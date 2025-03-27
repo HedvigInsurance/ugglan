@@ -123,6 +123,7 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         let discount: Discount = .init(
+            id: "CODE 2",
             code: "231223",
             amount: .sek(100),
             title: "23",

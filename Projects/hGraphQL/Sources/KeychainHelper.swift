@@ -80,7 +80,7 @@ final public class KeychainHelper {
             SecItemUpdate(query, attributesToUpdate)
         default:
             // Fire "security error -{OSStatus}" in terminal for details of the error
-            log.error("Failed to save token with OSStatus: \(status)", error: nil, attributes: nil)
+            graphQlLogger.error("Failed to save token with OSStatus: \(status)", error: nil, attributes: nil)
         }
     }
 
@@ -103,13 +103,13 @@ final public class KeychainHelper {
             return nil
         default:
             if let errMsg = SecCopyErrorMessageString(status, nil) as? String {
-                log.info(
+                graphQlLogger.info(
                     "Access token refresh missing token EXCEPTION",
                     error: NSError(domain: errMsg, code: 1000),
                     attributes: nil
                 )
             } else {
-                log.info("Access token refresh missing token EXCEPTION", error: nil, attributes: nil)
+                graphQlLogger.info("Access token refresh missing token EXCEPTION", error: nil, attributes: nil)
             }
             throw NSError(domain: NSOSStatusErrorDomain, code: Int(status))
         }

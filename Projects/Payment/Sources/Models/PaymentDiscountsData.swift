@@ -1,11 +1,15 @@
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
     let discounts: [Discount]
     let referralsData: ReferralsData
+
+    public init(discounts: [Discount], referralsData: ReferralsData) {
+        self.discounts = discounts
+        self.referralsData = referralsData
+    }
 }
 
 public struct ReferralsData: Equatable, Codable, Sendable {
@@ -13,6 +17,13 @@ public struct ReferralsData: Equatable, Codable, Sendable {
     let discountPerMember: MonetaryAmount
     let discount: MonetaryAmount
     let referrals: [Referral]
+
+    public init(code: String, discountPerMember: MonetaryAmount, discount: MonetaryAmount, referrals: [Referral]) {
+        self.code = code
+        self.discountPerMember = discountPerMember
+        self.discount = discount
+        self.referrals = referrals
+    }
 
     var allReferralDiscount: MonetaryAmount {
         let value = referrals.compactMap({ $0.activeDiscount }).compactMap({ $0.value }).reduce(0.0, +)

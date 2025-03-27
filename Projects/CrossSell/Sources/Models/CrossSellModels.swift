@@ -1,7 +1,6 @@
 import Foundation
 import SwiftUI
 import hCoreUI
-import hGraphQL
 
 public struct CrossSell: Codable, Equatable, Hashable, Sendable {
     public var title: String
@@ -15,7 +14,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable {
         }
     }
 
-    fileprivate static func hasBeenSeenKey(typeOfContract: String) -> String {
+    public static func hasBeenSeenKey(typeOfContract: String) -> String {
         "CrossSell-hasBeenSeen-\(typeOfContract)"
     }
 
@@ -36,19 +35,6 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable {
         self.hasBeenSeen = hasBeenSeen
         self.type = type
     }
-
-    public init?(_ data: OctopusGraphQL.CrossSellFragment.CrossSell) {
-        let type = data.type.crossSellType
-        guard type != .unknown else { return nil }
-        title = data.title
-        description = data.description
-
-        webActionURL = data.storeUrl
-        self.type = type
-        hasBeenSeen = UserDefaults.standard.bool(
-            forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
-        )
-    }
 }
 
 extension CrossSell {
@@ -59,26 +45,6 @@ extension CrossSell {
         case .accident: return HCoreUIAsset.bigPillowAccident.image
         case .pet: return HCoreUIAsset.bigPillowPet.image
         case .unknown: return HCoreUIAsset.bigPillowHome.image
-        }
-    }
-}
-
-extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
-    var crossSellType: CrossSellType {
-        switch self {
-        case .case(let t):
-            switch t {
-            case .car:
-                return .car
-            case .home:
-                return .home
-            case .accident:
-                return .accident
-            case .pet:
-                return .pet
-            }
-        case .unknown:
-            return .unknown
         }
     }
 }

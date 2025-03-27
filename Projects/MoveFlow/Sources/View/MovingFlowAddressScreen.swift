@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct MovingFlowAddressScreen: View {
     @ObservedObject var vm: AddressInputModel
@@ -278,18 +277,18 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
 @MainActor
 public class AddressInputModel: ObservableObject {
     @Inject private var service: MoveFlowClient
-    @Published var address: String = ""
-    @Published var postalCode: String = ""
-    @Published var squareArea: String = ""
-    @Published var nbOfCoInsured: Int = 0
-    @Published var accessDate: Date?
-    @Published var isStudent = false
+    @Published public var address: String = ""
+    @Published public var postalCode: String = ""
+    @Published public var squareArea: String = ""
+    @Published public var nbOfCoInsured: Int = 0
+    @Published public var accessDate: Date?
+    @Published public var isStudent = false
     @Published var addressError: String?
     @Published var postalCodeError: String?
     @Published var squareAreaError: String?
     @Published var accessDateError: String?
     @Published var type: MovingFlowNewAddressViewFieldType?
-    @Published var selectedHousingType: HousingType = .apartment
+    @Published public var selectedHousingType: HousingType = .apartment
     @Published var viewState: ProcessingState = .success
 
     @MainActor
