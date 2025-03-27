@@ -444,7 +444,7 @@ struct HomeTab: View {
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
             style: [.height]
-        ) { offerModel in
+        ) { claimInfo in
             CrossSellingScreen(
                 addonCardOnClick: { contractIds in
                     let store: ContractStore = globalPresentableStoreContainer.get()
@@ -455,7 +455,7 @@ struct HomeTab: View {
                         contractConfigs: addonConfigs
                     )
                 },
-                fromClaimId: offerModel.claimId
+                claimInfo: claimInfo
             )
         }
         .detent(
@@ -492,7 +492,18 @@ struct HomeTab: View {
                 Task {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
-                        homeNavigationVm.navBarItems.isNewOfferPresented = .init(claimId: claim?.id)
+                        if let claim = claim {
+                            homeNavigationVm.navBarItems.isNewOfferPresented = .init(
+                                id: claim.id,
+                                type: claim.claimType,
+                                status: claim.status.asString,
+                                outcome: claim.outcome.asString,
+                                submittedAt: claim.submittedAt,
+                                payoutAmount: claim.payoutAmount
+                            )
+                        } else {
+                            homeNavigationVm.navBarItems.isNewOfferPresented = nil
+                        }
                         let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                         if let claimId = claim?.id {
                             try await service.acknowledgeClosedStatus(claimId: claimId)

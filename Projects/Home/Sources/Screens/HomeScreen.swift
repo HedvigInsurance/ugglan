@@ -31,7 +31,7 @@ extension HomeScreen {
             action: { type in
                 switch type {
                 case .newOffer:
-                    navigationVm.navBarItems.isNewOfferPresented = .init()
+                    navigationVm.navBarItems.isNewOfferPresented = nil
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:

@@ -12,10 +12,10 @@ public struct CrossSellingScreen: View {
 
     public init(
         addonCardOnClick: @escaping (_ contractIds: [String]) -> Void,
-        fromClaimId: String?
+        claimInfo: CrossSellClaimInfo?
     ) {
         self.addonCardOnClick = addonCardOnClick
-        logCrossSellEvent(claimId: fromClaimId)
+        logCrossSellEvent(claimInfo: claimInfo)
     }
 
     public var body: some View {
@@ -66,19 +66,44 @@ public struct CrossSellingScreen: View {
         }
     }
 
-    private func logCrossSellEvent(claimId: String?) {
+    private func logCrossSellEvent(claimInfo: CrossSellClaimInfo?) {
         log.addUserAction(
             type: .custom,
             name: "cross sell",
             error: nil,
-            attributes: ["claim id": claimId]
+            attributes: ["claim info": claimInfo]
         )
+    }
+}
+
+public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
+    public let id: String
+    let type: String
+    let status: String
+    let outcome: String
+    let submittedAt: String?
+    public let payoutAmount: MonetaryAmount?
+
+    public init(
+        id: String,
+        type: String,
+        status: String,
+        outcome: String,
+        submittedAt: String?,
+        payoutAmount: MonetaryAmount?
+    ) {
+        self.id = id
+        self.type = type
+        self.status = status
+        self.outcome = outcome
+        self.submittedAt = submittedAt
+        self.payoutAmount = payoutAmount
     }
 }
 
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingScreen(addonCardOnClick: { _ in }, fromClaimId: "claim id")
+        return CrossSellingScreen(addonCardOnClick: { _ in }, claimInfo: nil)
     }
 }
