@@ -201,18 +201,6 @@ public struct EditCoInsuredNavigation: View {
         .environmentObject(editCoInsuredViewModel)
     }
 
-    func openSuccessScreen(title: String) -> some View {
-        hForm {
-            SuccessScreen(title: title)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        editCoInsuredNavigationVm.coInsuredInputModel = nil
-                    }
-                }
-        }
-        .hFormContentPosition(.compact)
-    }
-
     func openRemoveCoInsuredScreen() -> some View {
         return RemoveCoInsuredScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel
@@ -224,19 +212,6 @@ public struct EditCoInsuredNavigation: View {
         openCoInsuredInput(
             coInsuredModelEdit: coInsuredInputModel
         )
-        .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
-            var title: String {
-                switch actionType {
-                case .add:
-                    return L10n.contractCoinsuredAdded
-                case .delete:
-                    return L10n.contractCoinsuredRemoved
-                default:
-                    return ""
-                }
-            }
-            openSuccessScreen(title: title)
-        }
     }
 }
 

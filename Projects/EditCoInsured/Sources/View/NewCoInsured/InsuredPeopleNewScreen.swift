@@ -26,8 +26,6 @@ struct InsuredPeopleNewScreen: View {
                         .verticalPadding(0)
                         .padding(.top, .padding16)
                     }
-                    //                    .hWithoutHorizontalPadding([.row])
-                    //                    .sectionContainerStyle(.transparent)
 
                     hSection {
                         ForEach(Array(listToDisplay.enumerated()), id: \.0) {
