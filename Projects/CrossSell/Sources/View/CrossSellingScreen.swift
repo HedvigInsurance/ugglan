@@ -3,6 +3,7 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct CrossSellingScreen: View {
     @EnvironmentObject private var router: Router
@@ -10,9 +11,11 @@ public struct CrossSellingScreen: View {
     let addonCardOnClick: (_ contractIds: [String]) -> Void
 
     public init(
-        addonCardOnClick: @escaping (_ contractIds: [String]) -> Void
+        addonCardOnClick: @escaping (_ contractIds: [String]) -> Void,
+        fromClaimId: String?
     ) {
         self.addonCardOnClick = addonCardOnClick
+        logCrossSellEvent(claimId: fromClaimId)
     }
 
     public var body: some View {
@@ -62,11 +65,20 @@ public struct CrossSellingScreen: View {
             }
         }
     }
+
+    private func logCrossSellEvent(claimId: String?) {
+        log.addUserAction(
+            type: .custom,
+            name: "cross sell",
+            error: nil,
+            attributes: ["claim id": claimId]
+        )
+    }
 }
 
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingScreen(addonCardOnClick: { _ in })
+        return CrossSellingScreen(addonCardOnClick: { _ in }, fromClaimId: "claim id")
     }
 }
