@@ -3,6 +3,7 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct CrossSellingScreen: View {
     @EnvironmentObject private var router: Router
@@ -10,9 +11,11 @@ public struct CrossSellingScreen: View {
     let addonCardOnClick: (_ contractIds: [String]) -> Void
 
     public init(
-        addonCardOnClick: @escaping (_ contractIds: [String]) -> Void
+        addonCardOnClick: @escaping (_ contractIds: [String]) -> Void,
+        claimInfo: CrossSellClaimInfo
     ) {
         self.addonCardOnClick = addonCardOnClick
+        logCrossSellEvent(claimInfo: claimInfo)
     }
 
     public var body: some View {
@@ -62,11 +65,48 @@ public struct CrossSellingScreen: View {
             }
         }
     }
+
+    private func logCrossSellEvent(claimInfo: CrossSellClaimInfo?) {
+        log.addUserAction(
+            type: .custom,
+            name: "cross sell",
+            error: nil,
+            attributes: ["claim info": claimInfo]
+        )
+    }
+}
+
+public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
+    public let id: String?
+    let type: String?
+    let status: String?
+    let outcome: String?
+    let submittedAt: String?
+    let payoutAmount: MonetaryAmount?
+    let typeOfContract: String?
+
+    public init(
+        id: String? = nil,
+        type: String? = nil,
+        status: String? = nil,
+        outcome: String? = nil,
+        submittedAt: String? = nil,
+        payoutAmount: MonetaryAmount? = nil,
+        typeOfContract: String? = nil
+    ) {
+        self.id = id
+        self.type = type
+        self.status = status
+        self.outcome = outcome
+        self.submittedAt = submittedAt
+        self.payoutAmount = payoutAmount
+        self.typeOfContract = typeOfContract
+    }
 }
 
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingScreen(addonCardOnClick: { _ in })
+        return CrossSellingScreen(addonCardOnClick: { _ in }, claimInfo: .init())
     }
 }

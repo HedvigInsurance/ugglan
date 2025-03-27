@@ -319,15 +319,17 @@ extension View {
         }
     }
 
-    @MainActor public func configureTitleView(_ titleView: some TitleView) -> some View {
+    @MainActor public func configureTitleView(
+        title: String,
+        subTitle: String? = nil,
+        titleColor: TitleColor? = nil
+    ) -> some View {
         self.introspect(.viewController, on: .iOS(.v13...)) { vc in
-            vc.navigationItem.titleView = titleView.getTitleView()
-        }
-    }
-
-    @MainActor public func configureTitleView(title: String, subTitle: String) -> some View {
-        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
-            vc.navigationItem.titleView = getTitleUIView(title: title, subTitle: subTitle)
+            vc.navigationItem.titleView = getTitleUIView(
+                title: title,
+                subTitle: subTitle,
+                titleColor: titleColor ?? .default
+            )
         }
     }
 
@@ -337,25 +339,44 @@ extension View {
         }
     }
 
-    public func getTitleUIView(title: String, subTitle: String) -> UIView {
-        let view: UIView = UIHostingController(rootView: titleView(title: title, subTitle: subTitle)).view
+    public func getTitleUIView(title: String, subTitle: String?, titleColor: TitleColor) -> UIView {
+        let view: UIView = UIHostingController(
+            rootView: titleView(title: title, subTitle: subTitle, titleColor: titleColor)
+        )
+        .view
         view.backgroundColor = .clear
         view.isUserInteractionEnabled = true
         return view
     }
 
     @ViewBuilder
-    private func titleView(title: String, subTitle: String) -> some View {
+    private func titleView(title: String, subTitle: String?, titleColor: TitleColor) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             hText(title, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.primary)
-            hText(subTitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.secondary)
+                .foregroundColor(titleViewColor(titleColor))
+            if let subTitle {
+                hText(subTitle, style: .heading1)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
         .accessibilityElement(children: .combine)
     }
+
+    @hColorBuilder
+    private func titleViewColor(_ titleColor: TitleColor) -> some hColor {
+        if titleColor == .red {
+            hSignalColor.Red.element
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
+}
+
+public enum TitleColor: Sendable {
+    case `default`
+    case red
 }
 
 @MainActor

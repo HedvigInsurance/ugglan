@@ -87,29 +87,7 @@ struct EditDeductibleScreen: View {
             .sectionContainerStyle(.transparent)
             .padding(.top, .padding16)
         }
-        .configureTitleView(self)
-    }
-}
-
-extension EditDeductibleScreen: TitleView {
-    public func getTitleView() -> UIView {
-        let view: UIView = UIHostingController(rootView: titleView).view
-        view.backgroundColor = .clear
-        view.isUserInteractionEnabled = true
-        return view
-    }
-
-    @ViewBuilder
-    private var titleView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            hText(L10n.tierFlowSelectDeductibleTitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.primary)
-            hText(L10n.tierFlowSelectDeductibleSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Translucent.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, .padding8)
-        .accessibilityElement(children: .combine)
+        .configureTitleView(title: L10n.tierFlowSelectDeductibleTitle, subTitle: L10n.tierFlowSelectDeductibleSubtitle)
     }
 }
 

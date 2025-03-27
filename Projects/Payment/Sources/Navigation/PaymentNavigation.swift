@@ -30,7 +30,7 @@ public struct PaymentsNavigation<Content: View>: View {
                 .configureTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
-                        .configureTitleView(paymentData)
+                        .configureTitleView(title: paymentData.getTitle, titleColor: paymentData.titleColor)
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {

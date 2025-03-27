@@ -442,18 +442,21 @@ struct HomeTab: View {
                 )
         }
         .detent(
-            presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
+            item: $homeNavigationVm.navBarItems.isNewOfferPresented,
             style: [.height]
-        ) {
-            CrossSellingScreen(addonCardOnClick: { contractIds in
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
+        ) { claimInfo in
+            CrossSellingScreen(
+                addonCardOnClick: { contractIds in
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
 
-                loggedInVm.isAddonPresented = .init(
-                    addonSource: .crossSell,
-                    contractConfigs: addonConfigs
-                )
-            })
+                    loggedInVm.isAddonPresented = .init(
+                        addonSource: .crossSell,
+                        contractConfigs: addonConfigs
+                    )
+                },
+                claimInfo: claimInfo
+            )
             .embededInNavigation(
                 options: .navigationType(type: .large),
                 tracking: LoggedInNavigationDetentType.crossSelling
@@ -493,7 +496,19 @@ struct HomeTab: View {
                 Task {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
-                        homeNavigationVm.navBarItems.isNewOfferPresented = true
+                        if let claim = claim {
+                            homeNavigationVm.navBarItems.isNewOfferPresented = .init(
+                                id: claim.id,
+                                type: claim.claimType,
+                                status: claim.status.asString,
+                                outcome: claim.outcome.asString,
+                                submittedAt: claim.submittedAt,
+                                payoutAmount: claim.payoutAmount,
+                                typeOfContract: claim.productVariant?.typeOfContract
+                            )
+                        } else {
+                            homeNavigationVm.navBarItems.isNewOfferPresented = .init()
+                        }
                         let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                         if let claimId = claim?.id {
                             try await service.acknowledgeClosedStatus(claimId: claimId)
