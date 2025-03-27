@@ -58,7 +58,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let showClaimClosedFlow: Bool
     public var infoText: String?
     public let displayItems: [ClaimDisplayItem]
-    public var statusParagraph: String {
+    public var statusParagraph: String? {
         switch self.status {
         case .submitted:
             return L10n.ClaimStatus.Submitted.supportText
@@ -75,12 +75,12 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
             case .unresponsive:
                 return L10n.claimOutcomeUnresponsiveSupportText
             case .none:
-                return ""
+                return nil
             }
         case .reopened:
             return L10n.ClaimStatus.BeingHandledReopened.supportText
         default:
-            return ""
+            return nil
         }
     }
 
