@@ -18,9 +18,13 @@ struct MockData {
                     payoutAmount: nil,
                     targetFileUploadUri: "",
                     claimType: "",
-                    incidentDate: nil,
                     productVariant: nil,
-                    conversation: nil
+                    conversation: nil,
+                    appealInstructionsUrl: nil,
+                    isUploadingFilesEnabled: false,
+                    showClaimClosedFlow: false,
+                    infoText: nil,
+                    displayItems: []
                 ),
                 count: 0
             )
