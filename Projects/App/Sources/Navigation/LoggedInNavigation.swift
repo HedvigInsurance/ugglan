@@ -503,7 +503,8 @@ struct HomeTab: View {
                                 status: claim.status.asString,
                                 outcome: claim.outcome.asString,
                                 submittedAt: claim.submittedAt,
-                                payoutAmount: claim.payoutAmount
+                                payoutAmount: claim.payoutAmount,
+                                typeOfContract: claim.productVariant?.typeOfContract
                             )
                         } else {
                             homeNavigationVm.navBarItems.isNewOfferPresented = .init()

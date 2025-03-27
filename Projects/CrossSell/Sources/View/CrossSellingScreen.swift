@@ -82,7 +82,8 @@ public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
     let status: String?
     let outcome: String?
     let submittedAt: String?
-    public let payoutAmount: MonetaryAmount?
+    let payoutAmount: MonetaryAmount?
+    let typeOfContract: String?
 
     public init(
         id: String? = nil,
@@ -90,7 +91,8 @@ public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
         status: String? = nil,
         outcome: String? = nil,
         submittedAt: String? = nil,
-        payoutAmount: MonetaryAmount? = nil
+        payoutAmount: MonetaryAmount? = nil,
+        typeOfContract: String? = nil
     ) {
         self.id = id
         self.type = type
@@ -98,6 +100,7 @@ public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
         self.outcome = outcome
         self.submittedAt = submittedAt
         self.payoutAmount = payoutAmount
+        self.typeOfContract = typeOfContract
     }
 }
 
