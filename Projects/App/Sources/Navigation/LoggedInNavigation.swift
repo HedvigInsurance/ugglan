@@ -442,18 +442,21 @@ struct HomeTab: View {
                 )
         }
         .detent(
-            presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
+            item: $homeNavigationVm.navBarItems.isNewOfferPresented,
             style: [.height]
-        ) {
-            CrossSellingScreen(addonCardOnClick: { contractIds in
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
+        ) { offerModel in
+            CrossSellingScreen(
+                addonCardOnClick: { contractIds in
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
 
-                loggedInVm.isAddonPresented = .init(
-                    addonSource: .crossSell,
-                    contractConfigs: addonConfigs
-                )
-            })
+                    loggedInVm.isAddonPresented = .init(
+                        addonSource: .crossSell,
+                        contractConfigs: addonConfigs
+                    )
+                },
+                fromClaimId: offerModel.claimId
+            )
             .embededInNavigation(
                 options: .navigationType(type: .large),
                 tracking: LoggedInNavigationDetentType.crossSelling
@@ -493,7 +496,7 @@ struct HomeTab: View {
                 Task {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
-                        homeNavigationVm.navBarItems.isNewOfferPresented = true
+                        homeNavigationVm.navBarItems.isNewOfferPresented = .init(claimId: claim?.id)
                         let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                         if let claimId = claim?.id {
                             try await service.acknowledgeClosedStatus(claimId: claimId)
