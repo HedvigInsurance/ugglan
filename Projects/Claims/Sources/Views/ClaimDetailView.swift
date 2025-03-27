@@ -128,12 +128,12 @@ public struct ClaimDetailView: View {
     private var infoAndContactSection: some View {
         hSection {
             VStack(spacing: 0) {
-                hRow {
-                    if let statusParagraph {
+                if let statusParagraph {
+                    hRow {
                         hText(statusParagraph, style: .body1)
                     }
+                    Divider()
                 }
-                Divider()
 
                 hRow {
                     HStack {
