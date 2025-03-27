@@ -12,7 +12,7 @@ public struct CrossSellingScreen: View {
 
     public init(
         addonCardOnClick: @escaping (_ contractIds: [String]) -> Void,
-        claimInfo: CrossSellClaimInfo?
+        claimInfo: CrossSellClaimInfo
     ) {
         self.addonCardOnClick = addonCardOnClick
         logCrossSellEvent(claimInfo: claimInfo)
@@ -77,20 +77,20 @@ public struct CrossSellingScreen: View {
 }
 
 public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
-    public let id: String
-    let type: String
-    let status: String
-    let outcome: String
+    public let id: String?
+    let type: String?
+    let status: String?
+    let outcome: String?
     let submittedAt: String?
     public let payoutAmount: MonetaryAmount?
 
     public init(
-        id: String,
-        type: String,
-        status: String,
-        outcome: String,
-        submittedAt: String?,
-        payoutAmount: MonetaryAmount?
+        id: String? = nil,
+        type: String? = nil,
+        status: String? = nil,
+        outcome: String? = nil,
+        submittedAt: String? = nil,
+        payoutAmount: MonetaryAmount? = nil
     ) {
         self.id = id
         self.type = type
@@ -104,6 +104,6 @@ public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingScreen(addonCardOnClick: { _ in }, claimInfo: nil)
+        return CrossSellingScreen(addonCardOnClick: { _ in }, claimInfo: .init())
     }
 }

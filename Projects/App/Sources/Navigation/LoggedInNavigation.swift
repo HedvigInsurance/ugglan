@@ -457,6 +457,10 @@ struct HomeTab: View {
                 },
                 claimInfo: claimInfo
             )
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: LoggedInNavigationDetentType.crossSelling
+            )
         }
         .detent(
             item: $homeNavigationVm.openChat,
@@ -502,7 +506,7 @@ struct HomeTab: View {
                                 payoutAmount: claim.payoutAmount
                             )
                         } else {
-                            homeNavigationVm.navBarItems.isNewOfferPresented = nil
+                            homeNavigationVm.navBarItems.isNewOfferPresented = .init()
                         }
                         let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                         if let claimId = claim?.id {
