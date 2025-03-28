@@ -110,7 +110,7 @@ public struct SubmitClaimDeflectScreen: View {
                 description: nil,
                 info: nil,
                 buttonText: nil,
-                largerImageSize: false
+                preferredImageHeight: nil
             )
         ]
     )
