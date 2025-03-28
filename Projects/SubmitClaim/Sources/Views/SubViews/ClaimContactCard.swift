@@ -22,9 +22,10 @@ struct ClaimContactCard: View {
                     .setProcessor(SVGImageProcessor())
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: model.largerImageSize ? 80 : 40)
+                    .frame(height: model.largerImageSize ? 80 : 35)
                     .foregroundColor(hTextColor.Opaque.negative)
                     .accessibilityHidden(true)
+                    .padding(.bottom, .padding8)
             }
             VStack(spacing: 0) {
                 if let title = model.title {
@@ -105,8 +106,8 @@ struct ClaimContactCard_Previews: PreviewProvider {
             ClaimContactCard(
                 model: .init(
                     id: "id",
-                    imageUrl: nil,
-                    url: "https://www.hedvig.com",
+                    imageUrl: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
+                    url: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
                     phoneNumber: nil,
                     title: nil,
                     description: nil,
