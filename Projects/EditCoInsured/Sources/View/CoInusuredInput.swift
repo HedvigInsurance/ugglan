@@ -601,10 +601,8 @@ public class IntentViewModel: ObservableObject {
         do {
             let data = try await service.sendIntent(contractId: contractId, coInsured: coInsured)
             withAnimation {
-                //                self.intent = data
-                //                self.viewState = .success
-                self.viewState = .error(errorMessage: "error")
-                self.errorMessageForInput = "error"
+                self.intent = data
+                self.viewState = .success
             }
         } catch let exception {
             withAnimation {
