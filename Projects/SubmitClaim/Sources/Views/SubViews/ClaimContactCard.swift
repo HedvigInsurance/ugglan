@@ -22,7 +22,7 @@ struct ClaimContactCard: View {
                     .setProcessor(SVGImageProcessor())
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: CGFloat(model.preferredImageHeight ?? 80))
+                    .frame(height: CGFloat(model.preferredImageHeight ?? 40))
                     .foregroundColor(hTextColor.Opaque.negative)
                     .accessibilityHidden(true)
                     .padding(.bottom, .padding8)
