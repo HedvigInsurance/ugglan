@@ -1,3 +1,4 @@
+import Campaign
 import PresentableStore
 import SwiftUI
 import hCore
@@ -8,8 +9,6 @@ public class PaymentsNavigationViewModel: ObservableObject {
 
     public init() {}
     public var connectPaymentVm = ConnectPaymentViewModel()
-    @Published public var isAddCampaignPresented = false
-    @Published public var isDeleteCampaignPresented: Discount?
 }
 
 public struct PaymentsNavigation<Content: View>: View {
@@ -36,18 +35,26 @@ public struct PaymentsNavigation<Content: View>: View {
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
                     case .discounts:
-                        PaymentsDiscountsRootView()
-                            .onAppear {
-                                let store: PaymentStore = globalPresentableStoreContainer.get()
-                                store.send(.fetchDiscountsData)
-                            }
-                            .routerDestination(for: PaymentsRedirectType.self) { redirectType in
-                                switch redirectType {
+                        let store: PaymentStore = globalPresentableStoreContainer.get()
+                        let paymentDataDiscounts = store.state.paymentData?.discounts ?? []
+                        CampaignNavigation(
+                            campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts),
+                            redirect: { redirect in
+                                switch redirect {
                                 case .forever:
-                                    redirect(.forever)
+                                    router.push(PaymentsRedirectType.forever)
                                 }
+                            },
+                            onEditCode: {
+                                store.send(.load)
                             }
-                            .configureTitle(L10n.paymentsDiscountsSectionTitle)
+                        )
+                        .routerDestination(for: PaymentsRedirectType.self) { redirectType in
+                            switch redirectType {
+                            case .forever:
+                                redirect(.forever)
+                            }
+                        }
                     case .history:
                         PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)
@@ -55,27 +62,6 @@ public struct PaymentsNavigation<Content: View>: View {
                 }
         }
         .environmentObject(paymentsNavigationVm)
-        .detent(
-            presented: $paymentsNavigationVm.isAddCampaignPresented,
-            style: [.height]
-        ) {
-            AddCampaignCodeView()
-                .configureTitle(L10n.paymentsAddCampaignCode)
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: PaymentsDetentActions.addCampaign
-                )
-        }
-        .detent(
-            item: $paymentsNavigationVm.isDeleteCampaignPresented,
-            style: [.height]
-        ) { discount in
-            DeleteCampaignView(vm: .init(discount: discount))
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: PaymentsDetentActions.deleteCampaign
-                )
-        }
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
     }
 }
@@ -85,22 +71,15 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
         switch self {
         case .paymentsView:
             return .init(describing: PaymentsView.self)
-        case .addCampaign:
-            return .init(describing: AddCampaignCodeView.self)
-        case .deleteCampaign:
-            return .init(describing: DeleteCampaignView.self)
         }
     }
 
     case paymentsView
-    case addCampaign
-    case deleteCampaign
 }
 
 public enum PaymentsRouterAction: Hashable {
     case discounts
     case history
-    //    case openUrl(url: URL)
 }
 
 extension PaymentsRouterAction: TrackingViewNameProtocol {
