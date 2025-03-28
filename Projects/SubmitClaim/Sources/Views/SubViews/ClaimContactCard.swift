@@ -22,7 +22,7 @@ struct ClaimContactCard: View {
                     .setProcessor(SVGImageProcessor())
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: model.largerImageSize ? 80 : 35)
+                    .frame(height: CGFloat(model.preferredImageHeight ?? 80))
                     .foregroundColor(hTextColor.Opaque.negative)
                     .accessibilityHidden(true)
                     .padding(.bottom, .padding8)
@@ -113,7 +113,7 @@ struct ClaimContactCard_Previews: PreviewProvider {
                     description: nil,
                     info: nil,
                     buttonText: "Button text",
-                    largerImageSize: false
+                    preferredImageHeight: nil
                 )
             )
             ClaimContactCard(
@@ -126,7 +126,7 @@ struct ClaimContactCard_Previews: PreviewProvider {
                     description: nil,
                     info: nil,
                     buttonText: nil,
-                    largerImageSize: false
+                    preferredImageHeight: nil
                 )
             )
             ClaimContactCard(
@@ -139,7 +139,7 @@ struct ClaimContactCard_Previews: PreviewProvider {
                     description: nil,
                     info: nil,
                     buttonText: nil,
-                    largerImageSize: false
+                    preferredImageHeight: nil
                 )
             )
         }

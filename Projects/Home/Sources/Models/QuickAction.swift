@@ -119,6 +119,7 @@ public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable, Sen
     public let imageUrl: String?
     public let phoneNumber: String?
     public let url: String?
+    public let preferredImageHeight: Int?
 }
 
 public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Sendable {

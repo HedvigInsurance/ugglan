@@ -395,7 +395,7 @@ struct HomeTab: View {
                                         description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
                                         info: L10n.submitClaimGlobalAssistanceFootnote,
                                         buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
-                                        largerImageSize: true
+                                        preferredImageHeight: $0.preferredImageHeight
                                     )
                                 })
 

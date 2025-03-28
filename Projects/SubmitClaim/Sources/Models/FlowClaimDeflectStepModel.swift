@@ -97,8 +97,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
                 title: L10n.submitClaimEmergencyGlobalAssistanceTitle,
                 description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
                 info: L10n.submitClaimGlobalAssistanceFootnote,
-                buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
-                largerImageSize: true
+                buttonText: L10n.submitClaimGlobalAssistanceUrlLabel
             )
         })
         infoText = nil
@@ -269,8 +268,7 @@ extension Partner {
         title: String?,
         description: String?,
         info: String?,
-        buttonText: String?,
-        largerImageSize: Bool = false
+        buttonText: String?
     ) {
         self.init(
             id: data.id,
@@ -281,7 +279,7 @@ extension Partner {
             description: description,
             info: info,
             buttonText: buttonText,
-            largerImageSize: largerImageSize
+            preferredImageHeight: data.preferredImageHeight
         )
     }
 }

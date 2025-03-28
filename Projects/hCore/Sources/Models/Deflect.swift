@@ -7,7 +7,7 @@ public struct Partner: Codable, Equatable, Hashable, Sendable {
     public let description: String?
     public let info: String?
     public let buttonText: String?
-    public let largerImageSize: Bool
+    public let preferredImageHeight: Int?
     public init(
         id: String,
         imageUrl: String?,
@@ -17,7 +17,7 @@ public struct Partner: Codable, Equatable, Hashable, Sendable {
         description: String?,
         info: String?,
         buttonText: String?,
-        largerImageSize: Bool
+        preferredImageHeight: Int?
     ) {
         self.id = id
         self.imageUrl = imageUrl
@@ -27,7 +27,7 @@ public struct Partner: Codable, Equatable, Hashable, Sendable {
         self.description = description
         self.info = info
         self.buttonText = buttonText
-        self.largerImageSize = largerImageSize
+        self.preferredImageHeight = preferredImageHeight
     }
 }
 
