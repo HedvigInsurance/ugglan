@@ -117,30 +117,33 @@ public struct ProcessingStateView: View {
 
     @ViewBuilder
     private var loadingView: some View {
-        ZStack(alignment: .bottom) {
-            BackgroundView().ignoresSafeArea()
-            VStack {
-                Spacer()
-                hText(loadingViewText)
-                ProgressView(value: vm.progress)
-                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                    .accessibilityHidden(true)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            animationTimings.forEach { item in
-                                withAnimation(
-                                    .easeInOut(duration: TimeInterval(item.duration)).delay(TimeInterval(item.delay))
-                                ) {
-                                    vm.progress = item.progress
+        GeometryReader { proxy in
+            ZStack(alignment: .bottom) {
+                BackgroundView().ignoresSafeArea()
+                VStack {
+                    Spacer()
+                    hText(loadingViewText)
+                    ProgressView(value: vm.progress)
+                        .frame(width: proxy.size.width * 0.53)
+                        .accessibilityHidden(true)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                animationTimings.forEach { item in
+                                    withAnimation(
+                                        .easeInOut(duration: TimeInterval(item.duration))
+                                            .delay(TimeInterval(item.delay))
+                                    ) {
+                                        vm.progress = item.progress
+                                    }
                                 }
                             }
                         }
-                    }
-                    .progressViewStyle(hProgressViewStyle())
-                Spacer()
+                        .progressViewStyle(hProgressViewStyle())
+                    Spacer()
+                }
             }
+            .accessibilityElement(children: .combine)
         }
-        .accessibilityElement(children: .combine)
     }
 }
 

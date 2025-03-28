@@ -137,17 +137,19 @@ public struct ClaimFilesView: View {
     }
 
     private var loadingView: some View {
-        hSection {
-            VStack(spacing: 20) {
-                Spacer()
-                hText(L10n.fileUploadIsUploading)
-                ProgressView(value: vm.progress)
-                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                    .progressViewStyle(hProgressViewStyle())
-                Spacer()
+        GeometryReader { proxy in
+            hSection {
+                VStack(spacing: 20) {
+                    Spacer()
+                    hText(L10n.fileUploadIsUploading)
+                    ProgressView(value: vm.progress)
+                        .frame(width: proxy.size.width * 0.53)
+                        .progressViewStyle(hProgressViewStyle())
+                    Spacer()
+                }
             }
+            .sectionContainerStyle(.transparent)
         }
-        .sectionContainerStyle(.transparent)
     }
 
     private var successView: some View {
