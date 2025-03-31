@@ -20,6 +20,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         ]
 
         let discount: Discount = .init(
+            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",
@@ -39,6 +40,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [.forPayment, .showExpire]
 
         let discount: Discount = .init(
+            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",
@@ -61,6 +63,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             let nonValidServerBasedDate = date.localDateString
 
             let discount: Discount = .init(
+                id: "id",
                 code: "code",
                 amount: .init(amount: "20", currency: "SEK"),
                 title: "title",

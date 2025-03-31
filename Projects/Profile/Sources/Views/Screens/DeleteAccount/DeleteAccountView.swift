@@ -3,7 +3,6 @@ import Contracts
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel

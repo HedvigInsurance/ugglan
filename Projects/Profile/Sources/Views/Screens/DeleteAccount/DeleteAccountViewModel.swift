@@ -4,7 +4,6 @@ import Combine
 import Contracts
 import Foundation
 import hCore
-import hGraphQL
 
 @MainActor
 public class DeleteAccountViewModel: ObservableObject {

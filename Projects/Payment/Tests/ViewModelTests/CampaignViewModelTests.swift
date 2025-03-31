@@ -58,6 +58,7 @@ final class CampaignViewModelTests: XCTestCase {
         self.sut = mockService
 
         let discount: Discount = .init(
+            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",
@@ -84,6 +85,7 @@ final class CampaignViewModelTests: XCTestCase {
         self.sut = mockService
 
         let discount: Discount = .init(
+            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",

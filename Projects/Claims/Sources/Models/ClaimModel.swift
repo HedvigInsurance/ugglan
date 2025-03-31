@@ -140,6 +140,11 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         }
         let displayTitle: String
         let displayValue: String
+
+        public init(displayTitle: String, displayValue: String) {
+            self.displayTitle = displayTitle
+            self.displayValue = displayValue
+        }
     }
 }
 

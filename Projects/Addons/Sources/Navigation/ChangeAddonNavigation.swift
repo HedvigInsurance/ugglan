@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String = UUID().uuidString
@@ -27,13 +26,6 @@ public enum AddonSource: String, Codable {
     case travelCertificates = "TRAVEL_CERTIFICATES"
     case crossSell = "CROSS_SELL"
     case deeplink = "DEEPLINK"
-
-    public var getSource: OctopusGraphQL.UpsellTravelAddonFlow {
-        switch self {
-        case .insurances, .crossSell: return .appOnlyUpsale
-        case .travelCertificates, .deeplink: return .appUpsellUpgrade
-        }
-    }
 }
 
 struct AddonInfo: Equatable, Identifiable {

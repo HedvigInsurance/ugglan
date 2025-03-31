@@ -7,7 +7,6 @@ import SwiftUI
 import WebKit
 import hCore
 import hCoreUI
-import hGraphQL
 
 private class DirectDebitWebview: UIView {
     var paymentService = hPaymentService()

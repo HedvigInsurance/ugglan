@@ -1,7 +1,6 @@
 import Foundation
 import PresentableStore
 import hCore
-import hGraphQL
 
 public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileState
