@@ -5,16 +5,13 @@ import hCoreUI
 struct ContactChatView: View {
     let store: ClaimsStore
     let id: String
-    let status: String
 
     init(
         store: ClaimsStore,
-        id: String,
-        status: String
+        id: String
     ) {
         self.store = store
         self.id = id
-        self.status = status
     }
 
     var body: some View {

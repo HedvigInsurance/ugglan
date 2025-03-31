@@ -80,29 +80,7 @@ struct AddonSelectSubOptionScreen: View {
             .padding(.top, 16)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(self)
-    }
-}
-
-extension AddonSelectSubOptionScreen: TitleView {
-    func getTitleView() -> UIView {
-        let view: UIView = UIHostingController(rootView: titleView).view
-        view.backgroundColor = .clear
-        view.isUserInteractionEnabled = true
-        return view
-    }
-
-    @ViewBuilder
-    private var titleView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            hText(L10n.addonFlowSelectSuboptionTitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.primary)
-            hText(L10n.addonFlowSelectSuboptionSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Translucent.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, .padding8)
-        .accessibilityElement(children: .combine)
+        .configureTitleView(title: L10n.addonFlowSelectSuboptionTitle, subTitle: L10n.addonFlowSelectSuboptionSubtitle)
     }
 }
 

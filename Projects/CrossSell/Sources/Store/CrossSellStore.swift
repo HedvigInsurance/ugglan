@@ -1,3 +1,4 @@
+import Addons
 import PresentableStore
 import hCore
 

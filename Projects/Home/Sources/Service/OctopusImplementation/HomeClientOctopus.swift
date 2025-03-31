@@ -92,13 +92,14 @@ public class HomeClientOctopus: HomeClient {
             quickActions.append(.firstVet(partners: firstVetPartners))
         }
 
-        if let sickAbroadPartners = actions?.sickAbroadAction?.partners {
+        if let sickAbroadPartners = actions?.sickAbroadAction?.deflectPartners {
             let firstVetPartners = sickAbroadPartners.compactMap({
                 SickAbroadPartner(
                     id: $0.id,
                     imageUrl: $0.imageUrl,
                     phoneNumber: $0.phoneNumber,
-                    url: $0.url
+                    url: $0.url,
+                    preferredImageHeight: $0.preferredImageHeight
                 )
             })
             quickActions.append(.sickAbroad(partners: firstVetPartners))

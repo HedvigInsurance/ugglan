@@ -30,9 +30,13 @@ final class FetchClaimsTests: XCTestCase {
                 payoutAmount: nil,
                 targetFileUploadUri: "",
                 claimType: "",
-                incidentDate: "2024-07-25",
                 productVariant: nil,
-                conversation: nil
+                conversation: nil,
+                appealInstructionsUrl: nil,
+                isUploadingFilesEnabled: false,
+                showClaimClosedFlow: false,
+                infoText: nil,
+                displayItems: []
             ),
             .init(
                 id: "id2",
@@ -44,9 +48,13 @@ final class FetchClaimsTests: XCTestCase {
                 payoutAmount: nil,
                 targetFileUploadUri: "",
                 claimType: "",
-                incidentDate: "2024-05-29",
                 productVariant: nil,
-                conversation: nil
+                conversation: nil,
+                appealInstructionsUrl: nil,
+                isUploadingFilesEnabled: false,
+                showClaimClosedFlow: false,
+                infoText: nil,
+                displayItems: []
             ),
         ]
 

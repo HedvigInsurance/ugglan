@@ -359,33 +359,3 @@ extension ConversationsError: LocalizedError {
         }
     }
 }
-
-extension ChatConversationViewModel: TitleView {
-    public func getTitleView() -> UIView {
-        let view: UIView = UIHostingController(rootView: titleView).view
-        view.backgroundColor = .clear
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
-        view.addGestureRecognizer(tapGesture)
-        view.isUserInteractionEnabled = true
-        return view
-    }
-
-    @objc private func handleTapGesture() {
-        if claimId != nil {
-            self.onTitleTap()
-        }
-    }
-
-    @ViewBuilder
-    private var titleView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            hText(self.title).foregroundColor(hTextColor.Opaque.primary)
-            if let subTitle = subTitle {
-                hText(subTitle)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityElement(children: .combine)
-    }
-}

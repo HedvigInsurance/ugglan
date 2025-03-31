@@ -1,6 +1,7 @@
 import Chat
 import Combine
 import Contracts
+import CrossSell
 import EditCoInsuredShared
 import Foundation
 import Payment
@@ -71,7 +72,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct NavBarItems {
         public var isFirstVetPresented = false
-        public var isNewOfferPresented = false
+        public var isNewOfferPresented: CrossSellClaimInfo?
     }
 
     deinit {

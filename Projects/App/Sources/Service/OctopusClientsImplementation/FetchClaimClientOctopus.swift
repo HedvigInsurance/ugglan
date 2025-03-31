@@ -24,19 +24,69 @@ extension ClaimModel {
     ) {
         self.init(
             id: claim.id,
-            status: ClaimStatus(rawValue: claim.status?.rawValue ?? "") ?? .none,
-            outcome: .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none,
+            status: claim.status?.asClaimStatus ?? .none,
+            outcome: claim.outcome?.asClaimOutcome,
             submittedAt: claim.submittedAt,
             signedAudioURL: claim.audioUrl ?? "",
             memberFreeText: claim.memberFreeText,
             payoutAmount: MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment),
             targetFileUploadUri: claim.targetFileUploadUri,
             claimType: claim.claimType ?? "",
-            incidentDate: claim.incidentDate,
             productVariant: .init(data: claim.productVariant?.fragments.productVariantFragment),
             conversation: .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim),
-            showClaimClosedFlow: claim.showClaimClosedFlow
+            appealInstructionsUrl: claim.appealInstructionsUrl,
+            isUploadingFilesEnabled: claim.isUploadingFilesEnabled,
+            showClaimClosedFlow: claim.showClaimClosedFlow,
+            infoText: claim.infoText,
+            displayItems: claim.displayItems.compactMap({ item in
+                let displayValue: String = {
+                    return item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? item.displayValue
+                        .localDateToIso8601Date?
+                        .displayDateDDMMMYYYYFormat ?? item.displayValue
+                }()
+                return .init(displayTitle: item.displayTitle, displayValue: displayValue)
+            })
         )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ClaimStatus> {
+    fileprivate var asClaimStatus: ClaimModel.ClaimStatus {
+        switch self {
+        case .case(let status):
+            switch status {
+            case .created:
+                return .submitted
+            case .inProgress:
+                return .beingHandled
+            case .closed:
+                return .closed
+            case .reopened:
+                return .reopened
+            }
+        case .unknown:
+            return ClaimModel.ClaimStatus.none
+        }
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ClaimOutcome> {
+    fileprivate var asClaimOutcome: ClaimModel.ClaimOutcome? {
+        switch self {
+        case .case(let status):
+            switch status {
+            case .paid:
+                return .paid
+            case .notCompensated:
+                return .notCompensated
+            case .notCovered:
+                return .notCovered
+            case .unresponsive:
+                return .unresponsive
+            }
+        case .unknown:
+            return nil
+        }
     }
 }
 
