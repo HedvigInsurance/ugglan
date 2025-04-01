@@ -12,7 +12,6 @@ import SwiftUI
 @preconcurrency import UserNotifications
 import hCore
 import hCoreUI
-import hGraphQL
 
 extension AppDelegate {
     func application(

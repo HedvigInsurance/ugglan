@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public enum Market: String, CaseIterable, Codable, Sendable {
     case sweden = "SE"
