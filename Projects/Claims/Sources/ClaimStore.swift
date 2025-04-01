@@ -3,7 +3,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var fetchClaimsClient: hFetchClaimsClient

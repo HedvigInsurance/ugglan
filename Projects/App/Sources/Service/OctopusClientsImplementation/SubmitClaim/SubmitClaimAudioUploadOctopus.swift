@@ -1,17 +1,35 @@
 import Apollo
+import Claims
 import Environment
 import Foundation
+import SubmitClaim
 import hCore
 import hGraphQL
 
-enum OdysseyRequest: Sendable {
+extension NetworkClient: @retroactive FileUploaderClient {
+    public func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel {
+        let request = try await OdysseyRequest.uploadAudioFile(flowId: flowId, file: file).asRequest()
+        let (data, response) = try await self.sessionClient.data(for: request)
+        let responseModel: UploadFileResponseModel? = try await self.handleResponse(
+            data: data,
+            response: response,
+            error: nil
+        )
+        if let responseModel {
+            return responseModel
+        }
+        throw FileUploadError.error(message: L10n.General.errorBody)
+    }
+}
+
+private enum OdysseyRequest: Sendable {
     case uploadAudioFile(flowId: String, file: UploadFile)
 
-    var baseUrl: URL {
+    private var baseUrl: URL {
         return Environment.current.odysseyApiURL
     }
 
-    var methodType: String {
+    private var methodType: String {
         switch self {
         case .uploadAudioFile:
             return "POST"
@@ -42,5 +60,17 @@ enum OdysseyRequest: Sendable {
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }
         return request
+    }
+}
+
+private enum FileUploadError: Error {
+    case error(message: String)
+}
+
+extension FileUploadError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .error(message): return message
+        }
     }
 }

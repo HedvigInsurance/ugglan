@@ -1,14 +1,23 @@
-import Combine
-import Contracts
+import Apollo
+import Claims
+import Environment
 import Foundation
+import Kingfisher
+//
+//  SubmitClaimOctopus.swift
+//  Ugglan
+//
+//  Created by Sladan Nimcevic on 2025-03-31.
+//  Copyright © 2025 Hedvig. All rights reserved.
+//
+import SubmitClaim
+import UIKit
 import hCore
 import hGraphQL
 
-public class SubmitClaimClientOctopus: SubmitClaimClient {
+class SubmitClaimClientOctopus: SubmitClaimClient {
     private let fileUploadService = FileUploaderService()
-    public init() {}
-
-    public func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
+    func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
         let startInput = OctopusGraphQL.FlowClaimStartInput(
             entrypointId: GraphQLNullable(optionalValue: entrypointId),
             entrypointOptionId: GraphQLNullable(optionalValue: entrypointOptionId),
@@ -18,7 +27,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
     }
 
-    public func updateContact(
+    func updateContact(
         phoneNumber: String,
         context: String,
         model: FlowClaimPhoneNumberStepModel
@@ -28,7 +37,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func dateOfOccurrenceAndLocationRequest(
+    func dateOfOccurrenceAndLocationRequest(
         context: String,
         model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
     ) async throws -> SubmitClaimStepResponse {
@@ -72,7 +81,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         throw SubmitClaimError.error(message: L10n.General.errorBody)
     }
 
-    public func submitAudioRecording(
+    func submitAudioRecording(
         type: SubmitAudioRecordingType,
         context: String,
         currentClaimId: String,
@@ -131,7 +140,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         }
     }
 
-    public func singleItemRequest(
+    func singleItemRequest(
         context: String,
         model: FlowClaimSingleItemStepModel
     ) async throws -> SubmitClaimStepResponse {
@@ -143,7 +152,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimSingleItemNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func summaryRequest(
+    func summaryRequest(
         context: String,
         model: SubmitClaimStep.SummaryStepModels
     ) async throws -> SubmitClaimStepResponse {
@@ -155,7 +164,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func singleItemCheckoutRequest(
+    func singleItemCheckoutRequest(
         context: String,
         model: FlowClaimSingleItemCheckoutStepModel
     ) async throws -> SubmitClaimStepResponse {
@@ -170,7 +179,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         }
     }
 
-    public func contractSelectRequest(
+    func contractSelectRequest(
         contractId: String,
         context: String,
         model: FlowClaimContractSelectStepModel
@@ -185,7 +194,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimContractSelectNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func emergencyConfirmRequest(isEmergency: Bool, context: String) async throws -> SubmitClaimStepResponse {
+    func emergencyConfirmRequest(isEmergency: Bool, context: String) async throws -> SubmitClaimStepResponse {
         let confirmEmergencyInput = OctopusGraphQL.FlowClaimConfirmEmergencyInput(confirmEmergency: isEmergency)
         let mutation = OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation(
             input: confirmEmergencyInput,
@@ -194,7 +203,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimConfirmEmergencyNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func submitFileUpload(
+    func submitFileUpload(
         ids: [String],
         context: String,
         model: FlowClaimFileUploadStepModel
@@ -204,7 +213,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimFileUploadNext.fragments.flowClaimFragment.currentStep)
     }
 
-    private func supportedSteps() -> [OctopusGraphQL.ID] {
+    func supportedSteps() -> [OctopusGraphQL.ID] {
         return [
             OctopusGraphQL.Objects.FlowClaimDateOfOccurrenceStep.typename,
             OctopusGraphQL.Objects.FlowClaimDateOfOccurrencePlusLocationStep.typename,
@@ -286,7 +295,7 @@ private protocol Into<To> where To: Sendable {
 }
 
 extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
-    fileprivate func into() -> SubmitClaimStep {
+    func into() -> SubmitClaimStep {
         if let step = self.asFlowClaimDateOfOccurrenceStep?.fragments.flowClaimDateOfOccurrenceStepFragment {
             return .setDateOfOccurence(model: .init(with: step))
         } else if let step = self.asFlowClaimDateOfOccurrencePlusLocationStep?.fragments
@@ -625,142 +634,547 @@ extension OctopusGraphQL.FlowClaimFileUploadNextMutation.Data: ClaimId, NextStep
 }
 
 extension FlowClaimSuccessStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimSuccessStepFragment
     ) {
-        self.id = data.id
+        self.init(id: data.id)
     }
 }
 
 extension FlowClaimFailedStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimFailedStepFragment
     ) {
-        self.id = data.id
+        self.init(id: data.id)
     }
 }
 
 extension FlowClaimDateOfOccurenceStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimDateOfOccurrenceStepFragment
     ) {
-        self.id = data.id
-        self.dateOfOccurence = data.dateOfOccurrence
-        self.maxDate = data.maxDate
-    }
-
-    @MainActor
-    func getMaxDate() -> Date {
-        return maxDate?.localDateToDate ?? Date()
+        self.init(
+            id: data.id,
+            dateOfOccurence: data.dateOfOccurrence,
+            maxDate: data.maxDate
+        )
     }
 }
 
 extension FlowClaimDateOfOccurrencePlusLocationStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationStepFragment
     ) {
-        self.id = data.id
+        self.init(id: data.id)
     }
 }
 
 extension FlowClaimLocationStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimLocationStepFragment
     ) {
-        self.id = data.id
-        self.location = data.location
-        self.options = data.options.map({ .init(with: $0) })
+        self.init(
+            id: data.id,
+            location: data.location,
+            options: data.options.map({ .init(with: $0) })
+        )
     }
 }
 
 extension FlowClaimAudioRecordingStepModel {
-    init?(
+    fileprivate init?(
         with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment?
     ) {
         guard let data else {
             return nil
         }
-        self.id = data.id
-        self.questions = data.questions
-        self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))
-        self.textQuestions = data.freeTextQuestions
-        self.inputTextContent = data.freeText
-        self.optionalAudio = data.freeTextAvailable
+        self.init(
+            id: data.id,
+            questions: data.questions,
+            audioContent: .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment)),
+            textQuestions: data.freeTextQuestions,
+            inputTextContent: data.freeText,
+            optionalAudio: data.freeTextAvailable
+        )
     }
 }
 
 extension FlowClaimPhoneNumberStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimPhoneNumberStepFragment
     ) {
-        self.id = data.id
-        self.phoneNumber = data.phoneNumber
+        self.init(
+            id: data.id,
+            phoneNumber: data.phoneNumber
+        )
     }
 }
 
 @MainActor
 extension FlowClaimContractSelectStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment
     ) {
-        self.selectedContractId = data.selectedOptionId ?? data.options.first?.id
-        self.availableContractOptions = data.options.map({ .init(with: $0) })
+        self.init(
+            availableContractOptions: data.options.map({ .init(with: $0) }),
+            selectedContractId: data.selectedOptionId ?? data.options.first?.id
+        )
     }
 }
 
 @MainActor
 extension FlowClaimContractSelectOptionModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment.Option
     ) {
-        self.id = data.id
-        self.displayTitle = data.displayTitle
-        self.displaySubTitle = data.displaySubtitle
+        self.init(
+            displayTitle: data.displayTitle,
+            displaySubTitle: data.displaySubtitle,
+            id: data.id
+        )
     }
 }
 
 extension FlowClaimConfirmEmergencyStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimConfirmEmergencyStepFragment
     ) {
-        self.id = data.id
-        self.text = data.text
-        self.confirmEmergency = data.confirmEmergency
-        self.options = data.options.map({ data in
-            FlowClaimConfirmEmergencyOption(displayName: data.displayName, value: data.displayValue)
-        })
+        self.init(
+            id: data.id,
+            text: data.text,
+            confirmEmergency: data.confirmEmergency,
+            options: data.options.map({ data in
+                FlowClaimConfirmEmergencyOption(displayName: data.displayName, value: data.displayValue)
+            })
+        )
     }
 }
 
 extension FlowClaimFileUploadStepModel {
-    init?(
+    fileprivate init?(
         with data: OctopusGraphQL.FlowClaimFileUploadStepFragment?
     ) {
         guard let data else {
             return nil
         }
-        self.id = data.id
-        self.title = data.title
-        self.targetUploadUrl = data.targetUploadUrl
-        self.uploads = data.uploads.compactMap({
-            FlowClaimFileUploadStepFileModel(
-                fileId: $0.fileId,
-                signedUrl: $0.signedUrl,
-                mimeType: $0.mimeType,
-                name: $0.name
-            )
-        })
+        self.init(
+            id: data.id,
+            title: data.title,
+            targetUploadUrl: data.targetUploadUrl,
+            uploads: data.uploads.compactMap({
+                FlowClaimFileUploadStepFileModel(
+                    fileId: $0.fileId,
+                    signedUrl: $0.signedUrl,
+                    mimeType: $0.mimeType,
+                    name: $0.name
+                )
+            })
+        )
     }
 }
 
 extension FlowClaimSummaryStepModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.FlowClaimSummaryStepFragment
     ) {
-        self.id = data.id
-        self.title = data.title
-        self.shouldShowDateOfOccurence = true
-        self.shouldShowLocation = true
-        self.shouldShowSingleItem = data.singleItemStep != nil
+        self.init(
+            id: data.id,
+            title: data.title,
+            shouldShowDateOfOccurence: true,
+            shouldShowLocation: true,
+            shouldShowSingleItem: data.singleItemStep != nil
+        )
+    }
+}
+
+extension AudioContentModel {
+    fileprivate init?(
+        with data: OctopusGraphQL.FlowClaimAudioContentFragment?
+    ) {
+        guard let data else {
+            return nil
+        }
+        self.init(
+            audioUrl: data.audioUrl,
+            signedUrl: data.signedUrl
+        )
+    }
+}
+
+extension FlowClaimDeflectStepModel {
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimDeflectPestsStepFragment
+    ) {
+        self.init(
+            id: (Self.setDeflectType(idIn: data.id)),
+            infoText: L10n.submitClaimPestsInfoLabel,
+            warningText: nil,
+            infoSectionText: L10n.submitClaimPestsHowItWorksLabel,
+            infoSectionTitle: L10n.submitClaimHowItWorksTitle,
+            infoViewTitle: L10n.submitClaimPestsTitle,
+            infoViewText: L10n.submitClaimPestsInfoLabel,
+            questions: [],
+            partners: data.partners.map({
+                .init(
+                    with: $0.fragments.flowClaimDeflectPartnerFragment,
+                    title: nil,
+                    description: L10n.submitClaimPestsCustomerServiceLabel,
+                    info: nil,
+                    buttonText: L10n.submitClaimPestsCustomerServiceButton
+                )
+            })
+        )
+    }
+
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimDeflectGlassDamageStepFragment
+    ) {
+        self.init(
+            id: (Self.setDeflectType(idIn: data.id)),
+            infoText: L10n.submitClaimGlassDamageInfoLabel,
+            warningText: nil,
+            infoSectionText: L10n.submitClaimGlassDamageHowItWorksLabel,
+            infoSectionTitle: L10n.submitClaimHowItWorksTitle,
+            infoViewTitle: L10n.submitClaimGlassDamageTitle,
+            infoViewText: L10n.submitClaimGlassDamageInfoLabel,
+            questions: [],
+            partners: data.partners.map({
+                .init(
+                    with: $0.fragments.flowClaimDeflectPartnerFragment,
+                    title: nil,
+                    description: L10n.submitClaimGlassDamageOnlineBookingLabel,
+                    info: nil,
+                    buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
+                )
+            })
+        )
+    }
+
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimDeflectTowingStepFragment
+    ) {
+        self.init(
+            id: (Self.setDeflectType(idIn: data.id)),
+            infoText: L10n.submitClaimTowingInfoLabel,
+            warningText: nil,
+            infoSectionText: L10n.submitClaimTowingHowItWorksLabel,
+            infoSectionTitle: L10n.submitClaimHowItWorksTitle,
+            infoViewTitle: L10n.submitClaimTowingTitle,
+            infoViewText: L10n.submitClaimTowingInfoLabel,
+            questions: [
+                .init(question: L10n.submitClaimTowingQ1, answer: L10n.submitClaimTowingA1),
+                .init(question: L10n.submitClaimTowingQ2, answer: L10n.submitClaimTowingA2),
+                .init(question: L10n.submitClaimTowingQ3, answer: L10n.submitClaimTowingA3),
+            ],
+            partners: data.partners.map({
+                .init(
+                    with: $0.fragments.flowClaimDeflectPartnerFragment,
+                    title: nil,
+                    description: L10n.submitClaimTowingOnlineBookingLabel,
+                    info: nil,
+                    buttonText: L10n.submitClaimTowingOnlineBookingButton
+                )
+            })
+        )
+    }
+
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimDeflectEirStepFragment
+    ) {
+        self.init(
+            id: (Self.setDeflectType(idIn: data.id)),
+            infoText: nil,
+            warningText: nil,
+            infoSectionText: nil,
+            infoSectionTitle: nil,
+            infoViewTitle: nil,
+            infoViewText: nil,
+            questions: [],
+            partners: data.partners.map({
+                .init(
+                    with: $0.fragments.flowClaimDeflectPartnerFragment,
+                    title: nil,
+                    description: nil,
+                    info: nil,
+                    buttonText: nil
+                )
+            })
+        )
+    }
+
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimDeflectIDProtectionStepFragment
+    ) {
+        self.init(
+            id: (Self.setDeflectType(idIn: data.id)),
+            infoText: nil,
+            warningText: nil,
+            infoSectionText: data.description,
+            infoSectionTitle: data.title,
+            infoViewTitle: nil,
+            infoViewText: nil,
+            questions: [],
+            partners: data.partners.map({
+                .init(
+                    with: $0.deflectPartner.fragments.flowClaimDeflectPartnerFragment,
+                    title: $0.title,
+                    description: $0.description,
+                    info: $0.info,
+                    buttonText: $0.urlButtonTitle
+                )
+            })
+        )
+    }
+
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimDeflectEmergencyStepFragment
+    ) {
+        self.init(
+            id: (Self.setDeflectType(idIn: data.id)),
+            infoText: nil,
+            warningText: L10n.submitClaimEmergencyInfoLabel,
+            infoSectionText: L10n.submitClaimEmergencyInsuranceCoverLabel,
+            infoSectionTitle: L10n.submitClaimEmergencyInsuranceCoverTitle,
+            infoViewTitle: nil,
+            infoViewText: nil,
+            questions: [
+                .init(question: L10n.submitClaimEmergencyFaq1Title, answer: L10n.submitClaimEmergencyFaq1Label),
+                .init(question: L10n.submitClaimEmergencyFaq2Title, answer: L10n.submitClaimEmergencyFaq2Label),
+                .init(question: L10n.submitClaimEmergencyFaq3Title, answer: L10n.submitClaimEmergencyFaq3Label),
+                .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
+                .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
+                .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
+                .init(question: L10n.submitClaimEmergencyFaq7Title, answer: L10n.submitClaimEmergencyFaq7Label),
+                .init(question: L10n.submitClaimEmergencyFaq8Title, answer: L10n.submitClaimEmergencyFaq8Label),
+
+            ],
+            partners: data.partners.map({
+                .init(
+                    with: $0.fragments.flowClaimDeflectPartnerFragment,
+                    title: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                    description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                    info: L10n.submitClaimGlobalAssistanceFootnote,
+                    buttonText: L10n.submitClaimGlobalAssistanceUrlLabel
+                )
+            })
+        )
+    }
+}
+
+extension Partner {
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimDeflectPartnerFragment,
+        title: String?,
+        description: String?,
+        info: String?,
+        buttonText: String?
+    ) {
+        self.init(
+            id: data.id,
+            imageUrl: data.imageUrl,
+            url: data.url,
+            phoneNumber: data.phoneNumber,
+            title: title,
+            description: description,
+            info: info,
+            buttonText: buttonText,
+            preferredImageHeight: data.preferredImageHeight
+        )
+    }
+}
+extension ClaimFlowLocationOptionModel {
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimLocationStepFragment.Option
+    ) {
+        self.init(displayName: data.displayName, value: data.value)
+    }
+}
+
+@MainActor
+extension FlowClaimSingleItemCheckoutStepModel {
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
+    ) {
+        let flowClaimSingleItemStepModel: FlowClaimSingleItemStepModel? = {
+            if let singleItemFragment = data.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
+                return .init(with: singleItemFragment)
+            } else {
+                return nil
+            }
+        }()
+        let payoutMethods = data.availableCheckoutMethods.compactMap({
+            let id = $0.id
+            if $0.__typename == "FlowClaimAutomaticAutogiroPayout" {
+                let fragment = $0.asFlowClaimAutomaticAutogiroPayout!.fragments.flowClaimAutomaticAutogiroPayoutFragment
+                return AvailableCheckoutMethod(
+                    id: id,
+                    autogiro: ClaimAutomaticAutogiroPayoutModel.init(
+                        id: fragment.id,
+                        amount: .init(fragment: fragment.amount.fragments.moneyFragment),
+                        displayName: fragment.displayName
+                    )
+                )
+            }
+            return nil
+        })
+        let compensationFragment = data.compensation.fragments.flowClaimSingleItemCheckoutCompensationFragment
+
+        let compensation = Compensation(
+            id: compensationFragment.id,
+            deductible: .init(fragment: compensationFragment.deductible.fragments.moneyFragment),
+            payoutAmount: .init(fragment: compensationFragment.payoutAmount.fragments.moneyFragment),
+            repairCompensation: .init(with: compensationFragment.asFlowClaimSingleItemCheckoutRepairCompensation),
+            valueCompensation: .init(with: compensationFragment.asFlowClaimSingleItemCheckoutValueCompensation)
+        )
+
+        self.init(
+            id: data.id,
+            payoutMethods: payoutMethods,
+            selectedPayoutMethod: payoutMethods.first,
+            compensation: compensation,
+            singleItemModel: flowClaimSingleItemStepModel
+        )
+    }
+
+    fileprivate func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
+        return selectedPayoutMethod?.getCheckoutInput(forAmount: Double(compensation.payoutAmount.floatAmount))
+    }
+}
+
+@MainActor
+extension FlowClaimSingleItemStepModel {
+    fileprivate init(
+        with data: OctopusGraphQL.FlowClaimSingleItemStepFragment
+    ) {
+        var selectedItemModel = data.selectedItemModel
+        let customName = data.customName
+        let availableItemModelOptions =
+            data.availableItemModels?
+            .map({
+                ClaimFlowItemModelOptionModel.init(
+                    displayName: $0.displayName,
+                    itemBrandId: $0.itemBrandId,
+                    itemTypeId: $0.itemTypeId,
+                    itemModelId: $0.itemModelId
+                )
+            }) ?? []
+        var selectedItemBrand = data.selectedItemBrand
+        if selectedItemModel == nil && customName == nil {
+            let currentDeviceName = UIDevice.modelName.lowercased()
+            if let matchingModelWithCurrentDevice = availableItemModelOptions.first(where: {
+                let name = $0.displayName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                return name == currentDeviceName
+            }) {
+                selectedItemModel = matchingModelWithCurrentDevice.itemModelId
+                selectedItemBrand = matchingModelWithCurrentDevice.itemBrandId
+            }
+        }
+        self.init(
+            id: data.id,
+            availableItemBrandOptions: data.availableItemBrands?
+                .map({
+                    ClaimFlowItemBrandOptionModel.init(
+                        displayName: $0.displayName,
+                        itemBrandId: $0.itemBrandId,
+                        itemTypeId: $0.itemTypeId
+                    )
+                }) ?? [],
+            availableItemModelOptions: availableItemModelOptions,
+            availableItemProblems: data.availableItemProblems?
+                .map({
+                    ClaimFlowItemProblemOptionModel.init(displayName: $0.displayName, itemProblemId: $0.itemProblemId)
+                }) ?? [],
+            customName: customName,
+            prefferedCurrency: data.preferredCurrency.rawValue,
+            purchaseDate: data.purchaseDate,
+            purchasePrice: data.purchasePrice?.amount,
+            currencyCode: data.purchasePrice?.currencyCode.rawValue,
+            selectedItemBrand: selectedItemBrand,
+            selectedItemModel: selectedItemModel,
+            selectedItemProblems: data.selectedItemProblems,
+            defaultItemProblems: nil,
+            purchasePriceApplicable: data.purchasePriceApplicable
+        )
+
+    }
+}
+
+extension Compensation.RepairCompensation {
+    fileprivate init?(
+        with data: OctopusGraphQL.FlowClaimSingleItemCheckoutCompensationFragment
+            .AsFlowClaimSingleItemCheckoutRepairCompensation?
+    ) {
+        guard let data else {
+            return nil
+        }
+        self.init(
+            repairCost: .init(fragment: data.repairCost.fragments.moneyFragment)
+        )
+    }
+}
+
+extension Compensation.ValueCompensation {
+    fileprivate init?(
+        with data: OctopusGraphQL.FlowClaimSingleItemCheckoutCompensationFragment
+            .AsFlowClaimSingleItemCheckoutValueCompensation?
+    ) {
+        guard let data else {
+            return nil
+        }
+        self.init(
+            depreciation: .init(fragment: data.depreciation.fragments.moneyFragment),
+            price: .init(fragment: data.price.fragments.moneyFragment)
+        )
+    }
+}
+
+extension AvailableCheckoutMethod {
+    fileprivate func getCheckoutInput(forAmount amount: Double) -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
+        if autogiro != nil {
+            let automaticAutogiroInput = OctopusGraphQL.FlowClaimAutomaticAutogiroPayoutInput(
+                amount: amount
+            )
+
+            return OctopusGraphQL.FlowClaimSingleItemCheckoutInput(
+                automaticAutogiro: GraphQLNullable(optionalValue: automaticAutogiroInput)
+            )
+        }
+        return nil
+    }
+}
+
+extension FlowClaimSingleItemStepModel {
+    @MainActor
+    fileprivate func returnSingleItemInfo(purchasePrice: Double?) -> OctopusGraphQL.FlowClaimSingleItemInput {
+        let itemBrandInput: OctopusGraphQL.FlowClaimItemBrandInput? = {
+            if selectedItemModel != nil {
+                return nil
+            }
+            guard let selectedItemBrand,
+                let selectedBrand = availableItemBrandOptions.first(where: { $0.itemBrandId == selectedItemBrand })
+            else {
+                return nil
+            }
+            return OctopusGraphQL.FlowClaimItemBrandInput(
+                itemTypeId: selectedBrand.itemTypeId,
+                itemBrandId: selectedBrand.itemBrandId
+            )
+        }()
+
+        let itemModelInput: OctopusGraphQL.FlowClaimItemModelInput? = {
+            guard let selectedItemModel else { return nil }
+            return OctopusGraphQL.FlowClaimItemModelInput(itemModelId: selectedItemModel)
+
+        }()
+
+        let problemsIds = self.selectedItemProblems ?? defaultItemProblems ?? []
+        return OctopusGraphQL.FlowClaimSingleItemInput(
+            purchasePrice: GraphQLNullable(optionalValue: purchasePrice == 0 ? nil : purchasePrice),
+            purchaseDate: GraphQLNullable(optionalValue: purchaseDate?.localDateToDate?.localDateString),
+            itemProblemIds: GraphQLNullable(optionalValue: problemsIds),
+            itemBrandInput: GraphQLNullable(optionalValue: itemBrandInput),
+            itemModelInput: GraphQLNullable(optionalValue: itemModelInput),
+            customName: GraphQLNullable(optionalValue: customName)
+        )
     }
 }

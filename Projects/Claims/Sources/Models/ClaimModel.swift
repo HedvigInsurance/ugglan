@@ -3,7 +3,6 @@ import Contracts
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public init(

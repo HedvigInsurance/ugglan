@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public enum FlowClaimDeflectStepType: Decodable, Encodable, Sendable {
     case FlowClaimDeflectGlassDamageStep
@@ -31,9 +30,14 @@ public enum FlowClaimDeflectStepType: Decodable, Encodable, Sendable {
     }
 }
 
-struct DeflectQuestion: FlowClaimStepModel {
+public struct DeflectQuestion: FlowClaimStepModel {
     let question: String
     let answer: String
+    
+    public init(question: String, answer: String) {
+        self.question = question
+        self.answer = answer
+    }
 }
 
 public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
@@ -51,7 +55,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
         id == .FlowClaimDeflectEmergencyStep
     }
 
-    init(
+    public init(
         id: FlowClaimDeflectStepType,
         infoText: String?,
         warningText: String?,
@@ -71,38 +75,6 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
         self.infoViewText = infoViewText
         self.questions = questions
         self.partners = partners
-    }
-
-    init(
-        with data: OctopusGraphQL.FlowClaimDeflectEmergencyStepFragment
-    ) {
-        self.id = (Self.setDeflectType(idIn: data.id))
-        self.warningText = L10n.submitClaimEmergencyInfoLabel
-        infoSectionText = L10n.submitClaimEmergencyInsuranceCoverLabel
-        infoSectionTitle = L10n.submitClaimEmergencyInsuranceCoverTitle
-        questions = [
-            .init(question: L10n.submitClaimEmergencyFaq1Title, answer: L10n.submitClaimEmergencyFaq1Label),
-            .init(question: L10n.submitClaimEmergencyFaq2Title, answer: L10n.submitClaimEmergencyFaq2Label),
-            .init(question: L10n.submitClaimEmergencyFaq3Title, answer: L10n.submitClaimEmergencyFaq3Label),
-            .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
-            .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
-            .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
-            .init(question: L10n.submitClaimEmergencyFaq7Title, answer: L10n.submitClaimEmergencyFaq7Label),
-            .init(question: L10n.submitClaimEmergencyFaq8Title, answer: L10n.submitClaimEmergencyFaq8Label),
-
-        ]
-        self.partners = data.partners.map({
-            .init(
-                with: $0.fragments.flowClaimDeflectPartnerFragment,
-                title: L10n.submitClaimEmergencyGlobalAssistanceTitle,
-                description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                info: L10n.submitClaimGlobalAssistanceFootnote,
-                buttonText: L10n.submitClaimGlobalAssistanceUrlLabel
-            )
-        })
-        infoText = nil
-        infoViewText = nil
-        infoViewTitle = nil
     }
 
     public static func emergency(with partners: [Partner]) -> FlowClaimDeflectStepModel {
@@ -128,121 +100,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
         )
     }
 
-    init(
-        with data: OctopusGraphQL.FlowClaimDeflectPestsStepFragment
-    ) {
-        self.id = (Self.setDeflectType(idIn: data.id))
-        self.infoText = L10n.submitClaimPestsInfoLabel
-        infoSectionText = L10n.submitClaimPestsHowItWorksLabel
-        infoSectionTitle = L10n.submitClaimHowItWorksTitle
-        infoViewTitle = L10n.submitClaimPestsTitle
-        infoViewText = L10n.submitClaimPestsInfoLabel
-        self.partners = data.partners.map({
-            .init(
-                with: $0.fragments.flowClaimDeflectPartnerFragment,
-                title: nil,
-                description: L10n.submitClaimPestsCustomerServiceLabel,
-                info: nil,
-                buttonText: L10n.submitClaimPestsCustomerServiceButton
-            )
-        })
-        warningText = nil
-        questions = []
-    }
-
-    init(
-        with data: OctopusGraphQL.FlowClaimDeflectGlassDamageStepFragment
-    ) {
-        self.id = (Self.setDeflectType(idIn: data.id))
-        self.infoText = L10n.submitClaimGlassDamageInfoLabel
-        infoSectionText = L10n.submitClaimGlassDamageHowItWorksLabel
-        infoSectionTitle = L10n.submitClaimHowItWorksTitle
-        infoViewTitle = L10n.submitClaimGlassDamageTitle
-        infoViewText = L10n.submitClaimGlassDamageInfoLabel
-        self.partners = data.partners.map({
-            .init(
-                with: $0.fragments.flowClaimDeflectPartnerFragment,
-                title: nil,
-                description: L10n.submitClaimGlassDamageOnlineBookingLabel,
-                info: nil,
-                buttonText: L10n.submitClaimGlassDamageOnlineBookingButton
-            )
-        })
-        warningText = nil
-        questions = []
-    }
-
-    init(
-        with data: OctopusGraphQL.FlowClaimDeflectTowingStepFragment
-    ) {
-        id = (Self.setDeflectType(idIn: data.id))
-        infoText = L10n.submitClaimTowingInfoLabel
-        infoSectionText = L10n.submitClaimTowingHowItWorksLabel
-        infoSectionTitle = L10n.submitClaimHowItWorksTitle
-        infoViewTitle = L10n.submitClaimTowingTitle
-        infoViewText = L10n.submitClaimTowingInfoLabel
-        questions = [
-            .init(question: L10n.submitClaimTowingQ1, answer: L10n.submitClaimTowingA1),
-            .init(question: L10n.submitClaimTowingQ2, answer: L10n.submitClaimTowingA2),
-            .init(question: L10n.submitClaimTowingQ3, answer: L10n.submitClaimTowingA3),
-        ]
-        partners = data.partners.map({
-            .init(
-                with: $0.fragments.flowClaimDeflectPartnerFragment,
-                title: nil,
-                description: L10n.submitClaimTowingOnlineBookingLabel,
-                info: nil,
-                buttonText: L10n.submitClaimTowingOnlineBookingButton
-            )
-        })
-        warningText = nil
-    }
-
-    init(
-        with data: OctopusGraphQL.FlowClaimDeflectEirStepFragment
-    ) {
-        self.id = (Self.setDeflectType(idIn: data.id))
-        partners = data.partners.map({
-            .init(
-                with: $0.fragments.flowClaimDeflectPartnerFragment,
-                title: nil,
-                description: nil,
-                info: nil,
-                buttonText: nil
-            )
-        })
-        infoText = nil
-        warningText = nil
-        infoSectionText = nil
-        infoSectionTitle = nil
-        infoViewText = nil
-        infoViewTitle = nil
-        questions = []
-    }
-
-    init(
-        with data: OctopusGraphQL.FlowClaimDeflectIDProtectionStepFragment
-    ) {
-        self.id = (Self.setDeflectType(idIn: data.id))
-        self.partners = data.partners.map({
-            .init(
-                with: $0.deflectPartner.fragments.flowClaimDeflectPartnerFragment,
-                title: $0.title,
-                description: $0.description,
-                info: $0.info,
-                buttonText: $0.urlButtonTitle
-            )
-        })
-        infoText = nil
-        warningText = nil
-        infoSectionText = data.description
-        infoSectionTitle = data.title
-        infoViewText = nil
-        infoViewTitle = nil
-        questions = []
-    }
-
-    private static func setDeflectType(idIn: String) -> FlowClaimDeflectStepType {
+    public static func setDeflectType(idIn: String) -> FlowClaimDeflectStepType {
         switch idIn {
         case "FlowClaimDeflectGlassDamageStep":
             return .FlowClaimDeflectGlassDamageStep
@@ -259,27 +117,5 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
         default:
             return .Unknown
         }
-    }
-}
-
-extension Partner {
-    init(
-        with data: OctopusGraphQL.FlowClaimDeflectPartnerFragment,
-        title: String?,
-        description: String?,
-        info: String?,
-        buttonText: String?
-    ) {
-        self.init(
-            id: data.id,
-            imageUrl: data.imageUrl,
-            url: data.url,
-            phoneNumber: data.phoneNumber,
-            title: title,
-            description: description,
-            info: info,
-            buttonText: buttonText,
-            preferredImageHeight: data.preferredImageHeight
-        )
     }
 }

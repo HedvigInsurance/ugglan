@@ -9,7 +9,7 @@ public struct hApollo {
     public let octopus: hOctopus
 }
 
-public struct hOctopus {
+public struct hOctopus: Sendable {
     public let client: ApolloClient
     public let store: ApolloStore
 }

@@ -20,7 +20,7 @@ public class ChatFileUploaderService {
     }
 }
 
-extension NetworkClient: ChatFileUploaderClient {
+extension NetworkClient: @retroactive ChatFileUploaderClient {
     public func upload(
         files: [File],
         withProgress: (@Sendable (_ progress: Double) -> Void)?
