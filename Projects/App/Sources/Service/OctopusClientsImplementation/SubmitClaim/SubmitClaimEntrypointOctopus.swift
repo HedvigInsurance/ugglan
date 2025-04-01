@@ -1,13 +1,11 @@
-import Foundation
+import SubmitClaim
 import hCore
 import hGraphQL
 
-public class FetchEntrypointsClientOctopus: hFetchEntrypointsClient {
-    @Inject var octopus: hOctopus
+class FetchEntrypointsClientOctopus: hFetchEntrypointsClient {
+    @Inject private var octopus: hOctopus
 
-    public init() {}
-
-    public func get() async throws -> [ClaimEntryPointGroupResponseModel] {
+    func get() async throws -> [ClaimEntryPointGroupResponseModel] {
         let data = try await octopus.client.fetch(
             query: OctopusGraphQL.EntrypointGroupsQuery(type: GraphQLEnum<OctopusGraphQL.EntrypointType>(.claim)),
             cachePolicy: .fetchIgnoringCacheCompletely
@@ -18,34 +16,39 @@ public class FetchEntrypointsClientOctopus: hFetchEntrypointsClient {
         return entrypointModel
     }
 }
-
 extension ClaimEntryPointGroupResponseModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.EntrypointGroupFragment
     ) {
-        self.id = data.id
-        self.displayName = data.displayName
-        self.entrypoints = data.entrypoints.map({ ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) })
+        self.init(
+            id: data.id,
+            displayName: data.displayName,
+            entrypoints: data.entrypoints.map({ ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) })
+        )
     }
 }
 
 extension ClaimEntryPointResponseModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.EntrypointFragment
 
     ) {
-        self.id = data.id
-        self.displayName = data.displayName
-        options =
-            data.options?.map({ ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) }) ?? []
+        self.init(
+            id: data.id,
+            displayName: data.displayName,
+            options: data.options?
+                .map({ ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) }) ?? []
+        )
     }
 }
 
 extension ClaimEntryPointOptionResponseModel {
-    init(
+    fileprivate init(
         with data: OctopusGraphQL.EntrypointOptionFragment
     ) {
-        self.id = data.id
-        self.displayName = data.displayName
+        self.init(
+            id: data.id,
+            displayName: data.displayName
+        )
     }
 }

@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct SubmitClaimCheckoutScreen: View {
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel

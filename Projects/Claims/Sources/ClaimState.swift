@@ -2,7 +2,6 @@ import Apollo
 import PresentableStore
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct ClaimsState: StateProtocol {
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]

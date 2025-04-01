@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public protocol FlowClaimStepModel: Codable, Equatable, Hashable, Sendable {}
 
@@ -10,7 +9,7 @@ public struct FlowClaimSummaryStepModel: FlowClaimStepModel {
     let shouldShowLocation: Bool
     let shouldShowSingleItem: Bool
 
-    init(
+    public init(
         id: String,
         title: String,
         shouldShowDateOfOccurence: Bool,
