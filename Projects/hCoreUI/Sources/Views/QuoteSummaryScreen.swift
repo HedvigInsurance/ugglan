@@ -1,6 +1,5 @@
 import SwiftUI
 import hCore
-import hGraphQL
 
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]

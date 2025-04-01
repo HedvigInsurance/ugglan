@@ -1,7 +1,6 @@
 import Environment
 import Foundation
 import UnleashProxyClientSwift
-import hGraphQL
 
 public class FeatureFlagsUnleash: FeatureFlags {
     private var unleashClient: UnleashClient?

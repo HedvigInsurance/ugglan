@@ -1,12 +1,12 @@
 import Chat
 import Foundation
+import Home
 import hCore
 import hGraphQL
 
-public class HomeClientOctopus: HomeClient {
-    @Inject var octopus: hOctopus
-    @Inject var featureFlags: FeatureFlags
-    public init() {}
+class HomeClientOctopus: HomeClient {
+    @Inject private var octopus: hOctopus
+    @Inject private var featureFlags: FeatureFlags
 
     public func getImportantMessages() async throws -> [ImportantMessage] {
         let data = try await self.octopus
@@ -145,7 +145,7 @@ public class HomeClientOctopus: HomeClient {
     }
 }
 extension OctopusGraphQL.MemberFAQQuery.Data {
-    var asHelpCenterModel: HelpCenterFAQModel {
+    fileprivate var asHelpCenterModel: HelpCenterFAQModel {
         let commonQuestions = currentMember.memberFAQ.commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
         return .init(
             topics: currentMember.memberFAQ.topics.compactMap({ $0.asTopic }),
@@ -154,13 +154,13 @@ extension OctopusGraphQL.MemberFAQQuery.Data {
     }
 }
 extension OctopusGraphQL.FAQFragment {
-    var asQuestion: FAQModel {
+    fileprivate var asQuestion: FAQModel {
         .init(id: id, question: question, answer: answer)
     }
 }
 
 extension OctopusGraphQL.MemberFAQQuery.Data.CurrentMember.MemberFAQ.Topic {
-    var asTopic: FaqTopic {
+    fileprivate var asTopic: FaqTopic {
         .init(
             id: id,
             title: title,
@@ -172,7 +172,7 @@ extension OctopusGraphQL.MemberFAQQuery.Data.CurrentMember.MemberFAQ.Topic {
 
 @MainActor
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
-    var futureStatus: FutureStatus {
+    fileprivate var futureStatus: FutureStatus {
         let localDate = Date().localDateString.localDateToDate ?? Date()
         let allActiveInFuture = activeContracts.allSatisfy({ contract in
             return contract.masterInceptionDate.localDateToDate?.daysBetween(start: localDate) ?? 0 > 0
@@ -193,7 +193,7 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
 
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     @MainActor
-    var homeState: MemberContractState {
+    fileprivate var homeState: MemberContractState {
         if isFuture {
             return .future
         } else if isTerminated {
@@ -218,18 +218,20 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
 }
 
 extension HomeContract {
-    public init(
+    fileprivate init(
         contract: OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract
     ) {
-        upcomingRenewal = UpcomingRenewal(
-            upcomingRenewal: contract.upcomingChangedAgreement?.fragments.agreementFragment
+        self.init(
+            upcomingRenewal: UpcomingRenewal(
+                upcomingRenewal: contract.upcomingChangedAgreement?.fragments.agreementFragment
+            ),
+            displayName: contract.exposureDisplayName
         )
-        displayName = contract.exposureDisplayName
     }
 }
 
 extension UpcomingRenewal {
-    public init?(
+    fileprivate init?(
         upcomingRenewal: OctopusGraphQL.AgreementFragment?
     ) {
         guard let upcomingRenewal, upcomingRenewal.creationCause == .renewal else { return nil }
