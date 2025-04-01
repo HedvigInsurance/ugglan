@@ -1,5 +1,6 @@
 import Chat
 import Contracts
+import CrossSell
 import Foundation
 import hCore
 import hCoreUI
@@ -146,5 +147,28 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
 extension ClaimModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: ClaimDetailView.self)
+    }
+}
+
+extension ClaimModel {
+    public var asCrossSellInfo: CrossSellInfo {
+        let additionalInfo = ClaimCrossSellAdditionalInfo.fromClaim(self)
+        return .init(type: .claim, additionalInfo: additionalInfo)
+    }
+}
+
+public struct ClaimCrossSellAdditionalInfo: Codable, Equatable {
+    let id: String
+    let type: String
+    let status: String
+    let typeOfContract: String?
+
+    static func fromClaim(_ claim: ClaimModel) -> Self {
+        Self.init(
+            id: claim.id,
+            type: claim.claimType,
+            status: claim.status.title,
+            typeOfContract: claim.productVariant?.typeOfContract
+        )
     }
 }

@@ -455,7 +455,7 @@ struct HomeTab: View {
                         contractConfigs: addonConfigs
                     )
                 },
-                claimInfo: claimInfo
+                info: claimInfo
             )
             .embededInNavigation(
                 options: .navigationType(type: .large),
@@ -497,23 +497,11 @@ struct HomeTab: View {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
                         if let claim = claim {
-                            homeNavigationVm.navBarItems.isNewOfferPresented = .init(
-                                id: claim.id,
-                                type: claim.claimType,
-                                status: claim.status.asString,
-                                outcome: claim.outcome.asString,
-                                submittedAt: claim.submittedAt,
-                                payoutAmount: claim.payoutAmount,
-                                typeOfContract: claim.productVariant?.typeOfContract
-                            )
-                        } else {
-                            homeNavigationVm.navBarItems.isNewOfferPresented = .init()
+                            homeNavigationVm.navBarItems.isNewOfferPresented = claim.asCrossSellInfo
+                            let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+                            try await service.acknowledgeClosedStatus(claimId: claim.id)
+                            claimsStore.send(.fetchClaims)
                         }
-                        let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
-                        if let claimId = claim?.id {
-                            try await service.acknowledgeClosedStatus(claimId: claimId)
-                        }
-                        claimsStore.send(.fetchClaims)
                     }
                 }
             }
