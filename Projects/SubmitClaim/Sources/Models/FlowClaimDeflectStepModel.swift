@@ -33,7 +33,7 @@ public enum FlowClaimDeflectStepType: Decodable, Encodable, Sendable {
 public struct DeflectQuestion: FlowClaimStepModel {
     let question: String
     let answer: String
-    
+
     public init(question: String, answer: String) {
         self.question = question
         self.answer = answer

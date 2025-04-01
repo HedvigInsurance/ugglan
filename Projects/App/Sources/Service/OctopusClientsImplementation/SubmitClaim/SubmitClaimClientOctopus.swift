@@ -1,15 +1,4 @@
-import Apollo
 import Claims
-import Environment
-import Foundation
-import Kingfisher
-//
-//  SubmitClaimOctopus.swift
-//  Ugglan
-//
-//  Created by Sladan Nimcevic on 2025-03-31.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
 import SubmitClaim
 import UIKit
 import hCore
