@@ -10,7 +10,6 @@ import SafariServices
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct HomeScreen: View {
     @StateObject var vm = HomeVM()
