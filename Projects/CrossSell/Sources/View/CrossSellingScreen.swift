@@ -12,10 +12,10 @@ public struct CrossSellingScreen: View {
 
     public init(
         addonCardOnClick: @escaping (_ contractIds: [String]) -> Void,
-        claimInfo: CrossSellClaimInfo
+        info: CrossSellInfo
     ) {
         self.addonCardOnClick = addonCardOnClick
-        logCrossSellEvent(claimInfo: claimInfo)
+        logCrossSellEvent(info: info)
     }
 
     public var body: some View {
@@ -66,47 +66,51 @@ public struct CrossSellingScreen: View {
         }
     }
 
-    private func logCrossSellEvent(claimInfo: CrossSellClaimInfo?) {
+    private func logCrossSellEvent(info: CrossSellInfo) {
         log.addUserAction(
             type: .custom,
-            name: "cross sell",
+            name: "crossSell",
             error: nil,
-            attributes: ["claim info": claimInfo]
+            attributes: info.asLogData()
         )
     }
 }
 
-public struct CrossSellClaimInfo: Codable, Equatable, Identifiable {
-    public let id: String?
-    let type: String?
-    let status: String?
-    let outcome: String?
-    let submittedAt: String?
-    let payoutAmount: MonetaryAmount?
-    let typeOfContract: String?
+public struct CrossSellInfo: Identifiable, Equatable {
+    public static func == (lhs: CrossSellInfo, rhs: CrossSellInfo) -> Bool {
+        lhs.id == rhs.id
+    }
 
-    public init(
-        id: String? = nil,
-        type: String? = nil,
-        status: String? = nil,
-        outcome: String? = nil,
-        submittedAt: String? = nil,
-        payoutAmount: MonetaryAmount? = nil,
-        typeOfContract: String? = nil
-    ) {
-        self.id = id
+    public let id: String = UUID().uuidString
+    public let type: CrossSellInfoType
+    let additionalInfo: (any Encodable)?
+
+    public init<T>(type: CrossSellInfoType, additionalInfo: T) where T: Encodable & Equatable {
         self.type = type
-        self.status = status
-        self.outcome = outcome
-        self.submittedAt = submittedAt
-        self.payoutAmount = payoutAmount
-        self.typeOfContract = typeOfContract
+        self.additionalInfo = additionalInfo
+    }
+
+    public init(type: CrossSellInfoType) {
+        self.type = type
+        self.additionalInfo = nil
+    }
+
+    public enum CrossSellInfoType: String, Codable, Equatable {
+        case home
+        case claim
+    }
+
+    fileprivate func asLogData() -> [AttributeKey: AttributeValue] {
+        var data = [AttributeKey: AttributeValue]()
+        data["type"] = type.rawValue
+        data["info"] = additionalInfo
+        return data
     }
 }
 
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingScreen(addonCardOnClick: { _ in }, claimInfo: .init())
+        return CrossSellingScreen(addonCardOnClick: { _ in }, info: .init(type: .home))
     }
 }

@@ -72,7 +72,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct NavBarItems {
         public var isFirstVetPresented = false
-        public var isNewOfferPresented: CrossSellClaimInfo?
+        public var isNewOfferPresented: CrossSellInfo?
     }
 
     deinit {
