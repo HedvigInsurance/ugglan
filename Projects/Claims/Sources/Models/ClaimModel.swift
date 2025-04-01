@@ -157,7 +157,7 @@ extension ClaimModel {
     }
 }
 
-public struct ClaimCrossSellAdditionalInfo: Codable, Equatable {
+private struct ClaimCrossSellAdditionalInfo: Codable, Equatable {
     let id: String
     let type: String
     let status: String
