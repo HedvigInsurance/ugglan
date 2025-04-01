@@ -4,7 +4,6 @@ import Foundation
 import Kingfisher
 import SwiftUI
 import hCore
-import hGraphQL
 
 @MainActor
 public class hClaimFileUploadService {
