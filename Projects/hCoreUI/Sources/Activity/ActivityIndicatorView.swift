@@ -38,7 +38,9 @@ struct LoadingViewWithContent: ViewModifier {
 
 struct LoadingViewWithContentForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
-    var errorTrackingName: TrackingViewNameProtocol?
+    private(set) var errorTrackingName: TrackingViewNameProtocol?
+    let router: Router?
+    let errorTitle: String?
 
     public func body(content: Content) -> some View {
         ZStack {
@@ -51,12 +53,13 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
             case .error(let errorMessage):
                 if let errorTrackingName {
                     GenericErrorView(
+                        title: errorTitle,
                         description: errorMessage,
                         formPosition: nil
                     )
                     .transition(.opacity.animation(.easeInOut(duration: 0.2)))
                     .withDismissButton()
-                    .embededInNavigation(tracking: errorTrackingName)
+                    .embededInNavigation(router: router, tracking: errorTrackingName)
                 } else {
                     GenericErrorView(
                         description: errorMessage,
@@ -122,9 +125,17 @@ extension View {
 
     public func loading(
         _ state: Binding<ProcessingState>,
-        errorTrackingName: TrackingViewNameProtocol? = nil
+        errorTitle: String? = nil,
+        errorTrackingNameWithRouter: (trackingName: TrackingViewNameProtocol, router: Router)? = nil
     ) -> some View {
-        modifier(LoadingViewWithContentForProcessingState(state: state, errorTrackingName: errorTrackingName))
+        modifier(
+            LoadingViewWithContentForProcessingState(
+                state: state,
+                errorTrackingName: errorTrackingNameWithRouter?.trackingName,
+                router: errorTrackingNameWithRouter?.router,
+                errorTitle: errorTitle
+            )
+        )
     }
 
     public func loadingWithButtonLoading(_ state: Binding<ProcessingState>) -> some View {
