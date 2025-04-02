@@ -38,6 +38,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     func getMoveIntent() async {
         withAnimation {
             self.viewState = .loading
+            errorTitle = nil
         }
 
         do {
