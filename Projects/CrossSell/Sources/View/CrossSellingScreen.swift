@@ -98,11 +98,14 @@ public struct CrossSellInfo: Identifiable, Equatable {
     public enum CrossSellInfoType: String, Codable, Equatable {
         case home
         case claim
+        case changeTier
+        case addon
+        case coInsured
     }
 
     fileprivate func asLogData() -> [AttributeKey: AttributeValue] {
         var data = [AttributeKey: AttributeValue]()
-        data["type"] = type.rawValue
+        data["source"] = type.rawValue
         data["info"] = additionalInfo
         return data
     }
