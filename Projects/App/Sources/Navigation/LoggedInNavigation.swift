@@ -629,7 +629,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
-        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .moveFlow))
+        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
