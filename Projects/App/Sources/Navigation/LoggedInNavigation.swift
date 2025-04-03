@@ -443,7 +443,8 @@ struct HomeTab: View {
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: [.height]
+            style: [.height],
+            options: .constant(.alwaysOpenOnTop)
         ) { claimInfo in
             CrossSellingScreen(
                 addonCardOnClick: { contractIds in
@@ -497,7 +498,7 @@ struct HomeTab: View {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
                         if let claim = claim {
-                            homeNavigationVm.navBarItems.isNewOfferPresented = claim.asCrossSellInfo
+                            NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                             let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                             try await service.acknowledgeClosedStatus(claimId: claim.id)
                             claimsStore.send(.fetchClaims)
@@ -617,17 +618,18 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(fetchAddons),
+            selector: #selector(addonAdded),
             name: .addonAdded,
             object: nil
         )
     }
 
-    @objc func fetchAddons(notification: Notification) {
+    @objc func addonAdded(notification: Notification) {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
+        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

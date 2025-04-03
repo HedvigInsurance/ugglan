@@ -25,6 +25,7 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 @MainActor
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
+    private var didShowCrossSellAfterSuccessFlow = false
     private var cancellables = Set<AnyCancellable>()
     public init() {
 
@@ -53,6 +54,26 @@ public class HomeNavigationViewModel: ObservableObject {
                     self?.openChat = nil
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         self?.openChat = openChat
+                    }
+                }
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
+            [weak self] notification in
+            if let crossSellInfo = notification.object as? CrossSellInfo {
+                Task { @MainActor in
+                    let typesForWhichWeShouldShowAlways = [
+                        CrossSellInfo.CrossSellInfoType.claim, CrossSellInfo.CrossSellInfoType.home,
+                    ]
+                    if self?.didShowCrossSellAfterSuccessFlow == false
+                        || typesForWhichWeShouldShowAlways.contains(crossSellInfo.type)
+                    {
+                        try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                        if crossSellInfo.type != CrossSellInfo.CrossSellInfoType.home {
+                            self?.didShowCrossSellAfterSuccessFlow = true
+                        }
+                        self?.navBarItems.isNewOfferPresented = crossSellInfo
                     }
                 }
             }
