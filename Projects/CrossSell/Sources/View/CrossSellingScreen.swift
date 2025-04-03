@@ -15,7 +15,7 @@ public struct CrossSellingScreen: View {
         info: CrossSellInfo
     ) {
         self.addonCardOnClick = addonCardOnClick
-        logCrossSellEvent(info: info)
+        info.logCrossSellEvent()
     }
 
     public var body: some View {
@@ -64,50 +64,6 @@ public struct CrossSellingScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-    }
-
-    private func logCrossSellEvent(info: CrossSellInfo) {
-        log.addUserAction(
-            type: .custom,
-            name: "crossSell",
-            error: nil,
-            attributes: info.asLogData()
-        )
-    }
-}
-
-public struct CrossSellInfo: Identifiable, Equatable {
-    public static func == (lhs: CrossSellInfo, rhs: CrossSellInfo) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    public let id: String = UUID().uuidString
-    public let type: CrossSellInfoType
-    let additionalInfo: (any Encodable)?
-
-    public init<T>(type: CrossSellInfoType, additionalInfo: T) where T: Encodable & Equatable {
-        self.type = type
-        self.additionalInfo = additionalInfo
-    }
-
-    public init(type: CrossSellInfoType) {
-        self.type = type
-        self.additionalInfo = nil
-    }
-
-    public enum CrossSellInfoType: String, Codable, Equatable {
-        case home
-        case claim
-        case changeTier
-        case addon
-        case coInsured
-    }
-
-    fileprivate func asLogData() -> [AttributeKey: AttributeValue] {
-        var data = [AttributeKey: AttributeValue]()
-        data["source"] = type.rawValue
-        data["info"] = additionalInfo
-        return data
     }
 }
 
