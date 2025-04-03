@@ -443,7 +443,8 @@ struct HomeTab: View {
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: [.height]
+            style: [.height],
+            options: .constant(.alwaysOpenOnTop)
         ) { claimInfo in
             CrossSellingScreen(
                 addonCardOnClick: { contractIds in
@@ -617,17 +618,18 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(fetchAddons),
+            selector: #selector(addonAdded),
             name: .addonAdded,
             object: nil
         )
     }
 
-    @objc func fetchAddons(notification: Notification) {
+    @objc func addonAdded(notification: Notification) {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
+        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .moveFlow))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

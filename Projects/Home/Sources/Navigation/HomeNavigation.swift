@@ -58,6 +58,15 @@ public class HomeNavigationViewModel: ObservableObject {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
+            [weak self] notification in
+            if let crossSellInfo = notification.object as? CrossSellInfo {
+                Task { @MainActor in
+                    self?.navBarItems.isNewOfferPresented = crossSellInfo
+                }
+            }
+        }
+
     }
 
     public var router = Router()
