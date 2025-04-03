@@ -498,7 +498,7 @@ struct HomeTab: View {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
                         if let claim = claim {
-                            homeNavigationVm.navBarItems.isNewOfferPresented = claim.asCrossSellInfo
+                            NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                             let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                             try await service.acknowledgeClosedStatus(claimId: claim.id)
                             claimsStore.send(.fetchClaims)

@@ -28,6 +28,15 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
         case addon
         case coInsured
         case moveFlow
+
+        public var delayInNanoSeconds: UInt64 {
+            switch self {
+            case .home, .claim:
+                return 0
+            case .changeTier, .addon, .coInsured, .moveFlow:
+                return 1_200_000_000
+            }
+        }
     }
 
     fileprivate func asLogData() -> [AttributeKey: AttributeValue] {
@@ -46,4 +55,5 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
             attributes: self.asLogData()
         )
     }
+
 }
