@@ -15,7 +15,10 @@ public struct CrossSellingScreen: View {
         info: CrossSellInfo
     ) {
         self.addonCardOnClick = addonCardOnClick
-        info.logCrossSellEvent()
+        Task {
+            try await Task.sleep(nanoseconds: 200_000_000)
+            info.logCrossSellEvent()
+        }
     }
 
     public var body: some View {
