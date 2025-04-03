@@ -70,7 +70,9 @@ public class HomeNavigationViewModel: ObservableObject {
                         || typesForWhichWeShouldShowAlways.contains(crossSellInfo.type)
                     {
                         try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
-                        self?.didShowCrossSellAfterSuccessFlow = true
+                        if crossSellInfo.type != CrossSellInfo.CrossSellInfoType.home {
+                            self?.didShowCrossSellAfterSuccessFlow = true
+                        }
                         self?.navBarItems.isNewOfferPresented = crossSellInfo
                     }
                 }
