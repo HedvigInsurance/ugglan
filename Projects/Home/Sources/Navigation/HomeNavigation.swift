@@ -64,7 +64,7 @@ public class HomeNavigationViewModel: ObservableObject {
             if let crossSellInfo = notification.object as? CrossSellInfo {
                 Task { @MainActor in
                     let typesForWhichWeShouldShowAlways = [
-                        CrossSellInfo.CrossSellInfoType.claim, CrossSellInfo.CrossSellInfoType.home,
+                        CrossSellInfo.CrossSellInfoType.closedClaim, CrossSellInfo.CrossSellInfoType.home,
                     ]
                     if self?.didShowCrossSellAfterSuccessFlow == false
                         || typesForWhichWeShouldShowAlways.contains(crossSellInfo.type)

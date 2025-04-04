@@ -23,17 +23,17 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
 
     public enum CrossSellInfoType: String, Codable, Equatable, Sendable {
         case home
-        case claim
+        case closedClaim
         case changeTier
         case addon
-        case coInsured
-        case moveFlow
+        case editCoInsured
+        case movingFlow
 
         public var delayInNanoSeconds: UInt64 {
             switch self {
-            case .home, .claim:
+            case .home, .closedClaim:
                 return 0
-            case .changeTier, .addon, .coInsured, .moveFlow:
+            case .changeTier, .addon, .editCoInsured, .movingFlow:
                 return 1_200_000_000
             }
         }

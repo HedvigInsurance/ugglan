@@ -96,7 +96,7 @@ public class EditCoInsuredViewModel: ObservableObject {
                 )
                 editCoInsuredModelMissingAlert = missingContractConfig
             } else {
-                NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .coInsured))
+                NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .editCoInsured))
             }
 
         }
