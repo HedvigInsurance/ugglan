@@ -50,13 +50,6 @@ public class ChangeAddonViewModel: ObservableObject {
                 addonId: selectedQuote?.addonId ?? ""
             )
             logAddonEvent()
-            Task {
-                try await Task.sleep(nanoseconds: 1_000_000_000)
-                NotificationCenter.default.post(
-                    name: .addonAdded,
-                    object: nil
-                )
-            }
             withAnimation {
                 self.submittingAddonsViewState = .success
             }
