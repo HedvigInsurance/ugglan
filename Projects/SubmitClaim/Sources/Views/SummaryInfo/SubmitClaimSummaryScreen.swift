@@ -26,6 +26,8 @@ public struct SubmitClaimSummaryScreen: View {
                     VStack(spacing: 0) {
                         matter
                         damageType
+                        subtitle
+                        selectedContractExposure
                         damageDate
                         place
                         model
@@ -85,6 +87,20 @@ public struct SubmitClaimSummaryScreen: View {
     private var damageType: some View {
         let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
         createRow(with: L10n.claimsDamages, and: singleItemStep?.getAllChoosenDamagesAsText())
+    }
+
+    @ViewBuilder
+    private var subtitle: some View {
+        if let subtitle = claimsNavigationVm.summaryModel?.summaryStep?.subtitle {
+            createRow(with: L10n.claimsSummaryWhatIsAbout, and: subtitle)
+        }
+    }
+
+    @ViewBuilder
+    private var selectedContractExposure: some View {
+        if let selectedContractExposure = claimsNavigationVm.summaryModel?.summaryStep?.selectedContractExposure {
+            createRow(with: L10n.claimsSummaryDetailInfo, and: selectedContractExposure)
+        }
     }
 
     @ViewBuilder
