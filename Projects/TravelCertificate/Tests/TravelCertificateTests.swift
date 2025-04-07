@@ -23,11 +23,12 @@ final class TravelCertificateTests: XCTestCase {
         let specifications: [TravelInsuranceContractSpecification] = [
             .init(
                 contractId: "contractId",
+                displayName: "",
+                exposureDisplayName: "",
                 minStartDate: Date(),
                 maxStartDate: Date(),
                 numberOfCoInsured: 2,
                 maxDuration: 3,
-                street: "Street name",
                 email: nil,
                 fullName: "First Last"
             )
