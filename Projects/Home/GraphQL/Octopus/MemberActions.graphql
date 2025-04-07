@@ -2,11 +2,12 @@ query MemberActions {
   currentMember {
     memberActions {
       sickAbroadAction {
-        partners {
+        deflectPartners {
           id
           imageUrl
           phoneNumber
           url
+          preferredImageHeight
         }
       }
       isTravelCertificateEnabled

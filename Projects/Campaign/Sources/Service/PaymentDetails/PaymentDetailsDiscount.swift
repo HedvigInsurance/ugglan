@@ -14,7 +14,7 @@ public struct PaymentDetailsDiscountView: View {
     public var body: some View {
         hRow {
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
+                HStack(alignment: .top) {
                     HStack(spacing: 8) {
                         hText(vm.discount.code, style: .label)
                             .foregroundColor(getCodeTextColor)
@@ -37,7 +37,8 @@ public struct PaymentDetailsDiscountView: View {
                     if vm.options.contains(.forPayment), let discount = vm.discount.amount {
                         hText(discount.formattedNegativeAmount)
                     } else if let title = vm.discount.title {
-                        hText(title)
+                        hText(title).multilineTextAlignment(.trailing)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 VStack(alignment: .leading, spacing: 0) {
@@ -128,10 +129,12 @@ public class PaymentDetailsDiscountViewModel: ObservableObject {
 struct PaymentDetailsDiscount_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
-        let discount: Discount = .init(
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+        let discount1: Discount = .init(
             code: "231223",
             amount: .sek(100),
-            title: "23",
+            title: "Very long name that needs to go into 2 rows so we can test it",
             listOfAffectedInsurances: [
                 .init(id: "id 11", displayName: "DISPLAY NAME"),
                 .init(id: "id 12", displayName: "DISPLAY NAME 2"),
@@ -140,6 +143,22 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             canBeDeleted: false,
             discountId: "1"
         )
-        return PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .forPayment], discount: discount))
+
+        let discount2: Discount = .init(
+            code: "231223",
+            amount: .sek(100),
+            title: "Very long name that needs to go into 2 rows",
+            listOfAffectedInsurances: [
+                .init(id: "id 11", displayName: "DISPLAY NAME"),
+                .init(id: "id 12", displayName: "DISPLAY NAME 2"),
+            ],
+            validUntil: "2023-12-06",
+            canBeDeleted: false,
+            discountId: "1"
+        )
+        return VStack {
+            PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
+            PaymentDetailsDiscountView(vm: .init(options: [.showExpire], discount: discount2))
+        }
     }
 }

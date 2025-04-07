@@ -1,4 +1,5 @@
 import Combine
+import CrossSell
 import Foundation
 import hCore
 
@@ -86,16 +87,18 @@ public class EditCoInsuredViewModel: ObservableObject {
                 }
             }
 
-            try await Task.sleep(nanoseconds: 400_000_000)
-
             if let missingContract {
+                try await Task.sleep(nanoseconds: 400_000_000)
                 let missingContractConfig = InsuredPeopleConfig(
                     contract: missingContract,
                     preSelectedCoInsuredList: existingCoInsured.get(contractId: missingContract.id),
                     fromInfoCard: false
                 )
                 editCoInsuredModelMissingAlert = missingContractConfig
+            } else {
+                NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .editCoInsured))
             }
+
         }
     }
 }

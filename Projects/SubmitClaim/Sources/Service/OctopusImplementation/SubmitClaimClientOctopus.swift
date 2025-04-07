@@ -759,8 +759,15 @@ extension FlowClaimSummaryStepModel {
     ) {
         self.id = data.id
         self.title = data.title
+        self.subtitle = data.subtitle
         self.shouldShowDateOfOccurence = true
         self.shouldShowLocation = true
         self.shouldShowSingleItem = data.singleItemStep != nil
+        self.selectedContractExposure =
+            data.selectContractStep?.options
+            .first(where: { it in
+                it.id == data.selectContractStep?.selectedOptionId
+            })?
+            .displaySubtitle
     }
 }

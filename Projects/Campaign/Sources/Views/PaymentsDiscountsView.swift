@@ -169,7 +169,9 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
 
 struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
     static var previews: some View {
-        PaymentsDiscountsView(
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+        return PaymentsDiscountsView(
             data: .init(
                 discounts: [],
                 referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])

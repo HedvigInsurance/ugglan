@@ -87,6 +87,8 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
             .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
             .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
             .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
+            .init(question: L10n.submitClaimEmergencyFaq7Title, answer: L10n.submitClaimEmergencyFaq7Label),
+            .init(question: L10n.submitClaimEmergencyFaq8Title, answer: L10n.submitClaimEmergencyFaq8Label),
 
         ]
         self.partners = data.partners.map({
@@ -95,8 +97,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
                 title: L10n.submitClaimEmergencyGlobalAssistanceTitle,
                 description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
                 info: L10n.submitClaimGlobalAssistanceFootnote,
-                buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
-                largerImageSize: true
+                buttonText: L10n.submitClaimGlobalAssistanceUrlLabel
             )
         })
         infoText = nil
@@ -120,7 +121,8 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
                 .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
                 .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
                 .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
-
+                .init(question: L10n.submitClaimEmergencyFaq7Title, answer: L10n.submitClaimEmergencyFaq7Label),
+                .init(question: L10n.submitClaimEmergencyFaq8Title, answer: L10n.submitClaimEmergencyFaq8Label),
             ],
             partners: partners
         )
@@ -266,8 +268,7 @@ extension Partner {
         title: String?,
         description: String?,
         info: String?,
-        buttonText: String?,
-        largerImageSize: Bool = false
+        buttonText: String?
     ) {
         self.init(
             id: data.id,
@@ -278,7 +279,7 @@ extension Partner {
             description: description,
             info: info,
             buttonText: buttonText,
-            largerImageSize: largerImageSize
+            preferredImageHeight: data.preferredImageHeight
         )
     }
 }

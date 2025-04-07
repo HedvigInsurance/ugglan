@@ -395,7 +395,7 @@ struct HomeTab: View {
                                         description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
                                         info: L10n.submitClaimGlobalAssistanceFootnote,
                                         buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
-                                        largerImageSize: true
+                                        preferredImageHeight: $0.preferredImageHeight
                                     )
                                 })
 
@@ -443,7 +443,8 @@ struct HomeTab: View {
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: [.height]
+            style: [.height],
+            options: .constant(.alwaysOpenOnTop)
         ) { claimInfo in
             CrossSellingScreen(
                 addonCardOnClick: { contractIds in
@@ -455,7 +456,7 @@ struct HomeTab: View {
                         contractConfigs: addonConfigs
                     )
                 },
-                claimInfo: claimInfo
+                info: claimInfo
             )
             .embededInNavigation(
                 options: .navigationType(type: .large),
@@ -497,23 +498,11 @@ struct HomeTab: View {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
                         if let claim = claim {
-                            homeNavigationVm.navBarItems.isNewOfferPresented = .init(
-                                id: claim.id,
-                                type: claim.claimType,
-                                status: claim.status.asString,
-                                outcome: claim.outcome.asString,
-                                submittedAt: claim.submittedAt,
-                                payoutAmount: claim.payoutAmount,
-                                typeOfContract: claim.productVariant?.typeOfContract
-                            )
-                        } else {
-                            homeNavigationVm.navBarItems.isNewOfferPresented = .init()
+                            NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
+                            let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+                            try await service.acknowledgeClosedStatus(claimId: claim.id)
+                            claimsStore.send(.fetchClaims)
                         }
-                        let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
-                        if let claimId = claim?.id {
-                            try await service.acknowledgeClosedStatus(claimId: claimId)
-                        }
-                        claimsStore.send(.fetchClaims)
                     }
                 }
             }
@@ -629,17 +618,18 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(fetchAddons),
+            selector: #selector(addonAdded),
             name: .addonAdded,
             object: nil
         )
     }
 
-    @objc func fetchAddons(notification: Notification) {
+    @objc func addonAdded(notification: Notification) {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
+        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

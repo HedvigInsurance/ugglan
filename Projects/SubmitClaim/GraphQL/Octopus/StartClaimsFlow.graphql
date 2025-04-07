@@ -194,6 +194,7 @@ fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
 fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
     id
     title
+    subtitle
     dateOfOccurrenceStep {
         ...FlowClaimDateOfOccurrenceStepFragment
     }
@@ -209,6 +210,9 @@ fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
     fileUploadStep {
         ...FlowClaimFileUploadStepFragment
     }
+    selectContractStep {
+        ...FlowClaimContractSelectStepFragment
+  }
 }
 
 fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {
@@ -234,6 +238,7 @@ fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
     imageUrl
     url
     phoneNumber
+    preferredImageHeight
 }
 
 fragment FlowClaimContractOptionFragment on FlowClaimContractOption {
