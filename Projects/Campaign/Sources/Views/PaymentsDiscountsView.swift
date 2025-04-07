@@ -10,7 +10,6 @@ struct PaymentsDiscountsView: View {
     @PresentableStore var store: CampaignStore
     @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
     @EnvironmentObject var router: Router
-    let redirect: (CampaignRedirectType) -> Void
 
     var body: some View {
         hForm {
@@ -101,7 +100,7 @@ struct PaymentsDiscountsView: View {
                     .init(
                         buttonTitle: L10n.paymentsInviteFriends,
                         buttonAction: {
-                            redirect(CampaignRedirectType.forever)
+                            router.push(CampaignRouterAction.forever)
                         }
                     )
                 ]
@@ -161,8 +160,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         .init(id: "a5", name: "Mark", activeDiscount: .sek(10), status: .terminated),
                     ]
                 )
-            ),
-            redirect: { _ in }
+            )
         )
     }
 }
@@ -175,8 +173,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
             data: .init(
                 discounts: [],
                 referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
-            ),
-            redirect: { _ in }
+            )
         )
     }
 }
@@ -185,7 +182,6 @@ public struct PaymentsDiscountsRootView: View {
     @PresentableStore var store: CampaignStore
     @StateObject var vm = PaymentsDiscountsRootViewModel()
     @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
-    let redirect: (CampaignRedirectType) -> Void
 
     public var body: some View {
         successView.loading($vm.viewState)
@@ -207,7 +203,7 @@ public struct PaymentsDiscountsRootView: View {
             }
         ) { paymentDiscountsData in
             if let paymentDiscountsData {
-                PaymentsDiscountsView(data: paymentDiscountsData, redirect: redirect)
+                PaymentsDiscountsView(data: paymentDiscountsData)
             }
         }
     }

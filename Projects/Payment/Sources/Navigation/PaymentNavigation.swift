@@ -6,22 +6,18 @@ import hCoreUI
 
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
-
     public init() {}
     public var connectPaymentVm = ConnectPaymentViewModel()
 }
 
-public struct PaymentsNavigation<Content: View>: View {
-    @ViewBuilder var redirect: (_ type: PaymentsRedirectType) -> Content
+public struct PaymentsNavigation: View {
     @EnvironmentObject var router: Router
     @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
 
     public init(
-        paymentsNavigationVm: PaymentsNavigationViewModel,
-        @ViewBuilder redirect: @escaping (_ type: PaymentsRedirectType) -> Content
+        paymentsNavigationVm: PaymentsNavigationViewModel
     ) {
         self.paymentsNavigationVm = paymentsNavigationVm
-        self.redirect = redirect
     }
 
     public var body: some View {
@@ -38,23 +34,11 @@ public struct PaymentsNavigation<Content: View>: View {
                         let store: PaymentStore = globalPresentableStoreContainer.get()
                         let paymentDataDiscounts = store.state.paymentData?.discounts ?? []
                         CampaignNavigation(
-                            campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts),
-                            redirect: { redirect in
-                                switch redirect {
-                                case .forever:
-                                    router.push(PaymentsRedirectType.forever)
-                                }
-                            },
+                            campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts, router: router),
                             onEditCode: {
                                 store.send(.load)
                             }
                         )
-                        .routerDestination(for: PaymentsRedirectType.self) { redirectType in
-                            switch redirectType {
-                            case .forever:
-                                redirect(.forever)
-                            }
-                        }
                     case .history:
                         PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)
@@ -93,19 +77,6 @@ extension PaymentsRouterAction: TrackingViewNameProtocol {
     }
 }
 
-public enum PaymentsRedirectType: Hashable {
-    case forever
-}
-
-extension PaymentsRedirectType: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        switch self {
-        case .forever:
-            return "Forever"
-        }
-    }
-}
-
 #Preview {
-    PaymentsNavigation(paymentsNavigationVm: .init(), redirect: { redirectType in })
+    PaymentsNavigation(paymentsNavigationVm: .init())
 }

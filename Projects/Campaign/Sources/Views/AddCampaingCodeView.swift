@@ -90,7 +90,7 @@ struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         return AddCampaignCodeView(
-            campaignNavigationVm: .init(paymentDataDiscounts: []),
+            campaignNavigationVm: .init(paymentDataDiscounts: [], router: Router()),
             vm: .init(paymentDataDiscounts: [], onInputChange: {})
         )
     }
