@@ -46,36 +46,10 @@ public struct ForeverView: View {
         ScrollViewReader { value in
             hForm {
                 VStack(spacing: 0) {
-                    HeaderView {
-                        scrollTo = 2
-                    }
-                    .id(0)
-                    .padding(.bottom, .padding16)
-                    .background(
-                        GeometryReader(content: { proxy in
-                            Color.clear
-                                .onAppear {
-                                    headerHeight = proxy.size.height.rounded()
-                                }
-                                .onChange(of: proxy.size) { size in
-                                    headerHeight = size.height.rounded()
-                                }
-                        })
-                    )
+                    headerView
                     Spacing(height: Float(spacing))
-                    DiscountCodeSectionView().id(1)
-                        .background(
-                            GeometryReader(content: { proxy in
-                                Color.clear
-                                    .onAppear {
-                                        discountCodeHeight = proxy.size.height.rounded()
-                                    }
-                                    .onChange(of: proxy.size.height.rounded()) { size in
-                                        discountCodeHeight = size
-                                    }
-                            })
-                        )
-                    InvitationTable().id(2)
+                    discountCodeSectionView
+                    InvitationTable(foreverData: foreverNavigationVm.foreverData).id(2)
                 }
             }
             .hSetScrollBounce(to: true)
@@ -88,40 +62,84 @@ public struct ForeverView: View {
                 }
             }
         }
-        .toolbar {
-            ToolbarItem(
-                placement: .topBarTrailing
-            ) {
-                if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
-                    InfoViewHolder(
-                        title: L10n.ReferralsInfoSheet.headline,
-                        description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
-                        type: .navigation
-                    )
-                    .foregroundColor(hTextColor.Opaque.primary)
-                }
-            }
+        .modifier(ForeverViewModifier(totalHeight: $totalHeight))
+    }
+
+    private var headerView: some View {
+        HeaderView(foreverNavigationVm: foreverNavigationVm) {
+            scrollTo = 2
         }
-        .onPullToRefresh {
-            Task { @MainActor in
-                try await foreverNavigationVm.fetchForeverData()
-            }
-        }
+        .id(0)
+        .padding(.bottom, .padding16)
         .background(
             GeometryReader(content: { proxy in
                 Color.clear
                     .onAppear {
-                        totalHeight = proxy.size.height
+                        headerHeight = proxy.size.height.rounded()
                     }
                     .onChange(of: proxy.size) { size in
-                        totalHeight = size.height
+                        headerHeight = size.height.rounded()
                     }
             })
         )
     }
 
+    private var discountCodeSectionView: some View {
+        DiscountCodeSectionView().id(1)
+            .background(
+                GeometryReader(content: { proxy in
+                    Color.clear
+                        .onAppear {
+                            discountCodeHeight = proxy.size.height.rounded()
+                        }
+                        .onChange(of: proxy.size.height.rounded()) { size in
+                            discountCodeHeight = size
+                        }
+                })
+            )
+    }
+
     private func recalculateHeight() {
         spacing = max(totalHeight - discountCodeHeight - headerHeight, 0)
+    }
+}
+
+struct ForeverViewModifier: ViewModifier {
+    @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
+    @Binding var totalHeight: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarTrailing
+                ) {
+                    if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
+                        InfoViewHolder(
+                            title: L10n.ReferralsInfoSheet.headline,
+                            description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
+                            type: .navigation
+                        )
+                        .foregroundColor(hTextColor.Opaque.primary)
+                    }
+                }
+            }
+            .onPullToRefresh {
+                Task { @MainActor in
+                    try await foreverNavigationVm.fetchForeverData()
+                }
+            }
+            .background(
+                GeometryReader(content: { proxy in
+                    Color.clear
+                        .onAppear {
+                            totalHeight = proxy.size.height
+                        }
+                        .onChange(of: proxy.size) { size in
+                            totalHeight = size.height
+                        }
+                })
+            )
     }
 }
 
