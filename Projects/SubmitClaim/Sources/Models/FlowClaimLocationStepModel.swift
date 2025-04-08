@@ -1,12 +1,11 @@
 import Foundation
-import hGraphQL
 
 public struct FlowClaimLocationStepModel: FlowClaimStepModel {
     let id: String
-    var location: String?
+    public internal(set) var location: String?
     let options: [ClaimFlowLocationOptionModel]
 
-    init(
+    public init(
         id: String,
         location: String? = nil,
         options: [ClaimFlowLocationOptionModel]
@@ -16,19 +15,17 @@ public struct FlowClaimLocationStepModel: FlowClaimStepModel {
         self.options = options
     }
 
-    func getSelectedOption() -> ClaimFlowLocationOptionModel? {
+    public func getSelectedOption() -> ClaimFlowLocationOptionModel? {
         return options.first(where: { $0.value == location })
     }
 }
 
 public struct ClaimFlowLocationOptionModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
-    let value: String
+    public let value: String
 
-    init(
-        with data: OctopusGraphQL.FlowClaimLocationStepFragment.Option
-    ) {
-        self.displayName = data.displayName
-        self.value = data.value
+    public init(displayName: String, value: String) {
+        self.displayName = displayName
+        self.value = value
     }
 }

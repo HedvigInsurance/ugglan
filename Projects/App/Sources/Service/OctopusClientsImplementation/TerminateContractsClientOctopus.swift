@@ -66,7 +66,7 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
     }
 }
 
-protocol Into {
+private protocol Into {
     associatedtype To
     func into(with progress: Float) -> To
 }
@@ -91,7 +91,7 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
 
 @MainActor
 extension GraphQLMutation {
-    func execute<TerminationStep: Into>(
+    fileprivate func execute<TerminationStep: Into>(
         _ keyPath: KeyPath<Self.Data, TerminationStep>
     ) async throws -> TerminateStepResponse
     where
