@@ -25,7 +25,6 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 @MainActor
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
-    private var didShowCrossSellAfterSuccessFlow = false
     private var cancellables = Set<AnyCancellable>()
     public init() {
 
@@ -66,19 +65,11 @@ public class HomeNavigationViewModel: ObservableObject {
                     let typesForWhichWeShouldShowAlways = [
                         CrossSellInfo.CrossSellInfoType.closedClaim, CrossSellInfo.CrossSellInfoType.home,
                     ]
-                    if self?.didShowCrossSellAfterSuccessFlow == false
-                        || typesForWhichWeShouldShowAlways.contains(crossSellInfo.type)
-                    {
-                        try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
-                        if crossSellInfo.type != CrossSellInfo.CrossSellInfoType.home {
-                            self?.didShowCrossSellAfterSuccessFlow = true
-                        }
-                        self?.navBarItems.isNewOfferPresented = crossSellInfo
-                    }
+                    try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                    self?.navBarItems.isNewOfferPresented = crossSellInfo
                 }
             }
         }
-
     }
 
     public var router = Router()
