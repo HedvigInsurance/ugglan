@@ -63,12 +63,13 @@ struct HeaderView_Previews: PreviewProvider {
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
+            .environmentObject(ForeverNavigationViewModel())
     }
 }
 
 struct HeaderView_Previews2: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HeaderView {}
+        return HeaderView {}.environmentObject(ForeverNavigationViewModel())
     }
 }

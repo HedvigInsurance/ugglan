@@ -117,7 +117,7 @@ struct InvitationRow: View {
 struct InvitationTable_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return InvitationTable()
+        return InvitationTable().environmentObject(ForeverNavigationViewModel())
     }
 }
 
@@ -146,7 +146,6 @@ struct InvitationRow_Previews: PreviewProvider {
     )
 
     static var previews: some View {
-
         Localization.Locale.currentLocale.send(.en_SE)
         return hSection {
             InvitationRow(row: mockRow, invitedYou: false)
@@ -156,5 +155,6 @@ struct InvitationRow_Previews: PreviewProvider {
         }
         .sectionContainerStyle(.transparent)
         .previewLayout(PreviewLayout.sizeThatFits)
+        .environmentObject(ForeverNavigationViewModel())
     }
 }

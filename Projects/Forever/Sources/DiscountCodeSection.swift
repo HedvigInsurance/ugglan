@@ -65,5 +65,6 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
+            .environmentObject(ForeverNavigationViewModel())
     }
 }
