@@ -48,6 +48,17 @@ public enum MovingFlowError: Error {
     case serverError(message: String)
     case missingDataError(message: String)
     case other
+
+    var title: String? {
+        switch self {
+        case .serverError(let message):
+            return L10n.generalContactUsTitle
+        case .missingDataError(let message):
+            return nil
+        case .other:
+            return nil
+        }
+    }
 }
 
 extension MovingFlowError: LocalizedError {

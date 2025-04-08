@@ -1,3 +1,4 @@
+import CrossSell
 import SwiftUI
 import hCore
 import hCoreUI
@@ -23,6 +24,11 @@ struct MovingFlowProcessingScreen: View {
             duration: 6
         )
         .hStateViewButtonConfig(errorButtons)
+        .onDeinit { [weak movingFlowConfirmVm] in
+            if movingFlowConfirmVm?.viewState == .success {
+                NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .movingFlow))
+            }
+        }
     }
 
     private var errorButtons: StateViewButtonConfig {

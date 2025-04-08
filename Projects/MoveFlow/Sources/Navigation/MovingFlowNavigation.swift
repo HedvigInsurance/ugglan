@@ -8,6 +8,7 @@ import hCoreUI
 public class MovingFlowNavigationViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
+    var errorTitle: String?
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published var document: hPDFDocument? = nil
     @Published var moveConfigurationModel: MoveConfigurationModel?
@@ -35,6 +36,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     func getMoveIntent() async {
         withAnimation {
             self.viewState = .loading
+            errorTitle = nil
         }
 
         do {
@@ -51,6 +53,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
             }
         } catch {
             if let error = error as? MovingFlowError {
+                errorTitle = error.title
                 self.viewState = .error(errorMessage: error.localizedDescription)
             } else {
                 self.viewState = .error(errorMessage: L10n.General.errorBody)
@@ -213,7 +216,22 @@ public struct MovingFlowNavigation: View {
                     }
                 }
         }
-        .loading($movingFlowNavigationVm.viewState, errorTrackingName: MovingFlowDetentType.error)
+        .loading(
+            $movingFlowNavigationVm.viewState,
+            errorTitle: movingFlowNavigationVm.errorTitle,
+            errorTrackingNameWithRouter: (MovingFlowDetentType.error, router)
+        )
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: .init(
+                    buttonTitle: L10n.openChat,
+                    buttonAction: { [weak router] in
+                        router?.dismiss()
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                    }
+                )
+            )
+        )
         .environmentObject(movingFlowNavigationVm)
         .detent(
             item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
@@ -245,7 +263,7 @@ public struct MovingFlowNavigation: View {
                 addExtraBuilingViewModel: model.addExtraBuildingVm
             )
         }
-        .onDisappear {
+        .onDeinit {
             onMoved()
         }
     }

@@ -130,7 +130,7 @@ final class CompareTierVireModelTests: XCTestCase {
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
-        assert(model.perils.first! == ("standard", [peril1]))
+        assert(model.perils.first! == ("Standard", [peril1]))
         assert(model.viewState == .success)
     }
 

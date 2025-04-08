@@ -3,6 +3,7 @@ import Chat
 import Claims
 import Combine
 import Contracts
+import CrossSell
 import Foundation
 import Payment
 import PresentableStore
@@ -30,7 +31,7 @@ extension HomeScreen {
             action: { type in
                 switch type {
                 case .newOffer:
-                    navigationVm.navBarItems.isNewOfferPresented = .init()
+                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:

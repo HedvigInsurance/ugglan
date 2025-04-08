@@ -8,6 +8,7 @@ struct PaymentDetailsView: View {
     @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
+    @Inject var featureFlags: FeatureFlags
 
     init(data: PaymentData) {
         self.data = data
@@ -40,7 +41,8 @@ struct PaymentDetailsView: View {
             }
             .withHeader(
                 title: L10n.paymentsDiscountsSectionTitle,
-                infoButtonDescription: L10n.paymentsDiscountInfoDescription,
+                infoButtonDescription: featureFlags.isRedeemCampaignDisabled
+                    ? nil : L10n.paymentsDiscountInfoDescription,
                 withoutBottomPadding: true
             )
             .sectionContainerStyle(.transparent)
