@@ -55,11 +55,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
 
         log.info("Started loading unleash experiments")
 
-        let market = await Task { @MainActor in
-            Localization.Locale.currentLocale.value.market
-        }
-        .value
-        emailPreferencesEnabled = market == .se
         do {
             try await self.unleashClient?.start(printToConsole: true)
             handleUpdate()
