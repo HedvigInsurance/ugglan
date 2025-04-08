@@ -16,8 +16,7 @@ extension Project {
         targets: Set<FeatureTarget> = Set([.framework, .tests, .example, .testing]),
         projects: [String] = [],
         dependencies: [String] = ["CoreDependencies"],
-        sdks: [String] = [],
-        includesGraphQL: Bool = false
+        sdks: [String] = []
     ) -> Project {
 
         let settings: [String: SettingValue] = {
@@ -93,14 +92,6 @@ extension Project {
             }
         )
 
-        let hGraphQLName = "hGraphQL"
-
-        if includesGraphQL, !projects.contains(hGraphQLName), name != hGraphQLName {
-            targetDependencies.append(
-                .project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)"))
-            )
-        }
-
         var projectTargets: [Target] = []
 
         if targets.contains(.framework) {
@@ -134,10 +125,6 @@ extension Project {
                     [
                         .target(name: "\(name)"),
                         .project(
-                            target: "TestingUtil",
-                            path: .relativeToRoot("Projects/TestingUtil")
-                        ),
-                        .project(
                             target: "DevDependencies",
                             path: .relativeToRoot("Dependencies/DevDependencies")
                         ),
@@ -162,10 +149,6 @@ extension Project {
                 dependencies: [
                     [
                         .target(name: "\(name)Example"),
-                        .project(
-                            target: "TestingUtil",
-                            path: .relativeToRoot("Projects/TestingUtil")
-                        ),
                         .project(
                             target: "CoreDependencies",
                             path: .relativeToRoot("Dependencies/CoreDependencies")
@@ -220,14 +203,6 @@ extension Project {
                 dependencies: [
                     [
                         .target(name: "\(name)"),
-                        .project(
-                            target: "ExampleUtil",
-                            path: .relativeToRoot("Projects/ExampleUtil")
-                        ),
-                        .project(
-                            target: "TestingUtil",
-                            path: .relativeToRoot("Projects/TestingUtil")
-                        ),
                         .project(
                             target: "DevDependencies",
                             path: .relativeToRoot("Dependencies/DevDependencies")
@@ -298,7 +273,7 @@ extension Project {
                     ) : nil,
             ]
             .compactMap { $0 },
-            additionalFiles: [includesGraphQL ? .folderReference(path: "GraphQL") : nil].compactMap { $0 }
+            additionalFiles: [nil].compactMap { $0 }
         )
     }
 }

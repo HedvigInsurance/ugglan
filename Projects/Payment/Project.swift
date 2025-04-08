@@ -6,6 +6,5 @@ let project = Project.framework(
     targets: Set([.framework, .tests, .example]),
     projects: ["hCore", "hCoreUI", "Contracts", "Forever"],
     dependencies: ["CoreDependencies", "ResourceBundledDependencies"],
-    sdks: [],
-    includesGraphQL: false
+    sdks: []
 )
