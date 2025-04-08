@@ -1,0 +1,293 @@
+mutation FlowClaimStart($input: FlowClaimStartInput!, $context: FlowContext) {
+  flowClaimStart(input: $input, context: $context) {
+    id
+    ...FlowClaimFragment
+    context
+    progress {
+        ...ProgressFragment
+    }
+  }
+}
+
+fragment FlowClaimFragment on Flow {
+  currentStep {
+    id
+    ...FlowClaimAudioRecordingStepFragment
+    ...FlowClaimDateOfOccurrencePlusLocationStepFragment
+    ...FlowClaimDateOfOccurrenceStepFragment
+    ...FlowClaimFailedStepFragment
+    ...FlowClaimLocationStepFragment
+    ...FlowClaimPhoneNumberStepFragment
+    ...FlowClaimSingleItemCheckoutStepFragment
+    ...FlowClaimSingleItemStepFragment
+    ...FlowClaimSuccessStepFragment
+    ...FlowClaimSummaryStepFragment
+    ...FlowClaimContractSelectStepFragment
+    ...FlowClaimDeflectEmergencyStepFragment
+    ...FlowClaimConfirmEmergencyStepFragment
+    ...FlowClaimDeflectGlassDamageStepFragment
+    ...FlowClaimDeflectTowingStepFragment
+    ...FlowClaimDeflectEirStepFragment
+    ...FlowClaimDeflectPestsStepFragment
+    ...FlowClaimFileUploadStepFragment
+    ...FlowClaimDeflectIDProtectionStepFragment
+  }
+}
+
+fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep{
+    id
+    questions
+    freeText
+    freeTextQuestions
+    freeTextAvailable
+    audioContent {
+        ...FlowClaimAudioContentFragment
+    }
+}
+
+fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {
+    dateOfOccurrenceStep {
+        ...FlowClaimDateOfOccurrenceStepFragment
+    }
+    id
+    locationStep {
+        ...FlowClaimLocationStepFragment
+    }
+}
+
+fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {
+    dateOfOccurrence
+    id
+    maxDate
+}
+
+fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
+    id
+}
+
+fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
+    id
+    selectedOptionId
+    options {
+        ...FlowClaimContractOptionFragment
+    }
+}
+
+fragment FlowClaimDeflectEmergencyStepFragment on FlowClaimDeflectEmergencyStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimConfirmEmergencyStepFragment on FlowClaimConfirmEmergencyStep {
+    id
+    text
+    confirmEmergency
+    options {
+        ...FlowClaimConfirmEmergencyOptionFragment
+    }
+}
+
+fragment FlowClaimDeflectGlassDamageStepFragment on FlowClaimDeflectGlassDamageStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimDeflectTowingStepFragment on FlowClaimDeflectTowingStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimDeflectEirStepFragment on FlowClaimDeflectEirStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimDeflectPestsStepFragment on FlowClaimDeflectPestsStep {
+    id
+    partners {
+        ...FlowClaimDeflectPartnerFragment
+    }
+}
+
+fragment FlowClaimFileUploadStepFragment on FlowClaimFileUploadStep {
+    id
+    title
+    targetUploadUrl
+    uploads {
+        fileId
+        signedUrl
+        name
+        mimeType
+    }
+}
+
+fragment FlowClaimLocationStepFragment on FlowClaimLocationStep {
+    id
+    location
+    options {
+        displayName
+        value
+    }
+}
+
+fragment FlowClaimPhoneNumberStepFragment on FlowClaimPhoneNumberStep {
+    id
+    phoneNumber
+}
+fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
+    id
+    compensation {
+        ...FlowClaimSingleItemCheckoutCompensationFragment
+    }
+    singleItemStep {
+        ...FlowClaimSingleItemStepFragment
+    }
+    
+    availableCheckoutMethods {
+        id
+        ...FlowClaimAutomaticAutogiroPayoutFragment
+    }
+}
+
+fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
+    id
+    preferredCurrency
+    purchasePrice {
+        ...MoneyFragment
+    }
+    purchaseDate
+    selectedItemProblems
+    availableItemProblems {
+        displayName
+        itemProblemId
+    }
+    selectedItemBrand
+    availableItemBrands {
+        displayName
+        itemTypeId
+        itemBrandId
+    }
+    selectedItemModel
+    availableItemModels {
+        displayName
+        imageUrl
+        itemTypeId
+        itemBrandId
+        itemModelId
+    }
+    customName
+    purchasePriceApplicable
+}
+
+fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
+    id
+}
+
+fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
+    id
+    title
+    subtitle
+    dateOfOccurrenceStep {
+        ...FlowClaimDateOfOccurrenceStepFragment
+    }
+    locationStep {
+        ...FlowClaimLocationStepFragment
+    }
+    singleItemStep {
+        ...FlowClaimSingleItemStepFragment
+    }
+    audioRecordingStep {
+        ...FlowClaimAudioRecordingStepFragment
+    }
+    fileUploadStep {
+        ...FlowClaimFileUploadStepFragment
+    }
+    selectContractStep {
+        ...FlowClaimContractSelectStepFragment
+  }
+}
+
+fragment FlowClaimAutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {
+    id
+    amount{
+        ...MoneyFragment
+    }
+    displayName
+}
+
+fragment FlowClaimAudioContentFragment on FlowClaimAudioContent {
+    audioUrl
+    signedUrl
+}
+
+fragment ProgressFragment on FlowProgress {
+    clearedSteps
+    totalSteps
+}
+
+fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
+    id
+    imageUrl
+    url
+    phoneNumber
+    preferredImageHeight
+}
+
+fragment FlowClaimContractOptionFragment on FlowClaimContractOption {
+    displayTitle
+    displaySubtitle
+    id
+}
+
+fragment FlowClaimConfirmEmergencyOptionFragment on FlowClaimConfirmEmergencyOption {
+    displayName
+    displayValue: value
+}
+
+fragment FlowClaimSingleItemCheckoutCompensationFragment on FlowClaimSingleItemCheckoutCompensation {
+    id
+    deductible {
+        ...MoneyFragment
+    }
+    payoutAmount {
+        ...MoneyFragment
+    }
+    
+    ... on FlowClaimSingleItemCheckoutRepairCompensation {
+        repairCost {
+            ...MoneyFragment
+        }
+    }
+    
+    ... on FlowClaimSingleItemCheckoutValueCompensation {
+        price {
+            ...MoneyFragment
+        }
+        depreciation {
+            ...MoneyFragment
+        }
+    }
+}
+
+fragment FlowClaimDeflectIDProtectionStepFragment on FlowClaimDeflectIDProtectionStep {
+    id
+    title
+    description
+    partners {
+        title
+        description
+        info
+        urlButtonTitle
+        deflectPartner {
+            ...FlowClaimDeflectPartnerFragment
+        }
+    }
+}

@@ -93,13 +93,14 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id: String
+    public let id = UUID().uuidString
     let code: String
     let amount: MonetaryAmount?
-    let title: String
+    let title: String?
     let listOfAffectedInsurances: [AffectedInsurance]
     let validUntil: ServerBasedDate?
     let canBeDeleted: Bool
+    let discountId: String
 
     @MainActor
     var isValid: Bool {

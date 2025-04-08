@@ -187,7 +187,7 @@ struct ChatScreenModifier: ViewModifier {
             .task {
                 messageVm.chatNavigationVm = chatNavigationVm
             }
-            .configureTitleView(conversationVm)
+            .configureTitleView(title: conversationVm.title, subTitle: conversationVm.subTitle)
             .onAppear {
                 vm.scrollCancellable = chatScrollViewDelegate.isScrolling
                     .subscribe(on: RunLoop.main)

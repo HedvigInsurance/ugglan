@@ -33,8 +33,6 @@ struct InsuredPeopleScreen: View {
                     .verticalPadding(0)
                     .padding(.top, .padding16)
                 }
-                .hSectionWithoutHorizontalPadding
-                .sectionContainerStyle(.transparent)
 
                 hSection(listToDisplay) { coInsured in
                     hRow {
@@ -46,8 +44,6 @@ struct InsuredPeopleScreen: View {
                         )
                     }
                 }
-                .hSectionWithoutHorizontalPadding
-                .sectionContainerStyle(.transparent)
 
                 hSection {
                     hButton.LargeButton(type: .secondary) {
@@ -67,8 +63,9 @@ struct InsuredPeopleScreen: View {
                         hText(L10n.contractAddCoinsured)
                     }
                 }
-                .sectionContainerStyle(.transparent)
             }
+            .hWithoutHorizontalPadding([.row])
+            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
@@ -205,6 +202,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             numberOfMissingCoInsured: 0,
             numberOfMissingCoInsuredWithoutTermination: 0,
             displayName: "",
+            exposureDisplayName: nil,
             preSelectedCoInsuredList: [],
             contractDisplayName: "",
             holderFirstName: "",
@@ -224,6 +222,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
+    @Published var isLoading = false
 
     func completeList(
         coInsuredAdded: [CoInsuredModel]? = nil,

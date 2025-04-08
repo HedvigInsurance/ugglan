@@ -51,9 +51,13 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     payoutAmount: nil,
                     targetFileUploadUri: "",
                     claimType: "claimType",
-                    incidentDate: nil,
                     productVariant: nil,
-                    conversation: nil
+                    conversation: nil,
+                    appealInstructionsUrl: nil,
+                    isUploadingFilesEnabled: true,
+                    showClaimClosedFlow: true,
+                    infoText: nil,
+                    displayItems: []
                 )
             ])
         )

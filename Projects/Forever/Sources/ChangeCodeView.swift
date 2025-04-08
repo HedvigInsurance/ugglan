@@ -19,16 +19,13 @@ struct ChangeCodeView: View {
             title: L10n.ReferralsEmpty.Code.headline
         )
 
-        self.vm = .init(inputVm: inputVm, foreverVm: foreverNavigationVm.foreverVm)
+        self.vm = .init(inputVm: inputVm, foreverVm: foreverNavigationVm)
     }
 
     var body: some View {
         TextInputView(vm: vm.inputVm)
             .task {
                 vm.router = router
-            }
-            .onChange(of: vm.foreverData) { newForeverData in
-                foreverNavigationVm.foreverData = newForeverData
             }
     }
 }
@@ -39,12 +36,11 @@ class ChangeCodeViewModel: ObservableObject {
     @Published var inputVm: TextInputViewModel
 
     var router: Router?
-    @Published var foreverData: ForeverData?
-    @Published var foreverVm: ForeverViewModel
+    weak var foreverVm: ForeverNavigationViewModel?
 
     init(
         inputVm: TextInputViewModel,
-        foreverVm: ForeverViewModel
+        foreverVm: ForeverNavigationViewModel
     ) {
         self.inputVm = inputVm
         self.foreverVm = foreverVm
@@ -64,7 +60,7 @@ class ChangeCodeViewModel: ObservableObject {
 
     private func handleOnSave(text: String) async throws {
         try await self.foreverService.changeCode(code: text)
-        self.foreverData = try await foreverVm.fetchForeverData()
+        try await foreverVm?.fetchForeverData()
         self.router?.push(ForeverRouterActions.success)
     }
 }

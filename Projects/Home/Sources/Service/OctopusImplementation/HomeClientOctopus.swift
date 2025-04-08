@@ -29,11 +29,13 @@ public class HomeClientOctopus: HomeClient {
             .client
             .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
 
+        let memberId = data.currentMember.id
         let contracts = data.currentMember.activeContracts.map { HomeContract(contract: $0) }
         let contractState = data.currentMember.homeState
         let futureStatus = data.currentMember.futureStatus
 
         return .init(
+            id: memberId,
             contracts: contracts,
             contractState: contractState,
             futureState: futureStatus
@@ -90,13 +92,14 @@ public class HomeClientOctopus: HomeClient {
             quickActions.append(.firstVet(partners: firstVetPartners))
         }
 
-        if let sickAbroadPartners = actions?.sickAbroadAction?.partners {
+        if let sickAbroadPartners = actions?.sickAbroadAction?.deflectPartners {
             let firstVetPartners = sickAbroadPartners.compactMap({
                 SickAbroadPartner(
                     id: $0.id,
                     imageUrl: $0.imageUrl,
                     phoneNumber: $0.phoneNumber,
-                    url: $0.url
+                    url: $0.url,
+                    preferredImageHeight: $0.preferredImageHeight
                 )
             })
             quickActions.append(.sickAbroad(partners: firstVetPartners))
@@ -207,9 +210,10 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     @MainActor
     private var isFuture: Bool {
         let hasActiveContractsInFuture = activeContracts.allSatisfy { contract in
-            return contract.currentAgreement.activeFrom.localDateToDate?.daysBetween(start: Date()) ?? 0 > 0
+            return contract.currentAgreement.activeFrom.localDateToDate ?? Date() > Date()
         }
-        return !activeContracts.isEmpty && hasActiveContractsInFuture
+        return (!activeContracts.isEmpty && hasActiveContractsInFuture)
+            || (!pendingContracts.isEmpty && activeContracts.isEmpty)
     }
 }
 

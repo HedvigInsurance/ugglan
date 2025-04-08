@@ -22,7 +22,7 @@ final class TestChatViewModelBanner: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.banner == banner)
+        assert(model.messageVm.conversationVm.banner == banner)
         self.sut = mockService
     }
 
@@ -31,9 +31,9 @@ final class TestChatViewModelBanner: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let chatInitialBanner = model.banner
+        let chatInitialBanner = model.messageVm.conversationVm.banner
         await model.startFetchingNewMessages()
-        assert(model.banner == chatInitialBanner)
+        assert(model.messageVm.conversationVm.banner == chatInitialBanner)
         self.sut = mockService
     }
 
@@ -46,9 +46,9 @@ final class TestChatViewModelBanner: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.banner == banner)
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.banner == updatedBanner)
+        assert(model.messageVm.conversationVm.banner == banner)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.conversationVm.banner == updatedBanner)
         self.sut = mockService
     }
 

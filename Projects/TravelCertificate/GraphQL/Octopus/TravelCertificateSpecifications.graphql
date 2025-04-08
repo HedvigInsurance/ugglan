@@ -3,6 +3,15 @@ query TravelCertificate {
     email
     firstName
     lastName
+    activeContracts {
+        id
+        exposureDisplayName
+        currentAgreement {
+            productVariant {
+                displayName
+            }
+        }
+    }
     travelCertificateSpecifications {
       contractSpecifications {
         contractId
@@ -10,9 +19,6 @@ query TravelCertificate {
         maxStartDate
         maxDurationDays
         numberOfCoInsured
-        location {
-          street
-        }
       }
     }
   }

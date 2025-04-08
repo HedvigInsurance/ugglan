@@ -43,10 +43,6 @@ public enum Localization {
             switch self {
             case .sv_SE: return "sv"
             case .en_SE: return "en-US"
-            case .en_NO: return "en-US"
-            case .nb_NO: return "nb"
-            case .da_DK: return "da"
-            case .en_DK: return "en-US"
             }
         }
 

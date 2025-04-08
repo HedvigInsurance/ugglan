@@ -1,6 +1,7 @@
 import Chat
 import Combine
 import Contracts
+import CrossSell
 import EditCoInsuredShared
 import Foundation
 import Payment
@@ -24,13 +25,13 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 @MainActor
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
+    private var didShowCrossSellAfterSuccessFlow = false
     private var cancellables = Set<AnyCancellable>()
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
 
-            //            let openChatTask = await Task {
             var openChat: ChatConversation?
 
             if let chatType = notification.object as? ChatType {
@@ -58,6 +59,26 @@ public class HomeNavigationViewModel: ObservableObject {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
+            [weak self] notification in
+            if let crossSellInfo = notification.object as? CrossSellInfo {
+                Task { @MainActor in
+                    let typesForWhichWeShouldShowAlways = [
+                        CrossSellInfo.CrossSellInfoType.closedClaim, CrossSellInfo.CrossSellInfoType.home,
+                    ]
+                    if self?.didShowCrossSellAfterSuccessFlow == false
+                        || typesForWhichWeShouldShowAlways.contains(crossSellInfo.type)
+                    {
+                        try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                        if crossSellInfo.type != CrossSellInfo.CrossSellInfoType.home {
+                            self?.didShowCrossSellAfterSuccessFlow = true
+                        }
+                        self?.navBarItems.isNewOfferPresented = crossSellInfo
+                    }
+                }
+            }
+        }
+
     }
 
     public var router = Router()
@@ -72,23 +93,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct NavBarItems {
         public var isFirstVetPresented = false
-        public var isNewOfferPresented = false
-    }
-
-    public struct FileUrlModel: Identifiable, Equatable {
-        public var id: String?
-        public var type: FileUrlModelType
-
-        public init(
-            type: FileUrlModelType
-        ) {
-            self.type = type
-        }
-
-        public enum FileUrlModelType: Codable, Equatable {
-            case url(url: URL, mimeType: MimeType)
-            case data(data: Data, mimeType: MimeType)
-        }
+        public var isNewOfferPresented: CrossSellInfo?
     }
 
     deinit {
@@ -99,15 +104,4 @@ public class HomeNavigationViewModel: ObservableObject {
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
-}
-
-extension HomeNavigationViewModel.FileUrlModel.FileUrlModelType {
-    public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
-        switch self {
-        case let .url(url, mimeType):
-            return .url(url: url, mimeType: mimeType)
-        case let .data(data, mimeType):
-            return .data(data: data, mimeType: mimeType)
-        }
-    }
 }

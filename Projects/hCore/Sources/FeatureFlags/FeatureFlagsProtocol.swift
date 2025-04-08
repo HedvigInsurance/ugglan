@@ -21,6 +21,7 @@ public protocol FeatureFlags {
     var isDemoMode: Bool { get set }
     var isMovingFlowEnabled: Bool { get }
     var isAddonsRemovalFromMovingFlowEnabled: Bool { get }
+    var isRedeemCampaignDisabled: Bool { get }
 }
 
 public enum PaymentType {

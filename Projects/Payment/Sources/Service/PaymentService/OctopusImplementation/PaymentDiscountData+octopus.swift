@@ -19,7 +19,7 @@ extension Discount {
         self.amount = amountFromPaymentData
         self.canBeDeleted = true
         self.code = data.code
-        self.id = data.id
+        self.discountId = data.id
         self.listOfAffectedInsurances =
             data.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) }) ?? []
         self.title = data.description

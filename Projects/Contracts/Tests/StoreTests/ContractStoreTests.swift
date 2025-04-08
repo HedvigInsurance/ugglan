@@ -19,36 +19,6 @@ final class ContractStoreTests: XCTestCase {
         }
     }
 
-    func testFetchCrossSalesSuccess() async {
-        let mockService = MockData.createMockContractsService(
-            fetchCrossSell: { CrossSell.getDefault }
-        )
-        let store = ContractStore()
-        self.store = store
-        await store.sendAsync(.fetchCrossSale)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells == CrossSell.getDefault
-        }
-
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getCrossSell)
-    }
-
-    func testFetchCrossSalesFailure() async throws {
-        let mockService = MockData.createMockContractsService(
-            fetchCrossSell: { throw MockContractError.fetchCrossSells }
-        )
-
-        let store = ContractStore()
-        self.store = store
-        await store.sendAsync(.fetchCrossSale)
-        try await Task.sleep(nanoseconds: 5 * 100_000_000)
-        assert(store.loadingState[.fetchCrossSell] != nil)
-        assert(store.state.crossSells.isEmpty)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getCrossSell)
-    }
-
     func testFetchContractsSuccess() async {
         let mockService = MockData.createMockContractsService(
             fetchContracts: { ContractsStack.getDefault }
@@ -88,24 +58,21 @@ final class ContractStoreTests: XCTestCase {
 
     func testFetchSuccess() async throws {
         let mockService = MockData.createMockContractsService(
-            fetchContracts: { ContractsStack.getDefault },
-            fetchCrossSell: { CrossSell.getDefault }
+            fetchContracts: { ContractsStack.getDefault }
         )
         let store = ContractStore()
         self.store = store
-        await store.sendAsync(.fetch)
+        await store.sendAsync(.fetchContracts)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchContracts] == nil && store.loadingState[.fetchCrossSell] == nil
+            store.loadingState[.fetchContracts] == nil
         }
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
         assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
         assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
-        assert(store.state.crossSells == CrossSell.getDefault)
-        assert(mockService.events.count == 2)
+        assert(mockService.events.count == 1)
         assert(mockService.events.contains(.getContracts))
-        assert(mockService.events.contains(.getCrossSell))
     }
 
 }
@@ -151,28 +118,6 @@ extension ContractsStack {
         pendingContracts: [],
         terminatedContracts: []
     )
-}
-
-@MainActor
-extension CrossSell {
-    fileprivate static let getDefault: [CrossSell] = [
-        .init(
-            title: "car",
-            description: "description",
-            imageURL: URL(string: "https://hedvig.com")!,
-            blurHash: "",
-            typeOfContract: "",
-            type: .car
-        ),
-        .init(
-            title: "home",
-            description: "description",
-            imageURL: URL(string: "https://hedvig.com")!,
-            blurHash: "",
-            typeOfContract: "",
-            type: .home
-        ),
-    ]
 }
 
 @MainActor

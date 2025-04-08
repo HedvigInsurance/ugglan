@@ -5,7 +5,7 @@ import hGraphQL
 
 struct ClaimStatusBar: View {
     let status: ClaimModel.ClaimStatus
-    let outcome: ClaimModel.ClaimOutcome
+    let outcome: ClaimModel.ClaimOutcome?
 
     func accessibilityText(segment: ClaimModel.ClaimStatus) -> String? {
 
@@ -22,12 +22,7 @@ struct ClaimStatusBar: View {
                 return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled + " "
                     + L10n.ClaimStatusDetail.submitted
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    return claimStatusText + L10n.Claim.StatusBar.beingHandled + " "
-                        + L10n.ClaimStatusDetail.missingReceipt
-                } else {
-                    return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled
-                }
+                return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled
             default:
                 return nil
             }
@@ -43,12 +38,7 @@ struct ClaimStatusBar: View {
                 return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + ": "
                     + L10n.ClaimStatusDetail.submitted
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened
-                        + L10n.ClaimStatusDetail.missingReceipt
-                } else {
-                    return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + L10n.Claim.StatusBar.beingHandled
-                }
+                return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + L10n.Claim.StatusBar.beingHandled
             default:
                 return nil
             }
@@ -71,11 +61,7 @@ struct ClaimStatusBar: View {
             case .submitted:
                 hSignalColor.Green.element
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    hSignalColor.Amber.element
-                } else {
-                    hSignalColor.Green.element
-                }
+                hSignalColor.Green.element
             default:
                 hFillColor.Opaque.disabled
             }
@@ -90,11 +76,7 @@ struct ClaimStatusBar: View {
             case .submitted:
                 hSignalColor.Green.element
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    hSignalColor.Amber.element
-                } else {
-                    hSignalColor.Green.element
-                }
+                hSignalColor.Green.element
             default:
                 hFillColor.Opaque.disabled
             }
@@ -172,9 +154,6 @@ struct ClaimStatusBar_Previews: PreviewProvider {
             }
             HStack {
                 ClaimStatusBar(status: .closed, outcome: .notCompensated)
-            }
-            HStack {
-                ClaimStatusBar(status: .beingHandled, outcome: .missingReceipt)
             }
         }
     }

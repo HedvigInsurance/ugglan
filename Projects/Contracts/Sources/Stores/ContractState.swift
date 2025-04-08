@@ -1,3 +1,4 @@
+import Addons
 import Apollo
 import EditCoInsuredShared
 import PresentableStore
@@ -10,7 +11,6 @@ public struct ContractState: StateProtocol {
     public var activeContracts: [Contract] = []
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
-    public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
         let coInsuredList = activeContracts.flatMap { coInsured in
@@ -53,10 +53,6 @@ public struct ContractState: StateProtocol {
 }
 
 extension ContractState {
-    public var hasUnseenCrossSell: Bool {
-        crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
-    }
-
     public var hasActiveContracts: Bool {
         !(activeContracts.compactMap { $0 }.isEmpty)
     }
@@ -66,5 +62,21 @@ extension ContractState {
 extension ContractStore: ExistingCoInsured {
     public func get(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
         return state.fetchAllCoInsuredNotInContract(contractId: contractId)
+    }
+}
+
+extension ContractStore {
+    public func getAddonConfigsFor(contractIds ids: [String]) -> [AddonConfig] {
+        let addonContracts = ids.compactMap({
+            self.state.contractForId($0)
+        })
+        let addonContractsConfig: [AddonConfig] = addonContracts.map({
+            .init(
+                contractId: $0.id,
+                exposureName: $0.exposureDisplayName,
+                displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+            )
+        })
+        return addonContractsConfig
     }
 }

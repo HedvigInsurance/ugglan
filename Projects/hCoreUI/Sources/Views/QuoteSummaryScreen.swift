@@ -210,10 +210,10 @@ public struct QuoteSummaryScreen: View {
                 extraButton: ExtraButtonModel(
                     text: removeModel.confirmButtonTitle,
                     style: .primary
-                ) {
+                ) { [weak vm] in
                     withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.removeModel = nil
-                        vm.removeContract(removeModel.id)
+                        vm?.removeModel = nil
+                        vm?.removeContract(removeModel.id)
                     }
                 }
             )
@@ -337,7 +337,7 @@ public struct QuoteSummaryScreen: View {
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
         VStack(spacing: .padding16) {
             hRowDivider()
-                .hWithoutDividerPadding
+                .hWithoutHorizontalPadding([.divider])
 
             if !contract.displayItems.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
@@ -362,7 +362,7 @@ public struct QuoteSummaryScreen: View {
                             ForEach(contract.insuranceLimits, id: \.limit) { limit in
                                 let displayItem: QuoteDisplayItem = .init(
                                     title: limit.label,
-                                    value: limit.limit,
+                                    value: limit.limit ?? "",
                                     id: limit.id
                                 )
                                 rowItem(for: displayItem)
@@ -490,8 +490,8 @@ public struct QuoteSummaryScreen: View {
                 }
                 .accessibilityElement(children: .combine)
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) {
-                        vm.onConfirmClick()
+                    hButton.LargeButton(type: .primary) { [weak vm] in
+                        vm?.onConfirmClick()
                     } content: {
                         hText(vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer)
                     }

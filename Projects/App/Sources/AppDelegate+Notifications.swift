@@ -88,7 +88,7 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         let shouldShowNotification: Bool = {
             if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
                 let listToCheck: [String] = [
-                    String(describing: HomeView<EmptyView>.self).components(separatedBy: "<").first ?? "",
+                    String(describing: HomeScreen.self),
                     .init(describing: ClaimDetailView.self),
                     .init(describing: InboxView.self),
                     .init(describing: ChatScreen.self),
@@ -115,4 +115,7 @@ enum PushNotificationType: String {
     case CROSS_SELL
     case OPEN_CONTACT_INFO
     case CHANGE_TIER
+    case ADDON_TRAVEL
+    case CLAIM_CLOSED
+    case OPEN_CLAIM
 }

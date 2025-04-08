@@ -85,7 +85,8 @@ public struct PaymentsView: View {
                 }
                 if let upcomingPayment = state.paymentData {
                     paymentView(for: upcomingPayment)
-                } else {
+                }
+                if state.ongoingPaymentData.isEmpty && state.paymentData == nil {
                     VStack(spacing: 16) {
                         Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
                             .resizable()
@@ -144,7 +145,7 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.discounts)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
 
     }
@@ -160,7 +161,7 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.history)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 
@@ -178,7 +179,7 @@ public struct PaymentsView: View {
         .withCustomAccessory {
             hText(descriptor).foregroundColor(hTextColor.Opaque.secondary)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 

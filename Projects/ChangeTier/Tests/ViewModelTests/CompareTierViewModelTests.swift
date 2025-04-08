@@ -122,7 +122,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
+        let model = CompareTierViewModel(tiers: tiers)
         self.vm = model
         model.productVariantComparision()
 
@@ -130,7 +130,7 @@ final class CompareTierVireModelTests: XCTestCase {
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
-        assert(model.perils.first! == ("standard", [peril1]))
+        assert(model.perils.first! == ("Standard", [peril1]))
         assert(model.viewState == .success)
     }
 
@@ -141,7 +141,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
+        let model = CompareTierViewModel(tiers: tiers)
         self.vm = model
         model.productVariantComparision()
 

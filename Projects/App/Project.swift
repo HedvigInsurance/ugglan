@@ -98,6 +98,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
         .project(target: "Claims", path: .relativeToRoot("Projects/Claims")),
+        .project(target: "SubmitClaim", path: .relativeToRoot("Projects/SubmitClaim")),
         .project(target: "Chat", path: .relativeToRoot("Projects/Chat")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
@@ -110,6 +111,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "EditCoInsuredShared", path: .relativeToRoot("Projects/EditCoInsuredShared")),
         .project(target: "ChangeTier", path: .relativeToRoot("Projects/ChangeTier")),
         .project(target: "Addons", path: .relativeToRoot("Projects/Addons")),
+        .project(target: "CrossSell", path: .relativeToRoot("Projects/CrossSell")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
         .project(

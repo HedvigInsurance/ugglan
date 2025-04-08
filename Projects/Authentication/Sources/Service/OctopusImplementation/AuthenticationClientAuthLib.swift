@@ -270,8 +270,12 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
             ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
         case .error(let error):
             log.error("Refreshing failed \(error.errorMessage), forcing logout")
-            forceLogoutHook()
-            throw AuthError.refreshFailed
+            switch onEnum(of: error) {
+            case .iOError:
+                throw AuthError.networkIssue
+            case .backendErrorResponse, .unknownError:
+                throw AuthError.refreshFailed
+            }
         }
     }
 }

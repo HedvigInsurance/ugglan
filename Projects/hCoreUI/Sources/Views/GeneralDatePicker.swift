@@ -17,9 +17,9 @@ public struct DatePickerView: View {
                 HStack {
                     if vm.config.showAsList ?? false {
                         datePicker
-                            .datePickerStyle(.wheel)
-                            .padding(.trailing, 23)
                             .padding(.bottom, .padding16)
+                            .labelsHidden()
+                            .datePickerStyle(.wheel)
                     } else {
                         datePicker
                             .tint(hSignalColor.Green.element)
@@ -112,6 +112,7 @@ public struct DatePickerView: View {
 struct DatePickerView_Previews: PreviewProvider {
     @State static var date = Date()
     static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return VStack {
             DatePickerView(
                 vm:
@@ -121,7 +122,8 @@ struct DatePickerView_Previews: PreviewProvider {
                         date: $date,
                         config: .init(
                             placeholder: "PLACEHOLDER",
-                            title: "TITLE"
+                            title: "TITLE",
+                            showAsList: true
                         )
                     )
             )
@@ -301,10 +303,14 @@ struct hDatePickerField_Previews: PreviewProvider {
         hDatePickerField
         .HDatePickerFieldConfig(
             placeholder: "Placeholder",
-            title: "Departure date"
+            title: "Departure date",
+            showAsList: true
         )
     static var previews: some View {
-        VStack {
+
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+        return VStack {
             hDatePickerField(config: config, selectedDate: dateForSmall)
                 .hFieldSize(.small)
             hDatePickerField(config: config, selectedDate: dateForSmallWithRealDate)

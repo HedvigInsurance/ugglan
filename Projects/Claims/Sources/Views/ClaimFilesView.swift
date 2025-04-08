@@ -137,17 +137,19 @@ public struct ClaimFilesView: View {
     }
 
     private var loadingView: some View {
-        hSection {
-            VStack(spacing: 20) {
-                Spacer()
-                hText(L10n.fileUploadIsUploading)
-                ProgressView(value: vm.progress)
-                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                    .progressViewStyle(hProgressViewStyle())
-                Spacer()
+        GeometryReader { proxy in
+            hSection {
+                VStack(spacing: 20) {
+                    Spacer()
+                    hText(L10n.fileUploadIsUploading)
+                    ProgressView(value: vm.progress)
+                        .frame(width: proxy.size.width * 0.53)
+                        .progressViewStyle(hProgressViewStyle())
+                    Spacer()
+                }
             }
+            .sectionContainerStyle(.transparent)
         }
-        .sectionContainerStyle(.transparent)
     }
 
     private var successView: some View {
@@ -156,7 +158,7 @@ public struct ClaimFilesView: View {
 }
 
 @MainActor
-class ClaimFilesViewModel: ObservableObject {
+public class ClaimFilesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var success = false
     @Published var error: String?
@@ -237,18 +239,48 @@ class ClaimFilesViewModel: ObservableObject {
         }
     }
 
-    struct ClaimFilesViewOptions: OptionSet {
-        let rawValue: UInt
+    public struct ClaimFilesViewOptions: OptionSet, Sendable {
+        public let rawValue: UInt
 
-        static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
-        static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
-        static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
+        public init(
+            rawValue: UInt
+        ) {
+            self.rawValue = rawValue
+        }
+
+        static public let add = ClaimFilesViewOptions(rawValue: 1 << 0)
+        static public let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+        static public let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
 
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {
         let nav = UIApplication.shared.getTopViewControllerNavigation()
         nav?.setNavigationBarHidden(hidden, animated: true)
+    }
+}
+public struct FileUrlModel: Identifiable, Equatable {
+    public var id: String?
+    public var type: FileUrlModelType
+
+    public init(
+        type: FileUrlModelType
+    ) {
+        self.type = type
+    }
+
+    public enum FileUrlModelType: Codable, Equatable {
+        case url(url: URL, mimeType: MimeType)
+        case data(data: Data, mimeType: MimeType)
+
+        public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
+            switch self {
+            case let .url(url, mimeType):
+                return .url(url: url, mimeType: mimeType)
+            case let .data(data, mimeType):
+                return .data(data: data, mimeType: mimeType)
+            }
+        }
     }
 }
 
@@ -308,8 +340,8 @@ class ClaimFilesViewModel: ObservableObject {
     }
 }
 @MainActor
-struct FilePicker {
-    static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
+public struct FilePicker {
+    public static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
         let alert = UIAlertController(
             title: nil,
             message: nil,
@@ -354,7 +386,7 @@ struct FilePicker {
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
-    enum SelectedFileInputType {
+    public enum SelectedFileInputType {
         case camera
         case imagePicker
         case filePicker

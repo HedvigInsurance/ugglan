@@ -65,33 +65,4 @@ final class ContractsTests: XCTestCase {
         assert(respondedContracts.pendingContracts == contractsStack.pendingContracts)
         assert(respondedContracts.terminatedContracts == contractsStack.terminatedContracts)
     }
-
-    func testGetCrossSellSuccess() async {
-        let crossSell: [CrossSell] = [
-            .init(
-                title: "car",
-                description: "description",
-                imageURL: URL(string: "url")!,
-                blurHash: "",
-                typeOfContract: "",
-                type: .car
-            ),
-            .init(
-                title: "pet",
-                description: "description",
-                imageURL: URL(string: "url")!,
-                blurHash: "",
-                typeOfContract: "",
-                type: .pet
-            ),
-        ]
-
-        let mockService = MockData.createMockContractsService(
-            fetchCrossSell: { crossSell }
-        )
-        self.sut = mockService
-
-        let respondedCrossSell = try! await mockService.fetchCrossSell()
-        assert(respondedCrossSell == crossSell)
-    }
 }

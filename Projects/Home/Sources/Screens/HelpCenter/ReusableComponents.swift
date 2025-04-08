@@ -16,7 +16,6 @@ struct HelpCenterPill: View {
         self.color = color
     }
 
-    @hColorBuilder
     var body: some View {
         hPill(text: title, color: color)
             .hFieldSize(.small)
@@ -94,10 +93,9 @@ struct QuestionsItems: View {
                         log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
                         router.push(item)
                     }
-                    .hWithoutHorizontalPadding
-                    .hWithoutDividerPadding
+                    .hWithoutHorizontalPadding([.row, .divider])
                 }
-                .hSectionWithoutHorizontalPadding
+                .hWithoutHorizontalPadding([.section])
                 .sectionContainerStyle(.transparent)
                 .padding(.leading, 2)
             }
@@ -185,7 +183,7 @@ struct QuickActionView: View {
                 onQuickAction()
             }
         }
-        .hSectionWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.section])
         .sectionContainerStyle(.opaque)
     }
 }

@@ -6,7 +6,6 @@ import hGraphQL
 
 public struct ForeverView: View {
     @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
-    @StateObject var foreverVm = ForeverViewModel()
     @State var scrollTo: Int = -1
     @State var spacing: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -25,15 +24,12 @@ public struct ForeverView: View {
 
     public var body: some View {
         successView
-            .loading($foreverVm.viewState)
+            .loading($foreverNavigationVm.viewState)
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
                         Task {
-                            let data = try await foreverVm.fetchForeverData()
-                            if let data {
-                                foreverNavigationVm.foreverData = data
-                            }
+                            try await foreverNavigationVm.fetchForeverData()
                         }
                     }),
                     dismissButton: nil
@@ -41,10 +37,7 @@ public struct ForeverView: View {
             )
             .onAppear {
                 Task {
-                    let data = try await foreverVm.fetchForeverData()
-                    if let data {
-                        foreverNavigationVm.foreverData = data
-                    }
+                    try await foreverNavigationVm.fetchForeverData()
                 }
             }
     }
@@ -62,12 +55,10 @@ public struct ForeverView: View {
                         GeometryReader(content: { proxy in
                             Color.clear
                                 .onAppear {
-                                    print(proxy.size)
-                                    headerHeight = proxy.size.height
+                                    headerHeight = proxy.size.height.rounded()
                                 }
                                 .onChange(of: proxy.size) { size in
-                                    print(proxy.size)
-                                    headerHeight = size.height
+                                    headerHeight = size.height.rounded()
                                 }
                         })
                     )
@@ -77,12 +68,10 @@ public struct ForeverView: View {
                             GeometryReader(content: { proxy in
                                 Color.clear
                                     .onAppear {
-                                        print(proxy.size)
-                                        discountCodeHeight = proxy.size.height
+                                        discountCodeHeight = proxy.size.height.rounded()
                                     }
-                                    .onChange(of: proxy.size) { size in
-                                        print(proxy.size)
-                                        discountCodeHeight = size.height
+                                    .onChange(of: proxy.size.height.rounded()) { size in
+                                        discountCodeHeight = size
                                     }
                             })
                         )
@@ -115,63 +104,24 @@ public struct ForeverView: View {
         }
         .onPullToRefresh {
             Task { @MainActor in
-                let data = try await foreverVm.fetchForeverData()
-                if let data {
-                    foreverNavigationVm.foreverData = data
-                }
+                try await foreverNavigationVm.fetchForeverData()
             }
         }
         .background(
             GeometryReader(content: { proxy in
                 Color.clear
                     .onAppear {
-                        print(proxy.size)
                         totalHeight = proxy.size.height
                     }
                     .onChange(of: proxy.size) { size in
-                        print(proxy.size)
                         totalHeight = size.height
                     }
             })
         )
-        .onAppear {
-            Task {
-                let data = try await foreverVm.fetchForeverData()
-                if let data {
-                    foreverNavigationVm.foreverData = data
-                }
-            }
-        }
     }
 
     private func recalculateHeight() {
         spacing = max(totalHeight - discountCodeHeight - headerHeight, 0)
-    }
-}
-
-@MainActor
-public class ForeverViewModel: ObservableObject {
-    @Inject var foreverService: ForeverClient
-    @Published var viewState: ProcessingState = .loading
-
-    func fetchForeverData() async throws -> ForeverData? {
-        withAnimation {
-            viewState = .loading
-        }
-
-        do {
-            let data = try await self.foreverService.getMemberReferralInformation()
-            withAnimation {
-                viewState = .success
-            }
-            return data
-        } catch let exception {
-            withAnimation {
-                viewState = .error(errorMessage: exception.localizedDescription)
-            }
-        }
-
-        return nil
     }
 }
 
@@ -182,6 +132,7 @@ struct ForeverView_Previews: PreviewProvider {
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
+            .environmentObject(ForeverNavigationViewModel())
     }
 }
 

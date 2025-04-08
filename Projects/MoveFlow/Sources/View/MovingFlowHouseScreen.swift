@@ -35,7 +35,7 @@ struct MovingFlowHouseScreen: View {
                 }
                 .hFieldSize(.medium)
                 .disabled(houseInformationInputvm.viewState == .loading)
-                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                if let days = movingFlowNavigationVm.selectedHomeAddress?.oldAddressCoverageDurationDays {
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                     }
@@ -200,13 +200,14 @@ struct MovingFlowHouseScreen: View {
     func continuePressed() {
         if houseInformationInputvm.isInputValid() {
             Task {
-                if let movingFlowData = await houseInformationInputvm.requestMoveIntent(
-                    intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
-                    addressInputModel: movingFlowNavigationVm.addressInputModel
+                if let requestVm = await houseInformationInputvm.requestMoveIntent(
+                    intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
+                    addressInputModel: movingFlowNavigationVm.addressInputModel,
+                    selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                 ) {
-                    movingFlowNavigationVm.movingFlowVm = movingFlowData
+                    movingFlowNavigationVm.moveQuotesModel = requestVm
 
-                    if let changeTierModel = movingFlowData.changeTierModel {
+                    if let changeTierModel = requestVm.changeTierModel {
                         router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                     } else {
                         router.push(MovingFlowRouterActions.confirm)
@@ -220,7 +221,10 @@ struct MovingFlowHouseScreen: View {
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
+        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
+            .environmentObject(MovingFlowNavigationViewModel())
     }
 }
 
@@ -264,17 +268,23 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
     init() {}
 
     @MainActor
-    func requestMoveIntent(intentId: String, addressInputModel: AddressInputModel) async -> MovingFlowModel? {
+    func requestMoveIntent(
+        intentId: String,
+        addressInputModel: AddressInputModel,
+        selectedAddressId: String
+    ) async -> MoveQuotesModel? {
         withAnimation {
             self.viewState = .loading
         }
 
         do {
-            let movingFlowData = try await service.requestMoveIntent(
+            let input = RequestMoveIntentInput(
                 intentId: intentId,
                 addressInputModel: addressInputModel,
-                houseInformationInputModel: self
+                houseInformationInputModel: self,
+                selectedAddressId: selectedAddressId
             )
+            let movingFlowData = try await service.requestMoveIntent(input: input)
 
             withAnimation {
                 self.viewState = .success

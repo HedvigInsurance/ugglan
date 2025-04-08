@@ -53,6 +53,7 @@ public struct ToastBarView: View {
                 Image(uiImage: toastModel.icon ?? toastModel.type.image)
                     .resizable()
                     .foregroundColor(iconColor)
+                    .accessibilityHidden(true)
                     .frame(width: 20, height: 20)
                 hText(toastModel.text, style: .label)
                     .foregroundColor(toastModel.type.textColor)
@@ -74,6 +75,7 @@ public struct ToastBarView: View {
             .modifier(NotificationStyle(type: toastModel.type))
         }
         .sectionContainerStyle(.transparent)
+        .accessibilityLabel(L10n.voiceoverNotificationAlert + "\n" + toastModel.text)
     }
 
     @hColorBuilder

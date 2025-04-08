@@ -296,13 +296,13 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     ]
                 ),
                 .init(
-                    title: "Long long long long long title",
+                    title: "Your belongings in your home",
                     description: "description",
                     colorCode: nil,
                     cells: [
                         .init(isCovered: false, coverageText: ""),
                         .init(isCovered: false, coverageText: ""),
-                        .init(isCovered: true, coverageText: ""),
+                        .init(isCovered: true, coverageText: "3 000 000 kr"),
                     ]
                 ),
 

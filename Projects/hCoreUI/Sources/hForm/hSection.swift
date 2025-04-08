@@ -270,54 +270,26 @@ extension View {
     }
 }
 
-private struct EnvironmentHEmbeddedHeader: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hEmbeddedHeader: Bool {
-        get { self[EnvironmentHEmbeddedHeader.self] }
-        set { self[EnvironmentHEmbeddedHeader.self] = newValue }
-    }
-}
-
-extension View {
-    public var hEmbeddedHeader: some View {
-        self.environment(\.hEmbeddedHeader, true)
-    }
-}
-
-private struct EnvironmentHWithoutSectionHorizontalPadding: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutSectionHorizontalPadding: Bool {
-        get { self[EnvironmentHWithoutSectionHorizontalPadding.self] }
-        set { self[EnvironmentHWithoutSectionHorizontalPadding.self] = newValue }
-    }
-}
-
-extension View {
-    public var hSectionWithoutHorizontalPadding: some View {
-        self.environment(\.hWithoutSectionHorizontalPadding, true)
-    }
+public enum HorizontalPadding: Sendable {
+    case section
+    case row
+    case divider
 }
 
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
-    static let defaultValue = false
+    static let defaultValue: [HorizontalPadding] = []
 }
 
 extension EnvironmentValues {
-    public var hWithoutHorizontalPadding: Bool {
+    public var hWithoutHorizontalPadding: [HorizontalPadding] {
         get { self[EnvironmentHWithoutHorizontalPadding.self] }
         set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
     }
 }
 
 extension View {
-    public var hWithoutHorizontalPadding: some View {
-        self.environment(\.hWithoutHorizontalPadding, true)
+    public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
+        self.environment(\.hWithoutHorizontalPadding, attributes)
     }
 }
 
@@ -350,114 +322,124 @@ struct hSectionContainer<Content: View>: View {
     }
 }
 
-public struct hSection<Header: View, Content: View, Footer: View>: View {
+public struct hSection<Header: View, Content: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.hEmbeddedHeader) var embeddedHeader
-    @Environment(\.hWithoutSectionHorizontalPadding) var hSectionWithoutHorizontalPadding
+    @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
     @Environment(\.hFieldSize) var fieldSize
     var header: Header?
     var content: Content
-    var footer: Footer?
 
     public init(
         header: Header? = nil,
-        footer: Footer? = nil,
         @RowViewBuilder _ builder: @escaping () -> Content
     ) {
         self.header = header
-        self.footer = footer
         self.content = builder()
     }
 
     init(
         header: Header? = nil,
-        content: Content,
-        footer: Footer? = nil
+        content: Content
     ) {
         self.header = header
-        self.footer = footer
         self.content = content
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if header != nil && !embeddedHeader {
-                VStack(alignment: .leading) {
-                    header
-                        .environment(\.defaultHTextStyle, .body1)
-                        .accessibilityAddTraits(.isHeader)
-                }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .padding(.bottom, .padding8)
+            if header != nil {
+                header
+                    .environment(\.defaultHTextStyle, .body1)
+                    .accessibilityAddTraits(.isHeader)
+                    .foregroundColor(hTextColor.Opaque.primary)
             }
             hSectionContainer {
-                if header != nil && embeddedHeader {
-                    header
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, .padding16)
-                        .padding(.top, .padding12)
-                        .padding(.bottom, -8)
-                }
                 content
-            }
-            if footer != nil {
-                VStack(alignment: .leading) {
-                    footer
-                        .environment(\.defaultHTextStyle, .label)
-                }
-                .foregroundColor(hTextColor.Opaque.secondary)
-                .padding(.horizontal, 15)
-                .padding(.top, .padding10)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(
             .horizontal,
-            hSectionWithoutHorizontalPadding
+            hWithoutHorizontalPadding.contains(.section)
                 ? 0 : (horizontalSizeClass == .regular ? .padding60 : fieldSize.horizontalPadding)
         )
     }
 
-    public func withHeader<HeaderView: View>(
-        @ViewBuilder _ builder: @escaping () -> HeaderView
-    ) -> hSection<HeaderView, Content, Footer> {
-        return hSection<HeaderView, Content, Footer>(header: builder(), content: content, footer: footer)
+    public func withHeader(
+        title: String,
+        infoButtonDescription: String? = nil,
+        withoutBottomPadding: Bool = false,
+        extraView: (view: AnyView, alignment: VerticalAlignment)? = nil
+    ) -> hSection<HeaderView<AnyView>, Content> {
+        hSection<HeaderView, Content>(
+            header: HeaderView(
+                title: title,
+                infoButtonDescription: infoButtonDescription,
+                withoutBottomPadding: withoutBottomPadding,
+                extraView: extraView
+            ),
+            content: content
+        )
     }
 
-    public func withFooter<FooterView: View>(
-        @ViewBuilder _ builder: @escaping () -> FooterView
-    ) -> hSection<Header, Content, FooterView> {
-        return hSection<Header, Content, FooterView>(header: header, content: content, footer: builder())
+    public struct HeaderView<ExtraView: View>: View {
+        public typealias HeaderExtraView = (view: ExtraView, alignment: VerticalAlignment)
+        let title: String
+        let infoButtonDescription: String?
+        let withInfoButton: Bool
+        let withoutBottomPadding: Bool
+        let extraView: HeaderExtraView?
+
+        init(
+            title: String,
+            infoButtonDescription: String?,
+            withoutBottomPadding: Bool,
+            extraView: HeaderExtraView? = nil
+        ) {
+            self.title = title
+            self.infoButtonDescription = infoButtonDescription
+            self.withoutBottomPadding = withoutBottomPadding
+            self.extraView = extraView
+            self.withInfoButton = infoButtonDescription != nil
+        }
+
+        public var body: some View {
+            VStack(alignment: .leading, spacing: .padding16) {
+                HStack {
+                    if let extraView = extraView, extraView.alignment == .top {
+                        extraView.view
+                    }
+
+                    hText(title)
+                    if withInfoButton, let infoButtonDescription {
+                        Spacer()
+                        InfoViewHolder(
+                            title: title,
+                            description: infoButtonDescription
+                        )
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityHint(title)
+                    }
+                }
+
+                if let extraView = extraView, extraView.alignment == .bottom {
+                    extraView.view
+                }
+            }
+            .padding(.bottom, withoutBottomPadding ? -8 : .padding8)
+        }
     }
 }
 
 extension hSection where Header == EmptyView {
     public init(
-        footer: Footer? = nil,
         @RowViewBuilder _ builder: @escaping () -> Content
     ) {
-        self.init(header: nil, footer: footer, builder)
+        self.init(header: nil, builder)
     }
 }
 
-extension hSection where Footer == EmptyView {
-    public init(
-        header: Header? = nil,
-        @RowViewBuilder _ builder: @escaping () -> Content
-    ) {
-        self.init(header: header, footer: nil, builder)
-    }
-}
-
-extension hSection where Header == EmptyView, Footer == EmptyView {
-    public init(
-        @RowViewBuilder _ builder: @escaping () -> Content
-    ) {
-        self.init(header: nil, footer: nil, builder)
-    }
-}
-
-extension hSection where Content == AnyView, Header == EmptyView, Footer == EmptyView {
+extension hSection where Content == AnyView, Header == EmptyView {
     struct IdentifiableContent: Identifiable {
         var id: Int
         var position: hRowPosition

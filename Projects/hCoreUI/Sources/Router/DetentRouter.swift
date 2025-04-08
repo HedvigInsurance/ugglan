@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -112,6 +113,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
+                presentationViewModel.style = style
                 let vcToPresent: UIViewController? = {
                     if options.contains(.alwaysOpenOnTop) {
                         let vc = UIApplication.shared.getTopViewController()
@@ -155,9 +157,51 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     }
 }
 
+@MainActor
 class PresentationViewModel: ObservableObject {
     weak var rootVC: UIViewController?
-    weak var presentingVC: UIViewController?
+    var style: [Detent] = []
+    weak var presentingVC: UIViewController? {
+        didSet {
+            if style.contains(.height) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                    let allScrollViewDescendants = self?.presentingVC?.view.allDescendants(ofType: UIScrollView.self)
+
+                    if let scrollView = allScrollViewDescendants?
+                        .first(where: { _ in
+                            true
+                        })
+                    {
+                        self?.formContentSizeChanged =
+                            scrollView
+                            .publisher(for: \.contentSize)
+                            .map {
+                                $0.height.rounded()
+                            }
+                            .removeDuplicates()
+                            .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
+                            .sink(receiveValue: { value in
+                                guard let self else { return }
+                                if #available(iOS 16.0, *) {
+                                    self.presentingVC?.sheetPresentationController?
+                                        .animateChanges {
+                                            self.presentingVC?.sheetPresentationController?
+                                                .invalidateDetents()
+                                        }
+                                } else {
+                                    self.presentingVC?.sheetPresentationController?
+                                        .animateChanges {
+
+                                        }
+                                }
+                            })
+                    }
+                }
+            }
+        }
+    }
+    private var formContentSizeChanged: AnyCancellable?
+
 }
 
 @MainActor

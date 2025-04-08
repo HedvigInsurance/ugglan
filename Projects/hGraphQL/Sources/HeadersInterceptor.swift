@@ -4,6 +4,7 @@ import Foundation
 public enum AuthError: Error {
     case refreshTokenExpired
     case refreshFailed
+    case networkIssue
 }
 
 class HeadersInterceptor: @preconcurrency ApolloInterceptor {

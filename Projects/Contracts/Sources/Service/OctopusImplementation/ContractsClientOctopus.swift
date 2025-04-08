@@ -47,14 +47,6 @@ public class FetchContractsClientOctopus: FetchContractsClient {
         )
     }
 
-    public func getCrossSell() async throws -> [CrossSell] {
-        let query = OctopusGraphQL.CrossSellsQuery()
-        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        return crossSells.currentMember.fragments.crossSellFragment.crossSells.compactMap({
-            CrossSell($0)
-        })
-    }
-
     public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(flow: .case(source.getSource))
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)

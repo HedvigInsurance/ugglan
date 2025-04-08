@@ -136,6 +136,7 @@ public struct EditCoInsuredNavigation: View {
         ) { selectCoInsured in
             openCoInsuredSelectScreen(contractId: selectCoInsured.id)
                 .environmentObject(editCoInsuredNavigationVm)
+                .embededInNavigation(tracking: EditCoInsuredDetentType.selectCoInsured)
         }
         .modally(presented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
             openProgress(showSuccess: true)
@@ -200,18 +201,6 @@ public struct EditCoInsuredNavigation: View {
         .environmentObject(editCoInsuredViewModel)
     }
 
-    func openSuccessScreen(title: String) -> some View {
-        hForm {
-            SuccessScreen(title: title)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        editCoInsuredNavigationVm.coInsuredInputModel = nil
-                    }
-                }
-        }
-        .hFormContentPosition(.compact)
-    }
-
     func openRemoveCoInsuredScreen() -> some View {
         return RemoveCoInsuredScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel
@@ -223,19 +212,6 @@ public struct EditCoInsuredNavigation: View {
         openCoInsuredInput(
             coInsuredModelEdit: coInsuredInputModel
         )
-        .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
-            var title: String {
-                switch actionType {
-                case .add:
-                    return L10n.contractCoinsuredAdded
-                case .delete:
-                    return L10n.contractCoinsuredRemoved
-                default:
-                    return ""
-                }
-            }
-            openSuccessScreen(title: title)
-        }
     }
 }
 
@@ -258,44 +234,18 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 
     func openSelectInsurance() -> some View {
-        ItemPickerScreen<InsuredPeopleConfig>(
-            config: .init(
-                items: {
-                    return configs.compactMap({
-                        (object: $0, displayName: .init(title: $0.displayName))
-                    })
-                }(),
-                preSelectedItems: {
-                    if let first = configs.first {
-                        return [first]
-                    }
-                    return []
-                },
-                onSelected: { [weak editCoInsuredViewModel] selectedConfigs in
-                    if let selectedConfig = selectedConfigs.first {
-                        if let object = selectedConfig.0 {
-                            editCoInsuredViewModel?.editCoInsuredModelDetent = nil
-                            editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                                return [object]
-                            })
-                            self.editCoInsuredNavigationVm.coInsuredViewModel.initializeCoInsured(with: object)
-                        }
-                    }
-                },
-                onCancel: { [weak router] in
-                    router?.dismiss()
-                },
-                singleSelect: true,
-                hButtonText: L10n.generalContinueButton
-            )
+        CoInsuredSelectInsuranceScreen(
+            configs: configs,
+            editCoInsuredNavigationVm: editCoInsuredNavigationVm,
+            editCoInsuredViewModel: editCoInsuredViewModel,
+            router: router
         )
-        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 }
 
 extension EditCoInsuredSelectInsuranceNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
+        return .init(describing: CoInsuredSelectInsuranceScreen.self)
     }
 }
 
