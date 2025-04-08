@@ -223,22 +223,16 @@ struct LoggedInNavigation: View {
     }
 
     var paymentsTab: some View {
-        PaymentsNavigation(paymentsNavigationVm: vm.paymentsNavigationVm) { redirectType in
-            switch redirectType {
-            case .forever:
-                ForeverNavigation(useOwnNavigation: false)
-                    .hideToolbar()
+        PaymentsNavigation(paymentsNavigationVm: vm.paymentsNavigationVm)
+            .environmentObject(paymentsRouter)
+            .tabItem {
+                Image(
+                    uiImage: vm.selectedTab == 3
+                        ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
+                )
+                hText(L10n.tabPaymentsTitle)
             }
-        }
-        .environmentObject(paymentsRouter)
-        .tabItem {
-            Image(
-                uiImage: vm.selectedTab == 3
-                    ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
-            )
-            hText(L10n.tabPaymentsTitle)
-        }
-        .tag(3)
+            .tag(3)
     }
 
     var profileTab: some View {

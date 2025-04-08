@@ -1,3 +1,4 @@
+import Campaign
 import Contracts
 import Foundation
 import hCore
@@ -90,36 +91,6 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
             return list
         }
     }
-}
-
-public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id = UUID().uuidString
-    let code: String
-    let amount: MonetaryAmount?
-    let title: String?
-    let listOfAffectedInsurances: [AffectedInsurance]
-    let validUntil: ServerBasedDate?
-    let canBeDeleted: Bool
-    let discountId: String
-
-    @MainActor
-    var isValid: Bool {
-        if let validUntil = validUntil?.localDateToDate {
-            let components = Calendar.current.dateComponents(
-                [.day],
-                from: Date(),
-                to: validUntil
-            )
-            let isValid = components.day ?? 0 >= 0
-            return isValid
-        }
-        return true
-    }
-}
-
-public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id: String
-    let displayName: String
 }
 
 extension PaymentData: TrackingViewNameProtocol {

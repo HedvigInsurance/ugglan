@@ -1,3 +1,4 @@
+import Campaign
 import PresentableStore
 import SwiftUI
 import hCore
@@ -57,6 +58,7 @@ struct PaymentDetailsView: View {
         }
 
     }
+
     private func getPaymentElements() -> [(id: String, view: AnyView)] {
         var list: [(id: String, view: AnyView)] = []
 
