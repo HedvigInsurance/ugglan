@@ -1,6 +1,5 @@
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct PriceField: View {
     let newPremium: MonetaryAmount?

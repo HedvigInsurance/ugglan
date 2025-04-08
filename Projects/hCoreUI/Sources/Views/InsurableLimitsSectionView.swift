@@ -1,6 +1,5 @@
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct InsurableLimitsSectionView: View {
     var limits: [InsurableLimits]

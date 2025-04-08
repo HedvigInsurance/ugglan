@@ -11,7 +11,6 @@ import Profile
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 extension AppDelegate {
     func setupAnalyticsAndTracking() {

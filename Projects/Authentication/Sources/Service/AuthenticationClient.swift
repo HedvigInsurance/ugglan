@@ -1,7 +1,6 @@
 import Foundation
 import authlib
 import hCore
-import hGraphQL
 
 @MainActor
 public protocol AuthenticationClient {
@@ -12,4 +11,10 @@ public protocol AuthenticationClient {
     func logout() async throws
     func exchange(code: String) async throws
     func exchange(refreshToken: String) async throws
+}
+
+public enum ObserveStatusResponseType {
+    case started(code: String)
+    case pending(qrCode: String?)
+    case completed
 }

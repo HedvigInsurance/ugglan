@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 @MainActor
 extension hGraphQL.GraphQLError: @retroactive @preconcurrency LocalizedError {
