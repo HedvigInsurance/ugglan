@@ -1,7 +1,6 @@
 import Foundation
 import Logger
 import hCore
-import hGraphQL
 
 public struct CrossSellInfo: Identifiable, Equatable, Sendable {
     public static func == (lhs: CrossSellInfo, rhs: CrossSellInfo) -> Bool {
