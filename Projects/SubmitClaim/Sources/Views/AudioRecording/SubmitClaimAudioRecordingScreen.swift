@@ -4,7 +4,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct SubmitClaimAudioRecordingScreen: View {
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel

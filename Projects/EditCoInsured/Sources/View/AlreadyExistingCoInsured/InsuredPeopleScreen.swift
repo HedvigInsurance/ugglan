@@ -2,7 +2,6 @@ import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct InsuredPeopleScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel

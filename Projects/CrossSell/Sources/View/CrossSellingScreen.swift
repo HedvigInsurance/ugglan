@@ -3,7 +3,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct CrossSellingScreen: View {
     @EnvironmentObject private var router: Router

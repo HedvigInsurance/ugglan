@@ -1,5 +1,5 @@
 import SwiftUI
-import hGraphQL
+import hCore
 
 public struct InsuranceTermView: View {
     let documents: [hPDFDocument]

@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ChangeCodeView: View {
     @ObservedObject private var vm: ChangeCodeViewModel

@@ -2,7 +2,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct UpcomingChangesScreen: View {
     let updateDate: String

@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
-import hGraphQL
 
 public class InfoViewNavigationViewModel: ObservableObject {
     @Published var isInfoViewPresented: InfoViewNavigationModel?

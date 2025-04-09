@@ -5,7 +5,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct PaymentHistoryView: View {
     @EnvironmentObject var router: Router

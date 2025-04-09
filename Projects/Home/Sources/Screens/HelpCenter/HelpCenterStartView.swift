@@ -5,7 +5,6 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel()

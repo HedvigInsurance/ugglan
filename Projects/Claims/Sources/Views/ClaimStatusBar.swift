@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ClaimStatusBar: View {
     let status: ClaimModel.ClaimStatus

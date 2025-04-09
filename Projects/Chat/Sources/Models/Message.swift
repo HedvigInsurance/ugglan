@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public struct Message: Codable, Identifiable, Hashable, Sendable {
     public static func == (lhs: Message, rhs: Message) -> Bool {
@@ -14,7 +13,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
     }
     let sender: MessageSender
     public let sentAt: Date
-    let type: MessageType
+    public let type: MessageType
     var status: MessageStatus
 
     init(
@@ -33,7 +32,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         self.status = status
     }
 
-    init(type: MessageType) {
+    public init(type: MessageType) {
         self.localId = UUID().uuidString
         self.remoteId = nil
         self.sender = .member
@@ -42,7 +41,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         self.status = .draft
     }
 
-    init(localId: String, remoteId: String, type: MessageType, date: Date) {
+    public init(localId: String, remoteId: String, type: MessageType, date: Date) {
         self.localId = localId
         self.remoteId = remoteId
         self.sender = .member
@@ -51,7 +50,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         self.status = .sent
     }
 
-    init(remoteId: String, type: MessageType, sender: MessageSender, date: Date) {
+    public init(remoteId: String, type: MessageType, sender: MessageSender, date: Date) {
         self.localId = nil
         self.remoteId = remoteId
         self.sender = sender
@@ -88,7 +87,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
 
 }
 
-enum MessageSender: Codable, Hashable, Sendable {
+public enum MessageSender: Codable, Hashable, Sendable {
     case member
     case hedvig
 }
@@ -108,7 +107,7 @@ enum MessageStatus: Codable, Hashable, Sendable {
         }
     }
 }
-enum MessageType: Codable, Hashable, Sendable {
+public enum MessageType: Codable, Hashable, Sendable {
     case text(text: String)
     case file(file: File)
     case crossSell(url: URL)
@@ -118,10 +117,16 @@ enum MessageType: Codable, Hashable, Sendable {
     case unknown
 }
 
-struct ActionMessage: Codable, Hashable {
+public struct ActionMessage: Codable, Hashable, Sendable {
     let url: URL
     let text: String?
     let buttonTitle: String
+
+    public init(url: URL, text: String?, buttonTitle: String) {
+        self.url = url
+        self.text = text
+        self.buttonTitle = buttonTitle
+    }
 }
 
 extension Sequence where Iterator.Element == Message {

@@ -2,7 +2,6 @@ import Combine
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
