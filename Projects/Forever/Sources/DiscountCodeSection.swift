@@ -8,11 +8,9 @@ struct DiscountCodeSectionView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            hSection {
-                hFloatingField(
-                    value: foreverNavigationVm.foreverData?.discountCode ?? "",
-                    placeholder: L10n.ReferralsEmpty.Code.headline
-                ) {
+            DiscountCodeField(
+                discountCode: foreverNavigationVm.foreverData?.discountCode ?? "",
+                onTap: {
                     UIPasteboard.general.string = foreverNavigationVm.foreverData?.discountCode
                     Toasts.shared.displayToastBar(
                         toast: .init(
@@ -22,39 +20,57 @@ struct DiscountCodeSectionView: View {
                         )
                     )
                 }
-                .hFieldTrailingView {
-                    Image(uiImage: hCoreUIAssets.copy.image)
-                        .accessibilityHidden(true)
-                }
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityValue(L10n.voiceOverCopyCode)
-            .accessibilityAddTraits(.isButton)
-            hSection {
-                VStack(spacing: .padding8) {
-                    if let code = foreverNavigationVm.foreverData?.discountCode {
-                        ModalPresentationSourceWrapper(
-                            content: {
-                                hButton.LargeButton(type: .primary) {
-                                    foreverNavigationVm.shareCode(code: code)
-                                } content: {
-                                    hText(L10n.ReferralsEmpty.shareCodeButton)
-                                }
-                            },
-                            vm: foreverNavigationVm.modalPresentationSourceWrapperViewModel
-                        )
+            )
+            accessibilityConfiguration()
 
-                        hButton.LargeButton(type: .ghost) {
-                            foreverNavigationVm.isChangeCodePresented = true
-                        } content: {
-                            hText(L10n.ReferralsChange.changeCode)
-                        }
-                    }
-                }
+            if let code = foreverNavigationVm.foreverData?.discountCode {
+                ActionButtons(
+                    code: code,
+                    onShare: { foreverNavigationVm.shareCode(code: code) },
+                    onChange: { foreverNavigationVm.isChangeCodePresented = true }
+                )
             }
-            .padding(.vertical, .padding16)
         }
         .sectionContainerStyle(.transparent)
+    }
+}
+
+private struct DiscountCodeField: View {
+    let discountCode: String
+    let onTap: () -> Void
+
+    var body: some View {
+        hSection {
+            hFloatingField(
+                value: discountCode,
+                placeholder: L10n.ReferralsEmpty.Code.headline,
+                onTap: onTap
+            )
+            .hFieldTrailingView {
+                Image(uiImage: hCoreUIAssets.copy.image)
+                    .accessibilityHidden(true)
+            }
+        }
+    }
+}
+
+private struct ActionButtons: View {
+    let code: String
+    let onShare: () -> Void
+    let onChange: () -> Void
+
+    var body: some View {
+        hSection {
+            VStack(spacing: .padding8) {
+                hButton.LargeButton(type: .primary, action: onShare) {
+                    hText(L10n.ReferralsEmpty.shareCodeButton)
+                }
+                hButton.LargeButton(type: .ghost, action: onChange) {
+                    hText(L10n.ReferralsChange.changeCode)
+                }
+            }
+        }
+        .padding(.vertical, .padding16)
     }
 }
 
@@ -66,5 +82,13 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
             .environmentObject(ForeverNavigationViewModel())
+    }
+}
+
+extension View {
+    fileprivate func accessibilityConfiguration() -> some View {
+        self.accessibilityElement(children: .combine)
+            .accessibilityValue(L10n.voiceOverCopyCode)
+            .accessibilityAddTraits(.isButton)
     }
 }

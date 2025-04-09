@@ -65,5 +65,6 @@ class ChangeCodeViewModel: ObservableObject {
 struct ChangeCodeView_Previews: PreviewProvider {
     static var previews: some View {
         ChangeCodeView(foreverNavigationVm: .init())
+            .environmentObject(Router())
     }
 }
