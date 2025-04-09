@@ -1,6 +1,5 @@
 import Environment
 import Foundation
-import hGraphQL
 
 @MainActor
 public enum DeepLink: String, Codable, CaseIterable {
