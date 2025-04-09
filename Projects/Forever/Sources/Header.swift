@@ -5,49 +5,56 @@ import hCoreUI
 import hGraphQL
 
 struct HeaderView: View {
-    @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
+    @StateObject var vm: HeaderViewModel
     let didPressInfo: () -> Void
+
+    init(
+        foreverNavigationVm: ForeverNavigationViewModel,
+        didPressInfo: @escaping () -> Void
+    ) {
+        self._vm = StateObject(wrappedValue: .init(foreverData: foreverNavigationVm.foreverData))
+        self.didPressInfo = didPressInfo
+    }
 
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
-                if let monthlyDiscount = foreverNavigationVm.foreverData?.monthlyDiscount, monthlyDiscount.value == 0 {
-                    hText(monthlyDiscount.negative.formattedAmount)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .accessibilityLabel(L10n.foreverTabMonthlyDiscount + monthlyDiscount.negative.formattedAmount)
-                }
-                let data = foreverNavigationVm.foreverData
-                if let grossAmount = data?.grossAmount,
-                    let netAmount = data?.netAmount,
-                    let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral,
-                    let monthlyDiscount = data?.monthlyDiscount
-                {
-                    PieChartView(
-                        state: .init(
-                            grossAmount: grossAmount,
-                            netAmount: netAmount,
-                            monthlyDiscountPerReferral: monthlyDiscountPerReferral
-                        ),
-                        newPrice: netAmount.formattedAmount
-                    )
-                    .frame(width: 215, height: 215, alignment: .center)
-
-                    if monthlyDiscount.value > 0 {
-                        // Discount present
-                        PriceSectionView(monthlyDiscount: monthlyDiscount, didPressInfo: didPressInfo)
-                            .padding(.bottom, 65)
-                            .padding(.top, .padding8)
-                    } else {
-                        // No discount present
-                        hText(
-                            L10n.ReferralsEmpty.body(
-                                monthlyDiscountPerReferral.formattedAmount
+                if let foreverData = vm.foreverData {
+                    if vm.showMonthlyDiscount {
+                        hText(foreverData.monthlyDiscount.negative.formattedAmount)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .accessibilityLabel(
+                                L10n.foreverTabMonthlyDiscount + foreverData.monthlyDiscount.negative.formattedAmount
                             )
+                    }
+                    if vm.showPieChart {
+                        PieChartView(
+                            state: .init(
+                                grossAmount: foreverData.grossAmount,
+                                netAmount: foreverData.netAmount,
+                                monthlyDiscountPerReferral: foreverData.monthlyDiscountPerReferral
+                            ),
+                            newPrice: foreverData.netAmount.formattedAmount
                         )
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, .padding8)
+                        .frame(width: 215, height: 215, alignment: .center)
+
+                        if foreverData.monthlyDiscount.value > 0 {
+                            // Discount present
+                            PriceSectionView(monthlyDiscount: foreverData.monthlyDiscount, didPressInfo: didPressInfo)
+                                .padding(.bottom, 65)
+                                .padding(.top, .padding8)
+                        } else {
+                            // No discount present
+                            hText(
+                                L10n.ReferralsEmpty.body(
+                                    foreverData.monthlyDiscountPerReferral.formattedAmount
+                                )
+                            )
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, .padding8)
+                        }
                     }
                 }
             }
@@ -57,9 +64,40 @@ struct HeaderView: View {
         .accessibilityElement(children: .combine)
     }
 }
+
+class HeaderViewModel: ObservableObject {
+    @Published var showPieChart: Bool = false
+    let foreverData: ForeverData?
+    @Published var showMonthlyDiscount: Bool = false
+
+    public init(
+        foreverData: ForeverData?
+    ) {
+        self.foreverData = foreverData
+        setShowPieShart()
+        setShowMonthlyDiscount()
+    }
+
+    private func setShowPieShart() {
+        if let grossAmount = foreverData?.grossAmount,
+            let netAmount = foreverData?.netAmount,
+            let monthlyDiscountPerReferral = foreverData?.monthlyDiscountPerReferral,
+            let monthlyDiscount = foreverData?.monthlyDiscount
+        {
+            self.showPieChart = true
+        }
+    }
+
+    private func setShowMonthlyDiscount() {
+        if let monthlyDiscount = foreverData?.monthlyDiscount, monthlyDiscount.value == 0 {
+            self.showMonthlyDiscount = true
+        }
+    }
+}
+
 struct HeaderView_Previews: PreviewProvider {
     static var previews: some View {
-        HeaderView {}
+        HeaderView(foreverNavigationVm: ForeverNavigationViewModel()) {}
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
@@ -69,6 +107,6 @@ struct HeaderView_Previews: PreviewProvider {
 struct HeaderView_Previews2: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HeaderView {}
+        return HeaderView(foreverNavigationVm: ForeverNavigationViewModel()) {}
     }
 }

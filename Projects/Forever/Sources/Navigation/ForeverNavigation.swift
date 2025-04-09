@@ -122,6 +122,7 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
 
 #Preview {
     ForeverNavigation(useOwnNavigation: true)
+        .environmentObject(Router())
 }
 
 extension View {
