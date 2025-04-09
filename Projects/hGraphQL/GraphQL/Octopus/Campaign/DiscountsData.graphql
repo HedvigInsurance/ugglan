@@ -1,12 +1,6 @@
 query Discounts {
   currentMember {
     ...ReedemCampaignsFragment
-    redeemedCampaigns {
-        onlyApplicableToContracts {
-            exposureDisplayName
-            id
-        }
-    }
     referralInformation {
       code
       monthlyDiscountPerReferral {
@@ -32,10 +26,14 @@ fragment MemberReferralFragment2 on MemberReferral {
 
 fragment ReedemCampaignsFragment on Member {
     redeemedCampaigns {
-      code
-      description
-      type
-      id
-      expiresAt
+        code
+        description
+        type
+        id
+        expiresAt
+        onlyApplicableToContracts {
+            exposureDisplayName
+            id
+        }
     }
 }

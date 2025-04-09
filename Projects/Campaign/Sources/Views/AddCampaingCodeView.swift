@@ -4,8 +4,17 @@ import hCore
 import hCoreUI
 
 struct AddCampaignCodeView: View {
-    @StateObject var vm = AddCampaingCodeViewModel()
+    @ObservedObject private var vm: AddCampaignCodeViewModel
+    @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
     @EnvironmentObject var router: Router
+
+    init(
+        campaignNavigationVm: CampaignNavigationViewModel,
+        vm: AddCampaignCodeViewModel
+    ) {
+        self.campaignNavigationVm = campaignNavigationVm
+        self.vm = vm
+    }
 
     var body: some View {
         ZStack(alignment: .center) {
@@ -25,16 +34,21 @@ struct AddCampaignCodeView: View {
 }
 
 @MainActor
-class AddCampaingCodeViewModel: ObservableObject {
+class AddCampaignCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
+    let paymentDataDiscounts: [Discount]
     var errorMessage: String?
     @Published var codeAdded: Bool = false
     @Published var hideTitle: Bool = false
     var router: Router?
 
     var campaignsService = hCampaignService()
-    @PresentableStore var store: PaymentStore
-    init() {
+    @PresentableStore var store: CampaignStore
+    init(
+        paymentDataDiscounts: [Discount],
+        onInputChange: @escaping () -> Void
+    ) {
+        self.paymentDataDiscounts = paymentDataDiscounts
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: "",
@@ -43,8 +57,8 @@ class AddCampaingCodeViewModel: ObservableObject {
 
         inputVm.onSave = { [weak self] text in
             try await self?.campaignsService.add(code: text)
-            self?.store.send(.load)
-            self?.store.send(.fetchDiscountsData)
+            onInputChange()
+            self?.store.send(.fetchDiscountsData(paymentDataDiscounts: paymentDataDiscounts))
 
             await self?.onSuccessAdd()
 
@@ -75,6 +89,9 @@ class AddCampaingCodeViewModel: ObservableObject {
 struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
-        return AddCampaignCodeView()
+        return AddCampaignCodeView(
+            campaignNavigationVm: .init(paymentDataDiscounts: [], router: Router()),
+            vm: .init(paymentDataDiscounts: [], onInputChange: {})
+        )
     }
 }

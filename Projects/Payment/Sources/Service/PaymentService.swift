@@ -16,10 +16,6 @@ public class hPaymentService {
         return try await client.getPaymentStatusData()
     }
 
-    public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
-        log.info("hPaymentService: getPaymentDiscountsData", error: nil, attributes: nil)
-        return try await client.getPaymentDiscountsData()
-    }
     public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         log.info("hPaymentService: getPaymentHistoryData", error: nil, attributes: nil)
         return try await client.getPaymentHistoryData()

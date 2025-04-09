@@ -1,3 +1,4 @@
+import Campaign
 import PresentableStore
 import SwiftUI
 import hCore
@@ -57,6 +58,7 @@ struct PaymentDetailsView: View {
         }
 
     }
+
     private func getPaymentElements() -> [(id: String, view: AnyView)] {
         var list: [(id: String, view: AnyView)] = []
 
@@ -277,7 +279,6 @@ struct PaymentDetails_Previews: PreviewProvider {
             ],
             discounts: [
                 .init(
-                    id: "CODE",
                     code: "CODE",
                     amount: .sek(100),
                     title: "Title",
@@ -289,7 +290,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                     discountId: "CODE"
                 ),
                 .init(
-                    id: "CODE2",
                     code: "CODE2",
                     amount: .sek(99),
                     title: "Title1",
@@ -301,7 +301,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                     discountId: "CODE2"
                 ),
                 .init(
-                    id: "FRIENDS",
                     code: "MY CODE",
                     amount: .sek(30),
                     title: "3 friends invited",

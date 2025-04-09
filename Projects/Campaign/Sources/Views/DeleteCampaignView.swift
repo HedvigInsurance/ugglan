@@ -78,14 +78,22 @@ struct DeleteCampaignView: View {
 class DeleteCampaignViewModel: ObservableObject {
     let discount: Discount
     private var campaignService = hCampaignService()
-    @PresentableStore private var store: PaymentStore
+    @PresentableStore private var store: CampaignStore
+    let paymentDataDiscounts: [Discount]
     @Published var codeRemoved = false
     @Published var isLoading = false
     @Published var error: String? = nil
     var router: Router?
+    let onInputChange: () -> Void
 
-    init(discount: Discount) {
+    init(
+        discount: Discount,
+        paymentDataDiscounts: [Discount],
+        onInputChange: @escaping () -> Void
+    ) {
         self.discount = discount
+        self.paymentDataDiscounts = paymentDataDiscounts
+        self.onInputChange = onInputChange
     }
 
     func confirmRemove() {
@@ -103,8 +111,8 @@ class DeleteCampaignViewModel: ObservableObject {
         do {
             error = nil
             try await campaignService.remove(codeId: discount.discountId)
-            store.send(.load)
-            store.send(.fetchDiscountsData)
+            onInputChange()
+            store.send(.fetchDiscountsData(paymentDataDiscounts: paymentDataDiscounts))
             withAnimation {
                 codeRemoved = true
             }
@@ -133,7 +141,6 @@ struct DeleteCampaignView_Previews: PreviewProvider {
         DeleteCampaignView(
             vm: .init(
                 discount: .init(
-                    id: "CODE 2",
                     code: "CODE",
                     amount: nil,
                     title: "Title",
@@ -141,7 +148,9 @@ struct DeleteCampaignView_Previews: PreviewProvider {
                     validUntil: nil,
                     canBeDeleted: false,
                     discountId: "id"
-                )
+                ),
+                paymentDataDiscounts: [],
+                onInputChange: {}
             )
         )
     }

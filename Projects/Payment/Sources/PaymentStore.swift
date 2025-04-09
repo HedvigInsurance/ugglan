@@ -7,7 +7,6 @@ import hCore
 public struct PaymentState: StateProtocol {
     public var paymentData: PaymentData?
     public var ongoingPaymentData: [PaymentData] = []
-    var paymentDiscountsData: PaymentDiscountsData?
     public var paymentStatusData: PaymentStatusData? = nil
     var paymentHistory: [PaymentHistoryListData] = []
     var paymentConnectionID: String? = nil
@@ -21,8 +20,6 @@ public enum PaymentAction: ActionProtocol {
     case setOngoingPaymentData(data: [PaymentData])
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
-    case fetchDiscountsData
-    case setDiscountsData(data: PaymentDiscountsData)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
 }
@@ -30,7 +27,6 @@ public enum PaymentAction: ActionProtocol {
 public enum LoadingAction: LoadingProtocol {
     case getPaymentData
     case getPaymentStatus
-    case getDiscountsData
     case getHistory
 }
 
@@ -53,13 +49,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                 self.send(.setPaymentStatus(data: statusData))
             } catch {
                 self.setError(L10n.General.errorBody, for: .getPaymentStatus)
-            }
-        case .fetchDiscountsData:
-            do {
-                let data = try await self.paymentService.getPaymentDiscountsData()
-                self.send(.setDiscountsData(data: data))
-            } catch {
-                self.setError(L10n.General.errorBody, for: .getDiscountsData)
             }
         case .getHistory:
             do {
@@ -89,11 +78,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setPaymentStatus(data):
             removeLoading(for: .getPaymentStatus)
             newState.paymentStatusData = data
-        case .fetchDiscountsData:
-            setLoading(for: .getDiscountsData)
-        case let .setDiscountsData(data):
-            removeLoading(for: .getDiscountsData)
-            newState.paymentDiscountsData = data
         case .getHistory:
             setLoading(for: .getHistory)
         case let .setHistory(data):

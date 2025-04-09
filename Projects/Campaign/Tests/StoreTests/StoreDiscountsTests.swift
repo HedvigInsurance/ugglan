@@ -1,11 +1,11 @@
 import PresentableStore
 @preconcurrency import XCTest
 
-@testable import Payment
+@testable import Campaign
 
 @MainActor
 final class StoreDiscountsTests: XCTestCase {
-    weak var store: PaymentStore?
+    weak var store: CampaignStore?
 
     override func setUp() async throws {
         try await super.setUp()
@@ -18,19 +18,20 @@ final class StoreDiscountsTests: XCTestCase {
     }
 
     func testFetchDiscountsSuccess() async throws {
+
+        let discounts: [Discount] = [
+            .init(
+                code: "code",
+                amount: .init(amount: "30", currency: "SEK"),
+                title: "title",
+                listOfAffectedInsurances: [],
+                validUntil: nil,
+                canBeDeleted: true,
+                discountId: "id"
+            )
+        ]
         let discountsData: PaymentDiscountsData = .init(
-            discounts: [
-                .init(
-                    id: "id",
-                    code: "code",
-                    amount: .init(amount: "30", currency: "SEK"),
-                    title: "title",
-                    listOfAffectedInsurances: [],
-                    validUntil: nil,
-                    canBeDeleted: true,
-                    discountId: "id"
-                )
-            ],
+            discounts: discounts,
             referralsData: .init(
                 code: "code1",
                 discountPerMember: .init(amount: "10", currency: "SEK"),
@@ -41,12 +42,12 @@ final class StoreDiscountsTests: XCTestCase {
             )
         )
 
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentDiscountsData: { discountsData }
+        let mockService = MockCampaignData.createMockCampaignService(
+            fetchPaymentDiscountsData: { _ in discountsData }
         )
-        let store = PaymentStore()
+        let store = CampaignStore()
         self.store = store
-        await store.sendAsync(.fetchDiscountsData)
+        await store.sendAsync(.fetchDiscountsData(paymentDataDiscounts: discounts))
         try await Task.sleep(nanoseconds: 100_000_000)
         assert(store.loadingState[.getDiscountsData] == nil)
         assert(store.state.paymentDiscountsData == discountsData)
@@ -55,12 +56,12 @@ final class StoreDiscountsTests: XCTestCase {
     }
 
     func testFetchDiscountsFailure() async throws {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentDiscountsData: { throw PaymentError.missingDataError(message: "error") }
+        let mockService = MockCampaignData.createMockCampaignService(
+            fetchPaymentDiscountsData: { _ in throw MockCampaignError.failure }
         )
-        let store = PaymentStore()
+        let store = CampaignStore()
         self.store = store
-        await store.sendAsync(.fetchDiscountsData)
+        await store.sendAsync(.fetchDiscountsData(paymentDataDiscounts: []))
         try await Task.sleep(nanoseconds: 100_000_000)
         assert(store.loadingState[.getDiscountsData] != nil)
         assert(store.state.paymentDiscountsData == nil)

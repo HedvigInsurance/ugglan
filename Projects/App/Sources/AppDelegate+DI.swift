@@ -1,6 +1,7 @@
 import Addons
 import Apollo
 import Authentication
+import Campaign
 import ChangeTier
 import Chat
 import Claims
@@ -47,6 +48,7 @@ extension ApolloClient {
             let addonClient = AddonsClientDemo()
             let fetchClaimDetailsDemoClient = FetchClaimDetailsClientDemo()
             let crossSellClient = CrossSellClientDemo()
+            let campaignClient = hCampaignClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
             Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in fetchClaimsService })
@@ -64,10 +66,10 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
             Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsDemoClient })
             Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
-
+            Dependencies.shared.add(module: Module { () -> hCampaignClient in campaignClient })
         } else {
             let paymentService = hPaymentClientOctopus()
-            let hCampaignsService = hCampaingsClientOctopus()
+            let hCampaignsService = hCampaignsClientOctopus()
             let networkClient = NetworkClient()
             let moveFlowService = MoveFlowClientOctopus()
             let foreverService = ForeverClientOctopus()

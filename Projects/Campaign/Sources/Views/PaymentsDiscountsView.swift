@@ -7,8 +7,8 @@ import hCoreUI
 
 struct PaymentsDiscountsView: View {
     let data: PaymentDiscountsData
-    @PresentableStore var store: PaymentStore
-    @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
+    @PresentableStore var store: CampaignStore
+    @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
     @EnvironmentObject var router: Router
 
     var body: some View {
@@ -18,7 +18,7 @@ struct PaymentsDiscountsView: View {
                 if !Dependencies.featureFlags().isRedeemCampaignDisabled {
                     hSection {
                         hButton.LargeButton(type: .secondary) {
-                            paymentsNavigationVm.isAddCampaignPresented = true
+                            campaignNavigationVm.isAddCampaignPresented = true
                         } content: {
                             hText(L10n.paymentsAddCampaignCode)
                         }
@@ -100,7 +100,7 @@ struct PaymentsDiscountsView: View {
                     .init(
                         buttonTitle: L10n.paymentsInviteFriends,
                         buttonAction: {
-                            router.push(PaymentsRedirectType.forever)
+                            router.push(CampaignRouterAction.forever)
                         }
                     )
                 ]
@@ -126,7 +126,6 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
             data: .init(
                 discounts: [
                     .init(
-                        id: "id",
                         code: "code",
                         amount: .sek(100),
                         title: "title",
@@ -138,7 +137,6 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         discountId: "id"
                     ),
                     .init(
-                        id: "id2",
                         code: "code 2",
                         amount: .sek(100),
                         title: "title 2",
@@ -180,16 +178,17 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
     }
 }
 
-struct PaymentsDiscountsRootView: View {
-    @PresentableStore var store: PaymentStore
+public struct PaymentsDiscountsRootView: View {
+    @PresentableStore var store: CampaignStore
     @StateObject var vm = PaymentsDiscountsRootViewModel()
+    @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
 
-    var body: some View {
+    public var body: some View {
         successView.loading($vm.viewState)
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        store.send(.fetchDiscountsData)
+                        store.send(.fetchDiscountsData(paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts))
                     }),
                     dismissButton: nil
                 )
@@ -198,7 +197,7 @@ struct PaymentsDiscountsRootView: View {
 
     private var successView: some View {
         PresentableStoreLens(
-            PaymentStore.self,
+            CampaignStore.self,
             getter: { state in
                 state.paymentDiscountsData
             }
@@ -213,7 +212,7 @@ struct PaymentsDiscountsRootView: View {
 @MainActor
 class PaymentsDiscountsRootViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
-    @PresentableStore var store: PaymentStore
+    @PresentableStore var store: CampaignStore
     @Published var loadingCancellable: AnyCancellable?
 
     init() {
