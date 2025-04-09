@@ -6,13 +6,10 @@ import hGraphQL
 struct ChangeCodeView: View {
     @ObservedObject private var vm: ChangeCodeViewModel
     @EnvironmentObject private var router: Router
-    @ObservedObject private var foreverNavigationVm: ForeverNavigationViewModel
 
     init(
         foreverNavigationVm: ForeverNavigationViewModel
     ) {
-        self.foreverNavigationVm = foreverNavigationVm
-
         let inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: foreverNavigationVm.foreverData?.discountCode ?? "",

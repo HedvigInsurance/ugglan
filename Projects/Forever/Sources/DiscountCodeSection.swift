@@ -31,7 +31,7 @@ struct DiscountCodeSectionView: View {
             .accessibilityValue(L10n.voiceOverCopyCode)
             .accessibilityAddTraits(.isButton)
             hSection {
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     if let code = foreverNavigationVm.foreverData?.discountCode {
                         ModalPresentationSourceWrapper(
                             content: {
