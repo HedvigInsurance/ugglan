@@ -66,9 +66,9 @@ struct HeaderView: View {
 }
 
 class HeaderViewModel: ObservableObject {
-    @State var showPieChart: Bool = false
+    @Published var showPieChart: Bool = false
     let foreverData: ForeverData?
-    @State var showMonthlyDiscount: Bool = false
+    @Published var showMonthlyDiscount: Bool = false
 
     public init(
         foreverData: ForeverData?

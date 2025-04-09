@@ -21,7 +21,9 @@ struct DiscountCodeSectionView: View {
                     )
                 }
             )
-            accessibilityConfiguration()
+            .accessibilityElement(children: .combine)
+            .accessibilityValue(L10n.voiceOverCopyCode)
+            .accessibilityAddTraits(.isButton)
 
             if let code = foreverNavigationVm.foreverData?.discountCode {
                 ActionButtons(
@@ -82,13 +84,5 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
             .environmentObject(ForeverNavigationViewModel())
-    }
-}
-
-extension View {
-    fileprivate func accessibilityConfiguration() -> some View {
-        self.accessibilityElement(children: .combine)
-            .accessibilityValue(L10n.voiceOverCopyCode)
-            .accessibilityAddTraits(.isButton)
     }
 }
