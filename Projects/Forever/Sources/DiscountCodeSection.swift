@@ -28,7 +28,9 @@ struct DiscountCodeSectionView: View {
             if let code = foreverNavigationVm.foreverData?.discountCode {
                 ActionButtons(
                     code: code,
-                    onShare: { foreverNavigationVm.shareCode(code: code) },
+                    onShare: { vm in
+                        foreverNavigationVm.shareCode(code: code, modalPresentationWrapperVM: vm)
+                    },
                     onChange: { foreverNavigationVm.isChangeCodePresented = true }
                 )
             }
@@ -58,15 +60,23 @@ private struct DiscountCodeField: View {
 
 private struct ActionButtons: View {
     let code: String
-    let onShare: () -> Void
+    let onShare: (_ vm: ModalPresentationSourceWrapperViewModel) -> Void
     let onChange: () -> Void
-
+    @State var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
     var body: some View {
         hSection {
             VStack(spacing: .padding8) {
-                hButton.LargeButton(type: .primary, action: onShare) {
-                    hText(L10n.ReferralsEmpty.shareCodeButton)
-                }
+                ModalPresentationSourceWrapper(
+                    content: {
+                        hButton.LargeButton(type: .primary) {
+                            onShare(modalPresentationSourceWrapperViewModel)
+                        } content: {
+                            hText(L10n.ReferralsEmpty.shareCodeButton)
+                        }
+                    },
+                    vm: modalPresentationSourceWrapperViewModel
+                )
+
                 hButton.LargeButton(type: .ghost, action: onChange) {
                     hText(L10n.ReferralsChange.changeCode)
                 }
