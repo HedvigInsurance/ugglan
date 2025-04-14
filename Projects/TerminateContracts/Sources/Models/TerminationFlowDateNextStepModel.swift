@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public protocol FlowStepModel: Codable, Equatable, Hashable, Sendable {}
 
@@ -10,7 +9,7 @@ public struct TerminationFlowDateNextStepModel: FlowStepModel {
     let extraCoverageItem: [ExtraCoverageItem]
     var date: Date?
 
-    init(
+    public init(
         id: String,
         maxDate: String,
         minDate: String,
@@ -29,7 +28,7 @@ public struct ExtraCoverageItem: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let displayValue: String?
 
-    init(
+    public init(
         displayName: String,
         displayValue: String?
     ) {

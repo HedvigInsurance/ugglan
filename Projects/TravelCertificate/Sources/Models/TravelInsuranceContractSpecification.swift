@@ -15,7 +15,7 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
     let email: String?
     let fullName: String
 
-    init(
+    public init(
         contractId: String,
         displayName: String,
         exposureDisplayName: String?,

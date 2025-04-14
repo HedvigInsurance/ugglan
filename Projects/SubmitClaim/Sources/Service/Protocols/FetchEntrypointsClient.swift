@@ -1,6 +1,6 @@
+import Claims
 import Foundation
 import hCore
-import hGraphQL
 
 @MainActor
 class FetchEntrypointsService {

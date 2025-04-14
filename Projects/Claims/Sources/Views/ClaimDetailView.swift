@@ -7,7 +7,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ClaimDetailView: View {
     @State var showImagePicker = false

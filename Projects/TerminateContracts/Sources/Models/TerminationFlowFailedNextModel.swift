@@ -1,10 +1,9 @@
 import Foundation
-import hGraphQL
 
 public struct TerminationFlowFailedNextModel: FlowStepModel {
     let id: String
 
-    init(
+    public init(
         id: String
     ) {
         self.id = id

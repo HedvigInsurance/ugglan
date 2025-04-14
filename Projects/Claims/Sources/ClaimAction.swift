@@ -2,7 +2,6 @@ import Apollo
 import PresentableStore
 import SwiftUI
 import hCore
-import hGraphQL
 
 public indirect enum ClaimsAction: ActionProtocol, Hashable, Sendable {
     case fetchClaims

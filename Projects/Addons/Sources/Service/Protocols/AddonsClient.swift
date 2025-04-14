@@ -1,7 +1,5 @@
 import Foundation
 import hCore
-import hCoreUI
-import hGraphQL
 
 @MainActor
 public protocol AddonsClient {

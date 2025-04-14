@@ -1,6 +1,5 @@
 import Apollo
 import Foundation
-import hGraphQL
 
 @MainActor
 public class Dependencies {

@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel

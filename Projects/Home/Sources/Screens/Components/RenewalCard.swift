@@ -5,7 +5,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct RenewalCardView: View {
     @PresentableStore var store: HomeStore
@@ -156,14 +155,7 @@ struct RenewalCardView_Previews: PreviewProvider {
         return RenewalCardView()
             .onAppear {
                 let state = MemberContractState.active
-                let octopusContract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
-                    _dataDict: .init(
-                        data: [:],
-                        fulfilledFragments: .init()
-                    )
-                )
-
-                let contract = HomeContract(contract: octopusContract)
+                let contract = HomeContract(upcomingRenewal: nil, displayName: "name")
                 store.send(.setMemberContractState(state: state, contracts: [contract]))
             }
     }

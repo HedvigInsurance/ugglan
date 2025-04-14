@@ -7,7 +7,6 @@ import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore

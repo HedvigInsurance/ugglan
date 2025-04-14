@@ -2,10 +2,11 @@ import Apollo
 import DatadogInternal
 import DatadogLogs
 import DatadogRUM
+import Environment
+import Logger
 import SwiftUI
-import hGraphQL
 
-class DatadogLogger: hGraphQL.Logging {
+class DatadogLogger: Logging {
     private let datadogLogger: LoggerProtocol
 
     init(datadogLogger: LoggerProtocol) {
@@ -13,7 +14,9 @@ class DatadogLogger: hGraphQL.Logging {
     }
 
     public func debug(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        datadogLogger.debug(message, error: error, attributes: attributes)
+        if Environment.current != .production {
+            datadogLogger.debug(message, error: error, attributes: attributes)
+        }
     }
 
     /// Sends an INFO log message.
@@ -81,8 +84,8 @@ class DatadogLogger: hGraphQL.Logging {
 
     public func addError(
         error: Error,
-        type: hGraphQL.ErrorSource,
-        attributes: [hGraphQL.AttributeKey: hGraphQL.AttributeValue]?
+        type: ErrorSource,
+        attributes: [AttributeKey: AttributeValue]?
     ) {
         if let attributes = attributes {
             RUMMonitor.shared().addError(error: error, source: type.asRUMErrorSource, attributes: attributes)
@@ -92,7 +95,7 @@ class DatadogLogger: hGraphQL.Logging {
     }
 }
 
-extension hGraphQL.ErrorSource {
+extension ErrorSource {
     var asRUMErrorSource: RUMErrorSource {
         switch self {
         case .network:

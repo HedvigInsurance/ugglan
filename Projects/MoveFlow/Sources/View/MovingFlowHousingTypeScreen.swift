@@ -1,8 +1,6 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct MovingFlowHousingTypeScreen: View {
     @ObservedObject var vm = MovingFlowHousingTypeViewModel()
@@ -130,17 +128,6 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
             return L10n.changeAddressApartmentRentLabel
         case .house:
             return L10n.changeAddressVillaLabel
-        }
-    }
-
-    var asMoveApartmentSubType: GraphQLEnum<OctopusGraphQL.MoveApartmentSubType> {
-        switch self {
-        case .apartment:
-            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
-        case .rental:
-            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.rent)
-        case .house:
-            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
         }
     }
 }

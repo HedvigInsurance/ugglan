@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @main class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?

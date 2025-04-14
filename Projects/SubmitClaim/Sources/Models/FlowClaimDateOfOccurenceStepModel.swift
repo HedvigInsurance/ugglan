@@ -1,12 +1,11 @@
 import Foundation
-import hGraphQL
 
 public struct FlowClaimDateOfOccurenceStepModel: FlowClaimStepModel {
     let id: String
-    var dateOfOccurence: String?
-    let maxDate: String?
+    public internal(set) var dateOfOccurence: String?
+    public let maxDate: String?
 
-    init(
+    public init(
         id: String,
         dateOfOccurence: String? = nil,
         maxDate: String?
@@ -14,5 +13,10 @@ public struct FlowClaimDateOfOccurenceStepModel: FlowClaimStepModel {
         self.id = id
         self.dateOfOccurence = dateOfOccurence
         self.maxDate = maxDate
+    }
+
+    @MainActor
+    func getMaxDate() -> Date {
+        return maxDate?.localDateToDate ?? Date()
     }
 }

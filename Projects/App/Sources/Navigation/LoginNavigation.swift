@@ -2,13 +2,13 @@ import AVKit
 import Apollo
 import Authentication
 import Combine
+import Environment
 import Foundation
 import Market
 import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct LoginNavigation: View {
     @ObservedObject var vm: NotLoggedViewModel
