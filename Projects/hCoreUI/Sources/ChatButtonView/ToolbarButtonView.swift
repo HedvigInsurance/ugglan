@@ -21,6 +21,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case firstVet
     case chat
     case chatNotification(lastMessageTimeStamp: Date?)
+    case travelCertificate
 
     @MainActor
     var image: UIImage {
@@ -33,6 +34,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return hCoreUIAssets.inbox.image
         case .chatNotification:
             return hCoreUIAssets.inboxNotification.image
+        case .travelCertificate:
+            return hCoreUIAssets.infoOutlined.image
         }
     }
 
@@ -46,6 +49,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return L10n.CrossSell.Info.faqChatButton
         case .chatNotification(let lastMessageTimeStamp):
             return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
+        case .travelCertificate:
+            return L10n.hcQuickActionsTravelCertificate
         }
     }
 
@@ -59,6 +64,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return "chatHint"
         case .chatNotification:
             return "chatHintNotification"
+        case .travelCertificate:
+            return "travelCertHint"
         }
     }
 
@@ -72,6 +79,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return tooltipId
         case .chatNotification(let lastMessageTimeStamp):
             return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
+        case .travelCertificate:
+            return tooltipId
         }
     }
 
@@ -85,6 +94,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return L10n.HomeTab.chatHintText
         case .chatNotification:
             return L10n.Toast.newMessage
+        case .travelCertificate:
+            return L10n.TravelCertificate.notification
         }
     }
 
@@ -98,6 +109,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return true
         case .chatNotification:
             return true
+        case .travelCertificate:
+            return true
         }
     }
 
@@ -110,6 +123,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .chat:
             return .days(numberOfDays: 30)
         case .chatNotification:
+            return 30
+        case .travelCertificate:
             return 5
         }
     }
@@ -123,6 +138,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .chat:
             return 1.5
         case .chatNotification:
+            return 0.5
+        case .travelCertificate:
             return 0.5
         }
     }
@@ -159,6 +176,27 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             }
             onShow()
             return true
+        case .travelCertificate:
+            return true
+        }
+    }
+
+    var imageSize: CGFloat {
+        switch self {
+        case .travelCertificate:
+            return 24
+        default:
+            return 40
+        }
+    }
+
+    @hColorBuilder @MainActor
+    var tooltipColor: some hColor {
+        switch self {
+        case .travelCertificate:
+            hFillColor.Opaque.primary
+        default:
+            hFillColor.Opaque.secondary
         }
     }
 
@@ -172,6 +210,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         case .chatNotification(let lastMessageTimeStamp):
             UserDefaults.standard.setValue(lastMessageTimeStamp, forKey: userDefaultsKey)
+        case .travelCertificate:
+            break
         }
 
     }
@@ -182,7 +222,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
 }
 
-struct ToolbarButtonsView: View {
+struct ToolbarButtonView: View {
     @State var displayTooltip = false
     var action: ((_: ToolbarOptionType)) -> Void
     @Binding var types: [ToolbarOptionType]
@@ -204,7 +244,7 @@ struct ToolbarButtonsView: View {
     var body: some View {
         HStack(spacing: spacing) {
             ForEach(Array(types.enumerated()), id: \.element.identifiableId) { index, type in
-                VStack {
+                VStack(alignment: .trailing) {
                     withAnimation(nil) {
                         SwiftUI.Button(action: {
                             withAnimation(.spring()) {
@@ -215,7 +255,8 @@ struct ToolbarButtonsView: View {
                             Image(uiImage: type.image)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: 40, height: 40)
+                                .frame(width: type.imageSize, height: type.imageSize)
+                                .foregroundColor(hFillColor.Opaque.primary)
                                 .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
                                 .accessibilityValue(type.displayName)
                         }
@@ -229,7 +270,7 @@ struct ToolbarButtonsView: View {
                                 type: type,
                                 timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
                             )
-                            .position(x: 26, y: 55)
+                            .position(x: type == .travelCertificate ? 22 : 26, y: type == .travelCertificate ? 50 : 55)
                             .fixedSize()
                         }
                     }
@@ -239,12 +280,23 @@ struct ToolbarButtonsView: View {
     }
 }
 
-struct ToolbarButtonsViewModifier: ViewModifier {
+public struct ToolbarButtonsViewModifier: ViewModifier {
     let action: (_: ToolbarOptionType) -> Void
     @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
     @Binding var types: [ToolbarOptionType]
     let vcName: String
-    func body(content: Content) -> some View {
+
+    public init(
+        action: @escaping (_: ToolbarOptionType) -> Void,
+        types: Binding<[ToolbarOptionType]>,
+        vcName: String
+    ) {
+        self.action = action
+        self._types = types
+        self.vcName = vcName
+    }
+
+    public func body(content: Content) -> some View {
         if #available(iOS 18.0, *) {
             content
                 .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
@@ -262,14 +314,14 @@ struct ToolbarButtonsViewModifier: ViewModifier {
             content
                 .navigationBarItems(
                     trailing:
-                        ToolbarButtonsView(types: $types, action: action)
+                        ToolbarButtonView(types: $types, action: action)
                 )
         }
     }
 
     private func setNavigation() {
         if let vc = self.navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
-            let viewToInject = ToolbarButtonsView(types: $types, action: action)
+            let viewToInject = ToolbarButtonView(types: $types, action: action)
             let hostingVc = UIHostingController(rootView: viewToInject)
             let viewToPlace = hostingVc.view!
             viewToPlace.backgroundColor = .clear
@@ -292,39 +344,62 @@ extension TimeInterval {
 extension View {
     public func setToolbar<Leading: View, Trailing: View>(
         @ViewBuilder _ leading: () -> Leading,
-        @ViewBuilder _ trailing: () -> Trailing
+        @ViewBuilder _ trailing: () -> Trailing,
+        toolTipInput: TooltipInput? = nil
     ) -> some View {
         self.modifier(
-            ToolbarViewModifier(leading: leading(), trailing: trailing(), showLeading: true, showTrailing: true)
+            ToolbarViewModifier(
+                leading: leading(),
+                trailing: trailing(),
+                showLeading: true,
+                showTrailing: true,
+                tooltipInput: toolTipInput
+            )
         )
     }
 
     public func setToolbarLeading<Leading: View>(
-        @ViewBuilder _ leading: () -> Leading
+        @ViewBuilder content leading: () -> Leading,
+        toolTipInput: TooltipInput? = nil
     ) -> some View {
         self.modifier(
             ToolbarViewModifier(
                 leading: leading(),
                 trailing: EmptyView(),
                 showLeading: true,
-                showTrailing: false
+                showTrailing: false,
+                tooltipInput: toolTipInput
             )
         )
     }
 
     public func setToolbarTrailing<Trailing: View>(
-        @ViewBuilder _ trailing: () -> Trailing
+        @ViewBuilder _ trailing: () -> Trailing,
+        toolTipInput: TooltipInput? = nil
     ) -> some View {
         self.modifier(
             ToolbarViewModifier(
                 leading: EmptyView(),
                 trailing: trailing(),
                 showLeading: false,
-                showTrailing: true
+                showTrailing: true,
+                tooltipInput: toolTipInput
             )
         )
     }
+}
 
+public struct TooltipInput {
+    let action: (_: ToolbarOptionType) -> Void
+    @Binding var types: [ToolbarOptionType]
+
+    public init(
+        action: @escaping (_: ToolbarOptionType) -> Void,
+        types: Binding<[ToolbarOptionType]>
+    ) {
+        self.action = action
+        self._types = types
+    }
 }
 
 struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
@@ -332,21 +407,18 @@ struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     let trailing: Trailing?
     let showLeading: Bool
     let showTrailing: Bool
+    @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
+    let tooltipInput: TooltipInput?
+
     func body(content: Content) -> some View {
         if #available(iOS 18.0, *) {
             content
                 .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
                     if let leading, showLeading {
-                        let hostingVc = UIHostingController(rootView: leading)
-                        let viewToPlace = hostingVc.view!
-                        viewToPlace.backgroundColor = .clear
-                        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+                        setView(for: vc, placement: .leading, tooltipInput: tooltipInput)
                     }
                     if let trailing, showTrailing {
-                        let hostingVc = UIHostingController(rootView: trailing)
-                        let viewToPlace = hostingVc.view!
-                        viewToPlace.backgroundColor = .clear
-                        vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+                        setView(for: vc, placement: .trailing, tooltipInput: tooltipInput)
                     }
                 }
         } else {
@@ -365,4 +437,29 @@ struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
             }
         }
     }
+
+    private func setView(for vc: UIViewController, placement: ListToolBarPlacement, tooltipInput: TooltipInput?) {
+        if let tooltipInput {
+            let viewToInject = ToolbarButtonView(types: tooltipInput.$types, action: tooltipInput.action)
+            setRootView(for: viewToInject, vc: vc, placement: placement)
+        } else {
+            setRootView(for: placement == .leading ? leading : trailing, vc: vc, placement: placement)
+        }
+    }
+
+    private func setRootView(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
+        let hostingVc = UIHostingController(rootView: view.asAnyView)
+        let viewToPlace = hostingVc.view!
+        viewToPlace.backgroundColor = .clear
+        if placement == .leading {
+            vc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+        } else {
+            vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+        }
+    }
+}
+
+public enum ListToolBarPlacement {
+    case trailing
+    case leading
 }

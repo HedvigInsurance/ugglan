@@ -21,7 +21,7 @@ struct TooltipView: View {
                     HStack {
                         Spacer()
                         Triangle()
-                            .fill(hFillColor.Opaque.secondary)
+                            .fill(type.tooltipColor)
                             .frame(width: 12, height: 6)
                             .padding(.trailing, .padding16)
                     }
@@ -31,7 +31,7 @@ struct TooltipView: View {
                         .padding(.top, 6.5)
                         .padding(.bottom, 7.5)
                         .foregroundColor(hTextColor.Opaque.negative)
-                        .background(hFillColor.Opaque.secondary)
+                        .background(type.tooltipColor)
                         .cornerRadius(.cornerRadiusS)
                 }
                 .transition(.scale(scale: 0, anchor: UnitPoint(x: 0.90, y: 0)).combined(with: .opacity))
@@ -72,7 +72,7 @@ struct Triangle: Shape {
     }
 }
 
-#Preview{
+#Preview {
     VStack {
         Triangle().fill(Color.red)
             .frame(width: 120, height: 60)

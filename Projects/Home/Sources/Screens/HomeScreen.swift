@@ -37,6 +37,8 @@ extension HomeScreen {
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
                     navigationVm.router.push(String.init(describing: InboxView.self))
+                case .travelCertificate:
+                    break
                 }
             }
         )
