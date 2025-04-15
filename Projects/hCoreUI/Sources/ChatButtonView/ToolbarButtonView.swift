@@ -215,7 +215,10 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .chatNotification(let lastMessageTimeStamp):
             UserDefaults.standard.setValue(lastMessageTimeStamp, forKey: userDefaultsKey)
         case .travelCertificate:
-            UserDefaults.standard.setValue(true, forKey: userDefaultsKey)
+            Task {
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                UserDefaults.standard.setValue(true, forKey: userDefaultsKey)
+            }
         }
     }
 
