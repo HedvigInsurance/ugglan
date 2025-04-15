@@ -152,15 +152,11 @@ extension View {
                 .foregroundColor(hTextColor.Opaque.primary)
             })
         case .trailing:
-            self.setToolbarTrailing(
-                {},
-                toolTipInput: .init(
-                    action: { _ in
-                        action()
-                    },
-                    types: .constant([.travelCertificate])
-                )
-            )
+            self.setToolbarTrailing {
+                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate])) { _ in
+                    action()
+                }
+            }
         }
     }
 }

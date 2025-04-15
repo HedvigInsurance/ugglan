@@ -95,7 +95,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .chatNotification:
             return L10n.Toast.newMessage
         case .travelCertificate:
-            return L10n.TravelCertificate.notification
+            return L10n.Toast.readMore
         }
     }
 
@@ -222,7 +222,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
 }
 
-struct ToolbarButtonView: View {
+public struct ToolbarButtonView: View {
     @State var displayTooltip = false
     var action: ((_: ToolbarOptionType)) -> Void
     @Binding var types: [ToolbarOptionType]
@@ -233,7 +233,8 @@ struct ToolbarButtonView: View {
             return -8
         }
     }
-    init(
+    
+    public init(
         types: Binding<[ToolbarOptionType]>,
         action: @escaping (_: ToolbarOptionType) -> Void
     ) {
@@ -241,7 +242,7 @@ struct ToolbarButtonView: View {
         self.action = action
     }
 
-    var body: some View {
+    public var body: some View {
         HStack(spacing: spacing) {
             ForEach(Array(types.enumerated()), id: \.element.identifiableId) { index, type in
                 VStack(alignment: .trailing) {
@@ -344,8 +345,7 @@ extension TimeInterval {
 extension View {
     public func setToolbar<Leading: View, Trailing: View>(
         @ViewBuilder _ leading: () -> Leading,
-        @ViewBuilder _ trailing: () -> Trailing,
-        toolTipInput: TooltipInput? = nil
+        @ViewBuilder _ trailing: () -> Trailing
     ) -> some View {
         self.modifier(
             ToolbarViewModifier(
@@ -353,37 +353,32 @@ extension View {
                 trailing: trailing(),
                 showLeading: true,
                 showTrailing: true,
-                tooltipInput: toolTipInput
             )
         )
     }
 
     public func setToolbarLeading<Leading: View>(
-        @ViewBuilder content leading: () -> Leading,
-        toolTipInput: TooltipInput? = nil
+        @ViewBuilder content leading: () -> Leading
     ) -> some View {
         self.modifier(
             ToolbarViewModifier(
                 leading: leading(),
                 trailing: EmptyView(),
                 showLeading: true,
-                showTrailing: false,
-                tooltipInput: toolTipInput
+                showTrailing: false
             )
         )
     }
 
     public func setToolbarTrailing<Trailing: View>(
-        @ViewBuilder _ trailing: () -> Trailing,
-        toolTipInput: TooltipInput? = nil
+        @ViewBuilder _ trailing: () -> Trailing
     ) -> some View {
         self.modifier(
             ToolbarViewModifier(
                 leading: EmptyView(),
                 trailing: trailing(),
                 showLeading: false,
-                showTrailing: true,
-                tooltipInput: toolTipInput
+                showTrailing: true
             )
         )
     }
@@ -408,17 +403,16 @@ struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     let showLeading: Bool
     let showTrailing: Bool
     @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
-    let tooltipInput: TooltipInput?
 
     func body(content: Content) -> some View {
         if #available(iOS 18.0, *) {
             content
                 .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
                     if let leading, showLeading {
-                        setView(for: vc, placement: .leading, tooltipInput: tooltipInput)
+                        setView(for: leading, vc: vc, placement: .leading)
                     }
                     if let trailing, showTrailing {
-                        setView(for: vc, placement: .trailing, tooltipInput: tooltipInput)
+                        setView(for: trailing, vc: vc, placement: .trailing)
                     }
                 }
         } else {
@@ -438,16 +432,7 @@ struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         }
     }
 
-    private func setView(for vc: UIViewController, placement: ListToolBarPlacement, tooltipInput: TooltipInput?) {
-        if let tooltipInput {
-            let viewToInject = ToolbarButtonView(types: tooltipInput.$types, action: tooltipInput.action)
-            setRootView(for: viewToInject, vc: vc, placement: placement)
-        } else {
-            setRootView(for: placement == .leading ? leading : trailing, vc: vc, placement: placement)
-        }
-    }
-
-    private func setRootView(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
+    private func setView(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
         let hostingVc = UIHostingController(rootView: view.asAnyView)
         let viewToPlace = hostingVc.view!
         viewToPlace.backgroundColor = .clear
