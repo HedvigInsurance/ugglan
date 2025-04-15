@@ -50,11 +50,11 @@ public struct ListScreen: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityAddTraits(.isButton)
                 }
+                .hWithoutHorizontalPadding([.section])
             }
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)
         .hSetScrollBounce(to: true)
-        .hWithoutHorizontalPadding([.section])
         .hFormAlwaysAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
