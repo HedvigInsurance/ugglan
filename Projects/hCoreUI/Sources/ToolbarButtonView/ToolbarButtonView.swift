@@ -365,17 +365,12 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                         leading:
                             leading
                     )
-            } else if let trailing, showTrailing {
-                content
-                    .navigationBarItems(
-                        trailing:
-                            trailing
-                    )
             } else {
+                let toolbarView = ToolbarButtonView(types: $types, placement: placement, action: action)
                 content
                     .navigationBarItems(
                         trailing:
-                            ToolbarButtonView(types: $types, placement: placement, action: action)
+                            trailing != nil && showTrailing ? trailing?.asAnyView : toolbarView.asAnyView
                     )
             }
         }
