@@ -28,9 +28,8 @@ public class ForeverNavigationViewModel: ObservableObject {
             }
         }
     }
-    var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
-    func shareCode(code: String) {
+    func shareCode(code: String, modalPresentationWrapperVM: ModalPresentationSourceWrapperViewModel) {
         let discount = foreverData?.monthlyDiscountPerReferral.formattedAmount
         let url =
             "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"
@@ -40,7 +39,7 @@ public class ForeverNavigationViewModel: ObservableObject {
             activityItems: [message as Any],
             applicationActivities: nil
         )
-        modalPresentationSourceWrapperViewModel.present(activity: activityVC)
+        modalPresentationWrapperVM.present(activity: activityVC)
     }
 }
 
@@ -122,6 +121,7 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
 
 #Preview {
     ForeverNavigation(useOwnNavigation: true)
+        .environmentObject(Router())
 }
 
 extension View {
