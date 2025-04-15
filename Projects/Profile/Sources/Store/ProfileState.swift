@@ -21,6 +21,10 @@ public struct ProfileState: StateProtocol {
         return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
     }
 
+    var showInsuranceEvidence: Bool {
+        return false
+    }
+
     @MainActor
     public var canCreateTravelInsurance: Bool {
         let store: ContractStore = globalPresentableStoreContainer.get()

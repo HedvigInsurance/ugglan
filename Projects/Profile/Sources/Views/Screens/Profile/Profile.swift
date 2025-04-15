@@ -33,7 +33,7 @@ public struct ProfileView: View {
                 hSection {
                     ProfileRow(row: .myInfo)
                     if store.state.showTravelCertificate {
-                        ProfileRow(row: .travelCertificate)
+                        ProfileRow(row: .certificates)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
@@ -78,4 +78,8 @@ public struct ProfileView: View {
         }
         .configureTitle(L10n.profileTitle)
     }
+}
+
+#Preview {
+    ProfileView()
 }

@@ -44,8 +44,12 @@ struct ProfileRow: View {
             router.push(ProfileRouterType.settings)
         case .eurobonus:
             router.push(ProfileRouterType.euroBonus)
+        case .certificates:
+            router.push(ProfileRouterType.certificates)
         case .travelCertificate:
             router.push(ProfileRedirectType.travelCertificate)
+        case .insuranceEvidence:
+            break
         }
     }
 }

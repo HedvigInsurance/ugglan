@@ -56,6 +56,9 @@ public struct ProfileNavigation<Content: View>: View {
                             .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)
+                    case .certificates:
+                        CertificatesScreen()
+                            .configureTitle("Certificates")
                     }
                 }
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in
@@ -105,6 +108,7 @@ public enum ProfileRouterType: Hashable {
     case appInfo
     case settings
     case euroBonus
+    case certificates
 }
 
 enum ProfileDetentType: TrackingViewNameProtocol {
@@ -135,12 +139,15 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: SettingsView.self)
         case .euroBonus:
             return .init(describing: EuroBonusView.self)
+        case .certificates:
+            return .init(describing: CertificatesScreen.self)
         }
     }
 }
 
 public enum ProfileRedirectType: Hashable {
     case travelCertificate
+    case insuranceEvidence
     case deleteAccount(memberDetails: MemberDetails)
     case deleteRequestLoading
     case pickLanguage
@@ -157,6 +164,8 @@ extension ProfileRedirectType: TrackingViewNameProtocol {
             return .init(describing: DeleteRequestLoadingView.self)
         case .pickLanguage:
             return .init(describing: PickLanguage.self)
+        case .insuranceEvidence:
+            return "Insurance evidence"
         }
     }
 
