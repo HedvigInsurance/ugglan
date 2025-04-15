@@ -7,6 +7,7 @@ import hGraphQL
 struct ProfileRow: View {
     @PresentableStore var store: ProfileStore
     @EnvironmentObject var router: Router
+    @EnvironmentObject var profileNavigationViewModel: ProfileNavigationViewModel
 
     let row: ProfileRowType
 
@@ -46,6 +47,10 @@ struct ProfileRow: View {
             router.push(ProfileRouterType.euroBonus)
         case .travelCertificate:
             router.push(ProfileRedirectType.travelCertificate)
+        case .legalProtection:
+            profileNavigationViewModel.isCreateInsuranceEvidencePresented = true
+        case .certificates:
+            router.push(ProfileRouterType.certificates)
         }
     }
 }

@@ -1,3 +1,3 @@
-public struct InsuranceEvidenceInput: Sendable {
-    let email: String
+public struct InsuranceEvidenceInput: Sendable, Hashable {
+    var email: String
 }

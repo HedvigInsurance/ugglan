@@ -6,9 +6,12 @@ public class ProfileClientDemo: ProfileClient {
     }
 
     public init() {}
-    public func getProfileState() async throws -> (memberData: MemberDetails, partnerData: PartnerData?) {
+    public func getProfileState() async throws -> (
+        memberData: MemberDetails, partnerData: PartnerData?, canCraeteLegalProtection: Bool
+    ) {
         return (
-            MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false), nil
+            MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false), nil,
+            false
         )
     }
 

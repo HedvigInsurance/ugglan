@@ -32,8 +32,14 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if store.state.showTravelCertificate {
+                    if stateData.showTravelCertificate && stateData.canCreateInsuranceEvidence {
+                        ProfileRow(row: .certificates)
+                    }
+                    if store.state.showTravelCertificate && !stateData.canCreateInsuranceEvidence {
                         ProfileRow(row: .travelCertificate)
+                    }
+                    if !store.state.canCreateInsuranceEvidence && !stateData.canCreateInsuranceEvidence {
+                        ProfileRow(row: .legalProtection)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
