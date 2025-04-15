@@ -240,7 +240,7 @@ public struct ToolbarButtonView: View {
             return -8
         }
     }
-    
+
     public init(
         types: Binding<[ToolbarOptionType]>,
         placement: ListToolBarPlacement,
@@ -289,19 +289,19 @@ public struct ToolbarButtonView: View {
             }
         }
     }
-    
+
     func xOffset(for type: ToolbarOptionType) -> CGFloat {
         switch type {
         case .travelCertificate:
             if placement == .leading {
                 return 76
             }
-                return 22
+            return 22
         default:
             return 26
         }
     }
-    
+
     func yOffset(for type: ToolbarOptionType) -> CGFloat {
         switch type {
         case .travelCertificate:
@@ -386,7 +386,7 @@ extension View {
                 leading: leading(),
                 trailing: trailing(),
                 showLeading: true,
-                showTrailing: true,
+                showTrailing: true
             )
         )
     }
