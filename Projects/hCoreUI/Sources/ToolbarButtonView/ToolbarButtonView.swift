@@ -58,15 +58,9 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
     var identifiableId: String {
         switch self {
-        case .newOffer:
-            return tooltipId
-        case .firstVet:
-            return tooltipId
-        case .chat:
-            return tooltipId
         case .chatNotification(let lastMessageTimeStamp):
             return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
-        case .travelCertificate:
+        default:
             return tooltipId
         }
     }
@@ -88,55 +82,39 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
     var showAsTooltip: Bool {
         switch self {
-        case .newOffer:
+        case .newOffer, .firstVet:
             return false
-        case .firstVet:
-            return false
-        case .chat:
-            return true
-        case .chatNotification:
-            return true
-        case .travelCertificate:
+        default:
             return true
         }
     }
 
     var timeIntervalForShowingAgain: TimeInterval? {
         switch self {
-        case .newOffer:
-            return nil
-        case .firstVet:
-            return nil
         case .chat:
             return .days(numberOfDays: 30)
         case .chatNotification:
             return 30
         case .travelCertificate:
             return 5
+        default:
+            return nil
         }
     }
 
     var delay: TimeInterval {
         switch self {
-        case .newOffer:
-            return 0
-        case .firstVet:
-            return 0
         case .chat:
             return 1.5
-        case .chatNotification:
+        case .chatNotification, .travelCertificate:
             return 0.5
-        case .travelCertificate:
-            return 0.5
+        default:
+            return 0
         }
     }
 
     func shouldShowTooltip(for timeInterval: TimeInterval) -> Bool {
         switch self {
-        case .newOffer:
-            return false
-        case .firstVet:
-            return false
         case .chat:
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
@@ -169,6 +147,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             }
             onShow()
             return true
+        default:
+            return false
         }
     }
 
@@ -193,10 +173,6 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
     func onShow() {
         switch self {
-        case .newOffer:
-            break
-        case .firstVet:
-            break
         case .chat:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         case .chatNotification(let lastMessageTimeStamp):
@@ -206,6 +182,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
                 try await Task.sleep(nanoseconds: 1_000_000_000)
                 UserDefaults.standard.setValue(true, forKey: userDefaultsKey)
             }
+        default:
+            break
         }
     }
 
@@ -242,42 +220,42 @@ public struct ToolbarButtonView: View {
         HStack(spacing: spacing) {
             ForEach(Array(types.enumerated()), id: \.element.identifiableId) { index, type in
                 VStack(alignment: .trailing) {
-                    withAnimation(nil) {
-                        SwiftUI.Button(action: {
-                            withAnimation(.spring()) {
-                                displayTooltip = false
-                            }
-                            action(type)
-                        }) {
-                            Image(uiImage: type.image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: type.imageSize, height: type.imageSize)
-                                .foregroundColor(hFillColor.Opaque.primary)
-                                .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
-                                .accessibilityValue(type.displayName)
+                    SwiftUI.Button(action: {
+                        withAnimation(.spring()) {
+                            displayTooltip = false
                         }
+                        action(type)
+                    }) {
+                        Image(uiImage: type.image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: type.imageSize, height: type.imageSize)
+                            .foregroundColor(hFillColor.Opaque.primary)
+                            .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
+                            .accessibilityValue(type.displayName)
                     }
                 }
-                .background(
-                    VStack {
-                        if type.showAsTooltip {
-                            TooltipView(
-                                displayTooltip: $displayTooltip,
-                                type: type,
-                                timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30),
-                                placement: placement
-                            )
-                            .position(x: xOffset(for: type), y: yOffset(for: type))
-                            .fixedSize()
-                        }
-                    }
-                )
+                .background(tooltipView(for: type))
             }
         }
     }
 
-    func xOffset(for type: ToolbarOptionType) -> CGFloat {
+    private func tooltipView(for type: ToolbarOptionType) -> some View {
+        VStack {
+            if type.showAsTooltip {
+                TooltipView(
+                    displayTooltip: $displayTooltip,
+                    type: type,
+                    timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30),
+                    placement: placement
+                )
+                .position(x: xOffset(for: type), y: yOffset(for: type))
+                .fixedSize()
+            }
+        }
+    }
+
+    private func xOffset(for type: ToolbarOptionType) -> CGFloat {
         switch type {
         case .travelCertificate:
             if placement == .leading {
@@ -289,7 +267,7 @@ public struct ToolbarButtonView: View {
         }
     }
 
-    func yOffset(for type: ToolbarOptionType) -> CGFloat {
+    private func yOffset(for type: ToolbarOptionType) -> CGFloat {
         switch type {
         case .travelCertificate:
             return 50
