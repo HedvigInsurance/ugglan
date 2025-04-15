@@ -6,6 +6,7 @@ struct TooltipView: View {
     @Binding var displayTooltip: Bool
     let type: ToolbarOptionType
     let timeInterval: TimeInterval
+    let placement: ListToolBarPlacement
 
     func canShowTooltip() -> Bool {
         if type.showAsTooltip {
@@ -23,7 +24,7 @@ struct TooltipView: View {
                         Triangle()
                             .fill(type.tooltipColor)
                             .frame(width: 12, height: 6)
-                            .padding(.trailing, .padding16)
+                            .padding(.trailing, trailingPadding(for: placement))
                     }
 
                     hText(type.textToShow ?? "", style: .label)
@@ -49,6 +50,15 @@ struct TooltipView: View {
                     }
                 }
             }
+        }
+    }
+
+    func trailingPadding(for placement: ListToolBarPlacement) -> CGFloat {
+        switch placement {
+        case .leading:
+            return 70
+        case .trailing:
+            return .padding16
         }
     }
 }
@@ -78,5 +88,11 @@ struct Triangle: Shape {
             .frame(width: 120, height: 60)
             .background(Color.blue)
         Spacer()
+    }
+}
+
+#Preview {
+    VStack {
+        TooltipView(displayTooltip: .constant(true), type: .travelCertificate, timeInterval: 1, placement: .trailing)
     }
 }

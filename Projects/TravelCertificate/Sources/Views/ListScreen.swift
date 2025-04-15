@@ -143,17 +143,14 @@ extension View {
     ) -> some View {
         switch withPlacement {
         case .leading:
-            self.setToolbarLeading(content: {
-                InfoViewHolder(
-                    title: L10n.TravelCertificate.Info.title,
-                    description: L10n.TravelCertificate.Info.subtitle,
-                    type: .navigation
-                )
-                .foregroundColor(hTextColor.Opaque.primary)
-            })
+            self.setToolbarLeading {
+                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
+                    action()
+                }
+            }
         case .trailing:
             self.setToolbarTrailing {
-                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate])) { _ in
+                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
                     action()
                 }
             }

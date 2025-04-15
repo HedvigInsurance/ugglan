@@ -11,7 +11,7 @@ extension View {
     ) -> some View {
         ModifiedContent(
             content: self,
-            modifier: ToolbarButtonsViewModifier(action: action, types: options, vcName: vcName)
+            modifier: ToolbarButtonsViewModifier(action: action, types: options, vcName: vcName, placement: .leading)
         )
     }
 }
@@ -226,6 +226,7 @@ public struct ToolbarButtonView: View {
     @State var displayTooltip = false
     var action: ((_: ToolbarOptionType)) -> Void
     @Binding var types: [ToolbarOptionType]
+    let placement: ListToolBarPlacement
     private var spacing: CGFloat {
         if #available(iOS 18.0, *) {
             return 0
@@ -236,9 +237,11 @@ public struct ToolbarButtonView: View {
     
     public init(
         types: Binding<[ToolbarOptionType]>,
-        action: @escaping (_: ToolbarOptionType) -> Void
+        placement: ListToolBarPlacement,
+        action: @escaping (_: ToolbarOptionType) -> Void,
     ) {
         self._types = types
+        self.placement = placement
         self.action = action
     }
 
@@ -269,14 +272,36 @@ public struct ToolbarButtonView: View {
                             TooltipView(
                                 displayTooltip: $displayTooltip,
                                 type: type,
-                                timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
+                                timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30),
+                                placement: placement
                             )
-                            .position(x: type == .travelCertificate ? 22 : 26, y: type == .travelCertificate ? 50 : 55)
+                            .position(x: xOffset(for: type), y: yOffset(for: type))
                             .fixedSize()
                         }
                     }
                 )
             }
+        }
+    }
+    
+    func xOffset(for type: ToolbarOptionType) -> CGFloat {
+        switch type {
+        case .travelCertificate:
+            if placement == .leading {
+                return 76
+            }
+                return 22
+        default:
+            return 26
+        }
+    }
+    
+    func yOffset(for type: ToolbarOptionType) -> CGFloat {
+        switch type {
+        case .travelCertificate:
+            return 50
+        default:
+            return 55
         }
     }
 }
@@ -286,15 +311,18 @@ public struct ToolbarButtonsViewModifier: ViewModifier {
     @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
     @Binding var types: [ToolbarOptionType]
     let vcName: String
+    let placement: ListToolBarPlacement
 
     public init(
         action: @escaping (_: ToolbarOptionType) -> Void,
         types: Binding<[ToolbarOptionType]>,
-        vcName: String
+        vcName: String,
+        placement: ListToolBarPlacement
     ) {
         self.action = action
         self._types = types
         self.vcName = vcName
+        self.placement = placement
     }
 
     public func body(content: Content) -> some View {
@@ -315,14 +343,14 @@ public struct ToolbarButtonsViewModifier: ViewModifier {
             content
                 .navigationBarItems(
                     trailing:
-                        ToolbarButtonView(types: $types, action: action)
+                        ToolbarButtonView(types: $types, placement: placement, action: action)
                 )
         }
     }
 
     private func setNavigation() {
         if let vc = self.navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
-            let viewToInject = ToolbarButtonView(types: $types, action: action)
+            let viewToInject = ToolbarButtonView(types: $types, placement: placement, action: action)
             let hostingVc = UIHostingController(rootView: viewToInject)
             let viewToPlace = hostingVc.view!
             viewToPlace.backgroundColor = .clear
