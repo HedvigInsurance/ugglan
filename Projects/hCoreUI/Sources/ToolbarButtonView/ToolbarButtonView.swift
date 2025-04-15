@@ -3,19 +3,6 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
-extension View {
-    public func setHomeNavigationBars(
-        with options: Binding<[ToolbarOptionType]>,
-        and vcName: String,
-        action: @escaping (_: ToolbarOptionType) -> Void
-    ) -> some View {
-        ModifiedContent(
-            content: self,
-            modifier: ToolbarButtonsViewModifier(action: action, types: options, vcName: vcName, placement: .leading)
-        )
-    }
-}
-
 public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case newOffer
     case firstVet
@@ -312,12 +299,33 @@ public struct ToolbarButtonView: View {
     }
 }
 
-public struct ToolbarButtonsViewModifier: ViewModifier {
+public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     let action: (_: ToolbarOptionType) -> Void
     @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
     @Binding var types: [ToolbarOptionType]
-    let vcName: String
+    let vcName: String?
     let placement: ListToolBarPlacement
+
+    let leading: Leading?
+    let trailing: Trailing?
+    let showLeading: Bool
+    let showTrailing: Bool
+
+    public init(
+        leading: Leading?,
+        trailing: Trailing?,
+        showLeading: Bool,
+        showTrailing: Bool
+    ) {
+        self.leading = leading
+        self.trailing = trailing
+        self.showLeading = showLeading
+        self.showTrailing = showTrailing
+        self.placement = leading == nil ? .trailing : .leading
+        self.action = { _ in }
+        self.vcName = nil
+        self._types = .constant([])
+    }
 
     public init(
         action: @escaping (_: ToolbarOptionType) -> Void,
@@ -329,6 +337,10 @@ public struct ToolbarButtonsViewModifier: ViewModifier {
         self._types = types
         self.vcName = vcName
         self.placement = placement
+        self.leading = nil
+        self.trailing = nil
+        self.showLeading = false
+        self.showTrailing = false
     }
 
     public func body(content: Content) -> some View {
@@ -338,28 +350,58 @@ public struct ToolbarButtonsViewModifier: ViewModifier {
                     if let nav = vc.navigationController {
                         if self.navVm.nav != nav {
                             self.navVm.nav = nav
-                            setNavigation()
+                            setNavigation(vc)
                         }
                     }
                 }
                 .onChange(of: types) { value in
                     setNavigation()
                 }
+
         } else {
-            content
-                .navigationBarItems(
-                    trailing:
-                        ToolbarButtonView(types: $types, placement: placement, action: action)
-                )
+            if let leading, showLeading {
+                content
+                    .navigationBarItems(
+                        leading:
+                            leading
+                    )
+            } else if let trailing, showTrailing {
+                content
+                    .navigationBarItems(
+                        trailing:
+                            trailing
+                    )
+            } else {
+                content
+                    .navigationBarItems(
+                        trailing:
+                            ToolbarButtonView(types: $types, placement: placement, action: action)
+                    )
+            }
         }
     }
 
-    private func setNavigation() {
-        if let vc = self.navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
-            let viewToInject = ToolbarButtonView(types: $types, placement: placement, action: action)
-            let hostingVc = UIHostingController(rootView: viewToInject)
-            let viewToPlace = hostingVc.view!
-            viewToPlace.backgroundColor = .clear
+    private func setNavigation(_ vc: UIViewController? = nil) {
+        if let leading, let vc = vc, showLeading {
+            setView(for: leading, vc: vc, placement: .leading)
+        }
+        if let trailing, let vc = vc, showTrailing {
+            setView(for: trailing, vc: vc, placement: .trailing)
+        } else {
+            if let vc = self.navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
+                let viewToInject = ToolbarButtonView(types: $types, placement: placement, action: action)
+                setView(for: viewToInject, vc: vc, placement: placement)
+            }
+        }
+    }
+
+    private func setView(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
+        let hostingVc = UIHostingController(rootView: view.asAnyView)
+        let viewToPlace = hostingVc.view!
+        viewToPlace.backgroundColor = .clear
+        if placement == .leading {
+            vc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+        } else {
             vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
         }
     }
@@ -377,6 +419,22 @@ extension TimeInterval {
 }
 
 extension View {
+    public func setHomeNavigationBars(
+        with options: Binding<[ToolbarOptionType]>,
+        and vcName: String,
+        action: @escaping (_: ToolbarOptionType) -> Void
+    ) -> some View {
+        ModifiedContent(
+            content: self,
+            modifier: ToolbarViewModifier<EmptyView, EmptyView>(
+                action: action,
+                types: options,
+                vcName: vcName,
+                placement: .trailing
+            )
+        )
+    }
+
     public func setToolbar<Leading: View, Trailing: View>(
         @ViewBuilder _ leading: () -> Leading,
         @ViewBuilder _ trailing: () -> Trailing
@@ -415,66 +473,6 @@ extension View {
                 showTrailing: true
             )
         )
-    }
-}
-
-public struct TooltipInput {
-    let action: (_: ToolbarOptionType) -> Void
-    @Binding var types: [ToolbarOptionType]
-
-    public init(
-        action: @escaping (_: ToolbarOptionType) -> Void,
-        types: Binding<[ToolbarOptionType]>
-    ) {
-        self.action = action
-        self._types = types
-    }
-}
-
-struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
-    let leading: Leading?
-    let trailing: Trailing?
-    let showLeading: Bool
-    let showTrailing: Bool
-    @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
-
-    func body(content: Content) -> some View {
-        if #available(iOS 18.0, *) {
-            content
-                .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
-                    if let leading, showLeading {
-                        setView(for: leading, vc: vc, placement: .leading)
-                    }
-                    if let trailing, showTrailing {
-                        setView(for: trailing, vc: vc, placement: .trailing)
-                    }
-                }
-        } else {
-            if let leading, showLeading {
-                content
-                    .navigationBarItems(
-                        leading:
-                            leading
-                    )
-            } else if let trailing, showTrailing {
-                content
-                    .navigationBarItems(
-                        trailing:
-                            trailing
-                    )
-            }
-        }
-    }
-
-    private func setView(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
-        let hostingVc = UIHostingController(rootView: view.asAnyView)
-        let viewToPlace = hostingVc.view!
-        viewToPlace.backgroundColor = .clear
-        if placement == .leading {
-            vc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: viewToPlace)
-        } else {
-            vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
-        }
     }
 }
 
