@@ -220,7 +220,7 @@ extension PHAsset {
                                         return
                                     }
 
-                                    let fileName = url.path
+                                    let fileName = url.lastPathComponent
 
                                     guard let data = (try? Data(contentsOf: url))
                                     else {
@@ -249,7 +249,7 @@ extension PHAsset {
                     PHImageManager.default()
                         .requestImageDataAndOrientation(for: self, options: nil) { data, _, _, _ in
                             guard let data = data else { return }
-                            guard let fileName = contentInput?.fullSizeImageURL?.path else {
+                            guard let fileName = contentInput?.fullSizeImageURL?.lastPathComponent else {
                                 inCont.resume(throwing: GenerateFileUploadError.failedToGenerateFileName)
                                 return
                             }

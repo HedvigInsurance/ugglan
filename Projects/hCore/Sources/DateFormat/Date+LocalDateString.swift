@@ -30,6 +30,10 @@ extension Date {
         Dependencies.dateService.displayddMMMyyyy.string(from: self).lowercased()
     }
 
+    public var displayDateWithTimeStamp: String {
+        Dependencies.dateService.displayddMMMyyyyHHmm.string(from: self).lowercased()
+    }
+
     public var displayTimeStamp: String {
         let dateFormatter = DateFormatter()
         if !Calendar.current.isDateInWeek(from: self) {
@@ -99,6 +103,13 @@ public class DateService {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
         formatter.dateFormat = "dd MMM yyyy"
+        return formatter
+    }()
+
+    let displayddMMMyyyyHHmm: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.dateFormat = "dd.MM.yyyy HH:mm"
         return formatter
     }()
 
