@@ -177,6 +177,10 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             onShow()
             return true
         case .travelCertificate:
+            if let hasSeenTooltip = UserDefaults.standard.value(forKey: userDefaultsKey) as? Bool, hasSeenTooltip {
+                return false
+            }
+            onShow()
             return true
         }
     }
@@ -211,9 +215,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .chatNotification(let lastMessageTimeStamp):
             UserDefaults.standard.setValue(lastMessageTimeStamp, forKey: userDefaultsKey)
         case .travelCertificate:
-            break
+            UserDefaults.standard.setValue(true, forKey: userDefaultsKey)
         }
-
     }
 
     var userDefaultsKey: String {
