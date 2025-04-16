@@ -244,7 +244,6 @@ struct LoggedInNavigation: View {
                     infoButtonPlacement: .trailing,
                     useOwnNavigation: false
                 )
-                .navigationTitle("tittle")
                 .handleEditCoInsured(
                     with: vm.travelCertificateNavigationVm.editCoInsuredVm
                 )
