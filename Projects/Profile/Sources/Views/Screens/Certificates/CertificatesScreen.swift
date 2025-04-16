@@ -32,6 +32,5 @@ public struct CertificatesScreen: View {
                 .environmentObject(profileNavigationVm)
             }
         }
-        .configureTitle(L10n.profileTitle)
     }
 }
