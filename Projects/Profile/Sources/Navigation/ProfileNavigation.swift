@@ -61,7 +61,7 @@ public struct ProfileNavigation<Content: View>: View {
                         EuroBonusNavigation(useOwnNavigation: false)
                     case .certificates:
                         CertificatesScreen()
-                            .configureTitle("Certificates")
+                            .configureTitle(L10n.Profile.Certificates.title)
                             .environmentObject(profileNavigationViewModel)
 
                     }

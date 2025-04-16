@@ -20,7 +20,7 @@ enum ProfileRowType {
         case .travelCertificate:
             return L10n.TravelCertificate.cardTitle
         case .certificates:
-            return "Certificates"
+            return L10n.Profile.Certificates.title
         case .insuranceEvidence:
             return "Insurance Evidence"
         }
