@@ -39,7 +39,7 @@ public struct ProfileView: View {
                         ProfileRow(row: .travelCertificate)
                     }
                     if !store.state.canCreateInsuranceEvidence && !stateData.canCreateInsuranceEvidence {
-                        ProfileRow(row: .legalProtection)
+                        ProfileRow(row: .insuranceEvidence)
                     }
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""

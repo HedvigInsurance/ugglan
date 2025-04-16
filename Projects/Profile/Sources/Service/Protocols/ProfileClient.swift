@@ -3,7 +3,7 @@ import Foundation
 @MainActor
 public protocol ProfileClient {
     func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCraeteLegalProtection: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCraeteInsuranceEvidence: Bool
     )
     func getMemberDetails() async throws -> MemberDetails
     func updateLanguage() async throws

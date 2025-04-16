@@ -7,7 +7,7 @@ public class ProfileClientDemo: ProfileClient {
 
     public init() {}
     public func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCraeteLegalProtection: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCraeteInsuranceEvidence: Bool
     ) {
         return (
             MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false), nil,

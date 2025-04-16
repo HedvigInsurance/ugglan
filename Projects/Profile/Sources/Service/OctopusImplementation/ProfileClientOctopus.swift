@@ -7,7 +7,7 @@ public class ProfileService {
     @Inject var client: ProfileClient
 
     public func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCraeteLegalProtection: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCraeteInsuranceEvidence: Bool
     ) {
         log.info("ProfileService: getProfileState", error: nil, attributes: nil)
         return try await client.getProfileState()
@@ -55,7 +55,7 @@ public class ProfileClientOctopus: ProfileClient {
     public init() {}
 
     public func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCraeteLegalProtection: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCraeteInsuranceEvidence: Bool
     ) {
         let data = try await self.octopus.client
             .fetch(

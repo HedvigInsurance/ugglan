@@ -23,7 +23,7 @@ public struct CertificatesScreen: View {
                         ProfileRow(row: .travelCertificate)
                     }
                     if stateData.canCreateInsuranceEvidence {
-                        ProfileRow(row: .legalProtection)
+                        ProfileRow(row: .insuranceEvidence)
                     }
                 }
                 .sectionContainerStyle(.transparent)
