@@ -13,9 +13,9 @@ public struct PaymentDetailsDiscountView: View {
 
     public var body: some View {
         hRow {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: .padding4) {
                 HStack(alignment: .top) {
-                    HStack(spacing: 8) {
+                    HStack(spacing: .padding8) {
                         hText(vm.discount.code, style: .label)
                             .foregroundColor(getCodeTextColor)
                             .padding(.vertical, .padding4)
@@ -28,7 +28,7 @@ public struct PaymentDetailsDiscountView: View {
                     .padding(.horizontal, .padding8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(hSurfaceColor.Opaque.primary)
+                            .fill(hSurfaceColor.Translucent.primary)
                     )
                     .onTapGesture {
                         startRemoveCode()
@@ -37,7 +37,7 @@ public struct PaymentDetailsDiscountView: View {
                     if vm.options.contains(.forPayment), let discount = vm.discount.amount {
                         hText(discount.formattedNegativeAmount)
                     } else if let title = vm.discount.title {
-                        hText(title).multilineTextAlignment(.trailing)
+                        hText(title, style: .label).multilineTextAlignment(.trailing)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
@@ -71,9 +71,8 @@ public struct PaymentDetailsDiscountView: View {
                     }
                 }
             }
-            .foregroundColor(hTextColor.Opaque.secondary)
+            .foregroundColor(hTextColor.Translucent.secondary)
         }
-        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 

@@ -5,34 +5,38 @@ import hGraphQL
 public struct PriceField: View {
     let newPremium: MonetaryAmount?
     let currentPremium: MonetaryAmount?
+    let title: String?
     let subTitle: String?
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
+    @SwiftUI.Environment(\.hPriceFormatting) var formatting
 
     public init(
         newPremium: MonetaryAmount?,
         currentPremium: MonetaryAmount?,
+        title: String? = nil,
         subTitle: String? = nil
     ) {
         self.newPremium = newPremium
         self.currentPremium = currentPremium
+        self.title = title
         self.subTitle = subTitle
     }
 
     public var body: some View {
         VStack(spacing: .padding2) {
             HStack(alignment: .top) {
-                hText(L10n.tierFlowTotal)
+                hText(title ?? L10n.tierFlowTotal)
                     .foregroundColor(getTotalColor())
                 Spacer()
 
                 if strikeThroughPrice != .none, newPremium != currentPremium {
                     if #available(iOS 16.0, *) {
-                        hText(currentPremium?.formattedAmountPerMonth ?? "")
+                        hText(currentPremium?.priceFormat(formatting) ?? "")
                             .strikethrough()
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .accessibilityValue(L10n.voiceoverCurrentPrice)
                     } else {
-                        hText(currentPremium?.formattedAmountPerMonth ?? "")
+                        hText(currentPremium?.priceFormat(formatting) ?? "")
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
@@ -40,7 +44,7 @@ public struct PriceField: View {
                 VStack(alignment: .trailing, spacing: 0) {
                     if strikeThroughPrice == .crossNewPrice {
                         if #available(iOS 16.0, *) {
-                            hText(newPremium?.formattedAmountPerMonth ?? "")
+                            hText(newPremium?.priceFormat(formatting) ?? "")
                                 .strikethrough()
                                 .foregroundColor(hTextColor.Opaque.secondary)
                                 .accessibilityValue(
@@ -48,21 +52,21 @@ public struct PriceField: View {
                                 )
 
                         } else {
-                            hText(newPremium?.formattedAmountPerMonth ?? "")
+                            hText(newPremium?.priceFormat(formatting) ?? "")
                                 .foregroundColor(hTextColor.Opaque.secondary)
                                 .accessibilityValue(
                                     L10n.ReferralsActive.Your.New.Price.title
                                 )
                         }
                     } else {
-                        hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
+                        hText(newPremium?.priceFormat(formatting) ?? currentPremium?.priceFormat(formatting) ?? "")
                     }
 
                     if let currentPremium, let newPremium, newPremium != currentPremium,
                         strikeThroughPrice != .crossOldPrice
                     {
                         hText(
-                            L10n.tierFlowPreviousPrice(currentPremium.formattedAmountPerMonth),
+                            L10n.tierFlowPreviousPrice(currentPremium.priceFormat(formatting)),
                             style: .label
                         )
                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -139,5 +143,38 @@ extension EnvironmentValues {
 extension View {
     public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
         self.environment(\.hWithStrikeThroughPrice, setTo)
+    }
+}
+
+private struct EnvironmentHPriceFormatting: EnvironmentKey {
+    static let defaultValue: PriceFormatting = .perMonth
+}
+
+public enum PriceFormatting: Sendable {
+    case perMonth
+    case month
+}
+
+extension EnvironmentValues {
+    public var hPriceFormatting: PriceFormatting {
+        get { self[EnvironmentHPriceFormatting.self] }
+        set { self[EnvironmentHPriceFormatting.self] = newValue }
+    }
+}
+
+extension View {
+    public func hPriceFormatting(setTo: PriceFormatting) -> some View {
+        self.environment(\.hPriceFormatting, setTo)
+    }
+}
+
+extension MonetaryAmount {
+    func priceFormat(_ format: PriceFormatting) -> String {
+        switch format {
+        case .perMonth:
+            return self.formattedAmountPerMonth
+        case .month:
+            return self.formattedAmount
+        }
     }
 }

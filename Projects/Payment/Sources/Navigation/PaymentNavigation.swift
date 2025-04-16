@@ -79,4 +79,5 @@ extension PaymentsRouterAction: TrackingViewNameProtocol {
 
 #Preview {
     PaymentsNavigation(paymentsNavigationVm: .init())
+        .environmentObject(Router())
 }

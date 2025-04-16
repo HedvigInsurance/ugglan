@@ -1,3 +1,4 @@
+import Campaign
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,44 +9,60 @@ struct ContractDetails: View {
 
     var body: some View {
         hSection {
-            hRow {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .top, spacing: 8) {
-                        HStack {
-                            hText(contract.title)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer()
-                        }
-                        hText(contract.amount.formattedAmount)
-                        Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                            .rotationEffect(
-                                expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
-                            )
-                            .padding(.top, .padding4)
-                    }
-                    if let subtitle = contract.subtitle, !subtitle.isEmpty {
-                        hText(subtitle)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                }
-            }
-            .withEmptyAccessory
-            .onTap {
-                withAnimation {
-                    if let index = expandedContracts.firstIndex(of: contract.id) {
-                        expandedContracts.remove(at: index)
-                    } else {
-                        expandedContracts.append(contract.id)
-                    }
-                }
-            }
-            .hWithoutDivider
+            insuranceSection
             getContractDetails(for: contract)
         }
+    }
+
+    private var insuranceSection: some View {
+        hRow {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top, spacing: .padding10) {
+                    HStack {
+                        hText(contract.title)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer()
+                    }
+
+                    HStack(spacing: .padding8) {
+                        if #available(iOS 16.0, *) {
+                            hText(contract.currentAmount.formattedAmount)
+                                .strikethrough()
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                        } else {
+                            hText(contract.currentAmount.formattedAmount)
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                        }
+
+                        hText(contract.newAmount.formattedAmount)
+                    }
+
+                    Image(uiImage: hCoreUIAssets.chevronDown.image)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .rotationEffect(
+                            expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
+                        )
+                }
+                if let subtitle = contract.subtitle, !subtitle.isEmpty {
+                    hText(subtitle, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
+            }
+        }
+        .withEmptyAccessory
+        .onTap {
+            withAnimation {
+                if let index = expandedContracts.firstIndex(of: contract.id) {
+                    expandedContracts.remove(at: index)
+                } else {
+                    expandedContracts.append(contract.id)
+                }
+            }
+        }
+        .hWithoutDivider
     }
 
     @ViewBuilder
@@ -69,7 +86,7 @@ struct ContractDetails: View {
                         if let desciption = period.desciption {
                             hText(desciption, style: .label)
                                 .foregroundColor(
-                                    getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                    getColor(hTextColor.Translucent.secondary, isOutstanding: period.isOutstanding)
                                 )
 
                         }
@@ -77,14 +94,23 @@ struct ContractDetails: View {
                 }
                 .withEmptyAccessory
                 .accessibilityElement(children: .combine)
+
                 if contract.periods.count - 1 == offset {
-                    hRow {
-                        hText(L10n.paymentsSubtotal)
-                        Spacer()
-                        hText(contract.amount.formattedAmount)
-                        hText(" ")
+
+                    if !contract.discounts.isEmpty {
+                        ForEach(contract.discounts) { discount in
+                            PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount))
+                        }
                     }
-                    .accessibilityElement(children: .combine)
+                    hRow {
+                        PriceField(
+                            newPremium: contract.newAmount,
+                            currentPremium: contract.currentAmount,
+                            title: L10n.paymentsSubtotal
+                        )
+                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                        .hPriceFormatting(setTo: .month)
+                    }
                 }
             }
             .hWithoutHorizontalPadding([.section])
@@ -112,7 +138,19 @@ struct ContractDetails: View {
             id: "id1",
             title: "title",
             subtitle: "subtitle",
-            amount: .sek(200),
+            newAmount: .sek(250),
+            currentAmount: .sek(200),
+            discounts: [
+                .init(
+                    code: "TOGETHER",
+                    amount: .init(amount: "10", currency: "SEK"),
+                    title: "15% discount for 12 months",
+                    listOfAffectedInsurances: [],
+                    validUntil: nil,
+                    canBeDeleted: true,
+                    discountId: "id"
+                )
+            ],
             periods: [
                 .init(
                     id: "1",
@@ -120,7 +158,7 @@ struct ContractDetails: View {
                     to: "2023-11-23",
                     amount: .sek(100),
                     isOutstanding: false,
-                    desciption: nil
+                    desciption: "description"
                 ),
                 .init(
                     id: "2",

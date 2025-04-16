@@ -237,6 +237,7 @@ struct PaymentsView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-        return PaymentsView()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return PaymentsView().environmentObject(PaymentsNavigationViewModel())
     }
 }

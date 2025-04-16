@@ -17,7 +17,7 @@ struct PaymentDetailsView: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 contracts
                 paymentInfo
                 paymentInfoDetails
@@ -27,7 +27,7 @@ struct PaymentDetailsView: View {
     }
 
     private var contracts: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: .padding8) {
             ForEach(data.contracts) { contract in
                 ContractDetails(expandedContracts: $expandedContracts, contract: contract)
             }
@@ -56,7 +56,6 @@ struct PaymentDetailsView: View {
             .sectionContainerStyle(.transparent)
             .dividerInsets(.all, 0)
         }
-
     }
 
     private func getPaymentElements() -> [(id: String, view: AnyView)] {
@@ -217,6 +216,7 @@ struct PaymentDetails_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
         let data = PaymentData(
             id: "id",
             payment: .init(
@@ -232,7 +232,19 @@ struct PaymentDetails_Previews: PreviewProvider {
                     id: "id1",
                     title: "title",
                     subtitle: "subtitle",
-                    amount: .sek(200),
+                    newAmount: .sek(250),
+                    currentAmount: .sek(200),
+                    discounts: [
+                        .init(
+                            code: "TOGETHER",
+                            amount: .init(amount: "10", currency: "SEK"),
+                            title: "15% discount for 12 months",
+                            listOfAffectedInsurances: [],
+                            validUntil: nil,
+                            canBeDeleted: true,
+                            discountId: "id"
+                        )
+                    ],
                     periods: [
                         .init(
                             id: "1",
@@ -256,7 +268,19 @@ struct PaymentDetails_Previews: PreviewProvider {
                     id: "id2",
                     title: "title 2",
                     subtitle: "subtitle 2",
-                    amount: .sek(300),
+                    newAmount: .sek(350),
+                    currentAmount: .sek(300),
+                    discounts: [
+                        .init(
+                            code: "TOGETHER",
+                            amount: .init(amount: "10", currency: "SEK"),
+                            title: "15% discount for 12 months",
+                            listOfAffectedInsurances: [],
+                            validUntil: nil,
+                            canBeDeleted: true,
+                            discountId: "id"
+                        )
+                    ],
                     periods: [
                         .init(
                             id: "1",

@@ -22,7 +22,19 @@ public class hPaymentClientDemo: hPaymentClient {
                         id: "id",
                         title: "Hemförsäkring Bostadsrätt Standard",
                         subtitle: "Bastugatan 25 ∙ Bara du",
-                        amount: .sek(200),
+                        newAmount: .sek(250),
+                        currentAmount: .sek(200),
+                        discounts: [
+                            .init(
+                                code: "TOGETHER",
+                                amount: .init(amount: "10", currency: "SEK"),
+                                title: "15% discount for 12 months",
+                                listOfAffectedInsurances: [],
+                                validUntil: nil,
+                                canBeDeleted: true,
+                                discountId: "id"
+                            )
+                        ],
                         periods: [
                             .init(
                                 id: "id",
@@ -38,7 +50,19 @@ public class hPaymentClientDemo: hPaymentClient {
                         id: "id1",
                         title: "Kattförsäkring Basic",
                         subtitle: "Lola ∙ Huskatt/blandras",
-                        amount: .sek(200),
+                        newAmount: .sek(250),
+                        currentAmount: .sek(200),
+                        discounts: [
+                            .init(
+                                code: "TOGETHER",
+                                amount: .init(amount: "10", currency: "SEK"),
+                                title: "15% discount for 12 months",
+                                listOfAffectedInsurances: [],
+                                validUntil: nil,
+                                canBeDeleted: true,
+                                discountId: "id"
+                            )
+                        ],
                         periods: [
                             .init(
                                 id: "id2",
@@ -81,7 +105,19 @@ public class hPaymentClientDemo: hPaymentClient {
                             id: "id",
                             title: "Hemförsäkring Bostadsrätt Standard",
                             subtitle: "Bastugatan 25 ∙ Bara du",
-                            amount: .sek(200),
+                            newAmount: .sek(250),
+                            currentAmount: .sek(200),
+                            discounts: [
+                                .init(
+                                    code: "TOGETHER",
+                                    amount: .init(amount: "10", currency: "SEK"),
+                                    title: "15% discount for 12 months",
+                                    listOfAffectedInsurances: [],
+                                    validUntil: nil,
+                                    canBeDeleted: true,
+                                    discountId: "id"
+                                )
+                            ],
                             periods: [
                                 .init(
                                     id: "id",
@@ -97,7 +133,19 @@ public class hPaymentClientDemo: hPaymentClient {
                             id: "id1",
                             title: "Kattförsäkring Basic",
                             subtitle: "Lola ∙ Huskatt/blandras",
-                            amount: .sek(200),
+                            newAmount: .sek(250),
+                            currentAmount: .sek(200),
+                            discounts: [
+                                .init(
+                                    code: "TOGETHER",
+                                    amount: .init(amount: "10", currency: "SEK"),
+                                    title: "15% discount for 12 months",
+                                    listOfAffectedInsurances: [],
+                                    validUntil: nil,
+                                    canBeDeleted: true,
+                                    discountId: "id"
+                                )
+                            ],
                             periods: [
                                 .init(
                                     id: "id2",
