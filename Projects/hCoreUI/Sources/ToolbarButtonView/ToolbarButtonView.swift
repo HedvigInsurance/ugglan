@@ -96,7 +96,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .chatNotification:
             return 30
         case .travelCertificate:
-            return 5
+            return 60
         default:
             return nil
         }
@@ -142,7 +142,15 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             onShow()
             return true
         case .travelCertificate:
-            if let hasSeenTooltip = UserDefaults.standard.value(forKey: userDefaultsKey) as? Bool, hasSeenTooltip {
+            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
+                let timeIntervalSincePast = abs(
+                    pastDate.timeIntervalSince(Date())
+                )
+
+                if timeIntervalSincePast > timeInterval {
+                    onShow()
+                    return true
+                }
                 return false
             }
             onShow()
@@ -178,10 +186,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .chatNotification(let lastMessageTimeStamp):
             UserDefaults.standard.setValue(lastMessageTimeStamp, forKey: userDefaultsKey)
         case .travelCertificate:
-            Task {
-                try await Task.sleep(nanoseconds: 1_000_000_000)
-                UserDefaults.standard.setValue(true, forKey: userDefaultsKey)
-            }
+            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         default:
             break
         }
