@@ -714,6 +714,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 Task {
                     await handleClaimDetails(claimId: claimId)
                 }
+            case .INSURANCE_EVIDENCE:
+                self.isInsuranceEvidencePresented = true
             }
         }
     }
