@@ -10,6 +10,7 @@ import EditCoInsuredShared
 import Forever
 import Foundation
 import Home
+import InsuranceEvidence
 import Market
 import MoveFlow
 import Payment
@@ -62,6 +63,13 @@ struct LoggedInNavigation: View {
             .handleEditCoInsured(
                 with: vm.travelCertificateNavigationVm.editCoInsuredVm
             )
+        }
+        .modally(
+            presented: $vm.isInsuranceEvidencePresented,
+            options: .constant(.alwaysOpenOnTop),
+            tracking: nil
+        ) {
+            InsuranceEvidenceNavigation()
         }
         .modally(
             presented: $vm.isMoveContractPresented,
@@ -546,6 +554,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var isInsuranceEvidencePresented = false
     @Published var isAddonErrorPresented: String?
     let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
@@ -753,6 +762,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.selectedTab = 3
             case .travelCertificate:
                 self.isTravelInsurancePresented = true
+            case .insuranceEvidence:
+                self.isInsuranceEvidencePresented = true
             case .helpCenter:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 0
