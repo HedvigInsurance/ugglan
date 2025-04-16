@@ -79,7 +79,11 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     @hColorBuilder
     static func getFillColor(isSelected: Bool, enabled: Bool) -> some hColor {
         if !enabled {
-            hFillColor.Translucent.disabled
+            if isSelected {
+                hFillColor.Translucent.disabled
+            } else {
+                hSurfaceColor.Opaque.primary
+            }
         } else if isSelected {
             hSignalColor.Green.element
         } else {
