@@ -62,7 +62,10 @@ struct PaymentDetailsView: View {
         var list: [(id: String, view: AnyView)] = []
 
         for discount in data.discounts {
-            let view = AnyView(PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount)))
+            let view = AnyView(
+                PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount))
+                    .hWithoutHorizontalPadding([.row])
+            )
             list.append(("\(discount.code)", view))
 
         }
