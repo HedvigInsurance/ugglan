@@ -22,7 +22,7 @@ enum ProfileRowType {
         case .certificates:
             return "Certificates"
         case .insuranceEvidence:
-            return "Legal protection"
+            return "Insurance Evidence"
         }
     }
     @MainActor
