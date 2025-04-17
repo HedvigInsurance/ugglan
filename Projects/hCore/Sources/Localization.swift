@@ -46,7 +46,7 @@ public enum Localization {
             }
         }
 
-        nonisolated(unsafe)
+        nonisolated
             public var market: Market
         {
             switch self {
@@ -121,11 +121,11 @@ public enum Localization {
             }
         }
 
-        nonisolated(unsafe)
+        nonisolated
             public var foundation: Foundation.Locale
         { Foundation.Locale(identifier: lprojCode) }
 
-        nonisolated(unsafe)
+        nonisolated
             public var lprojCode: String
         {
             switch self {

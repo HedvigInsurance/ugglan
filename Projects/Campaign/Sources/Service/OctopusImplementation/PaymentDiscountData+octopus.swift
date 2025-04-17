@@ -22,6 +22,7 @@ extension Discount {
         amountFromPaymentData: MonetaryAmount?
 
     ) {
+        self.id = UUID().uuidString
         self.amount = amountFromPaymentData
         self.canBeDeleted = true
         self.code = data.code
@@ -36,6 +37,7 @@ extension Discount {
         with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
         discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
     ) {
+        self.id = UUID().uuidString
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description ?? ""
@@ -53,6 +55,7 @@ extension Discount {
         with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
         discountDto discount: ReedeemedCampaingDTO?
     ) {
+        id = UUID().uuidString
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description ?? ""

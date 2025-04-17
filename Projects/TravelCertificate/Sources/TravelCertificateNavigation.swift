@@ -13,6 +13,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     @Published var isDocumentPresented: TravelCertificateModel?
     @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var isInfoViewPresented = false
 
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
@@ -62,11 +63,6 @@ extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProto
         }
     }
 
-}
-
-public enum ListToolBarPlacement {
-    case trailing
-    case leading
 }
 
 public struct TravelCertificateNavigation: View {
@@ -119,6 +115,16 @@ public struct TravelCertificateNavigation: View {
         ) { model in
             PDFPreview(
                 document: .init(displayName: model.title, url: model.url.absoluteString, type: .unknown)
+            )
+        }
+        .detent(
+            presented: $vm.isInfoViewPresented,
+            style: [.height],
+            options: .constant(.withoutGrabber)
+        ) {
+            InfoView(
+                title: L10n.TravelCertificate.Info.title,
+                description: L10n.TravelCertificate.Info.subtitle
             )
         }
         .modally(
