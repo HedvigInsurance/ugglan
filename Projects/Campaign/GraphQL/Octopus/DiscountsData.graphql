@@ -13,6 +13,9 @@ query Discounts {
         ...MemberReferralFragment2
       }
     }
+    futureCharge {
+        ...MemberChargeFragment
+    }
   }
 }
 

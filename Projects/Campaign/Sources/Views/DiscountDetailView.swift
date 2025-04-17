@@ -34,18 +34,16 @@ public struct DiscountDetailView: View {
                         startRemoveCode()
                     }
                     Spacer()
-                    if vm.options.contains(.forPayment), let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmount)
-                    } else if let title = vm.discount.title {
-                        hText(title, style: .label).multilineTextAlignment(.trailing)
-                            .fixedSize(horizontal: false, vertical: true)
+                    if let discount = vm.discount.amount {
+                        hText(discount.formattedNegativeAmountPerMonth)
                     }
                 }
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top) {
-                        if let title = vm.discount.title, vm.options.contains(.forPayment) {
+                        if let title = vm.discount.title {
                             hText(title, style: .label)
-                        } else if !vm.discount.listOfAffectedInsurances.isEmpty {
+                        }
+                        if !vm.discount.listOfAffectedInsurances.isEmpty {
                             VStack(alignment: .leading, spacing: 0) {
                                 ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
                                     hText(affectedInsurance.displayName, style: .label)
@@ -158,5 +156,6 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             DiscountDetailView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
             DiscountDetailView(vm: .init(options: [.showExpire], discount: discount2))
         }
+        .environmentObject(Router())
     }
 }

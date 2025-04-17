@@ -6,6 +6,8 @@ import hGraphQL
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
     let discounts: [Discount]
     let referralsData: ReferralsData
+    let netAmount: MonetaryAmount
+    let grossAmount: MonetaryAmount
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
@@ -34,6 +36,22 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.validUntil = validUntil
         self.canBeDeleted = canBeDeleted
         self.discountId = discountId
+    }
+
+    @MainActor
+    public init(
+        referral: Referral,
+        nbOfReferrals: Int
+    ) {
+        self.code = referral.name
+        self.amount = referral.activeDiscount
+        self.title =
+            referral.invitedYou
+            ? L10n.Forever.Referral.invitedYou(referral.name) : L10n.Forever.Referral.invitedByYou(nbOfReferrals)
+        self.listOfAffectedInsurances = []
+        self.validUntil = nil
+        self.canBeDeleted = true
+        self.discountId = referral.id
     }
 
     @MainActor

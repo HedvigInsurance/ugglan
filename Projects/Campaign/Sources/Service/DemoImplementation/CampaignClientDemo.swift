@@ -55,7 +55,9 @@ public class hCampaignClientDemo: hCampaignClient {
                     .init(id: "id14", name: "Name", activeDiscount: .sek(10), status: .active),
                     .init(id: "id15", name: "Name", activeDiscount: .sek(10), status: .active),
                 ]
-            )
+            ),
+            netAmount: .sek(220),
+            grossAmount: .sek(260)
         )
     }
 }
