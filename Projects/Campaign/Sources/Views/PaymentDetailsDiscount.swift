@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct PaymentDetailsDiscountView: View {
+public struct DiscountDetailView: View {
     @ObservedObject var vm: PaymentDetailsDiscountViewModel
     @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
 
@@ -155,8 +155,8 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             discountId: "1"
         )
         return VStack {
-            PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
-            PaymentDetailsDiscountView(vm: .init(options: [.showExpire], discount: discount2))
+            DiscountDetailView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
+            DiscountDetailView(vm: .init(options: [.showExpire], discount: discount2))
         }
     }
 }

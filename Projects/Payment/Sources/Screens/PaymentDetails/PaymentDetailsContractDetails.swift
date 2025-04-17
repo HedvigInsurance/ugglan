@@ -21,7 +21,7 @@ struct ContractDetails: View {
                     HStack {
                         hText(contract.title)
                             .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
+                            .fixedSize(horizontal: false, vertical: expandedContracts.contains(contract.id))
                         Spacer()
                     }
 
@@ -99,7 +99,7 @@ struct ContractDetails: View {
 
                     if !contract.discounts.isEmpty {
                         ForEach(contract.discounts) { discount in
-                            PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount))
+                            DiscountDetailView(vm: .init(options: [.forPayment], discount: discount))
                         }
                     }
                     hRow {

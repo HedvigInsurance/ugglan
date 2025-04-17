@@ -18,15 +18,15 @@ struct PaymentDetailsView: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                contracts
-                paymentInfo
-                paymentInfoDetails
+                contractsSection
+                referralSection
+                paymentDetailsSection
             }
             .padding(.vertical, .padding8)
         }
     }
 
-    private var contracts: some View {
+    private var contractsSection: some View {
         VStack(spacing: .padding8) {
             ForEach(data.contracts) { contract in
                 ContractDetails(expandedContracts: $expandedContracts, contract: contract)
@@ -35,52 +35,40 @@ struct PaymentDetailsView: View {
     }
 
     @ViewBuilder
-    private var paymentInfo: some View {
-        if data.discounts.count > 0 {
-            hSection(getPaymentElements(), id: \.id) { row in
-                row.view
+    private var referralSection: some View {
+        if !data.referralDiscounts.isEmpty {
+            hSection(data.referralDiscounts, id: \.id) { referral in
+                DiscountDetailView(vm: .init(options: [.forPayment], discount: referral))
+                    .hWithoutHorizontalPadding([.row])
             }
             .withHeader(
-                title: L10n.paymentsDiscountsSectionTitle,
+                title: L10n.paymentsReferralsInfoTitle,
                 infoButtonDescription: featureFlags.isRedeemCampaignDisabled
-                    ? nil : L10n.paymentsDiscountInfoDescription,
-                withoutBottomPadding: true
+                ? nil : L10n.paymentsDiscountInfoDescription,
+                withoutBottomPadding: false
             )
             .sectionContainerStyle(.transparent)
-            .dividerInsets(.all, 0)
-
-        } else {
-            hSection(getPaymentElements(), id: \.id) { row in
-                row.view
-            }
-            .sectionContainerStyle(.transparent)
-            .dividerInsets(.all, 0)
+            .hSectionHeaderWithDivider
+            .hWithoutHorizontalPadding([.row, .divider])
         }
     }
 
-    private func getPaymentElements() -> [(id: String, view: AnyView)] {
-        var list: [(id: String, view: AnyView)] = []
-
-        for discount in data.discounts {
-            let view = AnyView(
-                PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount))
-                    .hWithoutHorizontalPadding([.row])
-            )
-            list.append(("\(discount.code)", view))
-
+    @ViewBuilder
+    private var paymentDetailsSection: some View {
+        hSection {
+            carriedAdjustmentView
+            settlementAdjustmentView
+            total
+            paymentDue
+            bankDetails
         }
-
-        if let carriedAdjustment = data.payment.carriedAdjustment, carriedAdjustment.floatAmount > 0 {
-            list.append(("carriedAdjusment", AnyView(carriedAdjustmentView)))
-        }
-        if let settlementAdjustment = data.payment.settlementAdjustment, settlementAdjustment.floatAmount > 0 {
-            list.append(("settlementAdjustmentView", AnyView(settlementAdjustmentView)))
-        }
-        list.append(("total", AnyView(total)))
-        list.append(("paymentDue", AnyView(paymentDue)))
-        return list
+        .withHeader(title: L10n.PaymentDetails.NavigationBar.title, infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription, withoutBottomPadding: false,
+        )
+        .sectionContainerStyle(.transparent)
+        .hSectionHeaderWithDivider
+        .hWithoutHorizontalPadding([.row, .divider])
     }
-
+    
     @ViewBuilder
     private var carriedAdjustmentView: some View {
         if let carriedAdjustment = data.payment.carriedAdjustment, carriedAdjustment.floatAmount > 0 {
@@ -94,7 +82,6 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsCarriedAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding([.row])
         }
     }
 
@@ -111,10 +98,9 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsSettlementAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding([.row])
         }
     }
-
+    
     @ViewBuilder
     private var total: some View {
         hRow {
@@ -137,7 +123,6 @@ struct PaymentDetailsView: View {
                 hText(" ")
             }
         }
-        .hWithoutHorizontalPadding([.row])
         .accessibilityElement(children: .combine)
     }
 
@@ -162,56 +147,24 @@ struct PaymentDetailsView: View {
                 }
             }
         }
-        .hWithoutHorizontalPadding([.row])
         .accessibilityElement(children: .combine)
     }
-
+    
     @ViewBuilder
-    private var paymentInfoDetails: some View {
+    private var bankDetails: some View {
         if let paymentDetails = data.paymentDetails {
-            hSection(getListForPaymentDetails(for: paymentDetails), id: \.id) { item in
-                item.view
-            }
-            .sectionContainerStyle(.transparent)
-        }
-    }
-
-    private func getListForPaymentDetails(
-        for paymentDetails: PaymentData.PaymentDetails
-    ) -> [(id: String, view: AnyView)] {
-        var list: [(id: String, view: AnyView)] = []
-        list.append(("header", AnyView(paymentDetailsHeaderView)))
-
-        for item in paymentDetails.getDisplayList {
-            let view = hRow {
-                HStack {
-                    hText(item.key)
-                    Spacer()
-                    hText(item.value)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+            hSection(paymentDetails.getDisplayList, id: \.key) { item in
+                hRow {
+                    HStack {
+                        hText(item.key)
+                        Spacer()
+                        hText(item.value)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
                 }
             }
-            .hWithoutHorizontalPadding([.row])
-            .dividerInsets(.all, 0)
-
-            list.append((item.key, AnyView(view)))
+            .hWithoutHorizontalPadding([.section, .row, .divider])
         }
-        return list
-    }
-
-    private var paymentDetailsHeaderView: some View {
-        hRow {
-            HStack {
-                hText(L10n.PaymentDetails.NavigationBar.title)
-                Spacer()
-                InfoViewHolder(
-                    title: L10n.paymentsPaymentDetailsInfoTitle,
-                    description: L10n.paymentsPaymentDetailsInfoDescription
-                )
-                .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
-        .hWithoutHorizontalPadding([.row])
     }
 }
 
@@ -304,7 +257,18 @@ struct PaymentDetails_Previews: PreviewProvider {
                     ]
                 ),
             ],
-            discounts: [
+            referralDiscounts: [
+                .init(
+                    code: "MY CODE",
+                    amount: .sek(30),
+                    title: "3 friends invited",
+                    listOfAffectedInsurances: [],
+                    validUntil: nil,
+                    canBeDeleted: false,
+                    discountId: "FRIENDS"
+                )
+            ],
+            otherDiscounts: [
                 .init(
                     code: "CODE",
                     amount: .sek(100),
@@ -326,18 +290,9 @@ struct PaymentDetails_Previews: PreviewProvider {
                     validUntil: "2023-11-22",
                     canBeDeleted: false,
                     discountId: "CODE2"
-                ),
-                .init(
-                    code: "MY CODE",
-                    amount: .sek(30),
-                    title: "3 friends invited",
-                    listOfAffectedInsurances: [],
-                    validUntil: nil,
-                    canBeDeleted: false,
-                    discountId: "FRIENDS"
-                ),
+                )
             ],
-            paymentDetails: nil,
+            paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
             addedToThePayment: nil
         )
         return PaymentDetailsView(data: data)

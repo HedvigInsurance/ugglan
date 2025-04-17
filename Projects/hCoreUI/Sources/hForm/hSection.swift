@@ -293,6 +293,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHSectionHeaderWithDivider: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hSectionHeaderWithDivider: Bool {
+        get { self[EnvironmentHSectionHeaderWithDivider.self] }
+        set { self[EnvironmentHSectionHeaderWithDivider.self] = newValue }
+    }
+}
+
+extension View {
+    public var hSectionHeaderWithDivider: some View {
+        self.environment(\.hSectionHeaderWithDivider, true)
+    }
+}
+
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
@@ -325,6 +342,7 @@ struct hSectionContainer<Content: View>: View {
 public struct hSection<Header: View, Content: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
+    @Environment(\.hSectionHeaderWithDivider) var useHeaderDivider
     @Environment(\.hFieldSize) var fieldSize
     var header: Header?
     var content: Content
@@ -348,10 +366,15 @@ public struct hSection<Header: View, Content: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if header != nil {
-                header
-                    .environment(\.defaultHTextStyle, .body1)
-                    .accessibilityAddTraits(.isHeader)
-                    .foregroundColor(hTextColor.Opaque.primary)
+                VStack(spacing: .padding8) {
+                    header
+                        .environment(\.defaultHTextStyle, .body1)
+                        .accessibilityAddTraits(.isHeader)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                    if useHeaderDivider {
+                        hRowDivider()
+                    }
+                }
             }
             hSectionContainer {
                 content

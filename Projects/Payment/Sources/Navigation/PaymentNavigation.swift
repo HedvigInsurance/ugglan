@@ -32,7 +32,7 @@ public struct PaymentsNavigation: View {
                     switch routerAction {
                     case .discounts:
                         let store: PaymentStore = globalPresentableStoreContainer.get()
-                        let paymentDataDiscounts = store.state.paymentData?.discounts ?? []
+                        let paymentDataDiscounts = store.state.paymentData?.otherDiscounts ?? []
                         CampaignNavigation(
                             campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts, router: router),
                             onEditCode: {

@@ -75,7 +75,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         ]
                     ),
                 ],
-                discounts: [
+                referralDiscounts: [],
+                otherDiscounts: [
                     .init(
                         code: "CODE 2",
                         amount: .sek(30),
@@ -158,7 +159,8 @@ public class hPaymentClientDemo: hPaymentClient {
                             ]
                         ),
                     ],
-                    discounts: [
+                    referralDiscounts: [],
+                    otherDiscounts: [
                         .init(
                             code: "CODE 2",
                             amount: .sek(30),
@@ -203,7 +205,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         ),
                         status: .success,
                         contracts: [],
-                        discounts: [],
+                        referralDiscounts: [],
+                        otherDiscounts: [],
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
@@ -227,7 +230,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         ),
                         status: .addedtoFuture(date: "2023-12-12"),
                         contracts: [],
-                        discounts: [],
+                        referralDiscounts: [],
+                        otherDiscounts: [],
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )

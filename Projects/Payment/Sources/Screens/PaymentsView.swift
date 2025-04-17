@@ -86,6 +86,7 @@ public struct PaymentsView: View {
                 if let upcomingPayment = state.paymentData {
                     paymentView(for: upcomingPayment)
                 }
+
                 if state.ongoingPaymentData.isEmpty && state.paymentData == nil {
                     VStack(spacing: 16) {
                         Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
