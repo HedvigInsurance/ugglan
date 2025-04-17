@@ -8,11 +8,9 @@ struct DiscountCodeSectionView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            hSection {
-                hFloatingField(
-                    value: foreverNavigationVm.foreverData?.discountCode ?? "",
-                    placeholder: L10n.ReferralsEmpty.Code.headline
-                ) {
+            DiscountCodeField(
+                discountCode: foreverNavigationVm.foreverData?.discountCode ?? "",
+                onTap: {
                     UIPasteboard.general.string = foreverNavigationVm.foreverData?.discountCode
                     Toasts.shared.displayToastBar(
                         toast: .init(
@@ -22,39 +20,69 @@ struct DiscountCodeSectionView: View {
                         )
                     )
                 }
-                .hFieldTrailingView {
-                    Image(uiImage: hCoreUIAssets.copy.image)
-                        .accessibilityHidden(true)
-                }
-            }
+            )
             .accessibilityElement(children: .combine)
             .accessibilityValue(L10n.voiceOverCopyCode)
             .accessibilityAddTraits(.isButton)
-            hSection {
-                VStack(spacing: 8) {
-                    if let code = foreverNavigationVm.foreverData?.discountCode {
-                        ModalPresentationSourceWrapper(
-                            content: {
-                                hButton.LargeButton(type: .primary) {
-                                    foreverNavigationVm.shareCode(code: code)
-                                } content: {
-                                    hText(L10n.ReferralsEmpty.shareCodeButton)
-                                }
-                            },
-                            vm: foreverNavigationVm.modalPresentationSourceWrapperViewModel
-                        )
 
-                        hButton.LargeButton(type: .ghost) {
-                            foreverNavigationVm.isChangeCodePresented = true
-                        } content: {
-                            hText(L10n.ReferralsChange.changeCode)
-                        }
-                    }
-                }
+            if let code = foreverNavigationVm.foreverData?.discountCode {
+                ActionButtons(
+                    code: code,
+                    onShare: { vm in
+                        foreverNavigationVm.shareCode(code: code, modalPresentationWrapperVM: vm)
+                    },
+                    onChange: { foreverNavigationVm.isChangeCodePresented = true }
+                )
             }
-            .padding(.vertical, .padding16)
         }
         .sectionContainerStyle(.transparent)
+    }
+}
+
+private struct DiscountCodeField: View {
+    let discountCode: String
+    let onTap: () -> Void
+
+    var body: some View {
+        hSection {
+            hFloatingField(
+                value: discountCode,
+                placeholder: L10n.ReferralsEmpty.Code.headline,
+                onTap: onTap
+            )
+            .hFieldTrailingView {
+                Image(uiImage: hCoreUIAssets.copy.image)
+                    .accessibilityHidden(true)
+            }
+        }
+    }
+}
+
+private struct ActionButtons: View {
+    let code: String
+    let onShare: (_ vm: ModalPresentationSourceWrapperViewModel) -> Void
+    let onChange: () -> Void
+    @State var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
+    var body: some View {
+        hSection {
+            VStack(spacing: .padding8) {
+                ModalPresentationSourceWrapper(
+                    content: {
+                        hButton.LargeButton(type: .primary) {
+                            onShare(modalPresentationSourceWrapperViewModel)
+                        } content: {
+                            hText(L10n.ReferralsEmpty.shareCodeButton)
+                        }
+                    },
+                    vm: modalPresentationSourceWrapperViewModel
+                )
+
+                hButton.LargeButton(type: .ghost, action: onChange) {
+                    hText(L10n.ReferralsChange.changeCode)
+                }
+            }
+        }
+        .padding(.vertical, .padding16)
     }
 }
 
@@ -65,5 +93,6 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
+            .environmentObject(ForeverNavigationViewModel())
     }
 }

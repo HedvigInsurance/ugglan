@@ -358,7 +358,7 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
                 id: UUID().uuidString,
                 size: 0,
                 mimeType: .JPEG,
-                name: "Camera shoot",
+                name: "Camera shoot \(Date().displayDateWithTimeStamp).jpeg",
                 source: .data(data: image.jpegData(compressionQuality: 0.9)!)
             )
             sendMessage(.init(type: .file(file: file)))
@@ -379,7 +379,7 @@ extension ChatInputViewModel: PHPickerViewControllerDelegate {
                     id: UUID().uuidString,
                     size: 0,
                     mimeType: .JPEG,
-                    name: "\(Date().currentTimeMillis).jpeg",
+                    name: "\(Date().displayDateWithTimeStamp).jpeg",
                     source: .localFile(results: selectedItem)
                 )
                 files.append(file)
@@ -388,7 +388,7 @@ extension ChatInputViewModel: PHPickerViewControllerDelegate {
                     id: UUID().uuidString,
                     size: 0,
                     mimeType: .MOV,
-                    name: "\(Date().currentTimeMillis).mov",
+                    name: "\(Date().displayDateWithTimeStamp).mov",
                     source: .localFile(results: selectedItem)
                 )
                 files.append(file)

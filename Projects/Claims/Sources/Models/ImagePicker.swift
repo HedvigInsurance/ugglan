@@ -53,7 +53,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
                             id: id,
                             size: 0,
                             mimeType: .JPEG,
-                            name: "\(Date().currentTimeMillis).jpeg",
+                            name: "\(Date().displayDateWithTimeStamp).jpeg",
                             source: .localFile(results: selectedItem)
                         )
                     files.append(file)
@@ -64,7 +64,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
                             id: id,
                             size: 0,
                             mimeType: .MOV,
-                            name: "\(Date().currentTimeMillis).mov",
+                            name: "\(Date().displayDateWithTimeStamp).mov",
                             source: .localFile(results: selectedItem)
                         )
                     files.append(file)

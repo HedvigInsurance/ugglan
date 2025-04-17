@@ -6,20 +6,11 @@ import hGraphQL
 struct ChangeCodeView: View {
     @ObservedObject private var vm: ChangeCodeViewModel
     @EnvironmentObject private var router: Router
-    @ObservedObject private var foreverNavigationVm: ForeverNavigationViewModel
 
     init(
         foreverNavigationVm: ForeverNavigationViewModel
     ) {
-        self.foreverNavigationVm = foreverNavigationVm
-
-        let inputVm = TextInputViewModel(
-            masking: .init(type: .none),
-            input: foreverNavigationVm.foreverData?.discountCode ?? "",
-            title: L10n.ReferralsEmpty.Code.headline
-        )
-
-        self.vm = .init(inputVm: inputVm, foreverVm: foreverNavigationVm)
+        self.vm = .init(input: foreverNavigationVm.foreverData?.discountCode ?? "", foreverVm: foreverNavigationVm)
     }
 
     var body: some View {
@@ -36,14 +27,15 @@ class ChangeCodeViewModel: ObservableObject {
     @Published var inputVm: TextInputViewModel
 
     var router: Router?
-    weak var foreverVm: ForeverNavigationViewModel?
+    let foreverVm: ForeverNavigationViewModel?
 
     init(
-        inputVm: TextInputViewModel,
+        input: String,
         foreverVm: ForeverNavigationViewModel
     ) {
-        self.inputVm = inputVm
         self.foreverVm = foreverVm
+
+        self.inputVm = ChangeCodeViewModel.createInputViewModel(input: input)
 
         inputVm.onSave = { [weak self] text in
             try await self?.handleOnSave(text: text)
@@ -52,6 +44,15 @@ class ChangeCodeViewModel: ObservableObject {
         inputVm.onDismiss = { [weak self] in
             try await self?.dismissRouter()
         }
+    }
+
+    private static func createInputViewModel(input: String) -> TextInputViewModel {
+        let inputVm = TextInputViewModel(
+            masking: .init(type: .none),
+            input: input,
+            title: L10n.ReferralsEmpty.Code.headline
+        )
+        return inputVm
     }
 
     private func dismissRouter() async throws {
@@ -68,5 +69,6 @@ class ChangeCodeViewModel: ObservableObject {
 struct ChangeCodeView_Previews: PreviewProvider {
     static var previews: some View {
         ChangeCodeView(foreverNavigationVm: .init())
+            .environmentObject(Router())
     }
 }
