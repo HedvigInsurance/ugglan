@@ -12,6 +12,10 @@ extension PaymentDiscountsData {
         self.discounts = data.currentMember.redeemedCampaigns.filter({ $0.type == .voucher })
             .compactMap({ .init(with: $0, amountFromPaymentData: amountFromPaymentData) })
         self.referralsData = .init(with: data.currentMember.referralInformation)
+        self.grossAmount =
+            .init(optionalFragment: data.currentMember.futureCharge?.gross.fragments.moneyFragment) ?? .sek(0)
+        self.netAmount =
+            .init(optionalFragment: data.currentMember.futureCharge?.net.fragments.moneyFragment) ?? .sek(0)
     }
 }
 
