@@ -6,6 +6,7 @@ struct TooltipView: View {
     @Binding var displayTooltip: Bool
     let type: ToolbarOptionType
     let timeInterval: TimeInterval
+    let placement: ListToolBarPlacement
 
     func canShowTooltip() -> Bool {
         if type.showAsTooltip {
@@ -21,9 +22,9 @@ struct TooltipView: View {
                     HStack {
                         Spacer()
                         Triangle()
-                            .fill(hFillColor.Opaque.secondary)
+                            .fill(type.tooltipColor)
                             .frame(width: 12, height: 6)
-                            .padding(.trailing, .padding16)
+                            .padding(.trailing, trailingPadding(for: placement))
                     }
 
                     hText(type.textToShow ?? "", style: .label)
@@ -31,7 +32,7 @@ struct TooltipView: View {
                         .padding(.top, 6.5)
                         .padding(.bottom, 7.5)
                         .foregroundColor(hTextColor.Opaque.negative)
-                        .background(hFillColor.Opaque.secondary)
+                        .background(type.tooltipColor)
                         .cornerRadius(.cornerRadiusS)
                 }
                 .transition(.scale(scale: 0, anchor: UnitPoint(x: 0.90, y: 0)).combined(with: .opacity))
@@ -49,6 +50,15 @@ struct TooltipView: View {
                     }
                 }
             }
+        }
+    }
+
+    func trailingPadding(for placement: ListToolBarPlacement) -> CGFloat {
+        switch placement {
+        case .leading:
+            return 70
+        case .trailing:
+            return .padding16
         }
     }
 }
@@ -72,11 +82,17 @@ struct Triangle: Shape {
     }
 }
 
-#Preview{
+#Preview {
     VStack {
         Triangle().fill(Color.red)
             .frame(width: 120, height: 60)
             .background(Color.blue)
         Spacer()
+    }
+}
+
+#Preview {
+    VStack {
+        TooltipView(displayTooltip: .constant(true), type: .travelCertificate, timeInterval: 1, placement: .trailing)
     }
 }
