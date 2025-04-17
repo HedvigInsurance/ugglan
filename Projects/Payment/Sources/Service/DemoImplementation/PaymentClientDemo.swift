@@ -22,8 +22,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         id: "id",
                         title: "Hemförsäkring Bostadsrätt Standard",
                         subtitle: "Bastugatan 25 ∙ Bara du",
-                        newAmount: .sek(250),
-                        currentAmount: .sek(200),
+                        netAmount: .sek(250),
+                        grossAmount: .sek(200),
                         discounts: [
                             .init(
                                 code: "TOGETHER",
@@ -50,8 +50,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         id: "id1",
                         title: "Kattförsäkring Basic",
                         subtitle: "Lola ∙ Huskatt/blandras",
-                        newAmount: .sek(250),
-                        currentAmount: .sek(200),
+                        netAmount: .sek(250),
+                        grossAmount: .sek(200),
                         discounts: [
                             .init(
                                 code: "TOGETHER",
@@ -105,8 +105,8 @@ public class hPaymentClientDemo: hPaymentClient {
                             id: "id",
                             title: "Hemförsäkring Bostadsrätt Standard",
                             subtitle: "Bastugatan 25 ∙ Bara du",
-                            newAmount: .sek(250),
-                            currentAmount: .sek(200),
+                            netAmount: .sek(250),
+                            grossAmount: .sek(200),
                             discounts: [
                                 .init(
                                     code: "TOGETHER",
@@ -133,8 +133,8 @@ public class hPaymentClientDemo: hPaymentClient {
                             id: "id1",
                             title: "Kattförsäkring Basic",
                             subtitle: "Lola ∙ Huskatt/blandras",
-                            newAmount: .sek(250),
-                            currentAmount: .sek(200),
+                            netAmount: .sek(250),
+                            grossAmount: .sek(200),
                             discounts: [
                                 .init(
                                     code: "TOGETHER",

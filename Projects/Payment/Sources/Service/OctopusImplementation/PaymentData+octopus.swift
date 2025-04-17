@@ -128,8 +128,8 @@ extension PaymentData.ContractPaymentDetails {
         id = UUID().uuidString
         title = data.displayTitle
         subtitle = data.displaySubtitle
-        currentAmount = .init(fragment: data.gross.fragments.moneyFragment)
-        newAmount = net
+        grossAmount = .init(fragment: data.gross.fragments.moneyFragment)
+        netAmount = net
         self.discounts = discounts
         periods = data.periods.compactMap({ .init(with: $0) })
     }

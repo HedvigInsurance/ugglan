@@ -73,7 +73,6 @@ public struct PaymentDetailsDiscountView: View {
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
-        .dividerInsets(.all, 0)
     }
 
     @hColorBuilder

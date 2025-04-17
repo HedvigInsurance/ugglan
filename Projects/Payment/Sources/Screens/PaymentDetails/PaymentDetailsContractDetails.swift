@@ -27,15 +27,15 @@ struct ContractDetails: View {
 
                     HStack(spacing: .padding8) {
                         if #available(iOS 16.0, *) {
-                            hText(contract.currentAmount.formattedAmount)
+                            hText(contract.grossAmount.formattedAmount)
                                 .strikethrough()
                                 .foregroundColor(hTextColor.Translucent.secondary)
                         } else {
-                            hText(contract.currentAmount.formattedAmount)
+                            hText(contract.grossAmount.formattedAmount)
                                 .foregroundColor(hTextColor.Translucent.secondary)
                         }
 
-                        hText(contract.newAmount.formattedAmount)
+                        hText(contract.netAmount.formattedAmount)
                     }
 
                     Image(uiImage: hCoreUIAssets.chevronDown.image)
@@ -104,8 +104,8 @@ struct ContractDetails: View {
                     }
                     hRow {
                         PriceField(
-                            newPremium: contract.newAmount,
-                            currentPremium: contract.currentAmount,
+                            newPremium: contract.netAmount,
+                            currentPremium: contract.grossAmount,
                             title: L10n.paymentsSubtotal
                         )
                         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
@@ -138,8 +138,8 @@ struct ContractDetails: View {
             id: "id1",
             title: "title",
             subtitle: "subtitle",
-            newAmount: .sek(250),
-            currentAmount: .sek(200),
+            netAmount: .sek(250),
+            grossAmount: .sek(200),
             discounts: [
                 .init(
                     code: "TOGETHER",

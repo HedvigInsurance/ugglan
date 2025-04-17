@@ -235,8 +235,8 @@ struct PaymentDetails_Previews: PreviewProvider {
                     id: "id1",
                     title: "title",
                     subtitle: "subtitle",
-                    newAmount: .sek(250),
-                    currentAmount: .sek(200),
+                    netAmount: .sek(250),
+                    grossAmount: .sek(200),
                     discounts: [
                         .init(
                             code: "TOGETHER",
@@ -271,8 +271,8 @@ struct PaymentDetails_Previews: PreviewProvider {
                     id: "id2",
                     title: "title 2",
                     subtitle: "subtitle 2",
-                    newAmount: .sek(350),
-                    currentAmount: .sek(300),
+                    netAmount: .sek(350),
+                    grossAmount: .sek(300),
                     discounts: [
                         .init(
                             code: "TOGETHER",
