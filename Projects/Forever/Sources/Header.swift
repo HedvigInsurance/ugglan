@@ -79,10 +79,10 @@ class HeaderViewModel: ObservableObject {
     }
 
     private func setShowPieShart() {
-        if let grossAmount = foreverData?.grossAmount,
-            let netAmount = foreverData?.netAmount,
-            let monthlyDiscountPerReferral = foreverData?.monthlyDiscountPerReferral,
-            let monthlyDiscount = foreverData?.monthlyDiscount
+        if foreverData?.grossAmount != nil,
+            foreverData?.netAmount != nil,
+            foreverData?.monthlyDiscountPerReferral != nil,
+            foreverData?.monthlyDiscount != nil
         {
             self.showPieChart = true
         }
