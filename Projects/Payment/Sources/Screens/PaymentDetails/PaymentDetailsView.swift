@@ -44,7 +44,7 @@ struct PaymentDetailsView: View {
             .withHeader(
                 title: L10n.paymentsReferralsInfoTitle,
                 infoButtonDescription: featureFlags.isRedeemCampaignDisabled
-                ? nil : L10n.paymentsDiscountInfoDescription,
+                    ? nil : L10n.paymentsDiscountInfoDescription,
                 withoutBottomPadding: false
             )
             .sectionContainerStyle(.transparent)
@@ -62,13 +62,16 @@ struct PaymentDetailsView: View {
             paymentDue
             bankDetails
         }
-        .withHeader(title: L10n.PaymentDetails.NavigationBar.title, infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription, withoutBottomPadding: false,
+        .withHeader(
+            title: L10n.PaymentDetails.NavigationBar.title,
+            infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription,
+            withoutBottomPadding: false
         )
         .sectionContainerStyle(.transparent)
         .hSectionHeaderWithDivider
         .hWithoutHorizontalPadding([.row, .divider])
     }
-    
+
     @ViewBuilder
     private var carriedAdjustmentView: some View {
         if let carriedAdjustment = data.payment.carriedAdjustment, carriedAdjustment.floatAmount > 0 {
@@ -100,7 +103,7 @@ struct PaymentDetailsView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var total: some View {
         hRow {
@@ -149,7 +152,7 @@ struct PaymentDetailsView: View {
         }
         .accessibilityElement(children: .combine)
     }
-    
+
     @ViewBuilder
     private var bankDetails: some View {
         if let paymentDetails = data.paymentDetails {
@@ -290,7 +293,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                     validUntil: "2023-11-22",
                     canBeDeleted: false,
                     discountId: "CODE2"
-                )
+                ),
             ],
             paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
             addedToThePayment: nil
