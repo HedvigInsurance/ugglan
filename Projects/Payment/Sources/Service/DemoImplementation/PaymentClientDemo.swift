@@ -22,7 +22,19 @@ public class hPaymentClientDemo: hPaymentClient {
                         id: "id",
                         title: "Hemförsäkring Bostadsrätt Standard",
                         subtitle: "Bastugatan 25 ∙ Bara du",
-                        amount: .sek(200),
+                        netAmount: .sek(250),
+                        grossAmount: .sek(200),
+                        discounts: [
+                            .init(
+                                code: "TOGETHER",
+                                amount: .init(amount: "10", currency: "SEK"),
+                                title: "15% discount for 12 months",
+                                listOfAffectedInsurances: [],
+                                validUntil: nil,
+                                canBeDeleted: true,
+                                discountId: "id"
+                            )
+                        ],
                         periods: [
                             .init(
                                 id: "id",
@@ -38,7 +50,19 @@ public class hPaymentClientDemo: hPaymentClient {
                         id: "id1",
                         title: "Kattförsäkring Basic",
                         subtitle: "Lola ∙ Huskatt/blandras",
-                        amount: .sek(200),
+                        netAmount: .sek(250),
+                        grossAmount: .sek(200),
+                        discounts: [
+                            .init(
+                                code: "TOGETHER",
+                                amount: .init(amount: "10", currency: "SEK"),
+                                title: "15% discount for 12 months",
+                                listOfAffectedInsurances: [],
+                                validUntil: nil,
+                                canBeDeleted: true,
+                                discountId: "id"
+                            )
+                        ],
                         periods: [
                             .init(
                                 id: "id2",
@@ -51,7 +75,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         ]
                     ),
                 ],
-                discounts: [
+                referralDiscounts: [],
+                otherDiscounts: [
                     .init(
                         code: "CODE 2",
                         amount: .sek(30),
@@ -81,7 +106,19 @@ public class hPaymentClientDemo: hPaymentClient {
                             id: "id",
                             title: "Hemförsäkring Bostadsrätt Standard",
                             subtitle: "Bastugatan 25 ∙ Bara du",
-                            amount: .sek(200),
+                            netAmount: .sek(250),
+                            grossAmount: .sek(200),
+                            discounts: [
+                                .init(
+                                    code: "TOGETHER",
+                                    amount: .init(amount: "10", currency: "SEK"),
+                                    title: "15% discount for 12 months",
+                                    listOfAffectedInsurances: [],
+                                    validUntil: nil,
+                                    canBeDeleted: true,
+                                    discountId: "id"
+                                )
+                            ],
                             periods: [
                                 .init(
                                     id: "id",
@@ -97,7 +134,19 @@ public class hPaymentClientDemo: hPaymentClient {
                             id: "id1",
                             title: "Kattförsäkring Basic",
                             subtitle: "Lola ∙ Huskatt/blandras",
-                            amount: .sek(200),
+                            netAmount: .sek(250),
+                            grossAmount: .sek(200),
+                            discounts: [
+                                .init(
+                                    code: "TOGETHER",
+                                    amount: .init(amount: "10", currency: "SEK"),
+                                    title: "15% discount for 12 months",
+                                    listOfAffectedInsurances: [],
+                                    validUntil: nil,
+                                    canBeDeleted: true,
+                                    discountId: "id"
+                                )
+                            ],
                             periods: [
                                 .init(
                                     id: "id2",
@@ -110,7 +159,8 @@ public class hPaymentClientDemo: hPaymentClient {
                             ]
                         ),
                     ],
-                    discounts: [
+                    referralDiscounts: [],
+                    otherDiscounts: [
                         .init(
                             code: "CODE 2",
                             amount: .sek(30),
@@ -155,7 +205,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         ),
                         status: .success,
                         contracts: [],
-                        discounts: [],
+                        referralDiscounts: [],
+                        otherDiscounts: [],
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
@@ -179,7 +230,8 @@ public class hPaymentClientDemo: hPaymentClient {
                         ),
                         status: .addedtoFuture(date: "2023-12-12"),
                         contracts: [],
-                        discounts: [],
+                        referralDiscounts: [],
+                        otherDiscounts: [],
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )

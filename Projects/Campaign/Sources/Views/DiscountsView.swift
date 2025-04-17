@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentsDiscountsView: View {
+struct DiscountsView: View {
     let data: PaymentDiscountsData
     @PresentableStore var store: CampaignStore
     @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
@@ -35,7 +35,7 @@ struct PaymentsDiscountsView: View {
 
     private var discounts: some View {
         hSection(data.discounts) { discount in
-            PaymentDetailsDiscountView(
+            DiscountDetailView(
                 vm: .init(
                     options: [.showExpire],
                     discount: discount
@@ -122,7 +122,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
-        return PaymentsDiscountsView(
+        return DiscountsView(
             data: .init(
                 discounts: [
                     .init(
@@ -169,7 +169,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
-        return PaymentsDiscountsView(
+        return DiscountsView(
             data: .init(
                 discounts: [],
                 referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
@@ -203,7 +203,7 @@ public struct PaymentsDiscountsRootView: View {
             }
         ) { paymentDiscountsData in
             if let paymentDiscountsData {
-                PaymentsDiscountsView(data: paymentDiscountsData)
+                DiscountsView(data: paymentDiscountsData)
             }
         }
     }
