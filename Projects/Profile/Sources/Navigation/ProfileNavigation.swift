@@ -1,6 +1,8 @@
 import EditCoInsuredShared
+import InsuranceEvidence
 import Market
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 
@@ -10,7 +12,8 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published var isDeleteAccountAlreadyRequestedPresented = false
     @Published public var isLanguagePickerPresented = false
     @Published public var isConfirmEmailPreferencesPresented = false
-
+    @Published public var isCreateInsuranceEvidencePresented = false
+    let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
     public let profileRouter = Router()
 
     public func pushToProfile() {
@@ -56,12 +59,21 @@ public struct ProfileNavigation<Content: View>: View {
                             .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)
+                    case .certificates:
+                        CertificatesScreen()
+                            .configureTitle(L10n.Profile.Certificates.title)
+                            .environmentObject(profileNavigationViewModel)
+
                     }
                 }
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in
                     switch redirectType {
                     case .travelCertificate:
-                        redirect(.travelCertificate)
+                        TravelCertificateNavigation(
+                            vm: profileNavigationViewModel.travelCertificateNavigationViewModel,
+                            infoButtonPlacement: .trailing,
+                            useOwnNavigation: false
+                        )
                     default:
                         EmptyView()
                     }
@@ -97,6 +109,9 @@ public struct ProfileNavigation<Content: View>: View {
         ) {
             redirect(.deleteRequestLoading)
         }
+        .modally(presented: $profileNavigationViewModel.isCreateInsuranceEvidencePresented) {
+            InsuranceEvidenceNavigation()
+        }
     }
 }
 
@@ -105,6 +120,7 @@ public enum ProfileRouterType: Hashable {
     case appInfo
     case settings
     case euroBonus
+    case certificates
 }
 
 enum ProfileDetentType: TrackingViewNameProtocol {
@@ -135,6 +151,8 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: SettingsView.self)
         case .euroBonus:
             return .init(describing: EuroBonusView.self)
+        case .certificates:
+            return .init(describing: CertificatesScreen.self)
         }
     }
 }
