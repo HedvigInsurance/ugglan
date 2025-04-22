@@ -35,7 +35,7 @@ struct InsuranceEvidenceInputScreen: View {
             }
             .loadingWithButtonLoading($vm.state)
             .setToolbarLeading {
-                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
+                ToolbarButtonView(types: .constant([ToolbarOptionType.insuranceEvidence]), placement: .leading) { _ in
                     vm.insuranceEvidenceNavigationViewModel?.isInfoViewPresented = true
                 }
             }

@@ -144,7 +144,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             }
             onShow()
             return true
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
                     pastDate.timeIntervalSince(Date())
@@ -158,6 +158,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             }
             onShow()
             return true
+
         default:
             return false
         }
@@ -165,7 +166,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
     var imageSize: CGFloat {
         switch self {
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return 24
         default:
             return 40
@@ -175,7 +176,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
     @hColorBuilder @MainActor
     var tooltipColor: some hColor {
         switch self {
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             hFillColor.Opaque.primary
         default:
             hFillColor.Opaque.secondary
@@ -188,7 +189,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         case .chatNotification(let lastMessageTimeStamp):
             UserDefaults.standard.setValue(lastMessageTimeStamp, forKey: userDefaultsKey)
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         default:
             break
@@ -277,7 +278,7 @@ public struct ToolbarButtonView: View {
 
     private func yOffset(for type: ToolbarOptionType) -> CGFloat {
         switch type {
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return 50
         default:
             return 55
