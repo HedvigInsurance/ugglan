@@ -12,9 +12,9 @@ struct InsuranceEvidenceInputScreen: View {
                 subTitle: .init(.small, .heading2, L10n.Certificates.verifyEmail, alignment: .leading)
             )
             .hFormAttachToBottom {
-                VStack(spacing: 16) {
+                VStack(spacing: .padding16) {
                     hSection {
-                        VStack(spacing: 4) {
+                        VStack(spacing: .padding4) {
                             hFloatingTextField(
                                 masking: .init(type: .email),
                                 value: $vm.insuranceEvidenceInput.email,

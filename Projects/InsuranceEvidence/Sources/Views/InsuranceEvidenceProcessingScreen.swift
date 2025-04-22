@@ -31,8 +31,8 @@ struct InsuranceEvidenceProcessingScreen: View {
 
     private var bottomSuccessView: some View {
         hSection {
-            VStack(spacing: 16) {
-                VStack(spacing: 8) {
+            VStack(spacing: .padding16) {
+                VStack(spacing: .padding8) {
                     ModalPresentationSourceWrapper(
                         content: {
                             hButton.LargeButton(type: .primary) {
