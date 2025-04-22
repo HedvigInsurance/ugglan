@@ -7,14 +7,6 @@ struct ClaimStatus: View {
     var claim: ClaimModel
     var enableTap: Bool
 
-    init(
-        claim: ClaimModel,
-        enableTap: Bool
-    ) {
-        self.claim = claim
-        self.enableTap = enableTap
-    }
-
     @EnvironmentObject var homeRouter: Router
     var tapAction: (ClaimModel) -> Void {
         return { claim in
@@ -63,36 +55,58 @@ struct ClaimPills: View {
 
     var body: some View {
         HStack {
-            if claim.status == .reopened || (claim.status == .closed && claim.outcome != .paid) {
-                hPill(
-                    text: claim.status.title,
-                    color: claim.status.pillColor,
-                    colorLevel: .three
-                )
-            } else if claim.status != .closed {
-                hPill(
-                    text: L10n.Home.ClaimCard.Pill.claim,
-                    color: .grey,
-                    colorLevel: .two
-                )
+            if let statusPill = statusPill {
+                statusPill
             }
-            if let outcome = claim.outcome {
-                hPill(
-                    text: outcome.text.capitalized,
-                    color: outcome.color,
-                    colorLevel: outcome.colorLevel
-                )
+            if let outcomePill = outcomePill {
+                outcomePill
             }
-
-            if let payout = claim.payoutAmount {
-                hPill(
-                    text: payout.formattedAmount,
-                    color: .blue,
-                    colorLevel: .two
-                )
+            if let payoutPill = payoutPill {
+                payoutPill
             }
         }
         .hFieldSize(.small)
+    }
+}
+
+extension ClaimPills {
+    private var statusPill: hPill? {
+        if claim.status == .reopened || (claim.status == .closed && claim.outcome != .paid) {
+            return hPill(
+                text: claim.status.title,
+                color: claim.status.pillColor,
+                colorLevel: .three
+            )
+        } else if claim.status != .closed {
+            return hPill(
+                text: L10n.Home.ClaimCard.Pill.claim,
+                color: .grey,
+                colorLevel: .two
+            )
+        }
+        return nil
+    }
+
+    private var outcomePill: hPill? {
+        if let outcome = claim.outcome {
+            return hPill(
+                text: outcome.text.capitalized,
+                color: outcome.color,
+                colorLevel: outcome.colorLevel
+            )
+        }
+        return nil
+    }
+
+    private var payoutPill: hPill? {
+        if let payout = claim.payoutAmount {
+            return hPill(
+                text: payout.formattedAmount,
+                color: .blue,
+                colorLevel: .two
+            )
+        }
+        return nil
     }
 }
 
@@ -114,268 +128,68 @@ extension ClaimModel.ClaimOutcome {
     }
 }
 
-struct ClaimBeingHandled_Previews: PreviewProvider {
+@MainActor
+extension ClaimModel {
+    static func previewData(
+        id: String = "1",
+        status: ClaimStatus = .closed,
+        outcome: ClaimOutcome? = nil,
+        submittedAt: String? = nil,
+        payoutAmount: MonetaryAmount? = nil
+    ) -> ClaimModel {
+        ClaimModel(
+            id: id,
+            status: status,
+            outcome: outcome,
+            submittedAt: submittedAt,
+            signedAudioURL: "",
+            memberFreeText: nil,
+            payoutAmount: payoutAmount,
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                status: .open,
+                hasClaim: true,
+                claimType: "claim type",
+                unreadMessageCount: 0
+            ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true,
+            infoText: "info text",
+            displayItems: []
+        )
+    }
+}
+
+struct ClaimStatus_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        let data = ClaimModel(
-            id: "1",
-            status: .beingHandled,
-            outcome: nil,
-            submittedAt: "2023-06-10",
-            signedAudioURL: "",
-            memberFreeText: nil,
-            payoutAmount: nil,
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: "info text",
-            displayItems: []
-        )
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: data, enableTap: true)
-
+        return hForm {
+            hSection {
+                VStack(spacing: .padding8) {
+                    ClaimStatus(claim: .previewData(status: .beingHandled), enableTap: true)
+                    ClaimStatus(claim: .previewData(status: .reopened), enableTap: true)
+                    ClaimStatus(
+                        claim: .previewData(
+                            status: .closed,
+                            outcome: .paid,
+                            payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
+                        ),
+                        enableTap: true
+                    )
+                    ClaimStatus(claim: .previewData(status: .closed, outcome: .notCompensated), enableTap: true)
+                    ClaimStatus(claim: .previewData(status: .closed, outcome: .notCovered), enableTap: true)
+                    ClaimStatus(claim: .previewData(status: .closed, outcome: .unresponsive), enableTap: true)
+                }
+            }
+            .sectionContainerStyle(.transparent)
         }
-        .padding(20)
-    }
-}
-
-struct ClaimReopened_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = ClaimModel(
-            id: "1",
-            status: .reopened,
-            outcome: .none,
-            submittedAt: "2023-10-10",
-            signedAudioURL: "",
-            memberFreeText: nil,
-            payoutAmount: nil,
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: "info text",
-            displayItems: []
-        )
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: data, enableTap: true)
-
-        }
-        .padding(20)
-    }
-}
-
-struct ClaimPaid_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = ClaimModel(
-            id: "1",
-            status: .closed,
-            outcome: .paid,
-            submittedAt: "2023-10-10",
-            signedAudioURL: "",
-            memberFreeText: nil,
-            payoutAmount: MonetaryAmount(amount: "100", currency: "SEK"),
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: "info text",
-            displayItems: []
-        )
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: data, enableTap: true)
-        }
-        .padding(20)
-    }
-}
-
-struct ClaimNotCompensated_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = ClaimModel(
-            id: "1",
-            status: .closed,
-            outcome: .notCompensated,
-            submittedAt: "2023-10-10",
-            signedAudioURL: "",
-            memberFreeText: nil,
-            payoutAmount: nil,
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: "info text",
-            displayItems: []
-        )
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: data, enableTap: true)
-
-        }
-        .padding(20)
-    }
-}
-
-struct ClaimNotCovered_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = ClaimModel(
-            id: "1",
-            status: .closed,
-            outcome: .notCovered,
-            submittedAt: "2023-10-10",
-            signedAudioURL: "",
-            memberFreeText: nil,
-            payoutAmount: nil,
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: "info text",
-            displayItems: []
-        )
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: data, enableTap: true)
-
-        }
-        .padding(20)
-    }
-}
-
-struct ClaimNoResponse_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = ClaimModel(
-            id: "1",
-            status: .closed,
-            outcome: .unresponsive,
-            submittedAt: "2023-10-10",
-            signedAudioURL: "",
-            memberFreeText: nil,
-            payoutAmount: nil,
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: nil,
-            displayItems: []
-        )
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: data, enableTap: true)
-
-        }
-        .padding(20)
-    }
-}
-
-struct ClaimClosed_Previews: PreviewProvider {
-    static var previews: some View {
-        let data = ClaimModel(
-            id: "1",
-            status: .closed,
-            outcome: .paid,
-            submittedAt: "2023-10-10",
-            signedAudioURL: "",
-            memberFreeText: nil,
-            payoutAmount: nil,
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "convId",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: "info text",
-            displayItems: []
-        )
-        return VStack(spacing: 20) {
-            ClaimStatus(claim: data, enableTap: true)
-
-        }
-        .padding(20)
     }
 }
