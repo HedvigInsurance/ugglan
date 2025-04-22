@@ -44,6 +44,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         referral: Referral,
         nbOfReferrals: Int
     ) {
+        self.id = UUID().uuidString
         self.code = referral.name
         self.amount = referral.activeDiscount
         self.title =
