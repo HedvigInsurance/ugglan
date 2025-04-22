@@ -8,8 +8,8 @@ struct InsuranceEvidenceInputScreen: View {
         hForm {}
             .sectionContainerStyle(.transparent)
             .hFormTitle(
-                title: .init(.small, .heading2, "Insurance evidence", alignment: .leading),
-                subTitle: .init(.small, .heading2, "Please verify your email address", alignment: .leading)
+                title: .init(.small, .heading2, L10n.InsuranceEvidence.documentTitle, alignment: .leading),
+                subTitle: .init(.small, .heading2, L10n.Certificates.verifyEmail, alignment: .leading)
             )
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
@@ -28,7 +28,7 @@ struct InsuranceEvidenceInputScreen: View {
                         hButton.LargeButton(type: .primary) {
                             vm.confirm()
                         } content: {
-                            hText("Send certificate")
+                            hText(L10n.Certificates.createCertificate)
                         }
                     }
                 }

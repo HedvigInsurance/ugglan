@@ -22,7 +22,7 @@ enum ProfileRowType {
         case .certificates:
             return L10n.Profile.Certificates.title
         case .insuranceEvidence:
-            return "Insurance Evidence"
+            return L10n.InsuranceEvidence.documentTitle
         }
     }
     @MainActor

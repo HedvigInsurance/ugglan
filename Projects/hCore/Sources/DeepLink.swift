@@ -78,7 +78,7 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .claimDetails:
             return L10n.ClaimStatus.ClaimDetails.title
         case .insuranceEvidence:
-            return L10n.LegalProtection.documentTitle
+            return L10n.InsuranceEvidence.documentTitle
         }
     }
     @MainActor

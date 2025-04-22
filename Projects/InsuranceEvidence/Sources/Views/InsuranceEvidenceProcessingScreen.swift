@@ -7,9 +7,9 @@ struct InsuranceEvidenceProcessingScreen: View {
     @EnvironmentObject var router: Router
     var body: some View {
         ProcessingStateView(
-            loadingViewText: L10n.TravelCertificate.generating,
-            successViewTitle: L10n.TravelCertificate.travelCertificateReady,
-            successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
+            loadingViewText: L10n.Certificates.generating,
+            successViewTitle: L10n.Certificates.emailSent,
+            successViewBody: L10n.InsuranceEvidence.emailSentDescription,
             state: $vm.viewState
         )
         .hSuccessBottomAttachedView {
@@ -32,7 +32,6 @@ struct InsuranceEvidenceProcessingScreen: View {
     private var bottomSuccessView: some View {
         hSection {
             VStack(spacing: 16) {
-                InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
                 VStack(spacing: 8) {
                     ModalPresentationSourceWrapper(
                         content: {
@@ -41,7 +40,7 @@ struct InsuranceEvidenceProcessingScreen: View {
                                     await vm?.presentShare()
                                 }
                             } content: {
-                                hText(L10n.TravelCertificate.download)
+                                hText(L10n.Certificates.download)
                             }
                         },
                         vm: vm.modalPresentationSourceWrapperViewModel
@@ -119,7 +118,7 @@ class ProcessingViewModel: ObservableObject {
     }
 
     var fileName: String {
-        "\("Insurance Evidence") \(Date().localDateString)\(".pdf")"
+        "\(L10n.InsuranceEvidence.documentTitle) \(Date().localDateString)\(".pdf")"
     }
 
     enum FileError: LocalizedError {
