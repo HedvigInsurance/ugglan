@@ -8,11 +8,6 @@ struct ClaimStatus: View {
     var enableTap: Bool
 
     @EnvironmentObject var homeRouter: Router
-    var tapAction: (ClaimModel) -> Void {
-        return { claim in
-            homeRouter.push(claim)
-        }
-    }
 
     var body: some View {
         StatusCard(
@@ -29,7 +24,7 @@ struct ClaimStatus: View {
                         hButton.MediumButton(
                             type: .secondary
                         ) {
-                            tapAction(claim)
+                            homeRouter.push(claim)
                         } content: {
                             hText(L10n.ClaimStatus.ClaimDetails.button)
                         }
@@ -42,11 +37,9 @@ struct ClaimStatus: View {
     }
 
     var getSubTitle: String? {
-        if let submittedAt = claim.submittedAt {
-            return L10n.ClaimStatus.ClaimDetails.submitted + " "
-                + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
-        }
-        return nil
+        guard let submittedAt = claim.submittedAt else { return nil }
+        return L10n.ClaimStatus.ClaimDetails.submitted + " "
+            + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
     }
 }
 
