@@ -705,6 +705,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 Task {
                     await handleClaimDetails(claimId: claimId)
                 }
+            case .TRAVEL_CERTIFICATE:
+                self.isTravelInsurancePresented = true
             }
         }
     }

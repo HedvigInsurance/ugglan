@@ -9,7 +9,7 @@ public struct PaymentDiscountsData: Codable, Equatable, Sendable {
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id = UUID().uuidString
+    public let id: String
     public let code: String
     let amount: MonetaryAmount?
     let title: String?
@@ -27,6 +27,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         canBeDeleted: Bool,
         discountId: String
     ) {
+        self.id = UUID().uuidString
         self.code = code
         self.amount = amount
         self.title = title
