@@ -75,7 +75,7 @@ struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
                             hButton.LargeButton(type: .primary) {
 
                             } content: {
-                                hText(L10n.TravelCertificate.download)
+                                hText(L10n.Certificates.download)
                             }
                             hButton.LargeButton(type: .ghost) {
 
