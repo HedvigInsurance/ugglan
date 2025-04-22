@@ -41,7 +41,7 @@ enum ProfileRowType {
                 return hCoreUIAssets.eurobonus.image
             }
         case .travelCertificate, .certificates, .insuranceEvidence:
-            return hCoreUIAssets.documents.image
+            return hCoreUIAssets.document.image
         }
     }
 
