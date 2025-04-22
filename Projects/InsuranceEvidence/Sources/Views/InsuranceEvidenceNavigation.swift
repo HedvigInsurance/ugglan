@@ -5,6 +5,7 @@ import hCoreUI
 @MainActor
 class InsuranceEvidenceNavigationViewModel: ObservableObject {
     let service = InsuranceEvidenceService()
+    @Published var isInfoViewPresented = false
     lazy fileprivate var insuranceEvidenceInputScreenViewModel = InsuranceEvidenceInputScreenViewModel(
         InsuranceEvidenceNavigationViewModel: self
     )
@@ -12,7 +13,7 @@ class InsuranceEvidenceNavigationViewModel: ObservableObject {
 }
 
 public struct InsuranceEvidenceNavigation: View {
-    @State private var vm = InsuranceEvidenceNavigationViewModel()
+    @StateObject private var vm = InsuranceEvidenceNavigationViewModel()
     @EnvironmentObject var router: Router
     public init() {}
 
@@ -29,6 +30,16 @@ public struct InsuranceEvidenceNavigation: View {
                 }
             }
             .withDismissButton()
+        }
+        .detent(
+            presented: $vm.isInfoViewPresented,
+            style: [.height],
+            options: .constant(.withoutGrabber)
+        ) {
+            InfoView(
+                title: L10n.InsuranceEvidence.readMoreTitle,
+                description: L10n.InsuranceEvidence.readMoreDescription
+            )
         }
     }
 }

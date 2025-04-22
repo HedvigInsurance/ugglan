@@ -9,6 +9,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case chat
     case chatNotification(lastMessageTimeStamp: Date?)
     case travelCertificate
+    case insuranceEvidence
 
     @MainActor
     var image: UIImage {
@@ -21,7 +22,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return hCoreUIAssets.inbox.image
         case .chatNotification:
             return hCoreUIAssets.inboxNotification.image
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.image
         }
     }
@@ -36,8 +37,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return L10n.CrossSell.Info.faqChatButton
         case .chatNotification(let lastMessageTimeStamp):
             return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
-        case .travelCertificate:
-            return L10n.hcQuickActionsTravelCertificate
+        case .travelCertificate, .insuranceEvidence:
+            return L10n.InsuranceEvidence.documentTitle
         }
     }
 
@@ -53,6 +54,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return "chatHintNotification"
         case .travelCertificate:
             return "travelCertHint"
+        case .insuranceEvidence:
+            return "insuranceEvidenceHint"
         }
     }
 
@@ -75,7 +78,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return L10n.HomeTab.chatHintText
         case .chatNotification:
             return L10n.Toast.newMessage
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return L10n.Toast.readMore
         }
     }
@@ -95,7 +98,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return .days(numberOfDays: 30)
         case .chatNotification:
             return 30
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return 60
         default:
             return nil
@@ -106,7 +109,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         switch self {
         case .chat:
             return 1.5
-        case .chatNotification, .travelCertificate:
+        case .chatNotification, .travelCertificate, .insuranceEvidence:
             return 0.5
         default:
             return 0
