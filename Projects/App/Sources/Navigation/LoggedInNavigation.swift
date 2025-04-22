@@ -716,6 +716,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             case .INSURANCE_EVIDENCE:
                 self.isInsuranceEvidencePresented = true
+            case .TRAVEL_CERTIFICATE:
+                self.isTravelInsurancePresented = true
             }
         }
     }
