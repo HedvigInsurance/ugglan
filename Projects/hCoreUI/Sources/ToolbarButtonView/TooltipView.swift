@@ -7,7 +7,9 @@ struct TooltipView: View {
     let type: ToolbarOptionType
     let timeInterval: TimeInterval
     let placement: ListToolBarPlacement
-
+    private let triangleWidth: CGFloat = 12
+    private let trianglePadding: CGFloat = .padding16
+    @State var xPosition: CGFloat = 0
     func canShowTooltip() -> Bool {
         if type.showAsTooltip {
             return type.shouldShowTooltip(for: timeInterval)
@@ -20,32 +22,57 @@ struct TooltipView: View {
             if displayTooltip {
                 VStack(spacing: 0) {
                     HStack {
-                        Spacer()
+                        if placement == .trailing {
+                            Spacer()
+                        }
                         Triangle()
                             .fill(type.tooltipColor)
-                            .frame(width: 12, height: 6)
-                            .padding(.trailing, trailingPadding(for: placement))
+                            .frame(width: triangleWidth, height: 6)
+                            .padding(.horizontal, trianglePadding)
+                        if placement == .leading {
+                            Spacer()
+                        }
                     }
-
-                    hText(type.textToShow ?? "", style: .label)
-                        .padding(.horizontal, .padding12)
-                        .padding(.top, 6.5)
-                        .padding(.bottom, 7.5)
-                        .foregroundColor(hTextColor.Opaque.negative)
-                        .background(type.tooltipColor)
-                        .cornerRadius(.cornerRadiusS)
+                    content
                 }
-                .transition(.scale(scale: 0, anchor: UnitPoint(x: 0.90, y: 0)).combined(with: .opacity))
+                .fixedSize()
+                .transition(.scale(scale: 0, anchor: UnitPoint(x: xPosition, y: 0)).combined(with: .opacity))
+            }
+        }
+        .background {
+            if displayTooltip {
+                //used to calculate the anchor of the tooltip
+                content
+                    .background {
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear {
+                                    let percentageOffset =
+                                        (proxy.size.width - (proxy.size.width - triangleWidth / 2 - trianglePadding))
+                                        / proxy.size.width
+                                    xPosition = placement == .leading ? percentageOffset : 1 - percentageOffset
+                                }
+                                .onChange(of: proxy.size) { value in
+                                    let percentageOffset =
+                                        (value.width - (value.width - triangleWidth / 2 - trianglePadding))
+                                        / value.width
+                                    xPosition = placement == .leading ? percentageOffset : 1 - percentageOffset
+                                }
+                        }
+                    }
+                    .opacity(0)
             }
         }
         .onAppear {
             if canShowTooltip() {
-                withAnimation(.spring().delay(type.delay)) {
-                    displayTooltip = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + type.delay) {
+                    withAnimation(.defaultSpring) {
+                        displayTooltip = true
+                    }
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + type.delay + 4) {
-                    withAnimation(.spring()) {
+                    withAnimation(.defaultSpring) {
                         displayTooltip = false
                     }
                 }
@@ -53,13 +80,14 @@ struct TooltipView: View {
         }
     }
 
-    func trailingPadding(for placement: ListToolBarPlacement) -> CGFloat {
-        switch placement {
-        case .leading:
-            return 70
-        case .trailing:
-            return .padding16
-        }
+    var content: some View {
+        hText(type.textToShow ?? "", style: .label)
+            .padding(.horizontal, .padding12)
+            .padding(.top, 6.5)
+            .padding(.bottom, 7.5)
+            .foregroundColor(hTextColor.Opaque.negative)
+            .background(type.tooltipColor)
+            .cornerRadius(.cornerRadiusS)
     }
 }
 
