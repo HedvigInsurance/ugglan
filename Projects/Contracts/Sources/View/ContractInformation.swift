@@ -151,7 +151,6 @@ struct ContractInformationView: View {
                             CoInsuredField(
                                 coInsured: coInsured.coInsured,
                                 accessoryView: EmptyView(),
-                                includeStatusPill: includeStatusPill(type: coInsured.type),
                                 date: coInsured.date
                             )
                         }
@@ -195,10 +194,7 @@ struct ContractInformationView: View {
         CoInsuredField(
             accessoryView: getAccessoryView(contract: contract, coInsured: coInsured)
                 .foregroundColor(hSignalColor.Amber.element),
-            includeStatusPill: statusPill,
-            date: coInsured.terminatesOn ?? coInsured.activatesOn,
-            title: L10n.contractCoinsured,
-            subTitle: L10n.contractNoInformation
+            date: coInsured.terminatesOn ?? coInsured.activatesOn
         )
         .onTapGesture {
             if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {

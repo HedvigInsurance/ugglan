@@ -96,7 +96,7 @@ extension InsuredPeopleConfigType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .oneItem:
-            return .init(describing: InsuredPeopleNewScreen.self)
+            return .init(describing: InsuredScreen.self)
         case .list:
             return .init(describing: CoInsuredSelectInsuranceScreen.self)
         case .error:
