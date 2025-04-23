@@ -40,9 +40,9 @@ public enum Market: String, CaseIterable, Codable, Sendable {
 
     var languages: [Localization.Locale] {
         switch self {
-        case .norway: return [.nb_NO, .en_NO]
+        case .norway: return [.en_NO]
         case .sweden: return [.sv_SE, .en_SE]
-        case .denmark: return [.da_DK, .en_DK]
+        case .denmark: return [.en_DK]
         }
     }
 
