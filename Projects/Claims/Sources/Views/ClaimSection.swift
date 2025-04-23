@@ -20,7 +20,7 @@ struct ClaimSection: View {
             items: $claims,
             vm: scrollVM,
             content: { claim in
-                ClaimStatus(claim: claim, enableTap: true)
+                ClaimStatusCard(claim: claim, enableTap: true)
                     .padding(.top)
                     .padding(.bottom, 5)
             }

@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ClaimStatus: View {
+struct ClaimStatusCard: View {
     var claim: ClaimModel
     var enableTap: Bool
 
@@ -167,9 +167,9 @@ struct ClaimStatus_Previews: PreviewProvider {
         return hForm {
             hSection {
                 VStack(spacing: .padding8) {
-                    ClaimStatus(claim: .previewData(status: .beingHandled), enableTap: true)
-                    ClaimStatus(claim: .previewData(status: .reopened), enableTap: true)
-                    ClaimStatus(
+                    ClaimStatusCard(claim: .previewData(status: .beingHandled), enableTap: true)
+                    ClaimStatusCard(claim: .previewData(status: .reopened), enableTap: true)
+                    ClaimStatusCard(
                         claim: .previewData(
                             status: .closed,
                             outcome: .paid,
@@ -177,9 +177,9 @@ struct ClaimStatus_Previews: PreviewProvider {
                         ),
                         enableTap: true
                     )
-                    ClaimStatus(claim: .previewData(status: .closed, outcome: .notCompensated), enableTap: true)
-                    ClaimStatus(claim: .previewData(status: .closed, outcome: .notCovered), enableTap: true)
-                    ClaimStatus(claim: .previewData(status: .closed, outcome: .unresponsive), enableTap: true)
+                    ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCompensated), enableTap: true)
+                    ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCovered), enableTap: true)
+                    ClaimStatusCard(claim: .previewData(status: .closed, outcome: .unresponsive), enableTap: true)
                 }
             }
             .sectionContainerStyle(.transparent)
