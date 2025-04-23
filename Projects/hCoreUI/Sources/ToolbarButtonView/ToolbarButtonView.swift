@@ -9,6 +9,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case chat
     case chatNotification(lastMessageTimeStamp: Date?)
     case travelCertificate
+    case insuranceEvidence
 
     @MainActor
     var image: UIImage {
@@ -21,7 +22,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return hCoreUIAssets.inbox.image
         case .chatNotification:
             return hCoreUIAssets.inboxNotification.image
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.image
         }
     }
@@ -36,8 +37,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return L10n.CrossSell.Info.faqChatButton
         case .chatNotification(let lastMessageTimeStamp):
             return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
-        case .travelCertificate:
-            return L10n.hcQuickActionsTravelCertificate
+        case .travelCertificate, .insuranceEvidence:
+            return L10n.InsuranceEvidence.documentTitle
         }
     }
 
@@ -53,6 +54,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return "chatHintNotification"
         case .travelCertificate:
             return "travelCertHint"
+        case .insuranceEvidence:
+            return "insuranceEvidenceHint"
         }
     }
 
@@ -75,7 +78,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return L10n.HomeTab.chatHintText
         case .chatNotification:
             return L10n.Toast.newMessage
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return L10n.Toast.readMore
         }
     }
@@ -95,7 +98,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return .days(numberOfDays: 30)
         case .chatNotification:
             return 30
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return 60
         default:
             return nil
@@ -106,7 +109,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         switch self {
         case .chat:
             return 1.5
-        case .chatNotification, .travelCertificate:
+        case .chatNotification, .travelCertificate, .insuranceEvidence:
             return 0.5
         default:
             return 0
@@ -141,7 +144,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             }
             onShow()
             return true
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
                     pastDate.timeIntervalSince(Date())
@@ -155,6 +158,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             }
             onShow()
             return true
+
         default:
             return false
         }
@@ -162,7 +166,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
     var imageSize: CGFloat {
         switch self {
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return 24
         default:
             return 40
@@ -172,7 +176,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
     @hColorBuilder @MainActor
     var tooltipColor: some hColor {
         switch self {
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             hFillColor.Opaque.primary
         default:
             hFillColor.Opaque.secondary
@@ -185,7 +189,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         case .chatNotification(let lastMessageTimeStamp):
             UserDefaults.standard.setValue(lastMessageTimeStamp, forKey: userDefaultsKey)
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         default:
             break
@@ -274,7 +278,7 @@ public struct ToolbarButtonView: View {
 
     private func yOffset(for type: ToolbarOptionType) -> CGFloat {
         switch type {
-        case .travelCertificate:
+        case .travelCertificate, .insuranceEvidence:
             return 50
         default:
             return 55

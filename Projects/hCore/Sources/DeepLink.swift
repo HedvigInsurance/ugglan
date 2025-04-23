@@ -25,6 +25,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case contactInfo = "contact-info"
     case editCoInsured = "edit-coinsured"
     case claimDetails = "claim-details"
+    case insuranceEvidence = "insurance-evidence"
 
     public func wholeText(displayText: String) -> String {
         return L10n.generalGoTo(displayText.lowercased())
@@ -76,6 +77,8 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.hcQuickActionsEditCoinsured
         case .claimDetails:
             return L10n.ClaimStatus.ClaimDetails.title
+        case .insuranceEvidence:
+            return L10n.InsuranceEvidence.documentTitle
         }
     }
     @MainActor
