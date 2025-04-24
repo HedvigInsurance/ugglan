@@ -16,8 +16,6 @@
 	<array>
 		<string>sv</string>
 		<string>en</string>
-		<string>da</string>
-		<string>nb</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
