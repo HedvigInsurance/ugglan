@@ -53,11 +53,11 @@ enum EditCoInsuredScreenTrackingType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .newInsurance:
-            return .init(describing: InsuredScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         case .removeCoInsured:
-            return .init(describing: InsuredScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         case .insuredPeople:
-            return .init(describing: InsuredScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         }
     }
 }
@@ -158,7 +158,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openInsuredPeopleScreen() -> some View {
-        return InsuredScreen(
+        return InsuredPeopleScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel,
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
@@ -198,7 +198,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openRemoveCoInsuredScreen() -> some View {
-        return InsuredScreen(
+        return InsuredPeopleScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel,
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .delete

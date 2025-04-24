@@ -3,7 +3,7 @@ import EditCoInsuredShared
 import hCoreUI
 import hCore
 
-struct InsuredScreen: View {
+struct InsuredPeopleScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentViewModel: IntentViewModel
@@ -18,20 +18,21 @@ struct InsuredScreen: View {
                     vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
                 let hasContentBelow = nbOfMissingoInsured > 0
                 
-                contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || hasContentBelow)
-                coInsuredSection(list: listToDisplay)
-                buttonSection
+                Group {
+                    contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || hasContentBelow)
+                    coInsuredSection(list: listToDisplay)
+                    buttonSection
+                }
+                .hWithoutHorizontalPadding([.section])
             }
-            .hWithoutHorizontalPadding([.row])
             .sectionContainerStyle(.transparent)
             
             infoCardSection
         }
         .hFormAttachToBottom {
             VStack(spacing: .padding8) {
-                let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination
-                if vm.coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0 {
-                    saveChangesButton(nbOfMissingCoInsured: nbOfMissingCoInsured)
+                if vm.showSavebutton {
+                    saveChangesButton
                 }
                 
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
@@ -46,7 +47,7 @@ struct InsuredScreen: View {
         }
     }
     
-    private func saveChangesButton(nbOfMissingCoInsured: Int) -> some View {
+    private var saveChangesButton: some View {
             hSection {
                 hButton.LargeButton(type: .primary) {
                     Task {
@@ -62,7 +63,7 @@ struct InsuredScreen: View {
                 .hButtonIsLoading(intentViewModel.isLoading)
                 .disabled(
                     (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
-                    < nbOfMissingCoInsured
+                    < vm.config.numberOfMissingCoInsuredWithoutTermination
                 )
             }
             .sectionContainerStyle(.transparent)
@@ -92,7 +93,6 @@ struct InsuredScreen: View {
                 )
             }
         }
-        .hWithoutHorizontalPadding([.divider, .section])
     }
     
     @ViewBuilder
@@ -116,13 +116,14 @@ struct InsuredScreen: View {
                     hText(L10n.contractAddCoinsured)
                 }
             }
+            .hWithoutHorizontalPadding([.row])
         }
     }
     
     @ViewBuilder
     private var infoCardSection: some View {
         let missingNumberOfCoInsured = vm.config.numberOfMissingCoInsured
-        if (vm.coInsuredAdded.count >= missingNumberOfCoInsured) && missingNumberOfCoInsured != 0 {
+        if vm.coInsuredAdded.count < missingNumberOfCoInsured && type != .delete {
             hSection {
                 InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
             }
@@ -134,8 +135,8 @@ struct InsuredScreen: View {
         var addLocallyAdded: [CoInsuredListType] = []
         var coInsuredMissingInfo: [CoInsuredListType] = []
         
-        if type == .delete {
-            let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
+        let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
+        if type == .delete && nbOfMissingCoInsured > 0 {
             for _ in 1...nbOfMissingCoInsured {
                 addLocallyAdded.append(
                     CoInsuredListType(
@@ -145,7 +146,7 @@ struct InsuredScreen: View {
                     )
                 )
             }
-        } else {
+        } else if type != .delete {
             // add locally added
             addLocallyAdded = vm.coInsuredAdded.map {
                 CoInsuredListType(
@@ -349,10 +350,19 @@ struct ConfirmChangesView: View {
 class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var previousValue = CoInsuredModel()
     @Published var coInsuredAdded: [CoInsuredModel] = []
+//    { didSet {
+//        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
+//        showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
+//    }}
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
     @Published var isLoading = false
+    @Published var showSavebutton: Bool = false
+//    { didSet {
+//        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
+//        showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
+//    }}
 
     func completeList(
         coInsuredAdded: [CoInsuredModel]? = nil,
@@ -418,6 +428,8 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         coInsuredAdded = []
         coInsuredDeleted = []
         self.config = config
+        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
+        self.showSavebutton =  coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
@@ -484,5 +496,5 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         fromInfoCard: false
     )
     vm.initializeCoInsured(with: config)
-    return InsuredScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
+    return InsuredPeopleScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
 }
