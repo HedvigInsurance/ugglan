@@ -17,13 +17,11 @@ struct ContractDetails: View {
     private var insuranceSection: some View {
         hRow {
             VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .top, spacing: .padding10) {
-                    HStack {
-                        hText(contract.title)
-                            .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: expandedContracts.contains(contract.id))
-                        Spacer()
-                    }
+                HStack(alignment: .top, spacing: .padding8) {
+                    hText(contract.title)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: expandedContracts.contains(contract.id))
+                    Spacer()
 
                     HStack(spacing: .padding8) {
                         if #available(iOS 16.0, *) {
@@ -36,6 +34,7 @@ struct ContractDetails: View {
                         }
 
                         hText(contract.netAmount.formattedAmount)
+                            .fixedSize()
                     }
 
                     Image(uiImage: hCoreUIAssets.chevronDown.image)
