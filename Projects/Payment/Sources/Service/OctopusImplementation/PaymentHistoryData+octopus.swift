@@ -77,7 +77,7 @@ extension PaymentData {
         self.referralDiscounts = referralDiscounts
         self.otherDiscounts = otherDiscounts
         contracts = chargeFragment.chargeBreakdown.compactMap({
-            .init(with: $0, net: .init(fragment: data.net.fragments.moneyFragment), discounts: otherDiscounts)
+            .init(with: $0)
         })
         paymentDetails = nil
         if let nextPayment {

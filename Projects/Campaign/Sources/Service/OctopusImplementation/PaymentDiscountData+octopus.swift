@@ -64,6 +64,19 @@ extension Discount {
         canBeDeleted = false
         discountId = UUID().uuidString
     }
+
+    public init(
+        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment
+    ) {
+        self.id = UUID().uuidString
+        self.amount = .init(fragment: data.discount.fragments.moneyFragment)
+        self.code = data.code
+        self.discountId = ""
+        self.validUntil = nil
+        self.title = nil
+        self.listOfAffectedInsurances = []
+        self.canBeDeleted = true
+    }
 }
 
 extension OctopusGraphQL.MemberReferralInformationCodeFragment {
