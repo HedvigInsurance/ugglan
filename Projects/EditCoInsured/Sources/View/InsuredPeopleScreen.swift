@@ -1,23 +1,23 @@
-import SwiftUI
 import EditCoInsuredShared
-import hCoreUI
+import SwiftUI
 import hCore
+import hCoreUI
 
 struct InsuredPeopleScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @ObservedObject var vm: InsuredPeopleScreenViewModel
     @ObservedObject var intentViewModel: IntentViewModel
     let type: CoInsuredFieldType?
-    
+
     var body: some View {
         hForm {
             VStack(spacing: 0) {
                 let listToDisplay = listToDisplay()
-                
+
                 let nbOfMissingoInsured =
                     vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
                 let hasContentBelow = nbOfMissingoInsured > 0
-                
+
                 Group {
                     contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || hasContentBelow)
                     coInsuredSection(list: listToDisplay)
@@ -26,7 +26,7 @@ struct InsuredPeopleScreen: View {
                 .hWithoutHorizontalPadding([.section])
             }
             .sectionContainerStyle(.transparent)
-            
+
             infoCardSection
         }
         .hFormAttachToBottom {
@@ -34,7 +34,7 @@ struct InsuredPeopleScreen: View {
                 if vm.showSavebutton {
                     saveChangesButton
                 }
-                
+
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
                     ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
                 }
@@ -46,29 +46,29 @@ struct InsuredPeopleScreen: View {
             }
         }
     }
-    
+
     private var saveChangesButton: some View {
-            hSection {
-                hButton.LargeButton(type: .primary) {
-                    Task {
-                        await intentViewModel.performCoInsuredChanges(
-                            commitId: intentViewModel.intent.id
-                        )
-                    }
-                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
-                    editCoInsuredNavigation.editCoInsuredConfig = nil
-                } content: {
-                    hText(L10n.generalSaveChangesButton)
+        hSection {
+            hButton.LargeButton(type: .primary) {
+                Task {
+                    await intentViewModel.performCoInsuredChanges(
+                        commitId: intentViewModel.intent.id
+                    )
                 }
-                .hButtonIsLoading(intentViewModel.isLoading)
-                .disabled(
-                    (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
-                    < vm.config.numberOfMissingCoInsuredWithoutTermination
-                )
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
+                editCoInsuredNavigation.editCoInsuredConfig = nil
+            } content: {
+                hText(L10n.generalSaveChangesButton)
             }
-            .sectionContainerStyle(.transparent)
+            .hButtonIsLoading(intentViewModel.isLoading)
+            .disabled(
+                (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
+                    < vm.config.numberOfMissingCoInsuredWithoutTermination
+            )
+        }
+        .sectionContainerStyle(.transparent)
     }
-    
+
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
         hSection {
             hRow {
@@ -81,7 +81,7 @@ struct InsuredPeopleScreen: View {
             .padding(.top, .padding16)
         }
     }
-    
+
     private func coInsuredSection(list: [CoInsuredListType]) -> some View {
         hSection(list) { coInsured in
             hRow {
@@ -89,12 +89,12 @@ struct InsuredPeopleScreen: View {
                     coInsured: coInsured.coInsured,
                     accessoryView: getAccesoryView(coInsured: coInsured),
                     statusPill: coInsured.type == .added ? .added : nil,
-                    date: coInsured.date,
+                    date: coInsured.date
                 )
             }
         }
     }
-    
+
     @ViewBuilder
     private var buttonSection: (some View)? {
         if vm.config.numberOfMissingCoInsuredWithoutTermination == 0 {
@@ -119,7 +119,7 @@ struct InsuredPeopleScreen: View {
             .hWithoutHorizontalPadding([.row])
         }
     }
-    
+
     @ViewBuilder
     private var infoCardSection: some View {
         let missingNumberOfCoInsured = vm.config.numberOfMissingCoInsured
@@ -129,12 +129,12 @@ struct InsuredPeopleScreen: View {
             }
         }
     }
-    
+
     /* TODO: REFACTOR */
     private func listToDisplay() -> [CoInsuredListType] {
         var addLocallyAdded: [CoInsuredListType] = []
         var coInsuredMissingInfo: [CoInsuredListType] = []
-        
+
         let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
         if type == .delete && nbOfMissingCoInsured > 0 {
             for _ in 1...nbOfMissingCoInsured {
@@ -153,42 +153,42 @@ struct InsuredPeopleScreen: View {
                     coInsured: $0,
                     type: .added,
                     date: (intentViewModel.intent.activationDate != "")
-                    ? intentViewModel.intent.activationDate : vm.config.activeFrom,
+                        ? intentViewModel.intent.activationDate : vm.config.activeFrom,
                     locallyAdded: true
                 )
             }
-            
-            
+
             // add missing
             let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination
-            
+
             if vm.coInsuredAdded.count < nbOfMissingCoInsured {
                 let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
                 for _ in 1...nbOfFields {
                     coInsuredMissingInfo.append(
                         CoInsuredListType(
                             coInsured: CoInsuredModel(),
-                            type: nil, locallyAdded:
+                            type: nil,
+                            locallyAdded:
                                 false
                         )
                     )
                 }
             }
         }
-        
+
         let coInsured = vm.config.contractCoInsured
         var removeDeleted: [CoInsuredListType] = []
         // add deleted
         if coInsured.allSatisfy({ !$0.hasMissingInfo }) {
             removeDeleted =
-            coInsured.filter { coInsured in
-                !vm.coInsuredDeleted.contains(coInsured) && coInsured.terminatesOn == nil
-            }
-            .compactMap{ CoInsuredListType(coInsured: $0, locallyAdded: false) }
+                coInsured.filter { coInsured in
+                    !vm.coInsuredDeleted.contains(coInsured) && coInsured.terminatesOn == nil
+                }
+                .compactMap { CoInsuredListType(coInsured: $0, locallyAdded: false) }
         }
         return removeDeleted + addLocallyAdded + coInsuredMissingInfo
     }
-    
+
     @ViewBuilder
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
         if coInsured.coInsured.hasMissingData && type != .delete {
@@ -199,12 +199,12 @@ struct InsuredPeopleScreen: View {
             getAccesoryView(for: .delete, coInsured: coInsured.coInsured)
         }
     }
-    
+
     enum CoInsuredFieldType {
         case empty
         case localEdit
         case delete
-        
+
         @MainActor
         var icon: ImageAsset? {
             switch self {
@@ -216,7 +216,7 @@ struct InsuredPeopleScreen: View {
                 return nil
             }
         }
-        
+
         @hColorBuilder @MainActor
         var iconColor: some hColor {
             switch self {
@@ -225,9 +225,9 @@ struct InsuredPeopleScreen: View {
             default:
                 hTextColor.Opaque.primary
             }
-            
+
         }
-        
+
         var text: String? {
             switch self {
             case .empty:
@@ -238,7 +238,7 @@ struct InsuredPeopleScreen: View {
                 return L10n.Claims.Edit.Screen.title
             }
         }
-        
+
         var action: CoInsuredAction {
             switch self {
             case .empty:
@@ -246,10 +246,10 @@ struct InsuredPeopleScreen: View {
             case .localEdit:
                 return .edit
             case .delete:
-                return  .delete
+                return .delete
             }
         }
-        
+
         var title: String {
             switch self {
             case .empty:
@@ -261,7 +261,7 @@ struct InsuredPeopleScreen: View {
             }
         }
     }
-    
+
     private func getAccesoryView(for type: CoInsuredFieldType, coInsured: CoInsuredModel) -> some View {
         HStack {
             if let text = type.text {
@@ -271,7 +271,8 @@ struct InsuredPeopleScreen: View {
                 Image(uiImage: icon.image)
                     .foregroundColor(type.iconColor)
             }
-        }.onTapGesture {
+        }
+        .onTapGesture {
             let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
             if type == .empty && !hasExistingCoInsured.isEmpty {
                 editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
@@ -284,7 +285,7 @@ struct InsuredPeopleScreen: View {
                 )
             }
         }
-        
+
     }
 }
 
@@ -345,24 +346,15 @@ struct ConfirmChangesView: View {
     }
 }
 
-/* TODO: RENAME? */
 @MainActor
-class InsuredPeopleNewScreenModel: ObservableObject {
+class InsuredPeopleScreenViewModel: ObservableObject {
     @Published var previousValue = CoInsuredModel()
     @Published var coInsuredAdded: [CoInsuredModel] = []
-//    { didSet {
-//        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-//        showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
-//    }}
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
     @Published var isLoading = false
     @Published var showSavebutton: Bool = false
-//    { didSet {
-//        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-//        showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
-//    }}
 
     func completeList(
         coInsuredAdded: [CoInsuredModel]? = nil,
@@ -429,7 +421,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
         coInsuredDeleted = []
         self.config = config
         let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-        self.showSavebutton =  coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
+        self.showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
@@ -476,11 +468,19 @@ class InsuredPeopleNewScreenModel: ObservableObject {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    let vm = InsuredPeopleNewScreenModel()
+    let vm = InsuredPeopleScreenViewModel()
     let config = InsuredPeopleConfig(
         id: UUID().uuidString,
         contractCoInsured: [
-            .init(firstName: "first name", lastName: "last name", SSN: "00000000-0000", birthDate: "2000-01-01", needsMissingInfo: false, activatesOn: "2025-04-22", terminatesOn: nil)
+            .init(
+                firstName: "first name",
+                lastName: "last name",
+                SSN: "00000000-0000",
+                birthDate: "2000-01-01",
+                needsMissingInfo: false,
+                activatesOn: "2025-04-22",
+                terminatesOn: nil
+            )
         ],
         contractId: "",
         activeFrom: nil,

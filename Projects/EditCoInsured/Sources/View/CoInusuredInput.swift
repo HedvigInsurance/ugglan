@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct CoInusuredInputScreen: View {
-    @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
+    @ObservedObject var insuredPeopleVm: InsuredPeopleScreenViewModel
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel

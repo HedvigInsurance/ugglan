@@ -19,7 +19,7 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
-    let coInsuredViewModel = InsuredPeopleNewScreenModel()
+    let coInsuredViewModel = InsuredPeopleScreenViewModel()
     let intentViewModel = IntentViewModel()
 }
 
