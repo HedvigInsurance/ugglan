@@ -81,6 +81,7 @@ struct DiscountsView: View {
 
     private func getRefferalView(_ referral: Referral, nbOfReferrals: Int) -> some View {
         DiscountDetailView(
+            isReferral: true,
             vm: .init(
                 options: [.showExpire],
                 discount: .init(referral: referral, nbOfReferrals: nbOfReferrals)
