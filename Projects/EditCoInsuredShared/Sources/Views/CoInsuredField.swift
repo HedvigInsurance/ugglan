@@ -18,8 +18,17 @@ public struct CoInsuredField<Content: View>: View {
     ) {
         self.coInsured = coInsured
         self.accessoryView = accessoryView
-        let hasMissingData = coInsured?.hasMissingData ?? false
-        self.statusPill = statusPill ?? (hasMissingData ? nil : (coInsured?.activatesOn != nil ? .added : .deleted))
+        self.statusPill =
+            statusPill
+            ?? {
+                guard coInsured?.hasMissingData == false else { return nil }
+                if coInsured?.activatesOn != nil {
+                    return .added
+                } else if coInsured?.terminatesOn != nil {
+                    return .deleted
+                }
+                return nil
+            }()
         self.date = date ?? coInsured?.activatesOn ?? coInsured?.terminatesOn ?? ""
         self.subTitle = coInsured?.hasMissingData ?? false ? L10n.contractNoInformation : nil
     }

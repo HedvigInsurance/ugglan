@@ -30,10 +30,9 @@ struct InsuredScreen: View {
         .hFormAttachToBottom {
             VStack(spacing: .padding8) {
                 let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination
-                if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
+                if vm.coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0 {
                     saveChangesButton(nbOfMissingCoInsured: nbOfMissingCoInsured)
                 }
-                
                 
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
                     ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
@@ -93,7 +92,7 @@ struct InsuredScreen: View {
                 )
             }
         }
-        .hWithoutHorizontalPadding([.divider])
+        .hWithoutHorizontalPadding([.divider, .section])
     }
     
     @ViewBuilder
