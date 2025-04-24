@@ -11,7 +11,7 @@ struct TravelCertificateProcessingScreen: View {
     var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.Certificates.generating,
-            successViewTitle: L10n.TravelCertificate.travelCertificateReady,
+            successViewTitle: L10n.Certificates.emailSent,
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
             state: $vm.viewState
         )

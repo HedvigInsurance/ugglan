@@ -12,9 +12,6 @@ struct SlideToConfirm: View {
     @State private var progress: CGFloat = 0
     @State private var width: CGFloat = 0
     @State private var bounceSliderButton = false
-
-    private let animation = Animation.spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
-
     var body: some View {
         if #available(iOS 16.0, *) {
             slider
@@ -23,12 +20,12 @@ struct SlideToConfirm: View {
                         return
                     }
                     let progress = location.x + 25
-                    withAnimation(animation) {
+                    withAnimation(.defaultSpring) {
                         self.progress = progress
                     }
                     if progress < width {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(animation) {
+                            withAnimation(.defaultSpring) {
                                 self.progress = 0
                             }
                         }
@@ -64,7 +61,7 @@ struct SlideToConfirm: View {
                             if didFinished {
                                 return
                             }
-                            withAnimation(animation.speed(4)) {
+                            withAnimation(.defaultSpring.speed(4)) {
                                 progress = (gesture.translation.width + gesture.startLocation.x - 29)
                             }
                             if progress + 58 >= width {
@@ -75,7 +72,7 @@ struct SlideToConfirm: View {
                             if didFinished {
                                 return
                             }
-                            withAnimation(animation.speed(2)) {
+                            withAnimation(.defaultSpring.speed(2)) {
                                 progress = 0
                             }
                         }
@@ -99,7 +96,7 @@ struct SlideToConfirm: View {
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverHonestypledgeSlider)
         .accessibilityAction {
-            withAnimation(animation.speed(2)) {
+            withAnimation(.defaultSpring.speed(2)) {
                 progress = 0
             }
             promiseConfirmed()
@@ -108,14 +105,14 @@ struct SlideToConfirm: View {
 
     private func promiseConfirmed() {
         self.didFinished = true
-        withAnimation(animation) {
+        withAnimation(.defaultSpring) {
             self.progress = width
         }
-        withAnimation(animation.speed(2)) {
+        withAnimation(.defaultSpring.speed(2)) {
             bounceSliderButton = true
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            withAnimation(animation.speed(2)) {
+            withAnimation(.defaultSpring.speed(2)) {
                 bounceSliderButton = false
                 updateUIForFinished = true
             }
