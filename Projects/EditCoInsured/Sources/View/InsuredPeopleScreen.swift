@@ -132,13 +132,14 @@ struct InsuredPeopleScreen: View {
 
     /* TODO: REFACTOR */
     private func listToDisplay() -> [CoInsuredListType] {
-        var addLocallyAdded: [CoInsuredListType] = []
-        var coInsuredMissingInfo: [CoInsuredListType] = []
+        var locallyAndExistingCoInsured: [CoInsuredListType] = []
+        var coInsuredWithMissingInfo: [CoInsuredListType] = []
 
         let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
+
         if type == .delete && nbOfMissingCoInsured > 0 {
             for _ in 1...nbOfMissingCoInsured {
-                addLocallyAdded.append(
+                locallyAndExistingCoInsured.append(
                     CoInsuredListType(
                         coInsured: CoInsuredModel(),
                         type: nil,
@@ -148,7 +149,7 @@ struct InsuredPeopleScreen: View {
             }
         } else if type != .delete {
             // add locally added
-            addLocallyAdded = vm.coInsuredAdded.map {
+            locallyAndExistingCoInsured = vm.coInsuredAdded.map {
                 CoInsuredListType(
                     coInsured: $0,
                     type: .added,
@@ -159,12 +160,10 @@ struct InsuredPeopleScreen: View {
             }
 
             // add missing
-            let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination
-
             if vm.coInsuredAdded.count < nbOfMissingCoInsured {
                 let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
                 for _ in 1...nbOfFields {
-                    coInsuredMissingInfo.append(
+                    coInsuredWithMissingInfo.append(
                         CoInsuredListType(
                             coInsured: CoInsuredModel(),
                             type: nil,
@@ -176,17 +175,14 @@ struct InsuredPeopleScreen: View {
             }
         }
 
-        let coInsured = vm.config.contractCoInsured
-        var removeDeleted: [CoInsuredListType] = []
         // add deleted
-        if coInsured.allSatisfy({ !$0.hasMissingInfo }) {
-            removeDeleted =
-                coInsured.filter { coInsured in
-                    !vm.coInsuredDeleted.contains(coInsured) && coInsured.terminatesOn == nil
-                }
-                .compactMap { CoInsuredListType(coInsured: $0, locallyAdded: false) }
-        }
-        return removeDeleted + addLocallyAdded + coInsuredMissingInfo
+        let removeDeleted =
+            vm.allHasMissingInfo
+            ? vm.config.contractCoInsured
+                .filter({ !vm.coInsuredDeleted.contains($0) && $0.isTerminated })
+                .compactMap { CoInsuredListType(coInsured: $0, locallyAdded: false) } : []
+
+        return removeDeleted + locallyAndExistingCoInsured + coInsuredWithMissingInfo
     }
 
     @ViewBuilder
@@ -355,6 +351,9 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
     @Published var isLoading = false
     @Published var showSavebutton: Bool = false
+    var allHasMissingInfo: Bool {
+        config.contractCoInsured.allSatisfy({ !$0.hasMissingInfo })
+    }
 
     func completeList(
         coInsuredAdded: [CoInsuredModel]? = nil,
