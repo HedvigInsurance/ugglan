@@ -12,11 +12,9 @@ struct InsuredPeopleScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: 0) {
-                let listToDisplay = listToDisplay()
+                let listToDisplay = vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
 
-                let nbOfMissingoInsured =
-                    vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
-                let hasContentBelow = nbOfMissingoInsured > 0
+                let hasContentBelow = vm.nbOfMissingCoInsuredExcludingDeleted > 0
 
                 Group {
                     contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || hasContentBelow)
@@ -122,67 +120,11 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private var infoCardSection: some View {
-        let missingNumberOfCoInsured = vm.config.numberOfMissingCoInsured
-        if vm.coInsuredAdded.count < missingNumberOfCoInsured && type != .delete {
+        if vm.showInfoCard(type: type) {
             hSection {
                 InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
             }
         }
-    }
-
-    /* TODO: REFACTOR */
-    private func listToDisplay() -> [CoInsuredListType] {
-        var locallyAndExistingCoInsured: [CoInsuredListType] = []
-        var coInsuredWithMissingInfo: [CoInsuredListType] = []
-
-        let nbOfMissingCoInsured = vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
-
-        if type == .delete && nbOfMissingCoInsured > 0 {
-            for _ in 1...nbOfMissingCoInsured {
-                locallyAndExistingCoInsured.append(
-                    CoInsuredListType(
-                        coInsured: CoInsuredModel(),
-                        type: nil,
-                        locallyAdded: false
-                    )
-                )
-            }
-        } else if type != .delete {
-            // add locally added
-            locallyAndExistingCoInsured = vm.coInsuredAdded.map {
-                CoInsuredListType(
-                    coInsured: $0,
-                    type: .added,
-                    date: (intentViewModel.intent.activationDate != "")
-                        ? intentViewModel.intent.activationDate : vm.config.activeFrom,
-                    locallyAdded: true
-                )
-            }
-
-            // add missing
-            if vm.coInsuredAdded.count < nbOfMissingCoInsured {
-                let nbOfFields = nbOfMissingCoInsured - vm.coInsuredAdded.count
-                for _ in 1...nbOfFields {
-                    coInsuredWithMissingInfo.append(
-                        CoInsuredListType(
-                            coInsured: CoInsuredModel(),
-                            type: nil,
-                            locallyAdded:
-                                false
-                        )
-                    )
-                }
-            }
-        }
-
-        // add deleted
-        let removeDeleted =
-            vm.allHasMissingInfo
-            ? vm.config.contractCoInsured
-                .filter({ !vm.coInsuredDeleted.contains($0) && $0.isTerminated })
-                .compactMap { CoInsuredListType(coInsured: $0, locallyAdded: false) } : []
-
-        return removeDeleted + locallyAndExistingCoInsured + coInsuredWithMissingInfo
     }
 
     @ViewBuilder
@@ -193,68 +135,6 @@ struct InsuredPeopleScreen: View {
             getAccesoryView(for: .localEdit, coInsured: coInsured.coInsured)
         } else {
             getAccesoryView(for: .delete, coInsured: coInsured.coInsured)
-        }
-    }
-
-    enum CoInsuredFieldType {
-        case empty
-        case localEdit
-        case delete
-
-        @MainActor
-        var icon: ImageAsset? {
-            switch self {
-            case .empty:
-                return hCoreUIAssets.plusSmall
-            case .delete:
-                return hCoreUIAssets.closeSmall
-            case .localEdit:
-                return nil
-            }
-        }
-
-        @hColorBuilder @MainActor
-        var iconColor: some hColor {
-            switch self {
-            case .delete:
-                hTextColor.Opaque.secondary
-            default:
-                hTextColor.Opaque.primary
-            }
-
-        }
-
-        var text: String? {
-            switch self {
-            case .empty:
-                return L10n.generalAddInfoButton
-            case .delete:
-                return nil
-            case .localEdit:
-                return L10n.Claims.Edit.Screen.title
-            }
-        }
-
-        var action: CoInsuredAction {
-            switch self {
-            case .empty:
-                return .add
-            case .localEdit:
-                return .edit
-            case .delete:
-                return .delete
-            }
-        }
-
-        var title: String {
-            switch self {
-            case .empty:
-                return L10n.contractAddConisuredInfo
-            case .localEdit:
-                return L10n.contractAddConisuredInfo
-            case .delete:
-                return L10n.contractRemoveCoinsuredConfirmation
-            }
         }
     }
 
@@ -281,187 +161,6 @@ struct InsuredPeopleScreen: View {
                 )
             }
         }
-
-    }
-}
-
-struct CancelButton: View {
-    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @EnvironmentObject private var router: Router
-
-    var body: some View {
-        hSection {
-            hButton.LargeButton(type: .ghost) {
-                editCoInsuredNavigation.editCoInsuredConfig = nil
-                router.dismiss()
-            } content: {
-                hText(L10n.generalCancelButton)
-            }
-        }
-        .sectionContainerStyle(.transparent)
-    }
-}
-
-struct ConfirmChangesView: View {
-    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @ObservedObject var intentViewModel: IntentViewModel
-
-    public init(
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    ) {
-        self.editCoInsuredNavigation = editCoInsuredNavigation
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
-    }
-
-    var body: some View {
-        hSection {
-            VStack(spacing: .padding16) {
-                PriceField(
-                    newPremium: intentViewModel.intent.newPremium,
-                    currentPremium: intentViewModel.intent.currentPremium,
-                    subTitle: L10n.contractAddCoinsuredStartsFrom(
-                        intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                    )
-                )
-                .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-
-                hButton.LargeButton(type: .primary) {
-                    editCoInsuredNavigation.showProgressScreenWithSuccess = true
-                    Task {
-                        await intentViewModel.performCoInsuredChanges(
-                            commitId: intentViewModel.intent.id
-                        )
-                    }
-                } content: {
-                    hText(L10n.contractAddCoinsuredConfirmChanges)
-                }
-                .hButtonIsLoading(intentViewModel.isLoading)
-            }
-        }
-        .sectionContainerStyle(.transparent)
-    }
-}
-
-@MainActor
-class InsuredPeopleScreenViewModel: ObservableObject {
-    @Published var previousValue = CoInsuredModel()
-    @Published var coInsuredAdded: [CoInsuredModel] = []
-    @Published var coInsuredDeleted: [CoInsuredModel] = []
-    @Published var noSSN = false
-    var config: InsuredPeopleConfig = InsuredPeopleConfig()
-    @Published var isLoading = false
-    @Published var showSavebutton: Bool = false
-    var allHasMissingInfo: Bool {
-        config.contractCoInsured.allSatisfy({ !$0.hasMissingInfo })
-    }
-
-    func completeList(
-        coInsuredAdded: [CoInsuredModel]? = nil,
-        coInsuredDeleted: [CoInsuredModel]? = nil
-    ) -> [CoInsuredModel] {
-        let coInsuredAdded = coInsuredAdded ?? self.coInsuredAdded
-        let coInsuredDeleted = coInsuredDeleted ?? self.coInsuredDeleted
-        var filterList: [CoInsuredModel] = []
-        let existingList = config.contractCoInsured
-        let nbOfCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-        let allHasMissingInfo = existingList.allSatisfy({ $0.hasMissingInfo })
-
-        if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()), allHasMissingInfo {
-            if coInsuredDeleted.count > 0 || coInsuredAdded.count > 0 {
-                var num: Int {
-                    if coInsuredDeleted.count > 0 {
-                        return nbOfCoInsured - coInsuredDeleted.count
-                    } else {
-                        return nbOfCoInsured - coInsuredAdded.count
-                    }
-                }
-                for _ in 0..<num {
-                    filterList.append(CoInsuredModel())
-                }
-                if coInsuredDeleted.count > 0 {
-                    return filterList
-                }
-            } else if nbOfCoInsured > 0 {
-                filterList = existingList
-            }
-        } else {
-            filterList = existingList
-        }
-        let finalList =
-            filterList.filter {
-                !coInsuredDeleted.contains($0)
-            } + coInsuredAdded
-
-        return finalList.filter({ $0.terminatesOn == nil })
-    }
-
-    func listForGettingIntentFor(addCoInsured: CoInsuredModel) -> [CoInsuredModel] {
-        var coInsuredAdded = self.coInsuredAdded
-        coInsuredAdded.append(addCoInsured)
-        return completeList(coInsuredAdded: coInsuredAdded)
-    }
-
-    func listForGettingIntentFor(removedCoInsured: CoInsuredModel) -> [CoInsuredModel] {
-        var coInsuredAdded = self.coInsuredAdded
-        var coInsuredDeleted = self.coInsuredDeleted
-        if let index = coInsuredAdded.firstIndex(where: { coInsured in
-            coInsured == removedCoInsured
-        }) {
-            coInsuredAdded.remove(at: index)
-        } else {
-            coInsuredDeleted.append(removedCoInsured)
-        }
-
-        return completeList(coInsuredAdded: coInsuredAdded, coInsuredDeleted: coInsuredDeleted)
-    }
-
-    func initializeCoInsured(with config: InsuredPeopleConfig) {
-        coInsuredAdded = []
-        coInsuredDeleted = []
-        self.config = config
-        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-        self.showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
-    }
-
-    func addCoInsured(_ coInsuredModel: CoInsuredModel) {
-        coInsuredAdded.append(coInsuredModel)
-    }
-
-    func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
-        if let index = coInsuredAdded.firstIndex(where: { coInsured in
-            coInsured == coInsuredModel
-        }) {
-            coInsuredAdded.remove(at: index)
-        } else {
-            coInsuredDeleted.append(coInsuredModel)
-        }
-    }
-
-    func undoDeleted(_ coInsuredModel: CoInsuredModel) {
-        var removedCoInsured: CoInsuredModel {
-            return
-                .init(
-                    firstName: coInsuredModel.firstName,
-                    lastName: coInsuredModel.lastName,
-                    SSN: coInsuredModel.SSN,
-                    needsMissingInfo: false
-                )
-        }
-
-        if let index = coInsuredDeleted.firstIndex(where: {
-            $0 == removedCoInsured
-        }) {
-            coInsuredDeleted.remove(at: index)
-        }
-    }
-
-    func editCoInsured(_ coInsuredModel: CoInsuredModel) {
-        if let index = coInsuredAdded.firstIndex(where: {
-            $0 == previousValue
-        }) {
-            coInsuredAdded.remove(at: index)
-        }
-        addCoInsured(coInsuredModel)
     }
 }
 
