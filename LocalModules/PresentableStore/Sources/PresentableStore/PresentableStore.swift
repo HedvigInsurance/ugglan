@@ -50,7 +50,7 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where
         self.stateWriteSignal.value = state
     }
 
-    nonisolated(unsafe)
+    nonisolated
         private func getQueue() -> DispatchQueue
     {
         return DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
@@ -137,7 +137,7 @@ public protocol Store {
     func reduce(_ state: State, _ action: Action) async -> State
     @MainActor
     func effects(_ getState: @escaping () -> State, _ action: Action) async
-    nonisolated(unsafe)
+    nonisolated
         func send(_ action: Action)
     @StoreActor
     func sendAsync(_ action: Action) async
@@ -166,7 +166,7 @@ extension Store {
         return pointers[key]!
     }
 
-    nonisolated(unsafe)
+    nonisolated
         static var persistenceURL: URL
     {
         let docURL = storePersistenceDirectory
@@ -174,7 +174,7 @@ extension Store {
         return docURL.appendingPathComponent(String(describing: Self.self))
     }
 
-    nonisolated(unsafe)
+    nonisolated
         public static func persist(_ value: State)
     {
         let encoder = JSONEncoder()

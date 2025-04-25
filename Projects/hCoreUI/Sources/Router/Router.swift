@@ -351,15 +351,21 @@ extension View {
 
     @ViewBuilder
     private func titleView(title: String, subTitle: String?, titleColor: TitleColor) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            hText(title, style: .heading1)
-                .foregroundColor(titleViewColor(titleColor))
+        Group {
             if let subTitle {
-                hText(subTitle, style: .heading1)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(title, style: .heading1)
+                        .foregroundColor(titleViewColor(titleColor))
+                    hText(subTitle, style: .heading1)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            } else {
+                hText(title, style: .heading1)
+                    .foregroundColor(titleViewColor(titleColor))
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
         .accessibilityElement(children: .combine)
     }

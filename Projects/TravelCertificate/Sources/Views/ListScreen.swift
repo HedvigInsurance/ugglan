@@ -50,6 +50,7 @@ public struct ListScreen: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityAddTraits(.isButton)
                 }
+                .hWithoutHorizontalPadding([.section])
             }
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)
@@ -63,14 +64,12 @@ public struct ListScreen: View {
             }
         }
         .loading($vm.isLoading, $vm.error)
-        .applyInfoButton(withPlacement: infoButtonPlacement) {
-            InfoViewHolder(
-                title: L10n.TravelCertificate.Info.title,
-                description: L10n.TravelCertificate.Info.subtitle,
-                type: .navigation
-            )
-            .foregroundColor(hTextColor.Opaque.primary)
-        }
+        .applyInfoButton(
+            withPlacement: infoButtonPlacement,
+            action: {
+                travelCertificateNavigationVm.isInfoViewPresented = true
+            }
+        )
         .sectionContainerStyle(.transparent)
         .onAppear {
             Task {
@@ -138,18 +137,22 @@ public struct ListScreen: View {
 
 extension View {
     @ViewBuilder
-    fileprivate func applyInfoButton<Content: View>(
+    fileprivate func applyInfoButton(
         withPlacement: ListToolBarPlacement,
-        @ViewBuilder content: @escaping () -> Content
+        action: @escaping () -> Void
     ) -> some View {
         switch withPlacement {
         case .leading:
             self.setToolbarLeading {
-                content()
+                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
+                    action()
+                }
             }
         case .trailing:
             self.setToolbarTrailing {
-                content()
+                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
+                    action()
+                }
             }
         }
     }
@@ -203,6 +206,7 @@ class ListScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    ListScreen(infoButtonPlacement: .trailing)
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    return ListScreen(infoButtonPlacement: .trailing)
         .environmentObject(TravelCertificateNavigationViewModel())
 }
