@@ -11,10 +11,6 @@ public struct PieChartView: View {
     @State private var nextSlicePercentage: CGFloat = .zero
     @State private var showNewAmount: Bool = false
 
-    var animation: Animation {
-        Animation.spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1).delay(1)
-    }
-
     public var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -33,14 +29,14 @@ public struct PieChartView: View {
                     )
                     .fill(hTextColor.Translucent.tertiary).colorScheme(.light)
                     .onAppear {
-                        withAnimation(self.animation.delay(state.slices == 0 ? 0 : 1.2).repeatForever()) {
+                        withAnimation(.defaultSpring.delay(state.slices == 0 ? 0 : 1.2).repeatForever()) {
                             self.nextSlicePercentage = 1.0
                         }
                     }
                     Slice(percentage: percentage, percentagePerSlice: state.percentagePerSlice, slices: state.slices)
                         .fill(hTextColor.Opaque.negative)
                         .onAppear {
-                            withAnimation(self.animation) {
+                            withAnimation(.defaultSpring) {
                                 self.percentage = 1.0
                             }
                         }
