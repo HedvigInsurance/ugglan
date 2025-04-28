@@ -366,7 +366,7 @@ public struct hSection<Header: View, Content: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if header != nil {
-                VStack(spacing: .padding8) {
+                VStack(alignment: .leading, spacing: .padding8) {
                     header
                         .environment(\.defaultHTextStyle, .body1)
                         .accessibilityAddTraits(.isHeader)
