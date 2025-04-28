@@ -33,7 +33,7 @@ extension PaymentData {
         self.referralDiscounts = referralDiscounts
         self.otherDiscounts = otherDiscounts
         contracts = chargeFragment.chargeBreakdown.compactMap({
-            .init(with: $0)
+            .init(with: $0, campaign: data.currentMember.fragments.reedemCampaignsFragment)
         })
         self.paymentDetails = paymentDetails
         addedToThePayment = []
@@ -62,7 +62,7 @@ extension PaymentData {
         self.referralDiscounts = []
         self.otherDiscounts = discounts
         contracts = data.chargeBreakdown.compactMap({
-            .init(with: $0)
+            .init(with: $0, campaign: paymentDataQueryCurrentMember.fragments.reedemCampaignsFragment)
         })
         self.paymentDetails = nil
         addedToThePayment = []
@@ -126,7 +126,8 @@ extension PaymentData.PaymentStack {
 @MainActor
 extension PaymentData.ContractPaymentDetails {
     init(
-        with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown
+        with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown,
+        campaign: OctopusGraphQL.ReedemCampaignsFragment
     ) {
         id = UUID().uuidString
         title = data.displayTitle
@@ -134,7 +135,9 @@ extension PaymentData.ContractPaymentDetails {
         grossAmount = .init(fragment: data.gross.fragments.moneyFragment)
         netAmount = .init(fragment: data.net.fragments.moneyFragment)
         discounts =
-            data.discounts?.compactMap({ .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment) }) ?? []
+            data.discounts?
+            .compactMap({ .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment, campaign: campaign) })
+            ?? []
         periods = data.periods.compactMap({ .init(with: $0) })
     }
 }
