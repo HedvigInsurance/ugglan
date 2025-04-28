@@ -50,6 +50,7 @@ struct PaymentDetailsView: View {
             .sectionContainerStyle(.transparent)
             .hSectionHeaderWithDivider
             .hWithoutHorizontalPadding([.row, .divider])
+            .padding(.top, .padding8)
         }
     }
 
