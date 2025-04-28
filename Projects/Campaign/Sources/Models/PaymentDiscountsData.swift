@@ -6,8 +6,6 @@ import hGraphQL
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
     let discounts: [Discount]
     let referralsData: ReferralsData
-    let netAmount: MonetaryAmount
-    let grossAmount: MonetaryAmount
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {

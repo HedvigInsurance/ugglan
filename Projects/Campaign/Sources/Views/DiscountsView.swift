@@ -88,11 +88,6 @@ struct DiscountsView: View {
             )
         )
     }
-
-    private func priceField(paymentDiscountsData: PaymentDiscountsData) -> some View {
-        PriceField(newPremium: paymentDiscountsData.netAmount, currentPremium: paymentDiscountsData.grossAmount)
-            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-    }
 }
 
 struct PaymentsDiscountView_Previews: PreviewProvider {
@@ -153,9 +148,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                             invitedYou: false
                         ),
                     ]
-                ),
-                netAmount: .sek(220),
-                grossAmount: .sek(260)
+                )
             )
         )
     }
@@ -168,9 +161,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
         return DiscountsView(
             data: .init(
                 discounts: [],
-                referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: []),
-                netAmount: .sek(220),
-                grossAmount: .sek(260)
+                referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
             )
         )
     }
