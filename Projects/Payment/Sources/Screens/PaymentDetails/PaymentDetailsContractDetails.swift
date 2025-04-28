@@ -21,21 +21,24 @@ struct ContractDetails: View {
                     hText(contract.title)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: expandedContracts.contains(contract.id))
+                        .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
                     Spacer()
 
                     HStack(spacing: .padding8) {
-                        if #available(iOS 16.0, *) {
-                            hText(contract.grossAmount.formattedAmount)
-                                .strikethrough()
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                        } else {
-                            hText(contract.grossAmount.formattedAmount)
-                                .foregroundColor(hTextColor.Translucent.secondary)
+                        if contract.grossAmount != contract.netAmount {
+                            if #available(iOS 16.0, *) {
+                                hText(contract.grossAmount.formattedAmount)
+                                    .strikethrough()
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                            } else {
+                                hText(contract.grossAmount.formattedAmount)
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                            }
                         }
 
                         hText(contract.netAmount.formattedAmount)
-                            .fixedSize()
                     }
+                    .layoutPriority(1)
 
                     Image(uiImage: hCoreUIAssets.chevronDown.image)
                         .resizable()
