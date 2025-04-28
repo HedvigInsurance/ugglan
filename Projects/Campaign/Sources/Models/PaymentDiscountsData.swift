@@ -49,7 +49,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.amount = referral.activeDiscount
         self.title =
             referral.invitedYou
-            ? L10n.Forever.Referral.invitedYou(referral.name) : L10n.Forever.Referral.invitedByYou(nbOfReferrals)
+            ? L10n.Forever.Referral.invitedYou(referral.name) : L10n.foreverReferralInvitedByYouPlural(nbOfReferrals)
         self.listOfAffectedInsurances = []
         self.validUntil = nil
         self.canBeDeleted = true
