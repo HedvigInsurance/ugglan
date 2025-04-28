@@ -206,6 +206,9 @@ public struct ToolbarButtonView: View {
     @State var displayTooltip = false
     var action: ((_: ToolbarOptionType)) -> Void
     @Binding var types: [ToolbarOptionType]
+    @State var xOffset: CGFloat = .zero
+    @State var yOffset: CGFloat = .zero
+
     let placement: ListToolBarPlacement
     private var spacing: CGFloat {
         if #available(iOS 18.0, *) {
@@ -258,8 +261,31 @@ public struct ToolbarButtonView: View {
                     timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30),
                     placement: placement
                 )
-                .position(x: xOffset(for: type), y: yOffset(for: type))
-                .fixedSize()
+                .background {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear {
+                                let imageSize = type.imageSize
+                                if placement == .trailing {
+                                    xOffset = -(proxy.size.width - imageSize) / 2 + (44 - imageSize) / 2
+                                } else {
+                                    xOffset = (proxy.size.width - imageSize) / 2 - (44 - imageSize) / 2
+                                }
+                                yOffset = imageSize + (40 - imageSize) / 2
+
+                            }
+                            .onChange(of: proxy.size) { value in
+                                let imageSize = type.imageSize
+                                if placement == .trailing {
+                                    xOffset = -(value.width - imageSize) / 2 + (44 - imageSize) / 2
+                                } else {
+                                    xOffset = (value.width - imageSize) / 2 - (44 - imageSize) / 2
+                                }
+                                yOffset = imageSize + (40 - imageSize) / 2
+                            }
+                    }
+                }
+                .offset(x: xOffset, y: yOffset)
             }
         }
     }
