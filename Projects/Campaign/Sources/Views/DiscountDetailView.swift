@@ -3,20 +3,25 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct PaymentDetailsDiscountView: View {
+public struct DiscountDetailView: View {
     @ObservedObject var vm: PaymentDetailsDiscountViewModel
     @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
+    let isReferral: Bool
 
-    public init(vm: PaymentDetailsDiscountViewModel) {
+    public init(
+        isReferral: Bool? = false,
+        vm: PaymentDetailsDiscountViewModel
+    ) {
+        self.isReferral = isReferral ?? false
         self.vm = vm
     }
 
     public var body: some View {
         hRow {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: .padding4) {
                 HStack(alignment: .top) {
-                    HStack(spacing: 8) {
-                        hText(vm.discount.code, style: .label)
+                    HStack(spacing: .padding8) {
+                        hText(vm.discount.code.uppercased(), style: .label)
                             .foregroundColor(getCodeTextColor)
                             .padding(.vertical, .padding4)
                         if vm.shouldShowRemove {
@@ -28,37 +33,31 @@ public struct PaymentDetailsDiscountView: View {
                     .padding(.horizontal, .padding8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(hSurfaceColor.Opaque.primary)
+                            .fill(hSurfaceColor.Translucent.primary)
                     )
                     .onTapGesture {
                         startRemoveCode()
                     }
                     Spacer()
-                    if vm.options.contains(.forPayment), let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmount)
-                    } else if let title = vm.discount.title {
-                        hText(title).multilineTextAlignment(.trailing)
-                            .fixedSize(horizontal: false, vertical: true)
+                    if let validUntil = vm.discount.validUntil {
+                        if vm.shouldShowExpire {
+                            hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .label)
+                                .foregroundColor(hSignalColor.Red.element)
+                        } else {
+                            hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
+                        }
+                    } else if isReferral, let discount = vm.discount.amount {
+                        hText(discount.formattedNegativeAmountPerMonth)
                     }
                 }
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .top) {
-                        if let title = vm.discount.title, vm.options.contains(.forPayment) {
-                            hText(title, style: .label)
-                        } else if !vm.discount.listOfAffectedInsurances.isEmpty {
-                            VStack(alignment: .leading, spacing: 0) {
-                                ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                    hText(affectedInsurance.displayName, style: .label)
-                                }
-                            }
-                        }
-                        Spacer()
-                        if let validUntil = vm.discount.validUntil {
-                            if vm.shouldShowExpire {
-                                hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .label)
-                                    .foregroundColor(hSignalColor.Red.element)
-                            } else {
-                                hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
+                    if let title = vm.discount.title {
+                        hText(title, style: .label)
+                    }
+                    if !vm.discount.listOfAffectedInsurances.isEmpty {
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
+                                hText(affectedInsurance.displayName, style: .label)
                             }
                         }
                     }
@@ -71,10 +70,8 @@ public struct PaymentDetailsDiscountView: View {
                     }
                 }
             }
-            .foregroundColor(hTextColor.Opaque.secondary)
+            .foregroundColor(hTextColor.Translucent.secondary)
         }
-        .hWithoutHorizontalPadding([.row])
-        .dividerInsets(.all, 0)
     }
 
     @hColorBuilder
@@ -139,7 +136,7 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
                 .init(id: "id 11", displayName: "DISPLAY NAME"),
                 .init(id: "id 12", displayName: "DISPLAY NAME 2"),
             ],
-            validUntil: "2023-12-06",
+            validUntil: "2026-03-06",
             canBeDeleted: false,
             discountId: "1"
         )
@@ -157,8 +154,9 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             discountId: "1"
         )
         return VStack {
-            PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
-            PaymentDetailsDiscountView(vm: .init(options: [.showExpire], discount: discount2))
+            DiscountDetailView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
+            DiscountDetailView(vm: .init(options: [.showExpire], discount: discount2))
         }
+        .environmentObject(Router())
     }
 }

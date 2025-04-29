@@ -2,6 +2,7 @@ query Profile {
   currentMember {
     memberActions {
       isTravelCertificateEnabled
+      isCreatingOfInsuranceEvidenceEnabled
     }
   id
   email

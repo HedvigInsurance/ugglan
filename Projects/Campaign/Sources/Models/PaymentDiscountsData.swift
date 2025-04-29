@@ -38,6 +38,23 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     }
 
     @MainActor
+    public init(
+        referral: Referral,
+        nbOfReferrals: Int
+    ) {
+        self.id = UUID().uuidString
+        self.code = referral.name
+        self.amount = referral.activeDiscount
+        self.title =
+            referral.invitedYou
+            ? L10n.Forever.Referral.invitedYou(referral.name) : L10n.foreverReferralInvitedByYouPlural(nbOfReferrals)
+        self.listOfAffectedInsurances = []
+        self.validUntil = nil
+        self.canBeDeleted = true
+        self.discountId = referral.id
+    }
+
+    @MainActor
     var isValid: Bool {
         if let validUntil = validUntil?.localDateToDate {
             let components = Calendar.current.dateComponents(
