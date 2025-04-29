@@ -177,7 +177,7 @@ public struct PaymentsDiscountsRootView: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        store.send(.fetchDiscountsData(paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts))
+                        store.send(.fetchDiscountsData)
                     }),
                     dismissButton: nil
                 )
