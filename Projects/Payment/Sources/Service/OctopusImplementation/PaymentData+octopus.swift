@@ -15,19 +15,25 @@ extension PaymentData {
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         payment = .init(with: chargeFragment)
         status = PaymentData.PaymentStatus.getStatus(for: chargeFragment, with: data.currentMember)
-        contracts = chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
-        discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
-            if discountBreakdown.isReferral {
+
+        let referralDiscounts: [Discount] = chargeFragment.discountBreakdown
+            .filter({ discountBreakdown in
+                discountBreakdown.isReferral
+            })
+            .compactMap({
                 let dto = data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return .init(with: discountBreakdown, discountDto: dto)
-            } else {
-                return .init(
-                    with: discountBreakdown,
-                    discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
-                )
-            }
+                return .init(with: $0, discountDto: dto)
+            })
+
+        let otherDiscounts: [Discount] = chargeFragment.discountBreakdown.filter({ !$0.isReferral })
+            .compactMap({ .init(with: $0, discount: redeemedCampaigns.first(where: { $0.code == $0.code })) })
+
+        self.referralDiscounts = referralDiscounts
+        self.otherDiscounts = otherDiscounts
+        contracts = chargeFragment.chargeBreakdown.compactMap({
+            .init(with: $0, campaign: data.currentMember.fragments.reedemCampaignsFragment)
         })
         self.paymentDetails = paymentDetails
         addedToThePayment = []
@@ -41,9 +47,9 @@ extension PaymentData {
         self.id = data.id ?? ""
         payment = .init(with: data)
         status = PaymentData.PaymentStatus.getStatus(for: data, with: paymentDataQueryCurrentMember)
-        contracts = data.chargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = paymentDataQueryCurrentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
-        discounts = data.discountBreakdown.compactMap({ discountBreakdown in
+
+        let discounts: [Discount] = data.discountBreakdown.compactMap({ discountBreakdown in
             if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
                 return .init(with: discountBreakdown, discount: campaing)
             } else {
@@ -52,6 +58,11 @@ extension PaymentData {
                     .asReedeemedCampaing()
                 return .init(with: discountBreakdown, discountDto: dto)
             }
+        })
+        self.referralDiscounts = []
+        self.otherDiscounts = discounts
+        contracts = data.chargeBreakdown.compactMap({
+            .init(with: $0, campaign: paymentDataQueryCurrentMember.fragments.reedemCampaignsFragment)
         })
         self.paymentDetails = nil
         addedToThePayment = []
@@ -114,11 +125,19 @@ extension PaymentData.PaymentStack {
 
 @MainActor
 extension PaymentData.ContractPaymentDetails {
-    init(with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown) {
+    init(
+        with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown,
+        campaign: OctopusGraphQL.ReedemCampaignsFragment
+    ) {
         id = UUID().uuidString
         title = data.displayTitle
         subtitle = data.displaySubtitle
-        amount = .init(fragment: data.gross.fragments.moneyFragment)
+        grossAmount = .init(fragment: data.gross.fragments.moneyFragment)
+        netAmount = .init(fragment: data.net.fragments.moneyFragment)
+        discounts =
+            data.discounts?
+            .compactMap({ .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment, campaign: campaign) })
+            ?? []
         periods = data.periods.compactMap({ .init(with: $0) })
     }
 }
