@@ -6,17 +6,14 @@ import hCoreUI
 public struct CoInsuredInputButton: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @ObservedObject var intentViewModel: IntentViewModel
     @EnvironmentObject private var router: Router
 
     init(
         vm: CoInusuredInputViewModel,
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel,
-        intentViewModel: IntentViewModel,
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
         self.vm = vm
         self.editCoInsuredNavigation = editCoInsuredNavigation
-        self.intentViewModel = intentViewModel
     }
 
     public var body: some View {
@@ -42,7 +39,7 @@ public struct CoInsuredInputButton: View {
             hText(L10n.removeConfirmationButton)
                 .transition(.opacity.animation(.easeOut))
         }
-        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
+        .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
     }
 
     private var addCoInsuredButton: some View {
@@ -60,7 +57,7 @@ public struct CoInsuredInputButton: View {
             hText(buttonDisplayText)
                 .transition(.opacity.animation(.easeOut))
         }
-        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
+        .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
     }
 
     var buttonDisplayText: String {
@@ -133,13 +130,13 @@ public struct CoInsuredInputButton: View {
             }
         }()
 
-        await intentViewModel.getIntent(
+        await editCoInsuredNavigation.intentViewModel.getIntent(
             contractId: vm.contractId,
             origin: .coinsuredInput,
             coInsured: coInsuredModel
         )
 
-        if !intentViewModel.showErrorViewForCoInsuredInput {
+        if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
             switch action {
             case .delete:
                 editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)

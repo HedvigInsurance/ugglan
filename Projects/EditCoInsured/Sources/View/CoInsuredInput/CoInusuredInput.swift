@@ -84,8 +84,7 @@ struct CoInusuredInputScreen: View {
                 }
                 CoInsuredInputButton(
                     vm: vm,
-                    editCoInsuredNavigation: editCoInsuredNavigation,
-                    intentViewModel: intentViewModel
+                    editCoInsuredNavigation: editCoInsuredNavigation
                 )
                 cancelButtonView
             }
