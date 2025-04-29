@@ -140,7 +140,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     private var existingCoInsured: [CoInsuredListType] {
         return config.contractCoInsured
             .filter {
-                !coInsuredDeleted.contains($0) && $0.terminatesOn == nil
+                !coInsuredDeleted.contains($0) && $0.terminatesOn == nil && !$0.hasMissingInfo
             }
             .map { CoInsuredListType(coInsured: $0, locallyAdded: false) }
     }
@@ -157,7 +157,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
                     type: nil,
                     locallyAdded: false
                 ),
-                count: nbOfFields - 1
+                count: nbOfFields
             ) : []
     }
 
