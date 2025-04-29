@@ -44,7 +44,7 @@ struct InvitationTable: View {
 
 class InvitationTableViewModel: ObservableObject {
     let foreverData: ForeverData?
-    @State var showInvitations = false
+    @Published var showInvitations = false
 
     public init(
         foreverData: ForeverData?
