@@ -7,19 +7,16 @@ public struct CoInsuredInputButton: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject var intentViewModel: IntentViewModel
-    @ObservedObject var insuredPeopleVm: InsuredPeopleScreenViewModel
     @EnvironmentObject private var router: Router
 
     init(
         vm: CoInusuredInputViewModel,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel,
         intentViewModel: IntentViewModel,
-        insuredPeopleVm: InsuredPeopleScreenViewModel,
     ) {
         self.vm = vm
         self.editCoInsuredNavigation = editCoInsuredNavigation
         self.intentViewModel = intentViewModel
-        self.insuredPeopleVm = insuredPeopleVm
     }
 
     public var body: some View {
@@ -39,41 +36,13 @@ public struct CoInsuredInputButton: View {
     private var deleteCoInsuredButton: some View {
         hButton.LargeButton(type: .alert) {
             Task {
-                await intentViewModel.getIntent(
-                    contractId: vm.contractId,
-                    origin: .coinsuredInput,
-                    coInsured: insuredPeopleVm.listForGettingIntentFor(
-                        removedCoInsured: coInsuredToDelete
-                    )
-                )
-                if !intentViewModel.showErrorViewForCoInsuredInput {
-                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
-                } else {
-                    performErrorAction(for: .delete)
-                }
-                editCoInsuredNavigation.coInsuredInputModel = nil
+                await getIntent(for: .delete)
             }
         } content: {
             hText(L10n.removeConfirmationButton)
                 .transition(.opacity.animation(.easeOut))
         }
         .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
-    }
-
-    private func performErrorAction(for action: CoInsuredAction) {
-        let errorModel: CoInsuredModel = .init(
-            firstName: vm.personalData.firstName,
-            lastName: vm.personalData.lastName,
-            SSN: !vm.noSSN ? vm.SSN : nil,
-            birthDate: vm.noSSN ? vm.birthday : nil,
-            needsMissingInfo: false
-        )
-
-        if action == .add {
-            editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(errorModel)
-        } else {
-            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(errorModel)
-        }
     }
 
     private var addCoInsuredButton: some View {
@@ -83,7 +52,9 @@ public struct CoInsuredInputButton: View {
                     await vm.getNameFromSSN(SSN: vm.SSN)
                 }
             } else if vm.nameFetchedFromSSN || vm.noSSN {
-                sendIntent()
+                Task {
+                    await getIntent(for: vm.actionType)
+                }
             }
         } content: {
             hText(buttonDisplayText)
@@ -117,85 +88,47 @@ public struct CoInsuredInputButton: View {
     }
 
     var coInsuredToDelete: CoInsuredModel {
-        if vm.personalData.firstName == "" && vm.SSN == "" {
-            return .init()
-        } else if vm.SSN != "" {
-            return .init(
+        return (vm.personalData.firstName == "" && vm.SSN == "")
+            ? .init()
+            : .init(
                 firstName: vm.personalData.firstName,
                 lastName: vm.personalData.lastName,
-                SSN: vm.SSN,
+                SSN: vm.SSN != "" ? vm.SSN : nil,
+                birthDate: vm.SSN == "" ? vm.birthday : nil,
                 needsMissingInfo: false
             )
-        } else {
-            return .init(
-                firstName: vm.personalData.firstName,
-                lastName: vm.personalData.lastName,
-                birthDate: vm.birthday,
-                needsMissingInfo: false
-            )
-        }
     }
 
-    private func sendIntent() {
-        Task {
-            if !intentViewModel.showErrorViewForCoInsuredInput {
-                vm.actionType == .edit ? await performEditAction() : await performAddAction()
-
-                !intentViewModel.showErrorViewForCoInsuredInput
-                    ? router.push(CoInsuredAction.add) : performErrorAction(for: .add)
-            }
-            editCoInsuredNavigation.selectCoInsured = nil
-        }
-    }
-
-    func performEditAction() async {
-        if vm.noSSN {
-            editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
-                .init(
-                    firstName: vm.personalData.firstName,
-                    lastName: vm.personalData.lastName,
-                    birthDate: vm.birthday,
-                    needsMissingInfo: false
-                )
-            )
-        } else {
-            editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
-                .init(
-                    firstName: vm.personalData.firstName,
-                    lastName: vm.personalData.lastName,
-                    SSN: vm.SSN,
-                    needsMissingInfo: false
-                )
-            )
-        }
-        await intentViewModel.getIntent(
-            contractId: vm.contractId,
-            origin: .coinsuredInput,
-            coInsured: insuredPeopleVm.completeList()
+    var coInsuredPerformModel: CoInsuredModel {
+        return .init(
+            firstName: vm.personalData.firstName,
+            lastName: vm.personalData.lastName,
+            SSN: vm.noSSN ? nil : vm.SSN,
+            birthDate: vm.noSSN ? vm.birthday : nil,
+            needsMissingInfo: false
         )
+    }
 
-        if !editCoInsuredNavigation.intentViewModel
-            .showErrorViewForCoInsuredInput
-        {
-            editCoInsuredNavigation.coInsuredInputModel = nil
+    private func performErrorAction(for action: CoInsuredAction) {
+        if action == .delete {
+            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(coInsuredPerformModel)
+        } else {
+            editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredPerformModel)
         }
     }
 
-    func performAddAction() async {
-        let coInsuredToAdd: CoInsuredModel = {
-            if vm.noSSN {
-                return .init(
-                    firstName: vm.personalData.firstName,
-                    lastName: vm.personalData.lastName,
-                    birthDate: vm.birthday,
-                    needsMissingInfo: false
+    private func getIntent(for action: CoInsuredAction) async {
+        let coInsuredModel: [CoInsuredModel] = {
+            switch action {
+            case .add:
+                return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
+                    addCoInsured: coInsuredPerformModel
                 )
-            } else {
-                return .init(
-                    firstName: vm.personalData.firstName,
-                    lastName: vm.personalData.lastName,
-                    SSN: vm.SSN,
-                    needsMissingInfo: false
+            case .edit:
+                return editCoInsuredNavigation.coInsuredViewModel.completeList()
+            case .delete:
+                return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
+                    removedCoInsured: coInsuredToDelete
                 )
             }
         }()
@@ -203,15 +136,23 @@ public struct CoInsuredInputButton: View {
         await intentViewModel.getIntent(
             contractId: vm.contractId,
             origin: .coinsuredInput,
-            coInsured: insuredPeopleVm.listForGettingIntentFor(
-                addCoInsured: coInsuredToAdd
-            )
+            coInsured: coInsuredModel
         )
-        if !editCoInsuredNavigation.intentViewModel
-            .showErrorViewForCoInsuredInput
-        {
-            insuredPeopleVm.addCoInsured(coInsuredToAdd)
+
+        if !intentViewModel.showErrorViewForCoInsuredInput {
+            switch action {
+            case .delete:
+                editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
+            case .edit:
+                editCoInsuredNavigation.coInsuredViewModel.editCoInsured(coInsuredPerformModel)
+            case .add:
+                editCoInsuredNavigation.coInsuredViewModel.addCoInsured(coInsuredPerformModel)
+            }
             editCoInsuredNavigation.coInsuredInputModel = nil
+        } else {
+            performErrorAction(for: action)
         }
+
+        editCoInsuredNavigation.selectCoInsured = nil
     }
 }
