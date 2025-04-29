@@ -2,10 +2,12 @@ import Foundation
 import hCore
 
 @MainActor
-public class ProfileService {
+class ProfileService {
     @Inject var client: ProfileClient
 
-    public func getProfileState() async throws -> (memberData: MemberDetails, partnerData: PartnerData?) {
+    public func getProfileState() async throws -> (
+        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
+    ) {
         log.info("ProfileService: getProfileState", error: nil, attributes: nil)
         return try await client.getProfileState()
     }

@@ -9,7 +9,8 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     public let payment: PaymentStack
     let status: PaymentStatus
     let contracts: [ContractPaymentDetails]
-    public let discounts: [Discount]
+    let referralDiscounts: [Discount]
+    let otherDiscounts: [Discount]
     let paymentDetails: PaymentDetails?
     //had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
@@ -19,7 +20,8 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         payment: PaymentStack,
         status: PaymentStatus,
         contracts: [ContractPaymentDetails],
-        discounts: [Discount],
+        referralDiscounts: [Discount],
+        otherDiscounts: [Discount],
         paymentDetails: PaymentDetails?,
         addedToThePayment: [PaymentData]?
     ) {
@@ -27,7 +29,8 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         self.payment = payment
         self.status = status
         self.contracts = contracts
-        self.discounts = discounts
+        self.referralDiscounts = referralDiscounts
+        self.otherDiscounts = otherDiscounts
         self.paymentDetails = paymentDetails
         self.addedToThePayment = addedToThePayment
     }
@@ -83,14 +86,26 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         public let id: String
         let title: String
         let subtitle: String?
-        let amount: MonetaryAmount
+        let netAmount: MonetaryAmount
+        let grossAmount: MonetaryAmount
+        let discounts: [Discount]
         let periods: [PeriodInfo]
 
-        public init(id: String, title: String, subtitle: String?, amount: MonetaryAmount, periods: [PeriodInfo]) {
+        public init(
+            id: String,
+            title: String,
+            subtitle: String?,
+            netAmount: MonetaryAmount,
+            grossAmount: MonetaryAmount,
+            discounts: [Discount],
+            periods: [PeriodInfo]
+        ) {
             self.id = id
             self.title = title
             self.subtitle = subtitle
-            self.amount = amount
+            self.netAmount = netAmount
+            self.grossAmount = grossAmount
+            self.discounts = discounts
             self.periods = periods
         }
     }

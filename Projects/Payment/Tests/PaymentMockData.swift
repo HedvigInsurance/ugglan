@@ -46,17 +46,6 @@ struct MockPaymentData {
         fetchPaymentStatusData: @escaping FetchPaymentStatusData = {
             .init(status: .active, displayName: nil, descriptor: nil)
         },
-        fetchPaymentDiscountsData: @escaping FetchPaymentDiscountsData = {
-            .init(
-                discounts: [],
-                referralsData: .init(
-                    code: "code",
-                    discountPerMember: .init(amount: "10", currency: "SEK"),
-                    discount: .init(amount: "10", currency: "SEK"),
-                    referrals: []
-                )
-            )
-        },
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {
             .init()
         },
@@ -70,7 +59,6 @@ struct MockPaymentData {
         let service = MockPaymentService(
             fetchPaymentData: fetchPaymentData,
             fetchPaymentStatusData: fetchPaymentStatusData,
-            fetchPaymentDiscountsData: fetchPaymentDiscountsData,
             fetchPaymentHistoryData: fetchPaymentHistoryData,
             fetchConnectPaymentUrl: fetchConnectPaymentUrl
         )

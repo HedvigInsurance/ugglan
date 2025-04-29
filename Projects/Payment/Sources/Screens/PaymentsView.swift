@@ -85,6 +85,7 @@ public struct PaymentsView: View {
                 if let upcomingPayment = state.paymentData {
                     paymentView(for: upcomingPayment)
                 }
+
                 if state.ongoingPaymentData.isEmpty && state.paymentData == nil {
                     VStack(spacing: 16) {
                         Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
@@ -236,6 +237,7 @@ struct PaymentsView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-        return PaymentsView()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return PaymentsView().environmentObject(PaymentsNavigationViewModel())
     }
 }

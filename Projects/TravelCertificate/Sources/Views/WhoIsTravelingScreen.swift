@@ -36,7 +36,7 @@ struct WhoIsTravelingScreen: View {
                 vm.setCoInsured(data: listOfIncludedTravellers)
                 vm.validateAndSubmit()
             },
-            buttonText: L10n.General.submit,
+            buttonText: L10n.Certificates.createCertificate,
             infoCard: vm.hasMissingCoInsuredData
                 ? .init(
                     text: L10n.TravelCertificate.missingCoinsuredInfo,
@@ -93,7 +93,7 @@ class WhoIsTravelingViewModel: ObservableObject {
         coInsured.append(insuranceHolder)
         coInsured.append(contentsOf: contract?.coInsured.filter({ !$0.hasMissingInfo }) ?? [])
         coInsuredModelData = coInsured
-        hasMissingCoInsuredData = contract?.coInsured.allSatisfy({ $0.hasMissingInfo }) ?? false
+        hasMissingCoInsuredData = contract?.coInsured.filter({ $0.hasMissingInfo }).count != 0
     }
 
     func setCoInsured(data: [PolicyCoinsuredPersonModel]) {

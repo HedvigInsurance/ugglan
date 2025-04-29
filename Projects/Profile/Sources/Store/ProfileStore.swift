@@ -14,10 +14,11 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
         switch action {
         case .fetchProfileState:
             do {
-                let (member, partner) = try await self.profileService.getProfileState()
+                let (member, partner, canCreateInsuranceEvidence) = try await self.profileService.getProfileState()
                 self.removeLoading(for: .fetchProfileState)
 
                 send(.setEurobonusNumber(partnerData: partner))
+                send(.setCanCreateInsuranceEvidence(to: canCreateInsuranceEvidence))
                 send(.setMember(memberData: member))
                 send(.isTravelCertificateEnabled(has: member.isTravelCertificateEnabled))
                 send(.fetchProfileStateCompleted)
@@ -60,6 +61,8 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             newState.memberDetails = memberData
         case .setEurobonusNumber(let partnerData):
             newState.partnerData = partnerData
+        case .setCanCreateInsuranceEvidence(let canCreate):
+            newState.canCreateInsuranceEvidence = canCreate
         case let .setMemberEmail(email):
             newState.memberDetails?.email = email
         case let .setMemberPhone(phone):

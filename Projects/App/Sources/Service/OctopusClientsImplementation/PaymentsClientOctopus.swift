@@ -106,26 +106,31 @@ extension PaymentData {
         with data: OctopusGraphQL.PaymentDataQuery.Data,
         paymentDetails: PaymentDetails?
     ) {
+
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         let redeemedCampaigns = data.currentMember.redeemedCampaigns
+        let referralDiscounts: [Discount] = chargeFragment.discountBreakdown
+            .filter({ discountBreakdown in
+                discountBreakdown.isReferral
+            })
+            .compactMap({
+                let dto = data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
+                return .init(with: $0, discountDto: dto)
+            })
+
+        let otherDiscounts: [Discount] = chargeFragment.discountBreakdown.filter({ !$0.isReferral })
+            .compactMap({ .init(with: $0, discount: redeemedCampaigns.first(where: { $0.code == $0.code })) })
         self.init(
             id: data.currentMember.futureCharge?.id ?? "",
             payment: .init(with: chargeFragment),
             status: PaymentData.PaymentStatus.getStatus(for: chargeFragment, with: data.currentMember),
-            contracts: chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) }),
-            discounts: chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
-                if discountBreakdown.isReferral {
-                    let dto = data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
-                        .asReedeemedCampaing()
-                    return .init(with: discountBreakdown, discountDto: dto)
-                } else {
-                    return .init(
-                        with: discountBreakdown,
-                        discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
-                    )
-                }
+            contracts: chargeFragment.chargeBreakdown.compactMap({
+                .init(with: $0, campaign: data.currentMember.fragments.reedemCampaignsFragment)
             }),
+            referralDiscounts: referralDiscounts,
+            otherDiscounts: otherDiscounts,
             paymentDetails: paymentDetails,
             addedToThePayment: []
         )
@@ -136,22 +141,27 @@ extension PaymentData {
         with data: OctopusGraphQL.MemberChargeFragment,
         paymentDataQueryCurrentMember: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
     ) {
-        let redeemedCampaigns = paymentDataQueryCurrentMember.redeemedCampaigns
+
+        let redeemedCampaigns = paymentDataQueryCurrentMember.fragments.reedemCampaignsFragment.redeemedCampaigns
+        let discounts: [Discount] = data.discountBreakdown.compactMap({ discountBreakdown in
+            if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
+                return .init(with: discountBreakdown, discount: campaing)
+            } else {
+                let dto = paymentDataQueryCurrentMember.referralInformation.fragments
+                    .memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
+                return .init(with: discountBreakdown, discountDto: dto)
+            }
+        })
         self.init(
             id: data.id ?? "",
             payment: .init(with: data),
             status: PaymentData.PaymentStatus.getStatus(for: data, with: paymentDataQueryCurrentMember),
-            contracts: data.chargeBreakdown.compactMap({ .init(with: $0) }),
-            discounts: data.discountBreakdown.compactMap({ discountBreakdown in
-                if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
-                    return .init(with: discountBreakdown, discount: campaing)
-                } else {
-                    let dto = paymentDataQueryCurrentMember.referralInformation.fragments
-                        .memberReferralInformationCodeFragment
-                        .asReedeemedCampaing()
-                    return .init(with: discountBreakdown, discountDto: dto)
-                }
+            contracts: data.chargeBreakdown.compactMap({
+                .init(with: $0, campaign: paymentDataQueryCurrentMember.fragments.reedemCampaignsFragment)
             }),
+            referralDiscounts: [],
+            otherDiscounts: discounts,
             paymentDetails: nil,
             addedToThePayment: []
         )
@@ -218,12 +228,19 @@ extension PaymentData.PaymentStack {
 
 @MainActor
 extension PaymentData.ContractPaymentDetails {
-    init(with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown) {
+    init(
+        with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown,
+        campaign: OctopusGraphQL.ReedemCampaignsFragment
+    ) {
         self.init(
             id: UUID().uuidString,
             title: data.displayTitle,
             subtitle: data.displaySubtitle,
-            amount: .init(fragment: data.gross.fragments.moneyFragment),
+            netAmount: .init(fragment: data.net.fragments.moneyFragment),
+            grossAmount: .init(fragment: data.gross.fragments.moneyFragment),
+            discounts: data.discounts?
+                .compactMap({ .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment, campaign: campaign) })
+                ?? [],
             periods: data.periods.compactMap({ .init(with: $0) })
         )
     }
@@ -316,26 +333,30 @@ extension PaymentData {
     ) {
         let chargeFragment = data
         let redeemedCampaigns = campaings.redeemedCampaigns
+        let referralDiscounts = chargeFragment.discountBreakdown.filter({ $0.isReferral })
+            .compactMap({
+                let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
+                return Discount.init(
+                    with: $0,
+                    discountDto: referralDescription
+                )
+            })
+
+        let otherDiscounts = chargeFragment.discountBreakdown.filter({ !$0.isReferral })
+            .compactMap({
+                Discount.init(
+                    with: $0,
+                    discount: redeemedCampaigns.first(where: { $0.code == $0.code })
+                )
+            })
         self.init(
             id: data.id ?? "",
             payment: .init(with: chargeFragment),
             status: PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment),
-            contracts: chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) }),
-            discounts: chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
-                if discountBreakdown.isReferral {
-                    let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment
-                        .asReedeemedCampaing()
-                    return Discount.init(
-                        with: discountBreakdown,
-                        discountDto: referralDescription
-                    )
-                } else {
-                    return Discount.init(
-                        with: discountBreakdown,
-                        discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
-                    )
-                }
-            }),
+            contracts: chargeFragment.chargeBreakdown.compactMap({ .init(with: $0, campaign: campaings) }),
+            referralDiscounts: referralDiscounts,
+            otherDiscounts: otherDiscounts,
             paymentDetails: nil,
             addedToThePayment: {
                 if let nextPayment {
@@ -370,5 +391,23 @@ extension PaymentData.PaymentStatus {
         case .unknown(_):
             return .unknown
         }
+    }
+}
+
+@MainActor
+extension Discount {
+    public init(
+        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment,
+        campaign: OctopusGraphQL.ReedemCampaignsFragment
+    ) {
+        self.init(
+            code: data.code,
+            amount: .init(fragment: data.discount.fragments.moneyFragment),
+            title: campaign.redeemedCampaigns.first(where: { $0.code == data.code })?.description,
+            listOfAffectedInsurances: [],
+            validUntil: nil,
+            canBeDeleted: true,
+            discountId: ""
+        )
     }
 }

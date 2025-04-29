@@ -12,8 +12,6 @@ public enum Localization {
         case sv_SE
         case en_SE
         case en_NO
-        case nb_NO
-        case da_DK
         case en_DK
         @MainActor
         public enum Market: String, Codable, CaseIterable {
@@ -31,8 +29,8 @@ public enum Localization {
 
             public var availableLocales: [Localization.Locale] {
                 switch self {
-                case .no: return [.nb_NO, .en_NO]
-                case .dk: return [.da_DK, .en_DK]
+                case .no: return [.en_NO]
+                case .dk: return [.en_DK]
                 case .se: return [.sv_SE, .en_SE]
                 }
             }
@@ -46,13 +44,13 @@ public enum Localization {
             }
         }
 
-        nonisolated(unsafe)
+        nonisolated
             public var market: Market
         {
             switch self {
             case .sv_SE, .en_SE: return .se
-            case .en_NO, .nb_NO: return .no
-            case .da_DK, .en_DK: return .dk
+            case .en_NO: return .no
+            case .en_DK: return .dk
             }
         }
 
@@ -63,8 +61,6 @@ public enum Localization {
             case .sv_SE: return "sv-SE"
             case .en_SE: return "en-SE"
             case .en_NO: return "en-NO"
-            case .nb_NO: return "nb-NO"
-            case .da_DK: return "da-DK"
             case .en_DK: return "en-DK"
             }
         }
@@ -74,8 +70,6 @@ public enum Localization {
             case .sv_SE: return "se"
             case .en_SE: return "se-en"
             case .en_NO: return "no-en"
-            case .nb_NO: return "no"
-            case .da_DK: return "dk"
             case .en_DK: return "dk-en"
             }
         }
@@ -93,8 +87,6 @@ public enum Localization {
             case .sv_SE: return "sv_SE"
             case .en_SE: return "en_SE"
             case .en_NO: return "en_NO"
-            case .nb_NO: return "nb_NO"
-            case .da_DK: return "da_DK"
             case .en_DK: return "en_DK"
             }
         }
@@ -104,8 +96,6 @@ public enum Localization {
             case .sv_SE: return "sv"
             case .en_SE: return "en-US"
             case .en_NO: return "en-US"
-            case .nb_NO: return "nb"
-            case .da_DK: return "da"
             case .en_DK: return "en-US"
             }
         }
@@ -115,25 +105,21 @@ public enum Localization {
             case .sv_SE: return "Svenska"
             case .en_SE: return "English"
             case .en_NO: return "English"
-            case .nb_NO: return "Norsk (Bokmål)"
-            case .da_DK: return "Dansk"
             case .en_DK: return "English"
             }
         }
 
-        nonisolated(unsafe)
+        nonisolated
             public var foundation: Foundation.Locale
         { Foundation.Locale(identifier: lprojCode) }
 
-        nonisolated(unsafe)
+        nonisolated
             public var lprojCode: String
         {
             switch self {
             case .sv_SE: return "sv-SE"
             case .en_SE: return "en-SE"
             case .en_NO: return "en-NO"
-            case .nb_NO: return "nb-NO"
-            case .da_DK: return "da-DK"
             case .en_DK: return "en-DK"
             }
         }

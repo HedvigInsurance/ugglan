@@ -63,5 +63,6 @@ struct MovingFlowSelectContractScreen: View {
     Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let navigationVm = MovingFlowNavigationViewModel()
-    return MovingFlowSelectContractScreen(navigationVm: navigationVm, router: Router())
+    let router = Router()
+    return MovingFlowSelectContractScreen(navigationVm: navigationVm, router: router)
 }

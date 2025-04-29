@@ -51,9 +51,9 @@ public enum MovingFlowError: Error {
 
     var title: String? {
         switch self {
-        case .serverError(let message):
+        case .serverError:
             return L10n.generalContactUsTitle
-        case .missingDataError(let message):
+        case .missingDataError:
             return nil
         case .other:
             return nil

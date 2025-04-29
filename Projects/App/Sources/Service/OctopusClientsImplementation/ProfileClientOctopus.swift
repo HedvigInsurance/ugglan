@@ -7,7 +7,9 @@ public class ProfileClientOctopus: ProfileClient {
 
     public init() {}
 
-    public func getProfileState() async throws -> (memberData: MemberDetails, partnerData: PartnerData?) {
+    public func getProfileState() async throws -> (
+        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
+    ) {
         let data = try await self.octopus.client
             .fetch(
                 query: OctopusGraphQL.ProfileQuery(),
@@ -26,7 +28,7 @@ public class ProfileClientOctopus: ProfileClient {
             )
 
         let partner = PartnerData(with: data.currentMember.fragments.partnerDataFragment)
-        return (memberData, partner)
+        return (memberData, partner, currentMember.memberActions?.isCreatingOfInsuranceEvidenceEnabled ?? false)
     }
 
     public func getMemberDetails() async throws -> MemberDetails {

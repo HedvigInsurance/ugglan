@@ -13,7 +13,7 @@ public struct PaymentDiscountsData: Codable, Equatable, Sendable {
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id = UUID().uuidString
+    public let id: String
     public let code: String
     public let amount: MonetaryAmount?
     let title: String?
@@ -31,6 +31,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         canBeDeleted: Bool,
         discountId: String
     ) {
+        self.id = UUID().uuidString
         self.code = code
         self.amount = amount
         self.title = title
@@ -38,6 +39,23 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.validUntil = validUntil
         self.canBeDeleted = canBeDeleted
         self.discountId = discountId
+    }
+
+    @MainActor
+    public init(
+        referral: Referral,
+        nbOfReferrals: Int
+    ) {
+        self.id = UUID().uuidString
+        self.code = referral.name
+        self.amount = referral.activeDiscount
+        self.title =
+            referral.invitedYou
+            ? L10n.Forever.Referral.invitedYou(referral.name) : L10n.foreverReferralInvitedByYouPlural(nbOfReferrals)
+        self.listOfAffectedInsurances = []
+        self.validUntil = nil
+        self.canBeDeleted = true
+        self.discountId = referral.id
     }
 
     @MainActor

@@ -13,6 +13,7 @@ public struct ProfileState: StateProtocol {
     var pushNotificationsSnoozeDate: Date?
 
     var hasTravelCertificates: Bool = false
+    var canCreateInsuranceEvidence: Bool = false
 
     @MainActor
     var showTravelCertificate: Bool {

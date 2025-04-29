@@ -13,6 +13,7 @@ import Environment
 import Forever
 import Foundation
 import Home
+import InsuranceEvidence
 import MoveFlow
 import Payment
 import PresentableStore
@@ -49,6 +50,7 @@ extension ApolloClient {
             let fetchClaimDetailsDemoClient = FetchClaimDetailsClientDemo()
             let crossSellClient = CrossSellClientDemo()
             let campaignClient = hCampaignClientDemo()
+            let insuranceEvidenceClient = InsuranceEvidenceClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
             Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in fetchClaimsService })
@@ -67,6 +69,8 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsDemoClient })
             Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
             Dependencies.shared.add(module: Module { () -> hCampaignClient in campaignClient })
+            Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
+
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
@@ -92,6 +96,8 @@ extension ApolloClient {
             let addonClient = AddonsClientOctopus()
             let fetchClaimDetailsClient = FetchClaimDetailsClientOctopus()
             let crossSellClient = CrossSellClientOctopus()
+            let insuranceEvidenceClient = InsuranceEvidenceClientOctopus()
+
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -122,6 +128,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
+                Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -151,6 +158,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
+                Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
             }
         }
     }

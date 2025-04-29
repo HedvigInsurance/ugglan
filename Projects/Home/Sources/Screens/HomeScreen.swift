@@ -36,6 +36,8 @@ extension HomeScreen {
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
                     navigationVm.router.push(String.init(describing: InboxView.self))
+                case .travelCertificate, .insuranceEvidence:
+                    break
                 }
             }
         )
@@ -145,13 +147,9 @@ class HomeVM: ObservableObject {
 
     func fetchHomeState() {
         let store: HomeStore = globalPresentableStoreContainer.get()
-        print("STORE TEST SEND: fetchMemberState 1")
         store.send(.fetchMemberState)
-        print("STORE TEST SEND: fetchImportantMessages 1")
         store.send(.fetchImportantMessages)
-        print("STORE TEST SEND: fetchQuickActions 1")
         store.send(.fetchQuickActions)
-        print("STORE TEST SEND: fetchChatNotifications 1")
         store.send(.fetchChatNotifications)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)

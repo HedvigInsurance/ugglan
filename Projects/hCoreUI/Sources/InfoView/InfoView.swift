@@ -177,10 +177,10 @@ class InfoViewModel: ObservableObject {
     weak var vc: UIViewController?
 }
 
-struct InfoViewNavigationModel: Equatable, Identifiable {
-    var id: String?
+public struct InfoViewNavigationModel: Equatable, Identifiable {
+    public var id: String?
 
-    static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
+    public static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
         return lhs.id == rhs.id
     }
 
