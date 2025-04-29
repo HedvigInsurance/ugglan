@@ -38,7 +38,7 @@ struct PaymentDetailsView: View {
     private var referralSection: some View {
         if !data.referralDiscounts.isEmpty {
             hSection(data.referralDiscounts, id: \.id) { referral in
-                DiscountDetailView(vm: .init(options: [.forPayment], discount: referral))
+                DiscountDetailView(isReferral: true, vm: .init(options: [.forPayment], discount: referral))
                     .hWithoutHorizontalPadding([.row])
             }
             .withHeader(
