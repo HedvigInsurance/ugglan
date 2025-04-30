@@ -12,12 +12,16 @@ struct StartDateScreen: View {
             isLastScreenInFlow: false,
             elements: [.datePicker, .email, .infoCard],
             vm: .init(
-                emailInput: $vm.email,
-                emailError: $vm.emailError,
-                dateInput: $vm.date,
-                minStartDate: vm.specification.minStartDate,
-                maxStartDate: vm.specification.maxStartDate,
-                maxDuration: vm.specification.maxDuration,
+                emailInput: .init(
+                    input: $vm.email,
+                    error: $vm.emailError
+                ),
+                dateInput: .init(
+                    input: $vm.date,
+                    minStartDate: vm.specification.minStartDate,
+                    maxStartDate: vm.specification.maxStartDate,
+                    maxDuration: vm.specification.maxDuration
+                ),
                 onButtonClick: {
                     Task {
                         await submit()

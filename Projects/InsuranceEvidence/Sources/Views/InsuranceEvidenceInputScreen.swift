@@ -12,7 +12,9 @@ struct InsuranceEvidenceInputScreen: View {
             isLastScreenInFlow: true,
             elements: [.email],
             vm: .init(
-                emailInput: $vm.insuranceEvidenceInput.email,
+                emailInput: .init(
+                    input: $vm.insuranceEvidenceInput.email
+                ),
                 state: $vm.state,
                 onButtonClick: vm.confirm,
                 infoViewClicked: {

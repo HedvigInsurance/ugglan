@@ -37,30 +37,30 @@ public struct CertificateInputScreen: View {
                             if elements.contains(.datePicker) {
                                 hDatePickerField(
                                     config: .init(
-                                        minDate: vm.minStartDate,
-                                        maxDate: vm.maxStartDate,
+                                        minDate: vm.dateInput?.minStartDate,
+                                        maxDate: vm.dateInput?.maxStartDate,
                                         placeholder: L10n.TravelCertificate.startDateTitle,
                                         title: L10n.TravelCertificate.startDateTitle
                                     ),
-                                    selectedDate: vm.dateInput
+                                    selectedDate: vm.dateInput?.input
                                 ) { date in
-                                    vm.dateInput = date
+                                    vm.dateInput?.input = date
                                 }
                             }
 
                             if elements.contains(.email) {
                                 hFloatingTextField(
                                     masking: .init(type: .email),
-                                    value: $vm.emailInput,
-                                    equals: $vm.editValue,
+                                    value: $vm.emailInput.input,
+                                    equals: $vm.emailInput.editValue,
                                     focusValue: .email,
                                     placeholder: L10n.emailRowTitle,
-                                    error: $vm.emailError
+                                    error: $vm.emailInput.error
                                 )
                             }
                         }
 
-                        if elements.contains(.infoCard), let maxDuration = vm.maxDuration {
+                        if elements.contains(.infoCard), let maxDuration = vm.dateInput?.maxDuration {
                             InfoCard(
                                 text: L10n.TravelCertificate.startDateInfo(maxDuration),
                                 type: .info
@@ -88,37 +88,21 @@ public struct CertificateInputScreen: View {
 }
 
 public class CertificateInputViewModel: ObservableObject {
-    @Published var editValue: StartDateViewEditType?
-
-    @Binding var emailInput: String
-    @Binding var emailError: String?
-
-    @Binding var dateInput: Date
-    let minStartDate: Date?
-    let maxStartDate: Date?
-    let maxDuration: Int?
-
+    @Published var emailInput: CertificateEmailInput
+    @Published var dateInput: CertificateDateInput?
     @Binding var state: ProcessingState
     let onButtonClick: () -> Void
     let infoViewClicked: (() -> Void)?
 
     public init(
-        emailInput: Binding<String>? = nil,
-        emailError: Binding<String?>? = nil,
-        dateInput: Binding<Date>? = nil,
-        minStartDate: Date? = nil,
-        maxStartDate: Date? = nil,
-        maxDuration: Int? = nil,
+        emailInput: CertificateEmailInput? = .init(input: nil, error: nil),
+        dateInput: CertificateDateInput? = nil,
         state: Binding<ProcessingState>? = nil,
         onButtonClick: @escaping () -> Void,
         infoViewClicked: (() -> Void)? = nil
     ) {
-        self._emailInput = emailInput ?? .constant("")
-        self._emailError = emailError ?? .constant(nil)
-        self._dateInput = dateInput ?? .constant(Date())
-        self.maxStartDate = maxStartDate
-        self.minStartDate = minStartDate
-        self.maxDuration = maxDuration
+        self.emailInput = emailInput ?? .init(input: nil, error: nil)
+        self.dateInput = dateInput
         self._state = state ?? .constant(.success)
         self.onButtonClick = onButtonClick
         self.infoViewClicked = infoViewClicked
@@ -141,6 +125,39 @@ public class CertificateInputViewModel: ObservableObject {
         case date
         case email
     }
+
+    public struct CertificateEmailInput {
+        @State var editValue: StartDateViewEditType?
+        @Binding var input: String
+        @Binding var error: String?
+
+        public init(
+            input: Binding<String>? = .constant(""),
+            error: Binding<String?>? = .constant(nil)
+        ) {
+            self._input = input ?? .constant("")
+            self._error = error ?? .constant(nil)
+        }
+    }
+
+    public struct CertificateDateInput {
+        @Binding var input: Date
+        let minStartDate: Date?
+        let maxStartDate: Date?
+        let maxDuration: Int?
+
+        public init(
+            input: Binding<Date>,
+            minStartDate: Date? = nil,
+            maxStartDate: Date? = nil,
+            maxDuration: Int? = nil
+        ) {
+            self._input = input
+            self.minStartDate = minStartDate
+            self.maxStartDate = maxStartDate
+            self.maxDuration = maxDuration
+        }
+    }
 }
 
 public enum CertificateInputElement {
@@ -152,7 +169,6 @@ public enum CertificateInputElement {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-
     @State var emailInput: String = ""
     @State var dateInput: Date = Date()
 
@@ -162,11 +178,13 @@ public enum CertificateInputElement {
         isLastScreenInFlow: true,
         elements: [.email, .infoCard],
         vm: .init(
-            emailInput: $emailInput,
-            dateInput: $dateInput,
-            minStartDate: "2025-06-01".localDateToDate,
-            maxStartDate: "2026-06-01".localDateToDate,
-            maxDuration: 30,
+            emailInput: .init(input: $emailInput, error: .constant(nil)),
+            dateInput: .init(
+                input: $dateInput,
+                minStartDate: "2025-06-01".localDateToDate,
+                maxStartDate: "2026-06-01".localDateToDate,
+                maxDuration: 30
+            ),
             state: .constant(.success),
             onButtonClick: {},
             infoViewClicked: {}
