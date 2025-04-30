@@ -4,41 +4,23 @@ import hCoreUI
 
 struct InsuranceEvidenceInputScreen: View {
     @ObservedObject var vm: InsuranceEvidenceInputScreenViewModel
+
     var body: some View {
-        hForm {}
-            .sectionContainerStyle(.transparent)
-            .hFormTitle(
-                title: .init(.small, .heading2, L10n.InsuranceEvidence.documentTitle, alignment: .leading),
-                subTitle: .init(.small, .heading2, L10n.Certificates.verifyEmail, alignment: .leading)
-            )
-            .hFormAttachToBottom {
-                VStack(spacing: .padding16) {
-                    hSection {
-                        VStack(spacing: .padding4) {
-                            hFloatingTextField(
-                                masking: .init(type: .email),
-                                value: $vm.insuranceEvidenceInput.email,
-                                equals: $vm.focused,
-                                focusValue: true,
-                                placeholder: L10n.emailRowTitle
-                            )
-                        }
-                    }
-                    hSection {
-                        hButton.LargeButton(type: .primary) {
-                            vm.confirm()
-                        } content: {
-                            hText(L10n.Certificates.createCertificate)
-                        }
-                    }
-                }
-            }
-            .loadingWithButtonLoading($vm.state)
-            .setToolbarLeading {
-                ToolbarButtonView(types: .constant([ToolbarOptionType.insuranceEvidence]), placement: .leading) { _ in
+        CertificateInputScreen(
+            title: L10n.InsuranceEvidence.documentTitle,
+            subtitle: L10n.Certificates.verifyEmail,
+            isLastScreenInFlow: true,
+            elements: [.email],
+            vm: .init(
+                emailInput: $vm.insuranceEvidenceInput.email,
+                state: $vm.state,
+                onButtonClick: vm.confirm,
+                infoViewClicked: {
                     vm.insuranceEvidenceNavigationViewModel?.isInfoViewPresented = true
                 }
-            }
+            )
+        )
+        .hWithTooltip
     }
 }
 
@@ -47,7 +29,6 @@ class InsuranceEvidenceInputScreenViewModel: ObservableObject {
     weak var insuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel!
     @Published var state: ProcessingState = .loading
     @Published var insuranceEvidenceInput = InsuranceEvidenceInput(email: "")
-    @Published var focused: Bool?
     init(InsuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel) {
         self.insuranceEvidenceNavigationViewModel = InsuranceEvidenceNavigationViewModel
         getData()
