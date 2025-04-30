@@ -90,7 +90,7 @@ extension ReferralsData {
             referrals.append(.init(with: invitedBy, invitedYou: true))
         }
         referrals.append(contentsOf: data.referrals.compactMap({ .init(with: $0.fragments.memberReferralFragment2) }))
-        self.referrals = referrals.reversed()
+        self.referrals = referrals.filter({ $0.status == .active }).reversed()
     }
 }
 
