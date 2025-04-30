@@ -34,30 +34,12 @@ extension Discount {
     }
 
     public init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
-    ) {
-        self.id = UUID().uuidString
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description ?? ""
-        listOfAffectedInsurances =
-            discount?.onlyApplicableToContracts?
-            .compactMap({
-                .init(id: $0.id, displayName: $0.exposureDisplayName)
-            }) ?? []
-        validUntil = nil
-        canBeDeleted = false
-        discountId = UUID().uuidString
-    }
-
-    public init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
+        with moneyFragment: OctopusGraphQL.MoneyFragment,
         discountDto discount: ReedeemedCampaingDTO?
     ) {
         id = UUID().uuidString
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
+        code = discount?.code ?? ""
+        amount = .init(fragment: moneyFragment)
         title = discount?.description ?? ""
         listOfAffectedInsurances = []
         validUntil = nil

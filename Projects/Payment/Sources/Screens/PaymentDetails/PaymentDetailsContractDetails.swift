@@ -81,7 +81,7 @@ struct ContractDetails: View {
                             Spacer()
                             hText(period.amount.formattedAmount)
                                 .foregroundColor(
-                                    getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                    getColor(hTextColor.Opaque.primary, isOutstanding: period.isOutstanding)
                                 )
 
                         }
@@ -101,7 +101,7 @@ struct ContractDetails: View {
 
                     if !contract.discounts.isEmpty {
                         ForEach(contract.discounts) { discount in
-                            DiscountDetailView(vm: .init(options: [.forPayment], discount: discount))
+                            DiscountDetailView(isReferral: true, vm: .init(options: [.forPayment], discount: discount))
                         }
                     }
                     hRow {

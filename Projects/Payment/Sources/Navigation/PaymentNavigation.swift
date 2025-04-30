@@ -31,11 +31,9 @@ public struct PaymentsNavigation: View {
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
                     case .discounts:
-                        let store: PaymentStore = globalPresentableStoreContainer.get()
-                        let paymentDataDiscounts = store.state.paymentData?.otherDiscounts ?? []
                         CampaignNavigation(
-                            campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts, router: router),
                             onEditCode: {
+                                let store: PaymentStore = globalPresentableStoreContainer.get()
                                 store.send(.load)
                             }
                         )
