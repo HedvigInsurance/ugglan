@@ -101,7 +101,7 @@ struct ContractDetails: View {
 
                     if !contract.discounts.isEmpty {
                         ForEach(contract.discounts) { discount in
-                            DiscountDetailView(isReferral: true, vm: .init(options: [.forPayment], discount: discount))
+                            DiscountDetailView(vm: .init(options: [.forPayment], discount: discount))
                         }
                     }
                     hRow {

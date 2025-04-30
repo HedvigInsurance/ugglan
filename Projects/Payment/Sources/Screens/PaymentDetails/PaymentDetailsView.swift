@@ -38,7 +38,7 @@ struct PaymentDetailsView: View {
     private var referralSection: some View {
         if let referralDiscount = data.referralDiscount {
             hSection {
-                DiscountDetailView(isReferral: true, vm: .init(options: [.forPayment], discount: referralDiscount))
+                DiscountDetailView(vm: .init(options: [.forPayment], discount: referralDiscount))
                     .hWithoutHorizontalPadding([.row])
             }
             .withHeader(

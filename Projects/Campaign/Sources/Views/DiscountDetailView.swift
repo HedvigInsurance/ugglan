@@ -48,6 +48,8 @@ public struct DiscountDetailView: View {
                         }
                     } else if isReferral, let discount = vm.discount.amount {
                         hText(discount.formattedNegativeAmountPerMonth)
+                    } else if vm.options.contains(.forPayment), let discount = vm.discount.amount {
+                        hText(discount.formattedNegativeAmount)
                     }
                 }
                 VStack(alignment: .leading, spacing: 0) {
