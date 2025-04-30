@@ -190,6 +190,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             updateMoveLabel(true)
             onReturn()
         }
+        .onChange(of: value) { value in
+            self.innerValue = value
+        }
+
     }
 
     private func startAnimation(_ value: String) {

@@ -15,9 +15,9 @@ public class hCampaignService {
         return try await service.add(code: code)
     }
 
-    public func getPaymentDiscountsData(paymentDataDiscounts: [Discount]) async throws -> PaymentDiscountsData {
+    public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         log.info("hPaymentService: getPaymentDiscountsData", error: nil, attributes: nil)
-        return try await service.getPaymentDiscountsData(paymentDataDiscounts: paymentDataDiscounts)
+        return try await service.getPaymentDiscountsData()
     }
 }
 
@@ -41,12 +41,9 @@ public class hCampaignsClientOctopus: hCampaignClient {
         }
     }
 
-    public func getPaymentDiscountsData(paymentDataDiscounts: [Discount]) async throws -> PaymentDiscountsData {
+    public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         let query = OctopusGraphQL.DiscountsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-
-        let code = data.currentMember.referralInformation.code
-        let amountFromPaymentData = paymentDataDiscounts.first(where: { $0.code == code })?.amount
-        return PaymentDiscountsData.init(with: data, amountFromPaymentData: amountFromPaymentData)
+        return PaymentDiscountsData.init(with: data, amountFromPaymentData: nil)
     }
 }

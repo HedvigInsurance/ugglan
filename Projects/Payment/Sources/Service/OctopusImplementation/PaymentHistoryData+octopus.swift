@@ -54,24 +54,20 @@ extension PaymentData {
         let chargeFragment = data
         payment = .init(with: chargeFragment)
         status = PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment)
-        contracts = chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) })
-        let redeemedCampaigns = campaings.redeemedCampaigns
-        discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
-            if discountBreakdown.isReferral {
+
+        let referralDiscount: Discount? = {
+            if let referalDiscount = chargeFragment.referralDiscount?.fragments.moneyFragment {
                 let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount.init(
-                    with: discountBreakdown,
-                    discountDto: referralDescription
-                )
-            } else {
-                return Discount.init(
-                    with: discountBreakdown,
-                    discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
-                )
+                return Discount.init(with: referalDiscount, discountDto: referralDescription)
             }
-        })
+            return nil
+        }()
 
+        self.referralDiscount = referralDiscount
+        contracts = chargeFragment.chargeBreakdown.compactMap({
+            .init(with: $0, campaign: campaings)
+        })
         paymentDetails = nil
         if let nextPayment {
             addedToThePayment = [nextPayment]

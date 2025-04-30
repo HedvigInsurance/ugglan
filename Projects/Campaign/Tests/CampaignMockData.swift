@@ -7,9 +7,9 @@ struct MockCampaignData {
     static func createMockCampaignService(
         removeCampaign: @escaping RemoveCampaign = {},
         addCampaign: @escaping AddCampaign = {},
-        fetchPaymentDiscountsData: @escaping FetchPaymentDiscountsData = { discounts in
+        fetchPaymentDiscountsData: @escaping FetchPaymentDiscountsData = {
             .init(
-                discounts: discounts,
+                discounts: [],
                 referralsData: .init(
                     code: "code",
                     discountPerMember: .init(amount: "10", currency: "SEK"),
@@ -35,7 +35,7 @@ enum MockCampaignError: Error {
 
 typealias RemoveCampaign = () async throws -> Void
 typealias AddCampaign = () async throws -> Void
-typealias FetchPaymentDiscountsData = ([Discount]) async throws -> PaymentDiscountsData
+typealias FetchPaymentDiscountsData = () async throws -> PaymentDiscountsData
 
 class MockCampaignService: hCampaignClient {
     var events = [Event]()
@@ -70,9 +70,9 @@ class MockCampaignService: hCampaignClient {
         try await addCampaign()
     }
 
-    func getPaymentDiscountsData(paymentDataDiscounts: [Discount]) async throws -> PaymentDiscountsData {
+    func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         events.append(.getPaymentDiscountsData)
-        let data = try await fetchPaymentDiscountsData(paymentDataDiscounts)
+        let data = try await fetchPaymentDiscountsData()
         return data
     }
 }

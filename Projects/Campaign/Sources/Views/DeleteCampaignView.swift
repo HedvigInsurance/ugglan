@@ -79,7 +79,6 @@ class DeleteCampaignViewModel: ObservableObject {
     let discount: Discount
     private var campaignService = hCampaignService()
     @PresentableStore private var store: CampaignStore
-    let paymentDataDiscounts: [Discount]
     @Published var codeRemoved = false
     @Published var isLoading = false
     @Published var error: String? = nil
@@ -88,11 +87,9 @@ class DeleteCampaignViewModel: ObservableObject {
 
     init(
         discount: Discount,
-        paymentDataDiscounts: [Discount],
         onInputChange: @escaping () -> Void
     ) {
         self.discount = discount
-        self.paymentDataDiscounts = paymentDataDiscounts
         self.onInputChange = onInputChange
     }
 
@@ -112,7 +109,7 @@ class DeleteCampaignViewModel: ObservableObject {
             error = nil
             try await campaignService.remove(codeId: discount.discountId)
             onInputChange()
-            store.send(.fetchDiscountsData(paymentDataDiscounts: paymentDataDiscounts))
+            store.send(.fetchDiscountsData)
             withAnimation {
                 codeRemoved = true
             }
@@ -149,7 +146,6 @@ struct DeleteCampaignView_Previews: PreviewProvider {
                     canBeDeleted: false,
                     discountId: "id"
                 ),
-                paymentDataDiscounts: [],
                 onInputChange: {}
             )
         )

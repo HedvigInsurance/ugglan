@@ -25,6 +25,13 @@ fragment MemberChargeFragment on MemberCharge{
         gross {
           ...MoneyFragment
         }
+        net {
+          ...MoneyFragment
+        }
+        discounts {
+            ...MemberChargeBreakdownItemDiscountFragment
+        }
+
         periods {
           fromDate
           toDate
@@ -38,12 +45,8 @@ fragment MemberChargeFragment on MemberCharge{
       discount {
         ...MoneyFragment
       }
-      discountBreakdown {
-        code
-        discount {
+      referralDiscount {
         ...MoneyFragment
-        }
-        isReferral
       }
       gross {
         ...MoneyFragment
@@ -59,4 +62,11 @@ fragment MemberChargeFragment on MemberCharge{
       settlementAdjustment {
         ...MoneyFragment
       }
+}
+
+fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {
+    code
+    discount {
+        ...MoneyFragment
+    }
 }

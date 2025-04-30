@@ -34,35 +34,31 @@ extension Discount {
     }
 
     public init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
+        with moneyFragment: OctopusGraphQL.MoneyFragment,
+        discountDto discount: ReedeemedCampaingDTO?
     ) {
-        self.id = UUID().uuidString
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
+        id = UUID().uuidString
+        code = discount?.code ?? ""
+        amount = .init(fragment: moneyFragment)
         title = discount?.description ?? ""
-        listOfAffectedInsurances =
-            discount?.onlyApplicableToContracts?
-            .compactMap({
-                .init(id: $0.id, displayName: $0.exposureDisplayName)
-            }) ?? []
+        listOfAffectedInsurances = []
         validUntil = nil
         canBeDeleted = false
         discountId = UUID().uuidString
     }
 
     public init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discountDto discount: ReedeemedCampaingDTO?
+        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment,
+        campaign: OctopusGraphQL.ReedemCampaignsFragment
     ) {
-        id = UUID().uuidString
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description ?? ""
-        listOfAffectedInsurances = []
-        validUntil = nil
-        canBeDeleted = false
-        discountId = UUID().uuidString
+        self.id = UUID().uuidString
+        self.amount = .init(fragment: data.discount.fragments.moneyFragment)
+        self.code = data.code
+        self.discountId = ""
+        self.validUntil = nil
+        self.title = campaign.redeemedCampaigns.first(where: { $0.code == data.code })?.description
+        self.listOfAffectedInsurances = []
+        self.canBeDeleted = true
     }
 }
 
@@ -94,7 +90,7 @@ extension ReferralsData {
             referrals.append(.init(with: invitedBy, invitedYou: true))
         }
         referrals.append(contentsOf: data.referrals.compactMap({ .init(with: $0.fragments.memberReferralFragment2) }))
-        self.referrals = referrals.reversed()
+        self.referrals = referrals.filter({ $0.status == .active }).reversed()
     }
 }
 
