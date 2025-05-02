@@ -575,6 +575,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
+            .delay(for: 1.5, scheduler: RunLoop.main)
             .sink { contractId in
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
