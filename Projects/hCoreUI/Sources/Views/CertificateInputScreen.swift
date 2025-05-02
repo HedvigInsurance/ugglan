@@ -33,45 +33,16 @@ public struct CertificateInputScreen: View {
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: .padding16) {
-                        VStack(spacing: .padding4) {
-                            if elements.contains(.datePicker) {
-                                hDatePickerField(
-                                    config: .init(
-                                        minDate: vm.dateInput?.minStartDate,
-                                        maxDate: vm.dateInput?.maxStartDate,
-                                        placeholder: L10n.TravelCertificate.startDateTitle,
-                                        title: L10n.TravelCertificate.startDateTitle
-                                    ),
-                                    selectedDate: vm.dateInput?.input
-                                ) { date in
-                                    vm.dateInput?.input = date
-                                }
-                            }
-
-                            if elements.contains(.email) {
-                                hFloatingTextField(
-                                    masking: .init(type: .email),
-                                    value: $vm.emailInput.input,
-                                    equals: $vm.emailInput.editValue,
-                                    focusValue: .email,
-                                    placeholder: L10n.emailRowTitle,
-                                    error: $vm.emailInput.error
-                                )
-                            }
-                        }
+                        CertificateFields(elements: elements, vm: vm)
 
                         if elements.contains(.infoCard), let maxDuration = vm.dateInput?.maxDuration {
-                            InfoCard(
-                                text: L10n.TravelCertificate.startDateInfo(maxDuration),
-                                type: .info
-                            )
+                            CertificateInfoCard(maxDuration: maxDuration)
                         }
 
-                        hButton.LargeButton(type: .primary) {
-                            vm.onButtonClick()
-                        } content: {
-                            hText(isLastScreenInFlow ? L10n.Certificates.createCertificate : L10n.generalContinueButton)
-                        }
+                        CertificateInputButton(
+                            isLastScreenInFlow: isLastScreenInFlow,
+                            action: vm.onButtonClick
+                        )
                     }
                 }
             }
@@ -84,6 +55,62 @@ public struct CertificateInputScreen: View {
                     }
                 }
             }
+    }
+}
+
+private struct CertificateFields: View {
+    let elements: [CertificateInputElement]
+    @ObservedObject var vm: CertificateInputViewModel
+
+    var body: some View {
+        VStack(spacing: .padding4) {
+            if elements.contains(.datePicker), let dateInput = vm.dateInput {
+                hDatePickerField(
+                    config: .init(
+                        minDate: dateInput.minStartDate,
+                        maxDate: dateInput.maxStartDate,
+                        placeholder: L10n.TravelCertificate.startDateTitle,
+                        title: L10n.TravelCertificate.startDateTitle
+                    ),
+                    selectedDate: dateInput.input
+                ) { date in
+                    vm.dateInput?.input = date
+                }
+            }
+
+            if elements.contains(.email) {
+                hFloatingTextField(
+                    masking: .init(type: .email),
+                    value: $vm.emailInput.input,
+                    equals: $vm.emailInput.editValue,
+                    focusValue: .email,
+                    placeholder: L10n.emailRowTitle,
+                    error: $vm.emailInput.error
+                )
+            }
+        }
+    }
+}
+
+private struct CertificateInfoCard: View {
+    let maxDuration: Int
+
+    var body: some View {
+        InfoCard(
+            text: L10n.TravelCertificate.startDateInfo(maxDuration),
+            type: .info
+        )
+    }
+}
+
+private struct CertificateInputButton: View {
+    let isLastScreenInFlow: Bool
+    let action: () -> Void
+
+    var body: some View {
+        hButton.LargeButton(type: .primary, action: action) {
+            hText(isLastScreenInFlow ? L10n.Certificates.createCertificate : L10n.generalContinueButton)
+        }
     }
 }
 
@@ -163,7 +190,6 @@ public class CertificateInputViewModel: ObservableObject {
 public enum CertificateInputElement {
     case datePicker
     case email
-    case name
     case infoCard
 }
 
