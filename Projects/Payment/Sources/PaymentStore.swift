@@ -1,4 +1,5 @@
 import Apollo
+import Campaign
 import Contracts
 import Foundation
 import PresentableStore

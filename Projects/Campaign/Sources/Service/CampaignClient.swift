@@ -5,7 +5,7 @@ import hCore
 public protocol hCampaignClient {
     func remove(codeId: String) async throws
     func add(code: String) async throws
-    func getPaymentDiscountsData(paymentDataDiscounts: [Discount]) async throws -> PaymentDiscountsData
+    func getPaymentDiscountsData() async throws -> PaymentDiscountsData
 }
 
 public enum CampaignError: Error {

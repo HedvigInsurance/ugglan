@@ -136,13 +136,21 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                     discountPerMember: .sek(10),
                     discount: .sek(30),
                     referrals: [
-                        .init(id: "a1", name: "Mark", activeDiscount: .sek(10), status: .active, invitedYou: true),
-                        .init(id: "a2", name: "Idris", activeDiscount: .sek(10), status: .active),
-                        .init(id: "a3", name: "Atotio", activeDiscount: .sek(10), status: .active),
-                        .init(id: "a4", name: "SONNY", activeDiscount: .sek(10), status: .pending),
+                        .init(
+                            id: "a1",
+                            name: "Mark",
+                            description: "desc",
+                            activeDiscount: .sek(10),
+                            status: .active,
+                            invitedYou: true
+                        ),
+                        .init(id: "a2", name: "Idris", description: "desc", activeDiscount: .sek(10), status: .active),
+                        .init(id: "a3", name: "Atotio", description: "desc", activeDiscount: .sek(10), status: .active),
+                        .init(id: "a4", name: "SONNY", description: "desc", activeDiscount: .sek(10), status: .pending),
                         .init(
                             id: "a5",
                             name: "RILLE",
+                            description: "desc",
                             activeDiscount: .sek(30),
                             status: .terminated,
                             invitedYou: false
@@ -177,7 +185,7 @@ public struct PaymentsDiscountsRootView: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        store.send(.fetchDiscountsData(paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts))
+                        store.send(.fetchDiscountsData)
                     }),
                     dismissButton: nil
                 )

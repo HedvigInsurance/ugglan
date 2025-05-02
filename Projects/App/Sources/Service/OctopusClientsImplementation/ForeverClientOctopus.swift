@@ -27,7 +27,7 @@ public class ForeverClientOctopus: ForeverClient {
             grossAmount: .init(fragment: data.insuranceCost.monthlyGross.fragments.moneyFragment),
             netAmount: .init(fragment: data.insuranceCost.monthlyNet.fragments.moneyFragment),
             otherDiscounts: .init(
-                fragment: data.referralInformation.monthlyDiscountExcludingReferrals.fragments.moneyFragment
+                optionalFragment: data.referralInformation.referredBy?.activeDiscount?.fragments.moneyFragment
             ),
             discountCode: data.referralInformation.code,
             monthlyDiscount: .init(fragment: data.insuranceCost.monthlyDiscount.fragments.moneyFragment),

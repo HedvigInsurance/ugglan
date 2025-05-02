@@ -14,8 +14,8 @@ public class hCampaignService {
         return try await service.add(code: code)
     }
 
-    public func getPaymentDiscountsData(paymentDataDiscounts: [Discount]) async throws -> PaymentDiscountsData {
+    public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         log.info("hPaymentService: getPaymentDiscountsData", error: nil, attributes: nil)
-        return try await service.getPaymentDiscountsData(paymentDataDiscounts: paymentDataDiscounts)
+        return try await service.getPaymentDiscountsData()
     }
 }

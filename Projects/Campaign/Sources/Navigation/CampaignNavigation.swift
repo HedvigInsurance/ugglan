@@ -5,30 +5,18 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class CampaignNavigationViewModel: ObservableObject {
-    @Published public var isAddCampaignPresented = false
-    @Published public var isDeleteCampaignPresented: Discount?
-    var paymentDataDiscounts: [Discount]
-    let router: Router
-
-    public init(
-        paymentDataDiscounts: [Discount],
-        router: Router
-    ) {
-        self.paymentDataDiscounts = paymentDataDiscounts
-        self.router = router
-    }
+class CampaignNavigationViewModel: ObservableObject {
+    @Published var isAddCampaignPresented = false
+    @Published var isDeleteCampaignPresented: Discount?
 }
 
 public struct CampaignNavigation: View {
-    @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
+    @StateObject var campaignNavigationVm = CampaignNavigationViewModel()
     let onEditCode: () -> Void
 
     public init(
-        campaignNavigationVm: CampaignNavigationViewModel,
         onEditCode: @escaping () -> Void
     ) {
-        self.campaignNavigationVm = campaignNavigationVm
         self.onEditCode = onEditCode
     }
 
@@ -36,7 +24,7 @@ public struct CampaignNavigation: View {
         PaymentsDiscountsRootView(campaignNavigationVm: campaignNavigationVm)
             .onAppear {
                 let store: CampaignStore = globalPresentableStoreContainer.get()
-                store.send(.fetchDiscountsData(paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts))
+                store.send(.fetchDiscountsData)
             }
             .configureTitle(L10n.paymentsDiscountsSectionTitle)
             .environmentObject(campaignNavigationVm)
@@ -47,7 +35,6 @@ public struct CampaignNavigation: View {
                 AddCampaignCodeView(
                     campaignNavigationVm: campaignNavigationVm,
                     vm: .init(
-                        paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts,
                         onInputChange: onEditCode
                     )
                 )
@@ -64,7 +51,6 @@ public struct CampaignNavigation: View {
                 DeleteCampaignView(
                     vm: .init(
                         discount: discount,
-                        paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts,
                         onInputChange: onEditCode
                     )
                 )
@@ -108,5 +94,5 @@ extension CampaignRouterAction: TrackingViewNameProtocol {
 }
 
 #Preview {
-    CampaignNavigation(campaignNavigationVm: .init(paymentDataDiscounts: [], router: Router()), onEditCode: {})
+    CampaignNavigation(onEditCode: {})
 }

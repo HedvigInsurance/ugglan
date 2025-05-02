@@ -24,13 +24,10 @@ public class hCampaignsClientOctopus: hCampaignClient {
         }
     }
 
-    public func getPaymentDiscountsData(paymentDataDiscounts: [Discount]) async throws -> PaymentDiscountsData {
+    public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         let query = OctopusGraphQL.DiscountsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-
-        let code = data.currentMember.referralInformation.code
-        let amountFromPaymentData = paymentDataDiscounts.first(where: { $0.code == code })?.amount
-        return PaymentDiscountsData.init(with: data, amountFromPaymentData: amountFromPaymentData)
+        return PaymentDiscountsData.init(with: data, amountFromPaymentData: nil)
     }
 }
 
@@ -69,11 +66,11 @@ extension Discount {
     }
 
     public init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
+        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment,
         discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
     ) {
         self.init(
-            code: data.code ?? discount?.code ?? "",
+            code: data.code,
             amount: .init(fragment: data.discount.fragments.moneyFragment),
             title: discount?.description ?? "",
             listOfAffectedInsurances: discount?.onlyApplicableToContracts?
@@ -87,12 +84,12 @@ extension Discount {
     }
 
     public init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
+        with moneyFragment: OctopusGraphQL.MoneyFragment,
         discountDto discount: ReedeemedCampaingDTO?
     ) {
         self.init(
-            code: data.code ?? discount?.code ?? "",
-            amount: .init(fragment: data.discount.fragments.moneyFragment),
+            code: discount?.code ?? "",
+            amount: .init(fragment: moneyFragment),
             title: discount?.description ?? "",
             listOfAffectedInsurances: [],
             validUntil: nil,
@@ -126,7 +123,25 @@ extension ReferralsData {
         if let invitedBy = data.referredBy?.fragments.memberReferralFragment2 {
             referrals.append(.init(with: invitedBy, invitedYou: true))
         }
-        referrals.append(contentsOf: data.referrals.compactMap({ .init(with: $0.fragments.memberReferralFragment2) }))
+        let amount = data.referrals.reduce(0) { partialResult, referal in
+            if referal.status == .active {
+                return partialResult + (referal.activeDiscount?.amount ?? 0)
+            }
+            return partialResult
+        }
+        let numberOfReferrals = data.referrals.filter({ $0.status == .active }).count
+        referrals.append(
+            .init(
+                id: UUID().uuidString,
+                name: data.code,
+                description: L10n.foreverReferralInvitedByYouPlural(numberOfReferrals),
+                activeDiscount: MonetaryAmount(
+                    amount: Float(amount),
+                    currency: data.monthlyDiscountPerReferral.fragments.moneyFragment.currencyCode.rawValue
+                ),
+                status: .active
+            )
+        )
         self.init(
             code: data.code,
             discountPerMember: .init(fragment: data.monthlyDiscountPerReferral.fragments.moneyFragment),
@@ -141,6 +156,7 @@ extension Referral {
         self.init(
             id: UUID().uuidString,
             name: data.name,
+            description: L10n.Forever.Referral.invitedYou(data.name),
             activeDiscount: .init(optionalFragment: data.activeDiscount?.fragments.moneyFragment),
             status: data.status.asReferralState,
             invitedYou: invitedYou

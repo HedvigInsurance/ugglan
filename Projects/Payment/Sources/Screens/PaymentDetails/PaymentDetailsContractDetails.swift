@@ -81,7 +81,7 @@ struct ContractDetails: View {
                             Spacer()
                             hText(period.amount.formattedAmount)
                                 .foregroundColor(
-                                    getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                    getColor(hTextColor.Opaque.primary, isOutstanding: period.isOutstanding)
                                 )
 
                         }

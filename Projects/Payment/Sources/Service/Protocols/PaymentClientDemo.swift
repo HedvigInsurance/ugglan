@@ -75,18 +75,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         ]
                     ),
                 ],
-                referralDiscounts: [],
-                otherDiscounts: [
-                    .init(
-                        code: "CODE 2",
-                        amount: .sek(30),
-                        title: "15% off for 1 year",
-                        listOfAffectedInsurances: [.init(id: "1", displayName: "Bastugatan 25 ∙ Bara du")],
-                        validUntil: "2025-12-31",
-                        canBeDeleted: false,
-                        discountId: "CODE 2"
-                    )
-                ],
+                referralDiscount: nil,
                 paymentDetails: .init(paymentMethod: "Autogiro", account: "****124124", bank: "Handelsbanken"),
                 addedToThePayment: nil
             ),
@@ -159,18 +148,7 @@ public class hPaymentClientDemo: hPaymentClient {
                             ]
                         ),
                     ],
-                    referralDiscounts: [],
-                    otherDiscounts: [
-                        .init(
-                            code: "CODE 2",
-                            amount: .sek(30),
-                            title: "15% off for 1 year",
-                            listOfAffectedInsurances: [.init(id: "1", displayName: "Bastugatan 25 ∙ Bara du")],
-                            validUntil: "2025-12-31",
-                            canBeDeleted: false,
-                            discountId: "CODE 2"
-                        )
-                    ],
+                    referralDiscount: nil,
                     paymentDetails: nil,
                     addedToThePayment: nil
                 )
@@ -205,8 +183,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         ),
                         status: .success,
                         contracts: [],
-                        referralDiscounts: [],
-                        otherDiscounts: [],
+                        referralDiscount: nil,
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
@@ -230,8 +207,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         ),
                         status: .addedtoFuture(date: "2023-12-12"),
                         contracts: [],
-                        referralDiscounts: [],
-                        otherDiscounts: [],
+                        referralDiscount: nil,
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
