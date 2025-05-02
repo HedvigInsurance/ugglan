@@ -252,7 +252,7 @@ struct ContractInformationView: View {
                     }) != nil, Dependencies.featureFlags().isEditCoInsuredEnabled {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
-                                contract.coInsured.count,
+                                contract.coInsured.filter({ !$0.isTerminated }).count,
                                 upcomingChangedAgreement.activeFrom?.localDateToDate?
                                     .displayDateDDMMMYYYYFormat ?? ""
                             ),

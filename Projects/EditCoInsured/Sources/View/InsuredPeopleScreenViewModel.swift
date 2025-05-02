@@ -149,16 +149,20 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         let nbOfFields = nbOfMissingCoInsuredExcludingDeleted - coInsuredAdded.count
 
         let stillHasMissingCoInsured = coInsuredAdded.count < nbOfMissingCoInsuredExcludingDeleted
+        var missingCoInsuredToDisplay: [CoInsuredListType] = []
 
-        return stillHasMissingCoInsured
-            ? Array(
-                repeating: CoInsuredListType(
-                    coInsured: CoInsuredModel(),
-                    type: nil,
-                    locallyAdded: false
-                ),
-                count: nbOfFields
-            ) : []
+        if stillHasMissingCoInsured {
+            for _ in 1...nbOfFields {
+                missingCoInsuredToDisplay.append(
+                    CoInsuredListType(
+                        coInsured: CoInsuredModel(),
+                        type: nil,
+                        locallyAdded: false
+                    )
+                )
+            }
+        }
+        return missingCoInsuredToDisplay
     }
 
     private func locallyAddedCoInsured(activationDate: String?) -> [CoInsuredListType] {
