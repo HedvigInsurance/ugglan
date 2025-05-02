@@ -89,7 +89,26 @@ extension ReferralsData {
         if let invitedBy = data.referredBy?.fragments.memberReferralFragment2 {
             referrals.append(.init(with: invitedBy, invitedYou: true))
         }
-        referrals.append(contentsOf: data.referrals.compactMap({ .init(with: $0.fragments.memberReferralFragment2) }))
+        let code = data.code
+        let amount = data.referrals.reduce(0) { partialResult, referal in
+            if referal.status == .active {
+                return partialResult + (referal.activeDiscount?.amount ?? 0)
+            }
+            return partialResult
+        }
+        let numberOfReferrals = data.referrals.filter({ $0.status == .active }).count
+        referrals.append(
+            .init(
+                id: UUID().uuidString,
+                name: code,
+                description: L10n.foreverReferralInvitedByYouPlural(numberOfReferrals),
+                activeDiscount: MonetaryAmount(
+                    amount: Float(amount),
+                    currency: data.monthlyDiscountPerReferral.fragments.moneyFragment.currencyCode.rawValue
+                ),
+                status: .active
+            )
+        )
         self.referrals = referrals.filter({ $0.status == .active }).reversed()
     }
 }
@@ -98,6 +117,7 @@ extension Referral {
     init(with data: OctopusGraphQL.MemberReferralFragment2, invitedYou: Bool = false) {
         self.id = UUID().uuidString
         self.status = data.status.asReferralState
+        self.description = L10n.Forever.Referral.invitedYou(data.name)
         self.name = data.name
         self.activeDiscount = .init(optionalFragment: data.activeDiscount?.fragments.moneyFragment)
         self.invitedYou = invitedYou

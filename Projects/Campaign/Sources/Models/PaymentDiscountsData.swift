@@ -45,9 +45,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.id = UUID().uuidString
         self.code = referral.name
         self.amount = referral.activeDiscount
-        self.title =
-            referral.invitedYou
-            ? L10n.Forever.Referral.invitedYou(referral.name) : L10n.foreverReferralInvitedByYouPlural(nbOfReferrals)
+        self.title = referral.description
         self.listOfAffectedInsurances = []
         self.validUntil = nil
         self.canBeDeleted = true
@@ -84,6 +82,7 @@ public struct ReferralsData: Equatable, Codable, Sendable {
 public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public let id: String
     let name: String
+    let description: String
     let activeDiscount: MonetaryAmount?
     let status: State
     let invitedYou: Bool
@@ -91,12 +90,14 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public init(
         id: String,
         name: String,
+        description: String,
         activeDiscount: MonetaryAmount? = nil,
         status: State,
         invitedYou: Bool = false
     ) {
         self.id = id
         self.name = name
+        self.description = description
         self.activeDiscount = activeDiscount
         self.status = status
         self.invitedYou = invitedYou
