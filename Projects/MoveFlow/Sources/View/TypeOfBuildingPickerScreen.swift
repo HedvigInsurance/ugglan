@@ -1,5 +1,6 @@
 import PresentableStore
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct TypeOfBuildingPickerScreen: View {

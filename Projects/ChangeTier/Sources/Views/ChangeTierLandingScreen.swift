@@ -41,7 +41,6 @@ public struct ChangeTierLandingScreen: View {
             ),
             dismissButton:
                 .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         changeTierNavigationVm.router.dismiss()
                     }
@@ -171,7 +170,8 @@ public struct ChangeTierLandingScreen: View {
                 } content: {
                     hText(vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton, style: .body1)
                 }
-                hButton.LargeButton(type: .primary) {
+
+                hContinueButton {
                     switch vm.changeTierInput {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
@@ -182,8 +182,6 @@ public struct ChangeTierLandingScreen: View {
                             changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                         }
                     }
-                } content: {
-                    hText(L10n.generalContinueButton)
                 }
                 .disabled(!vm.isValid)
             }

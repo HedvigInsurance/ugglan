@@ -58,7 +58,12 @@ public struct ConfirmChangesButtonConfig {
         dismissButton: ConfirmChangeButton
     ) {
         self.mainButton = mainButton
-        self.dismissButton = dismissButton
+
+        if dismissButton.buttonTitle == nil {
+            self.dismissButton = .init(buttonAction: dismissButton.buttonAction)
+        } else {
+            self.dismissButton = dismissButton
+        }
     }
 
     public struct ConfirmChangeButton {

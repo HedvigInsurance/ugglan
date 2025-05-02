@@ -77,11 +77,7 @@ struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
                             } content: {
                                 hText(L10n.Certificates.download)
                             }
-                            hButton.LargeButton(type: .ghost) {
-
-                            } content: {
-                                hText(L10n.generalCloseButton)
-                            }
+                            hCloseButton {}
                         }
                     }
                 }

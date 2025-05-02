@@ -549,7 +549,6 @@ struct TerminationFlowNavigation: View {
                     }
                 ),
                 dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: { [weak vm] in
                         vm?.router.dismiss()
                     }

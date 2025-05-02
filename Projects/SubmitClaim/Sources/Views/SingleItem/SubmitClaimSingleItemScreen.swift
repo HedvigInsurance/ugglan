@@ -24,7 +24,8 @@ public struct SubmitClaimSingleItemScreen: View {
             .hFormAttachToBottom {
                 hSection {
                     getFields(singleItemStep: claimsNavigationVm.singleItemModel)
-                    hButton.LargeButton(type: .primary) {
+
+                    hContinueButton {
                         if let singleItemModel = claimsNavigationVm.singleItemModel {
                             Task {
                                 let step = await vm.singleItemRequest(
@@ -37,8 +38,6 @@ public struct SubmitClaimSingleItemScreen: View {
                                 }
                             }
                         }
-                    } content: {
-                        hText(L10n.generalContinueButton)
                     }
                     .hButtonIsLoading(vm.viewState == .loading)
                     .disabled(vm.viewState == .loading)

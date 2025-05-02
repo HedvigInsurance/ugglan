@@ -29,6 +29,7 @@ struct InsuranceEvidenceProcessingScreen: View {
         )
     }
 
+    @ViewBuilder
     private var bottomSuccessView: some View {
         hSection {
             VStack(spacing: .padding16) {
@@ -46,10 +47,8 @@ struct InsuranceEvidenceProcessingScreen: View {
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )
                     .fixedSize(horizontal: false, vertical: true)
-                    hButton.LargeButton(type: .ghost) {
+                    hCloseButton {
                         vm.navigation.router.dismiss()
-                    } content: {
-                        hText(L10n.generalCloseButton)
                     }
                 }
             }

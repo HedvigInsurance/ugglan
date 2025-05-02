@@ -27,7 +27,6 @@ struct CompareTierScreen: View {
                     ),
                     dismissButton:
                         .init(
-                            buttonTitle: L10n.generalCloseButton,
                             buttonAction: {
                                 changeTierNavigationVm.router.dismiss()
                             }

@@ -27,7 +27,8 @@ struct SumitClaimEmergencySelectView: View {
                 hSection {
                     VStack(spacing: 16) {
                         buttonView()
-                        hButton.LargeButton(type: .primary) {
+
+                        hContinueButton {
                             Task {
                                 let step = await vm.emergencyConfirmRequest(
                                     context: claimsNavigationVm.currentClaimContext ?? "",
@@ -38,8 +39,6 @@ struct SumitClaimEmergencySelectView: View {
                                     claimsNavigationVm.navigate(data: step)
                                 }
                             }
-                        } content: {
-                            hText(L10n.generalContinueButton)
                         }
                         .hButtonIsLoading(vm.state == .loading)
                     }

@@ -298,7 +298,6 @@ public struct DirectDebitSetup: View {
                             }
                         ),
                         dismissButton: .init(
-                            buttonTitle: L10n.generalCloseButton,
                             buttonAction: {
                                 router.dismiss()
                             }

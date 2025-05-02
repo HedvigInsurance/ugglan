@@ -54,10 +54,8 @@ public struct FirstVetView: View {
     }
 
     private var buttonComponent: some View {
-        hButton.LargeButton(type: .ghost) {
+        hCloseButton {
             router.dismiss()
-        } content: {
-            hText(L10n.generalCloseButton)
         }
     }
 }

@@ -59,11 +59,9 @@ struct EditTierScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) {
+                    hContinueButton {
                         vm.setTier(for: self.selectedTier ?? "")
                         changeTierNavigationVm.isEditTierPresented = false
-                    } content: {
-                        hText(L10n.generalContinueButton)
                     }
                     .accessibilityHint(L10n.voiceoverOptionSelected + (self.selectedTier ?? ""))
 

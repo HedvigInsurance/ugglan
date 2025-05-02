@@ -42,7 +42,7 @@ struct SubmitClaimFilesUploadScreen: View {
                             }
                             .disabled(vm.isLoading)
                             ZStack(alignment: .leading) {
-                                hButton.LargeButton(type: .primary) {
+                                hContinueButton {
                                     Task {
                                         let step = await vm.uploadFiles(
                                             newClaimContext: claimsNavigationVm.currentClaimContext ?? ""
@@ -52,9 +52,6 @@ struct SubmitClaimFilesUploadScreen: View {
                                             claimsNavigationVm.navigate(data: step)
                                         }
                                     }
-
-                                } content: {
-                                    hText(L10n.generalContinueButton)
                                 }
                                 .hButtonIsLoading(vm.isLoading)
                                 .disabled(vm.fileGridViewModel.files.isEmpty)

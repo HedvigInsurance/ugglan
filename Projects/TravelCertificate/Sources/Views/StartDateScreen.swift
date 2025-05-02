@@ -15,9 +15,9 @@ struct StartDateScreen: View {
             .sectionContainerStyle(.transparent)
             .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whenIsYourTrip, alignment: .leading))
             .hFormAttachToBottom {
-                VStack(spacing: 16) {
-                    hSection {
-                        VStack(spacing: 4) {
+                hSection {
+                    VStack(spacing: .padding16) {
+                        VStack(spacing: .padding4) {
                             hDatePickerField(
                                 config: .init(
                                     minDate: vm.specification.minStartDate,
@@ -39,20 +39,14 @@ struct StartDateScreen: View {
                                 error: $vm.emailError
                             )
                         }
-                    }
-                    hSection {
                         InfoCard(
                             text: L10n.TravelCertificate.startDateInfo(vm.specification.maxDuration),
                             type: .info
                         )
-                    }
-                    hSection {
-                        hButton.LargeButton(type: .primary) {
+                        hContinueButton {
                             Task {
                                 await submit()
                             }
-                        } content: {
-                            hText(L10n.generalContinueButton)
                         }
                     }
                 }
@@ -108,7 +102,8 @@ class StartDateViewModel: ObservableObject {
 
 struct StartDateView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return NavigationView {
             StartDateScreen(
                 vm: .init(
                     specification: .init(
