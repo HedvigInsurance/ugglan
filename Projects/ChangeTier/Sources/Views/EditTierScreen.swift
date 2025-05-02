@@ -65,12 +65,9 @@ struct EditTierScreen: View {
                     }
                     .accessibilityHint(L10n.voiceoverOptionSelected + (self.selectedTier ?? ""))
 
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         changeTierNavigationVm.isEditTierPresented = false
-                    } content: {
-                        hText(L10n.generalCancelButton)
                     }
-
                 }
             }
             .sectionContainerStyle(.transparent)

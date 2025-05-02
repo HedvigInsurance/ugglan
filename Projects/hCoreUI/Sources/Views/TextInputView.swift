@@ -44,7 +44,8 @@ public struct TextInputView: View {
                             hText(L10n.generalSaveButton, style: .body1)
                         }
                         .hButtonIsLoading(vm.isLoading)
-                        hButton.LargeButton(type: .ghost) {
+
+                        hCancelButton {
                             if let dismissAction = dismissAction?() {
                                 dismissAction
                             } else {
@@ -52,8 +53,6 @@ public struct TextInputView: View {
                                     await vm?.dismiss()
                                 }
                             }
-                        } content: {
-                            hText(L10n.generalCancelButton, style: .body1)
                         }
                         .disabled(vm.isLoading)
                     }

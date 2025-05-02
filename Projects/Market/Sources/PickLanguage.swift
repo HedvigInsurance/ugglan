@@ -76,10 +76,8 @@ public struct PickLanguage: View {
                         }
                     }
                     if let onCancel {
-                        hButton.LargeButton(type: .ghost) {
+                        hCancelButton {
                             onCancel()
-                        } content: {
-                            hText(L10n.generalCancelButton)
                         }
                     }
                 }

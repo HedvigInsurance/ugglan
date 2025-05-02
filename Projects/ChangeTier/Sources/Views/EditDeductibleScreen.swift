@@ -76,12 +76,9 @@ struct EditDeductibleScreen: View {
                             + (self.quotes.first(where: { $0.id == selectedQuote })?.displayTitle ?? "")
                     )
 
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         changeTierNavigationVm.isEditDeductiblePresented = false
-                    } content: {
-                        hText(L10n.generalCancelButton)
                     }
-
                 }
             }
             .sectionContainerStyle(.transparent)

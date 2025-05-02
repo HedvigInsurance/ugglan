@@ -217,10 +217,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
                 .accessibilityHint(accessibilityText)
                 if let onCancel = config.onCancel {
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         onCancel()
-                    } content: {
-                        hText(L10n.generalCancelButton, style: .body1)
                     }
                     .disabled(isLoading)
                     .hButtonDontShowLoadingWhenDisabled(true)

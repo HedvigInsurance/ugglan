@@ -50,12 +50,10 @@ public struct LanguageAndMarketPickerView: View {
                     } content: {
                         hText(L10n.generalSaveButton)
                     }
-                    hButton.LargeButton(type: .ghost) {
-                        router.dismiss()
-                    } content: {
-                        hText(L10n.generalCancelButton)
-                    }
 
+                    hCancelButton {
+                        router.dismiss()
+                    }
                 }
             }
             .padding(.top, .padding8)

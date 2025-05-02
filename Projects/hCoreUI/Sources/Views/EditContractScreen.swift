@@ -62,10 +62,8 @@ public struct EditContractScreen: View {
                                 : L10n.voiceoverPickerInfo(selectedType?.buttonTitle ?? L10n.generalContinueButton)
                         )
 
-                        hButton.LargeButton(type: .ghost) {
+                        hCancelButton {
                             router.dismiss()
-                        } content: {
-                            hText(L10n.generalCancelButton)
                         }
                     }
                 }

@@ -38,12 +38,9 @@ struct MovingFlowAddExtraBuildingScreen: View {
                         } content: {
                             hText(L10n.generalSaveButton)
                         }
-                        hButton.LargeButton(type: .ghost) {
+                        hCancelButton {
                             movingFlowNavigationVm.isAddExtraBuildingPresented = nil
-                        } content: {
-                            hText(L10n.generalCancelButton)
                         }
-
                     }
                     .padding(.vertical, .padding16)
                 }

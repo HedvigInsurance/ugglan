@@ -164,10 +164,8 @@ struct CoInusuredInputScreen: View {
                 .disabled(buttonIsDisabled && !(vm.actionType == .delete))
 
                 hSection {
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         editCoInsuredNavigation.coInsuredInputModel = nil
-                    } content: {
-                        hText(L10n.generalCancelButton)
                     }
                     .padding(.top, .padding4)
                     .padding(.bottom, .padding16)

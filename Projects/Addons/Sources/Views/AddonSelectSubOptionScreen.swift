@@ -69,10 +69,8 @@ struct AddonSelectSubOptionScreen: View {
                     }
                     .accessibilityHint(L10n.voiceoverOptionSelected + (selectedQuote?.displayName ?? ""))
 
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         router.dismiss()
-                    } content: {
-                        hText(L10n.generalCancelButton)
                     }
                 }
             }

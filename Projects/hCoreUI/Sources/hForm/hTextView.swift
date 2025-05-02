@@ -329,11 +329,9 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                 .padding(.horizontal, .padding16)
                 VStack(spacing: 0) {
                     hSection {
-                        HStack(spacing: 8) {
-                            hButton.MediumButton(type: .secondary) {
+                        HStack(spacing: .padding8) {
+                            hCancelButton {
                                 cancelAction.execute()
-                            } content: {
-                                hText(L10n.generalCancelButton)
                             }
                             hButton.MediumButton(type: .primary) {
                                 continueAction.execute()

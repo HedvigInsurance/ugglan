@@ -41,10 +41,8 @@ struct DeleteCampaignView: View {
                                 }
                                 .hButtonIsLoading(vm.isLoading)
 
-                                hButton.LargeButton(type: .ghost) {
+                                hCancelButton {
                                     router.dismiss()
-                                } content: {
-                                    hText(L10n.generalCancelButton)
                                 }
                                 .disabled(vm.isLoading)
                             }

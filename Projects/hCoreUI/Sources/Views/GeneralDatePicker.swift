@@ -49,14 +49,8 @@ public struct DatePickerView: View {
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding(.horizontal, .padding16)
 
-                hButton.LargeButton(type: .ghost) {
+                hCancelButton {
                     vm.cancelAction.execute()
-                } content: {
-                    hText(
-                        L10n.generalCancelButton,
-                        style: .body1
-                    )
-                    .foregroundColor(hTextColor.Opaque.primary)
                 }
                 .sectionContainerStyle(.transparent)
             }
