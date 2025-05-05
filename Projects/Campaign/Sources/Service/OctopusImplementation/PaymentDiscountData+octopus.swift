@@ -28,7 +28,8 @@ extension Discount {
         self.code = data.code
         self.discountId = data.id
         self.listOfAffectedInsurances =
-            data.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) }) ?? []
+            data.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayNameShort) })
+            ?? []
         self.title = data.description
         self.validUntil = data.expiresAt
     }

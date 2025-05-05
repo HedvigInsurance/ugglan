@@ -167,7 +167,10 @@ public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sen
     public let id: String
     let displayName: String
 
-    public init(id: String, displayName: String) {
+    public init(
+        id: String,
+        displayName: String
+    ) {
         self.id = id
         self.displayName = displayName
     }

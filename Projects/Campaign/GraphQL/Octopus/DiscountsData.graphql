@@ -33,6 +33,7 @@ fragment ReedemCampaignsFragment on Member {
         expiresAt
         onlyApplicableToContracts {
             exposureDisplayName
+            exposureDisplayNameShort
             id
         }
     }
