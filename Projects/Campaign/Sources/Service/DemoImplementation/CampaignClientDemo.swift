@@ -39,21 +39,112 @@ public class hCampaignClientDemo: hCampaignClient {
                 discountPerMember: .sek(10),
                 discount: .sek(0),
                 referrals: [
-                    .init(id: "id1", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id2", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id3", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id4", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id5", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id6", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id7", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id8", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id9", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id10", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id11", name: "Name pending", description: "desc", status: .pending),
-                    .init(id: "id12", name: "Name terminated", description: "desc", status: .terminated),
-                    .init(id: "id13", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id14", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
-                    .init(id: "id15", name: "Name", description: "desc", activeDiscount: .sek(10), status: .active),
+                    .init(
+                        id: "id1",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id2",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id3",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id4",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id5",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id6",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id7",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id8",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id9",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id10",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(id: "id11", name: "Name pending", code: "CODE", description: "desc", status: .pending),
+                    .init(id: "id12", name: "Name terminated", code: "CODE", description: "desc", status: .terminated),
+                    .init(
+                        id: "id13",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id14",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
+                    .init(
+                        id: "id15",
+                        name: "Name",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        status: .active
+                    ),
                 ]
             )
         )

@@ -18,6 +18,7 @@ query Discounts {
 
 fragment MemberReferralFragment2 on MemberReferral {
         name
+        code
         status
         activeDiscount {
           ...MoneyFragment

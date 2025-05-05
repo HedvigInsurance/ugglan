@@ -102,6 +102,7 @@ extension ReferralsData {
             .init(
                 id: UUID().uuidString,
                 name: code,
+                code: nil,
                 description: L10n.foreverReferralInvitedByYouPlural(numberOfReferrals),
                 activeDiscount: MonetaryAmount(
                     amount: Float(amount),
@@ -120,6 +121,7 @@ extension Referral {
         self.status = data.status.asReferralState
         self.description = L10n.Forever.Referral.invitedYou(data.name)
         self.name = data.name
+        self.code = data.code
         self.activeDiscount = .init(optionalFragment: data.activeDiscount?.fragments.moneyFragment)
         self.invitedYou = invitedYou
     }
