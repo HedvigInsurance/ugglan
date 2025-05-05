@@ -715,7 +715,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     await handleClaimDetails(claimId: claimId)
                 }
             case .INSURANCE_EVIDENCE:
-                self.isInsuranceEvidencePresented = true
+                self.handleInsuranceEvidence()
             case .TRAVEL_CERTIFICATE:
                 self.isTravelInsurancePresented = true
             }
@@ -767,7 +767,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .travelCertificate:
                 self.isTravelInsurancePresented = true
             case .insuranceEvidence:
-                self.isInsuranceEvidencePresented = true
+                self.handleInsuranceEvidence()
             case .helpCenter:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 0
@@ -1002,6 +1002,20 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
         } else {
             Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
+        }
+    }
+
+    private func handleInsuranceEvidence() {
+        Task {
+            do {
+                let profileClient: ProfileClient = Dependencies.shared.resolve()
+                let canCreate = try await profileClient.getProfileState().canCreateInsuranceEvidence
+                if canCreate {
+                    self.isInsuranceEvidencePresented = true
+                }
+            } catch {
+
+            }
         }
     }
 
