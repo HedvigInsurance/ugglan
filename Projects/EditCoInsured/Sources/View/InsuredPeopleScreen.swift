@@ -33,8 +33,7 @@ struct InsuredPeopleScreen: View {
                     saveChangesButton
                 }
 
-                if (vm.coInsuredAdded.count >= vm.nbOfMissingCoInsuredExcludingDeleted) || vm.coInsuredDeleted.count > 0
-                {
+                if vm.showConfirmChangesButton {
                     ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
                 }
                 hSection {

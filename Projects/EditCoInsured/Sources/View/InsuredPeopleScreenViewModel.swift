@@ -11,6 +11,12 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var showSavebutton: Bool = false
     @Published var showInfoCard: Bool = false
+
+    var showConfirmChangesButton: Bool {
+        (coInsuredAdded.count >= nbOfMissingCoInsuredExcludingDeleted && coInsuredAdded.count > 0)
+            || coInsuredDeleted.count > 0
+    }
+
     var nbOfMissingCoInsuredExcludingDeleted: Int {
         config.numberOfMissingCoInsuredWithoutTermination - coInsuredDeleted.count
     }
