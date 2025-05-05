@@ -7,6 +7,7 @@ public struct CoInsuredInputButton: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var router: Router
+    @ObservedObject private var intentViewModel: IntentViewModel
 
     init(
         vm: CoInusuredInputViewModel,
@@ -14,6 +15,7 @@ public struct CoInsuredInputButton: View {
     ) {
         self.vm = vm
         self.editCoInsuredNavigation = editCoInsuredNavigation
+        self.intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     public var body: some View {
@@ -39,7 +41,7 @@ public struct CoInsuredInputButton: View {
             hText(L10n.removeConfirmationButton)
                 .transition(.opacity.animation(.easeOut))
         }
-        .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
+        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
     }
 
     private var addCoInsuredButton: some View {
@@ -57,7 +59,7 @@ public struct CoInsuredInputButton: View {
             hText(buttonDisplayText)
                 .transition(.opacity.animation(.easeOut))
         }
-        .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
+        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
     }
 
     var buttonDisplayText: String {
