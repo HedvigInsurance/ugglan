@@ -110,11 +110,12 @@ public struct ListScreen: View {
         if vm.canCreateTravelInsurance {
             hButton(
                 .large,
-                .secondary, {
-                createNewPressed()
-            } content: {
-                hText(L10n.TravelCertificate.createNewCertificate)
-            }
+                .secondary,
+                title: L10n.TravelCertificate.createNewCertificate,
+                {
+                    createNewPressed()
+                }
+            )
             .hButtonIsLoading(vm.isCreateNewLoading)
         }
     }

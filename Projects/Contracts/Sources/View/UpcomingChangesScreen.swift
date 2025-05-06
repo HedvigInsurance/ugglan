@@ -39,13 +39,14 @@ struct UpcomingChangesScreen: View {
                 }
                 hSection {
                     VStack(spacing: .padding8) {
-                                            hButton(
-                        .large,
-                        .primary, {
-                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                        } content: {
-                            hText(L10n.openChat)
-                        }
+                        hButton(
+                            .large,
+                            .primary,
+                            title: L10n.openChat,
+                            {
+                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                            }
+                        )
 
                         hCloseButton {
                             contractsNavigationVm.insuranceUpdate = nil

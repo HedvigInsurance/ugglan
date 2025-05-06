@@ -57,29 +57,34 @@ struct ContractInformationView: View {
                                 if contract.showEditInfo {
                                     hSection {
                                         hButton(
-                .large,
-                .secondary, {
-                                            if contract.onlyCoInsured()
-                                                && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                            .large,
+                                            .secondary,
                                             {
-                                                let contract: InsuredPeopleConfig = .init(
-                                                    contract: contract,
-                                                    fromInfoCard: false
-                                                )
+                                                if contract.onlyCoInsured()
+                                                    && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                                {
+                                                    let contract: InsuredPeopleConfig = .init(
+                                                        contract: contract,
+                                                        fromInfoCard: false
+                                                    )
 
-                                                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-                                            } else {
-                                                contractsNavigationVm.changeYourInformationContract = contract
+                                                    contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                                                } else {
+                                                    contractsNavigationVm.changeYourInformationContract = contract
+                                                }
+                                            },
+                                            content: {
+                                                if contract.onlyCoInsured()
+                                                    && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                                {
+                                                    hText(L10n.contractEditCoinsured)
+                                                        .asAnyView
+                                                } else {
+                                                    hText(L10n.contractEditInfoLabel)
+                                                        .asAnyView
+                                                }
                                             }
-                                        } content: {
-                                            if contract.onlyCoInsured()
-                                                && Dependencies.featureFlags().isEditCoInsuredEnabled
-                                            {
-                                                hText(L10n.contractEditCoinsured)
-                                            } else {
-                                                hText(L10n.contractEditInfoLabel)
-                                            }
-                                        }
+                                        )
                                     }
                                 }
                                 moveAddressButton(contract: contract)
@@ -315,10 +320,11 @@ struct ContractInformationView: View {
                 hButton(
                     .large,
                     .ghost,
-                    contractsNavigationVm.isChangeAddressPresented = true
-                } content: {
-                    hText(L10n.InsuranceDetails.moveButton, style: .body1)
-                }
+                    title: L10n.InsuranceDetails.moveButton,
+                    {
+                        contractsNavigationVm.isChangeAddressPresented = true
+                    }
+                )
             }
             .sectionContainerStyle(.transparent)
         }
