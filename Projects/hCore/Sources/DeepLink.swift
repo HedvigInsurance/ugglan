@@ -27,11 +27,16 @@ public enum DeepLink: String, Codable, CaseIterable {
     case claimDetails = "claim-details"
     case insuranceEvidence = "insurance-evidence"
 
-    public func wholeText(displayText: String) -> String {
-        return L10n.generalGoTo(displayText.lowercased())
+    public func goToTextWith(contractName: String?) -> String {
+        switch self {
+        case .terminateContract:
+            return L10n.chatConversationTerminateContract(contractName ?? importantText)
+        default:
+            return L10n.generalGoTo(contractName ?? importantText)
+        }
     }
 
-    public var importantText: String {
+    var importantText: String {
         switch self {
         case .forever:
             return L10n.tabReferralsTitle
@@ -81,6 +86,7 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.InsuranceEvidence.documentTitle
         }
     }
+
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
         guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }
