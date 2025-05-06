@@ -1,0 +1,47 @@
+query MemberReferralInformation {
+    currentMember {
+        insuranceCost {
+            monthlyDiscount {
+                ...MoneyFragment
+            }
+            monthlyGross {
+                ...MoneyFragment
+            }
+            monthlyNet {
+                ...MoneyFragment
+            }
+        }
+        referralInformation {
+            code
+                monthlyDiscountPerReferral {
+                    ...MoneyFragment
+                }
+                referrals {
+                    ...MemberReferralFragment
+                }
+                referredBy {
+            		activeDiscount {
+                		...MoneyFragment
+            		}
+		}
+            monthlyDiscountPerReferral {
+                ...MoneyFragment
+            }
+            referrals {
+                ...MemberReferralFragment
+            }
+            referredBy {
+                ...MemberReferralFragment
+            }
+        }
+    }
+}
+
+fragment MemberReferralFragment on MemberReferral {
+    activeDiscount {
+        ...MoneyFragment
+    }
+    name
+    status
+}
+

@@ -7,6 +7,7 @@ import Contracts
 import CrossSell
 import EditCoInsured
 import EditCoInsuredShared
+import Environment
 import Forever
 import Foundation
 import Home
@@ -24,7 +25,6 @@ import TerminateContracts
 import TravelCertificate
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
@@ -873,7 +873,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     await self.handleClaimDetails(claimId: claimId)
                 }
             case nil:
-                let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
+                let isDeeplink = Environment.current.isDeeplink(url)
                 if !isDeeplink {
                     openUrl(url: url)
                 }

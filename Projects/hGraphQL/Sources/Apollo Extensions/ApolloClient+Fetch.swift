@@ -85,22 +85,22 @@ extension ApolloClient {
             case .refreshTokenExpired:
                 break
             case .refreshFailed:
-                log.error("graphQL error \(operation)", error: error, attributes: [:])
+                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
             case .networkIssue:
-                log.info("graphQL error \(operation)", error: error, attributes: [:])
+                graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
             }
         } else if let error = error as? URLSessionClient.URLSessionClientError {
             switch error {
             case .networkError:
-                log.info("graphQL error \(operation)", error: error, attributes: [:])
+                graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
             default:
-                log.error("graphQL error \(operation)", error: error, attributes: [:])
+                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
             }
         } else if let error = error as? GraphQLError {
-            log.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
-            log.error("graphQL error \(error.logDescription)", error: error, attributes: [:])
+            graphQlLogger.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
+            graphQlLogger.error("graphQL error \(error.logDescription)", error: error, attributes: [:])
         } else {
-            log.error("graphQL error \(operation)", error: error, attributes: [:])
+            graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
         }
     }
 }

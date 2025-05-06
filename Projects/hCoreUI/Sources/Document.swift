@@ -4,7 +4,6 @@ import SafariServices
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
-import hGraphQL
 
 public struct PDFPreview: View {
     @StateObject fileprivate var vm: PDFPreviewViewModel

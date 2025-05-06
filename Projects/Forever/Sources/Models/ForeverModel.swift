@@ -1,7 +1,6 @@
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct Referral: Hashable, Codable, Sendable {
     let name: String

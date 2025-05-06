@@ -4,11 +4,10 @@ import Contracts
 import Foundation
 import PresentableStore
 import hCore
-import hGraphQL
 
 public struct PaymentState: StateProtocol {
-    var paymentData: PaymentData?
-    var ongoingPaymentData: [PaymentData] = []
+    public var paymentData: PaymentData?
+    public var ongoingPaymentData: [PaymentData] = []
     public var paymentStatusData: PaymentStatusData? = nil
     var paymentHistory: [PaymentHistoryListData] = []
     var paymentConnectionID: String? = nil

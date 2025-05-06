@@ -1,11 +1,10 @@
 import Foundation
-import hGraphQL
 
 public struct TerminationFlowDeletionNextModel: FlowStepModel {
     let id: String
     let extraCoverageItem: [ExtraCoverageItem]
 
-    init(
+    public init(
         id: String,
         extraCoverageItem: [ExtraCoverageItem]
     ) {

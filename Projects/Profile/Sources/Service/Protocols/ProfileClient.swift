@@ -14,19 +14,19 @@ public protocol ProfileClient {
     func updateSubscriptionPreference(to subscribed: Bool) async throws
 }
 
-enum ProfileError: Error {
+public enum ProfileError: Error {
     case error(message: String)
 }
 
 extension ProfileError: LocalizedError {
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case let .error(message): return message
         }
     }
 }
 
-enum ChangeEuroBonusError: LocalizedError {
+public enum ChangeEuroBonusError: LocalizedError {
     case error(message: String)
 
     public var errorDescription: String? {

@@ -1,31 +1,11 @@
-import hGraphQL
-
 public struct Contract: Codable, Hashable, Equatable, Identifiable {
-    public init(
-        contract: OctopusGraphQL.ContractFragment,
-        firstName: String,
-        lastName: String,
-        ssn: String?
-    ) {
-        self.id = contract.id
-        self.exposureDisplayName = contract.exposureDisplayName
-        self.coInsured = contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
-        self.supportsCoInsured = contract.supportsCoInsured
-        self.upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
-        self.currentAgreement =
-            .init(agreement: contract.currentAgreement.fragments.agreementFragment)
-        self.terminationDate = contract.terminationDate
-        self.firstName = firstName
-        self.lastName = lastName
-        self.ssn = ssn
-    }
 
     public init(
         id: String,
         exposureDisplayName: String,
         supportsCoInsured: Bool,
         upcomingChangedAgreement: Agreement?,
-        currentAgreement: Agreement,
+        currentAgreement: Agreement?,
         terminationDate: String?,
         coInsured: [CoInsuredModel],
         firstName: String,
@@ -81,16 +61,6 @@ public struct Agreement: Codable, Hashable {
         self.activeFrom = activeFrom
         self.productVariant = productVariant
     }
-
-    init?(
-        agreement: OctopusGraphQL.AgreementFragment?
-    ) {
-        guard let agreement = agreement else {
-            return nil
-        }
-        activeFrom = agreement.activeFrom
-        productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
-    }
 }
 
 public struct ProductVariant: Codable, Hashable {
@@ -100,12 +70,6 @@ public struct ProductVariant: Codable, Hashable {
         displayName: String
     ) {
         self.displayName = displayName
-    }
-
-    public init(
-        data: OctopusGraphQL.ProductVariantFragment
-    ) {
-        self.displayName = data.displayName
     }
 }
 @MainActor
