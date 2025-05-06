@@ -50,26 +50,16 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
 
     public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
         let personalNumber: String? = {
-            switch Localization.Locale.currentLocale.value.market {
-            case .no, .dk:
-                return otpState.input.replacingOccurrences(of: "-", with: "")
-            case .se:
-                return nil
-            }
+            return nil
         }()
 
         let email: String? = {
-            switch Localization.Locale.currentLocale.value.market {
-            case .no, .dk:
-                return nil
-            case .se:
-                return otpState.input
-            }
+            return otpState.input
         }()
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .otp,
-                market: Localization.Locale.currentLocale.value.market.asOtpMarket,
+                market: .se,
                 personalNumber: personalNumber,
                 email: email
             )
@@ -101,7 +91,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
             AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
-                market: Localization.Locale.currentLocale.value.market.asOtpMarket,
+                market: .se,
                 personalNumber: nil,
                 email: nil
             )
@@ -261,16 +251,6 @@ extension Environment {
         case .staging: return .staging
         case .production: return .production
         case .custom(_, _, _, _): return .staging
-        }
-    }
-}
-
-extension Localization.Locale.Market {
-    fileprivate var asOtpMarket: OtpMarket {
-        switch self {
-        case .no: return .no
-        case .se: return .se
-        case .dk: return .dk
         }
     }
 }
