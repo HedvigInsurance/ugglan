@@ -227,46 +227,6 @@ extension TypeOfContract {
             return false
         case .seCatPremium:
             return false
-        case .noHouse:
-            return false
-        case .noHomeContentOwn:
-            return false
-        case .noHomeContentRent:
-            return false
-        case .noHomeContentYouthOwn:
-            return false
-        case .noHomeContentYouthRent:
-            return false
-        case .noHomeContentStudentOwn:
-            return false
-        case .noHomeContentStudentRent:
-            return false
-        case .noTravel:
-            return false
-        case .noTravelYouth:
-            return false
-        case .noTravelStudent:
-            return false
-        case .noAccident:
-            return false
-        case .dkHomeContentOwn:
-            return false
-        case .dkHomeContentRent:
-            return false
-        case .dkHomeContentStudentOwn:
-            return false
-        case .dkHomeContentStudentRent:
-            return false
-        case .dkHouse:
-            return false
-        case .dkAccident:
-            return false
-        case .dkAccidentStudent:
-            return false
-        case .dkTravel:
-            return false
-        case .dkTravelStudent:
-            return false
         case .unknown:
             return false
         }

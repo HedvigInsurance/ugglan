@@ -177,5 +177,4 @@ extension ProfileRedirectType: TrackingViewNameProtocol {
             return .init(describing: PickLanguage.self)
         }
     }
-
 }

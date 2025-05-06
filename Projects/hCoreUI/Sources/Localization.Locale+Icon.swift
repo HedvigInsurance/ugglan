@@ -6,7 +6,7 @@ extension Localization.Locale {
         switch self {
         case .sv_SE:
             return hCoreUIAssets.flagSE.image
-        case .en_SE, .en_NO, .en_DK:
+        case .en_SE:
             return hCoreUIAssets.flagUK.image
         }
     }
