@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public struct FlowClaimConfirmEmergencyStepModel: FlowClaimStepModel {
     let id: String
@@ -7,7 +6,7 @@ public struct FlowClaimConfirmEmergencyStepModel: FlowClaimStepModel {
     let confirmEmergency: Bool?
     let options: [FlowClaimConfirmEmergencyOption]
 
-    init(
+    public init(
         id: String,
         text: String,
         confirmEmergency: Bool?,
@@ -24,7 +23,7 @@ public struct FlowClaimConfirmEmergencyOption: Codable, Equatable, Hashable, Sen
     let displayName: String
     let value: Bool
 
-    init(
+    public init(
         displayName: String,
         value: Bool
     ) {

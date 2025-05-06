@@ -108,7 +108,7 @@ public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identif
     public let id: String
     let quickActions: [QuickAction]
 
-    init(quickActions: [QuickAction]) {
+    public init(quickActions: [QuickAction]) {
         self.id = quickActions.compactMap({ $0.id }).joined(separator: ",")
         self.quickActions = quickActions
     }
@@ -120,6 +120,14 @@ public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable, Sen
     public let phoneNumber: String?
     public let url: String?
     public let preferredImageHeight: Int?
+
+    public init(id: String, imageUrl: String?, phoneNumber: String?, url: String?, preferredImageHeight: Int?) {
+        self.id = id
+        self.imageUrl = imageUrl
+        self.phoneNumber = phoneNumber
+        self.url = url
+        self.preferredImageHeight = preferredImageHeight
+    }
 }
 
 public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Sendable {
@@ -128,6 +136,14 @@ public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Senda
     let description: String?
     let url: String?
     let title: String?
+
+    public init(id: String, buttonTitle: String?, description: String?, url: String?, title: String?) {
+        self.id = id
+        self.buttonTitle = buttonTitle
+        self.description = description
+        self.url = url
+        self.title = title
+    }
 }
 
 extension Sequence where Iterator.Element == QuickAction {

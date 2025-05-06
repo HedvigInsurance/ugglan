@@ -1,5 +1,3 @@
-import hGraphQL
-
 public class hCampaignClientDemo: hCampaignClient {
     public init() {}
 

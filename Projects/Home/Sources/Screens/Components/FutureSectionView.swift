@@ -4,7 +4,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct FutureSectionInfoView: View {
 
@@ -47,17 +46,12 @@ struct ActiveInFutureView_Previews: PreviewProvider {
             FutureSectionInfoView()
                 .onAppear {
                     let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
-                        _dataDict: .init(
-                            data: [:],
-                            fulfilledFragments: .init()
-                        )
-                    )
+                    let contract = HomeContract(upcomingRenewal: nil, displayName: "name")
 
                     store.send(
                         .setMemberContractState(
                             state: .future,
-                            contracts: [.init(contract: contract)]
+                            contracts: [contract]
                         )
                     )
                     store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))

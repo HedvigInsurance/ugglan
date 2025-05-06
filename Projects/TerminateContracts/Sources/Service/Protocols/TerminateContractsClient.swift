@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 @MainActor
 public protocol TerminateContractsClient {
@@ -22,6 +23,12 @@ public struct TerminateStepResponse: Equatable, Sendable {
     let context: String
     let step: TerminationContractStep
     let progress: Float?
+
+    public init(context: String, step: TerminationContractStep, progress: Float?) {
+        self.context = context
+        self.step = step
+        self.progress = progress
+    }
 }
 
 public enum TerminationContractStep: Equatable, Sendable {
@@ -31,4 +38,17 @@ public enum TerminationContractStep: Equatable, Sendable {
     case setFailedStep(model: TerminationFlowFailedNextModel)
     case setTerminationSurveyStep(model: TerminationFlowSurveyStepModel)
     case openTerminationUpdateAppScreen
+}
+
+public enum TerminationError: Error {
+    case missingContext
+}
+
+extension TerminationError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingContext:
+            return L10n.General.errorBody
+        }
+    }
 }

@@ -1,6 +1,7 @@
 @preconcurrency import Apollo
 @preconcurrency import ApolloWebSocket
 import Disk
+import Environment
 import Foundation
 import SwiftUI
 

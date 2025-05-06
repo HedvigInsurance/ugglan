@@ -4,7 +4,6 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct MyInfoView: View {
     @StateObject var vm = MyInfoViewModel()
