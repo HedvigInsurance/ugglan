@@ -35,6 +35,12 @@ fragment ReedemCampaignsFragment on Member {
         onlyApplicableToContracts {
             exposureDisplayName
             exposureDisplayNameShort
+            currentAgreement {
+                productVariant {
+                    displayNameShort
+                    displayName
+                }
+            }
             id
         }
     }
