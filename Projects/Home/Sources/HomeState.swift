@@ -195,9 +195,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             types.append(.firstVet)
         }
 
-        if state.hasSentOrRecievedAtLeastOneMessage
-            || Localization.Locale.currentLocale.value.market != .se
-        {
+        if state.hasSentOrRecievedAtLeastOneMessage {
             if state.showChatNotification {
                 types.append(.chatNotification(lastMessageTimeStamp: self.state.latestConversationTimeStamp))
             } else {
