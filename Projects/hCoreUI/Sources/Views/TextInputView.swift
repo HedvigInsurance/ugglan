@@ -29,7 +29,7 @@ public struct TextInputView: View {
                     .disabled(vm.isLoading)
                 }
                 hSection {
-                    VStack(spacing: 8) {
+                    VStack(spacing: .padding8) {
                         hButton.LargeButton(type: .primary) {
                             Task { [weak vm] in
                                 withAnimation {

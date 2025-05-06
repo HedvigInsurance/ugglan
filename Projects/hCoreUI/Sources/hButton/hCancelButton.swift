@@ -14,8 +14,7 @@ public struct hCancelButton: View {
         hButton.LargeButton(type: .ghost) {
             action()
         } content: {
-            L10n.generalCancelButton.hText(.body1)
-                .foregroundColor(hTextColor.Opaque.primary)
+            hText(L10n.generalCloseButton)
         }
     }
 }

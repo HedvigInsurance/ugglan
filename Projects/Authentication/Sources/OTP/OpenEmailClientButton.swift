@@ -102,14 +102,12 @@ public struct OpenEmailClientButton: View {
     }
 
     public var body: some View {
-        //        ReadOTPState { state in
         hSection {
             displayButton
         }
         .offset(x: 0, y: showButton(state: otpVM) ? 0 : 150)
         .opacity(showButton(state: otpVM) ? 1 : 0)
         .animation(.spring(), value: showButton(state: otpVM))
-        //        }
         .onUpdate(
             of: hasAcceptedAlert,
             perform: { newValue in
