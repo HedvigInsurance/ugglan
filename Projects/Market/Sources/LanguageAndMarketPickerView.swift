@@ -42,13 +42,11 @@ public struct LanguageAndMarketPickerView: View {
                     hText(L10n.profileAboutAppVersion + " " + Bundle.main.appVersion, style: .finePrint)
                         .foregroundColor(hTextColor.Opaque.tertiary)
 
-                    hButton.LargeButton(type: .primary) {
+                    hSaveButton {
                         Task {
                             await vm.save()
                             router.dismiss()
                         }
-                    } content: {
-                        hText(L10n.generalSaveButton)
                     }
 
                     hCancelButton {

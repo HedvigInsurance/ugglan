@@ -29,12 +29,10 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 connectedToWater
                 hSection {
                     VStack {
-                        hButton.LargeButton(type: .primary) {
+                        hSaveButton {
                             withAnimation {
                                 addExtraBuilding()
                             }
-                        } content: {
-                            hText(L10n.generalSaveButton)
                         }
                         hCancelButton {
                             movingFlowNavigationVm.isAddExtraBuildingPresented = nil

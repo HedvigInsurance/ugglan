@@ -33,12 +33,12 @@ public struct SubmitClaimEditSummaryScreen: View {
         }
 
         .hFormAttachToBottom {
-            hButton.LargeButton(type: .primary) {
-                claimsNavigationVm.router.dismiss()
-            } content: {
-                hText(L10n.generalSaveButton)
+            hSection {
+                hSaveButton {
+                    claimsNavigationVm.router.dismiss()
+                }
             }
-            .padding(.horizontal, .padding16)
+            .sectionContainerStyle(.transparent)
         }
     }
 
