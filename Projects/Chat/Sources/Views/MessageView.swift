@@ -61,7 +61,7 @@ struct MessageView: View {
                     Button {
                         NotificationCenter.default.post(name: .openDeepLink, object: url)
                     } label: {
-                        hText(type.goToTextWith(contractName: url.contractName))
+                        hText(type.getDeeplinkTextFor(contractName: url.contractName))
                             .foregroundColor(hTextColor.Opaque.primary)
                             .multilineTextAlignment(.leading)
                     }

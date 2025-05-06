@@ -27,10 +27,13 @@ public enum DeepLink: String, Codable, CaseIterable {
     case claimDetails = "claim-details"
     case insuranceEvidence = "insurance-evidence"
 
-    public func goToTextWith(contractName: String?) -> String {
+    public func getDeeplinkTextFor(contractName: String?) -> String {
         switch self {
         case .terminateContract:
-            return L10n.chatConversationTerminateContract(contractName ?? importantText)
+            if let contractName {
+                return L10n.chatConversationTerminateContract(contractName)
+            }
+            return L10n.generalGoTo(importantText)
         default:
             return L10n.generalGoTo(contractName ?? importantText)
         }
