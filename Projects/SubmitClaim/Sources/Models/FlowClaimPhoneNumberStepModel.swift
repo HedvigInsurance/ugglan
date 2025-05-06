@@ -1,11 +1,10 @@
 import Foundation
-import hGraphQL
 
 public struct FlowClaimPhoneNumberStepModel: FlowClaimStepModel {
     let id: String
     let phoneNumber: String
 
-    init(
+    public init(
         id: String,
         phoneNumber: String
     ) {

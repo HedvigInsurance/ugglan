@@ -3,7 +3,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 class CampaignNavigationViewModel: ObservableObject {

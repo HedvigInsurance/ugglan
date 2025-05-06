@@ -4,7 +4,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class ChatConversationViewModel: ObservableObject {
@@ -343,7 +342,7 @@ public class ChatScreenViewModel: ObservableObject {
     }
 }
 
-enum ConversationsError: Error {
+public enum ConversationsError: Error {
     case errorMesage(message: String)
     case missingData
     case uploadFailed
@@ -351,7 +350,7 @@ enum ConversationsError: Error {
 }
 
 extension ConversationsError: LocalizedError {
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case let .errorMesage(message): return message
         case .missingData: return L10n.somethingWentWrong

@@ -5,7 +5,7 @@ public struct PersonalData: Sendable {
     public var lastName: String
     public let fullname: String
 
-    init(
+    public init(
         firstName: String,
         lastName: String
     ) {

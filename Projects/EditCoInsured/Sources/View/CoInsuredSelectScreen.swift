@@ -5,7 +5,7 @@ import hCoreUI
 
 struct CoInsuredSelectScreen: View {
     let contractId: String
-    @ObservedObject var vm: InsuredPeopleNewScreenModel
+    @ObservedObject var vm: InsuredPeopleScreenViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     let itemPickerConfig: ItemConfig<CoInsuredModel>

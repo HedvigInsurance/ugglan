@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct MovingFlowHouseScreen: View {
     @ObservedObject var houseInformationInputvm: HouseInformationInputModel
@@ -255,14 +254,14 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
 
     @Inject private var service: MoveFlowClient
     @Published var type: MovingFlowHouseFieldType?
-    @Published var yearOfConstruction: String = ""
-    @Published var ancillaryArea: String = ""
-    @Published var bathrooms: Int = 1
-    @Published var isSubleted = false
+    @Published public var yearOfConstruction: String = ""
+    @Published public var ancillaryArea: String = ""
+    @Published public var bathrooms: Int = 1
+    @Published public var isSubleted = false
     @Published var yearOfConstructionError: String?
     @Published var ancillaryAreaError: String?
     @Published var bathroomsError: String?
-    @Published var extraBuildings: [ExtraBuilding] = []
+    @Published public var extraBuildings: [ExtraBuilding] = []
     @Published var viewState: ProcessingState = .success
 
     init() {}
@@ -322,11 +321,11 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
     }
 }
 
-struct ExtraBuilding: Identifiable {
-    let id: String
-    let type: ExtraBuildingType
-    let livingArea: Int
-    let connectedToWater: Bool
+public struct ExtraBuilding: Identifiable {
+    public let id: String
+    public let type: ExtraBuildingType
+    public let livingArea: Int
+    public let connectedToWater: Bool
 
     var descriptionText: String {
         var elements: [String] = []
@@ -334,7 +333,7 @@ struct ExtraBuilding: Identifiable {
         if connectedToWater {
             elements.append(L10n.changeAddressExtraBuildingsWaterLabel)
         }
-        return elements.joined(separator: " ∙ ")
+        return elements.displayName
     }
 }
 

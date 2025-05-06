@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public struct FlowClaimFileUploadStepModel: FlowClaimStepModel {
     let id: String
@@ -26,7 +25,7 @@ public struct FlowClaimFileUploadStepFileModel: Codable, Equatable, Hashable, Se
     let mimeType: String
     let name: String
 
-    init(fileId: String, signedUrl: String, mimeType: String, name: String) {
+    public init(fileId: String, signedUrl: String, mimeType: String, name: String) {
         self.fileId = fileId
         self.signedUrl = signedUrl
         self.mimeType = mimeType

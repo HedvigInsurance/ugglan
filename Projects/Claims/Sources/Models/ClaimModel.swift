@@ -4,7 +4,6 @@ import CrossSell
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public init(
@@ -141,6 +140,11 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         }
         let displayTitle: String
         let displayValue: String
+
+        public init(displayTitle: String, displayValue: String) {
+            self.displayTitle = displayTitle
+            self.displayValue = displayValue
+        }
     }
 }
 

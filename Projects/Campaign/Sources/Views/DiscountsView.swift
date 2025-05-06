@@ -139,17 +139,40 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         .init(
                             id: "a1",
                             name: "Mark",
+                            code: "CODE",
                             description: "desc",
                             activeDiscount: .sek(10),
                             status: .active,
                             invitedYou: true
                         ),
-                        .init(id: "a2", name: "Idris", description: "desc", activeDiscount: .sek(10), status: .active),
-                        .init(id: "a3", name: "Atotio", description: "desc", activeDiscount: .sek(10), status: .active),
-                        .init(id: "a4", name: "SONNY", description: "desc", activeDiscount: .sek(10), status: .pending),
+                        .init(
+                            id: "a2",
+                            name: "Idris",
+                            code: "CODE",
+                            description: "desc",
+                            activeDiscount: .sek(10),
+                            status: .active
+                        ),
+                        .init(
+                            id: "a3",
+                            name: "Atotio",
+                            code: "CODE",
+                            description: "desc",
+                            activeDiscount: .sek(10),
+                            status: .active
+                        ),
+                        .init(
+                            id: "a4",
+                            name: "SONNY",
+                            code: "CODE",
+                            description: "desc",
+                            activeDiscount: .sek(10),
+                            status: .pending
+                        ),
                         .init(
                             id: "a5",
                             name: "RILLE",
+                            code: "CODE",
                             description: "desc",
                             activeDiscount: .sek(30),
                             status: .terminated,

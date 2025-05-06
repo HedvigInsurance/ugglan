@@ -5,7 +5,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ProfileState: StateProtocol {
     public var partnerData: PartnerData?
@@ -67,7 +66,7 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
         return !(sas?.eurobonusNumber ?? "").isEmpty
     }
 
-    init(sas: PartnerDataSas?) {
+    public init(sas: PartnerDataSas?) {
         self.sas = sas
     }
 }
@@ -75,7 +74,7 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
 public struct PartnerDataSas: Codable, Equatable, Hashable, Sendable {
     let eligible: Bool
     let eurobonusNumber: String?
-    init(eligible: Bool, eurobonusNumber: String?) {
+    public init(eligible: Bool, eurobonusNumber: String?) {
         self.eligible = eligible
         self.eurobonusNumber = eurobonusNumber
     }
