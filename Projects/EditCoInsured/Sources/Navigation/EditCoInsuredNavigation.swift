@@ -19,7 +19,7 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
-    let coInsuredViewModel = InsuredPeopleNewScreenModel()
+    let coInsuredViewModel = InsuredPeopleScreenViewModel()
     let intentViewModel = IntentViewModel()
 }
 
@@ -53,9 +53,9 @@ enum EditCoInsuredScreenTrackingType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .newInsurance:
-            return .init(describing: InsuredPeopleNewScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         case .removeCoInsured:
-            return .init(describing: RemoveCoInsuredScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         case .insuredPeople:
             return .init(describing: InsuredPeopleScreen.self)
         }
@@ -154,18 +154,14 @@ public struct EditCoInsuredNavigation: View {
 
     func openNewInsuredPeopleScreen() -> some View {
         openSpecificScreen = .none
-        return InsuredPeopleNewScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel,
-            intentViewModel: editCoInsuredNavigationVm.intentViewModel
-        )
-        .configureTitle(L10n.coinsuredEditTitle)
-        .addDismissEditCoInsuredFlow()
+        return openInsuredPeopleScreen()
     }
 
     func openInsuredPeopleScreen() -> some View {
         return InsuredPeopleScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel,
-            intentViewModel: editCoInsuredNavigationVm.intentViewModel
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel,
+            type: .none
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -202,8 +198,10 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openRemoveCoInsuredScreen() -> some View {
-        return RemoveCoInsuredScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel
+        return InsuredPeopleScreen(
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel,
+            type: .delete
         )
         .configureTitle(L10n.coinsuredEditTitle)
     }

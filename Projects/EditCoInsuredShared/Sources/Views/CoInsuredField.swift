@@ -1,46 +1,40 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 @MainActor
 public struct CoInsuredField<Content: View>: View {
     let coInsured: CoInsuredModel?
     let accessoryView: Content
-    let includeStatusPill: StatusPillType?
+    let statusPill: StatusPillType?
     let date: String
-    let title: String?
     let subTitle: String?
 
     public init(
         coInsured: CoInsuredModel? = nil,
         accessoryView: Content,
-        includeStatusPill: StatusPillType? = nil,
+        statusPill: StatusPillType? = nil,
         date: String? = nil,
-        title: String? = nil,
-        subTitle: String? = nil
     ) {
         self.coInsured = coInsured
         self.accessoryView = accessoryView
-
-        var statusPill: StatusPillType? {
-            if includeStatusPill == nil {
+        self.statusPill =
+            statusPill
+            ?? {
+                guard coInsured?.hasMissingData == false else { return nil }
                 if coInsured?.activatesOn != nil {
                     return .added
                 } else if coInsured?.terminatesOn != nil {
                     return .deleted
                 }
-            }
-            return nil
-        }
-
-        self.includeStatusPill = includeStatusPill ?? statusPill
-
+                return nil
+            }()
         self.date = date ?? coInsured?.activatesOn ?? coInsured?.terminatesOn ?? ""
-        self.title = title
-        self.subTitle = subTitle
+        self.subTitle = coInsured?.hasMissingData ?? true ? L10n.contractNoInformation : nil
     }
 
     public var body: some View {
-        let displayTitle = (coInsured?.fullName ?? title) ?? ""
+        let displayTitle = coInsured?.fullName ?? L10n.contractCoinsured
         let displaySubTitle =
             coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
@@ -57,24 +51,24 @@ public struct CoInsuredField<Content: View>: View {
                     .fixedSize()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            statusPill
+            statusPillView
         }
     }
 
     @ViewBuilder
-    var statusPill: some View {
-        if let includeStatusPill {
+    var statusPillView: some View {
+        if let statusPill {
             VStack {
                 hText(
-                    includeStatusPill
+                    statusPill
                         .text(date: (date.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")),
                     style: .label
                 )
             }
             .padding(.vertical, .padding4)
             .padding(.horizontal, .padding10)
-            .foregroundColor(includeStatusPill.textColor)
-            .background(includeStatusPill.backgroundColor)
+            .foregroundColor(statusPill.textColor)
+            .background(statusPill.backgroundColor)
             .cornerRadius(8)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
