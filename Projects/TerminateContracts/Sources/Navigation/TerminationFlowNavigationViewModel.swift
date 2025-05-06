@@ -332,6 +332,11 @@ struct TerminationFlowNavigation: View {
             tracking: vm.initialStep
         ) {
             getView(for: vm.initialStep)
+                .addNavigationInfoButton(
+                    placement: .leading,
+                    title: L10n.terminationFlowCancelInfoTitle,
+                    description: L10n.terminationFlowCancelInfoText
+                )
                 .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
@@ -444,26 +449,10 @@ struct TerminationFlowNavigation: View {
             terminationNavigationVm: vm
         )
         .withDismissButton()
-        .toolbar {
-            ToolbarItem(
-                placement: .topBarLeading
-            ) {
-                if fromSelectInsurance {
-                    tabBarInfoView
-                }
-            }
-        }
     }
 
     private func openSelectInsuranceScreen() -> some View {
         TerminationSelectInsuranceScreen(vm: vm)
-            .toolbar {
-                ToolbarItem(
-                    placement: .topBarLeading
-                ) {
-                    tabBarInfoView
-                }
-            }
     }
 
     private func openUpdateAppTerminationScreen() -> some View {
