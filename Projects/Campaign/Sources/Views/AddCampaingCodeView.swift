@@ -36,7 +36,6 @@ struct AddCampaignCodeView: View {
 @MainActor
 class AddCampaignCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
-    let paymentDataDiscounts: [Discount]
     var errorMessage: String?
     @Published var codeAdded: Bool = false
     @Published var hideTitle: Bool = false
@@ -45,10 +44,8 @@ class AddCampaignCodeViewModel: ObservableObject {
     var campaignsService = hCampaignService()
     @PresentableStore var store: CampaignStore
     init(
-        paymentDataDiscounts: [Discount],
         onInputChange: @escaping () -> Void
     ) {
-        self.paymentDataDiscounts = paymentDataDiscounts
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: "",
@@ -58,7 +55,7 @@ class AddCampaignCodeViewModel: ObservableObject {
         inputVm.onSave = { [weak self] text in
             try await self?.campaignsService.add(code: text)
             onInputChange()
-            self?.store.send(.fetchDiscountsData(paymentDataDiscounts: paymentDataDiscounts))
+            self?.store.send(.fetchDiscountsData)
 
             await self?.onSuccessAdd()
 
@@ -90,8 +87,8 @@ struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         return AddCampaignCodeView(
-            campaignNavigationVm: .init(paymentDataDiscounts: [], router: Router()),
-            vm: .init(paymentDataDiscounts: [], onInputChange: {})
+            campaignNavigationVm: .init(),
+            vm: .init(onInputChange: {})
         )
     }
 }

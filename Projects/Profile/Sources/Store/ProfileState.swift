@@ -5,7 +5,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ProfileState: StateProtocol {
     public var partnerData: PartnerData?
@@ -25,7 +24,10 @@ public struct ProfileState: StateProtocol {
     @MainActor
     public var canCreateTravelInsurance: Bool {
         let store: ContractStore = globalPresentableStoreContainer.get()
-        return store.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
+        let numerOfContractsEligibleForCreatingTravelCertificate = store.state.activeContracts.filter({
+            $0.supportsTravelCertificate
+        })
+        return numerOfContractsEligibleForCreatingTravelCertificate.count > 0
     }
 
     public init() {
@@ -64,7 +66,7 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
         return !(sas?.eurobonusNumber ?? "").isEmpty
     }
 
-    init(sas: PartnerDataSas?) {
+    public init(sas: PartnerDataSas?) {
         self.sas = sas
     }
 }
@@ -72,7 +74,7 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
 public struct PartnerDataSas: Codable, Equatable, Hashable, Sendable {
     let eligible: Bool
     let eurobonusNumber: String?
-    init(eligible: Bool, eurobonusNumber: String?) {
+    public init(eligible: Bool, eurobonusNumber: String?) {
         self.eligible = eligible
         self.eurobonusNumber = eurobonusNumber
     }

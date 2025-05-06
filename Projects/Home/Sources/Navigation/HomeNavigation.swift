@@ -9,7 +9,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 extension String: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {

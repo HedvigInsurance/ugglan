@@ -183,6 +183,15 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         }
     }
 
+    var shadowColor: Color {
+        switch self {
+        case .travelCertificate, .insuranceEvidence:
+            return Color.clear
+        default:
+            return .black.opacity(0.15)
+        }
+    }
+
     func onShow() {
         switch self {
         case .chat:
@@ -243,7 +252,7 @@ public struct ToolbarButtonView: View {
                             .scaledToFill()
                             .frame(width: type.imageSize, height: type.imageSize)
                             .foregroundColor(hFillColor.Opaque.primary)
-                            .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
+                            .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
                             .accessibilityValue(type.displayName)
                     }
                 }

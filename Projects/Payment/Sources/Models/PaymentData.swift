@@ -3,28 +3,58 @@ import Contracts
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     let id: String
-    let payment: PaymentStack
+    public let payment: PaymentStack
     let status: PaymentStatus
     let contracts: [ContractPaymentDetails]
-    let referralDiscounts: [Discount]
-    let otherDiscounts: [Discount]
+    let referralDiscount: Discount?
     let paymentDetails: PaymentDetails?
     //had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
 
-    struct PaymentStack: Codable, Equatable, Hashable, Sendable {
+    public init(
+        id: String,
+        payment: PaymentStack,
+        status: PaymentStatus,
+        contracts: [ContractPaymentDetails],
+        referralDiscount: Discount?,
+        paymentDetails: PaymentDetails?,
+        addedToThePayment: [PaymentData]?
+    ) {
+        self.id = id
+        self.payment = payment
+        self.status = status
+        self.contracts = contracts
+        self.referralDiscount = referralDiscount
+        self.paymentDetails = paymentDetails
+        self.addedToThePayment = addedToThePayment
+    }
+
+    public struct PaymentStack: Codable, Equatable, Hashable, Sendable {
         let gross: MonetaryAmount
         let net: MonetaryAmount
         let carriedAdjustment: MonetaryAmount?
         let settlementAdjustment: MonetaryAmount?
-        let date: ServerBasedDate
+        public let date: ServerBasedDate
+
+        public init(
+            gross: MonetaryAmount,
+            net: MonetaryAmount,
+            carriedAdjustment: MonetaryAmount?,
+            settlementAdjustment: MonetaryAmount?,
+            date: ServerBasedDate
+        ) {
+            self.gross = gross
+            self.net = net
+            self.carriedAdjustment = carriedAdjustment
+            self.settlementAdjustment = settlementAdjustment
+            self.date = date
+        }
     }
 
-    enum PaymentStatus: Codable, Equatable, Hashable, Sendable {
+    public enum PaymentStatus: Codable, Equatable, Hashable, Sendable {
         case upcoming
         case success
         case pending
@@ -49,23 +79,57 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         }
     }
 
-    struct ContractPaymentDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
-        let id: String
+    public struct ContractPaymentDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
+        public let id: String
         let title: String
         let subtitle: String?
         let netAmount: MonetaryAmount
         let grossAmount: MonetaryAmount
         let discounts: [Discount]
         let periods: [PeriodInfo]
+
+        public init(
+            id: String,
+            title: String,
+            subtitle: String?,
+            netAmount: MonetaryAmount,
+            grossAmount: MonetaryAmount,
+            discounts: [Discount],
+            periods: [PeriodInfo]
+        ) {
+            self.id = id
+            self.title = title
+            self.subtitle = subtitle
+            self.netAmount = netAmount
+            self.grossAmount = grossAmount
+            self.discounts = discounts
+            self.periods = periods
+        }
     }
 
-    struct PeriodInfo: Codable, Equatable, Identifiable, Hashable, Sendable {
-        let id: String
+    public struct PeriodInfo: Codable, Equatable, Identifiable, Hashable, Sendable {
+        public let id: String
         let from: ServerBasedDate
         let to: ServerBasedDate
         let amount: MonetaryAmount
         let isOutstanding: Bool
         let desciption: String?
+
+        public init(
+            id: String,
+            from: ServerBasedDate,
+            to: ServerBasedDate,
+            amount: MonetaryAmount,
+            isOutstanding: Bool,
+            desciption: String?
+        ) {
+            self.id = id
+            self.from = from
+            self.to = to
+            self.amount = amount
+            self.isOutstanding = isOutstanding
+            self.desciption = desciption
+        }
 
         @MainActor
         var fromToDate: String {
@@ -73,13 +137,13 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         }
     }
 
-    struct PaymentDetails: Codable, Equatable, Hashable, Sendable {
+    public struct PaymentDetails: Codable, Equatable, Hashable, Sendable {
         typealias KeyValue = (key: String, value: String)
         let paymentMethod: String
         let account: String
         let bank: String
 
-        init(paymentMethod: String, account: String, bank: String) {
+        public init(paymentMethod: String, account: String, bank: String) {
             self.paymentMethod = paymentMethod
             self.account = account
             self.bank = bank

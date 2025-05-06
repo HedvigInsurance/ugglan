@@ -3,7 +3,6 @@ import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct CoInusuredInputScreen: View {
     @ObservedObject var insuredPeopleVm: InsuredPeopleScreenViewModel

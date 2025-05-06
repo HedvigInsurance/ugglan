@@ -2,7 +2,6 @@ import Combine
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ClaimSection: View {
     @Binding var claims: [ClaimModel]

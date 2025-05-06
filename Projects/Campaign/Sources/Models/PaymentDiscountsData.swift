@@ -1,17 +1,21 @@
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
     let discounts: [Discount]
     let referralsData: ReferralsData
+
+    public init(discounts: [Discount], referralsData: ReferralsData) {
+        self.discounts = discounts
+        self.referralsData = referralsData
+    }
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let code: String
-    let amount: MonetaryAmount?
+    public let amount: MonetaryAmount?
     let title: String?
     let listOfAffectedInsurances: [AffectedInsurance]
     let validUntil: ServerBasedDate?
@@ -43,11 +47,9 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         nbOfReferrals: Int
     ) {
         self.id = UUID().uuidString
-        self.code = referral.name
+        self.code = referral.code ?? referral.name
         self.amount = referral.activeDiscount
-        self.title =
-            referral.invitedYou
-            ? L10n.Forever.Referral.invitedYou(referral.name) : L10n.foreverReferralInvitedByYouPlural(nbOfReferrals)
+        self.title = referral.description
         self.listOfAffectedInsurances = []
         self.validUntil = nil
         self.canBeDeleted = true
@@ -75,6 +77,13 @@ public struct ReferralsData: Equatable, Codable, Sendable {
     let discount: MonetaryAmount
     let referrals: [Referral]
 
+    public init(code: String, discountPerMember: MonetaryAmount, discount: MonetaryAmount, referrals: [Referral]) {
+        self.code = code
+        self.discountPerMember = discountPerMember
+        self.discount = discount
+        self.referrals = referrals
+    }
+
     var allReferralDiscount: MonetaryAmount {
         let value = referrals.compactMap({ $0.activeDiscount }).compactMap({ $0.value }).reduce(0.0, +)
         return MonetaryAmount(amount: value, currency: discountPerMember.currency)
@@ -84,6 +93,8 @@ public struct ReferralsData: Equatable, Codable, Sendable {
 public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public let id: String
     let name: String
+    let code: String?
+    let description: String
     let activeDiscount: MonetaryAmount?
     let status: State
     let invitedYou: Bool
@@ -91,12 +102,16 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public init(
         id: String,
         name: String,
+        code: String?,
+        description: String,
         activeDiscount: MonetaryAmount? = nil,
         status: State,
         invitedYou: Bool = false
     ) {
         self.id = id
         self.name = name
+        self.code = code
+        self.description = description
         self.activeDiscount = activeDiscount
         self.status = status
         self.invitedYou = invitedYou
@@ -166,7 +181,10 @@ public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sen
     public let id: String
     let displayName: String
 
-    public init(id: String, displayName: String) {
+    public init(
+        id: String,
+        displayName: String
+    ) {
         self.id = id
         self.displayName = displayName
     }

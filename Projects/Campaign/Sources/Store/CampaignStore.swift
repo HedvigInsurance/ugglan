@@ -10,11 +10,9 @@ public final class CampaignStore: LoadingStateStore<CampaignState, CampaignActio
 
     public override func effects(_ getState: @escaping () -> CampaignState, _ action: CampaignAction) async {
         switch action {
-        case let .fetchDiscountsData(paymentDataDiscounts):
+        case .fetchDiscountsData:
             do {
-                let data = try await self.campaignService.getPaymentDiscountsData(
-                    paymentDataDiscounts: paymentDataDiscounts
-                )
+                let data = try await self.campaignService.getPaymentDiscountsData()
                 self.send(.setDiscountsData(data: data))
             } catch {
                 self.setError(L10n.General.errorBody, for: .getDiscountsData)

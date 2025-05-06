@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct InvitationTable: View {
     @StateObject var vm: InvitationTableViewModel
@@ -44,7 +43,7 @@ struct InvitationTable: View {
 
 class InvitationTableViewModel: ObservableObject {
     let foreverData: ForeverData?
-    @State var showInvitations = false
+    @Published var showInvitations = false
 
     public init(
         foreverData: ForeverData?

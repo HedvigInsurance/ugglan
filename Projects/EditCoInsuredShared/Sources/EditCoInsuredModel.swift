@@ -1,7 +1,6 @@
 import Foundation
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
     public let SSN: String?
@@ -25,19 +24,6 @@ public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
 
     public var id: String {
         return (fullName ?? "") + (formattedSSN ?? "") + (birthDate ?? "")
-    }
-
-    public init(
-        data: OctopusGraphQL.CoInsuredFragment
-    ) {
-        self.SSN = data.ssn
-        self.birthDate = data.birthdate
-        self.firstName = data.firstName
-        self.lastName = data.lastName
-        self.hasMissingInfo = data.hasMissingInfo
-        self.activatesOn = data.activatesOn
-        self.terminatesOn = data.terminatesOn
-
     }
 
     @MainActor

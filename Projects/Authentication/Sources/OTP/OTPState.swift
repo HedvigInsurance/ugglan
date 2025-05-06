@@ -3,12 +3,12 @@ import Foundation
 public class OTPState: ObservableObject {
     @Published var isLoading = false
     @Published var isResending = false
-    @Published var resendUrl: URL? = nil
-    @Published var verifyUrl: URL? = nil
-    @Published var code: String
+    @Published public internal(set) var resendUrl: URL? = nil
+    @Published public internal(set) var verifyUrl: URL? = nil
+    @Published public internal(set) var code: String
     @Published var codeErrorMessage: String? = nil
     @Published var otpInputErrorMessage: String? = nil
-    @Published var input: String
+    @Published public internal(set) var input: String
     @Published var maskedEmail: String? = nil
     @Published var canResendAt: Date? = nil
 

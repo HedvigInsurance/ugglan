@@ -36,9 +36,9 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder
     private var referralSection: some View {
-        if !data.referralDiscounts.isEmpty {
-            hSection(data.referralDiscounts, id: \.id) { referral in
-                DiscountDetailView(isReferral: true, vm: .init(options: [.forPayment], discount: referral))
+        if let referralDiscount = data.referralDiscount {
+            hSection {
+                DiscountDetailView(vm: .init(options: [.forPayment], discount: referralDiscount))
                     .hWithoutHorizontalPadding([.row])
             }
             .withHeader(
@@ -261,7 +261,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                     ]
                 ),
             ],
-            referralDiscounts: [
+            referralDiscount:
                 .init(
                     code: "MY CODE",
                     amount: .sek(30),
@@ -270,32 +270,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                     validUntil: nil,
                     canBeDeleted: false,
                     discountId: "FRIENDS"
-                )
-            ],
-            otherDiscounts: [
-                .init(
-                    code: "CODE",
-                    amount: .sek(100),
-                    title: "Title",
-                    listOfAffectedInsurances: [
-                        .init(id: "1", displayName: "Car 15%")
-                    ],
-                    validUntil: "2023-11-20",
-                    canBeDeleted: false,
-                    discountId: "CODE"
                 ),
-                .init(
-                    code: "CODE2",
-                    amount: .sek(99),
-                    title: "Title1",
-                    listOfAffectedInsurances: [
-                        .init(id: "2", displayName: "House 15%")
-                    ],
-                    validUntil: "2023-11-22",
-                    canBeDeleted: false,
-                    discountId: "CODE2"
-                ),
-            ],
             paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
             addedToThePayment: nil
         )
