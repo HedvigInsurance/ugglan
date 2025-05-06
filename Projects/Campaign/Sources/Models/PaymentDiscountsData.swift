@@ -43,7 +43,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         nbOfReferrals: Int
     ) {
         self.id = UUID().uuidString
-        self.code = referral.name
+        self.code = referral.code ?? referral.name
         self.amount = referral.activeDiscount
         self.title = referral.description
         self.listOfAffectedInsurances = []
@@ -82,6 +82,7 @@ public struct ReferralsData: Equatable, Codable, Sendable {
 public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public let id: String
     let name: String
+    let code: String?
     let description: String
     let activeDiscount: MonetaryAmount?
     let status: State
@@ -90,6 +91,7 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public init(
         id: String,
         name: String,
+        code: String?,
         description: String,
         activeDiscount: MonetaryAmount? = nil,
         status: State,
@@ -97,6 +99,7 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
     ) {
         self.id = id
         self.name = name
+        self.code = code
         self.description = description
         self.activeDiscount = activeDiscount
         self.status = status
@@ -167,7 +170,10 @@ public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sen
     public let id: String
     let displayName: String
 
-    public init(id: String, displayName: String) {
+    public init(
+        id: String,
+        displayName: String
+    ) {
         self.id = id
         self.displayName = displayName
     }
