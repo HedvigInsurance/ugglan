@@ -115,7 +115,7 @@ public struct ClaimDetailView: View {
 
     private func claimCardSection(claim: ClaimModel) -> some View {
         hSection {
-            ClaimStatus(
+            ClaimStatusCard(
                 claim: claim,
                 enableTap: false
             )

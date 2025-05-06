@@ -40,52 +40,52 @@ public struct hPill: View {
                 .padding(.bottom, getBottomPadding)
                 .background(
                     RoundedRectangle(cornerRadius: getCornerRadius)
-                        .fill(getBackgroundColor)
+                        .fill(color.pillBackgroundColor(level: colorLevel))
                 )
         }
 
-        @hColorBuilder
-        private var getBackgroundColor: some hColor {
-            color.pillBackgroundColor(level: colorLevel)
-        }
-
         private var getHorizontalPadding: CGFloat {
-            var padding: CGFloat = .padding12
-            if fieldSize == .small {
-                padding = .padding6
-            } else if fieldSize == .medium {
-                padding = .padding10
+            switch fieldSize {
+            case .small:
+                return .padding6
+            case .medium:
+                return .padding10
+            case .large:
+                return .padding12
             }
-            return padding
         }
 
         private var getTopPadding: CGFloat {
-            var padding: CGFloat = 7
-            if fieldSize == .small {
-                padding = 3
-            } else if fieldSize == .medium {
-                padding = 6.5
+            switch fieldSize {
+            case .small:
+                return 3
+            case .medium:
+                return 6.5
+            case .large:
+                return 7
             }
-            return padding
         }
 
         private var getBottomPadding: CGFloat {
-            var padding: CGFloat = 9
-            if fieldSize == .small {
-                padding = 3
-            } else if fieldSize == .medium {
-                padding = 7.5
+            switch fieldSize {
+            case .small:
+                return 3
+            case .medium:
+                return 7.5
+            case .large:
+                return 9
             }
-            return padding
         }
 
         private var getCornerRadius: CGFloat {
-            if fieldSize == .small {
+            switch fieldSize {
+            case .small:
                 return .cornerRadiusXS
-            } else if fieldSize == .medium {
+            case .medium:
                 return .cornerRadiusS
+            case .large:
+                return .cornerRadiusM
             }
-            return .cornerRadiusM
         }
     }
 }
@@ -191,16 +191,13 @@ public enum PillColor {
 
     @hColorBuilder
     func pillTextColor(level: PillColor.PillColorLevel) -> some hColor {
-        switch self {
-        case .blue, .teal, .green, .yellow, .amber, .purple, .pink, .red:
-            hTextColor.Opaque.black
-        case .grey:
+        if self == .grey {
             switch level {
-            case .one, .two:
-                hTextColor.Opaque.primary
-            case .three:
-                hTextColor.Opaque.negative
+            case .one, .two: hTextColor.Opaque.primary
+            case .three: hTextColor.Opaque.negative
             }
+        } else {
+            hTextColor.Opaque.black
         }
     }
 

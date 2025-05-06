@@ -10,6 +10,9 @@ public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
     public var birthDate: String?
     public let activatesOn: ServerBasedDate?
     public let terminatesOn: ServerBasedDate?
+    public var isTerminated: Bool {
+        terminatesOn != nil
+    }
     public var fullName: String? {
         guard let firstName, let lastName else { return nil }
         return firstName + " " + lastName
