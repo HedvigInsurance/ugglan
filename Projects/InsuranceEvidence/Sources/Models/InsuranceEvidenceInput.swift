@@ -1,3 +1,3 @@
 public struct InsuranceEvidenceInput: Sendable, Hashable {
-    var email: String
+    public internal(set) var email: String
 }

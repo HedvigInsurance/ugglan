@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public struct AddonConfig: Hashable {
     let contractId: String
@@ -81,41 +80,32 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     let displayItems: [AddonDisplayItem]
     let price: MonetaryAmount?
     let addonVariant: AddonVariant?
-}
-
-struct AddonDisplayItem: Equatable, Hashable {
-    let displayTitle: String
-    let displayValue: String
-}
-
-public struct AddonVariant: Codable, Equatable, Hashable, Sendable {
-    public let displayName: String
-    public let documents: [hPDFDocument]
-    public let perils: [Perils]
-    public let product: String
-    public let termsVersion: String
 
     public init(
-        fragment: OctopusGraphQL.AddonVariantFragment?
-    ) {
-        self.displayName = fragment?.displayName ?? ""
-        self.documents = fragment?.documents.map({ .init($0) }) ?? []
-        self.perils = fragment?.addonPerils.map({ .init(fragment: $0) }) ?? []
-        self.product = fragment?.product ?? ""
-        self.termsVersion = fragment?.termsVersion ?? ""
-    }
-
-    public init(
-        displayName: String,
-        documents: [hPDFDocument],
-        perils: [Perils],
-        product: String,
-        termsVersion: String
+        displayName: String?,
+        quoteId: String,
+        addonId: String,
+        addonSubtype: String,
+        displayItems: [AddonDisplayItem],
+        price: MonetaryAmount?,
+        addonVariant: AddonVariant?
     ) {
         self.displayName = displayName
-        self.documents = documents
-        self.perils = perils
-        self.product = product
-        self.termsVersion = termsVersion
+        self.quoteId = quoteId
+        self.addonId = addonId
+        self.addonSubtype = addonSubtype
+        self.displayItems = displayItems
+        self.price = price
+        self.addonVariant = addonVariant
+    }
+}
+
+public struct AddonDisplayItem: Equatable, Hashable, Sendable {
+    let displayTitle: String
+    let displayValue: String
+
+    public init(displayTitle: String, displayValue: String) {
+        self.displayTitle = displayTitle
+        self.displayValue = displayValue
     }
 }

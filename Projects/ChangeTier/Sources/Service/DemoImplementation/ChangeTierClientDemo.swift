@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public class ChangeTierClientDemo: ChangeTierClient {
     public init() {}

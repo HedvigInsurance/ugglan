@@ -3,7 +3,6 @@ import Authentication
 import Foundation
 import SwiftUI
 import hCore
-import hGraphQL
 
 @MainActor
 struct Impersonate {

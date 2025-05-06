@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hGraphQL
 
 @MainActor
 public struct ApplicationState {

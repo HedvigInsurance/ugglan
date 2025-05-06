@@ -1,5 +1,5 @@
+import Environment
 import Foundation
-import hGraphQL
 
 extension String {
     public var isDeepLink: Bool {
