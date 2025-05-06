@@ -333,7 +333,7 @@ public struct ExtraBuilding: Identifiable {
         if connectedToWater {
             elements.append(L10n.changeAddressExtraBuildingsWaterLabel)
         }
-        return elements.joined(separator: " ∙ ")
+        return elements.displayName
     }
 }
 
