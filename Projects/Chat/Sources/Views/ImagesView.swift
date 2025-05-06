@@ -132,30 +132,39 @@ struct PHPAssetPreview: View {
                             }
                         }
                         .blur(radius: selected ? 20 : 0, opaque: true)
-                    hButton.MediumButton(type: .secondaryAlt) {
-                        Task {
-                            withAnimation {
-                                loading = true
-                            }
-                            do {
-                                if let file = try? await asset.getFile() {
-                                    onSend(.init(type: .file(file: file)))
+
+                    hButton(
+                        .medium,
+                        .secondaryAlt,
+                        {
+                            Task {
+                                withAnimation {
+                                    loading = true
+                                }
+                                do {
+                                    if let file = try? await asset.getFile() {
+                                        onSend(.init(type: .file(file: file)))
+                                    }
+                                }
+                                withAnimation {
+                                    loading = false
+                                    self.selected = false
                                 }
                             }
-                            withAnimation {
-                                loading = false
-                                self.selected = false
+                        },
+                        content: {
+                            Group {
+                                if loading {
+                                    ProgressView()
+                                        .foregroundColor(hTextColor.Opaque.primary)
+                                } else {
+                                    hText(L10n.chatUploadPresend)
+                                        .foregroundColor(hTextColor.Opaque.primary)
+                                }
                             }
+                            .asAnyView
                         }
-                    } content: {
-                        if loading {
-                            ProgressView()
-                                .foregroundColor(hTextColor.Opaque.primary)
-                        } else {
-                            hText(L10n.chatUploadPresend)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                        }
-                    }
+                    )
                     .opacity(selected ? 1 : 0)
                 }
             } else {

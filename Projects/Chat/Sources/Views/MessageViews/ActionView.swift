@@ -11,11 +11,14 @@ struct ActionView: View {
                     .foregroundColor(hTextColor.Opaque.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            hButton.MediumButton(type: .secondary) {
-                NotificationCenter.default.post(name: .openDeepLink, object: action.url)
-            } content: {
-                hText(action.buttonTitle)
-            }
+            hButton(
+                .medium,
+                .secondary,
+                title: action.buttonTitle,
+                {
+                    NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+                }
+            )
             .hButtonTakeFullWidth(true)
         }
     }

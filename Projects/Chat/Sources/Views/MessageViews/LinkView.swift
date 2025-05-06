@@ -36,11 +36,12 @@ struct LinkView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     hButton(
                         .medium,
-                        .primaryAlt,) {
-                        NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
-                    } content: {
-                        hText(L10n.ImportantMessage.readMore)
-                    }
+                        .primaryAlt,
+                        title: L10n.ImportantMessage.readMore,
+                        {
+                            NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
+                        }
+                    )
                     .hButtonTakeFullWidth(true)
 
                 }
