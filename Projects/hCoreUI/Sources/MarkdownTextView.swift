@@ -3,7 +3,6 @@ import MarkdownKit
 import SnapKit
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct MarkdownView: View {
     private let config: CustomTextViewRepresentableConfig

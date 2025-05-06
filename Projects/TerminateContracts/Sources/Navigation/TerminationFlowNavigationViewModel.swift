@@ -1,9 +1,9 @@
 import ChangeTier
 import Combine
+import Environment
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {

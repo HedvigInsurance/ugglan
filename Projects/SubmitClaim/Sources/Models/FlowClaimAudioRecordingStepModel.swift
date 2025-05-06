@@ -1,15 +1,14 @@
 import Foundation
-import hGraphQL
 
 public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
     let id: String
     let questions: [String]
-    var audioContent: AudioContentModel?
+    public internal(set) var audioContent: AudioContentModel?
     let textQuestions: [String]
     let inputTextContent: String?
     let optionalAudio: Bool
 
-    init(
+    public init(
         id: String,
         questions: [String],
         audioContent: AudioContentModel? = nil,
@@ -36,23 +35,13 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
     }
 }
 
-struct AudioContentModel: Codable, Equatable, Hashable {
-    let audioUrl: String
+public struct AudioContentModel: Codable, Equatable, Hashable, Sendable {
+    public let audioUrl: String
     let signedUrl: String
 
-    init(audioUrl: String, signedUrl: String) {
+    public init(audioUrl: String, signedUrl: String) {
         self.audioUrl = audioUrl
         self.signedUrl = signedUrl
-    }
-
-    init?(
-        with data: OctopusGraphQL.FlowClaimAudioContentFragment?
-    ) {
-        guard let data else {
-            return nil
-        }
-        self.audioUrl = data.audioUrl
-        self.signedUrl = data.signedUrl
     }
 }
 

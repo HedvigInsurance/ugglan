@@ -4,7 +4,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public struct ClaimsCard: View {
@@ -17,7 +16,7 @@ public struct ClaimsCard: View {
             if vm.claims.isEmpty {
                 Spacer().frame(height: 40)
             } else if vm.claims.count == 1, let claim = vm.claims.first {
-                ClaimStatus(claim: claim, enableTap: true)
+                ClaimStatusCard(claim: claim, enableTap: true)
                     .padding(.vertical)
             } else {
                 ClaimSection(claims: $vm.claims)

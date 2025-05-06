@@ -6,7 +6,6 @@ import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 enum ContractDetailsViews: String, CaseIterable, Identifiable {
     case overview

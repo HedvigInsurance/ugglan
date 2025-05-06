@@ -1,5 +1,5 @@
+import Logger
 import hCore
-import hGraphQL
 
 @MainActor
 class InsuranceEvidenceService {

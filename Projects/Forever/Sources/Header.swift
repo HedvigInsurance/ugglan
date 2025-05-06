@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct HeaderView: View {
     @StateObject var vm: HeaderViewModel
