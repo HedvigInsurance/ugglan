@@ -1,5 +1,4 @@
 import hCore
-import hGraphQL
 
 @MainActor
 public protocol MoveFlowClient {
@@ -9,8 +8,8 @@ public protocol MoveFlowClient {
 }
 
 public struct RequestMoveIntentInput {
-    let intentId: String
-    let addressInputModel: AddressInputModel
-    let houseInformationInputModel: HouseInformationInputModel?
-    let selectedAddressId: String
+    public let intentId: String
+    public let addressInputModel: AddressInputModel
+    public let houseInformationInputModel: HouseInformationInputModel?
+    public let selectedAddressId: String
 }

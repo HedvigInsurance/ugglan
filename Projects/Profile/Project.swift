@@ -8,6 +8,5 @@ let project = Project.framework(
         "hCore", "hCoreUI", "Home", "Claims", "Contracts", "TravelCertificate", "Market", "Authentication",
         "InsuranceEvidence",
     ],
-    sdks: [],
-    includesGraphQL: false
+    sdks: []
 )

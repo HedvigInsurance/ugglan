@@ -7,7 +7,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ClaimDetailView: View {
     @State var showImagePicker = false
@@ -116,7 +115,7 @@ public struct ClaimDetailView: View {
 
     private func claimCardSection(claim: ClaimModel) -> some View {
         hSection {
-            ClaimStatus(
+            ClaimStatusCard(
                 claim: claim,
                 enableTap: false
             )

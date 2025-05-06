@@ -1,13 +1,12 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public struct PaymentStatusData: Codable, Equatable, Sendable {
     public var status: PayinMethodStatus = .active
     let displayName: String?
     let descriptor: String?
 
-    init(
+    public init(
         status: PayinMethodStatus,
         displayName: String?,
         descriptor: String?
@@ -15,24 +14,6 @@ public struct PaymentStatusData: Codable, Equatable, Sendable {
         self.status = status
         self.displayName = displayName
         self.descriptor = descriptor
-    }
-}
-
-extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
-    var asPayinMethodStatus: PayinMethodStatus {
-        switch self {
-        case .case(let t):
-            switch t {
-            case .active:
-                return .active
-            case .pending:
-                return .pending
-            case .needsSetup:
-                return .needsSetup
-            }
-        case .unknown:
-            return .unknown
-        }
     }
 }
 

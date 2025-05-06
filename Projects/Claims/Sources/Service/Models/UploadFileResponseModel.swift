@@ -1,5 +1,5 @@
 import Foundation
 
 public struct UploadFileResponseModel: Decodable, Sendable {
-    let audioUrl: String
+    public let audioUrl: String
 }

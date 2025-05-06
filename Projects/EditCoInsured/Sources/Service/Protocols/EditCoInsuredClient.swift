@@ -2,7 +2,6 @@ import EditCoInsuredShared
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public protocol EditCoInsuredClient {
@@ -27,14 +26,14 @@ extension CoInsuredAction: TrackingViewNameProtocol {
     }
 }
 
-enum EditCoInsuredError: Error {
+public enum EditCoInsuredError: Error {
     case serviceError(message: String)
     case missingSSN
     case otherError
 }
 
 extension EditCoInsuredError: LocalizedError {
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case let .serviceError(message): return message
         case .missingSSN:

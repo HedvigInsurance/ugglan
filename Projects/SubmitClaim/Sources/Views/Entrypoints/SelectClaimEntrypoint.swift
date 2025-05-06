@@ -1,4 +1,5 @@
 import AVFoundation
+import Claims
 import SwiftUI
 import TagKit
 import hCore

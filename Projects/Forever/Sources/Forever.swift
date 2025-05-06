@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ForeverView: View {
     @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
