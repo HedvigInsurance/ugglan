@@ -1,20 +1,19 @@
 import Foundation
 import SwiftUI
 
-
 public enum hButtonSize: CaseIterable {
     case large
     case medium
     case small
 }
-    
+
 public struct hButton: View {
-        var size: hButtonSize
-        var type: hButtonConfigurationType
-        var title: String?
-        var content: (() -> AnyView)?
-        var action: () -> Void
-    
+    var size: hButtonSize
+    var type: hButtonConfigurationType
+    var title: String?
+    var content: (() -> AnyView)?
+    var action: () -> Void
+
     public init(
         _ size: hButtonSize,
         _ type: hButtonConfigurationType,
@@ -28,20 +27,20 @@ public struct hButton: View {
         self.action = action
         self.content = content
     }
-        
-        public var body: some View {
-            _hButton(action: {
-                action()
-            }) {
-                if let title {
-                    hText(title, style: size == .small ? .label : .body1)
-                } else {
-                    content?()
-                }
+
+    public var body: some View {
+        _hButton(action: {
+            action()
+        }) {
+            if let title {
+                hText(title, style: size == .small ? .label : .body1)
+            } else {
+                content?()
             }
-            .buttonStyle(ButtonFilledStyle(size: size))
-            .hButtonConfigurationType(type)
         }
+        .buttonStyle(ButtonFilledStyle(size: size))
+        .hButtonConfigurationType(type)
+    }
 }
 
 //@MainActor
@@ -133,7 +132,7 @@ public struct hButton: View {
 //    case large
 //    case medium
 //    case small
-//    
+//
 //    public func view(
 //        type: hButtonConfigurationType,
 //        buttonText: String? = nil,
@@ -592,7 +591,7 @@ extension View {
 #Preview {
     @State var isLoading = false
     @State var disabled = false
-    
+
     let buttons = VStack(alignment: .leading) {
         ForEach(hButtonSize.allCases, id: \.self) { size in
             ForEach(hButtonConfigurationType.allCases, id: \.self) { type in
@@ -605,11 +604,11 @@ extension View {
             }
         }
     }
-    
+
     VStack(alignment: .leading) {
         buttons
             .colorScheme(.dark)
-        
+
         buttons
             .colorScheme(.light)
     }
