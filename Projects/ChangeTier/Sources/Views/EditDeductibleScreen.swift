@@ -65,12 +65,15 @@ struct EditDeductibleScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) {
-                        vm.setDeductible(for: self.selectedQuote ?? "")
-                        changeTierNavigationVm.isEditDeductiblePresented = false
-                    } content: {
-                        hText(L10n.generalConfirm)
-                    }
+                    hButton(
+                        .large,
+                        .primary,
+                        title: L10n.generalConfirm,
+                        {
+                            vm.setDeductible(for: self.selectedQuote ?? "")
+                            changeTierNavigationVm.isEditDeductiblePresented = false
+                        }
+                    )
                     .accessibilityHint(
                         L10n.voiceoverOptionSelected
                             + (self.quotes.first(where: { $0.id == selectedQuote })?.displayTitle ?? "")

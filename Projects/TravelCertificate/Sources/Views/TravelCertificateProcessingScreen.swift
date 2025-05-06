@@ -44,7 +44,9 @@ struct TravelCertificateProcessingScreen: View {
                 VStack(spacing: .padding8) {
                     ModalPresentationSourceWrapper(
                         content: {
-                            hButton.LargeButton(type: .primary) {
+                                                hButton(
+                        .large,
+                        .primary, {
                                 Task { [weak vm] in
                                     await vm?.presentShare()
                                 }

@@ -37,15 +37,21 @@ public struct DatePickerView: View {
         .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             VStack {
-                hButton.LargeButton(type: .primary) {
-                    vm.continueAction.execute()
-                } content: {
-                    hText(
-                        vm.config.buttonText ?? L10n.generalSaveButton,
-                        style: .body1
-                    )
-                    .foregroundColor(hTextColor.Opaque.negative)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    {
+                        vm.continueAction.execute()
+                    },
+                    content: {
+                        hText(
+                            vm.config.buttonText ?? L10n.generalSaveButton,
+                            style: .body1
+                        )
+                        .foregroundColor(hTextColor.Opaque.negative)
+                        .asAnyView
+                    }
+                )
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding(.horizontal, .padding16)
 

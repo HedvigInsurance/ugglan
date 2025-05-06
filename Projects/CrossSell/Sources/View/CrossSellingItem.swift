@@ -35,13 +35,21 @@ struct CrossSellingItem: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                     }
                     Spacer()
-                    hButton.MediumButton(type: .primaryAlt) {
-                        fieldIsClicked.toggle()
-                        openExternal()
-                    } content: {
-                        hText(L10n.crossSellGetPrice)
-                            .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
-                    }
+
+                    hButton(
+                        .medium,
+                        .primaryAlt,
+                        {
+                            fieldIsClicked.toggle()
+                            openExternal()
+                        },
+                        content: {
+                            hText(L10n.crossSellGetPrice)
+                                .foregroundColor(hTextColor.Opaque.primary)
+                                .colorScheme(.light)
+                                .asAnyView
+                        }
+                    )
                 }
             }
             .accessibilityElement(children: .combine)

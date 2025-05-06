@@ -133,25 +133,32 @@ public struct OpenEmailClientButton: View {
     public var displayButton: some View {
         switch buttonSize {
         case .secondary:
-            hButton.LargeButton(type: .secondary) {
-                if hasAcceptedAlert {
-                    sheetPresented = true
-                } else {
-                    hasPressedButton?()
+            hButton(
+                .large,
+                .secondary,
+                title: buttonText ?? L10n.Login.openEmailAppButton,
+                {
+                    if hasAcceptedAlert {
+                        sheetPresented = true
+                    } else {
+                        hasPressedButton?()
+                    }
                 }
-            } content: {
-                hText(buttonText ?? L10n.Login.openEmailAppButton)
-            }
+            )
+
         case .primary:
-            hButton.LargeButton(type: .primary) {
-                if hasAcceptedAlert {
-                    sheetPresented = true
-                } else {
-                    hasPressedButton?()
+            hButton(
+                .large,
+                .primary,
+                title: buttonText ?? L10n.Login.openEmailAppButton,
+                {
+                    if hasAcceptedAlert {
+                        sheetPresented = true
+                    } else {
+                        hasPressedButton?()
+                    }
                 }
-            } content: {
-                hText(buttonText ?? L10n.Login.openEmailAppButton)
-            }
+            )
         }
     }
 }

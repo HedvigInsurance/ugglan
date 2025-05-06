@@ -49,20 +49,26 @@ public struct DeleteAccountView: View {
             .hFormContentPosition(.compact)
             .hFormAttachToBottom {
                 hSection {
-                    VStack(spacing: 8) {
+                    VStack(spacing: .padding8) {
                         if !vm.hasActiveClaims && !vm.hasActiveContracts {
-                            hButton.LargeButton(type: .alert) {
-                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                            hButton(
+                                .large,
+                                .alert,
+                                title: L10n.profileDeleteAccountConfirmDeletion,
+                                {
+                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
 
-                            } content: {
-                                hText(L10n.profileDeleteAccountConfirmDeletion)
+                                }
+                            )
+                        }
+                        hButton(
+                            .large,
+                            .ghost,
+                            title: vm.dismissButtonTitle,
+                            {
+                                router.dismiss()
                             }
-                        }
-                        hButton.LargeButton(type: .ghost) {
-                            router.dismiss()
-                        } content: {
-                            hText(vm.dismissButtonTitle)
-                        }
+                        )
                     }
                     .padding(.vertical, .padding16)
                 }

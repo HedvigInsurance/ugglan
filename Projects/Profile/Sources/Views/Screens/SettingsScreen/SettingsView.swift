@@ -75,7 +75,9 @@ struct SettingsView: View {
                 }
             ) { memberDetails in
                 hSection {
-                    hButton.LargeButton(type: .ghost) {
+                    hButton(
+                    .large,
+                    .ghost,
                         if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
                             let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
                             if hasAlreadyRequested {

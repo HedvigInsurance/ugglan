@@ -68,18 +68,26 @@ private struct ActionButtons: View {
             VStack(spacing: .padding8) {
                 ModalPresentationSourceWrapper(
                     content: {
-                        hButton.LargeButton(type: .primary) {
-                            onShare(modalPresentationSourceWrapperViewModel)
-                        } content: {
-                            hText(L10n.ReferralsEmpty.shareCodeButton)
-                        }
+                        hButton(
+                            .large,
+                            .primary,
+                            title: L10n.ReferralsEmpty.shareCodeButton,
+                            {
+                                onShare(modalPresentationSourceWrapperViewModel)
+                            }
+                        )
                     },
                     vm: modalPresentationSourceWrapperViewModel
                 )
 
-                hButton.LargeButton(type: .ghost, action: onChange) {
-                    hText(L10n.ReferralsChange.changeCode)
-                }
+                hButton(
+                    .large,
+                    .ghost,
+                    title: L10n.ReferralsChange.changeCode,
+                    {
+                        onChange()
+                    }
+                )
             }
         }
         .padding(.vertical, .padding16)

@@ -18,11 +18,14 @@ struct DiscountsView: View {
                     discounts
                     if !Dependencies.featureFlags().isRedeemCampaignDisabled {
                         hSection {
-                            hButton.LargeButton(type: .secondary) {
-                                campaignNavigationVm.isAddCampaignPresented = true
-                            } content: {
-                                hText(L10n.paymentsAddCampaignCode)
-                            }
+                            hButton(
+                                .large,
+                                .secondary,
+                                title: L10n.paymentsAddCampaignCode,
+                                {
+                                    campaignNavigationVm.isAddCampaignPresented = true
+                                }
+                            )
                         }
                     }
                 }

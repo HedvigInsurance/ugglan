@@ -52,7 +52,9 @@ public struct SubmitClaimSummaryScreen: View {
                 VStack(spacing: .padding8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
                         .padding(.bottom, .padding8)
-                    hButton.LargeButton(type: .primary) {
+                                        hButton(
+                        .large,
+                        .primary, {
                         if let model = claimsNavigationVm.summaryModel {
                             Task {
                                 let step = await vm.summaryRequest(

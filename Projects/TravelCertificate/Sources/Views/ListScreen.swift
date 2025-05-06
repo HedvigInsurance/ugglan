@@ -108,7 +108,9 @@ public struct ListScreen: View {
     @ViewBuilder
     private var createNewButton: some View {
         if vm.canCreateTravelInsurance {
-            hButton.LargeButton(type: .secondary) {
+            hButton(
+                .large,
+                .secondary, {
                 createNewPressed()
             } content: {
                 hText(L10n.TravelCertificate.createNewCertificate)

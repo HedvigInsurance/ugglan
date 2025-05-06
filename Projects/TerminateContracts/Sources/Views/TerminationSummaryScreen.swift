@@ -45,17 +45,22 @@ struct TerminationSummaryScreen: View {
 
                     hSection {
                         VStack(spacing: .padding8) {
-                            hButton.LargeButton(type: .primary) { [weak terminationNavigationVm] in
-                                terminationNavigationVm?.isConfirmTerminationPresented = true
-                            } content: {
-                                hText(L10n.terminationButton)
-                            }
-
-                            hButton.LargeButton(type: .ghost) { [weak terminationNavigationVm] in
-                                terminationNavigationVm?.router.dismiss()
-                            } content: {
-                                hText(L10n.terminationKeepInsuranceButton)
-                            }
+                            hButton(
+                                .large,
+                                .primary,
+                                title: L10n.terminationButton,
+                                { [weak terminationNavigationVm] in
+                                    terminationNavigationVm?.isConfirmTerminationPresented = true
+                                },
+                            )
+                            hButton(
+                                .large,
+                                .ghost,
+                                title: L10n.terminationKeepInsuranceButton,
+                                {  [weak terminationNavigationVm] in
+                                    terminationNavigationVm?.router.dismiss()
+                                },
+                            )
                         }
                     }
                 }

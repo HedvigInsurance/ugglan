@@ -47,7 +47,9 @@ public struct EditContractScreen: View {
                 infoView
                 hSection {
                     VStack(spacing: .padding8) {
-                        hButton.LargeButton(type: .primary) { [weak router] in
+                                            hButton(
+                        .large,
+                        .primary, { [weak router] in
                             if let selectedType {
                                 router?.dismiss()
                                 onSelectedType(selectedType)

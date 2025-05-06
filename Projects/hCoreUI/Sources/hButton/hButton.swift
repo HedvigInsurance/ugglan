@@ -1,108 +1,158 @@
 import Foundation
 import SwiftUI
 
-@MainActor
-public enum hButton {
-    public struct LargeButton<Content: View>: View {
+
+public enum hButtonSize: CaseIterable {
+    case large
+    case medium
+    case small
+}
+    
+public struct hButton: View {
+        var size: hButtonSize
         var type: hButtonConfigurationType
-        var content: () -> Content
+        var title: String?
+        var content: (() -> AnyView)?
         var action: () -> Void
-
-        public init(
-            type: hButtonConfigurationType,
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.type = type
-            self.action = action
-            self.content = content
-        }
-
+    
+    public init(
+        _ size: hButtonSize,
+        _ type: hButtonConfigurationType,
+        title: String? = nil,
+        _ action: @escaping () -> Void,
+        content: (() -> AnyView)? = nil
+    ) {
+        self.type = type
+        self.size = size
+        self.title = title
+        self.action = action
+        self.content = content
+    }
+        
         public var body: some View {
             _hButton(action: {
                 action()
             }) {
-                content()
+                if let title {
+                    hText(title, style: size == .small ? .label : .body1)
+                } else {
+                    content?()
+                }
             }
-            .buttonStyle(ButtonFilledStyle(size: .large))
+            .buttonStyle(ButtonFilledStyle(size: size))
             .hButtonConfigurationType(type)
         }
-    }
-
-    public struct MediumButton<Content: View>: View {
-        var type: hButtonConfigurationType
-        var content: () -> Content
-        var action: () -> Void
-
-        public init(
-            type: hButtonConfigurationType,
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.type = type
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: action) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .medium))
-            .hButtonConfigurationType(type)
-        }
-    }
-
-    public struct SmallButton<Content: View>: View {
-        var type: hButtonConfigurationType
-        var content: () -> Content
-        var action: () -> Void
-        @Environment(\.hUseLightMode) var useLightMode
-
-        public init(
-            type: hButtonConfigurationType,
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.type = type
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: action) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .small))
-            .hButtonConfigurationType(type)
-        }
-    }
-
-    public struct MiniButton<Content: View>: View {
-        var type: hButtonConfigurationType
-        var content: () -> Content
-        var action: () -> Void
-        @Environment(\.hUseLightMode) var useLightMode
-
-        public init(
-            type: hButtonConfigurationType,
-            action: @escaping () -> Void,
-            @ViewBuilder content: @escaping () -> Content
-        ) {
-            self.type = type
-            self.action = action
-            self.content = content
-        }
-
-        public var body: some View {
-            _hButton(action: action) {
-                content()
-            }
-            .buttonStyle(ButtonFilledStyle(size: .mini))
-            .hButtonConfigurationType(type)
-        }
-    }
 }
+
+//@MainActor
+//public enum hButton {
+//    public struct LargeButton<Content: View>: View {
+//        var type: hButtonConfigurationType
+//        var content: () -> Content
+//        var action: () -> Void
+//
+//        public init(
+//            type: hButtonConfigurationType,
+//            action: @escaping () -> Void,
+//            @ViewBuilder content: @escaping () -> Content
+//        ) {
+//            self.type = type
+//            self.action = action
+//            self.content = content
+//        }
+//
+//        public var body: some View {
+//            _hButton(action: {
+//                action()
+//            }) {
+//                content()
+//            }
+//            .buttonStyle(ButtonFilledStyle(size: .large))
+//            .hButtonConfigurationType(type)
+//        }
+//    }
+//
+//    public struct MediumButton<Content: View>: View {
+//        var type: hButtonConfigurationType
+//        var content: () -> Content
+//        var action: () -> Void
+//
+//        public init(
+//            type: hButtonConfigurationType,
+//            action: @escaping () -> Void,
+//            @ViewBuilder content: @escaping () -> Content
+//        ) {
+//            self.type = type
+//            self.action = action
+//            self.content = content
+//        }
+//
+//        public var body: some View {
+//            _hButton(action: action) {
+//                content()
+//            }
+//            .buttonStyle(ButtonFilledStyle(size: .medium))
+//            .hButtonConfigurationType(type)
+//        }
+//    }
+//
+//    public struct SmallButton<Content: View>: View {
+//        var type: hButtonConfigurationType
+//        var content: () -> Content
+//        var action: () -> Void
+//        @Environment(\.hUseLightMode) var useLightMode
+//
+//        public init(
+//            type: hButtonConfigurationType,
+//            action: @escaping () -> Void,
+//            @ViewBuilder content: @escaping () -> Content
+//        ) {
+//            self.type = type
+//            self.action = action
+//            self.content = content
+//        }
+//
+//        public var body: some View {
+//            _hButton(action: action) {
+//                content()
+//            }
+//            .buttonStyle(ButtonFilledStyle(size: .small))
+//            .hButtonConfigurationType(type)
+//        }
+//    }
+//}
+
+//extension hButton: View {
+//    public var body: some View {
+//        EmptyView()
+//    }
+//}
+
+//@MainActor
+//public enum hButton {
+//    case large
+//    case medium
+//    case small
+//    
+//    public func view(
+//        type: hButtonConfigurationType,
+//        buttonText: String? = nil,
+//        action: @escaping () -> Void,
+//        content: (() -> AnyView)? = nil
+//    ) -> some View {
+//        _hButton(action: {
+//            action()
+//        }) {
+//            if let buttonText {
+//                hText(buttonText)
+//            } else if let content {
+//                content()
+//            }
+//        }
+//        .buttonStyle(ButtonFilledStyle(size: self))
+//        .hButtonConfigurationType(type)
+//    }
+//}
 
 struct ButtonFilledStandardBackground: View {
     @Environment(\.isEnabled) var isEnabled
@@ -221,7 +271,7 @@ struct LoaderOrContent<Content: View>: View {
 }
 
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
-    fileprivate var size: ButtonSize
+    fileprivate var size: hButtonSize
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
 
     func makeBody(configuration: Configuration) -> some View {
@@ -379,20 +429,18 @@ private struct MiniButtonModifier: ViewModifier {
     }
 }
 
-//MARK: Button Size
-private enum ButtonSize {
-    case mini
-    case small
-    case medium
-    case large
-}
+////MARK: Button Size
+//private enum ButtonSize {
+//    case mini
+//    case small
+//    case medium
+//    case large
+//}
 
 extension View {
     @ViewBuilder
-    fileprivate func buttonSizeModifier(_ size: ButtonSize) -> some View {
+    fileprivate func buttonSizeModifier(_ size: hButtonSize) -> some View {
         switch size {
-        case .mini:
-            self.modifier(MiniButtonModifier()).environment(\.defaultHTextStyle, .label)
         case .small:
             self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .label)
         case .medium:
@@ -405,12 +453,8 @@ extension View {
 
 extension View {
     @ViewBuilder
-    fileprivate func buttonCornerModifier(_ size: ButtonSize) -> some View {
+    fileprivate func buttonCornerModifier(_ size: hButtonSize) -> some View {
         switch size {
-        case .mini:
-            self
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
-                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
         case .small:
             self
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
@@ -428,7 +472,7 @@ extension View {
 }
 
 //MARK: hButtonStyle
-public enum hButtonConfigurationType: Sendable {
+public enum hButtonConfigurationType: Sendable, CaseIterable {
     case primary
     case primaryAlt
     case secondary
@@ -545,206 +589,31 @@ extension View {
     }
 }
 
-struct hButtonLarge_Previews: PreviewProvider {
-    @State static var isLoading = false
-    @State static var disabled = false
-    static var previews: some View {
-        let buttons = VStack {
-            Spacer()
-            hButton.LargeButton(type: .primary) {
-
-            } content: {
-                hText("TEXT")
+#Preview {
+    @State var isLoading = false
+    @State var disabled = false
+    
+    let buttons = VStack(alignment: .leading) {
+        ForEach(hButtonSize.allCases, id: \.self) { size in
+            ForEach(hButtonConfigurationType.allCases, id: \.self) { type in
+                hButton(
+                    size,
+                    type,
+                    title: "TEXT",
+                    {}
+                )
             }
-            hButton.LargeButton(type: .primaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.LargeButton(type: .secondary) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.LargeButton(type: .secondaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.LargeButton(type: .ghost) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.LargeButton(type: .alert) {
-
-            } content: {
-                hText("TEXT")
-            }
-            Spacer()
         }
-        .background(hBackgroundColor.primary)
-
-        return VStack(alignment: .leading) {
-            buttons
-                .colorScheme(.dark)
-
-            buttons
-                .colorScheme(.light)
-        }
-        .hButtonIsLoading(hButtonLarge_Previews.isLoading)
-        .disabled(hButtonLarge_Previews.disabled)
     }
-}
-
-struct hButtonMedium_Previews: PreviewProvider {
-    static var previews: some View {
-        let buttons = VStack {
-            Spacer()
-            hButton.MediumButton(type: .primary) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MediumButton(type: .primaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MediumButton(type: .secondary) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MediumButton(type: .secondaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MediumButton(type: .ghost) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MediumButton(type: .alert) {
-
-            } content: {
-                hText("TEXT")
-            }
-            Spacer()
-        }
-        .background(hBackgroundColor.primary)
-
-        return VStack(alignment: .leading) {
-            buttons
-                .colorScheme(.dark)
-
-            buttons
-                .colorScheme(.light)
-        }
-        .hButtonIsLoading(hButtonLarge_Previews.isLoading)
-        .disabled(hButtonLarge_Previews.disabled)
-
+    
+    VStack(alignment: .leading) {
+        buttons
+            .colorScheme(.dark)
+        
+        buttons
+            .colorScheme(.light)
     }
-}
-
-struct hButtonSmall_Previews: PreviewProvider {
-    static var previews: some View {
-        let buttons = VStack {
-            Spacer()
-            hButton.SmallButton(type: .primary) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.SmallButton(type: .primaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.SmallButton(type: .secondary) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.SmallButton(type: .secondaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.SmallButton(type: .ghost) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.SmallButton(type: .alert) {
-
-            } content: {
-                hText("TEXT")
-            }
-            Spacer()
-        }
-        .background(hBackgroundColor.primary)
-
-        return VStack(alignment: .leading) {
-            buttons
-                .colorScheme(.dark)
-
-            buttons
-                .colorScheme(.light)
-        }
-        .hButtonIsLoading(hButtonLarge_Previews.isLoading)
-        .disabled(hButtonLarge_Previews.disabled)
-
-    }
-}
-
-struct hButtonMini_Previews: PreviewProvider {
-    static var previews: some View {
-        let buttons = VStack {
-            Spacer()
-            hButton.MiniButton(type: .primary) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MiniButton(type: .primaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MiniButton(type: .secondary) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MiniButton(type: .secondaryAlt) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MiniButton(type: .ghost) {
-
-            } content: {
-                hText("TEXT")
-            }
-            hButton.MiniButton(type: .alert) {
-
-            } content: {
-                hText("TEXT")
-            }
-            Spacer()
-        }
-        .background(hBackgroundColor.primary)
-
-        return VStack(alignment: .leading) {
-            buttons
-                .colorScheme(.dark)
-
-            buttons
-                .colorScheme(.light)
-        }
-        .hButtonIsLoading(hButtonLarge_Previews.isLoading)
-        .disabled(hButtonLarge_Previews.disabled)
-    }
+    .background(hBackgroundColor.primary)
+    .hButtonIsLoading(isLoading)
+    .disabled(disabled)
 }

@@ -25,11 +25,14 @@ struct InsuranceEvidenceInputScreen: View {
                         }
                     }
                     hSection {
-                        hButton.LargeButton(type: .primary) {
-                            vm.confirm()
-                        } content: {
-                            hText(L10n.Certificates.createCertificate)
-                        }
+                        hButton(
+                            .large,
+                            .primary,
+                            title: L10n.Certificates.createCertificate,
+                            {
+                                vm.confirm()
+                            }
+                        )
                     }
                 }
             }

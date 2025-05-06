@@ -29,17 +29,23 @@ public struct ConfirmChangesScreen: View {
                         }
                         .padding(.leading, .padding8)
                         VStack(spacing: .padding8) {
-                            hButton.LargeButton(type: .primary) {
-                                buttons.mainButton.buttonAction()
-                            } content: {
-                                hText(buttons.mainButton.buttonTitle ?? L10n.generalConfirm)
-                            }
+                            hButton(
+                                .large,
+                                .primary,
+                                title: buttons.mainButton.buttonTitle ?? L10n.generalConfirm,
+                                {
+                                    buttons.mainButton.buttonAction()
+                                }
+                            )
 
-                            hButton.LargeButton(type: .ghost) {
-                                buttons.dismissButton.buttonAction()
-                            } content: {
-                                hText(buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton)
-                            }
+                            hButton(
+                                .large,
+                                .ghost,
+                                title: buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton,
+                                {
+                                    buttons.dismissButton.buttonAction()
+                                }
+                            )
                         }
                     }
                     .padding(.top, .padding24)

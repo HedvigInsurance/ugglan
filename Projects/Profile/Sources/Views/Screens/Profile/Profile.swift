@@ -54,7 +54,9 @@ public struct ProfileView: View {
                 VStack(spacing: 8) {
                     RenewalCardView(showCoInsured: false)
                     NotificationsCardView()
-                    hButton.LargeButton(type: .ghost) {
+                    hButton(
+                    .large,
+                    .ghost,
                         showLogoutAlert = true
                     } content: {
                         hText(L10n.logoutButton)

@@ -39,7 +39,9 @@ struct UpcomingChangesScreen: View {
                 }
                 hSection {
                     VStack(spacing: .padding8) {
-                        hButton.LargeButton(type: .primary) {
+                                            hButton(
+                        .large,
+                        .primary, {
                             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                         } content: {
                             hText(L10n.openChat)

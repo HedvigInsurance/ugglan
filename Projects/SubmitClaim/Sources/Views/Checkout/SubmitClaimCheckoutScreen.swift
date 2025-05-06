@@ -21,7 +21,9 @@ public struct SubmitClaimCheckoutScreen: View {
                     if repairCost == nil {
                         InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                     }
-                    hButton.LargeButton(type: .primary) {
+                                        hButton(
+                        .large,
+                        .primary, {
                         if let model = claimsNavigationVm.singleItemCheckoutModel {
                             claimsNavigationVm.isCheckoutTransferringPresented = true
                             DispatchQueue.main.asyncAfter(deadline: .now() + 7) {

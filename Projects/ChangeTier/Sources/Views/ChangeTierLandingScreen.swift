@@ -164,11 +164,14 @@ public struct ChangeTierLandingScreen: View {
     private var buttons: some View {
         hSection {
             VStack(spacing: .padding8) {
-                hButton.LargeButton(type: .ghost) {
-                    changeTierNavigationVm.isCompareTiersPresented = true
-                } content: {
-                    hText(vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .ghost,
+                    title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton,
+                    {
+                        changeTierNavigationVm.isCompareTiersPresented = true
+                    }
+                )
 
                 hContinueButton {
                     switch vm.changeTierInput {

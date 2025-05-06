@@ -54,7 +54,9 @@ struct SumitClaimEmergencySelectView: View {
         HStack(spacing: 8) {
             ForEach(confirmEmergency?.options ?? [], id: \.displayName) { option in
                 if option.value == selectedValue {
-                    hButton.MediumButton(type: .primaryAlt) {
+                    hButton(
+                        .medium,
+                        .primaryAlt,) {
                         withAnimation(.spring()) {
                             selectedValue = option.value
                         }

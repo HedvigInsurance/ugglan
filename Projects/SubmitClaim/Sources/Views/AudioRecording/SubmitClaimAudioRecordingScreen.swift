@@ -124,7 +124,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     minutes = 0
                     seconds = 0
                 }
-            hButton.LargeButton(type: .primary) {
+                                hButton(
+                        .large,
+                        .primary, {
                 onSubmit(url)
                 Task {
                     if let model = claimsNavigationVm.audioRecordingModel {
@@ -145,7 +147,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .disabled(audioRecordingVm.viewState == .loading)
             .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-            hButton.LargeButton(type: .ghost) {
+            hButton(
+                    .large,
+                    .ghost,
                 withAnimation(.spring()) {
                     claimsNavigationVm.audioRecordingModel?.audioContent = nil
                     audioRecorder.restart()
@@ -175,7 +179,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
             if !audioRecorder.isRecording {
                 let audioRecordingStep = claimsNavigationVm.audioRecordingModel
                 if audioRecordingStep?.optionalAudio == true {
-                    hButton.LargeButton(type: .ghost) {
+                    hButton(
+                    .large,
+                    .ghost,
                         withAnimation {
                             self.isAudioInput = false
                         }
@@ -216,7 +222,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
         VStack(spacing: 16) {
             textField
             hSection {
-                hButton.LargeButton(type: .primary) {
+                                    hButton(
+                        .large,
+                        .primary, {
                     UIApplication.dismissKeyboard()
                     if validate() {
                         Task {
@@ -237,7 +245,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 } content: {
                     hText(L10n.saveAndContinueButtonLabel)
                 }
-                hButton.LargeButton(type: .ghost) {
+                hButton(
+                    .large,
+                    .ghost,
                     withAnimation {
                         self.isAudioInput = true
                     }

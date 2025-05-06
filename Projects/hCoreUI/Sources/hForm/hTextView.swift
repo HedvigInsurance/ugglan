@@ -333,11 +333,14 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                             hCancelButton {
                                 cancelAction.execute()
                             }
-                            hButton.MediumButton(type: .primary) {
-                                continueAction.execute()
-                            } content: {
-                                hText(L10n.generalSaveButton)
-                            }
+                            hButton(
+                                .medium,
+                                .primary,
+                                title: L10n.generalSaveButton,
+                                {
+                                    continueAction.execute()
+                                },
+                            )
                             .disabled(value.count > maxCharacters)
                         }
                         .padding(.bottom, .padding8)

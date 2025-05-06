@@ -196,7 +196,9 @@ public struct PaymentsView: View {
                         if statusData == .pending {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
-                        hButton.LargeButton(type: .secondary) {
+                        hButton(
+                .large,
+                .secondary, {
                             paymentNavigationVm.connectPaymentVm.set(for: nil)
                         } content: {
                             hText(statusData.connectButtonTitle)

@@ -46,7 +46,9 @@ struct PriceInputScreen: View {
                         claimsNavigationVm.isPriceInputPresented = false
                     }
 
-                    hButton.LargeButton(type: .ghost) {
+                    hButton(
+                    .large,
+                    .ghost,
                         UIApplication.dismissKeyboard()
                         router.dismiss()
                     } content: {

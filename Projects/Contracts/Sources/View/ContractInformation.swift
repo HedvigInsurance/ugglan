@@ -56,7 +56,9 @@ struct ContractInformationView: View {
                             VStack(spacing: 8) {
                                 if contract.showEditInfo {
                                     hSection {
-                                        hButton.LargeButton(type: .secondary) {
+                                        hButton(
+                .large,
+                .secondary, {
                                             if contract.onlyCoInsured()
                                                 && Dependencies.featureFlags().isEditCoInsuredEnabled
                                             {
@@ -310,7 +312,9 @@ struct ContractInformationView: View {
             && contractsThatSupportsMoving.count < 2 && !contract.isTerminated
         {
             hSection {
-                hButton.LargeButton(type: .ghost) {
+                hButton(
+                    .large,
+                    .ghost,
                     contractsNavigationVm.isChangeAddressPresented = true
                 } content: {
                     hText(L10n.InsuranceDetails.moveButton, style: .body1)

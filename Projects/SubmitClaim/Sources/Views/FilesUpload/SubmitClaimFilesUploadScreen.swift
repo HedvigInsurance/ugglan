@@ -34,7 +34,9 @@ struct SubmitClaimFilesUploadScreen: View {
                             if let error = vm.error {
                                 InfoCard(text: error, type: .attention)
                             }
-                            hButton.LargeButton(type: .secondary) {
+                            hButton(
+                .large,
+                .secondary, {
                                 showFilePickerAlert()
                             } content: {
                                 hText(L10n.ClaimStatusDetail.addMoreFiles)
@@ -97,14 +99,18 @@ struct SubmitClaimFilesUploadScreen: View {
                                     InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
                                 }
                                 VStack(spacing: 8) {
-                                    hButton.LargeButton(type: .primary) {
+                                                        hButton(
+                        .large,
+                        .primary, {
                                         showFilePickerAlert()
                                     } content: {
                                         hText(L10n.ClaimStatusDetail.addFiles)
                                     }
                                     .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
                                     .disabled(vm.isLoading && vm.skipPressed)
-                                    hButton.LargeButton(type: .ghost) {
+                                    hButton(
+                    .large,
+                    .ghost,
                                         skip()
                                     } content: {
                                         hText(L10n.NavBar.skip)

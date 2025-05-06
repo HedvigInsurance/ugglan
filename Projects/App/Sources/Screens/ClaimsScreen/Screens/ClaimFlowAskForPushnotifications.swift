@@ -64,7 +64,9 @@ struct AskForPushNotifications: View {
                 if !wrapWithForm {
                     Spacer()
                 }
-                hButton.LargeButton(type: .ghost) {
+                hButton(
+                    .large,
+                    .ghost,
                     onActionExecuted()
                     let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))

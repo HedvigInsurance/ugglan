@@ -53,7 +53,9 @@ public struct ClaimFilesView: View {
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 8) {
-                            hButton.LargeButton(type: .secondary) {
+                            hButton(
+                .large,
+                .secondary, {
                                 showFilePickerAlert()
                             } content: {
                                 hText(L10n.ClaimStatusDetail.addMoreFiles)
@@ -61,7 +63,9 @@ public struct ClaimFilesView: View {
                             }
                             .disabled(vm.isLoading)
 
-                            hButton.LargeButton(type: .primary) {
+                                                hButton(
+                        .large,
+                        .primary, {
                                 Task {
                                     await vm.uploadFiles()
                                 }

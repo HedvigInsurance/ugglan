@@ -11,10 +11,11 @@ public struct hSaveButton: View {
     }
 
     public var body: some View {
-        hButton.LargeButton(type: .ghost) {
-            action()
-        } content: {
-            hText(L10n.generalSaveButton)
-        }
+        hButton(
+            .large,
+            .ghost,
+            title: L10n.generalSaveButton,
+            { action() },
+        )
     }
 }

@@ -96,7 +96,9 @@ extension HomeScreen {
     @ViewBuilder
     private var startAClaimButton: some View {
         if featureFlags.isSubmitClaimEnabled {
-            hButton.LargeButton(type: .primary) {
+                                hButton(
+                        .large,
+                        .primary, {
                 navigationVm.isSubmitClaimPresented = true
             } content: {
                 hText(L10n.HomeTab.claimButtonText)
@@ -111,7 +113,9 @@ extension HomeScreen {
             !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
             || contractStore.state.activeContracts.count == 0
         if showHelpCenter && featureFlags.isHelpCenterEnabled {
-            hButton.LargeButton(type: .secondary) {
+            hButton(
+                .large,
+                .secondary, {
                 navigationVm.isHelpCenterPresented = true
             } content: {
                 hText(L10n.HomeTab.getHelp)

@@ -11,10 +11,11 @@ public struct hContinueButton: View {
     }
 
     public var body: some View {
-        hButton.LargeButton(type: .primary) {
-            action()
-        } content: {
-            hText(L10n.generalContinueButton)
-        }
+        hButton(
+            .large,
+            .primary,
+            title: L10n.generalContinueButton,
+            { action() },
+        )
     }
 }

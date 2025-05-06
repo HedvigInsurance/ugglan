@@ -34,7 +34,9 @@ struct LinkView: View {
                         .foregroundColor(hTextColor.Opaque.primary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
-                    hButton.MediumButton(type: .primaryAlt) {
+                    hButton(
+                        .medium,
+                        .primaryAlt,) {
                         NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
                     } content: {
                         hText(L10n.ImportantMessage.readMore)

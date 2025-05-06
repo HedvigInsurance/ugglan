@@ -207,12 +207,14 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         hSection {
             VStack(spacing: .padding16) {
                 bottomAttachedView
-
-                hButton.LargeButton(type: .primary) {
-                    sendSelectedItems
-                } content: {
-                    hText(config.buttonText, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    title: config.buttonText,
+                    {
+                        sendSelectedItems
+                    },
+                )
                 .hButtonIsLoading(isLoading)
                 .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
                 .accessibilityHint(accessibilityText)

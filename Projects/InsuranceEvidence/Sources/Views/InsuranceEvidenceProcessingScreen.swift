@@ -36,13 +36,16 @@ struct InsuranceEvidenceProcessingScreen: View {
                 VStack(spacing: .padding8) {
                     ModalPresentationSourceWrapper(
                         content: {
-                            hButton.LargeButton(type: .primary) {
-                                Task { [weak vm] in
-                                    await vm?.presentShare()
+                            hButton(
+                                .large,
+                                .primary,
+                                title: L10n.Certificates.download,
+                                {
+                                    Task { [weak vm] in
+                                        await vm?.presentShare()
+                                    }
                                 }
-                            } content: {
-                                hText(L10n.Certificates.download)
-                            }
+                            )
                         },
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )

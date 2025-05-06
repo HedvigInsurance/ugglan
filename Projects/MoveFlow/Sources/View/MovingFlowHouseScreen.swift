@@ -44,7 +44,9 @@ struct MovingFlowHouseScreen: View {
         }
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
+                                    hButton(
+                        .large,
+                        .primary, {
                     continuePressed()
                 } content: {
                     hText(L10n.saveAndContinueButtonLabel, style: .body1)
@@ -152,7 +154,9 @@ struct MovingFlowHouseScreen: View {
                             Divider()
                         }
                     }
-                    hButton.MediumButton(type: .primaryAlt) {
+                    hButton(
+                        .medium,
+                        .primaryAlt,) {
                         addExtraBuilding()
                     } content: {
                         HStack {

@@ -79,24 +79,30 @@ struct ContractTable: View {
                     ) { terminatedContracts in
                         if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                             hSection {
-                                hButton.LargeButton(type: .secondary) {
-                                    router.push(ContractsRouterType.terminatedContracts)
-                                } content: {
-                                    hRow {
-                                        HStack {
-                                            hText(
-                                                L10n.InsurancesTab.cancelledInsurancesLabel(
-                                                    "\(terminatedContracts.count)"
+                                hButton(
+                                    .large,
+                                    .secondary,
+                                    {
+                                        router.push(ContractsRouterType.terminatedContracts)
+                                    },
+                                    content: {
+                                        hRow {
+                                            HStack {
+                                                hText(
+                                                    L10n.InsurancesTab.cancelledInsurancesLabel(
+                                                        "\(terminatedContracts.count)"
+                                                    )
                                                 )
-                                            )
-                                            .foregroundColor(hTextColor.Opaque.primary)
-                                            Spacer()
+                                                .foregroundColor(hTextColor.Opaque.primary)
+                                                Spacer()
+                                            }
                                         }
+                                        .withChevronAccessory
+                                        .verticalPadding(0)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                        .asAnyView
                                     }
-                                    .withChevronAccessory
-                                    .verticalPadding(0)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-                                }
+                                )
                             }
                             .transition(.slide)
                         }

@@ -11,10 +11,11 @@ public struct hCancelButton: View {
     }
 
     public var body: some View {
-        hButton.LargeButton(type: .ghost) {
-            action()
-        } content: {
-            hText(L10n.generalCloseButton)
-        }
+        hButton(
+            .large,
+            .ghost,
+            title: L10n.generalCancelButton,
+            { action() },
+        )
     }
 }

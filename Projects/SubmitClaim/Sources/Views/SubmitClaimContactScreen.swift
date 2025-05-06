@@ -34,7 +34,9 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             placeholder: L10n.phoneNumberRowTitle,
                             error: $vm.phoneNumberError
                         )
-                        hButton.LargeButton(type: .primary) {
+                                            hButton(
+                        .large,
+                        .primary, {
                             if vm.keyboardEnabled {
                                 withAnimation {
                                     UIApplication.dismissKeyboard()

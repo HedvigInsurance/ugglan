@@ -33,32 +33,44 @@ public struct CoInsuredInputButton: View {
     }
 
     private var deleteCoInsuredButton: some View {
-        hButton.LargeButton(type: .alert) {
-            Task {
-                await getIntent(for: .delete)
+        hButton(
+            .large,
+            .alert,
+            {
+                Task {
+                    await getIntent(for: .delete)
+                }
+            },
+            content: {
+                hText(L10n.removeConfirmationButton)
+                    .transition(.opacity.animation(.easeOut))
+                    .asAnyView
             }
-        } content: {
-            hText(L10n.removeConfirmationButton)
-                .transition(.opacity.animation(.easeOut))
-        }
+        )
         .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
     }
 
     private var addCoInsuredButton: some View {
-        hButton.LargeButton(type: .primary) {
-            if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
-                Task {
-                    await vm.getNameFromSSN(SSN: vm.SSN)
+        hButton(
+            .large,
+            .primary,
+            {
+                if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
+                    Task {
+                        await vm.getNameFromSSN(SSN: vm.SSN)
+                    }
+                } else if vm.nameFetchedFromSSN || vm.noSSN {
+                    Task {
+                        await getIntent(for: vm.actionType)
+                    }
                 }
-            } else if vm.nameFetchedFromSSN || vm.noSSN {
-                Task {
-                    await getIntent(for: vm.actionType)
-                }
+            },
+            content: {
+                hText(buttonDisplayText)
+                    .transition(.opacity.animation(.easeOut))
+                    .asAnyView
             }
-        } content: {
-            hText(buttonDisplayText)
-                .transition(.opacity.animation(.easeOut))
-        }
+        )
         .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
     }
 

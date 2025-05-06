@@ -30,19 +30,22 @@ public struct TextInputView: View {
                 }
                 hSection {
                     VStack(spacing: .padding8) {
-                        hButton.LargeButton(type: .primary) {
-                            Task { [weak vm] in
-                                withAnimation {
-                                    vm?.isLoading = true
-                                }
-                                await vm?.save()
-                                withAnimation {
-                                    vm?.isLoading = false
+                        hButton(
+                            .large,
+                            .primary,
+                            title: L10n.generalSaveButton,
+                            {
+                                Task { [weak vm] in
+                                    withAnimation {
+                                        vm?.isLoading = true
+                                    }
+                                    await vm?.save()
+                                    withAnimation {
+                                        vm?.isLoading = false
+                                    }
                                 }
                             }
-                        } content: {
-                            hText(L10n.generalSaveButton, style: .body1)
-                        }
+                        )
                         .hButtonIsLoading(vm.isLoading)
 
                         hCancelButton {
