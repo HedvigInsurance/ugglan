@@ -283,21 +283,7 @@ struct LoggedInNavigation: View {
                 )
                 .environmentObject(vm.profileNavigationVm)
             case .pickLanguage:
-                PickLanguage { [weak profileNavigationVm = vm.profileNavigationVm, weak mainNavigationVm, weak vm] _ in
-                    //show loading screen since we everything needs to be updated
-                    mainNavigationVm?.hasLaunchFinished = false
-                    profileNavigationVm?.isLanguagePickerPresented = false
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.languageChanged)
-                    //show home screen with updated langauge
-                    mainNavigationVm?.loggedInVm = .init()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        mainNavigationVm?.hasLaunchFinished = true
-                        vm?.selectedTab = 0
-                    }
-                } onCancel: { [weak profileNavigationVm = vm.profileNavigationVm] in
-                    profileNavigationVm?.isLanguagePickerPresented = false
-                }
+                PickLanguage()
             case .deleteRequestLoading:
                 DeleteRequestLoadingView(
                     screenState: .success,
