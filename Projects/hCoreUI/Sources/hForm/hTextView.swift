@@ -339,7 +339,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                 title: L10n.generalSaveButton,
                                 {
                                     continueAction.execute()
-                                },
+                                }
                             )
                             .disabled(value.count > maxCharacters)
                         }
