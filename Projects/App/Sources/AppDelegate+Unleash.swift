@@ -18,7 +18,7 @@ extension AppDelegate {
         let optionalDictionary: [String: String?] = [
             "memberId": memberId,
             "appVersion": Bundle.main.appVersion,
-            "market": "se",
+            "market": "SE",
             "osVersion": UIDevice.current.systemVersion,
         ]
 
