@@ -27,8 +27,10 @@ struct SubmitClaimCarView: View {
         }
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton
-                    .init(type: .primary) {
+                hButton(
+                    .large,
+                    .primary,
+                    {
                         if let url = URL(string: model?.partners.first?.url) {
                             UIApplication.shared.open(url)
                             let delayTime = 60.0 * 3
@@ -36,12 +38,15 @@ struct SubmitClaimCarView: View {
                                 claimsNavigationVm.router.dismiss()
                             }
                         }
-                    } content: {
-                        HStack(spacing: 8) {
+                    },
+                    content: {
+                        HStack(spacing: .padding8) {
                             hText(L10n.submitClaimCarReportClaimButton)
                             Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                         }
+                        .asAnyView
                     }
+                )
             }
             .sectionContainerStyle(.transparent)
         }

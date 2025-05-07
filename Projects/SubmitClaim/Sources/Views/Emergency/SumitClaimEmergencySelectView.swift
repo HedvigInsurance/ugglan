@@ -51,30 +51,37 @@ struct SumitClaimEmergencySelectView: View {
     @ViewBuilder
     func buttonView() -> some View {
         let confirmEmergency = claimsNavigationVm.emergencyConfirmModel
-        HStack(spacing: 8) {
+        HStack(spacing: .padding8) {
             ForEach(confirmEmergency?.options ?? [], id: \.displayName) { option in
                 if option.value == selectedValue {
                     hButton(
                         .medium,
-                        .primaryAlt,) {
-                        withAnimation(.spring()) {
-                            selectedValue = option.value
+                        .primaryAlt,
+                        {
+                            withAnimation(.spring()) {
+                                selectedValue = option.value
+                            }
+                        },
+                        content: {
+                            hText(option.displayName)
+                                .foregroundColor(
+                                    hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
+                                )
+                                .asAnyView
                         }
-                    } content: {
-                        hText(option.displayName)
-                            .foregroundColor(
-                                hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
-                            )
-                    }
+                    )
                     .hButtonTakeFullWidth(true)
                 } else {
-                    hButton.MediumButton(type: .secondary) {
-                        withAnimation(.spring()) {
-                            selectedValue = option.value
+                    hButton(
+                        .medium,
+                        .secondary,
+                        title: option.displayName,
+                        {
+                            withAnimation(.spring()) {
+                                selectedValue = option.value
+                            }
                         }
-                    } content: {
-                        hText(option.displayName)
-                    }
+                    )
                     .hButtonTakeFullWidth(true)
                 }
             }

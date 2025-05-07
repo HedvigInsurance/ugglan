@@ -112,22 +112,22 @@ public struct NotLoggedInView: View {
                 }
                 Spacer()
                 VStack {
-                                        hButton(
-                        .large,
-                        .primary, {
-                        vm.showLogin = true
-                    } content: {
-                        hText(L10n.bankidLoginTitle)
-                    }
-
                     hButton(
-                    .large,
-                    .ghost,
-                        vm.onOnBoardPressed()
-                    } content: {
-                        hText(L10n.marketingGetHedvig)
-                    }
-
+                        .large,
+                        .primary,
+                        title: L10n.bankidLoginTitle,
+                        {
+                            vm.showLogin = true
+                        }
+                    )
+                    hButton(
+                        .large,
+                        .ghost,
+                        title: L10n.marketingGetHedvig,
+                        {
+                            vm.onOnBoardPressed()
+                        }
+                    )
                 }
             }
         }

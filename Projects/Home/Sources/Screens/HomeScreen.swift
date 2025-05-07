@@ -96,13 +96,14 @@ extension HomeScreen {
     @ViewBuilder
     private var startAClaimButton: some View {
         if featureFlags.isSubmitClaimEnabled {
-                                hButton(
-                        .large,
-                        .primary, {
-                navigationVm.isSubmitClaimPresented = true
-            } content: {
-                hText(L10n.HomeTab.claimButtonText)
-            }
+            hButton(
+                .large,
+                .primary,
+                title: L10n.HomeTab.claimButtonText,
+                {
+                    navigationVm.isSubmitClaimPresented = true
+                }
+            )
         }
     }
 
@@ -115,11 +116,12 @@ extension HomeScreen {
         if showHelpCenter && featureFlags.isHelpCenterEnabled {
             hButton(
                 .large,
-                .secondary, {
-                navigationVm.isHelpCenterPresented = true
-            } content: {
-                hText(L10n.HomeTab.getHelp)
-            }
+                .secondary,
+                title: L10n.HomeTab.getHelp,
+                {
+                    navigationVm.isHelpCenterPresented = true
+                }
+            )
         }
     }
 }

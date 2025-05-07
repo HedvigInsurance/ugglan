@@ -123,20 +123,27 @@ struct SupportView: View {
                 } _: { hasSentOrRecievedAtLeastOneMessage in
                     VStack(spacing: .padding8) {
                         if hasSentOrRecievedAtLeastOneMessage {
-                            hButton.MediumButton(type: .primary) {
-                                router.push(HelpCenterNavigationRouterType.inbox)
-                            } content: {
-                                hText(L10n.hcChatGoToInbox)
-                            }
-                        }
-                        hButton.MediumButton(type: hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary) {
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatType.newConversation
+                            hButton(
+                                .medium,
+                                .primary,
+                                title: L10n.hcChatGoToInbox,
+                                {
+                                    router.push(HelpCenterNavigationRouterType.inbox)
+                                }
                             )
-                        } content: {
-                            hText(L10n.hcChatButton)
                         }
+
+                        hButton(
+                            .medium,
+                            hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary,
+                            title: L10n.hcChatButton,
+                            {
+                                NotificationCenter.default.post(
+                                    name: .openChat,
+                                    object: ChatType.newConversation
+                                )
+                            }
+                        )
                     }
                     .padding(.top, .padding24)
                 }

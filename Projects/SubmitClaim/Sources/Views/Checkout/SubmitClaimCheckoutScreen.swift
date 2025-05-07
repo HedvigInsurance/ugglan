@@ -21,33 +21,31 @@ public struct SubmitClaimCheckoutScreen: View {
                     if repairCost == nil {
                         InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                     }
-                                        hButton(
+                    hButton(
                         .large,
-                        .primary, {
-                        if let model = claimsNavigationVm.singleItemCheckoutModel {
-                            claimsNavigationVm.isCheckoutTransferringPresented = true
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
-                                Task {
-                                    let step = await vm.singleItemRequest(
-                                        context: claimsNavigationVm.currentClaimContext ?? "",
-                                        model: model
-                                    )
+                        .primary,
+                        title: L10n.Claims.Payout.Button.label(
+                            singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
+                        ),
+                        {
+                            if let model = claimsNavigationVm.singleItemCheckoutModel {
+                                claimsNavigationVm.isCheckoutTransferringPresented = true
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+                                    Task {
+                                        let step = await vm.singleItemRequest(
+                                            context: claimsNavigationVm.currentClaimContext ?? "",
+                                            model: model
+                                        )
 
-                                    if let step {
-                                        claimsNavigationVm.isCheckoutTransferringPresented = false
-                                        claimsNavigationVm.navigate(data: step)
+                                        if let step {
+                                            claimsNavigationVm.isCheckoutTransferringPresented = false
+                                            claimsNavigationVm.navigate(data: step)
+                                        }
                                     }
                                 }
                             }
                         }
-                    } content: {
-                        hText(
-                            L10n.Claims.Payout.Button.label(
-                                singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
-                            ),
-                            style: .body1
-                        )
-                    }
+                    )
                     .disabled(vm.viewState == .loading)
                     .hButtonIsLoading(vm.viewState == .loading)
                 }

@@ -41,29 +41,31 @@ struct ClaimContactCard: View {
             }
             .padding(.horizontal, .padding16)
             .accessibilityElement(children: .combine)
-            VStack(spacing: 4) {
+            VStack(spacing: .padding4) {
                 if let url = URL(string: model.url) {
                     hSection {
-                        hButton.MediumButton(type: .secondaryAlt) {
-                            UIApplication.shared.open(url)
-                        } content: {
-                            hText(model.buttonText ?? "")
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                        }
+                        hButton(
+                            .medium,
+                            .secondaryAlt,
+                            title: model.buttonText ?? "",
+                            {
+                                UIApplication.shared.open(url)
+                            }
+                        )
                         .colorScheme(.light)
                         .hButtonTakeFullWidth(true)
                     }
                 }
                 if let phoneNumber = model.phoneNumber, let url = URL(string: "tel://" + phoneNumber) {
                     hSection {
-                        hButton.MediumButton(type: getPhoneNumberButtonType()) {
-                            UIApplication.shared.open(url)
-                        } content: {
-                            hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber))
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                        }
+                        hButton(
+                            .medium,
+                            getPhoneNumberButtonType(),
+                            title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber),
+                            {
+                                UIApplication.shared.open(url)
+                            }
+                        )
                         .colorScheme(getPhoneNumberSchema())
                         .hButtonTakeFullWidth(true)
                     }

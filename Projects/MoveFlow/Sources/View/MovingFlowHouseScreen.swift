@@ -44,13 +44,14 @@ struct MovingFlowHouseScreen: View {
         }
         .hFormAlwaysAttachToBottom {
             hSection {
-                                    hButton(
-                        .large,
-                        .primary, {
-                    continuePressed()
-                } content: {
-                    hText(L10n.saveAndContinueButtonLabel, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    title: L10n.saveAndContinueButtonLabel,
+                    {
+                        continuePressed()
+                    }
+                )
             }
         }
         .hFormTitle(
@@ -156,16 +157,20 @@ struct MovingFlowHouseScreen: View {
                     }
                     hButton(
                         .medium,
-                        .primaryAlt,) {
-                        addExtraBuilding()
-                    } content: {
-                        HStack {
-                            Image(uiImage: hCoreUIAssets.plusSmall.image)
-                                .resizable()
-                                .frame(width: .padding16, height: .padding16)
-                            hText(L10n.changeAddressAddBuilding)
+                        .primaryAlt,
+                        {
+                            addExtraBuilding()
+                        },
+                        content: {
+                            HStack {
+                                Image(uiImage: hCoreUIAssets.plusSmall.image)
+                                    .resizable()
+                                    .frame(width: .padding16, height: .padding16)
+                                hText(L10n.changeAddressAddBuilding)
+                            }
+                            .asAnyView
                         }
-                    }
+                    )
                     .hButtonDontShowLoadingWhenDisabled(true)
                     .hUseLightMode
                     .padding(.top, .padding8)

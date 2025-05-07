@@ -9,7 +9,7 @@ struct SupportView: View {
 
     var body: some View {
         HStack {
-            VStack(spacing: 24) {
+            VStack(spacing: .padding24) {
                 VStack(spacing: 0) {
                     hText(L10n.submitClaimNeedHelpTitle)
                         .foregroundColor(hTextColor.Translucent.primary)
@@ -18,14 +18,17 @@ struct SupportView: View {
                         .multilineTextAlignment(.center)
                 }
                 .accessibilityElement(children: .combine)
-                hButton.MediumButton(type: .primary) {
-                    router.dismiss()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        openChat()
+                hButton(
+                    .medium,
+                    .primary,
+                    title: L10n.CrossSell.Info.faqChatButton,
+                    {
+                        router.dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            openChat()
+                        }
                     }
-                } content: {
-                    hText(L10n.CrossSell.Info.faqChatButton)
-                }
+                )
             }
             .padding(.top, .padding32)
             .padding(.bottom, .padding56)

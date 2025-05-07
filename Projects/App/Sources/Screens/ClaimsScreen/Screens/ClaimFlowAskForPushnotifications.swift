@@ -36,7 +36,7 @@ struct AskForPushNotifications: View {
 
     var mainContent: some View {
         hSection {
-            VStack(spacing: 24) {
+            VStack(spacing: .padding24) {
                 if !wrapWithForm {
                     Spacer()
                 }
@@ -53,27 +53,30 @@ struct AskForPushNotifications: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .accessibilityElement(children: .combine)
-                hButton.MediumButton(type: .primary) {
-                    Task {
-                        await UIApplication.shared.appDelegate.registerForPushNotifications()
-                        onActionExecuted()
+                hButton(
+                    .medium,
+                    .primary,
+                    title: L10n.claimsActivateNotificationsCta,
+                    {
+                        Task {
+                            await UIApplication.shared.appDelegate.registerForPushNotifications()
+                            onActionExecuted()
+                        }
                     }
-                } content: {
-                    hText(L10n.claimsActivateNotificationsCta, style: .body1)
-                }
+                )
                 if !wrapWithForm {
                     Spacer()
                 }
                 hButton(
                     .large,
                     .ghost,
-                    onActionExecuted()
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.setPushNotificationStatus(status: nil))
-                } content: {
-                    hText(L10n.claimsActivateNotificationsDismiss, style: .label)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                }
+                    title: L10n.claimsActivateNotificationsDismiss,
+                    {
+                        onActionExecuted()
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
+                        store.send(.setPushNotificationStatus(status: nil))
+                    }
+                )
                 .padding(.bottom, .padding16)
             }
         }

@@ -76,20 +76,24 @@ struct SettingsView: View {
             ) { memberDetails in
                 hSection {
                     hButton(
-                    .large,
-                    .ghost,
-                        if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                            let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
-                            if hasAlreadyRequested {
-                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-                            } else {
-                                profileNavigationVm.isDeleteAccountPresented = memberDetails
+                        .large,
+                        .ghost,
+                        {
+                            if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                                let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                                if hasAlreadyRequested {
+                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                                } else {
+                                    profileNavigationVm.isDeleteAccountPresented = memberDetails
+                                }
                             }
+                        },
+                        content: {
+                            hText(L10n.SettingsScreen.deleteAccountButton)
+                                .foregroundColor(hSignalColor.Red.element)
+                                .asAnyView
                         }
-                    } content: {
-                        hText(L10n.SettingsScreen.deleteAccountButton)
-                            .foregroundColor(hSignalColor.Red.element)
-                    }
+                    )
                 }
                 .sectionContainerStyle(.transparent)
             }

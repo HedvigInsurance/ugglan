@@ -51,17 +51,21 @@ public struct ProfileView: View {
         }
         .hFormAttachToBottom {
             hSection {
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     RenewalCardView(showCoInsured: false)
                     NotificationsCardView()
                     hButton(
-                    .large,
-                    .ghost,
-                        showLogoutAlert = true
-                    } content: {
-                        hText(L10n.logoutButton)
-                            .foregroundColor(hSignalColor.Red.element)
-                    }
+                        .large,
+                        .ghost,
+                        {
+                            showLogoutAlert = true
+                        },
+                        content: {
+                            hText(L10n.logoutButton)
+                                .foregroundColor(hSignalColor.Red.element)
+                                .asAnyView
+                        }
+                    )
                     .alert(isPresented: $showLogoutAlert) {
                         logoutAlert
                     }

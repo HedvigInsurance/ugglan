@@ -47,16 +47,17 @@ public struct EditContractScreen: View {
                 infoView
                 hSection {
                     VStack(spacing: .padding8) {
-                                            hButton(
-                        .large,
-                        .primary, { [weak router] in
-                            if let selectedType {
-                                router?.dismiss()
-                                onSelectedType(selectedType)
+                        hButton(
+                            .large,
+                            .primary,
+                            title: selectedType?.buttonTitle ?? L10n.generalContinueButton,
+                            { [weak router] in
+                                if let selectedType {
+                                    router?.dismiss()
+                                    onSelectedType(selectedType)
+                                }
                             }
-                        } content: {
-                            hText(selectedType?.buttonTitle ?? L10n.generalContinueButton, style: .body1)
-                        }
+                        )
                         .disabled(selectedType == nil)
                         .accessibilityHint(
                             selectedType != nil

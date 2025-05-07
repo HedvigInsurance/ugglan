@@ -47,13 +47,14 @@ struct PriceInputScreen: View {
                     }
 
                     hButton(
-                    .large,
-                    .ghost,
-                        UIApplication.dismissKeyboard()
-                        router.dismiss()
-                    } content: {
-                        hText(L10n.generalNotSure, style: .body1)
-                    }
+                        .large,
+                        .ghost,
+                        title: L10n.generalNotSure,
+                        {
+                            UIApplication.dismissKeyboard()
+                            router.dismiss()
+                        }
+                    )
                 }
             }
             .padding(.top, .padding16)

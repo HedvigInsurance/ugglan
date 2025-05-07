@@ -52,24 +52,25 @@ public struct SubmitClaimSummaryScreen: View {
                 VStack(spacing: .padding8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
                         .padding(.bottom, .padding8)
-                                        hButton(
+                    hButton(
                         .large,
-                        .primary, {
-                        if let model = claimsNavigationVm.summaryModel {
-                            Task {
-                                let step = await vm.summaryRequest(
-                                    context: claimsNavigationVm.currentClaimContext ?? "",
-                                    model: model
-                                )
+                        .primary,
+                        title: L10n.embarkSubmitClaim,
+                        {
+                            if let model = claimsNavigationVm.summaryModel {
+                                Task {
+                                    let step = await vm.summaryRequest(
+                                        context: claimsNavigationVm.currentClaimContext ?? "",
+                                        model: model
+                                    )
 
-                                if let step {
-                                    claimsNavigationVm.navigate(data: step)
+                                    if let step {
+                                        claimsNavigationVm.navigate(data: step)
+                                    }
                                 }
                             }
                         }
-                    } content: {
-                        hText(L10n.embarkSubmitClaim)
-                    }
+                    )
                     .disabled(vm.viewState == .loading)
                     .hButtonIsLoading(vm.viewState == .loading)
                 }
