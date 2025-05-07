@@ -43,116 +43,6 @@ public struct hButton: View {
     }
 }
 
-//@MainActor
-//public enum hButton {
-//    public struct LargeButton<Content: View>: View {
-//        var type: hButtonConfigurationType
-//        var content: () -> Content
-//        var action: () -> Void
-//
-//        public init(
-//            type: hButtonConfigurationType,
-//            action: @escaping () -> Void,
-//            @ViewBuilder content: @escaping () -> Content
-//        ) {
-//            self.type = type
-//            self.action = action
-//            self.content = content
-//        }
-//
-//        public var body: some View {
-//            _hButton(action: {
-//                action()
-//            }) {
-//                content()
-//            }
-//            .buttonStyle(ButtonFilledStyle(size: .large))
-//            .hButtonConfigurationType(type)
-//        }
-//    }
-//
-//    public struct MediumButton<Content: View>: View {
-//        var type: hButtonConfigurationType
-//        var content: () -> Content
-//        var action: () -> Void
-//
-//        public init(
-//            type: hButtonConfigurationType,
-//            action: @escaping () -> Void,
-//            @ViewBuilder content: @escaping () -> Content
-//        ) {
-//            self.type = type
-//            self.action = action
-//            self.content = content
-//        }
-//
-//        public var body: some View {
-//            _hButton(action: action) {
-//                content()
-//            }
-//            .buttonStyle(ButtonFilledStyle(size: .medium))
-//            .hButtonConfigurationType(type)
-//        }
-//    }
-//
-//    public struct SmallButton<Content: View>: View {
-//        var type: hButtonConfigurationType
-//        var content: () -> Content
-//        var action: () -> Void
-//        @Environment(\.hUseLightMode) var useLightMode
-//
-//        public init(
-//            type: hButtonConfigurationType,
-//            action: @escaping () -> Void,
-//            @ViewBuilder content: @escaping () -> Content
-//        ) {
-//            self.type = type
-//            self.action = action
-//            self.content = content
-//        }
-//
-//        public var body: some View {
-//            _hButton(action: action) {
-//                content()
-//            }
-//            .buttonStyle(ButtonFilledStyle(size: .small))
-//            .hButtonConfigurationType(type)
-//        }
-//    }
-//}
-
-//extension hButton: View {
-//    public var body: some View {
-//        EmptyView()
-//    }
-//}
-
-//@MainActor
-//public enum hButton {
-//    case large
-//    case medium
-//    case small
-//
-//    public func view(
-//        type: hButtonConfigurationType,
-//        buttonText: String? = nil,
-//        action: @escaping () -> Void,
-//        content: (() -> AnyView)? = nil
-//    ) -> some View {
-//        _hButton(action: {
-//            action()
-//        }) {
-//            if let buttonText {
-//                hText(buttonText)
-//            } else if let content {
-//                content()
-//            }
-//        }
-//        .buttonStyle(ButtonFilledStyle(size: self))
-//        .hButtonConfigurationType(type)
-//    }
-//}
-
 struct ButtonFilledStandardBackground: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
@@ -427,14 +317,6 @@ private struct MiniButtonModifier: ViewModifier {
 
     }
 }
-
-////MARK: Button Size
-//private enum ButtonSize {
-//    case mini
-//    case small
-//    case medium
-//    case large
-//}
 
 extension View {
     @ViewBuilder

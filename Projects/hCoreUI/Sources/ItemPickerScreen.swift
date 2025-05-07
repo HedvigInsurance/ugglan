@@ -213,7 +213,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                     title: config.buttonText,
                     {
                         sendSelectedItems
-                    },
+                    }
                 )
                 .hButtonIsLoading(isLoading)
                 .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
