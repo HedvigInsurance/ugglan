@@ -43,87 +43,6 @@ public struct hButton: View {
     }
 }
 
-struct ButtonFilledStandardBackground: View {
-    @Environment(\.isEnabled) var isEnabled
-    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
-    var configuration: SwiftUI.ButtonStyle.Configuration
-    @Environment(\.hUseLightMode) var hUseLightMode
-    @Environment(\.hButtonIsLoading) var isLoading
-
-    var body: some View {
-        if hUseLightMode {
-            buttonBackgroundColor
-                .colorScheme(.light)
-        } else {
-            buttonBackgroundColor
-        }
-    }
-
-    @ViewBuilder
-    var buttonBackgroundColor: some View {
-        switch hButtonConfigurationType {
-        case .primary:
-            if configuration.isPressed {
-                hButtonColor.Primary.hover.background {
-                    hButtonColor.Primary.resting
-                }
-            } else if isEnabled || isLoading {
-                hButtonColor.Primary.resting
-            } else {
-                hButtonColor.Primary.disabled
-            }
-        case .primaryAlt:
-            if configuration.isPressed {
-                hButtonColor.PrimaryAlt.hover.background {
-                    hButtonColor.PrimaryAlt.resting
-                }
-            } else if isEnabled || isLoading {
-                hButtonColor.PrimaryAlt.resting
-            } else {
-                hButtonColor.PrimaryAlt.disabled
-            }
-        case .secondary:
-            if configuration.isPressed {
-                hButtonColor.Secondary.hover.background {
-                    hButtonColor.Secondary.resting
-                }
-            } else if isEnabled || isLoading {
-                hButtonColor.Secondary.resting
-            } else {
-                hButtonColor.Secondary.disabled
-            }
-        case .secondaryAlt:
-            if configuration.isPressed {
-                hButtonColor.SecondaryAlt.hover.background {
-                    hButtonColor.SecondaryAlt.resting
-                }
-            } else if isEnabled || isLoading {
-                hButtonColor.SecondaryAlt.resting
-            } else {
-                hButtonColor.SecondaryAlt.disabled
-            }
-        case .ghost:
-            if configuration.isPressed {
-                hButtonColor.Ghost.hover.background {
-                    hButtonColor.Ghost.resting
-                }
-            } else if isEnabled || isLoading {
-                hButtonColor.Ghost.resting
-            } else {
-                hButtonColor.Ghost.disabled
-            }
-        case .alert:
-            if configuration.isPressed {
-                hSignalColor.Red.element
-            } else if isEnabled || isLoading {
-                hSignalColor.Red.element
-            } else {
-                hSignalColor.Red.element.opacity(0.2)
-            }
-        }
-    }
-}
-
 struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
@@ -270,54 +189,6 @@ struct _hButton<Content: View>: View {
     }
 }
 
-//MARK: Button size modifiers
-private struct LargeButtonModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .padding(.top, 15)
-            .padding(.bottom, 17)
-            .frame(minHeight: .padding56)
-            .frame(maxWidth: .infinity)
-    }
-}
-
-private struct MediumButtonModifier: ViewModifier {
-    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
-
-    func body(content: Content) -> some View {
-        content
-            .padding(.top, 7)
-            .padding(.bottom, 9)
-            .padding(.horizontal, .padding16)
-            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
-    }
-}
-
-private struct SmallButtonModifier: ViewModifier {
-    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
-    func body(content: Content) -> some View {
-        content
-            .padding(.top, 6.5)
-            .padding(.bottom, 7.5)
-            .frame(minHeight: 32)
-            .padding(.horizontal, .padding16)
-            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
-    }
-}
-
-private struct MiniButtonModifier: ViewModifier {
-    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
-    func body(content: Content) -> some View {
-        content
-            .padding(.vertical, 3)
-            .padding(.horizontal, .padding8)
-            .frame(minHeight: 24)
-            .padding(.horizontal, .padding16)
-            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
-
-    }
-}
-
 extension View {
     @ViewBuilder
     fileprivate func buttonSizeModifier(_ size: hButtonSize) -> some View {
@@ -348,37 +219,6 @@ extension View {
             self
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                 .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-        }
-    }
-}
-
-//MARK: hButtonStyle
-public enum hButtonConfigurationType: Sendable, CaseIterable {
-    case primary
-    case primaryAlt
-    case secondary
-    case secondaryAlt
-    case ghost
-    case alert
-
-    func shouldUseDark(for schema: ColorScheme) -> Bool {
-        switch schema {
-        case .dark:
-            switch self {
-            case .primary, .primaryAlt:
-                return false
-            case .secondary, .secondaryAlt, .ghost, .alert:
-                return true
-            }
-        case .light:
-            switch self {
-            case .primary:
-                return false
-            default:
-                return true
-            }
-        @unknown default:
-            return false
         }
     }
 }

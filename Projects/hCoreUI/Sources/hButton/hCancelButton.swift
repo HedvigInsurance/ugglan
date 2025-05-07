@@ -15,7 +15,7 @@ public struct hCancelButton: View {
             .large,
             .ghost,
             title: L10n.generalCancelButton,
-            { action() },
+            { action() }
         )
     }
 }

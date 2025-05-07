@@ -15,7 +15,7 @@ public struct hSaveButton: View {
             .large,
             .ghost,
             title: L10n.generalSaveButton,
-            { action() },
+            { action() }
         )
     }
 }

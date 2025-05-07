@@ -358,7 +358,8 @@ struct ShowTagList: View {
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(hButtonColor.PrimaryAlt.resting)
+                .foregroundColor(PrimaryAlt().resting)
+                .asAnyView
                 .hShadow()
 
         } else {

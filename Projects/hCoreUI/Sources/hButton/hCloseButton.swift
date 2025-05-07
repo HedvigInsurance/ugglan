@@ -15,7 +15,7 @@ public struct hCloseButton: View {
             .large,
             .ghost,
             title: L10n.generalCloseButton,
-            { action() },
+            { action() }
         )
     }
 }
