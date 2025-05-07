@@ -332,15 +332,18 @@ public struct DirectDebitSetup: View {
     }
 
     private var dismissButton: some View {
-        hButton.MediumButton(type: .ghost) {
-            if self.showNotSupported {
-                router.dismiss()
-            } else {
-                showCancelAlert = true
+        hButton(
+            .medium,
+            .ghost,
+            title: setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton,
+            {
+                if self.showNotSupported {
+                    router.dismiss()
+                } else {
+                    showCancelAlert = true
+                }
             }
-        } content: {
-            hText(setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton)
-        }
+        )
     }
 
     private func cancelAlert() -> SwiftUI.Alert {
