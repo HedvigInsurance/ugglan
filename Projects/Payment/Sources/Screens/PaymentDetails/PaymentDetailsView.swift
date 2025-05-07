@@ -43,7 +43,6 @@ struct PaymentDetailsView: View {
             }
             .withHeader(
                 title: L10n.paymentsReferralsInfoTitle,
-                infoButtonDescription: L10n.paymentsDiscountInfoDescription,
                 withoutBottomPadding: false
             )
             .sectionContainerStyle(.transparent)
