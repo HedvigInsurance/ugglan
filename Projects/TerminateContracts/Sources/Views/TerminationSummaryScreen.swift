@@ -31,8 +31,6 @@ struct TerminationSummaryScreen: View {
                         StatusCard(
                             onSelected: {},
                             mainContent: mainContent,
-                            title: nil,
-                            subTitle: nil,
                             bottomComponent: !withAddonView
                                 ? nil
                                 : {
@@ -51,15 +49,15 @@ struct TerminationSummaryScreen: View {
                                 title: L10n.terminationButton,
                                 { [weak terminationNavigationVm] in
                                     terminationNavigationVm?.isConfirmTerminationPresented = true
-                                },
+                                }
                             )
                             hButton(
                                 .large,
                                 .ghost,
                                 title: L10n.terminationKeepInsuranceButton,
-                                {  [weak terminationNavigationVm] in
+                                { [weak terminationNavigationVm] in
                                     terminationNavigationVm?.router.dismiss()
-                                },
+                                }
                             )
                         }
                     }
