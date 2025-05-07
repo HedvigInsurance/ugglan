@@ -74,7 +74,7 @@ public struct InfoCard: View {
         }
         .padding(.leading, .padding8)
     }
-    
+
     func buttonsStackView(_ buttonsConfig: [InfoCardButtonConfig]) -> some View {
         ForEach(buttonsConfig, id: \.buttonTitle) { config in
             if type == .neutral {
@@ -84,7 +84,7 @@ public struct InfoCard: View {
             }
         }
     }
-    
+
     func secondaryButton(_ config: InfoCardButtonConfig) -> some View {
         hButton(
             .small,
@@ -92,10 +92,10 @@ public struct InfoCard: View {
             title: config.buttonTitle,
             {
                 config.buttonAction()
-            },
+            }
         )
     }
-    
+
     func secondaryAltButton(_ config: InfoCardButtonConfig) -> some View {
         hButton(
             .small,
@@ -103,7 +103,7 @@ public struct InfoCard: View {
             title: config.buttonTitle,
             {
                 config.buttonAction()
-            },
+            }
         )
     }
 }
