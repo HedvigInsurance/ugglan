@@ -43,8 +43,7 @@ struct PaymentDetailsView: View {
             }
             .withHeader(
                 title: L10n.paymentsReferralsInfoTitle,
-                infoButtonDescription: featureFlags.isRedeemCampaignDisabled
-                    ? nil : L10n.paymentsDiscountInfoDescription,
+                infoButtonDescription: L10n.paymentsDiscountInfoDescription,
                 withoutBottomPadding: false
             )
             .sectionContainerStyle(.transparent)

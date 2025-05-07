@@ -14,18 +14,7 @@ struct DiscountsView: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                VStack(spacing: .padding8) {
-                    discounts
-                    if !Dependencies.featureFlags().isRedeemCampaignDisabled {
-                        hSection {
-                            hButton.LargeButton(type: .secondary) {
-                                campaignNavigationVm.isAddCampaignPresented = true
-                            } content: {
-                                hText(L10n.paymentsAddCampaignCode)
-                            }
-                        }
-                    }
-                }
+                discounts
                 forever
             }
             .padding(.vertical, .padding16)

@@ -29,7 +29,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isAddonsEnabled: Bool = false
     public var isMovingFlowEnabled: Bool = false
     public var isAddonsRemovalFromMovingFlowEnabled: Bool = false
-    public var isRedeemCampaignDisabled: Bool = false
 
     public func setup(with context: [String: String]) async throws {
         unleashClient?.unsubscribe(name: "ready")
@@ -142,10 +141,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
         let enableAddonsRemovalFromMovingFlowKey = "enable_addons_removal_from_moving_flow"
         isAddonsRemovalFromMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
         featureFlags[enableAddonsRemovalFromMovingFlowKey] = isAddonsRemovalFromMovingFlowEnabled
-
-        let disableRedeemCampaignKey = "disable_redeem_campaign"
-        isRedeemCampaignDisabled = unleashClient.isEnabled(name: disableRedeemCampaignKey)
-        featureFlags[disableRedeemCampaignKey] = isRedeemCampaignDisabled
 
         Task {
             log.info(
