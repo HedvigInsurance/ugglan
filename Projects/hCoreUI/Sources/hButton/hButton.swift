@@ -1,12 +1,6 @@
 import Foundation
 import SwiftUI
 
-public enum hButtonSize: CaseIterable {
-    case large
-    case medium
-    case small
-}
-
 public struct hButton: View {
     var size: hButtonSize
     var type: hButtonConfigurationType
@@ -43,124 +37,10 @@ public struct hButton: View {
     }
 }
 
-struct LoaderOrContent<Content: View>: View {
-    @Environment(\.hButtonIsLoading) var isLoading
-    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
-    @Environment(\.isEnabled) var enabled
-    @Environment(\.hButtonDontShowLoadingWhenDisabled) var dontShowLoadingWhenDisabled
-    @Environment(\.colorScheme) var colorScheme
-    var content: () -> Content
-    var color: any hColor
-
-    init(
-        color: any hColor,
-        @ViewBuilder _ content: @escaping () -> Content
-    ) {
-        self.color = color
-        self.content = content
-    }
-
-    var body: some View {
-        if isLoading && !dontShowLoadingWhenDisabled {
-            Group {
-                if hButtonConfigurationType.shouldUseDark(for: colorScheme) {
-                    DotsActivityIndicator(.standard)
-                        .useDarkColor
-                        .colorScheme(.light)
-                } else {
-                    DotsActivityIndicator(.standard)
-                }
-            }
-            .fixedSize(horizontal: false, vertical: true)
-        } else {
-            content()
-        }
-    }
-}
-
-struct ButtonFilledStyle: SwiftUI.ButtonStyle {
-    fileprivate var size: hButtonSize
-    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
-
-    func makeBody(configuration: Configuration) -> some View {
-        switch hButtonConfigurationType {
-        case .primary, .ghost, .alert:
-            getView(configuration: configuration)
-        case .primaryAlt, .secondary, .secondaryAlt:
-            getView(configuration: configuration)
-        }
-    }
-
-    @ViewBuilder
-    private func getView(configuration: Configuration) -> some View {
-        VStack {
-            Label(configuration: configuration)
-        }
-        .buttonSizeModifier(size)
-        .background(ButtonFilledStandardBackground(configuration: configuration))
-        .buttonCornerModifier(size)
-    }
-
-    //content
-    struct Label: View {
-        @Environment(\.isEnabled) var isEnabled
-        @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
-        @Environment(\.hUseLightMode) var hUseLightMode
-
-        var configuration: Configuration
-
-        @hColorBuilder var foregroundColor: some hColor {
-            switch hButtonConfigurationType {
-            case .primary:
-                if isEnabled {
-                    hTextColor.Opaque.primary.inverted
-                } else {
-                    hTextColor.Opaque.disabled
-                }
-            case .primaryAlt:
-                if isEnabled {
-                    hTextColor.Opaque.primary.colorFor(.light, .base)
-                } else {
-                    hTextColor.Opaque.disabled
-                }
-            case .secondary, .ghost:
-                if isEnabled {
-                    hTextColor.Opaque.primary
-                } else {
-                    hTextColor.Opaque.disabled
-                }
-            case .secondaryAlt:
-                if isEnabled {
-                    hTextColor.Opaque.primary
-                } else {
-                    hTextColor.Opaque.disabled
-                }
-            case .alert:
-                if isEnabled {
-                    hTextColor.Opaque.primary
-                } else {
-                    hTextColor.Opaque.secondary
-                }
-            }
-        }
-
-        var body: some View {
-            LoaderOrContent(color: foregroundColor) {
-                if hUseLightMode {
-                    configuration.label
-                        .foregroundColor(
-                            foregroundColor
-                        )
-                        .colorScheme(.light)
-                } else {
-                    configuration.label
-                        .foregroundColor(
-                            foregroundColor
-                        )
-                }
-            }
-        }
-    }
+public enum hButtonSize: CaseIterable {
+    case large
+    case medium
+    case small
 }
 
 struct _hButton<Content: View>: View {
@@ -191,21 +71,7 @@ struct _hButton<Content: View>: View {
 
 extension View {
     @ViewBuilder
-    fileprivate func buttonSizeModifier(_ size: hButtonSize) -> some View {
-        switch size {
-        case .small:
-            self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .label)
-        case .medium:
-            self.modifier(MediumButtonModifier()).environment(\.defaultHTextStyle, .body1)
-        case .large:
-            self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .body1)
-        }
-    }
-}
-
-extension View {
-    @ViewBuilder
-    fileprivate func buttonCornerModifier(_ size: hButtonSize) -> some View {
+    func buttonCornerModifier(_ size: hButtonSize) -> some View {
         switch size {
         case .small:
             self

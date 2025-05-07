@@ -42,3 +42,58 @@ public enum hButtonConfigurationType: Sendable, CaseIterable {
         }
     }
 }
+
+public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
+    var size: hButtonSize
+    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
+
+    public func makeBody(configuration: Configuration) -> some View {
+        VStack {
+            Label(configuration: configuration)
+        }
+        .buttonSizeModifier(size)
+        .background(ButtonFilledStandardBackground(configuration: configuration))
+        .buttonCornerModifier(size)
+    }
+
+    //content
+    struct Label: View {
+        @Environment(\.isEnabled) var isEnabled
+        @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
+        @Environment(\.hUseLightMode) var hUseLightMode
+
+        var configuration: Configuration
+
+        @hColorBuilder var foregroundColor: some hColor {
+            if !isEnabled {
+                hTextColor.Opaque.disabled
+            } else {
+                switch hButtonConfigurationType {
+                case .primary:
+                    hTextColor.Opaque.primary.inverted
+                case .primaryAlt:
+                    hTextColor.Opaque.primary.colorFor(.light, .base)
+                default:
+                    hTextColor.Opaque.primary
+                }
+            }
+        }
+
+        var body: some View {
+            LoaderOrContent(color: foregroundColor) {
+                if hUseLightMode {
+                    configuration.label
+                        .foregroundColor(
+                            foregroundColor
+                        )
+                        .colorScheme(.light)
+                } else {
+                    configuration.label
+                        .foregroundColor(
+                            foregroundColor
+                        )
+                }
+            }
+        }
+    }
+}

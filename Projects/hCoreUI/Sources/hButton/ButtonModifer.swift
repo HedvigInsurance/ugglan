@@ -1,35 +1,56 @@
 import SwiftUI
 
-struct LargeButtonModifier: ViewModifier {
+struct ButtonModifier: ViewModifier {
+    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
+    var size: hButtonSize
+
     func body(content: Content) -> some View {
         content
-            .padding(.top, 15)
-            .padding(.bottom, 17)
-            .frame(minHeight: .padding56)
+            .padding(.top, topPadding)
+            .padding(.bottom, bottomPadding)
+            .frame(minHeight: minHeight)
+            .frame(maxWidth: (hButtonTakeFullWidth || size == .large) ? .infinity : nil)
+            .padding(.horizontal, size == .large ? 0 : .padding16)
             .frame(maxWidth: .infinity)
     }
-}
 
-struct MediumButtonModifier: ViewModifier {
-    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
+    private var topPadding: CGFloat {
+        switch size {
+        case .large:
+            return 15
+        case .medium:
+            return 7
+        case .small:
+            return 6.5
+        }
+    }
 
-    func body(content: Content) -> some View {
-        content
-            .padding(.top, 7)
-            .padding(.bottom, 9)
-            .padding(.horizontal, .padding16)
-            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
+    private var bottomPadding: CGFloat {
+        switch size {
+        case .large:
+            return 17
+        case .medium:
+            return 9
+        case .small:
+            return 7.5
+        }
+    }
+
+    private var minHeight: CGFloat {
+        switch size {
+        case .large:
+            return .padding56
+        case .medium:
+            return 0
+        case .small:
+            return .padding32
+        }
     }
 }
 
-struct SmallButtonModifier: ViewModifier {
-    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
-    func body(content: Content) -> some View {
-        content
-            .padding(.top, 6.5)
-            .padding(.bottom, 7.5)
-            .frame(minHeight: 32)
-            .padding(.horizontal, .padding16)
-            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
+extension View {
+    @ViewBuilder
+    func buttonSizeModifier(_ size: hButtonSize) -> some View {
+        self.modifier(ButtonModifier(size: size)).environment(\.defaultHTextStyle, size == .small ? .label : .body1)
     }
 }
