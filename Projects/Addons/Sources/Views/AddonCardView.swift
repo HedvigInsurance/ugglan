@@ -30,14 +30,14 @@ public struct AddonCardView: View {
                     }
                     hText(addon.descriptionDisplayName, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
-                    
+
                     hButton(
                         .small,
                         .secondary,
                         title: L10n.addonFlowSeePriceButton,
                         {
                             openAddon()
-                        },
+                        }
                     )
                     .hButtonTakeFullWidth(true)
                 }
