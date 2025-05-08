@@ -71,7 +71,7 @@ private struct ActionButtons: View {
                         hButton(
                             .large,
                             .primary,
-                            title: L10n.ReferralsEmpty.shareCodeButton,
+                            buttonContent: .init(title:  L10n.ReferralsEmpty.shareCodeButton),
                             {
                                 onShare(modalPresentationSourceWrapperViewModel)
                             }
@@ -83,7 +83,7 @@ private struct ActionButtons: View {
                 hButton(
                     .large,
                     .ghost,
-                    title: L10n.ReferralsChange.changeCode,
+                    buttonContent: .init(title: L10n.ReferralsChange.changeCode),
                     {
                         onChange()
                     }

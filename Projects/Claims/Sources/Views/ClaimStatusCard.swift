@@ -24,7 +24,7 @@ struct ClaimStatusCard: View {
                         hButton(
                             .medium,
                             .secondary,
-                            title: L10n.ClaimStatus.ClaimDetails.button,
+                            buttonContent: .init(title: L10n.ClaimStatus.ClaimDetails.button),
                             {
                                 homeRouter.push(claim)
                             }

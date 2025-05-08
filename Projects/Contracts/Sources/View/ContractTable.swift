@@ -82,26 +82,28 @@ struct ContractTable: View {
                                 hButton(
                                     .large,
                                     .secondary,
+                                    buttonContent: .init(title: nil),
+                                    /** todo: fix */
                                     {
                                         router.push(ContractsRouterType.terminatedContracts)
-                                    },
-                                    content: {
-                                        hRow {
-                                            HStack {
-                                                hText(
-                                                    L10n.InsurancesTab.cancelledInsurancesLabel(
-                                                        "\(terminatedContracts.count)"
-                                                    )
-                                                )
-                                                .foregroundColor(hTextColor.Opaque.primary)
-                                                Spacer()
-                                            }
-                                        }
-                                        .withChevronAccessory
-                                        .verticalPadding(0)
-                                        .foregroundColor(hTextColor.Opaque.secondary)
-                                        .asAnyView
                                     }
+                                    //                                    content: {
+                                    //                                        hRow {
+                                    //                                            HStack {
+                                    //                                                hText(
+                                    //                                                    L10n.InsurancesTab.cancelledInsurancesLabel(
+                                    //                                                        "\(terminatedContracts.count)"
+                                    //                                                    )
+                                    //                                                )
+                                    //                                                .foregroundColor(hTextColor.Opaque.primary)
+                                    //                                                Spacer()
+                                    //                                            }
+                                    //                                        }
+                                    //                                        .withChevronAccessory
+                                    //                                        .verticalPadding(0)
+                                    //                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                    //                                        .asAnyView
+                                    //                                    }
                                 )
                             }
                             .transition(.slide)

@@ -32,7 +32,7 @@ public struct ConfirmChangesScreen: View {
                             hButton(
                                 .large,
                                 .primary,
-                                title: buttons.mainButton.buttonTitle ?? L10n.generalConfirm,
+                                buttonContent: .init(title: buttons.mainButton.buttonTitle ?? L10n.generalConfirm),
                                 {
                                     buttons.mainButton.buttonAction()
                                 }
@@ -41,7 +41,9 @@ public struct ConfirmChangesScreen: View {
                             hButton(
                                 .large,
                                 .ghost,
-                                title: buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton,
+                                buttonContent: .init(
+                                    title: buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton
+                                ),
                                 {
                                     buttons.dismissButton.buttonAction()
                                 }

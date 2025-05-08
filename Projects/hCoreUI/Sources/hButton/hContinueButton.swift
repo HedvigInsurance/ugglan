@@ -14,7 +14,7 @@ public struct hContinueButton: View {
         hButton(
             .large,
             .primary,
-            title: L10n.generalContinueButton,
+            buttonContent: .init(title: L10n.generalContinueButton),
             { action() }
         )
     }

@@ -28,7 +28,7 @@ struct ConfirmChangesView: View {
                 hButton(
                     .large,
                     .primary,
-                    title: L10n.contractAddCoinsuredConfirmChanges,
+                    buttonContent: .init(title: L10n.contractAddCoinsuredConfirmChanges),
                     {
                         editCoInsuredNavigation.showProgressScreenWithSuccess = true
                         Task {

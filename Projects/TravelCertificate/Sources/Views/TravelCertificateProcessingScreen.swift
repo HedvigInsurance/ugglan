@@ -47,7 +47,7 @@ struct TravelCertificateProcessingScreen: View {
                             hButton(
                                 .large,
                                 .primary,
-                                title: L10n.Certificates.download,
+                                buttonContent: .init(title: L10n.Certificates.download),
                                 {
                                     Task { [weak vm] in
                                         await vm?.presentShare()

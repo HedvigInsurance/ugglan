@@ -56,7 +56,7 @@ public struct ClaimFilesView: View {
                             hButton(
                                 .large,
                                 .secondary,
-                                title: L10n.ClaimStatusDetail.addMoreFiles,
+                                buttonContent: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
                                 {
                                     showFilePickerAlert()
                                 }
@@ -66,7 +66,7 @@ public struct ClaimFilesView: View {
                             hButton(
                                 .large,
                                 .primary,
-                                title: L10n.fileUploadUploadFiles,
+                                buttonContent: .init(title: L10n.fileUploadUploadFiles),
                                 {
                                     Task {
                                         await vm.uploadFiles()

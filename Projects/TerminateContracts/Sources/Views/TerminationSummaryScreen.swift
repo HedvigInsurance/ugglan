@@ -46,7 +46,7 @@ struct TerminationSummaryScreen: View {
                             hButton(
                                 .large,
                                 .primary,
-                                title: L10n.terminationButton,
+                                buttonContent: .init(title: L10n.terminationButton),
                                 { [weak terminationNavigationVm] in
                                     terminationNavigationVm?.isConfirmTerminationPresented = true
                                 }
@@ -54,7 +54,7 @@ struct TerminationSummaryScreen: View {
                             hButton(
                                 .large,
                                 .ghost,
-                                title: L10n.terminationKeepInsuranceButton,
+                                buttonContent: .init(title: L10n.terminationKeepInsuranceButton),
                                 { [weak terminationNavigationVm] in
                                     terminationNavigationVm?.router.dismiss()
                                 }

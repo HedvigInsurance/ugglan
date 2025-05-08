@@ -280,7 +280,7 @@ public struct ClaimDetailView: View {
                             hButton(
                                 .medium,
                                 .primary,
-                                title: L10n.ClaimStatus.UploadedFiles.uploadButton,
+                                buttonContent: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
                                 {
                                     showFilePickerAlert()
                                 }

@@ -91,7 +91,7 @@ struct StateView: View {
                     hButton(
                         .medium,
                         .primary,
-                        title: button.buttonTitle ?? type.buttonText,
+                        buttonContent: .init(title: button.buttonTitle ?? type.buttonText),
                         {
                             button.buttonAction()
                         }
@@ -114,7 +114,7 @@ struct StateView: View {
                     hButton(
                         .large,
                         .primary,
-                        title: actionButton.buttonTitle ?? "",
+                        buttonContent: .init(title: actionButton.buttonTitle ?? ""),
                         {
                             actionButton.buttonAction()
                         }
@@ -124,8 +124,10 @@ struct StateView: View {
                     hButton(
                         .large,
                         .ghost,
-                        title: dismissButton.buttonTitle
-                            ?? (type == .success ? L10n.generalCloseButton : L10n.openChat),
+                        buttonContent: .init(
+                            title: dismissButton.buttonTitle
+                                ?? (type == .success ? L10n.generalCloseButton : L10n.openChat)
+                        ),
                         {
                             dismissButton.buttonAction()
                         }

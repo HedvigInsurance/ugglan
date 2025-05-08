@@ -199,7 +199,7 @@ public struct PaymentsView: View {
                         hButton(
                             .large,
                             .secondary,
-                            title: statusData.connectButtonTitle,
+                            buttonContent: .init(title: statusData.connectButtonTitle),
                             {
                                 paymentNavigationVm.connectPaymentVm.set(for: nil)
                             }

@@ -99,7 +99,7 @@ extension HomeScreen {
             hButton(
                 .large,
                 .primary,
-                title: L10n.HomeTab.claimButtonText,
+                buttonContent: .init(title: L10n.HomeTab.claimButtonText),
                 {
                     navigationVm.isSubmitClaimPresented = true
                 }
@@ -117,7 +117,7 @@ extension HomeScreen {
             hButton(
                 .large,
                 .secondary,
-                title: L10n.HomeTab.getHelp,
+                buttonContent: .init(title: L10n.HomeTab.getHelp),
                 {
                     navigationVm.isHelpCenterPresented = true
                 }

@@ -37,7 +37,9 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                         hButton(
                             .large,
                             .primary,
-                            title: vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton,
+                            buttonContent: .init(
+                                title: vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton
+                            ),
                             {
                                 if vm.keyboardEnabled {
                                     withAnimation {

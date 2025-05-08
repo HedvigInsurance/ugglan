@@ -335,7 +335,9 @@ public struct DirectDebitSetup: View {
         hButton(
             .medium,
             .ghost,
-            title: setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton,
+            buttonContent: .init(
+                title: setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton
+            ),
             {
                 if self.showNotSupported {
                     router.dismiss()

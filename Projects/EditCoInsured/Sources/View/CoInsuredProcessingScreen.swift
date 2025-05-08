@@ -65,7 +65,7 @@ struct CoInsuredProcessingScreen: View {
             hButton(
                 .large,
                 .ghost,
-                title: L10n.generalDoneButton,
+                buttonContent: .init(title: L10n.generalDoneButton),
                 {
                     editCoInsuredNavigation.showProgressScreenWithSuccess = false
                     editCoInsuredNavigation.showProgressScreenWithoutSuccess = false

@@ -24,8 +24,10 @@ public struct SubmitClaimCheckoutScreen: View {
                     hButton(
                         .large,
                         .primary,
-                        title: L10n.Claims.Payout.Button.label(
-                            singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
+                        buttonContent: .init(
+                            title: L10n.Claims.Payout.Button.label(
+                                singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
+                            )
                         ),
                         {
                             if let model = claimsNavigationVm.singleItemCheckoutModel {

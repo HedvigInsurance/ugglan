@@ -21,7 +21,7 @@ struct SupportView: View {
                 hButton(
                     .medium,
                     .primary,
-                    title: L10n.CrossSell.Info.faqChatButton,
+                    buttonContent: .init(title: L10n.CrossSell.Info.faqChatButton),
                     {
                         router.dismiss()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

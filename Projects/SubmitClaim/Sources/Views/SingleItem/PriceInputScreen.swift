@@ -49,7 +49,7 @@ struct PriceInputScreen: View {
                     hButton(
                         .large,
                         .ghost,
-                        title: L10n.generalNotSure,
+                        buttonContent: .init(title: L10n.generalNotSure),
                         {
                             UIApplication.dismissKeyboard()
                             router.dismiss()

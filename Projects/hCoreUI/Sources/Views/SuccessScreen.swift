@@ -75,7 +75,7 @@ struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
                             hButton(
                                 .large,
                                 .primary,
-                                title: L10n.Certificates.download,
+                                buttonContent: .init(title: L10n.Certificates.download),
                                 {}
                             )
 

@@ -54,7 +54,7 @@ public struct DeleteAccountView: View {
                             hButton(
                                 .large,
                                 .alert,
-                                title: L10n.profileDeleteAccountConfirmDeletion,
+                                buttonContent: .init(title: L10n.profileDeleteAccountConfirmDeletion),
                                 {
                                     profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
 
@@ -64,7 +64,7 @@ public struct DeleteAccountView: View {
                         hButton(
                             .large,
                             .ghost,
-                            title: vm.dismissButtonTitle,
+                            buttonContent: .init(title: vm.dismissButtonTitle),
                             {
                                 router.dismiss()
                             }

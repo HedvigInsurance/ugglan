@@ -1,39 +1,89 @@
 import Foundation
 import SwiftUI
 
+@MainActor
+public struct hButtonContent {
+    // TODO: make title not optional
+    let title: String?
+    let buttonImage: hButtonImage?
+    let textColor: any hColor
+
+    public init(
+        title: String?,
+        buttonImage: hButtonImage? = nil,
+        textColor: (any hColor)? = nil
+    ) {
+        self.title = title
+        self.buttonImage = buttonImage
+        self.textColor = textColor ?? hTextColor.Opaque.primary
+    }
+
+    public struct hButtonImage {
+        let image: UIImage
+        let alignment: HorizontalAlignment
+
+        public init(
+            image: UIImage,
+            alignment: HorizontalAlignment = .center
+        ) {
+            self.image = image
+            self.alignment = alignment
+        }
+    }
+}
+
 public struct hButton: View {
     var size: hButtonSize
     var type: hButtonConfigurationType
-    var title: String?
-    var content: (() -> AnyView)?
+    let buttonContent: hButtonContent
+    //    var title: String?
+    //    var buttonImage: hButtonImage?
+    //    var content: (() -> AnyView)?
     var action: () -> Void
 
     public init(
         _ size: hButtonSize,
         _ type: hButtonConfigurationType,
-        title: String? = nil,
-        _ action: @escaping () -> Void,
-        content: (() -> AnyView)? = nil
+        buttonContent: hButtonContent,
+        //        title: String? = nil,
+        //        withImage: hButtonImage? = nil,
+        _ action: @escaping () -> Void
+            //        content: (() -> AnyView)? = nil
     ) {
         self.type = type
         self.size = size
-        self.title = title
+        self.buttonContent = buttonContent
+        //        self.title = title
+        //        self.buttonImage = withImage
         self.action = action
-        self.content = content
+        //        self.content = content
     }
 
     public var body: some View {
         _hButton(action: {
             action()
         }) {
-            if let title {
-                hText(title, style: size == .small ? .label : .body1)
-            } else {
-                content?()
+            HStack(spacing: .padding8) {
+                imageView(for: .leading)
+                textView
+                imageView(for: .trailing)
             }
         }
         .buttonStyle(ButtonFilledStyle(size: size))
         .hButtonConfigurationType(type)
+    }
+
+    private var textView: some View {
+        hText(buttonContent.title ?? "", style: size == .small ? .label : .body1)
+            .foregroundColor(buttonContent.textColor)
+            .asAnyView
+    }
+
+    @ViewBuilder
+    private func imageView(for alignment: HorizontalAlignment) -> (some View)? {
+        if let image = buttonContent.buttonImage, image.alignment == alignment {
+            Image(uiImage: image.image)
+        }
     }
 }
 
@@ -186,21 +236,24 @@ extension View {
                 hButton(
                     size,
                     type,
-                    title: "TEXT",
+                    buttonContent: .init(title: "TEXT"),
                     {}
                 )
             }
         }
     }
 
-    VStack(alignment: .leading) {
-        buttons
-            .colorScheme(.dark)
+    hSection {
+        VStack(alignment: .leading) {
+            buttons
+                .colorScheme(.dark)
 
-        buttons
-            .colorScheme(.light)
+            buttons
+                .colorScheme(.light)
+        }
     }
     .background(hBackgroundColor.primary)
     .hButtonIsLoading(isLoading)
     .disabled(disabled)
+    .sectionContainerStyle(.transparent)
 }

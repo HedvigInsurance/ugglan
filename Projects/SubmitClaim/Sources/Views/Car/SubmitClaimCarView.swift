@@ -30,6 +30,13 @@ struct SubmitClaimCarView: View {
                 hButton(
                     .large,
                     .primary,
+                    buttonContent: .init(
+                        title: L10n.submitClaimCarReportClaimButton,
+                        buttonImage: .init(
+                            image: hCoreUIAssets.arrowNorthEast.image,
+                            alignment: .trailing
+                        )
+                    ),
                     {
                         if let url = URL(string: model?.partners.first?.url) {
                             UIApplication.shared.open(url)
@@ -38,13 +45,6 @@ struct SubmitClaimCarView: View {
                                 claimsNavigationVm.router.dismiss()
                             }
                         }
-                    },
-                    content: {
-                        HStack(spacing: .padding8) {
-                            hText(L10n.submitClaimCarReportClaimButton)
-                            Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
-                        }
-                        .asAnyView
                     }
                 )
             }

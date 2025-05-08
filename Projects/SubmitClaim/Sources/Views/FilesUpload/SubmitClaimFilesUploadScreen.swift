@@ -37,7 +37,7 @@ struct SubmitClaimFilesUploadScreen: View {
                             hButton(
                                 .large,
                                 .secondary,
-                                title: L10n.ClaimStatusDetail.addMoreFiles,
+                                buttonContent: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
                                 {
                                     showFilePickerAlert()
                                 }
@@ -102,7 +102,7 @@ struct SubmitClaimFilesUploadScreen: View {
                                     hButton(
                                         .large,
                                         .primary,
-                                        title: L10n.ClaimStatusDetail.addFiles,
+                                        buttonContent: .init(title: L10n.ClaimStatusDetail.addFiles),
                                         {
                                             showFilePickerAlert()
                                         }
@@ -112,7 +112,7 @@ struct SubmitClaimFilesUploadScreen: View {
                                     hButton(
                                         .large,
                                         .ghost,
-                                        title: L10n.NavBar.skip,
+                                        buttonContent: .init(title: L10n.NavBar.skip),
                                         {
                                             skip()
                                         }

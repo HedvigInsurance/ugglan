@@ -56,7 +56,7 @@ struct AskForPushNotifications: View {
                 hButton(
                     .medium,
                     .primary,
-                    title: L10n.claimsActivateNotificationsCta,
+                    buttonContent: .init(title: L10n.claimsActivateNotificationsCta),
                     {
                         Task {
                             await UIApplication.shared.appDelegate.registerForPushNotifications()
@@ -70,7 +70,7 @@ struct AskForPushNotifications: View {
                 hButton(
                     .large,
                     .ghost,
-                    title: L10n.claimsActivateNotificationsDismiss,
+                    buttonContent: .init(title: L10n.claimsActivateNotificationsDismiss),
                     {
                         onActionExecuted()
                         let store: ProfileStore = globalPresentableStoreContainer.get()

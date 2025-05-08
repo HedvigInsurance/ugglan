@@ -68,7 +68,7 @@ struct EditDeductibleScreen: View {
                     hButton(
                         .large,
                         .primary,
-                        title: L10n.generalConfirm,
+                        buttonContent: .init(title: L10n.generalConfirm),
                         {
                             vm.setDeductible(for: self.selectedQuote ?? "")
                             changeTierNavigationVm.isEditDeductiblePresented = false

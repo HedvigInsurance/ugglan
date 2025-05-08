@@ -127,7 +127,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             hButton(
                 .large,
                 .primary,
-                title: L10n.saveAndContinueButtonLabel,
+                buttonContent: .init(title: L10n.saveAndContinueButtonLabel),
                 {
                     onSubmit(url)
                     Task {
@@ -151,7 +151,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             hButton(
                 .large,
                 .ghost,
-                title: L10n.embarkRecordAgain,
+                buttonContent: .init(title: L10n.embarkRecordAgain),
                 {
                     withAnimation(.spring()) {
                         claimsNavigationVm.audioRecordingModel?.audioContent = nil
@@ -184,7 +184,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     hButton(
                         .large,
                         .ghost,
-                        title: L10n.claimsUseTextInstead,
+                        buttonContent: .init(title: L10n.claimsUseTextInstead),
                         {
                             withAnimation {
                                 self.isAudioInput = false
@@ -227,7 +227,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    title: L10n.saveAndContinueButtonLabel,
+                    buttonContent: .init(title: L10n.saveAndContinueButtonLabel),
                     {
                         UIApplication.dismissKeyboard()
                         if validate() {
@@ -251,7 +251,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 hButton(
                     .large,
                     .ghost,
-                    title: L10n.claimsUseAudioRecording,
+                    buttonContent: .init(title: L10n.claimsUseAudioRecording),
                     {
                         withAnimation {
                             self.isAudioInput = true

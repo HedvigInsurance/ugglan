@@ -67,7 +67,7 @@ public struct InfoScreen: View {
                 hButton(
                     .large,
                     .ghost,
-                    title: dismissButtonTitle,
+                    buttonContent: .init(title: dismissButtonTitle),
                     {
                         onClickButton()
                     }

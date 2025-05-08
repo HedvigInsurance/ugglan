@@ -47,7 +47,7 @@ struct ClaimContactCard: View {
                         hButton(
                             .medium,
                             .secondaryAlt,
-                            title: model.buttonText ?? "",
+                            buttonContent: .init(title: model.buttonText ?? ""),
                             {
                                 UIApplication.shared.open(url)
                             }
@@ -61,7 +61,7 @@ struct ClaimContactCard: View {
                         hButton(
                             .medium,
                             getPhoneNumberButtonType(),
-                            title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber),
+                            buttonContent: .init(title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber)),
                             {
                                 UIApplication.shared.open(url)
                             }

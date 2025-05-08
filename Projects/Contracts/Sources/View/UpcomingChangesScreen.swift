@@ -42,7 +42,7 @@ struct UpcomingChangesScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            title: L10n.openChat,
+                            buttonContent: .init(title: L10n.openChat),
                             {
                                 NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                             }

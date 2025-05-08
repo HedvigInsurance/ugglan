@@ -14,7 +14,7 @@ struct ActionView: View {
             hButton(
                 .medium,
                 .secondary,
-                title: action.buttonTitle,
+                buttonContent: .init(title: action.buttonTitle),
                 {
                     NotificationCenter.default.post(name: .openDeepLink, object: action.url)
                 }
