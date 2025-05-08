@@ -53,12 +53,13 @@ struct ContractInformationView: View {
                                 addCoInsuredView(contract: contract)
                             }
 
-                            VStack(spacing: 8) {
+                            VStack(spacing: .padding8) {
                                 if contract.showEditInfo {
                                     hSection {
                                         hButton(
                                             .large,
                                             .secondary,
+                                            title: vm.getButtonText(contract),
                                             {
                                                 if contract.onlyCoInsured()
                                                     && Dependencies.featureFlags().isEditCoInsuredEnabled
@@ -71,17 +72,6 @@ struct ContractInformationView: View {
                                                     contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
                                                 } else {
                                                     contractsNavigationVm.changeYourInformationContract = contract
-                                                }
-                                            },
-                                            content: {
-                                                if contract.onlyCoInsured()
-                                                    && Dependencies.featureFlags().isEditCoInsuredEnabled
-                                                {
-                                                    hText(L10n.contractEditCoinsured)
-                                                        .asAnyView
-                                                } else {
-                                                    hText(L10n.contractEditInfoLabel)
-                                                        .asAnyView
                                                 }
                                             }
                                         )
@@ -334,6 +324,7 @@ struct ContractInformationView: View {
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
+
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
         return contract.coInsured
             .map {
@@ -343,6 +334,16 @@ private class ContractsInformationViewModel: ObservableObject {
                     locallyAdded: false
                 )
             }
+    }
+
+    func getButtonText(_ contract: Contract) -> String {
+        if contract.onlyCoInsured()
+            && Dependencies.featureFlags().isEditCoInsuredEnabled
+        {
+            return L10n.contractEditCoinsured
+        } else {
+            return L10n.contractEditInfoLabel
+        }
     }
 }
 
