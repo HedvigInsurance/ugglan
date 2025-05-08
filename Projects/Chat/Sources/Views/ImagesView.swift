@@ -136,6 +136,7 @@ struct PHPAssetPreview: View {
                     hButton(
                         .medium,
                         .secondaryAlt,
+                        buttonContent: .init(title: L10n.chatUploadPresend),
                         {
                             Task {
                                 withAnimation {
@@ -151,20 +152,17 @@ struct PHPAssetPreview: View {
                                     self.selected = false
                                 }
                             }
-                        },
-                        content: {
-                            Group {
-                                if loading {
-                                    ProgressView()
-                                        .foregroundColor(hTextColor.Opaque.primary)
-                                } else {
-                                    hText(L10n.chatUploadPresend)
-                                        .foregroundColor(hTextColor.Opaque.primary)
-                                }
-                            }
-                            .asAnyView
                         }
                     )
+                    .hCustomButtonView {
+                        if loading {
+                            ProgressView()
+                                .foregroundColor(hTextColor.Opaque.primary)
+                        } else {
+                            hText(L10n.chatUploadPresend)
+                                .foregroundColor(hTextColor.Opaque.primary)
+                        }
+                    }
                     .opacity(selected ? 1 : 0)
                 }
             } else {

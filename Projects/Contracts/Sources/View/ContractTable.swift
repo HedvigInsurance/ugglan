@@ -82,29 +82,31 @@ struct ContractTable: View {
                                 hButton(
                                     .large,
                                     .secondary,
-                                    buttonContent: .init(title: nil),
-                                    /** todo: fix */
+                                    buttonContent: .init(
+                                        title: L10n.InsurancesTab.cancelledInsurancesLabel(
+                                            "\(terminatedContracts.count)"
+                                        )
+                                    ),
                                     {
                                         router.push(ContractsRouterType.terminatedContracts)
                                     }
-                                    //                                    content: {
-                                    //                                        hRow {
-                                    //                                            HStack {
-                                    //                                                hText(
-                                    //                                                    L10n.InsurancesTab.cancelledInsurancesLabel(
-                                    //                                                        "\(terminatedContracts.count)"
-                                    //                                                    )
-                                    //                                                )
-                                    //                                                .foregroundColor(hTextColor.Opaque.primary)
-                                    //                                                Spacer()
-                                    //                                            }
-                                    //                                        }
-                                    //                                        .withChevronAccessory
-                                    //                                        .verticalPadding(0)
-                                    //                                        .foregroundColor(hTextColor.Opaque.secondary)
-                                    //                                        .asAnyView
-                                    //                                    }
                                 )
+                                .hCustomButtonView {
+                                    hRow {
+                                        HStack {
+                                            hText(
+                                                L10n.InsurancesTab.cancelledInsurancesLabel(
+                                                    "\(terminatedContracts.count)"
+                                                )
+                                            )
+                                            .foregroundColor(hTextColor.Opaque.primary)
+                                            Spacer()
+                                        }
+                                    }
+                                    .withChevronAccessory
+                                    .verticalPadding(0)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                }
                             }
                             .transition(.slide)
                         }

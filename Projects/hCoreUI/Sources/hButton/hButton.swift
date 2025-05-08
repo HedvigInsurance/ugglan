@@ -34,6 +34,7 @@ public struct hButton: View {
     let buttonContent: hButtonContent
     var action: () -> Void
     @Environment(\.hWithTransition) var withTransition
+    @Environment(\.hCustomButtonView) var customButtonView
 
     public init(
         _ size: hButtonSize,
@@ -51,11 +52,15 @@ public struct hButton: View {
         _hButton(action: {
             action()
         }) {
-            if let transition = withTransition {
-                content
-                    .transition(transition)
+            if customButtonView != nil {
+                customButtonView
             } else {
-                content
+                if let transition = withTransition {
+                    content
+                        .transition(transition)
+                } else {
+                    content
+                }
             }
         }
         .buttonStyle(ButtonFilledStyle(size: size))
@@ -254,6 +259,24 @@ extension View {
 extension View {
     public func hUseButtonTextColor(_ color: hButtonTextColor) -> some View {
         self.environment(\.hUseButtonTextColor, color)
+    }
+}
+
+@MainActor
+private struct EnvironmentHCustomButtonView: @preconcurrency EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hCustomButtonView: AnyView? {
+        get { self[EnvironmentHCustomButtonView.self] }
+        set { self[EnvironmentHCustomButtonView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hCustomButtonView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hCustomButtonView, AnyView(content()))
     }
 }
 
