@@ -6,16 +6,16 @@ public struct hButtonContent {
     // TODO: make title not optional
     let title: String?
     let buttonImage: hButtonImage?
-    let textColor: any hColor
+    let textColor: hButtonTextColor
 
     public init(
         title: String?,
         buttonImage: hButtonImage? = nil,
-        textColor: (any hColor)? = nil
+        textColor: hButtonTextColor? = nil
     ) {
         self.title = title
         self.buttonImage = buttonImage
-        self.textColor = textColor ?? hTextColor.Opaque.primary
+        self.textColor = textColor ?? .default
     }
 
     public struct hButtonImage {
@@ -28,6 +28,21 @@ public struct hButtonContent {
         ) {
             self.image = image
             self.alignment = alignment
+        }
+    }
+
+    public enum hButtonTextColor {
+        case `default`
+        case red
+
+        @MainActor
+        var textColor: any hColor {
+            switch self {
+            case .default:
+                hTextColor.Opaque.primary
+            case .red:
+                hSignalColor.Red.element
+            }
         }
     }
 }
@@ -75,7 +90,7 @@ public struct hButton: View {
 
     private var textView: some View {
         hText(buttonContent.title ?? "", style: size == .small ? .label : .body1)
-            .foregroundColor(buttonContent.textColor)
+            .foregroundColor(buttonContent.textColor.textColor)
             .asAnyView
     }
 

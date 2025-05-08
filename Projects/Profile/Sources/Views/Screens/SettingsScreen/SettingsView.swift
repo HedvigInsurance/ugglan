@@ -17,7 +17,7 @@ struct SettingsView: View {
     var body: some View {
         hForm {
             hSection {
-                VStack(spacing: 4) {
+                VStack(spacing: .padding4) {
                     hFloatingField(
                         value: Localization.Locale.currentLocale.value.displayName,
                         placeholder: L10n.settingsLanguageTitle,
@@ -78,6 +78,10 @@ struct SettingsView: View {
                     hButton(
                         .large,
                         .ghost,
+                        buttonContent: .init(
+                            title: L10n.SettingsScreen.deleteAccountButton,
+                            textColor: .red
+                        ),
                         {
                             if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
                                 let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
@@ -87,11 +91,6 @@ struct SettingsView: View {
                                     profileNavigationVm.isDeleteAccountPresented = memberDetails
                                 }
                             }
-                        },
-                        content: {
-                            hText(L10n.SettingsScreen.deleteAccountButton)
-                                .foregroundColor(hSignalColor.Red.element)
-                                .asAnyView
                         }
                     )
                 }
