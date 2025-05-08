@@ -1,31 +1,57 @@
+import Combine
 import Foundation
 
-public class FeatureFlagsDemo: FeatureFlags {
+public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
+
     public init() {}
+    private let featureDataPublisher = PassthroughSubject<FeatureData, Never>()
+    //    public var featureDataCancellable: AnyCancellable?
 
-    public var isDemoMode: Bool = true
-    public var isEditCoInsuredEnabled: Bool = false
-    public var isTravelInsuranceEnabled: Bool = false
-    public var isTerminationFlowEnabled: Bool = false
-    public var isUpdateNecessary: Bool = false
-    public var isChatDisabled: Bool = false
-    public var isPaymentScreenEnabled: Bool = false
-    public var isCommonClaimEnabled: Bool = false
-    public var isForeverEnabled: Bool = false
-    public var isConnectPaymentEnabled: Bool = false
-    public var isHelpCenterEnabled: Bool = false
-    public var isSubmitClaimEnabled: Bool = false
-    public var osVersionTooLow: Bool = false
-    public var emailPreferencesEnabled: Bool = false
-    public var isAddonsEnabled: Bool = false
-    public var isMovingFlowEnabled: Bool = false
-    public var isAddonsRemovalFromMovingFlowEnabled: Bool = false
-    public var isRedeemCampaignDisabled: Bool = false
-
-    public func setup(with context: [String: String]) async throws {
-        try await Task.sleep(nanoseconds: 500_000_000)
+    public var featureData: AnyPublisher<FeatureData, Never> {
+        return featureDataPublisher.eraseToAnyPublisher()
     }
 
+    public func setup(with context: [String: String]) async throws {
+        let data = FeatureData(
+            isEditCoInsuredEnabled: true,
+            isTravelInsuranceEnabled: false,
+            isTerminationFlowEnabled: false,
+            isUpdateNecessary: false,
+            isChatDisabled: false,
+            isPaymentScreenEnabled: false,
+            isConnectPaymentEnabled: false,
+            isHelpCenterEnabled: false,
+            isSubmitClaimEnabled: false,
+            osVersionTooLow: false,
+            emailPreferencesEnabled: false,
+            isAddonsEnabled: false,
+            isDemoMode: true,
+            isMovingFlowEnabled: false,
+            isAddonsRemovalFromMovingFlowEnabled: false,
+            isRedeemCampaignDisabled: false
+        )
+        featureDataPublisher.send(data)
+    }
     public func updateContext(context: [String: String]) {
+        let data = FeatureData(
+            isEditCoInsuredEnabled: true,
+            isTravelInsuranceEnabled: false,
+            isTerminationFlowEnabled: false,
+            isUpdateNecessary: false,
+            isChatDisabled: false,
+            isPaymentScreenEnabled: false,
+            isConnectPaymentEnabled: false,
+            isHelpCenterEnabled: false,
+            isSubmitClaimEnabled: false,
+            osVersionTooLow: false,
+            emailPreferencesEnabled: false,
+            isAddonsEnabled: false,
+            isDemoMode: true,
+            isMovingFlowEnabled: false,
+            isAddonsRemovalFromMovingFlowEnabled: false,
+            isRedeemCampaignDisabled: false
+        )
+        featureDataPublisher.send(data)
+
     }
 }

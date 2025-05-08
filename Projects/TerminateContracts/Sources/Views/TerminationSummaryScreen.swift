@@ -102,7 +102,7 @@ struct TerminationSummaryScreen: View {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     return TerminationSummaryScreen()
         .environmentObject(
             TerminationFlowNavigationViewModel(
