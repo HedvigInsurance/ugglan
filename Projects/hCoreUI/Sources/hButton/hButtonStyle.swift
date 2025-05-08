@@ -61,20 +61,25 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.isEnabled) var isEnabled
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
         @Environment(\.hUseLightMode) var hUseLightMode
+        @Environment(\.hUseButtonTextColor) var buttonTextColor
 
         var configuration: Configuration
 
         @hColorBuilder var foregroundColor: some hColor {
-            if !isEnabled {
-                hTextColor.Opaque.disabled
+            if buttonTextColor == .red {
+                hSignalColor.Red.element
             } else {
-                switch hButtonConfigurationType {
-                case .primary:
-                    hTextColor.Opaque.primary.inverted
-                case .primaryAlt:
-                    hTextColor.Opaque.primary.colorFor(.light, .base)
-                default:
-                    hTextColor.Opaque.primary
+                if !isEnabled {
+                    hTextColor.Opaque.disabled
+                } else {
+                    switch hButtonConfigurationType {
+                    case .primary:
+                        hTextColor.Opaque.primary.inverted
+                    case .primaryAlt:
+                        hTextColor.Opaque.primary.colorFor(.light, .base)
+                    default:
+                        hTextColor.Opaque.primary
+                    }
                 }
             }
         }

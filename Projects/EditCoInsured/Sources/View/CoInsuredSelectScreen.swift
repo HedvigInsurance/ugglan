@@ -109,6 +109,13 @@ struct CoInsuredSelectScreen: View {
             hButton(
                 .large,
                 .ghost,
+                buttonContent: .init(
+                    title: L10n.generalAddNew,
+                    buttonImage: .init(
+                        image: hCoreUIAssets.plusSmall.image,
+                        alignment: .leading
+                    )
+                ),
                 {
                     editCoInsuredNavigation.coInsuredInputModel = .init(
                         actionType: .add,
@@ -116,13 +123,6 @@ struct CoInsuredSelectScreen: View {
                         title: L10n.contractAddCoinsured,
                         contractId: contractId
                     )
-                },
-                content: {
-                    HStack(alignment: .center) {
-                        Image(uiImage: hCoreUIAssets.plusSmall.image)
-                        hText(L10n.generalAddNew)
-                    }
-                    .asAnyView
                 }
             )
             .disabled(vm.isLoading)

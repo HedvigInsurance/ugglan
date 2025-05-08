@@ -47,7 +47,7 @@ struct MovingFlowHouseScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    title: L10n.saveAndContinueButtonLabel,
+                    buttonContent: .init(title: L10n.saveAndContinueButtonLabel),
                     {
                         continuePressed()
                     }
@@ -158,17 +158,15 @@ struct MovingFlowHouseScreen: View {
                     hButton(
                         .medium,
                         .primaryAlt,
+                        buttonContent: .init(
+                            title: L10n.changeAddressAddBuilding,
+                            buttonImage: .init(
+                                image: hCoreUIAssets.plusSmall.image,
+                                alignment: .leading
+                            )
+                        ),
                         {
                             addExtraBuilding()
-                        },
-                        content: {
-                            HStack {
-                                Image(uiImage: hCoreUIAssets.plusSmall.image)
-                                    .resizable()
-                                    .frame(width: .padding16, height: .padding16)
-                                hText(L10n.changeAddressAddBuilding)
-                            }
-                            .asAnyView
                         }
                     )
                     .hButtonDontShowLoadingWhenDisabled(true)

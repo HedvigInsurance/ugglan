@@ -6,16 +6,13 @@ public struct hButtonContent {
     // TODO: make title not optional
     let title: String?
     let buttonImage: hButtonImage?
-    let textColor: hButtonTextColor
 
     public init(
         title: String?,
-        buttonImage: hButtonImage? = nil,
-        textColor: hButtonTextColor? = nil
+        buttonImage: hButtonImage? = nil
     ) {
         self.title = title
         self.buttonImage = buttonImage
-        self.textColor = textColor ?? .default
     }
 
     public struct hButtonImage {
@@ -28,21 +25,6 @@ public struct hButtonContent {
         ) {
             self.image = image
             self.alignment = alignment
-        }
-    }
-
-    public enum hButtonTextColor {
-        case `default`
-        case red
-
-        @MainActor
-        var textColor: any hColor {
-            switch self {
-            case .default:
-                hTextColor.Opaque.primary
-            case .red:
-                hSignalColor.Red.element
-            }
         }
     }
 }
@@ -90,14 +72,15 @@ public struct hButton: View {
 
     private var textView: some View {
         hText(buttonContent.title ?? "", style: size == .small ? .label : .body1)
-            .foregroundColor(buttonContent.textColor.textColor)
-            .asAnyView
+
     }
 
     @ViewBuilder
     private func imageView(for alignment: HorizontalAlignment) -> (some View)? {
         if let image = buttonContent.buttonImage, image.alignment == alignment {
             Image(uiImage: image.image)
+                .resizable()
+                .frame(width: .padding16, height: .padding16)
         }
     }
 }
@@ -239,6 +222,29 @@ extension View {
     public func hButtonTakeFullWidth(_ takeFullWidth: Bool) -> some View {
         self.environment(\.hButtonTakeFullWidth, takeFullWidth)
     }
+}
+
+private struct EnvironmentHUseButtonTextColor: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: hButtonTextColor = .default
+}
+
+extension EnvironmentValues {
+    public var hUseButtonTextColor: hButtonTextColor {
+        get { self[EnvironmentHUseButtonTextColor.self] }
+        set { self[EnvironmentHUseButtonTextColor.self] = newValue }
+    }
+}
+
+extension View {
+    public func hUseButtonTextColor(_ color: hButtonTextColor) -> some View {
+        self.environment(\.hUseButtonTextColor, color)
+    }
+}
+
+public enum hButtonTextColor {
+    case `default`
+    case negative
+    case red
 }
 
 #Preview {
