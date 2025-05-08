@@ -36,17 +36,14 @@ public struct CoInsuredInputButton: View {
         hButton(
             .large,
             .alert,
+            buttonContent: .init(title: L10n.removeConfirmationButton),
             {
                 Task {
                     await getIntent(for: .delete)
                 }
-            },
-            content: {
-                hText(L10n.removeConfirmationButton)
-                    .transition(.opacity.animation(.easeOut))
-                    .asAnyView
             }
         )
+        .transition(.opacity.animation(.easeOut))
         .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
     }
 
@@ -54,6 +51,7 @@ public struct CoInsuredInputButton: View {
         hButton(
             .large,
             .primary,
+            buttonContent: .init(title: buttonDisplayText),
             {
                 if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
                     Task {
@@ -64,13 +62,9 @@ public struct CoInsuredInputButton: View {
                         await getIntent(for: vm.actionType)
                     }
                 }
-            },
-            content: {
-                hText(buttonDisplayText)
-                    .transition(.opacity.animation(.easeOut))
-                    .asAnyView
             }
         )
+        .transition(.opacity.animation(.easeOut))
         .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
     }
 

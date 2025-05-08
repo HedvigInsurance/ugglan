@@ -3,12 +3,11 @@ import SwiftUI
 
 @MainActor
 public struct hButtonContent {
-    // TODO: make title not optional
-    let title: String?
+    let title: String
     let buttonImage: hButtonImage?
 
     public init(
-        title: String?,
+        title: String,
         buttonImage: hButtonImage? = nil
     ) {
         self.title = title
@@ -34,6 +33,7 @@ public struct hButton: View {
     var type: hButtonConfigurationType
     let buttonContent: hButtonContent
     var action: () -> Void
+    @Environment(\.hWithTransition) var withTransition
 
     public init(
         _ size: hButtonSize,
@@ -51,19 +51,27 @@ public struct hButton: View {
         _hButton(action: {
             action()
         }) {
-            HStack(spacing: .padding8) {
-                imageView(for: .leading)
-                textView
-                imageView(for: .trailing)
+            if let transition = withTransition {
+                content
+                    .transition(transition)
+            } else {
+                content
             }
         }
         .buttonStyle(ButtonFilledStyle(size: size))
         .hButtonConfigurationType(type)
     }
 
-    private var textView: some View {
-        hText(buttonContent.title ?? "", style: size == .small ? .label : .body1)
+    private var content: some View {
+        HStack(spacing: .padding8) {
+            imageView(for: .leading)
+            textView
+            imageView(for: .trailing)
+        }
+    }
 
+    private var textView: some View {
+        hText(buttonContent.title, style: size == .small ? .label : .body1)
     }
 
     @ViewBuilder
@@ -223,6 +231,23 @@ extension EnvironmentValues {
     public var hUseButtonTextColor: hButtonTextColor {
         get { self[EnvironmentHUseButtonTextColor.self] }
         set { self[EnvironmentHUseButtonTextColor.self] = newValue }
+    }
+}
+
+private struct EnvironmentHWithTransition: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: AnyTransition? = nil
+}
+
+extension EnvironmentValues {
+    var hWithTransition: AnyTransition? {
+        get { self[EnvironmentHWithTransition.self] }
+        set { self[EnvironmentHWithTransition.self] = newValue }
+    }
+}
+
+extension View {
+    public func hWithTransition(_ transition: AnyTransition?) -> some View {
+        self.environment(\.hWithTransition, transition)
     }
 }
 
