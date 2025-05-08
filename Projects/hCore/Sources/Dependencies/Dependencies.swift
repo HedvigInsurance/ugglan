@@ -58,7 +58,7 @@ public struct Module {
 
 @MainActor
 @propertyWrapper
-public struct InjectObject<T: ObservableObject>: DynamicProperty {
+public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
     @StateObject private var stateObject: T
 
     public init() {
