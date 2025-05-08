@@ -33,6 +33,7 @@ struct LoggedInNavigation: View {
     @StateObject private var paymentsRouter = Router()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
 
+    @InjectObject private var features: FeatureFlags
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             homeTab
@@ -45,7 +46,7 @@ struct LoggedInNavigation: View {
                 foreverTab
             }
 
-            if Dependencies.featureFlags().isPaymentScreenEnabled {
+            if features.isPaymentScreenEnabled {
                 paymentsTab
             }
             profileTab

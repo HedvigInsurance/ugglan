@@ -1,4 +1,5 @@
 import Authentication
+import Combine
 import Contracts
 import Forever
 import Home
@@ -90,6 +91,7 @@ class MainNavigationViewModel: ObservableObject {
     var loggedInVm = LoggedInNavigationViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
+    private var featureFlagsCancellable = Set<AnyCancellable>()
     var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {
         didSet {
             Task {
@@ -153,9 +155,20 @@ class MainNavigationViewModel: ObservableObject {
     }
 
     private func checkForFeatureFlags() async {
+        let featureFlags: FeatureFlags = Dependencies.shared.resolve()
+        featureFlagsCancellable.removeAll()
+        featureFlags.$isUpdateNecessary
+            .prepend()
+            .sink { [weak self] data in
+                self?.shouldUpdateApp = data
+            }
+            .store(in: &featureFlagsCancellable)
+        featureFlags.$osVersionTooLow
+            .sink { [weak self] data in
+                self?.osVersionTooLow = data
+            }
+            .store(in: &featureFlagsCancellable)
         await fetchFeatureFlag()
-        shouldUpdateApp = Dependencies.featureFlags().isUpdateNecessary
-        osVersionTooLow = Dependencies.featureFlags().osVersionTooLow
     }
 
     func fetchFeatureFlag() async {
