@@ -16,7 +16,7 @@ struct CrossSellingItem: View {
 
     var body: some View {
         HStack {
-            HStack(spacing: 16) {
+            HStack(spacing: .padding16) {
                 Image(uiImage: crossSell.image)
                     .resizable()
                     .frame(width: 48, height: 48)
@@ -39,17 +39,13 @@ struct CrossSellingItem: View {
                     hButton(
                         .medium,
                         .primaryAlt,
+                        buttonContent: .init(title: L10n.crossSellGetPrice),
                         {
                             fieldIsClicked.toggle()
                             openExternal()
-                        },
-                        content: {
-                            hText(L10n.crossSellGetPrice)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                                .colorScheme(.light)
-                                .asAnyView
                         }
                     )
+                    .hUseLightMode
                 }
             }
             .accessibilityElement(children: .combine)

@@ -79,8 +79,7 @@ struct SettingsView: View {
                         .large,
                         .ghost,
                         buttonContent: .init(
-                            title: L10n.SettingsScreen.deleteAccountButton,
-                            textColor: .red
+                            title: L10n.SettingsScreen.deleteAccountButton
                         ),
                         {
                             if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
@@ -93,6 +92,7 @@ struct SettingsView: View {
                             }
                         }
                     )
+                    .hUseButtonTextColor(.red)
                 }
                 .sectionContainerStyle(.transparent)
             }

@@ -33,27 +33,18 @@ public struct hButton: View {
     var size: hButtonSize
     var type: hButtonConfigurationType
     let buttonContent: hButtonContent
-    //    var title: String?
-    //    var buttonImage: hButtonImage?
-    //    var content: (() -> AnyView)?
     var action: () -> Void
 
     public init(
         _ size: hButtonSize,
         _ type: hButtonConfigurationType,
         buttonContent: hButtonContent,
-        //        title: String? = nil,
-        //        withImage: hButtonImage? = nil,
         _ action: @escaping () -> Void
-            //        content: (() -> AnyView)? = nil
     ) {
         self.type = type
         self.size = size
         self.buttonContent = buttonContent
-        //        self.title = title
-        //        self.buttonImage = withImage
         self.action = action
-        //        self.content = content
     }
 
     public var body: some View {
