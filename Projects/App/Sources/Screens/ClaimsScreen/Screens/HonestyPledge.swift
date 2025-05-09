@@ -172,13 +172,9 @@ struct HonestyPledge: View {
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
 
-                hButton.LargeButton(type: .ghost) {
+                hCancelButton {
                     router.dismiss()
-                } content: {
-                    L10n.generalCancelButton.hText(.body1)
-                        .foregroundColor(hTextColor.Opaque.primary)
                 }
-
             }
             .padding(.horizontal, .padding24)
             .fixedSize(horizontal: false, vertical: true)

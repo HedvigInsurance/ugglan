@@ -100,7 +100,6 @@ struct LoggedInNavigation: View {
                 .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(
-                            buttonTitle: L10n.generalCloseButton,
                             buttonAction: { [weak vm] in
                                 vm?.addonErrorRouter.dismiss()
                             }

@@ -32,10 +32,8 @@ public struct CrossSellingScreen: View {
         .configureTitleView(title: L10n.crossSellTitle, subTitle: L10n.crossSellSubtitle)
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .ghost) {
+                hCloseButton {
                     router.dismiss()
-                } content: {
-                    hText(L10n.generalCloseButton)
                 }
             }
             .sectionContainerStyle(.transparent)

@@ -8,11 +8,9 @@ struct CancelButton: View {
 
     var body: some View {
         hSection {
-            hButton.LargeButton(type: .ghost) {
+            hCancelButton {
                 editCoInsuredNavigation.editCoInsuredConfig = nil
                 router.dismiss()
-            } content: {
-                hText(L10n.generalCancelButton)
             }
         }
         .sectionContainerStyle(.transparent)

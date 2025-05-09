@@ -30,7 +30,6 @@ struct EmailPreferencesConfirmView: View {
                         }
                     ),
                 dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         profileNavigationVm.isConfirmEmailPreferencesPresented = false
                     }

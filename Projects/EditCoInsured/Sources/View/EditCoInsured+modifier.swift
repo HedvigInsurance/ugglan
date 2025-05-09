@@ -54,7 +54,6 @@ struct EditCoInsured: ViewModifier {
                     .hStateViewButtonConfig(
                         .init(
                             actionButtonAttachedToBottom: .init(
-                                buttonTitle: L10n.generalCloseButton,
                                 buttonAction: {
                                     errorRouter.dismiss()
                                 }

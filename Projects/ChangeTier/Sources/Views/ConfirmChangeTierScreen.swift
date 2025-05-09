@@ -21,7 +21,6 @@ public struct ConfirmChangeTierScreen: View {
                     }
                 ),
                 dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         changeTierNavigationVm.isConfirmTierPresented = false
                     }

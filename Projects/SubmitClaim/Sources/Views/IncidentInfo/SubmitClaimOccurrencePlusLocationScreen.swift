@@ -79,7 +79,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     @ViewBuilder
     private var continueButton: some View {
-        hButton.LargeButton(type: .primary) {
+        hContinueButton {
             Task {
                 if let model = claimsNavigationVm.occurrencePlusLocationModel {
                     let step = await vm.dateOfOccurrenceAndLocationRequest(
@@ -92,8 +92,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     }
                 }
             }
-        } content: {
-            hText(L10n.generalContinueButton, style: .body1)
         }
         .hButtonIsLoading(vm.viewState == .loading)
         .disabled(vm.viewState == .loading)

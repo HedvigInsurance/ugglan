@@ -30,7 +30,6 @@ public struct UpdateAppScreen: View {
                 return nil
             }
             return .init(
-                buttonTitle: L10n.generalCloseButton,
                 buttonAction: {
                     onSelected()
                 }

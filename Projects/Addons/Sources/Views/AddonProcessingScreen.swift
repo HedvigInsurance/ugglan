@@ -42,7 +42,6 @@ struct AddonProcessingScreen: View {
             ),
             dismissButton:
                 .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         addonNavigationVm.router.dismiss(withDismissingAll: true)
                     }

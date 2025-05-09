@@ -74,7 +74,6 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 }
             ),
             dismissButton: .init(
-                buttonTitle: L10n.generalCloseButton,
                 buttonAction: {
                     claimsNavigationVm.router.dismiss()
                 }
@@ -110,11 +109,8 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 anchor: .center
             )
             Spacer()
-            hButton.LargeButton(type: .ghost) {
+            hCloseButton {
                 claimsNavigationVm.router.dismiss()
-            } content: {
-                hText(L10n.generalCloseButton, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
             }
         }
         .opacity(successAnimation ? 1 : 0)

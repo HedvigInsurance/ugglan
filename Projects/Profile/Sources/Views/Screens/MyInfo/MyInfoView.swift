@@ -37,7 +37,7 @@ public struct MyInfoView: View {
         }
         .hFormAttachToBottom({
             hSection {
-                hButton.LargeButton(type: .primary) {
+                hSaveButton {
                     Task {
                         withAnimation {
                             vm.isLoading = true
@@ -48,8 +48,6 @@ public struct MyInfoView: View {
                             vm.checkForChanges()
                         }
                     }
-                } content: {
-                    hText(L10n.generalSaveButton)
                 }
                 .hButtonIsLoading(vm.isLoading)
             }

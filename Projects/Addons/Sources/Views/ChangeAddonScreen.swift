@@ -26,7 +26,6 @@ struct ChangeAddonScreen: View {
                     ),
                     dismissButton:
                         .init(
-                            buttonTitle: L10n.generalCloseButton,
                             buttonAction: {
                                 changeAddonNavigationVm.router.dismiss()
                             }
@@ -74,10 +73,8 @@ struct ChangeAddonScreen: View {
                             )
                         ])
 
-                        hButton.LargeButton(type: .primary) {
+                        hContinueButton {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
-                        } content: {
-                            hText(L10n.generalContinueButton)
                         }
                         .padding(.top, .padding16)
                     }

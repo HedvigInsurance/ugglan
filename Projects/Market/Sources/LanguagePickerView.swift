@@ -60,20 +60,16 @@ public struct PickLanguage: View {
         .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hSection {
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     if let onSave {
-                        hButton.LargeButton(type: .primary) {
+                        hSaveButton {
                             Localization.Locale.currentLocale.send(currentLocale)
                             onSave(currentLocale.code)
-                        } content: {
-                            hText(L10n.generalSaveButton)
                         }
                     }
                     if let onCancel {
-                        hButton.LargeButton(type: .ghost) {
+                        hCancelButton {
                             onCancel()
-                        } content: {
-                            hText(L10n.generalCancelButton)
                         }
                     }
                 }
