@@ -11,111 +11,67 @@ public struct MyInfoView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            hSection {
-                VStack(spacing: .padding4) {
-                    hFloatingTextField(
-                        masking: .init(type: .digits),
-                        value: $vm.phone,
-                        equals: $vm.type,
-                        focusValue: .phone,
-                        placeholder: L10n.phoneNumberRowTitle,
-                        error: $vm.phoneError
-                    )
-                    hFloatingTextField(
-                        masking: .init(type: .email),
-                        value: $vm.email,
-                        equals: $vm.type,
-                        focusValue: .email,
-                        placeholder: L10n.emailRowTitle,
-                        error: $vm.emailError
-                    )
+        hForm {}
+            .hFormAttachToBottom {
+                hSection {
+                    VStack(spacing: .padding16) {
+                        VStack(spacing: .padding4) {
+                            infoCardView
+                            emailField
+                            phoneNumberField
+                        }
+                        buttonView
+                    }
                 }
+                .sectionContainerStyle(.transparent)
                 .disabled(vm.isLoading)
             }
-            .padding(.top, .padding8)
-        }
-        .hFormAttachToBottom({
-            hSection {
-                hButton.LargeButton(type: .primary) {
-                    Task {
-                        withAnimation {
-                            vm.isLoading = true
-                        }
-                        await vm.save()
-                        withAnimation {
-                            vm.isLoading = false
-                            vm.checkForChanges()
-                        }
-                    }
-                } content: {
-                    hText(L10n.generalSaveButton)
-                }
-                .hButtonIsLoading(vm.isLoading)
-            }
-            .sectionContainerStyle(.transparent)
-            .padding(.bottom, .padding8)
-            .opacity(vm.inEditMode ? 1 : 0)
-        })
-        .sectionContainerStyle(.transparent)
-        .introspect(.viewController, on: .iOS(.v13...)) { vc in
-            self.vm.vc = vc
-        }
-        .alert(isPresented: $vm.showAlert) {
-            cancelAlert
-        }
-        .navigationTitle(L10n.profileMyInfoRowTitle)
-
     }
 
-    @ToolbarContentBuilder
-    private var toolbars: some ToolbarContent {
-        Group {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(L10n.myInfoCancelButton) {
-                    vm.cancel()
-                }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .opacity(vm.inEditMode ? 1 : 0)
-                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-                .disabled(!vm.inEditMode)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if vm.isLoading {
-                    ProgressView().foregroundColor(hTextColor.Opaque.primary)
-                        .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-
-                } else {
-                    Button(L10n.generalDoneButton) {
-                        Task {
-                            withAnimation {
-                                vm.isLoading = true
-                            }
-                            await vm.save()
-                            withAnimation {
-                                vm.isLoading = false
-                                vm.checkForChanges()
-                            }
-                        }
-                    }
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .opacity(vm.inEditMode ? 1 : 0)
-                    .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-                    .disabled(!vm.inEditMode)
-                }
-            }
-        }
+    private var infoCardView: some View {
+        InfoCard(text: "Review and update your contact info. We’ll only get in touch when it matters.", type: .info)
     }
 
-    private var cancelAlert: SwiftUI.Alert {
-        return Alert(
-            title: Text(L10n.myInfoCancelAlertTitle),
-            message: Text(L10n.myInfoCancelAlertMessage),
-            primaryButton: .default(Text(L10n.myInfoCancelAlertButtonCancel)),
-            secondaryButton: .destructive(Text(L10n.myInfoCancelAlertButtonConfirm)) {
-                vm.vc?.navigationController?.popViewController(animated: true)
-            }
+    private var emailField: some View {
+        hFloatingTextField(
+            masking: .init(type: .digits),
+            value: $vm.phone,
+            equals: $vm.type,
+            focusValue: .phone,
+            placeholder: L10n.phoneNumberRowTitle,
+            error: $vm.phoneError
         )
+    }
+
+    private var phoneNumberField: some View {
+        hFloatingTextField(
+            masking: .init(type: .email),
+            value: $vm.email,
+            equals: $vm.type,
+            focusValue: .email,
+            placeholder: L10n.emailRowTitle,
+            error: $vm.emailError
+        )
+    }
+
+    private var buttonView: some View {
+        hButton.LargeButton(type: .primary) {
+            Task {
+                withAnimation {
+                    vm.isLoading = true
+                }
+                await vm.save()
+                withAnimation {
+                    vm.isLoading = false
+                    vm.checkForChanges()
+                }
+            }
+        } content: {
+            hText(L10n.generalSaveButton)
+        }
+        .hButtonIsLoading(vm.isLoading)
+        .disabled(!vm.inEditMode)
+        .padding(.bottom, .padding8)
     }
 }
 
@@ -129,7 +85,6 @@ public class MyInfoViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var emailError: String?
     @Published var inEditMode: Bool = false
-    @Published var showAlert: Bool = false
     @Published var isLoading: Bool = false
 
     weak var vc: UIViewController?
@@ -225,10 +180,6 @@ public class MyInfoViewModel: ObservableObject {
             }
 
         }
-    }
-
-    func cancel() {
-        showAlert = true
     }
 
     enum MyInfoViewEditType: hTextFieldFocusStateCompliant {
