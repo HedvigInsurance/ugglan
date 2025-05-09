@@ -8,9 +8,22 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+public struct MemberInfo: Codable, Equatable, Sendable {
+    let id: String
+    let phoneNumber: String?
+
+    public init(
+        id: String,
+        phoneNumber: String?
+    ) {
+        self.id = id
+        self.phoneNumber = phoneNumber
+    }
+}
+
 public struct HomeState: StateProtocol {
     public var memberContractState: MemberContractState = .loading
-    public var memberId: String?
+    public var memberInfo: MemberInfo?
     public var futureStatus: FutureStatus = .none
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
@@ -57,7 +70,7 @@ public enum HomeAction: ActionProtocol {
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
     case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
-    case setMemberId(id: String)
+    case setMemberInfo(memberInfo: MemberInfo)
     case setFutureStatus(status: FutureStatus)
     case openDocument(contractURL: URL)
     case fetchQuickActions
@@ -109,7 +122,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 )
 
                 send(.setFutureStatus(status: memberData.futureState))
-                send(.setMemberId(id: memberData.id))
+                send(.setMemberInfo(memberInfo: memberData.memberInfo))
             } catch _ {
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
@@ -149,8 +162,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     public override func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
         var newState = state
         switch action {
-        case .setMemberId(let id):
-            newState.memberId = id
+        case .setMemberInfo(let memberInfo):
+            newState.memberInfo = memberInfo
         case .setMemberContractState(let memberState, let contracts):
             newState.memberContractState = memberState
             newState.contracts = contracts

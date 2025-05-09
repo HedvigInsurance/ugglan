@@ -45,20 +45,8 @@ struct HomeBottomScrollView: View {
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
                 case .missingContactInfo:
-                    InfoCard(
-                        text: "Make sure we’ve got the right contact info in case we need to reach you.",
-                        type: .info
-                    )
-                    .buttons(
-                        [
-                            .init(
-                                buttonTitle: "Update contact info",
-                                buttonAction: {
-                                    navigationVm.router.push(HomeRouterActions.contactInfo)
-                                }
-                            )
-                        ]
-                    )
+                    ContactInfoView()
+                        .environmentObject(navigationVm.router)
                 }
             }
         )
@@ -205,7 +193,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handleUpdateOfMemberId() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .compactMap({ $0.memberId })
+            .compactMap({ $0.memberInfo?.id })
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { memberId in
@@ -265,9 +253,25 @@ class HomeBottomScrollViewModel: ObservableObject {
         }
     }
 
-    /** TODO: FIX **/
     func handleMissingContactInfo() {
-        handleItem(.missingContactInfo, with: true)
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
+            .map({ $0.memberInfo?.phoneNumber })
+            .sink(receiveValue: { [weak self] phoneNumber in
+                if phoneNumber == nil || phoneNumber?.isEmpty ?? true {
+                    self?.handleItem(.missingContactInfo, with: true)
+                } else {
+                    self?.handleItem(.missingContactInfo, with: false)
+                }
+            })
+            .store(in: &cancellables)
+
+        let phoneNumber = store.state.memberInfo?.phoneNumber
+        if phoneNumber == nil || phoneNumber?.isEmpty ?? true {
+            handleItem(.missingContactInfo, with: true)
+        } else {
+            handleItem(.missingContactInfo, with: false)
+        }
     }
 }
 

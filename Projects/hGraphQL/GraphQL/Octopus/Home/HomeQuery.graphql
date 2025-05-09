@@ -1,6 +1,7 @@
 query Home {
   currentMember {
     id
+    phoneNumber
     activeContracts {
         ...ContractFragment
     }
