@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct ContactInfoView: View {
@@ -6,13 +7,13 @@ struct ContactInfoView: View {
 
     var body: some View {
         InfoCard(
-            text: "Make sure we’ve got the right contact info in case we need to reach you.",
+            text: L10n.missingContactInfoCardText,
             type: .info
         )
         .buttons(
             [
                 .init(
-                    buttonTitle: "Update contact info",
+                    buttonTitle: L10n.missingContactInfoCardButton,
                     buttonAction: {
                         router.push(HomeRouterActions.contactInfo)
                     }

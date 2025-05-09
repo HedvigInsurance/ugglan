@@ -30,7 +30,7 @@ public struct MyInfoView: View {
     @ViewBuilder
     private var infoCardView: (some View)? {
         if vm.showInfoCard {
-            InfoCard(text: "Review and update your contact info. We’ll only get in touch when it matters.", type: .info)
+            InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
         }
     }
 
