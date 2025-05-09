@@ -1,7 +1,6 @@
 import Combine
 import PresentableStore
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -28,8 +27,11 @@ public struct MyInfoView: View {
             }
     }
 
-    private var infoCardView: some View {
-        InfoCard(text: "Review and update your contact info. We’ll only get in touch when it matters.", type: .info)
+    @ViewBuilder
+    private var infoCardView: (some View)? {
+        if vm.showInfoCard {
+            InfoCard(text: "Review and update your contact info. We’ll only get in touch when it matters.", type: .info)
+        }
     }
 
     private var emailField: some View {
@@ -63,7 +65,6 @@ public struct MyInfoView: View {
                 await vm.save()
                 withAnimation {
                     vm.isLoading = false
-                    vm.checkForChanges()
                 }
             }
         } content: {
@@ -84,14 +85,21 @@ public class MyInfoViewModel: ObservableObject {
     @Published var phoneError: String?
     @Published var email: String = ""
     @Published var emailError: String?
-    @Published var inEditMode: Bool = false
     @Published var isLoading: Bool = false
     @Published var disabledSaveButton: Bool = false
 
-    weak var vc: UIViewController?
     private var originalPhone: String
     private var originalEmail: String
     private var cancellables = Set<AnyCancellable>()
+    var showInfoCard: Bool {
+        guard let phoneNumber = store.state.memberDetails?.phone, !phoneNumber.isEmpty else {
+            return true
+        }
+        guard let email = store.state.memberDetails?.email, !email.isEmpty else {
+            return true
+        }
+        return false
+    }
 
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -102,14 +110,12 @@ public class MyInfoViewModel: ObservableObject {
         $phone
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
-                self?.checkForChanges()
                 self?.isValid()
             }
             .store(in: &cancellables)
         $email
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
-                self?.checkForChanges()
                 self?.isValid()
             }
             .store(in: &cancellables)
@@ -118,12 +124,6 @@ public class MyInfoViewModel: ObservableObject {
     func isValid() {
         withAnimation {
             disabledSaveButton = (phone == "" || originalPhone == "") || (email == "" || originalEmail == "")
-        }
-    }
-
-    func checkForChanges() {
-        withAnimation {
-            inEditMode = originalPhone != phone || originalEmail != email
         }
     }
 
