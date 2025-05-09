@@ -44,6 +44,21 @@ struct HomeBottomScrollView: View {
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                case .missingContactInfo:
+                    InfoCard(
+                        text: "Make sure we’ve got the right contact info in case we need to reach you.",
+                        type: .info
+                    )
+                    .buttons(
+                        [
+                            .init(
+                                buttonTitle: "Update contact info",
+                                buttonAction: {
+                                    navigationVm.router.push(HomeRouterActions.contactInfo)
+                                }
+                            )
+                        ]
+                    )
                 }
             }
         )
@@ -72,6 +87,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleRenewalCardView()
         handleTerminatedMessage()
         handleUpdateOfMemberId()
+        handleMissingContactInfo()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -248,6 +264,11 @@ class HomeBottomScrollViewModel: ObservableObject {
             handleItem(.terminated, with: false)
         }
     }
+
+    /** TODO: FIX **/
+    func handleMissingContactInfo() {
+        handleItem(.missingContactInfo, with: true)
+    }
 }
 
 struct HomeBottomScrollView_Previews: PreviewProvider {
@@ -271,4 +292,5 @@ enum InfoCardType: Hashable, Comparable {
     case renewal
     case deletedView
     case terminated
+    case missingContactInfo
 }

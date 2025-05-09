@@ -13,7 +13,7 @@ public struct MyInfoView: View {
     public var body: some View {
         hForm {
             hSection {
-                VStack(spacing: 4) {
+                VStack(spacing: .padding4) {
                     hFloatingTextField(
                         masking: .init(type: .digits),
                         value: $vm.phone,
