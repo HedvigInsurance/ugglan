@@ -70,7 +70,7 @@ public struct MyInfoView: View {
             hText(L10n.generalSaveButton)
         }
         .hButtonIsLoading(vm.isLoading)
-        .disabled(!vm.inEditMode)
+        .disabled(vm.disabledSaveButton)
         .padding(.bottom, .padding8)
     }
 }
@@ -86,6 +86,7 @@ public class MyInfoViewModel: ObservableObject {
     @Published var emailError: String?
     @Published var inEditMode: Bool = false
     @Published var isLoading: Bool = false
+    @Published var disabledSaveButton: Bool = false
 
     weak var vc: UIViewController?
     private var originalPhone: String
@@ -102,14 +103,22 @@ public class MyInfoViewModel: ObservableObject {
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.checkForChanges()
+                self?.isValid()
             }
             .store(in: &cancellables)
         $email
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.checkForChanges()
+                self?.isValid()
             }
             .store(in: &cancellables)
+    }
+
+    func isValid() {
+        withAnimation {
+            disabledSaveButton = (phone == "" || originalPhone == "") || (email == "" || originalEmail == "")
+        }
     }
 
     func checkForChanges() {
