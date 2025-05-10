@@ -351,6 +351,14 @@ struct HomeTab: View {
                         .configureTitle(L10n.chatConversationInbox)
                         .environmentObject(homeNavigationVm)
                 }
+                .routerDestination(for: HomeRouterActions.self) { action in
+                    switch action {
+                    case .contactInfo:
+                        self.loggedInVm.selectedTab = 4
+                        self.loggedInVm.profileNavigationVm.pushToProfile()
+                        return HomeScreen()
+                    }
+                }
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)

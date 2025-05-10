@@ -92,3 +92,14 @@ public class HomeNavigationViewModel: ObservableObject {
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }
+
+public enum HomeRouterActions: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .contactInfo:
+            return .init(describing: "MyInfoView".self)
+        }
+    }
+
+    case contactInfo
+}
