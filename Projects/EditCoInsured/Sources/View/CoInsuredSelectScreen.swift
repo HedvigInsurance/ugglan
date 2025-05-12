@@ -115,7 +115,7 @@ struct CoInsuredSelectScreen: View {
                 )
             } content: {
                 HStack(alignment: .center) {
-                    Image(uiImage: hCoreUIAssets.plusSmall.image)
+                    hCoreUIAssets.plusSmall.view
                     hText(L10n.generalAddNew)
                 }
             }

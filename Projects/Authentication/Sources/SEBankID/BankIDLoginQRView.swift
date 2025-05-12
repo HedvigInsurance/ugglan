@@ -25,7 +25,7 @@ public struct BankIDLoginQRView: View {
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
             } else {
                 hForm {
-                    VStack(spacing: 32) {
+                    VStack(spacing: .padding32) {
                         ZStack {
                             if let image = vm.image {
                                 Image(uiImage: image)
@@ -81,7 +81,7 @@ public struct BankIDLoginQRView: View {
                                     vm.openBankId()
                                 } content: {
                                     HStack(spacing: 8) {
-                                        Image(uiImage: hCoreUIAssets.bankID.image)
+                                        hCoreUIAssets.bankID.view
                                         hText(L10n.authenticationBankidOpenButton)
                                     }
                                 }
@@ -240,6 +240,7 @@ class BankIDViewModel: ObservableObject {
         }
         let processedImage = UIImage(cgImage: cgImage).withRenderingMode(.alwaysTemplate)
         return processedImage
+
     }
 }
 

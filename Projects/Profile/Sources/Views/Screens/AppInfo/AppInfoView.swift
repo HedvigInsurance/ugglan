@@ -133,7 +133,7 @@ public struct AppInfoView: View {
         Toasts.shared.displayToastBar(
             toast: .init(
                 type: .campaign,
-                icon: hCoreUIAssets.checkmark.image,
+                icon: hCoreUIAssets.checkmark.view,
                 text: L10n.General.copied
             )
         )

@@ -26,13 +26,11 @@ public struct InfoCard: View {
 
     private var mainView: some View {
         HStack(alignment: .top, spacing: 0) {
-            VStack(spacing: .padding8) {
-                Image(uiImage: type.image)
-                    .resizable()
-                    .foregroundColor(type.imageColor)
-                    .frame(width: 20, height: 20)
-                    .accessibilityHidden(true)
-            }
+            type.image
+                .resizable()
+                .foregroundColor(type.imageColor)
+                .frame(width: 20, height: 20)
+                .accessibilityHidden(true)
             if let customContentView = customContentView {
                 customContentView
                     .padding(.leading, .padding8)
@@ -171,18 +169,18 @@ public enum InfoCardType {
     case disabled
 
     @MainActor
-    var image: UIImage {
+    var image: Image {
         switch self {
         case .info:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         case .attention:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .error:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .campaign:
-            return hCoreUIAssets.campaignSmall.image
+            return hCoreUIAssets.campaignSmall.view
         case .disabled:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         }
     }
 }

@@ -39,7 +39,7 @@ struct SubmitClaimCarView: View {
                     } content: {
                         HStack(spacing: 8) {
                             hText(L10n.submitClaimCarReportClaimButton)
-                            Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
+                            hCoreUIAssets.arrowNorthEast.view
                         }
                     }
             }

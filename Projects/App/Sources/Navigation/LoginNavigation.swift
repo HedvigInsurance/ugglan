@@ -112,7 +112,7 @@ public struct NotLoggedInView: View {
                     Button {
                         vm.showLanguagePicker = true
                     } label: {
-                        Image(uiImage: Localization.Locale.currentLocale.value.icon)
+                        Localization.Locale.currentLocale.value.icon
                             .padding(.padding8)
                     }
 

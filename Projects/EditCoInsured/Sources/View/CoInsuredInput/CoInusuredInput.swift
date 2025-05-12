@@ -135,7 +135,7 @@ struct CoInusuredInputScreen: View {
                     )
                 }
                 .hFieldTrailingView {
-                    Image(uiImage: hCoreUIAssets.lock.image)
+                    hCoreUIAssets.lock.view
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
 
@@ -147,7 +147,7 @@ struct CoInusuredInputScreen: View {
                     )
                 }
                 .hFieldTrailingView {
-                    Image(uiImage: hCoreUIAssets.lock.image)
+                    hCoreUIAssets.lock.view
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }

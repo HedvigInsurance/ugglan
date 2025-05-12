@@ -64,9 +64,9 @@ struct StateView: View {
 
     private var centralContent: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 if let image = type.image {
-                    Image(uiImage: image)
+                    image
                         .resizable()
                         .frame(width: 40, height: 40)
                         .foregroundColor(type.imageColor)
@@ -138,16 +138,16 @@ enum StateType {
     case bankId
     case empty
 
-    var image: UIImage? {
+    var image: Image? {
         switch self {
         case .error:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .information:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         case .success:
-            return hCoreUIAssets.checkmarkFilled.image
+            return hCoreUIAssets.checkmarkFilled.view
         case .bankId:
-            return hCoreUIAssets.bankID.image
+            return hCoreUIAssets.bankID.view
         case .empty:
             return nil
         }

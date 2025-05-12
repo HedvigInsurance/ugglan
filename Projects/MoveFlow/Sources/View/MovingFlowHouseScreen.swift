@@ -141,7 +141,7 @@ struct MovingFlowHouseScreen: View {
                                     houseInformationInputvm.remove(extraBuilding: extraBuilding)
                                 }
                             } label: {
-                                Image(uiImage: hCoreUIAssets.closeSmall.image)
+                                hCoreUIAssets.closeSmall.view
                                     .resizable()
                                     .frame(width: 16, height: 16)
                                     .foregroundColor(hTextColor.Opaque.primary)
@@ -156,7 +156,7 @@ struct MovingFlowHouseScreen: View {
                         addExtraBuilding()
                     } content: {
                         HStack {
-                            Image(uiImage: hCoreUIAssets.plusSmall.image)
+                            hCoreUIAssets.plusSmall.view
                                 .resizable()
                                 .frame(width: .padding16, height: .padding16)
                             hText(L10n.changeAddressAddBuilding)
