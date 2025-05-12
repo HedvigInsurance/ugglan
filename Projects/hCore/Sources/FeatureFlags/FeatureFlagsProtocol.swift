@@ -24,7 +24,6 @@ public struct FeatureData: Codable, Equatable {
     public let isDemoMode: Bool
     public let isMovingFlowEnabled: Bool
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
-    public let isRedeemCampaignDisabled: Bool
 
     public init(
         isEditCoInsuredEnabled: Bool,
@@ -41,8 +40,7 @@ public struct FeatureData: Codable, Equatable {
         isAddonsEnabled: Bool,
         isDemoMode: Bool,
         isMovingFlowEnabled: Bool,
-        isAddonsRemovalFromMovingFlowEnabled: Bool,
-        isRedeemCampaignDisabled: Bool
+        isAddonsRemovalFromMovingFlowEnabled: Bool
     ) {
         self.isEditCoInsuredEnabled = isEditCoInsuredEnabled
         self.isTravelInsuranceEnabled = isTravelInsuranceEnabled
@@ -59,7 +57,6 @@ public struct FeatureData: Codable, Equatable {
         self.isDemoMode = isDemoMode
         self.isMovingFlowEnabled = isMovingFlowEnabled
         self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
-        self.isRedeemCampaignDisabled = isRedeemCampaignDisabled
     }
 }
 
@@ -95,7 +92,6 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var isDemoMode = false
     @Published public private(set) var isMovingFlowEnabled = false
     @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false
-    @Published public private(set) var isRedeemCampaignDisabled = false
 
     private init() {
     }
@@ -121,7 +117,6 @@ public class FeatureFlags: ObservableObject {
                 self.isDemoMode = data.isDemoMode
                 self.isMovingFlowEnabled = data.isMovingFlowEnabled
                 self.isAddonsRemovalFromMovingFlowEnabled = data.isAddonsRemovalFromMovingFlowEnabled
-                self.isRedeemCampaignDisabled = data.isRedeemCampaignDisabled
             }
         self.client = client
         try await client.setup(with: context)

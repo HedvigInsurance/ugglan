@@ -95,8 +95,7 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             isMovingFlowEnabled: unleashClient.isEnabled(name: "moving_flow"),
             isAddonsRemovalFromMovingFlowEnabled: unleashClient.isEnabled(
                 name: "enable_addons_removal_from_moving_flow"
-            ),
-            isRedeemCampaignDisabled: unleashClient.isEnabled(name: "disable_redeem_campaign")
+            )
         )
         featureDataPublisher.send(data)
         //        Task {
