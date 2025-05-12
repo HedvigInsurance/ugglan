@@ -34,8 +34,6 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchMemberDetails)
             }
-        case .languageChanged:
-            send(.updateLanguage)
         case .updateLanguage:
             do {
                 try await self.profileService.updateLanguage()
