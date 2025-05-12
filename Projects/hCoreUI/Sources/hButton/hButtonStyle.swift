@@ -20,23 +20,12 @@ public enum hButtonConfigurationType: Sendable, CaseIterable {
         }
     }
 
-    // TODO: IS THIS USED?
     func shouldUseDark(for schema: ColorScheme) -> Bool {
         switch schema {
         case .dark:
-            switch self {
-            case .primary, .primaryAlt:
-                return false
-            case .secondary, .secondaryAlt, .ghost, .alert:
-                return true
-            }
+            return self != .primary && self != .primaryAlt
         case .light:
-            switch self {
-            case .primary:
-                return false
-            default:
-                return true
-            }
+            return self != .primary
         @unknown default:
             return false
         }
@@ -45,7 +34,6 @@ public enum hButtonConfigurationType: Sendable, CaseIterable {
 
 public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     var size: hButtonSize
-    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
 
     public func makeBody(configuration: Configuration) -> some View {
         VStack {
@@ -68,35 +56,30 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @hColorBuilder var foregroundColor: some hColor {
             if buttonTextColor == .red {
                 hSignalColor.Red.element
+            } else if !isEnabled {
+                hTextColor.Opaque.disabled
             } else {
-                if !isEnabled {
-                    hTextColor.Opaque.disabled
-                } else {
-                    switch hButtonConfigurationType {
-                    case .primary:
-                        hTextColor.Opaque.primary.inverted
-                    case .primaryAlt:
-                        hTextColor.Opaque.primary.colorFor(.light, .base)
-                    default:
-                        hTextColor.Opaque.primary
-                    }
+                switch hButtonConfigurationType {
+                case .primary:
+                    hTextColor.Opaque.primary.inverted
+                case .primaryAlt:
+                    hTextColor.Opaque.primary.colorFor(.light, .base)
+                default:
+                    hTextColor.Opaque.primary
                 }
             }
         }
 
         var body: some View {
+            let label = configuration.label
+                .foregroundColor(foregroundColor)
+
             LoaderOrContent(color: foregroundColor) {
                 if hUseLightMode {
-                    configuration.label
-                        .foregroundColor(
-                            foregroundColor
-                        )
+                    label
                         .colorScheme(.light)
                 } else {
-                    configuration.label
-                        .foregroundColor(
-                            foregroundColor
-                        )
+                    label
                 }
             }
         }

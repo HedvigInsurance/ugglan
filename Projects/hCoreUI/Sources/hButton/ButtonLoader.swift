@@ -2,12 +2,12 @@ import SwiftUI
 
 struct LoaderOrContent<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
-    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
-    @Environment(\.isEnabled) var enabled
+    @Environment(\.hButtonConfigurationType) var configurationType
     @Environment(\.hButtonDontShowLoadingWhenDisabled) var dontShowLoadingWhenDisabled
     @Environment(\.colorScheme) var colorScheme
-    var content: () -> Content
-    var color: any hColor
+
+    private let content: () -> Content
+    private let color: any hColor
 
     init(
         color: any hColor,
@@ -18,19 +18,34 @@ struct LoaderOrContent<Content: View>: View {
     }
 
     var body: some View {
-        if isLoading && !dontShowLoadingWhenDisabled {
-            Group {
-                if hButtonConfigurationType.shouldUseDark(for: colorScheme) {
-                    DotsActivityIndicator(.standard)
-                        .useDarkColor
-                        .colorScheme(.light)
-                } else {
-                    DotsActivityIndicator(.standard)
-                }
-            }
-            .fixedSize(horizontal: false, vertical: true)
+        if shouldShowLoading {
+            loadingIndicator
+                .fixedSize(horizontal: false, vertical: true)
         } else {
             content()
         }
+    }
+
+    @ViewBuilder
+    private var loadingIndicator: some View {
+        let useDark = configurationType.shouldUseDark(for: colorScheme)
+        if useDark {
+            DotsActivityIndicator(.standard)
+                .modifier(DarkIndicatorStyle())
+        } else {
+            DotsActivityIndicator(.standard)
+        }
+    }
+
+    private var shouldShowLoading: Bool {
+        isLoading && !dontShowLoadingWhenDisabled
+    }
+}
+
+private struct DarkIndicatorStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .useDarkColor
+            .colorScheme(.light)
     }
 }
