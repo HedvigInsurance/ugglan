@@ -184,13 +184,18 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     }
 
     private var coInsuredToDelete: [CoInsuredListType] {
-        return Array(
-            repeating: CoInsuredListType(
-                coInsured: CoInsuredModel(),
-                type: nil,
-                locallyAdded: false
-            ),
-            count: nbOfMissingCoInsuredExcludingDeleted
-        )
+        var coInsuredToDisplay: [CoInsuredListType] = []
+
+        for _ in 1...nbOfMissingCoInsuredExcludingDeleted {
+            coInsuredToDisplay.append(
+                CoInsuredListType(
+                    coInsured: CoInsuredModel(),
+                    type: nil,
+                    locallyAdded: false
+                )
+            )
+        }
+
+        return coInsuredToDisplay
     }
 }

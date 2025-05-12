@@ -3,21 +3,16 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct PickLanguage: View {
-    let onSave: ((String) -> Void)?
-    let onCancel: (() -> Void)?
+public struct LanguagePickerView: View {
+    let onSave: (() -> Void)
+    let onCancel: (() -> Void)
     @PresentableStore var store: MarketStore
 
     @State var currentLocale: Localization.Locale = .currentLocale.value
     @State var code: String? = Localization.Locale.currentLocale.value.lprojCode
 
-    public init() {
-        onSave = nil
-        onCancel = nil
-    }
-
     public init(
-        onSave: @escaping (String) -> Void,
+        onSave: @escaping () -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.onSave = onSave
@@ -26,21 +21,14 @@ public struct PickLanguage: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 8) {
-                if onSave == nil {
-                    hSection {
-                        hText(L10n.LanguagePickerModal.text, style: .body1)
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
+            VStack(spacing: .padding8) {
                 hSection {
-                    VStack(spacing: 4) {
+                    VStack(spacing: .padding4) {
                         ForEach(Localization.Locale.allCases, id: \.lprojCode) { locale in
                             hRadioField(
                                 id: locale.lprojCode,
                                 leftView: {
-                                    HStack(spacing: 16) {
+                                    HStack(spacing: .padding16) {
                                         Image(uiImage: locale.icon)
                                             .resizable()
                                             .frame(width: 24, height: 24)
@@ -61,16 +49,12 @@ public struct PickLanguage: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    if let onSave {
-                        hSaveButton {
-                            Localization.Locale.currentLocale.send(currentLocale)
-                            onSave(currentLocale.code)
-                        }
+                    hSaveButton {
+                        Localization.Locale.currentLocale.send(currentLocale)
+                        onSave()
                     }
-                    if let onCancel {
-                        hCancelButton {
-                            onCancel()
-                        }
+                    hCancelButton {
+                        onCancel()
                     }
                 }
             }
@@ -80,9 +64,6 @@ public struct PickLanguage: View {
         }
         .onChange(of: code) { newValue in
             if let locale = Localization.Locale.allCases.first(where: { $0.lprojCode == newValue }) {
-                if onSave == nil {
-                    Localization.Locale.currentLocale.send(locale)
-                }
                 currentLocale = locale
             }
         }
@@ -105,4 +86,8 @@ public struct PickLanguage: View {
             hBorderColor.secondary
         }
     }
+}
+
+#Preview {
+    LanguagePickerView(onSave: {}, onCancel: {})
 }

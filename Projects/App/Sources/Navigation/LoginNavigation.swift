@@ -6,6 +6,7 @@ import Environment
 import Foundation
 import Market
 import PresentableStore
+import Profile
 import SwiftUI
 import hCore
 import hCoreUI
@@ -19,12 +20,18 @@ struct LoginNavigation: View {
             NotLoggedInView(vm: vm)
         }
         .detent(presented: $vm.showLanguagePicker, style: [.height]) {
-            PickLanguage()
-                .navigationTitle(L10n.loginLanguagePreferences)
-                .embededInNavigation(
-                    options: [.navigationType(type: .large)],
-                    tracking: LoginDetentType.languagePicker
-                )
+            LanguagePickerView {
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                store.send(.updateLanguage)
+                vm.showLanguagePicker = false
+            } onCancel: {
+                vm.showLanguagePicker = false
+            }
+            .navigationTitle(L10n.loginLanguagePreferences)
+            .embededInNavigation(
+                options: [.navigationType(type: .large)],
+                tracking: LoginDetentType.languagePicker
+            )
         }
         .detent(presented: $vm.showLogin, style: [.large]) {
             Group {
@@ -61,7 +68,7 @@ private enum LoginDetentType: TrackingViewNameProtocol {
         case .notLoggedIn:
             return .init(describing: NotLoggedInView.self)
         case .languagePicker:
-            return .init(describing: PickLanguage().self)
+            return .init(describing: LanguagePickerView.self)
         }
     }
 
