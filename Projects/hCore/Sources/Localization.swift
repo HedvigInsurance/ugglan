@@ -65,5 +65,23 @@ public enum Localization {
             case .en_SE: return "en-SE"
             }
         }
+
+        nonisolated
+            public var translationLocale: Foundation.Locale
+        {
+            switch self {
+            case .sv_SE: return Foundation.Locale(identifier: "sv-SE")
+            case .en_SE: return Foundation.Locale(identifier: "en")
+            }
+        }
+
+        nonisolated
+            public var translationlprojCode: String
+        {
+            switch self {
+            case .sv_SE: return "sv-SE"
+            case .en_SE: return "en"
+            }
+        }
     }
 }
