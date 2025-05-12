@@ -2,12 +2,12 @@ import Foundation
 import SwiftUI
 
 public struct hButton: View {
-    var size: hButtonSize
-    var type: hButtonConfigurationType
-    let buttonContent: hButtonContent
-    var action: () -> Void
-    @Environment(\.hWithTransition) var withTransition
-    @Environment(\.hCustomButtonView) var customButtonView
+    private let size: hButtonSize
+    private let type: hButtonConfigurationType
+    private let buttonContent: hButtonContent
+    private let action: () -> Void
+    @Environment(\.hWithTransition) private var withTransition
+    @Environment(\.hCustomButtonView) private var customButtonView
 
     public init(
         _ size: hButtonSize,
@@ -25,16 +25,11 @@ public struct hButton: View {
         _hButton(action: {
             action()
         }) {
-            if customButtonView != nil {
-                customButtonView
-            } else {
-                if let transition = withTransition {
+            customButtonView
+                ?? AnyView(
                     content
-                        .transition(transition)
-                } else {
-                    content
-                }
-            }
+                        .withOptionalTransition(withTransition)
+                )
         }
         .buttonStyle(ButtonFilledStyle(size: size))
         .hButtonConfigurationType(type)
@@ -53,7 +48,7 @@ public struct hButton: View {
     }
 
     @ViewBuilder
-    private func imageView(for alignment: HorizontalAlignment) -> (some View)? {
+    private func imageView(for alignment: HorizontalAlignment) -> some View {
         if let image = buttonContent.buttonImage, image.alignment == alignment {
             Image(uiImage: image.image)
                 .resizable()
@@ -63,7 +58,7 @@ public struct hButton: View {
 }
 
 @MainActor
-public struct hButtonContent {
+public struct hButtonContent: Equatable {
     let title: String
     let buttonImage: hButtonImage?
 
@@ -75,7 +70,8 @@ public struct hButtonContent {
         self.buttonImage = buttonImage
     }
 
-    public struct hButtonImage {
+    @MainActor
+    public struct hButtonImage: Equatable {
         let image: UIImage
         let alignment: HorizontalAlignment
 
@@ -124,20 +120,16 @@ struct _hButton<Content: View>: View {
 extension View {
     @ViewBuilder
     func buttonCornerModifier(_ size: hButtonSize) -> some View {
-        switch size {
-        case .small:
-            self
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-        case .medium:
-            self
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-        case .large:
-            self
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        var cornerRadius: CGFloat {
+            switch size {
+            case .small: .cornerRadiusS
+            case .medium: .cornerRadiusM
+            case .large: .cornerRadiusL
+            }
         }
+        self
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 }
 
@@ -151,6 +143,8 @@ extension EnvironmentValues {
         set { self[EnvironmentHButtonConfigurationType.self] = newValue }
     }
 }
+
+// MARK: Environment Keys and Extensions
 
 private struct EnvironmentHUseLightMode: EnvironmentKey {
     static let defaultValue: Bool = false
@@ -277,6 +271,16 @@ extension EnvironmentValues {
 extension View {
     public func hCustomButtonView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hCustomButtonView, AnyView(content()))
+    }
+}
+
+extension View {
+    func withOptionalTransition(_ transition: AnyTransition?) -> some View {
+        if let transition = transition {
+            return AnyView(self.transition(transition))
+        } else {
+            return AnyView(self)
+        }
     }
 }
 
