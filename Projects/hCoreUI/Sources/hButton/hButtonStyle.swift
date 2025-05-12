@@ -40,7 +40,7 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             Label(configuration: configuration)
         }
         .buttonSizeModifier(size)
-        .background(ButtonFilledStandardBackground(configuration: configuration))
+        .background(hButtonFilledBackground(configuration: configuration))
         .buttonCornerModifier(size)
     }
 

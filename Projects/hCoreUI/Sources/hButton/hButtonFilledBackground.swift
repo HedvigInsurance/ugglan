@@ -1,32 +1,31 @@
 import SwiftUI
 
-struct ButtonFilledStandardBackground: View {
-    @Environment(\.isEnabled) var isEnabled
-    @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
+struct hButtonFilledBackground: View {
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.hButtonConfigurationType) private var configurationType
+    @Environment(\.hUseLightMode) private var useLightMode
+    @Environment(\.hButtonIsLoading) private var isLoading
+
     var configuration: SwiftUI.ButtonStyle.Configuration
-    @Environment(\.hUseLightMode) var hUseLightMode
-    @Environment(\.hButtonIsLoading) var isLoading
 
     var body: some View {
         backgroundColorView
-            .if(hUseLightMode) { view in
-                view.colorScheme(.light)
-            }
+            .applyLightModeIfNeeded(useLightMode)
     }
 
     @ViewBuilder
     private var backgroundColorView: some View {
-        switch hButtonConfigurationType {
+        switch configurationType {
         case .alert:
             alertBackgroundColor
         default:
-            regularBackgroundColor(for: hButtonConfigurationType)
+            regularBackgroundColor
         }
     }
 
     @ViewBuilder
-    private func regularBackgroundColor(for type: hButtonConfigurationType) -> some View {
-        let colorSet = hButtonConfigurationType.hButtonColorSet
+    private var regularBackgroundColor: some View {
+        let colorSet = configurationType.hButtonColorSet
 
         if configuration.isPressed {
             colorSet.resting.asAnyView
@@ -48,11 +47,10 @@ struct ButtonFilledStandardBackground: View {
 }
 
 extension View {
-    /// Conditional modifier application.
     @ViewBuilder
-    func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
-        if condition {
-            transform(self)
+    fileprivate func applyLightModeIfNeeded(_ useLightMode: Bool) -> some View {
+        if useLightMode {
+            self.colorScheme(.light)
         } else {
             self
         }

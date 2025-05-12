@@ -1,33 +1,6 @@
 import Foundation
 import SwiftUI
 
-@MainActor
-public struct hButtonContent {
-    let title: String
-    let buttonImage: hButtonImage?
-
-    public init(
-        title: String,
-        buttonImage: hButtonImage? = nil
-    ) {
-        self.title = title
-        self.buttonImage = buttonImage
-    }
-
-    public struct hButtonImage {
-        let image: UIImage
-        let alignment: HorizontalAlignment
-
-        public init(
-            image: UIImage,
-            alignment: HorizontalAlignment = .center
-        ) {
-            self.image = image
-            self.alignment = alignment
-        }
-    }
-}
-
 public struct hButton: View {
     var size: hButtonSize
     var type: hButtonConfigurationType
@@ -85,6 +58,33 @@ public struct hButton: View {
             Image(uiImage: image.image)
                 .resizable()
                 .frame(width: .padding16, height: .padding16)
+        }
+    }
+}
+
+@MainActor
+public struct hButtonContent {
+    let title: String
+    let buttonImage: hButtonImage?
+
+    public init(
+        title: String,
+        buttonImage: hButtonImage? = nil
+    ) {
+        self.title = title
+        self.buttonImage = buttonImage
+    }
+
+    public struct hButtonImage {
+        let image: UIImage
+        let alignment: HorizontalAlignment
+
+        public init(
+            image: UIImage,
+            alignment: HorizontalAlignment = .center
+        ) {
+            self.image = image
+            self.alignment = alignment
         }
     }
 }
