@@ -23,7 +23,7 @@ public struct MyInfoView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                .disabled(vm.isLoading)
+                .disabled(vm.viewState == .loading)
             }
     }
 
@@ -59,18 +59,12 @@ public struct MyInfoView: View {
     private var buttonView: some View {
         hButton.LargeButton(type: .primary) {
             Task {
-                withAnimation {
-                    vm.isLoading = true
-                }
                 await vm.save()
-                withAnimation {
-                    vm.isLoading = false
-                }
             }
         } content: {
             hText(L10n.generalSaveButton)
         }
-        .hButtonIsLoading(vm.isLoading)
+        .hButtonIsLoading(vm.viewState == .loading)
         .disabled(vm.disabledSaveButton)
         .padding(.bottom, .padding8)
     }
@@ -85,7 +79,7 @@ public class MyInfoViewModel: ObservableObject {
     @Published var phoneError: String?
     @Published var email: String = ""
     @Published var emailError: String?
-    @Published var isLoading: Bool = false
+    @Published var viewState: ProcessingState = .success
     @Published var disabledSaveButton: Bool = false
 
     private var originalPhone: String
@@ -129,10 +123,16 @@ public class MyInfoViewModel: ObservableObject {
 
     @MainActor
     func save() async {
+        withAnimation {
+            viewState = .loading
+        }
         async let updatePhoneAsync: () = self.getPhoneFuture()
         async let updateEmailAsync: () = self.getEmailFuture()
         do {
             _ = try await [updatePhoneAsync, updateEmailAsync]
+            withAnimation {
+                viewState = .success
+            }
             Toasts.shared.displayToastBar(
                 toast: .init(
                     type: .campaign,
@@ -151,6 +151,9 @@ public class MyInfoViewModel: ObservableObject {
                     withAnimation {
                         self.phoneError = error.localizedDescription
                     }
+                }
+                withAnimation {
+                    viewState = .error(errorMessage: error.localizedDescription)
                 }
             }
         }
