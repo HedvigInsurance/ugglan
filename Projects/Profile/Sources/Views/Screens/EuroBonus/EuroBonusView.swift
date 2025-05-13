@@ -41,20 +41,26 @@ public struct EuroBonusView: View {
                             text: L10n.SasIntegration.eurobonusInfo,
                             type: .info
                         )
-                        hButton.LargeButton(type: .primary) {
-                            euroBonusNavigationVm.isChangeEuroBonusPresented = true
-                        } content: {
-                            hText(L10n.SasIntegration.connectEurobonus)
-                        }
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: L10n.SasIntegration.connectEurobonus),
+                            {
+                                euroBonusNavigationVm.isChangeEuroBonusPresented = true
+                            }
+                        )
                         .padding(.vertical, .padding16)
                     }
                 } else {
                     hSection {
-                        hButton.LargeButton(type: .ghost) {
-                            euroBonusNavigationVm.isChangeEuroBonusPresented = true
-                        } content: {
-                            hText(L10n.SasIntegration.changeEurobonusNumber)
-                        }
+                        hButton(
+                            .large,
+                            .ghost,
+                            content: .init(title: L10n.SasIntegration.changeEurobonusNumber),
+                            {
+                                euroBonusNavigationVm.isChangeEuroBonusPresented = true
+                            }
+                        )
                         .padding(.vertical, .padding16)
                     }
                 }

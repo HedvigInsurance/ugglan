@@ -64,11 +64,14 @@ public struct InfoScreen: View {
         .hFormContentPosition(contentPosition)
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .ghost) {
-                    onClickButton()
-                } content: {
-                    hText(dismissButtonTitle)
-                }
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: dismissButtonTitle),
+                    {
+                        onClickButton()
+                    }
+                )
             }
             .sectionContainerStyle(.transparent)
         }

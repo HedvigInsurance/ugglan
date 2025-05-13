@@ -24,7 +24,6 @@ public struct ConfirmChangeAddonScreen: View {
                     }
                 ),
                 dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         addonNavigationVm.isConfirmAddonPresented = false
                     }

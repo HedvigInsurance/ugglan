@@ -20,7 +20,7 @@ struct MockPaymentData {
                     ),
                     status: .upcoming,
                     contracts: [],
-                    discounts: [],
+                    referralDiscount: nil,
                     paymentDetails: nil,
                     addedToThePayment: nil
                 ),
@@ -36,7 +36,7 @@ struct MockPaymentData {
                         ),
                         status: .pending,
                         contracts: [],
-                        discounts: [],
+                        referralDiscount: nil,
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )

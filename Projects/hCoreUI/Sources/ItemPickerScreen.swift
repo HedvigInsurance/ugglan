@@ -207,20 +207,20 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         hSection {
             VStack(spacing: .padding16) {
                 bottomAttachedView
-
-                hButton.LargeButton(type: .primary) {
-                    sendSelectedItems
-                } content: {
-                    hText(config.buttonText, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: config.buttonText),
+                    {
+                        sendSelectedItems
+                    }
+                )
                 .hButtonIsLoading(isLoading)
                 .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
                 .accessibilityHint(accessibilityText)
                 if let onCancel = config.onCancel {
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         onCancel()
-                    } content: {
-                        hText(L10n.generalCancelButton, style: .body1)
                     }
                     .disabled(isLoading)
                     .hButtonDontShowLoadingWhenDisabled(true)

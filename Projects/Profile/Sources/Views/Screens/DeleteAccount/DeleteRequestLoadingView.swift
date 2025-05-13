@@ -51,11 +51,9 @@ public struct DeleteRequestLoadingView: View {
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .ghost) {
+                hCloseButton {
                     router.dismiss()
                     dismissAction(.makeHomeTabActive)
-                } content: {
-                    hText(L10n.generalCloseButton, style: .body1)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -70,7 +68,6 @@ public struct DeleteRequestLoadingView: View {
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         dismissAction(.makeHomeTabActive)
                     }

@@ -34,11 +34,14 @@ struct LinkView: View {
                         .foregroundColor(hTextColor.Opaque.primary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
-                    hButton.MediumButton(type: .primaryAlt) {
-                        NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
-                    } content: {
-                        hText(L10n.ImportantMessage.readMore)
-                    }
+                    hButton(
+                        .medium,
+                        .primaryAlt,
+                        content: .init(title: L10n.ImportantMessage.readMore),
+                        {
+                            NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
+                        }
+                    )
                     .hButtonTakeFullWidth(true)
 
                 }

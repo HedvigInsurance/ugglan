@@ -29,17 +29,25 @@ public struct ConfirmChangesScreen: View {
                         }
                         .padding(.leading, .padding8)
                         VStack(spacing: .padding8) {
-                            hButton.LargeButton(type: .primary) {
-                                buttons.mainButton.buttonAction()
-                            } content: {
-                                hText(buttons.mainButton.buttonTitle ?? L10n.generalConfirm)
-                            }
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: buttons.mainButton.buttonTitle ?? L10n.generalConfirm),
+                                {
+                                    buttons.mainButton.buttonAction()
+                                }
+                            )
 
-                            hButton.LargeButton(type: .ghost) {
-                                buttons.dismissButton.buttonAction()
-                            } content: {
-                                hText(buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton)
-                            }
+                            hButton(
+                                .large,
+                                .ghost,
+                                content: .init(
+                                    title: buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton
+                                ),
+                                {
+                                    buttons.dismissButton.buttonAction()
+                                }
+                            )
                         }
                     }
                     .padding(.top, .padding24)
@@ -58,7 +66,12 @@ public struct ConfirmChangesButtonConfig {
         dismissButton: ConfirmChangeButton
     ) {
         self.mainButton = mainButton
-        self.dismissButton = dismissButton
+
+        if dismissButton.buttonTitle == nil {
+            self.dismissButton = .init(buttonAction: dismissButton.buttonAction)
+        } else {
+            self.dismissButton = dismissButton
+        }
     }
 
     public struct ConfirmChangeButton {

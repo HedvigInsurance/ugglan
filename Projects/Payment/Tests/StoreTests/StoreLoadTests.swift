@@ -30,7 +30,7 @@ final class StoreLoadTests: XCTestCase {
                 ),
                 status: .upcoming,
                 contracts: [],
-                discounts: [],
+                referralDiscount: nil,
                 paymentDetails: nil,
                 addedToThePayment: nil
             ),
@@ -46,7 +46,7 @@ final class StoreLoadTests: XCTestCase {
                     ),
                     status: .pending,
                     contracts: [],
-                    discounts: [],
+                    referralDiscount: nil,
                     paymentDetails: nil,
                     addedToThePayment: nil
                 )

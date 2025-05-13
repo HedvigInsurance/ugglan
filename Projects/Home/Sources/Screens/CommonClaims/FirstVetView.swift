@@ -30,15 +30,19 @@ public struct FirstVetView: View {
                                 hText(partner.description ?? "")
                                     .foregroundColor(hTextColor.Opaque.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
-                                hButton.MediumButton(type: .secondaryAlt) {
-                                    if let url = URL(
-                                        string: partner.url
-                                    ) {
-                                        UIApplication.shared.open(url)
+
+                                hButton(
+                                    .medium,
+                                    .secondaryAlt,
+                                    content: .init(title: L10n.commonClaimButton),
+                                    {
+                                        if let url = URL(
+                                            string: partner.url
+                                        ) {
+                                            UIApplication.shared.open(url)
+                                        }
                                     }
-                                } content: {
-                                    hText(L10n.commonClaimButton)
-                                }
+                                )
                                 .hButtonTakeFullWidth(true)
                             }
                         }
@@ -54,10 +58,8 @@ public struct FirstVetView: View {
     }
 
     private var buttonComponent: some View {
-        hButton.LargeButton(type: .ghost) {
+        hCloseButton {
             router.dismiss()
-        } content: {
-            hText(L10n.generalCloseButton)
         }
     }
 }

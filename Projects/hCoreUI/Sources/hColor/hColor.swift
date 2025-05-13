@@ -391,131 +391,130 @@ public struct hTextColor {
 }
 
 @MainActor
-public struct hButtonColor {
-    @MainActor
-    public struct Primary {
-        public static var resting: some hColor {
-            hColorScheme(
-                light: hGrayscaleOpaqueColor.black,
-                dark: hGrayscaleOpaqueColor.white
-            )
-        }
+public protocol hButtonColor {
+    var resting: any hColor { get }
+    var hover: any hColor { get }
+    var disabled: any hColor { get }
+}
 
-        public static var hover: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucentDark.greyScaleTranslucent900,
-                dark: hGrayscaleTranslucentLight.greyScaleTranslucent200
-            )
-        }
-
-        public static var disabled: some hColor {
-            hColorScheme(
-                light: hGrayscaleOpaqueColor.greyScale100,
-                dark: hGrayscaleOpaqueColor.greyScale900
-            )
-        }
+public struct Primary: hButtonColor {
+    public var resting: any hColor {
+        hColorScheme(
+            light: hGrayscaleOpaqueColor.black,
+            dark: hGrayscaleOpaqueColor.white
+        )
     }
 
-    @MainActor
-    public struct PrimaryAlt {
-        public static var resting: some hColor {
-            hColorScheme(
-                light: hGreenColor.green100,
-                dark: hGreenColor.green200
-            )
-        }
-
-        public static var hover: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
-                dark: hGrayscaleTranslucentLight.greyScaleTranslucent200
-            )
-        }
-
-        public static var disabled: some hColor {
-            hColorScheme(
-                light: hGrayscaleOpaqueColor.greyScale100,
-                dark: hGrayscaleOpaqueColor.greyScale900
-            )
-        }
+    public var hover: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucentDark.greyScaleTranslucent900,
+            dark: hGrayscaleTranslucentLight.greyScaleTranslucent200
+        )
     }
 
-    @MainActor
-    public struct Secondary {
-        public static var resting: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
-                dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
-            )
-        }
+    public var disabled: any hColor {
+        hColorScheme(
+            light: hGrayscaleOpaqueColor.greyScale100,
+            dark: hGrayscaleOpaqueColor.greyScale900
+        )
+    }
+}
 
-        public static var hover: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
-                dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
-            )
-        }
-
-        public static var disabled: some hColor {
-            hColorScheme(
-                light: hGrayscaleOpaqueColor.greyScale100,
-                dark: hGrayscaleOpaqueColor.greyScale900
-            )
-        }
+public struct PrimaryAlt: hButtonColor {
+    public init() {}
+    public var resting: any hColor {
+        hColorScheme(
+            light: hGreenColor.green100,
+            dark: hGreenColor.green200
+        )
     }
 
-    @MainActor
-    public struct SecondaryAlt {
-        public static var resting: some hColor {
-            hColorScheme(
-                light: hGrayscaleOpaqueColor.white,
-                dark: hGrayscaleOpaqueColor.black
-            )
-        }
-
-        public static var hover: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucentLight.greyScaleTranslucent500,
-                dark: hGrayscaleTranslucentLight.greyScaleTranslucent800
-            )
-        }
-
-        public static var disabled: some hColor {
-            hColorScheme(
-                light: hGrayscaleOpaqueColor.greyScale100,
-                dark: hGrayscaleOpaqueColor.greyScale900
-            )
-        }
+    public var hover: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+            dark: hGrayscaleTranslucentLight.greyScaleTranslucent200
+        )
     }
 
-    @MainActor
-    public struct Ghost {
-        public static var resting: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucent.transparent,
-                dark: hGrayscaleTranslucent.transparent
-            )
-        }
+    public var disabled: any hColor {
+        hColorScheme(
+            light: hGrayscaleOpaqueColor.greyScale100,
+            dark: hGrayscaleOpaqueColor.greyScale900
+        )
+    }
+}
 
-        public static var hover: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
-                dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
-            )
-        }
+public struct Secondary: hButtonColor {
+    public var resting: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
+        )
+    }
 
-        public static var disabled: some hColor {
-            hColorScheme(
-                light: hGrayscaleTranslucent.transparent,
-                dark: hGrayscaleTranslucent.transparent
-            )
-        }
+    public var hover: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
+        )
+    }
+
+    public var disabled: any hColor {
+        hColorScheme(
+            light: hGrayscaleOpaqueColor.greyScale100,
+            dark: hGrayscaleOpaqueColor.greyScale900
+        )
+    }
+}
+
+public struct SecondaryAlt: hButtonColor {
+    public var resting: any hColor {
+        hColorScheme(
+            light: hGrayscaleOpaqueColor.white,
+            dark: hGrayscaleOpaqueColor.black
+        )
+    }
+
+    public var hover: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent500,
+            dark: hGrayscaleTranslucentLight.greyScaleTranslucent800
+        )
+    }
+
+    public var disabled: any hColor {
+        hColorScheme(
+            light: hGrayscaleOpaqueColor.greyScale100,
+            dark: hGrayscaleOpaqueColor.greyScale900
+        )
+    }
+}
+
+public struct Ghost: hButtonColor {
+    public var resting: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucent.transparent,
+            dark: hGrayscaleTranslucent.transparent
+        )
+    }
+
+    public var hover: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
+        )
+    }
+
+    public var disabled: any hColor {
+        hColorScheme(
+            light: hGrayscaleTranslucent.transparent,
+            dark: hGrayscaleTranslucent.transparent
+        )
     }
 }
 
 @MainActor
 public struct hFillColor {
-
     @MainActor
     public struct Opaque {
         public static var primary: some hColor {

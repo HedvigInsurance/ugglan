@@ -64,48 +64,47 @@ public struct InfoCard: View {
                 .padding(.bottom, .padding4)
             if let buttonsConfig {
                 if buttonsConfig.count > 1 {
-                    HStack(spacing: 4) {
-                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                            if type == .neutral {
-                                hButton.SmallButton(type: .secondary) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                            } else {
-                                hButton.SmallButton(type: .secondaryAlt) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                                .hUseLightMode
-                            }
-                        }
+                    HStack(spacing: .padding4) {
+                        buttonsStackView(buttonsConfig)
                     }
                 } else {
-                    ForEach(buttonsConfig, id: \.buttonTitle) {
-                        config in
-                        Group {
-                            if type == .neutral {
-                                hButton.SmallButton(type: .secondary) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                            } else {
-                                hButton.SmallButton(type: .secondaryAlt) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                                .hUseLightMode
-                            }
-                        }
-                    }
+                    buttonsStackView(buttonsConfig)
                 }
             }
         }
         .padding(.leading, .padding8)
+    }
+
+    func buttonsStackView(_ buttonsConfig: [InfoCardButtonConfig]) -> some View {
+        ForEach(buttonsConfig, id: \.buttonTitle) { config in
+            if type == .neutral {
+                secondaryButton(config)
+            } else {
+                secondaryAltButton(config)
+            }
+        }
+    }
+
+    func secondaryButton(_ config: InfoCardButtonConfig) -> some View {
+        hButton(
+            .small,
+            .secondary,
+            content: .init(title: config.buttonTitle),
+            {
+                config.buttonAction()
+            }
+        )
+    }
+
+    func secondaryAltButton(_ config: InfoCardButtonConfig) -> some View {
+        hButton(
+            .small,
+            .secondaryAlt,
+            content: .init(title: config.buttonTitle),
+            {
+                config.buttonAction()
+            }
+        )
     }
 }
 

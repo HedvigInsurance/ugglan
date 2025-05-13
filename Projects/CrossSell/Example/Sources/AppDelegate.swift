@@ -1,4 +1,3 @@
-import ExampleUtil
 import Foundation
 import SwiftUI
 import hCoreUI
@@ -10,7 +9,6 @@ import hCoreUI
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        application.setup()
         return true
     }
 }
