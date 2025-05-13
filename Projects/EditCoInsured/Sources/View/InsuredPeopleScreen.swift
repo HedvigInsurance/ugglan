@@ -47,17 +47,20 @@ struct InsuredPeopleScreen: View {
 
     private var saveChangesButton: some View {
         hSection {
-            hButton.LargeButton(type: .primary) {
-                Task {
-                    await intentViewModel.performCoInsuredChanges(
-                        commitId: intentViewModel.intent.id
-                    )
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: L10n.generalSaveChangesButton),
+                {
+                    Task {
+                        await intentViewModel.performCoInsuredChanges(
+                            commitId: intentViewModel.intent.id
+                        )
+                    }
+                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
+                    editCoInsuredNavigation.editCoInsuredConfig = nil
                 }
-                editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
-                editCoInsuredNavigation.editCoInsuredConfig = nil
-            } content: {
-                hText(L10n.generalSaveChangesButton)
-            }
+            )
             .hButtonIsLoading(intentViewModel.isLoading)
             .disabled(
                 (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
@@ -97,22 +100,25 @@ struct InsuredPeopleScreen: View {
     private var buttonSection: (some View)? {
         if vm.config.numberOfMissingCoInsuredWithoutTermination == 0 {
             hSection {
-                hButton.LargeButton(type: .secondary) {
-                    let hasExistingCoInsured = vm.config.preSelectedCoInsuredList
-                        .filter { !vm.coInsuredAdded.contains($0) }
-                    if hasExistingCoInsured.isEmpty {
-                        editCoInsuredNavigation.coInsuredInputModel = .init(
-                            actionType: .add,
-                            coInsuredModel: CoInsuredModel(),
-                            title: L10n.contractAddCoinsured,
-                            contractId: vm.config.contractId
-                        )
-                    } else {
-                        editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+                hButton(
+                    .large,
+                    .secondary,
+                    content: .init(title: L10n.contractAddCoinsured),
+                    {
+                        let hasExistingCoInsured = vm.config.preSelectedCoInsuredList
+                            .filter { !vm.coInsuredAdded.contains($0) }
+                        if hasExistingCoInsured.isEmpty {
+                            editCoInsuredNavigation.coInsuredInputModel = .init(
+                                actionType: .add,
+                                coInsuredModel: CoInsuredModel(),
+                                title: L10n.contractAddCoinsured,
+                                contractId: vm.config.contractId
+                            )
+                        } else {
+                            editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+                        }
                     }
-                } content: {
-                    hText(L10n.contractAddCoinsured)
-                }
+                )
             }
             .hWithoutHorizontalPadding([.row])
         }

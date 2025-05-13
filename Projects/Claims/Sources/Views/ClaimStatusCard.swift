@@ -21,13 +21,14 @@ struct ClaimStatusCard: View {
                         ClaimStatusBar(status: claim.status, outcome: claim.outcome)
                     }
                     if enableTap {
-                        hButton.MediumButton(
-                            type: .secondary
-                        ) {
-                            homeRouter.push(claim)
-                        } content: {
-                            hText(L10n.ClaimStatus.ClaimDetails.button)
-                        }
+                        hButton(
+                            .medium,
+                            .secondary,
+                            content: .init(title: L10n.ClaimStatus.ClaimDetails.button),
+                            {
+                                homeRouter.push(claim)
+                            }
+                        )
                         .hButtonTakeFullWidth(true)
                     }
                 }

@@ -30,19 +30,21 @@ struct SubmitClaimFilesUploadScreen: View {
                 }
                 .hFormAlwaysAttachToBottom {
                     hSection {
-                        VStack(spacing: 8) {
+                        VStack(spacing: .padding8) {
                             if let error = vm.error {
                                 InfoCard(text: error, type: .attention)
                             }
-                            hButton.LargeButton(type: .secondary) {
-                                showFilePickerAlert()
-                            } content: {
-                                hText(L10n.ClaimStatusDetail.addMoreFiles)
-
-                            }
+                            hButton(
+                                .large,
+                                .secondary,
+                                content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
+                                {
+                                    showFilePickerAlert()
+                                }
+                            )
                             .disabled(vm.isLoading)
                             ZStack(alignment: .leading) {
-                                hButton.LargeButton(type: .primary) {
+                                hContinueButton {
                                     Task {
                                         let step = await vm.uploadFiles(
                                             newClaimContext: claimsNavigationVm.currentClaimContext ?? ""
@@ -52,9 +54,6 @@ struct SubmitClaimFilesUploadScreen: View {
                                             claimsNavigationVm.navigate(data: step)
                                         }
                                     }
-
-                                } content: {
-                                    hText(L10n.generalContinueButton)
                                 }
                                 .hButtonIsLoading(vm.isLoading)
                                 .disabled(vm.fileGridViewModel.files.isEmpty)
@@ -93,25 +92,31 @@ struct SubmitClaimFilesUploadScreen: View {
                     )
                     .hFormAlwaysAttachToBottom {
                         hSection {
-                            VStack(spacing: 16) {
+                            VStack(spacing: .padding16) {
                                 if let error = vm.error {
                                     InfoCard(text: error, type: .attention)
                                 } else {
                                     InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
                                 }
-                                VStack(spacing: 8) {
-                                    hButton.LargeButton(type: .primary) {
-                                        showFilePickerAlert()
-                                    } content: {
-                                        hText(L10n.ClaimStatusDetail.addFiles)
-                                    }
+                                VStack(spacing: .padding8) {
+                                    hButton(
+                                        .large,
+                                        .primary,
+                                        content: .init(title: L10n.ClaimStatusDetail.addFiles),
+                                        {
+                                            showFilePickerAlert()
+                                        }
+                                    )
                                     .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
                                     .disabled(vm.isLoading && vm.skipPressed)
-                                    hButton.LargeButton(type: .ghost) {
-                                        skip()
-                                    } content: {
-                                        hText(L10n.NavBar.skip)
-                                    }
+                                    hButton(
+                                        .large,
+                                        .ghost,
+                                        content: .init(title: L10n.NavBar.skip),
+                                        {
+                                            skip()
+                                        }
+                                    )
                                     .disabled(vm.isLoading && !vm.skipPressed)
                                     .hButtonIsLoading(vm.isLoading && vm.skipPressed)
                                 }

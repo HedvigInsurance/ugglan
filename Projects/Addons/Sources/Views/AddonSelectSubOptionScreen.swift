@@ -61,18 +61,19 @@ struct AddonSelectSubOptionScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) {
-                        changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
-                        router.dismiss()
-                    } content: {
-                        hText(L10n.addonFlowSelectButton)
-                    }
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.addonFlowSelectButton),
+                        {
+                            changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
+                            router.dismiss()
+                        }
+                    )
                     .accessibilityHint(L10n.voiceoverOptionSelected + (selectedQuote?.displayName ?? ""))
 
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         router.dismiss()
-                    } content: {
-                        hText(L10n.generalCancelButton)
                     }
                 }
             }

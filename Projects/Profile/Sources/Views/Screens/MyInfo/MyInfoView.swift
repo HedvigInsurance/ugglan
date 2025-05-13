@@ -57,13 +57,16 @@ public struct MyInfoView: View {
     }
 
     private var buttonView: some View {
-        hButton.LargeButton(type: .primary) {
-            Task {
-                await vm.save()
+        hButton(
+            .large,
+            .primary,
+            content: .init(title: L10n.generalSaveButton),
+            {
+                Task {
+                    await vm.save()
+                }
             }
-        } content: {
-            hText(L10n.generalSaveButton)
-        }
+        )
         .hButtonIsLoading(vm.viewState == .loading)
         .disabled(vm.disabledSaveButton)
         .padding(.bottom, .padding8)

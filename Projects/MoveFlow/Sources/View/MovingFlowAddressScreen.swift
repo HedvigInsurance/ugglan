@@ -85,11 +85,14 @@ struct MovingFlowAddressScreen: View {
         .hFormContentPosition(.bottom)
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
-                    continuePressed()
-                } content: {
-                    hText(vm.continueButtonTitle, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: vm.continueButtonTitle),
+                    {
+                        continuePressed()
+                    }
+                )
             }
         }
     }

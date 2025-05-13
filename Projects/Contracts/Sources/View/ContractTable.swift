@@ -79,9 +79,19 @@ struct ContractTable: View {
                     ) { terminatedContracts in
                         if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                             hSection {
-                                hButton.LargeButton(type: .secondary) {
-                                    router.push(ContractsRouterType.terminatedContracts)
-                                } content: {
+                                hButton(
+                                    .large,
+                                    .secondary,
+                                    content: .init(
+                                        title: L10n.InsurancesTab.cancelledInsurancesLabel(
+                                            "\(terminatedContracts.count)"
+                                        )
+                                    ),
+                                    {
+                                        router.push(ContractsRouterType.terminatedContracts)
+                                    }
+                                )
+                                .hCustomButtonView {
                                     hRow {
                                         HStack {
                                             hText(

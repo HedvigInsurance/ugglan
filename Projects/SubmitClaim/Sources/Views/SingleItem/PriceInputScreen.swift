@@ -39,20 +39,22 @@ struct PriceInputScreen: View {
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
             hSection {
-                VStack(spacing: 8) {
-                    hButton.LargeButton(type: .primary) {
+                VStack(spacing: .padding8) {
+                    hSaveButton {
                         UIApplication.dismissKeyboard()
                         claimsNavigationVm.singleItemModel?.purchasePrice = Double(purchasePrice)
                         claimsNavigationVm.isPriceInputPresented = false
-                    } content: {
-                        hText(L10n.generalSaveButton, style: .body1)
                     }
-                    hButton.LargeButton(type: .ghost) {
-                        UIApplication.dismissKeyboard()
-                        router.dismiss()
-                    } content: {
-                        hText(L10n.generalNotSure, style: .body1)
-                    }
+
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(title: L10n.generalNotSure),
+                        {
+                            UIApplication.dismissKeyboard()
+                            router.dismiss()
+                        }
+                    )
                 }
             }
             .padding(.top, .padding16)

@@ -62,17 +62,20 @@ struct CoInsuredProcessingScreen: View {
 
     private var customBottomSuccessView: some View {
         hSection {
-            hButton.LargeButton(type: .ghost) {
-                editCoInsuredNavigation.showProgressScreenWithSuccess = false
-                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
-                editCoInsuredNavigation.editCoInsuredConfig = nil
-                editCoInsuredViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
-                EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
-                    intentViewModel.contractId
-                )
-            } content: {
-                hText(L10n.generalDoneButton)
-            }
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.generalDoneButton),
+                {
+                    editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                    editCoInsuredNavigation.editCoInsuredConfig = nil
+                    editCoInsuredViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
+                    EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
+                        intentViewModel.contractId
+                    )
+                }
+            )
         }
         .sectionContainerStyle(.transparent)
     }

@@ -30,10 +30,8 @@ public struct ListScreen<T>: View {
         .hFormContentPosition(.bottom)
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .ghost) {
+                hCancelButton {
                     onCancel()
-                } content: {
-                    hText(L10n.generalCancelButton, style: .body1)
                 }
             }
             .sectionContainerStyle(.transparent)

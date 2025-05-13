@@ -52,22 +52,27 @@ public struct ClaimFilesView: View {
                 }
                 .hFormAttachToBottom {
                     hSection {
-                        VStack(spacing: 8) {
-                            hButton.LargeButton(type: .secondary) {
-                                showFilePickerAlert()
-                            } content: {
-                                hText(L10n.ClaimStatusDetail.addMoreFiles)
-
-                            }
+                        VStack(spacing: .padding8) {
+                            hButton(
+                                .large,
+                                .secondary,
+                                content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
+                                {
+                                    showFilePickerAlert()
+                                }
+                            )
                             .disabled(vm.isLoading)
 
-                            hButton.LargeButton(type: .primary) {
-                                Task {
-                                    await vm.uploadFiles()
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.fileUploadUploadFiles),
+                                {
+                                    Task {
+                                        await vm.uploadFiles()
+                                    }
                                 }
-                            } content: {
-                                hText(L10n.fileUploadUploadFiles)
-                            }
+                            )
                             .hButtonIsLoading(vm.isLoading)
                             .disabled(vm.fileGridViewModel.files.isEmpty)
                         }

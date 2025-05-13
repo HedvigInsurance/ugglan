@@ -129,25 +129,33 @@ public struct InfoView: View {
             VStack(spacing: .padding8) {
                 if let button = extraButton {
                     if button.style != .alert {
-                        hButton.LargeButton(type: .primary) {
-                            button.action()
-                        } content: {
-                            hText(button.text)
-                        }
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: button.text),
+                            {
+                                button.action()
+                            }
+                        )
                     } else {
-                        hButton.LargeButton(type: .alert) {
-                            button.action()
-                        } content: {
-                            hText(button.text)
-                        }
-
+                        hButton(
+                            .large,
+                            .alert,
+                            content: .init(title: button.text),
+                            {
+                                button.action()
+                            }
+                        )
                     }
                 }
-                hButton.LargeButton(type: .ghost) {
-                    vm.vc?.dismiss(animated: true)
-                } content: {
-                    hText(closeButtonTitle)
-                }
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: closeButtonTitle),
+                    {
+                        vm.vc?.dismiss(animated: true)
+                    }
+                )
             }
             .padding(.horizontal, .padding24)
         }
