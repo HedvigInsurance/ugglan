@@ -7,7 +7,6 @@ public enum FeatureTarget {
     case tests
     case example
     case testing
-    case generateAssets
 }
 
 extension Project {
@@ -242,7 +241,7 @@ extension Project {
                 options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
             )
         }
-        let shouldDisableGeneratingAccessors = !targets.contains(.generateAssets)
+        let shouldDisableGeneratingAccessors = true
         return Project(
             name: name,
             organizationName: "Hedvig",
