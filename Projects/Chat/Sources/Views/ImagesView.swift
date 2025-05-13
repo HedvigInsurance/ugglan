@@ -132,22 +132,29 @@ struct PHPAssetPreview: View {
                             }
                         }
                         .blur(radius: selected ? 20 : 0, opaque: true)
-                    hButton.MediumButton(type: .secondaryAlt) {
-                        Task {
-                            withAnimation {
-                                loading = true
-                            }
-                            do {
-                                if let file = try? await asset.getFile() {
-                                    onSend(.init(type: .file(file: file)))
+
+                    hButton(
+                        .medium,
+                        .secondaryAlt,
+                        content: .init(title: L10n.chatUploadPresend),
+                        {
+                            Task {
+                                withAnimation {
+                                    loading = true
+                                }
+                                do {
+                                    if let file = try? await asset.getFile() {
+                                        onSend(.init(type: .file(file: file)))
+                                    }
+                                }
+                                withAnimation {
+                                    loading = false
+                                    self.selected = false
                                 }
                             }
-                            withAnimation {
-                                loading = false
-                                self.selected = false
-                            }
                         }
-                    } content: {
+                    )
+                    .hCustomButtonView {
                         if loading {
                             ProgressView()
                                 .foregroundColor(hTextColor.Opaque.primary)

@@ -33,18 +33,19 @@ struct DeleteCampaignView: View {
                                     .foregroundColor(hTextColor.Opaque.primary)
 
                             }
-                            VStack(spacing: 8) {
-                                hButton.LargeButton(type: .primary) {
-                                    vm.confirmRemove()
-                                } content: {
-                                    hText(L10n.paymentsConfirmCodeRemove)
-                                }
+                            VStack(spacing: .padding8) {
+                                hButton(
+                                    .large,
+                                    .primary,
+                                    content: .init(title: L10n.paymentsConfirmCodeRemove),
+                                    {
+                                        vm.confirmRemove()
+                                    }
+                                )
                                 .hButtonIsLoading(vm.isLoading)
 
-                                hButton.LargeButton(type: .ghost) {
+                                hCancelButton {
                                     router.dismiss()
-                                } content: {
-                                    hText(L10n.generalCancelButton)
                                 }
                                 .disabled(vm.isLoading)
                             }

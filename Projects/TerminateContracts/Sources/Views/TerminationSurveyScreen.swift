@@ -28,10 +28,8 @@ struct TerminationSurveyScreen: View {
         .hFormContentPosition(.bottom)
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
+                hContinueButton {
                     continueClicked()
-                } content: {
-                    hText(L10n.generalContinueButton)
                 }
                 .disabled(!vm.continueEnabled)
                 .accessibilityHint(

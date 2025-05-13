@@ -17,7 +17,7 @@ struct SettingsView: View {
     var body: some View {
         hForm {
             hSection {
-                VStack(spacing: 4) {
+                VStack(spacing: .padding4) {
                     hFloatingField(
                         value: Localization.Locale.currentLocale.value.displayName,
                         placeholder: L10n.settingsLanguageTitle,
@@ -75,19 +75,24 @@ struct SettingsView: View {
                 }
             ) { memberDetails in
                 hSection {
-                    hButton.LargeButton(type: .ghost) {
-                        if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                            let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
-                            if hasAlreadyRequested {
-                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-                            } else {
-                                profileNavigationVm.isDeleteAccountPresented = memberDetails
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(
+                            title: L10n.SettingsScreen.deleteAccountButton
+                        ),
+                        {
+                            if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                                let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                                if hasAlreadyRequested {
+                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                                } else {
+                                    profileNavigationVm.isDeleteAccountPresented = memberDetails
+                                }
                             }
                         }
-                    } content: {
-                        hText(L10n.SettingsScreen.deleteAccountButton)
-                            .foregroundColor(hSignalColor.Red.element)
-                    }
+                    )
+                    .hUseButtonTextColor(.red)
                 }
                 .sectionContainerStyle(.transparent)
             }

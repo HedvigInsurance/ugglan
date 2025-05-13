@@ -27,6 +27,7 @@ extension EditType {
         if contract.supportsChangeTier {
             editTypes.append(.changeTier)
         }
+
         if Dependencies.featureFlags().isEditCoInsuredEnabled && contract.supportsCoInsured {
             editTypes.append(.coInsured)
         }

@@ -318,7 +318,7 @@ struct ShowTagList: View {
                         .accessibilityAddTraits(.isButton)
                     }
                 }
-                hButton.LargeButton(type: .primary) {
+                hContinueButton {
                     if selection != nil && selection != "" {
                         notValid = false
                         onButtonClick()
@@ -328,8 +328,6 @@ struct ShowTagList: View {
                         }
                         selection = ""
                     }
-                } content: {
-                    hText(L10n.generalContinueButton, style: .body1)
                 }
                 .hButtonIsLoading(buttonIsLoading)
                 .accessibilityHint(selection == nil || selection == "" ? L10n.voiceoverSubmitClaimsTriagingInfo : "")
@@ -360,7 +358,8 @@ struct ShowTagList: View {
     func getColorAndShadow(claimId: String) -> some View {
         if selection == claimId {
             RoundedRectangle(cornerRadius: 12)
-                .foregroundColor(hButtonColor.PrimaryAlt.resting)
+                .foregroundColor(PrimaryAlt().resting)
+                .asAnyView
                 .hShadow()
 
         } else {

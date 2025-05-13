@@ -106,19 +106,25 @@ struct CoInsuredSelectScreen: View {
             config: itemPickerConfig
         )
         .hItemPickerBottomAttachedView {
-            hButton.LargeButton(type: .ghost) {
-                editCoInsuredNavigation.coInsuredInputModel = .init(
-                    actionType: .add,
-                    coInsuredModel: .init(),
-                    title: L10n.contractAddCoinsured,
-                    contractId: contractId
-                )
-            } content: {
-                HStack(alignment: .center) {
-                    hCoreUIAssets.plusSmall.view
-                    hText(L10n.generalAddNew)
+            hButton(
+                .large,
+                .ghost,
+                content: .init(
+                    title: L10n.generalAddNew,
+                    buttonImage: .init(
+                        image: hCoreUIAssets.plusSmall.view,
+                        alignment: .leading
+                    )
+                ),
+                {
+                    editCoInsuredNavigation.coInsuredInputModel = .init(
+                        actionType: .add,
+                        coInsuredModel: .init(),
+                        title: L10n.contractAddCoinsured,
+                        contractId: contractId
+                    )
                 }
-            }
+            )
             .disabled(vm.isLoading)
             .hButtonDontShowLoadingWhenDisabled(true)
             .padding(.top, -12)

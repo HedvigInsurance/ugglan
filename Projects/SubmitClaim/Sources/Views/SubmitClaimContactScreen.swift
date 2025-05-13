@@ -25,7 +25,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
             )
             .hFormAttachToBottom {
                 hSection {
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         hFloatingTextField(
                             masking: Masking(type: .digits),
                             value: $vm.phoneNumber,
@@ -34,29 +34,34 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             placeholder: L10n.phoneNumberRowTitle,
                             error: $vm.phoneNumberError
                         )
-                        hButton.LargeButton(type: .primary) {
-                            if vm.keyboardEnabled {
-                                withAnimation {
-                                    UIApplication.dismissKeyboard()
-                                }
-                            } else {
-                                Task {
-                                    if let model = claimsNavigationVm.phoneNumberModel {
-                                        let step = await vm.phoneNumberRequest(
-                                            context: claimsNavigationVm.currentClaimContext ?? "",
-                                            model: model
-                                        )
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(
+                                title: vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton
+                            ),
+                            {
+                                if vm.keyboardEnabled {
+                                    withAnimation {
+                                        UIApplication.dismissKeyboard()
+                                    }
+                                } else {
+                                    Task {
+                                        if let model = claimsNavigationVm.phoneNumberModel {
+                                            let step = await vm.phoneNumberRequest(
+                                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                                model: model
+                                            )
 
-                                        if let step {
-                                            claimsNavigationVm.navigate(data: step)
+                                            if let step {
+                                                claimsNavigationVm.navigate(data: step)
+                                            }
                                         }
                                     }
+                                    UIApplication.dismissKeyboard()
                                 }
-                                UIApplication.dismissKeyboard()
                             }
-                        } content: {
-                            hText(vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
-                        }
+                        )
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
                         .hButtonIsLoading(vm.viewState == .loading)
 

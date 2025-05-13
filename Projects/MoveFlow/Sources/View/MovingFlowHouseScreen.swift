@@ -44,11 +44,14 @@ struct MovingFlowHouseScreen: View {
         }
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
-                    continuePressed()
-                } content: {
-                    hText(L10n.saveAndContinueButtonLabel, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        continuePressed()
+                    }
+                )
             }
         }
         .hFormTitle(
@@ -152,16 +155,20 @@ struct MovingFlowHouseScreen: View {
                             Divider()
                         }
                     }
-                    hButton.MediumButton(type: .primaryAlt) {
-                        addExtraBuilding()
-                    } content: {
-                        HStack {
-                            hCoreUIAssets.plusSmall.view
-                                .resizable()
-                                .frame(width: .padding16, height: .padding16)
-                            hText(L10n.changeAddressAddBuilding)
+                    hButton(
+                        .medium,
+                        .primaryAlt,
+                        content: .init(
+                            title: L10n.changeAddressAddBuilding,
+                            buttonImage: .init(
+                                image: hCoreUIAssets.plusSmall.view,
+                                alignment: .leading
+                            )
+                        ),
+                        {
+                            addExtraBuilding()
                         }
-                    }
+                    )
                     .hButtonDontShowLoadingWhenDisabled(true)
                     .hUseLightMode
                     .padding(.top, .padding8)

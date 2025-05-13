@@ -278,43 +278,43 @@ public struct QuoteSummaryScreen: View {
                     .frame(height: isExpanded ? nil : 0, alignment: .top)
                     .clipped()
                 if vm.removedContracts.contains(contract.id) {
-                    hButton.MediumButton(
-                        type: .secondary
-                    ) {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            vm.addContract(contract)
+                    hButton(
+                        .medium,
+                        .secondary,
+                        content: .init(title: L10n.addonAddCoverage),
+                        {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                vm.addContract(contract)
+                            }
                         }
-                    } content: {
-                        hText(
-                            L10n.addonAddCoverage
-                        )
-                        .transition(.scale)
-                    }
+                    )
+                    .transition(.scale)
+
                 } else if contract.shouldShowDetails && !vm.isAddon {
-                    hButton.MediumButton(
-                        type: .secondary
-                    ) {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            vm.toggleContract(contract)
-                            Task { [weak vm] in
-                                guard let vm else { return }
-                                try await Task.sleep(nanoseconds: 200_000_000)
-                                withAnimation(.easeInOut(duration: 0.4)) {
-                                    if vm.expandedContracts.contains(contract.id) {
-                                        proxy.scrollTo(contract.id, anchor: .top)
+
+                    hButton(
+                        .medium,
+                        .secondary,
+                        content: .init(
+                            title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                                ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+                        ),
+                        {
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                vm.toggleContract(contract)
+                                Task { [weak vm] in
+                                    guard let vm else { return }
+                                    try await Task.sleep(nanoseconds: 200_000_000)
+                                    withAnimation(.easeInOut(duration: 0.4)) {
+                                        if vm.expandedContracts.contains(contract.id) {
+                                            proxy.scrollTo(contract.id, anchor: .top)
+                                        }
                                     }
                                 }
                             }
                         }
-
-                    } content: {
-                        hText(
-                            vm.expandedContracts.firstIndex(of: contract.id) != nil
-                                ? L10n.ClaimStatus.ClaimHideDetails.button
-                                : L10n.ClaimStatus.ClaimDetails.button
-                        )
-                        .transition(.scale)
-                    }
+                    )
+                    .hWithTransition(.scale)
                 }
             }
         }
@@ -395,23 +395,22 @@ public struct QuoteSummaryScreen: View {
             if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id),
                 isExpanded
             {
-                hButton.MediumButton(
-                    type: .ghost
-                ) {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.removeModel = removeModel
+                hButton(
+                    .medium,
+                    .ghost,
+                    content: .init(title: L10n.General.remove),
+                    {
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            vm.removeModel = removeModel
+                        }
                     }
-                } content: {
-                    hText(
-                        L10n.General.remove
-                    )
-                    .transition(.scale)
-                }
+                )
+                .hWithTransition(.scale)
                 .background {
                     RoundedRectangle(cornerRadius: .cornerRadiusM)
                         .stroke(hBorderColor.primary, lineWidth: 1)
                 }
-                .padding(.bottom, -.padding8)
+                .padding(.bottom, .padding8)
             }
         }
         .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 : 0)
@@ -489,11 +488,16 @@ public struct QuoteSummaryScreen: View {
                 }
                 .accessibilityElement(children: .combine)
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) { [weak vm] in
-                        vm?.onConfirmClick()
-                    } content: {
-                        hText(vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer)
-                    }
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(
+                            title: vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer
+                        ),
+                        { [weak vm] in
+                            vm?.onConfirmClick()
+                        }
+                    )
                 }
             }
         }
@@ -505,11 +509,15 @@ public struct QuoteSummaryScreen: View {
         VStack(spacing: 0) {
             hText(L10n.changeAddressNoFind, style: .body1)
             Spacing(height: 16)
-            hButton.SmallButton(type: .primary) {
-                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-            } content: {
-                hText(L10n.openChat, style: .body1)
-            }
+
+            hButton(
+                .small,
+                .primary,
+                content: .init(title: L10n.openChat),
+                {
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
+            )
             .fixedSize()
         }
     }

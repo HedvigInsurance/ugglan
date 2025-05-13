@@ -88,11 +88,14 @@ struct StateView: View {
                 .accessibilityElement(children: .combine)
 
                 if let button = buttonConfig?.actionButton {
-                    hButton.MediumButton(type: .primary) {
-                        button.buttonAction()
-                    } content: {
-                        hText(button.buttonTitle ?? type.buttonText)
-                    }
+                    hButton(
+                        .medium,
+                        .primary,
+                        content: .init(title: button.buttonTitle ?? type.buttonText),
+                        {
+                            button.buttonAction()
+                        }
+                    )
                 }
             }
         }
@@ -108,21 +111,27 @@ struct StateView: View {
                         .padding(.top, extraTopPadding ? 32 : 0)
                 }
                 if let actionButton = buttonConfig?.actionButtonAttachedToBottom {
-                    hButton.LargeButton(type: .primary) {
-                        actionButton.buttonAction()
-                    } content: {
-                        hText(actionButton.buttonTitle ?? "")
-                    }
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: actionButton.buttonTitle ?? ""),
+                        {
+                            actionButton.buttonAction()
+                        }
+                    )
                 }
                 if let dismissButton = buttonConfig?.dismissButton {
-                    hButton.LargeButton(type: .ghost) {
-                        dismissButton.buttonAction()
-                    } content: {
-                        hText(
-                            dismissButton.buttonTitle ?? (type == .success ? L10n.generalCloseButton : L10n.openChat),
-                            style: .body1
-                        )
-                    }
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(
+                            title: dismissButton.buttonTitle
+                                ?? (type == .success ? L10n.generalCloseButton : L10n.openChat)
+                        ),
+                        {
+                            dismissButton.buttonAction()
+                        }
+                    )
                 }
             }
         }
@@ -204,7 +213,11 @@ public struct StateViewButtonConfig {
     ) {
         self.actionButton = actionButton
         self.actionButtonAttachedToBottom = actionButtonAttachedToBottom
-        self.dismissButton = dismissButton
+        if let dismissButton {
+            self.dismissButton = .init(buttonAction: dismissButton.buttonAction)
+        } else {
+            self.dismissButton = dismissButton
+        }
     }
 
     public struct StateViewButton {

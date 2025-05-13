@@ -94,10 +94,8 @@ struct CoInusuredInputScreen: View {
 
     private var cancelButtonView: some View {
         hSection {
-            hButton.LargeButton(type: .ghost) {
+            hCancelButton {
                 editCoInsuredNavigation.coInsuredInputModel = nil
-            } content: {
-                hText(L10n.generalCancelButton)
             }
             .padding(.top, .padding4)
             .padding(.bottom, .padding16)

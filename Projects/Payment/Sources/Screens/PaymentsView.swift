@@ -192,15 +192,18 @@ public struct PaymentsView: View {
         ) { statusData in
             if let statusData, !statusData.showConnectPayment {
                 hSection {
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         if statusData == .pending {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
-                        hButton.LargeButton(type: .secondary) {
-                            paymentNavigationVm.connectPaymentVm.set(for: nil)
-                        } content: {
-                            hText(statusData.connectButtonTitle)
-                        }
+                        hButton(
+                            .large,
+                            .secondary,
+                            content: .init(title: statusData.connectButtonTitle),
+                            {
+                                paymentNavigationVm.connectPaymentVm.set(for: nil)
+                            }
+                        )
                     }
                 }
                 .sectionContainerStyle(.transparent)

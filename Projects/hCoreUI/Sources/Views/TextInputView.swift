@@ -29,22 +29,26 @@ public struct TextInputView: View {
                     .disabled(vm.isLoading)
                 }
                 hSection {
-                    VStack(spacing: 8) {
-                        hButton.LargeButton(type: .primary) {
-                            Task { [weak vm] in
-                                withAnimation {
-                                    vm?.isLoading = true
-                                }
-                                await vm?.save()
-                                withAnimation {
-                                    vm?.isLoading = false
+                    VStack(spacing: .padding8) {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: L10n.generalSaveButton),
+                            {
+                                Task { [weak vm] in
+                                    withAnimation {
+                                        vm?.isLoading = true
+                                    }
+                                    await vm?.save()
+                                    withAnimation {
+                                        vm?.isLoading = false
+                                    }
                                 }
                             }
-                        } content: {
-                            hText(L10n.generalSaveButton, style: .body1)
-                        }
+                        )
                         .hButtonIsLoading(vm.isLoading)
-                        hButton.LargeButton(type: .ghost) {
+
+                        hCancelButton {
                             if let dismissAction = dismissAction?() {
                                 dismissAction
                             } else {
@@ -52,8 +56,6 @@ public struct TextInputView: View {
                                     await vm?.dismiss()
                                 }
                             }
-                        } content: {
-                            hText(L10n.generalCancelButton, style: .body1)
                         }
                         .disabled(vm.isLoading)
                     }

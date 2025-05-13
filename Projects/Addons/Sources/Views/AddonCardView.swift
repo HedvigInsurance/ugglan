@@ -31,11 +31,14 @@ public struct AddonCardView: View {
                     hText(addon.descriptionDisplayName, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
 
-                    hButton.SmallButton(type: .secondary) {
-                        openAddon()
-                    } content: {
-                        hText(L10n.addonFlowSeePriceButton)
-                    }
+                    hButton(
+                        .small,
+                        .secondary,
+                        content: .init(title: L10n.addonFlowSeePriceButton),
+                        {
+                            openAddon()
+                        }
+                    )
                     .hButtonTakeFullWidth(true)
                 }
             }

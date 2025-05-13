@@ -49,16 +49,12 @@ public struct LanguagePickerView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) {
+                    hSaveButton {
                         Localization.Locale.currentLocale.send(currentLocale)
                         onSave()
-                    } content: {
-                        hText(L10n.generalSaveButton)
                     }
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         onCancel()
-                    } content: {
-                        hText(L10n.generalCancelButton)
                     }
                 }
             }

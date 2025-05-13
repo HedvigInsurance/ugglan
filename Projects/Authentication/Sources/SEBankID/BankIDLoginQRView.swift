@@ -75,24 +75,33 @@ public struct BankIDLoginQRView: View {
                 }
                 .hFormAttachToBottom {
                     hSection {
-                        VStack(spacing: 16) {
+                        VStack(spacing: .padding16) {
                             if vm.hasBankIdApp {
-                                hButton.LargeButton(type: .primary) {
-                                    vm.openBankId()
-                                } content: {
-                                    HStack(spacing: 8) {
-                                        hCoreUIAssets.bankID.view
-                                        hText(L10n.authenticationBankidOpenButton)
+                                hButton(
+                                    .large,
+                                    .primary,
+                                    content: .init(
+                                        title: L10n.authenticationBankidOpenButton,
+                                        buttonImage: .init(
+                                            image: hCoreUIAssets.bankID.view,
+                                            alignment: .leading
+                                        )
+                                    ),
+                                    {
+                                        vm.openBankId()
                                     }
-                                }
+                                )
                             }
 
-                            hButton.LargeButton(type: .ghost) {
-                                router.push(AuthentificationRouterType.emailLogin)
-                                vm.cancelLogin()
-                            } content: {
-                                hText(L10n.BankidMissingLogin.emailButton)
-                            }
+                            hButton(
+                                .large,
+                                .ghost,
+                                content: .init(title: L10n.BankidMissingLogin.emailButton),
+                                {
+                                    router.push(AuthentificationRouterType.emailLogin)
+                                    vm.cancelLogin()
+                                }
+                            )
                         }
                         .padding(.bottom, .padding16)
                     }
