@@ -167,7 +167,7 @@ public struct ChangeTierLandingScreen: View {
                 hButton(
                     .large,
                     .ghost,
-                    buttonContent: .init(
+                    content: .init(
                         title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
                     ),
                     {

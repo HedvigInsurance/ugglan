@@ -33,7 +33,7 @@ public struct TextInputView: View {
                         hButton(
                             .large,
                             .primary,
-                            buttonContent: .init(title: L10n.generalSaveButton),
+                            content: .init(title: L10n.generalSaveButton),
                             {
                                 Task { [weak vm] in
                                     withAnimation {

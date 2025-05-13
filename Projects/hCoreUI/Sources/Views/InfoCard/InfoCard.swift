@@ -89,7 +89,7 @@ public struct InfoCard: View {
         hButton(
             .small,
             .secondary,
-            buttonContent: .init(title: config.buttonTitle),
+            content: .init(title: config.buttonTitle),
             {
                 config.buttonAction()
             }
@@ -100,7 +100,7 @@ public struct InfoCard: View {
         hButton(
             .small,
             .secondaryAlt,
-            buttonContent: .init(title: config.buttonTitle),
+            content: .init(title: config.buttonTitle),
             {
                 config.buttonAction()
             }

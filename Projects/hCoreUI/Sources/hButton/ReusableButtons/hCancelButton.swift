@@ -14,7 +14,7 @@ public struct hCancelButton: View {
         hButton(
             .large,
             .ghost,
-            buttonContent: .init(title: L10n.generalCancelButton),
+            content: .init(title: L10n.generalCancelButton),
             { action() }
         )
     }

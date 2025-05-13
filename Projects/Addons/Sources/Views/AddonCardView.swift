@@ -34,7 +34,7 @@ public struct AddonCardView: View {
                     hButton(
                         .small,
                         .secondary,
-                        buttonContent: .init(title: L10n.addonFlowSeePriceButton),
+                        content: .init(title: L10n.addonFlowSeePriceButton),
                         {
                             openAddon()
                         }

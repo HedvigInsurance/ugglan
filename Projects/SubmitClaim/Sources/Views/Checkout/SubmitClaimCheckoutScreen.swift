@@ -24,7 +24,7 @@ public struct SubmitClaimCheckoutScreen: View {
                     hButton(
                         .large,
                         .primary,
-                        buttonContent: .init(
+                        content: .init(
                             title: L10n.Claims.Payout.Button.label(
                                 singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
                             )

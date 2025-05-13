@@ -136,7 +136,7 @@ public struct OpenEmailClientButton: View {
             hButton(
                 .large,
                 .secondary,
-                buttonContent: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
+                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
                 {
                     if hasAcceptedAlert {
                         sheetPresented = true
@@ -150,7 +150,7 @@ public struct OpenEmailClientButton: View {
             hButton(
                 .large,
                 .primary,
-                buttonContent: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
+                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
                 {
                     if hasAcceptedAlert {
                         sheetPresented = true

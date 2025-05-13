@@ -37,7 +37,7 @@ struct DeleteCampaignView: View {
                                 hButton(
                                     .large,
                                     .primary,
-                                    buttonContent: .init(title: L10n.paymentsConfirmCodeRemove),
+                                    content: .init(title: L10n.paymentsConfirmCodeRemove),
                                     {
                                         vm.confirmRemove()
                                     }

@@ -50,7 +50,7 @@ public struct EditContractScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            buttonContent: .init(title: selectedType?.buttonTitle ?? L10n.generalContinueButton),
+                            content: .init(title: selectedType?.buttonTitle ?? L10n.generalContinueButton),
                             { [weak router] in
                                 if let selectedType {
                                     router?.dismiss()

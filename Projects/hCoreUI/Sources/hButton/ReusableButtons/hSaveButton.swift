@@ -14,7 +14,7 @@ public struct hSaveButton: View {
         hButton(
             .large,
             .ghost,
-            buttonContent: .init(title: L10n.generalSaveButton),
+            content: .init(title: L10n.generalSaveButton),
             { action() }
         )
     }

@@ -111,7 +111,7 @@ public struct ListScreen: View {
             hButton(
                 .large,
                 .secondary,
-                buttonContent: .init(title: L10n.TravelCertificate.createNewCertificate),
+                content: .init(title: L10n.TravelCertificate.createNewCertificate),
                 {
                     createNewPressed()
                 }

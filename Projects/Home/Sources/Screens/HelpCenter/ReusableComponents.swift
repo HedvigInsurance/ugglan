@@ -126,7 +126,7 @@ struct SupportView: View {
                             hButton(
                                 .medium,
                                 .primary,
-                                buttonContent: .init(title: L10n.hcChatGoToInbox),
+                                content: .init(title: L10n.hcChatGoToInbox),
                                 {
                                     router.push(HelpCenterNavigationRouterType.inbox)
                                 }
@@ -136,7 +136,7 @@ struct SupportView: View {
                         hButton(
                             .medium,
                             hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary,
-                            buttonContent: .init(title: L10n.hcChatButton),
+                            content: .init(title: L10n.hcChatButton),
                             {
                                 NotificationCenter.default.post(
                                     name: .openChat,

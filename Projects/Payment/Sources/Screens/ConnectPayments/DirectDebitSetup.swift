@@ -335,7 +335,7 @@ public struct DirectDebitSetup: View {
         hButton(
             .medium,
             .ghost,
-            buttonContent: .init(
+            content: .init(
                 title: setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton
             ),
             {

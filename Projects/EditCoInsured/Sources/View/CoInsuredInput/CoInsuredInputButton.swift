@@ -36,7 +36,7 @@ public struct CoInsuredInputButton: View {
         hButton(
             .large,
             .alert,
-            buttonContent: .init(title: L10n.removeConfirmationButton),
+            content: .init(title: L10n.removeConfirmationButton),
             {
                 Task {
                     await getIntent(for: .delete)
@@ -51,7 +51,7 @@ public struct CoInsuredInputButton: View {
         hButton(
             .large,
             .primary,
-            buttonContent: .init(title: buttonDisplayText),
+            content: .init(title: buttonDisplayText),
             {
                 if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
                     Task {

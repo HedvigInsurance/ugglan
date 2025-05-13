@@ -80,7 +80,7 @@ public struct BankIDLoginQRView: View {
                                 hButton(
                                     .large,
                                     .primary,
-                                    buttonContent: .init(
+                                    content: .init(
                                         title: L10n.authenticationBankidOpenButton,
                                         buttonImage: .init(
                                             image: hCoreUIAssets.bankID.image,
@@ -96,7 +96,7 @@ public struct BankIDLoginQRView: View {
                             hButton(
                                 .large,
                                 .ghost,
-                                buttonContent: .init(title: L10n.BankidMissingLogin.emailButton),
+                                content: .init(title: L10n.BankidMissingLogin.emailButton),
                                 {
                                     router.push(AuthentificationRouterType.emailLogin)
                                     vm.cancelLogin()

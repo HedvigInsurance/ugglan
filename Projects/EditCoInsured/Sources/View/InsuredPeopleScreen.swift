@@ -50,7 +50,7 @@ struct InsuredPeopleScreen: View {
             hButton(
                 .large,
                 .primary,
-                buttonContent: .init(title: L10n.generalSaveChangesButton),
+                content: .init(title: L10n.generalSaveChangesButton),
                 {
                     Task {
                         await intentViewModel.performCoInsuredChanges(
@@ -103,7 +103,7 @@ struct InsuredPeopleScreen: View {
                 hButton(
                     .large,
                     .secondary,
-                    buttonContent: .init(title: L10n.contractAddCoinsured),
+                    content: .init(title: L10n.contractAddCoinsured),
                     {
                         let hasExistingCoInsured = vm.config.preSelectedCoInsuredList
                             .filter { !vm.coInsuredAdded.contains($0) }

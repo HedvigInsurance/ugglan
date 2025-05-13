@@ -122,7 +122,7 @@ public struct NotLoggedInView: View {
                     hButton(
                         .large,
                         .primary,
-                        buttonContent: .init(title: L10n.bankidLoginTitle),
+                        content: .init(title: L10n.bankidLoginTitle),
                         {
                             vm.showLogin = true
                         }
@@ -130,7 +130,7 @@ public struct NotLoggedInView: View {
                     hButton(
                         .large,
                         .ghost,
-                        buttonContent: .init(title: L10n.marketingGetHedvig),
+                        content: .init(title: L10n.marketingGetHedvig),
                         {
                             vm.onOnBoardPressed()
                         }

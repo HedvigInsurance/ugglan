@@ -59,7 +59,7 @@ struct ContractInformationView: View {
                                         hButton(
                                             .large,
                                             .secondary,
-                                            buttonContent: .init(title: vm.getButtonText(contract)),
+                                            content: .init(title: vm.getButtonText(contract)),
                                             {
                                                 if contract.onlyCoInsured()
                                                     && Dependencies.featureFlags().isEditCoInsuredEnabled
@@ -310,7 +310,7 @@ struct ContractInformationView: View {
                 hButton(
                     .large,
                     .ghost,
-                    buttonContent: .init(title: L10n.InsuranceDetails.moveButton),
+                    content: .init(title: L10n.InsuranceDetails.moveButton),
                     {
                         contractsNavigationVm.isChangeAddressPresented = true
                     }

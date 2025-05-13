@@ -336,7 +336,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                             hButton(
                                 .medium,
                                 .primary,
-                                buttonContent: .init(title: L10n.generalSaveButton),
+                                content: .init(title: L10n.generalSaveButton),
                                 {
                                     continueAction.execute()
                                 }

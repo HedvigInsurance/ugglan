@@ -82,7 +82,7 @@ struct ContractTable: View {
                                 hButton(
                                     .large,
                                     .secondary,
-                                    buttonContent: .init(
+                                    content: .init(
                                         title: L10n.InsurancesTab.cancelledInsurancesLabel(
                                             "\(terminatedContracts.count)"
                                         )

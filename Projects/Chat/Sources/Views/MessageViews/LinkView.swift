@@ -37,7 +37,7 @@ struct LinkView: View {
                     hButton(
                         .medium,
                         .primaryAlt,
-                        buttonContent: .init(title: L10n.ImportantMessage.readMore),
+                        content: .init(title: L10n.ImportantMessage.readMore),
                         {
                             NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
                         }

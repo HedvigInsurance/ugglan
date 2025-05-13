@@ -281,7 +281,7 @@ public struct QuoteSummaryScreen: View {
                     hButton(
                         .medium,
                         .secondary,
-                        buttonContent: .init(title: L10n.addonAddCoverage),
+                        content: .init(title: L10n.addonAddCoverage),
                         {
                             withAnimation(.easeInOut(duration: 0.4)) {
                                 vm.addContract(contract)
@@ -295,7 +295,7 @@ public struct QuoteSummaryScreen: View {
                     hButton(
                         .medium,
                         .secondary,
-                        buttonContent: .init(
+                        content: .init(
                             title: vm.expandedContracts.firstIndex(of: contract.id) != nil
                                 ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
                         ),
@@ -398,7 +398,7 @@ public struct QuoteSummaryScreen: View {
                 hButton(
                     .medium,
                     .ghost,
-                    buttonContent: .init(title: L10n.General.remove),
+                    content: .init(title: L10n.General.remove),
                     {
                         withAnimation(.easeInOut(duration: 0.4)) {
                             vm.removeModel = removeModel
@@ -491,7 +491,7 @@ public struct QuoteSummaryScreen: View {
                     hButton(
                         .large,
                         .primary,
-                        buttonContent: .init(
+                        content: .init(
                             title: vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer
                         ),
                         { [weak vm] in
@@ -513,7 +513,7 @@ public struct QuoteSummaryScreen: View {
             hButton(
                 .small,
                 .primary,
-                buttonContent: .init(title: L10n.openChat),
+                content: .init(title: L10n.openChat),
                 {
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }

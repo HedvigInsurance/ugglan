@@ -57,7 +57,7 @@ public struct ProfileView: View {
                     hButton(
                         .large,
                         .ghost,
-                        buttonContent: .init(
+                        content: .init(
                             title: L10n.logoutButton
                         ),
                         {

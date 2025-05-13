@@ -47,7 +47,7 @@ struct MovingFlowHouseScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    buttonContent: .init(title: L10n.saveAndContinueButtonLabel),
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
                     {
                         continuePressed()
                     }
@@ -158,7 +158,7 @@ struct MovingFlowHouseScreen: View {
                     hButton(
                         .medium,
                         .primaryAlt,
-                        buttonContent: .init(
+                        content: .init(
                             title: L10n.changeAddressAddBuilding,
                             buttonImage: .init(
                                 image: hCoreUIAssets.plusSmall.image,

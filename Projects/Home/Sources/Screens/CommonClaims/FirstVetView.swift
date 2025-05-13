@@ -34,7 +34,7 @@ public struct FirstVetView: View {
                                 hButton(
                                     .medium,
                                     .secondaryAlt,
-                                    buttonContent: .init(title: L10n.commonClaimButton),
+                                    content: .init(title: L10n.commonClaimButton),
                                     {
                                         if let url = URL(
                                             string: partner.url

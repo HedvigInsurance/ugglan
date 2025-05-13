@@ -39,7 +39,7 @@ struct InsuranceEvidenceProcessingScreen: View {
                             hButton(
                                 .large,
                                 .primary,
-                                buttonContent: .init(title: L10n.Certificates.download),
+                                content: .init(title: L10n.Certificates.download),
                                 {
                                     Task { [weak vm] in
                                         await vm?.presentShare()

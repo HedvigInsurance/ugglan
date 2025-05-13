@@ -57,7 +57,7 @@ struct SumitClaimEmergencySelectView: View {
                     hButton(
                         .medium,
                         .primaryAlt,
-                        buttonContent: .init(title: option.displayName),
+                        content: .init(title: option.displayName),
                         {
                             withAnimation(.spring()) {
                                 selectedValue = option.value
@@ -72,7 +72,7 @@ struct SumitClaimEmergencySelectView: View {
                     hButton(
                         .medium,
                         .secondary,
-                        buttonContent: .init(title: option.displayName),
+                        content: .init(title: option.displayName),
                         {
                             withAnimation(.spring()) {
                                 selectedValue = option.value

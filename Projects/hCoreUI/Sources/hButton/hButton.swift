@@ -4,7 +4,7 @@ import SwiftUI
 public struct hButton: View {
     private let size: hButtonSize
     private let type: hButtonConfigurationType
-    private let buttonContent: hButtonContent
+    private let content: hButtonContent
     private let action: () -> Void
     @Environment(\.hWithTransition) private var withTransition
     @Environment(\.hCustomButtonView) private var customButtonView
@@ -12,12 +12,12 @@ public struct hButton: View {
     public init(
         _ size: hButtonSize,
         _ type: hButtonConfigurationType,
-        buttonContent: hButtonContent,
+        content: hButtonContent,
         _ action: @escaping () -> Void
     ) {
         self.type = type
         self.size = size
-        self.buttonContent = buttonContent
+        self.content = content
         self.action = action
     }
 
@@ -27,7 +27,7 @@ public struct hButton: View {
         }) {
             customButtonView
                 ?? AnyView(
-                    content
+                    mainContent
                         .withOptionalTransition(withTransition)
                 )
         }
@@ -35,7 +35,7 @@ public struct hButton: View {
         .hButtonConfigurationType(type)
     }
 
-    private var content: some View {
+    private var mainContent: some View {
         HStack(spacing: .padding8) {
             imageView(for: .leading)
             textView
@@ -44,12 +44,12 @@ public struct hButton: View {
     }
 
     private var textView: some View {
-        hText(buttonContent.title, style: size == .small ? .label : .body1)
+        hText(content.title, style: size == .small ? .label : .body1)
     }
 
     @ViewBuilder
     private func imageView(for alignment: HorizontalAlignment) -> some View {
-        if let image = buttonContent.buttonImage, image.alignment == alignment {
+        if let image = content.buttonImage, image.alignment == alignment {
             Image(uiImage: image.image)
                 .resizable()
                 .frame(width: .padding16, height: .padding16)
@@ -300,7 +300,7 @@ public enum hButtonTextColor {
                 hButton(
                     size,
                     type,
-                    buttonContent: .init(title: "TEXT"),
+                    content: .init(title: "TEXT"),
                     {}
                 )
             }

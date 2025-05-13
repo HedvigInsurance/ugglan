@@ -44,7 +44,7 @@ public struct EuroBonusView: View {
                         hButton(
                             .large,
                             .primary,
-                            buttonContent: .init(title: L10n.SasIntegration.connectEurobonus),
+                            content: .init(title: L10n.SasIntegration.connectEurobonus),
                             {
                                 euroBonusNavigationVm.isChangeEuroBonusPresented = true
                             }
@@ -56,7 +56,7 @@ public struct EuroBonusView: View {
                         hButton(
                             .large,
                             .ghost,
-                            buttonContent: .init(title: L10n.SasIntegration.changeEurobonusNumber),
+                            content: .init(title: L10n.SasIntegration.changeEurobonusNumber),
                             {
                                 euroBonusNavigationVm.isChangeEuroBonusPresented = true
                             }

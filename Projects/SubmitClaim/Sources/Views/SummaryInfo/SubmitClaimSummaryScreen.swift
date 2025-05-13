@@ -55,7 +55,7 @@ public struct SubmitClaimSummaryScreen: View {
                     hButton(
                         .large,
                         .primary,
-                        buttonContent: .init(title: L10n.embarkSubmitClaim),
+                        content: .init(title: L10n.embarkSubmitClaim),
                         {
                             if let model = claimsNavigationVm.summaryModel {
                                 Task {

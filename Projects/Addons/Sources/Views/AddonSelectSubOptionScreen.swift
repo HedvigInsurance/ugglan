@@ -64,7 +64,7 @@ struct AddonSelectSubOptionScreen: View {
                     hButton(
                         .large,
                         .primary,
-                        buttonContent: .init(title: L10n.addonFlowSelectButton),
+                        content: .init(title: L10n.addonFlowSelectButton),
                         {
                             changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
                             router.dismiss()

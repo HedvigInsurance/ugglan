@@ -109,7 +109,7 @@ struct CoInsuredSelectScreen: View {
             hButton(
                 .large,
                 .ghost,
-                buttonContent: .init(
+                content: .init(
                     title: L10n.generalAddNew,
                     buttonImage: .init(
                         image: hCoreUIAssets.plusSmall.image,

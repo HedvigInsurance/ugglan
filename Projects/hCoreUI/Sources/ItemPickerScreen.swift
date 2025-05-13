@@ -210,7 +210,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 hButton(
                     .large,
                     .primary,
-                    buttonContent: .init(title: config.buttonText),
+                    content: .init(title: config.buttonText),
                     {
                         sendSelectedItems
                     }

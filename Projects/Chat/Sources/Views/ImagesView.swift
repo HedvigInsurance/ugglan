@@ -136,7 +136,7 @@ struct PHPAssetPreview: View {
                     hButton(
                         .medium,
                         .secondaryAlt,
-                        buttonContent: .init(title: L10n.chatUploadPresend),
+                        content: .init(title: L10n.chatUploadPresend),
                         {
                             Task {
                                 withAnimation {

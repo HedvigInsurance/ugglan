@@ -28,7 +28,7 @@ struct InsuranceEvidenceInputScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            buttonContent: .init(title: L10n.Certificates.createCertificate),
+                            content: .init(title: L10n.Certificates.createCertificate),
                             {
                                 vm.confirm()
                             }

@@ -132,7 +132,7 @@ public struct InfoView: View {
                         hButton(
                             .large,
                             .primary,
-                            buttonContent: .init(title: button.text),
+                            content: .init(title: button.text),
                             {
                                 button.action()
                             }
@@ -141,7 +141,7 @@ public struct InfoView: View {
                         hButton(
                             .large,
                             .alert,
-                            buttonContent: .init(title: button.text),
+                            content: .init(title: button.text),
                             {
                                 button.action()
                             }
@@ -151,7 +151,7 @@ public struct InfoView: View {
                 hButton(
                     .large,
                     .ghost,
-                    buttonContent: .init(title: closeButtonTitle),
+                    content: .init(title: closeButtonTitle),
                     {
                         vm.vc?.dismiss(animated: true)
                     }

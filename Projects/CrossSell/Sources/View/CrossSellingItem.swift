@@ -39,7 +39,7 @@ struct CrossSellingItem: View {
                     hButton(
                         .medium,
                         .primaryAlt,
-                        buttonContent: .init(title: L10n.crossSellGetPrice),
+                        content: .init(title: L10n.crossSellGetPrice),
                         {
                             fieldIsClicked.toggle()
                             openExternal()

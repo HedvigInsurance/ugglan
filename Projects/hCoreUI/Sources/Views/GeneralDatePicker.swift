@@ -40,7 +40,7 @@ public struct DatePickerView: View {
                 hButton(
                     .large,
                     .primary,
-                    buttonContent: .init(
+                    content: .init(
                         title: vm.config.buttonText ?? L10n.generalSaveButton
                     ),
                     {

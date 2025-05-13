@@ -78,7 +78,7 @@ struct SettingsView: View {
                     hButton(
                         .large,
                         .ghost,
-                        buttonContent: .init(
+                        content: .init(
                             title: L10n.SettingsScreen.deleteAccountButton
                         ),
                         {
