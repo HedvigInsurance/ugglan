@@ -29,27 +29,29 @@ struct InsuranceEvidenceProcessingScreen: View {
         )
     }
 
+    @ViewBuilder
     private var bottomSuccessView: some View {
         hSection {
             VStack(spacing: .padding16) {
                 VStack(spacing: .padding8) {
                     ModalPresentationSourceWrapper(
                         content: {
-                            hButton.LargeButton(type: .primary) {
-                                Task { [weak vm] in
-                                    await vm?.presentShare()
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.Certificates.download),
+                                {
+                                    Task { [weak vm] in
+                                        await vm?.presentShare()
+                                    }
                                 }
-                            } content: {
-                                hText(L10n.Certificates.download)
-                            }
+                            )
                         },
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )
                     .fixedSize(horizontal: false, vertical: true)
-                    hButton.LargeButton(type: .ghost) {
+                    hCloseButton {
                         vm.navigation.router.dismiss()
-                    } content: {
-                        hText(L10n.generalCloseButton)
                     }
                 }
             }

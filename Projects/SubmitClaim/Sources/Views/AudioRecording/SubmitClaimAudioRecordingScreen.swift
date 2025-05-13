@@ -118,41 +118,47 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     private func playRecordingButton(url: URL) -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: .padding12) {
             TrackPlayerView(audioPlayer: audioPlayer)
                 .onAppear {
                     minutes = 0
                     seconds = 0
                 }
-            hButton.LargeButton(type: .primary) {
-                onSubmit(url)
-                Task {
-                    if let model = claimsNavigationVm.audioRecordingModel {
-                        let step = await audioRecordingVm.submitAudioRecording(
-                            context: claimsNavigationVm.currentClaimContext ?? "",
-                            currentClaimId: claimsNavigationVm.currentClaimId ?? "",
-                            type: .audio(url: url),
-                            model: model
-                        )
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: L10n.saveAndContinueButtonLabel),
+                {
+                    onSubmit(url)
+                    Task {
+                        if let model = claimsNavigationVm.audioRecordingModel {
+                            let step = await audioRecordingVm.submitAudioRecording(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                type: .audio(url: url),
+                                model: model
+                            )
 
-                        if let step {
-                            claimsNavigationVm.navigate(data: step)
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
+                            }
                         }
                     }
                 }
-            } content: {
-                hText(L10n.saveAndContinueButtonLabel)
-            }
+            )
             .disabled(audioRecordingVm.viewState == .loading)
             .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-            hButton.LargeButton(type: .ghost) {
-                withAnimation(.spring()) {
-                    claimsNavigationVm.audioRecordingModel?.audioContent = nil
-                    audioRecorder.restart()
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.embarkRecordAgain),
+                {
+                    withAnimation(.spring()) {
+                        claimsNavigationVm.audioRecordingModel?.audioContent = nil
+                        audioRecorder.restart()
+                    }
                 }
-            } content: {
-                hText(L10n.embarkRecordAgain)
-            }
+            )
         }
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .onAppear {
@@ -175,14 +181,16 @@ public struct SubmitClaimAudioRecordingScreen: View {
             if !audioRecorder.isRecording {
                 let audioRecordingStep = claimsNavigationVm.audioRecordingModel
                 if audioRecordingStep?.optionalAudio == true {
-                    hButton.LargeButton(type: .ghost) {
-                        withAnimation {
-                            self.isAudioInput = false
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(title: L10n.claimsUseTextInstead),
+                        {
+                            withAnimation {
+                                self.isAudioInput = false
+                            }
                         }
-                    } content: {
-                        hText(L10n.claimsUseTextInstead, style: .body1)
-                            .foregroundColor(hTextColor.Opaque.primary)
-                    }
+                    )
 
                 } else {
                     hText(L10n.claimsStartRecordingLabel, style: .body1)
@@ -213,37 +221,43 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     private var textElements: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: .padding16) {
             textField
             hSection {
-                hButton.LargeButton(type: .primary) {
-                    UIApplication.dismissKeyboard()
-                    if validate() {
-                        Task {
-                            if let model = claimsNavigationVm.audioRecordingModel {
-                                let step = await audioRecordingVm.submitAudioRecording(
-                                    context: claimsNavigationVm.currentClaimContext ?? "",
-                                    currentClaimId: claimsNavigationVm.currentClaimId ?? "",
-                                    type: .text(text: inputText),
-                                    model: model
-                                )
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        UIApplication.dismissKeyboard()
+                        if validate() {
+                            Task {
+                                if let model = claimsNavigationVm.audioRecordingModel {
+                                    let step = await audioRecordingVm.submitAudioRecording(
+                                        context: claimsNavigationVm.currentClaimContext ?? "",
+                                        currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                        type: .text(text: inputText),
+                                        model: model
+                                    )
 
-                                if let step {
-                                    claimsNavigationVm.navigate(data: step)
+                                    if let step {
+                                        claimsNavigationVm.navigate(data: step)
+                                    }
                                 }
                             }
                         }
                     }
-                } content: {
-                    hText(L10n.saveAndContinueButtonLabel)
-                }
-                hButton.LargeButton(type: .ghost) {
-                    withAnimation {
-                        self.isAudioInput = true
+                )
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.claimsUseAudioRecording),
+                    {
+                        withAnimation {
+                            self.isAudioInput = true
+                        }
                     }
-                } content: {
-                    hText(L10n.claimsUseAudioRecording, style: .body1)
-                }
+                )
             }
             .sectionContainerStyle(.transparent)
         }

@@ -77,7 +77,8 @@ public struct ScrollableSegmentedView<Content: View>: View {
 
     var selectedPageHeaderBackground: some View {
         RoundedRectangle(cornerRadius: .cornerRadiusS)
-            .fill(hButtonColor.SecondaryAlt.resting)
+            .fill(SecondaryAlt().resting)
+            .asAnyView
             .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
             .offset(x: vm.selectedIndicatorOffset)
     }

@@ -69,19 +69,17 @@ struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
         return SuccessScreen(title: "TITLE", subtitle: "SUBTITLE")
             .hSuccessBottomAttachedView {
                 hSection {
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
-                        VStack(spacing: 8) {
-                            hButton.LargeButton(type: .primary) {
+                        VStack(spacing: .padding8) {
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.Certificates.download),
+                                {}
+                            )
 
-                            } content: {
-                                hText(L10n.Certificates.download)
-                            }
-                            hButton.LargeButton(type: .ghost) {
-
-                            } content: {
-                                hText(L10n.generalCloseButton)
-                            }
+                            hCloseButton {}
                         }
                     }
                 }

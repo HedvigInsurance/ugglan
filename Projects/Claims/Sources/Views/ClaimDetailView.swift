@@ -277,11 +277,14 @@ public struct ClaimDetailView: View {
                             }
                             .verticalPadding(0)
                             .fixedSize(horizontal: false, vertical: true)
-                            hButton.MediumButton(type: .primary) {
-                                showFilePickerAlert()
-                            } content: {
-                                hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
-                            }
+                            hButton(
+                                .medium,
+                                .primary,
+                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
+                                {
+                                    showFilePickerAlert()
+                                }
+                            )
                         }
                     }
                     .sectionContainerStyle(.transparent)
