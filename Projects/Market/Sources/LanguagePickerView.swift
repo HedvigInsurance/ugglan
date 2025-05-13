@@ -29,7 +29,7 @@ public struct LanguagePickerView: View {
                                 id: locale.lprojCode,
                                 leftView: {
                                     HStack(spacing: .padding16) {
-                                        Image(uiImage: locale.icon)
+                                        locale.icon
                                             .resizable()
                                             .frame(width: 24, height: 24)
                                         hText(locale.displayName, style: .heading2)

@@ -16,8 +16,8 @@ struct CrossSellingItem: View {
 
     var body: some View {
         HStack {
-            HStack(spacing: 16) {
-                Image(uiImage: crossSell.image)
+            HStack(spacing: .padding16) {
+                crossSell.image
                     .resizable()
                     .frame(width: 48, height: 48)
                     .aspectRatio(contentMode: .fill)
