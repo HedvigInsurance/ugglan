@@ -31,7 +31,7 @@ final class PaymentServiceTests: XCTestCase {
                 ),
                 status: .upcoming,
                 contracts: [],
-                discounts: [],
+                referralDiscount: nil,
                 paymentDetails: nil,
                 addedToThePayment: nil
             ),
@@ -47,7 +47,7 @@ final class PaymentServiceTests: XCTestCase {
                     ),
                     status: .pending,
                     contracts: [],
-                    discounts: [],
+                    referralDiscount: nil,
                     paymentDetails: nil,
                     addedToThePayment: nil
                 )
