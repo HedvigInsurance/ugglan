@@ -38,13 +38,13 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 if let data = data as? SubmitOtpResultSuccess {
                     return data.loginAuthorizationCode.code
                 } else {
-                    throw AuthentificationError.codeError
+                    throw AuthenticationError.codeError
                 }
             } catch {
-                throw AuthentificationError.codeError
+                throw AuthenticationError.codeError
             }
         }
-        throw AuthentificationError.codeError
+        throw AuthenticationError.codeError
 
     }
 
@@ -70,10 +70,10 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
             {
                 return (verifyUrl, resendUrl, otpProperties.maskedEmail)
             } else {
-                throw AuthentificationError.otpInputError
+                throw AuthenticationError.otpInputError
             }
         } catch {
-            throw AuthentificationError.otpInputError
+            throw AuthenticationError.otpInputError
         }
     }
 
@@ -81,7 +81,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
         if let resendUrl = otpState.resendUrl {
             _ = try await self.networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
         } else {
-            throw AuthentificationError.resendOtpFailed
+            throw AuthenticationError.resendOtpFailed
         }
     }
 
@@ -125,9 +125,9 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                                 "statusUrl": data.statusUrl.url,
                             ]
                         )
-                        throw AuthentificationError.loginFailure(message: failed.localisedMessage)
+                        throw AuthenticationError.loginFailure(message: failed.localisedMessage)
                     case .exception:
-                        throw AuthentificationError.loginFailure(message: nil)
+                        throw AuthenticationError.loginFailure(message: nil)
                     case let .completed(completed):
                         log.info(
                             "LOGIN AUTH FINISHED"
@@ -162,7 +162,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                     error: error,
                     attributes: [:]
                 )
-                throw AuthentificationError.loginFailure(message: localizedMessage)
+                throw AuthenticationError.loginFailure(message: localizedMessage)
             case .otpProperties:
                 break
             }
@@ -172,10 +172,10 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 error: error,
                 attributes: [:]
             )
-            if let error = error as? AuthentificationError {
+            if let error = error as? AuthenticationError {
                 throw error
             }
-            throw AuthentificationError.loginFailure(message: nil)
+            throw AuthenticationError.loginFailure(message: nil)
         }
     }
 
@@ -185,7 +185,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
                 switch onEnum(of: data) {
                 case .error:
-                    throw AuthentificationError.logoutFailure
+                    throw AuthenticationError.logoutFailure
                 case .success:
                     return
                 }
@@ -193,7 +193,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 return
             }
         } catch {
-            throw AuthentificationError.logoutFailure
+            throw AuthenticationError.logoutFailure
         }
     }
 
@@ -237,7 +237,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
     }
 }
 
-enum AuthentificationError: Error {
+enum AuthenticationError: Error {
     case codeError
     case otpInputError
     case resendOtpFailed
@@ -255,8 +255,8 @@ extension Environment {
     }
 }
 
-extension AuthentificationError: LocalizedError {
-    var errorDescription: String? {
+extension AuthenticationError: LocalizedError {
+    public var errorDescription: String? {
         switch self {
         case .codeError: return L10n.Login.CodeInput.ErrorMsg.codeNotValid
         case .otpInputError: return L10n.Login.TextInput.emailErrorNotValid
@@ -268,7 +268,7 @@ extension AuthentificationError: LocalizedError {
 }
 
 extension authlib.AuthTokenResultError {
-    public var errorMessage: String {
+    var errorMessage: String {
         switch onEnum(of: self) {
         case .backendErrorResponse(let error): return error.message
         case .iOError(let ioError): return ioError.message

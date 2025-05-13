@@ -8,7 +8,7 @@ xcassets:
           publicAccess: true
 strings:
   inputs: 
-    - Projects/hCore/Resources/en-SE.lproj
+    - Projects/hCore/Resources/en.lproj
   outputs:
     templatePath: swiftgen/localization.stencil
     output: Projects/hCore/Sources/Derived/Strings.swift

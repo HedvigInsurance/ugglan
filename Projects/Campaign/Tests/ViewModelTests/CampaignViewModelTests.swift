@@ -24,7 +24,7 @@ final class CampaignViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = AddCampaignCodeViewModel(paymentDataDiscounts: [], onInputChange: {})
+        let model = AddCampaignCodeViewModel(onInputChange: {})
         await model.inputVm.save()
 
         assert(model.hideTitle == true)
@@ -37,7 +37,7 @@ final class CampaignViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = AddCampaignCodeViewModel(paymentDataDiscounts: [], onInputChange: {})
+        let model = AddCampaignCodeViewModel(onInputChange: {})
         await model.inputVm.save()
 
         assert(model.hideTitle == false)
@@ -52,7 +52,6 @@ final class CampaignViewModelTests: XCTestCase {
         self.sut = mockService
 
         let discount: Discount = .init(
-            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",
@@ -62,7 +61,7 @@ final class CampaignViewModelTests: XCTestCase {
             discountId: "id"
         )
 
-        let model = DeleteCampaignViewModel(discount: discount, paymentDataDiscounts: [], onInputChange: {})
+        let model = DeleteCampaignViewModel(discount: discount, onInputChange: {})
         await model.removeCode()
 
         assert(model.codeRemoved == true)
@@ -77,7 +76,6 @@ final class CampaignViewModelTests: XCTestCase {
         self.sut = mockService
 
         let discount: Discount = .init(
-            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",
@@ -87,7 +85,7 @@ final class CampaignViewModelTests: XCTestCase {
             discountId: "id"
         )
 
-        let model = DeleteCampaignViewModel(discount: discount, paymentDataDiscounts: [], onInputChange: {})
+        let model = DeleteCampaignViewModel(discount: discount, onInputChange: {})
         await model.removeCode()
 
         assert(model.codeRemoved == false)
