@@ -108,9 +108,16 @@ private struct CertificateInputButton: View {
     let action: () -> Void
 
     var body: some View {
-        hButton.LargeButton(type: .primary, action: action) {
-            hText(isLastScreenInFlow ? L10n.Certificates.createCertificate : L10n.generalContinueButton)
-        }
+        hButton(
+            .large,
+            .primary,
+            content: .init(
+                title: isLastScreenInFlow ? L10n.Certificates.createCertificate : L10n.generalContinueButton
+            ),
+            {
+                action()
+            }
+        )
     }
 }
 
