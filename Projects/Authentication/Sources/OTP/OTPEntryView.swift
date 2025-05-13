@@ -30,10 +30,8 @@ public struct OTPEntryView: View {
         }
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
+                hContinueButton {
                     vm.onSubmit(otpState: otpVM)
-                } content: {
-                    hText(L10n.Login.continueButton)
                 }
                 .hButtonIsLoading(otpVM.isLoading)
             }

@@ -37,20 +37,19 @@ struct UpcomingChangesScreen: View {
                 hSection {
                     InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdatedWithInfo(updateDate), type: .info)
                 }
-                VStack(spacing: 8) {
-                    hSection {
-                        hButton.LargeButton(type: .primary) {
-                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                        } content: {
-                            hText(L10n.openChat)
-                        }
+                hSection {
+                    VStack(spacing: .padding8) {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: L10n.openChat),
+                            {
+                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                            }
+                        )
 
-                    }
-                    hSection {
-                        hButton.LargeButton(type: .ghost) {
+                        hCloseButton {
                             contractsNavigationVm.insuranceUpdate = nil
-                        } content: {
-                            hText(L10n.generalCloseButton)
                         }
                     }
                 }

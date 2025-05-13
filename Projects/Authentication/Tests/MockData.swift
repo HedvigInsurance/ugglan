@@ -13,7 +13,7 @@ struct MockData {
             if let verifyUrl = otpState.verifyUrl, let resendUrl = otpState.resendUrl {
                 return (verifyUrl, resendUrl, otpState.maskedEmail)
             }
-            throw AuthentificationError.otpInputError
+            throw AuthenticationError.otpInputError
         },
         resendAuth: @escaping Resend = { otpState in },
         startSeBankIdAuth: @escaping StartSeBankId = { updateStatusTo in },
@@ -33,6 +33,10 @@ struct MockData {
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in service })
         return service
     }
+}
+
+enum AuthenticationError: Error {
+    case otpInputError
 }
 
 typealias Submit = (Authentication.OTPState) async throws -> String

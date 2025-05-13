@@ -46,15 +46,18 @@ public struct EditContractScreen: View {
                 }
                 infoView
                 hSection {
-                    VStack(spacing: 8) {
-                        hButton.LargeButton(type: .primary) { [weak router] in
-                            if let selectedType {
-                                router?.dismiss()
-                                onSelectedType(selectedType)
+                    VStack(spacing: .padding8) {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: selectedType?.buttonTitle ?? L10n.generalContinueButton),
+                            { [weak router] in
+                                if let selectedType {
+                                    router?.dismiss()
+                                    onSelectedType(selectedType)
+                                }
                             }
-                        } content: {
-                            hText(selectedType?.buttonTitle ?? L10n.generalContinueButton, style: .body1)
-                        }
+                        )
                         .disabled(selectedType == nil)
                         .accessibilityHint(
                             selectedType != nil
@@ -62,10 +65,8 @@ public struct EditContractScreen: View {
                                 : L10n.voiceoverPickerInfo(selectedType?.buttonTitle ?? L10n.generalContinueButton)
                         )
 
-                        hButton.LargeButton(type: .ghost) {
+                        hCancelButton {
                             router.dismiss()
-                        } content: {
-                            hText(L10n.generalCancelButton)
                         }
                     }
                 }

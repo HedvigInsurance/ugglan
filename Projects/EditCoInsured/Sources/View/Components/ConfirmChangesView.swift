@@ -25,16 +25,19 @@ struct ConfirmChangesView: View {
                 )
                 .hWithStrikeThroughPrice(setTo: .crossOldPrice)
 
-                hButton.LargeButton(type: .primary) {
-                    editCoInsuredNavigation.showProgressScreenWithSuccess = true
-                    Task {
-                        await intentViewModel.performCoInsuredChanges(
-                            commitId: intentViewModel.intent.id
-                        )
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.contractAddCoinsuredConfirmChanges),
+                    {
+                        editCoInsuredNavigation.showProgressScreenWithSuccess = true
+                        Task {
+                            await intentViewModel.performCoInsuredChanges(
+                                commitId: intentViewModel.intent.id
+                            )
+                        }
                     }
-                } content: {
-                    hText(L10n.contractAddCoinsuredConfirmChanges)
-                }
+                )
                 .hButtonIsLoading(intentViewModel.isLoading)
             }
         }

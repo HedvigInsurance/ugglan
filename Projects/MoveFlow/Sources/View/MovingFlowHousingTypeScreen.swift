@@ -53,10 +53,8 @@ public struct MovingFlowHousingTypeScreen: View {
                             if let days = movingFlowNavigationVm.selectedHomeAddress?.oldAddressCoverageDurationDays {
                                 InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                             }
-                            hButton.LargeButton(type: .primary) {
+                            hContinueButton {
                                 continuePressed()
-                            } content: {
-                                hText(L10n.generalContinueButton, style: .body1)
                             }
                             .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
                         }

@@ -25,9 +25,10 @@ struct SumitClaimEmergencySelectView: View {
             )
             .hFormAttachToBottom {
                 hSection {
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         buttonView()
-                        hButton.LargeButton(type: .primary) {
+
+                        hContinueButton {
                             Task {
                                 let step = await vm.emergencyConfirmRequest(
                                     context: claimsNavigationVm.currentClaimContext ?? "",
@@ -38,8 +39,6 @@ struct SumitClaimEmergencySelectView: View {
                                     claimsNavigationVm.navigate(data: step)
                                 }
                             }
-                        } content: {
-                            hText(L10n.generalContinueButton)
                         }
                         .hButtonIsLoading(vm.state == .loading)
                     }
@@ -52,28 +51,34 @@ struct SumitClaimEmergencySelectView: View {
     @ViewBuilder
     func buttonView() -> some View {
         let confirmEmergency = claimsNavigationVm.emergencyConfirmModel
-        HStack(spacing: 8) {
+        HStack(spacing: .padding8) {
             ForEach(confirmEmergency?.options ?? [], id: \.displayName) { option in
                 if option.value == selectedValue {
-                    hButton.MediumButton(type: .primaryAlt) {
-                        withAnimation(.spring()) {
-                            selectedValue = option.value
+                    hButton(
+                        .medium,
+                        .primaryAlt,
+                        content: .init(title: option.displayName),
+                        {
+                            withAnimation(.spring()) {
+                                selectedValue = option.value
+                            }
                         }
-                    } content: {
-                        hText(option.displayName)
-                            .foregroundColor(
-                                hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
-                            )
-                    }
+                    )
                     .hButtonTakeFullWidth(true)
+                    .foregroundColor(
+                        hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
+                    )
                 } else {
-                    hButton.MediumButton(type: .secondary) {
-                        withAnimation(.spring()) {
-                            selectedValue = option.value
+                    hButton(
+                        .medium,
+                        .secondary,
+                        content: .init(title: option.displayName),
+                        {
+                            withAnimation(.spring()) {
+                                selectedValue = option.value
+                            }
                         }
-                    } content: {
-                        hText(option.displayName)
-                    }
+                    )
                     .hButtonTakeFullWidth(true)
                 }
             }
@@ -108,6 +113,10 @@ public class SumitClaimEmergencySelectViewModel: ObservableObject {
 
 struct SumitClaimEmergencySelectScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SumitClaimEmergencySelectView(title: L10n.submitClaimEmergencyTitle)
+
+        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+
+        return SumitClaimEmergencySelectView(title: L10n.submitClaimEmergencyTitle)
+            .environmentObject(SubmitClaimNavigationViewModel())
     }
 }

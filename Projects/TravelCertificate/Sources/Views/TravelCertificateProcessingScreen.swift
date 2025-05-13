@@ -39,26 +39,27 @@ struct TravelCertificateProcessingScreen: View {
 
     private var bottomSuccessView: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     ModalPresentationSourceWrapper(
                         content: {
-                            hButton.LargeButton(type: .primary) {
-                                Task { [weak vm] in
-                                    await vm?.presentShare()
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.Certificates.download),
+                                {
+                                    Task { [weak vm] in
+                                        await vm?.presentShare()
+                                    }
                                 }
-                            } content: {
-                                hText(L10n.Certificates.download)
-                            }
+                            )
                         },
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )
                     .fixedSize(horizontal: false, vertical: true)
-                    hButton.LargeButton(type: .ghost) {
+                    hCloseButton {
                         router.dismiss()
-                    } content: {
-                        hText(L10n.generalCloseButton)
                     }
                 }
             }
