@@ -13,7 +13,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isLanguagePickerPresented = false
     @Published public var isConfirmEmailPreferencesPresented = false
     @Published public var isCreateInsuranceEvidencePresented = false
-    @Published public var isChangeAppIconSelected = false
+    @Published public var isChangeAppIconSelected: ChangeAppIconViewModel?
     let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
     public let profileRouter = Router()
 
@@ -114,15 +114,20 @@ public struct ProfileNavigation<Content: View>: View {
             InsuranceEvidenceNavigation()
         }
         .detent(
-            presented: $profileNavigationViewModel.isChangeAppIconSelected,
+            item: $profileNavigationViewModel.isChangeAppIconSelected,
             style: [.height]
-        ) {
-            ChangeAppIconView()
-                .configureTitle("Customize app icon")
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: ProfileDetentType.appIcon
-                )
+        ) { appIconModel in
+            ChangeAppIconView(
+                vm: appIconModel,
+                onCancel: {
+                    profileNavigationViewModel.isChangeAppIconSelected = nil
+                }
+            )
+            .configureTitle("Customize app icon")
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: ProfileDetentType.appIcon
+            )
         }
     }
 }

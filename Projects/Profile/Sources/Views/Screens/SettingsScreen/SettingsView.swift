@@ -9,7 +9,6 @@ struct SettingsView: View {
     @PresentableStore var store: ProfileStore
     @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
-
     @StateObject var appIconVm = ChangeAppIconViewModel()
 
     init() {
@@ -107,7 +106,7 @@ struct SettingsView: View {
             value: appIconVm.selectedAppIcon == .primary ? "Default" : "Custom",
             placeholder: "App Icon",
             onTap: {
-                profileNavigationVm.isChangeAppIconSelected = true
+                profileNavigationVm.isChangeAppIconSelected = appIconVm
             }
         )
     }

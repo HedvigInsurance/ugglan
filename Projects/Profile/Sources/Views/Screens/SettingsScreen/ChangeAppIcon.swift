@@ -2,7 +2,8 @@ import SwiftUI
 import hCoreUI
 
 struct ChangeAppIconView: View {
-    @ObservedObject var vm = ChangeAppIconViewModel()
+    @ObservedObject var vm: ChangeAppIconViewModel
+    let onCancel: () -> Void
 
     var body: some View {
         hForm {
@@ -15,7 +16,7 @@ struct ChangeAppIconView: View {
                                 HStack(spacing: .padding16) {
                                     icon.previewImage
                                         .resizable()
-                                        .frame(width: 24, height: 24)
+                                        .frame(width: 40, height: 40)
                                     hText(icon.iconName, style: .heading2)
                                 }
                                 .asAnyView
@@ -35,6 +36,7 @@ struct ChangeAppIconView: View {
                     content: .init(title: "Apply"),
                     {
                         vm.updateAppIcon()
+                        onCancel()
                     }
                 )
             }
@@ -71,15 +73,19 @@ enum AppIcon: String, CaseIterable {
     var previewImage: Image {
         switch self {
         case .primary:
-            return hCoreUIAssets.flagSE.view
+            return hCoreUIAssets.ugglanAppIcon.view
         case .secondary:
-            return hCoreUIAssets.flagUK.view
+            return hCoreUIAssets.hedvigAppIcon.view
         }
     }
 }
 
 @MainActor
-final class ChangeAppIconViewModel: ObservableObject {
+public final class ChangeAppIconViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
+    public static func == (lhs: ChangeAppIconViewModel, rhs: ChangeAppIconViewModel) -> Bool {
+        return lhs.selectedAppIcon?.rawValue == rhs.selectedAppIcon?.rawValue
+    }
+
     @Published var selectedAppIcon: AppIcon?
 
     init() {
@@ -114,5 +120,5 @@ final class ChangeAppIconViewModel: ObservableObject {
 }
 
 #Preview {
-    ChangeAppIconView()
+    ChangeAppIconView(vm: .init(), onCancel: {})
 }
