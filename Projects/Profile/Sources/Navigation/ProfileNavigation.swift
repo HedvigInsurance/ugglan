@@ -13,6 +13,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isLanguagePickerPresented = false
     @Published public var isConfirmEmailPreferencesPresented = false
     @Published public var isCreateInsuranceEvidencePresented = false
+    @Published public var isChangeAppIconSelected = false
     let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
     public let profileRouter = Router()
 
@@ -112,6 +113,17 @@ public struct ProfileNavigation<Content: View>: View {
         .modally(presented: $profileNavigationViewModel.isCreateInsuranceEvidencePresented) {
             InsuranceEvidenceNavigation()
         }
+        .detent(
+            presented: $profileNavigationViewModel.isChangeAppIconSelected,
+            style: [.height]
+        ) {
+            ChangeAppIconView()
+                .configureTitle("Customize app icon")
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: ProfileDetentType.appIcon
+                )
+        }
     }
 }
 
@@ -132,12 +144,15 @@ enum ProfileDetentType: TrackingViewNameProtocol {
             return .init(describing: LanguagePickerView.self)
         case .emailPreferences:
             return .init(describing: EmailPreferencesConfirmView.self)
+        case .appIcon:
+            return .init(describing: ChangeAppIconView.self)
         }
     }
 
     case profile
     case languagePicker
     case emailPreferences
+    case appIcon
 }
 
 extension ProfileRouterType: TrackingViewNameProtocol {

@@ -10,6 +10,8 @@ struct SettingsView: View {
     @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
+    @StateObject var appIconVm = ChangeAppIconViewModel()
+
     init() {
         store.send(.fetchMemberDetails)
     }
@@ -50,6 +52,7 @@ struct SettingsView: View {
                     }
                     MemberSubscriptionPreferenceView(vm: memberSubscriptionPreferenceVm)
                         .environmentObject(profileNavigationVm)
+                    appIconView
                 }
                 .accessibilityAddTraits(.isButton)
                 NotificationsCardView()
@@ -98,10 +101,23 @@ struct SettingsView: View {
             }
         }
     }
+
+    private var appIconView: some View {
+        hFloatingField(
+            value: appIconVm.selectedAppIcon == .primary ? "Default" : "Custom",
+            placeholder: "App Icon",
+            onTap: {
+                profileNavigationVm.isChangeAppIconSelected = true
+            }
+        )
+    }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+        Dependencies.shared.add(module: Module { () -> ProfileClient in ProfileClientDemo() })
+        return SettingsView()
+            .environmentObject(ProfileNavigationViewModel())
     }
 }
