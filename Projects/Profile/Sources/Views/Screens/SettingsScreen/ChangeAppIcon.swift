@@ -35,8 +35,7 @@ struct ChangeAppIconView: View {
                     .primary,
                     content: .init(title: "Apply"),
                     {
-                        vm.updateAppIcon()
-                        onCancel()
+                        vm.updateAppIcon(onCancel: onCancel)
                     }
                 )
             }
@@ -96,7 +95,7 @@ public final class ChangeAppIconViewModel: ObservableObject, @preconcurrency Equ
         }
     }
 
-    func updateAppIcon() {
+    func updateAppIcon(onCancel: @escaping () -> Void) {
         let previousAppIcon = selectedAppIcon
 
         Task { @MainActor in
@@ -107,6 +106,8 @@ public final class ChangeAppIconViewModel: ObservableObject, @preconcurrency Equ
 
             do {
                 try await UIApplication.shared.setAlternateIconName(selectedAppIcon?.iconValue)
+
+                onCancel()
             } catch {
                 /// We're only logging the error here and not actively handling the app icon failure
                 /// since it's very unlikely to fail.
