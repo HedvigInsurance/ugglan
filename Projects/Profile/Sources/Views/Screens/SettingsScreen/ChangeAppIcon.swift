@@ -16,7 +16,10 @@ struct ChangeAppIconView: View {
                                 HStack(spacing: .padding16) {
                                     icon.previewImage
                                         .resizable()
+                                        .scaledToFill()
+                                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL, style: .circular))
                                         .frame(width: 40, height: 40)
+
                                     hText(icon.iconName, style: .heading2)
                                 }
                                 .asAnyView
