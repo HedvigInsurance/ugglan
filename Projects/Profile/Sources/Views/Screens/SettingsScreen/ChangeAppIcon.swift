@@ -48,7 +48,11 @@ struct ChangeAppIconView: View {
 @MainActor
 enum AppIcon: String, CaseIterable {
     case primary = "AppIcon"
-    case secondary = "AppIcon2"
+    case green = "AppIconGreen"
+    case blue = "AppIconBlue"
+    case dog = "AppIconDog"
+    case home = "AppIconHome"
+    case car = "AppIconCar"
 
     var iconValue: String? {
         switch self {
@@ -63,18 +67,34 @@ enum AppIcon: String, CaseIterable {
     var iconName: String {
         switch self {
         case .primary:
-            return "Ugglan"
-        default:
-            return "Hedvig"
+            return "Default"
+        case .green:
+            return "Green"
+        case .blue:
+            return "Blue"
+        case .dog:
+            return "Dog"
+        case .home:
+            return "Home"
+        case .car:
+            return "Car"
         }
     }
 
     var previewImage: Image {
         switch self {
         case .primary:
-            return hCoreUIAssets.ugglanAppIcon.view
-        case .secondary:
             return hCoreUIAssets.hedvigAppIcon.view
+        case .green:
+            return hCoreUIAssets.greenAppIcon.view
+        case .blue:
+            return hCoreUIAssets.blueAppIcon.view
+        case .dog:
+            return hCoreUIAssets.appIconDog.view
+        case .home:
+            return hCoreUIAssets.appIconHome.view
+        case .car:
+            return hCoreUIAssets.appIconHome.view
         }
     }
 }
