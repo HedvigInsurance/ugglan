@@ -19,14 +19,14 @@ struct CrossSellingItem: View {
             HStack(spacing: .padding16) {
                 Image(uiImage: crossSell.image)
                     .resizable()
-                    .frame(width: 48, height: 48)
+                    .frame(width: 48, height: 40)
                     .aspectRatio(contentMode: .fill)
                     .accessibilityHidden(true)
                 HStack(spacing: 0) {
                     VStack(alignment: .leading, spacing: 0) {
-                        hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
+                        hText(crossSell.displayText, style: .body1).foregroundColor(hTextColor.Opaque.primary)
                         MarqueeText(
-                            text: crossSell.description,
+                            text: crossSell.descriptionText,
                             font: Fonts.fontFor(style: .label),
                             leftFade: 3,
                             rightFade: 3,

@@ -133,23 +133,23 @@ struct ContractTable: View {
                 }
             ) { contracts in
                 VStack(spacing: .padding8) {
-                    ForEach(contracts, id: \.id) { contract in
-                        ContractRow(
-                            image: contract.pillowType?.bgImage,
-                            terminationMessage: contract.terminationMessage,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
-                            contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
-                            activeInFuture: contract.activeInFuture,
-                            masterInceptionDate: contract.masterInceptionDate,
-                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
-                            onClick: {
+                    ContractRow(
+                        terminationMessage: nil,
+                        displayNames: contracts.compactMap { $0.currentAgreement?.productVariant.displayName },
+                        contractExposureName: "",
+                        activeFrom: nil,
+                        activeInFuture: nil,
+                        masterInceptionDate: Date().localDateString,
+                        tierDisplayName: nil,
+                        onClick: { contractId in
+                            if let contract = store.state.contractForId(contractId) {
                                 router.push(contract)
                             }
-                        )
-                        .fixedSize(horizontal: false, vertical: sizeCategory > .large ? true : false)
-                        .transition(.slide)
-                    }
+                        },
+                        typeOfContracts: contracts.compactMap { (type: $0.typeOfContract, id: $0.id) }
+                    )
+                    .fixedSize(horizontal: false, vertical: sizeCategory > .large ? true : false)
+                    .transition(.slide)
                 }
             }
         }

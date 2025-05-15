@@ -231,6 +231,42 @@ extension TypeOfContract {
             return false
         }
     }
+
+    var isPetInsurance: Bool {
+        switch self {
+        case .seDogBasic:
+            return true
+        case .seDogStandard:
+            return true
+        case .seDogPremium:
+            return true
+        case .seCatBasic:
+            return true
+        case .seCatStandard:
+            return true
+        case .seCatPremium:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isCarInsurance: Bool {
+        switch self {
+        case .seCarTraffic:
+            return true
+        case .seCarHalf:
+            return true
+        case .seCarFull:
+            return true
+        case .seCarTrialFull:
+            return true
+        case .seCarTrialHalf:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 public struct ContractRenewal: Codable, Hashable, Sendable {

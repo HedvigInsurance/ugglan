@@ -40,11 +40,31 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable {
 extension CrossSell {
     public var image: UIImage {
         switch type {
-        case .home: return HCoreUIAsset.bigPillowHome.image
-        case .car: return HCoreUIAsset.bigPillowCar.image
+        case .home: return HCoreUIAsset.home.image
+        case .car: return HCoreUIAsset.car.image
         case .accident: return HCoreUIAsset.bigPillowAccident.image
-        case .pet: return HCoreUIAsset.bigPillowPet.image
+        case .pet: return HCoreUIAsset.dog.image
         case .unknown: return HCoreUIAsset.bigPillowHome.image
+        }
+    }
+
+    public var displayText: String {
+        switch type {
+        case .home: return "Home"
+        case .car: return "Car"
+        case .accident: return "Accident"
+        case .pet: return "Dog"
+        case .unknown: return ""
+        }
+    }
+
+    public var descriptionText: String {
+        switch type {
+        case .home: return "Best in class"
+        case .car: return "No binding time"
+        case .accident: return "Accident"
+        case .pet: return "Unlimited FirstVet calls"
+        case .unknown: return ""
         }
     }
 }

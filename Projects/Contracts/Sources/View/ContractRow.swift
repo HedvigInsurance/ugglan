@@ -7,56 +7,55 @@ import hCoreUI
 public struct ContractRow: View {
     @State var frameWidth: CGFloat = 0
 
-    let image: UIImage?
     let terminationMessage: String?
-    let contractDisplayName: String
+    let displayNames: [String]
     let contractExposureName: String
     let activeFrom: String?
     let activeInFuture: Bool?
     let masterInceptionDate: String?
     let tierDisplayName: String?
-
-    let onClick: (() -> Void)?
+    let typeOfContracts: [(type: TypeOfContract, id: String)]
+    let onClick: ((String) -> Void)?
 
     public init(
-        image: UIImage?,
         terminationMessage: String?,
-        contractDisplayName: String,
+        displayNames: [String],
         contractExposureName: String,
         activeFrom: String? = nil,
         activeInFuture: Bool? = nil,
         masterInceptionDate: String? = nil,
         tierDisplayName: String?,
-        onClick: (() -> Void)? = nil
+        onClick: ((String) -> Void)? = nil,
+        typeOfContracts: [(type: TypeOfContract, id: String)]
     ) {
-        self.image = image
         self.terminationMessage = terminationMessage
-        self.contractDisplayName = contractDisplayName
+        self.displayNames = displayNames
         self.contractExposureName = contractExposureName
         self.activeFrom = activeFrom
         self.activeInFuture = activeInFuture
         self.masterInceptionDate = masterInceptionDate
         self.tierDisplayName = tierDisplayName
+        self.typeOfContracts = typeOfContracts
 
         self.onClick = onClick
     }
 
     public var body: some View {
         SwiftUI.Button {
-            onClick?()
         } label: {
             EmptyView()
         }
         .buttonStyle(
             ContractRowButtonStyle(
-                image: image,
-                contractDisplayName: contractDisplayName,
+                displayNames: displayNames,
                 contractExposureName: contractExposureName,
                 terminationMessage: terminationMessage,
                 activeFrom: activeFrom,
                 activeInFuture: activeInFuture,
                 masterInceptionDate: masterInceptionDate,
-                tierDisplayName: tierDisplayName
+                tierDisplayName: tierDisplayName,
+                typeOfContracts: typeOfContracts,
+                onClick: onClick
             )
         )
         .background(
@@ -71,27 +70,30 @@ public struct ContractRow: View {
 }
 
 private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
-    let image: UIImage?
-    let contractDisplayName: String
+    let displayNames: [String]
     let contractExposureName: String
     let terminationMessage: String?
     let activeFrom: String?
     let activeInFuture: Bool?
     let masterInceptionDate: String?
     let tierDisplayName: String?
-    let tagsToShow: [(text: String, type: PillType)]
+    private let tagsToShow: [(text: String, type: PillType)]
+    let typeOfContracts: [(type: TypeOfContract, id: String)]
+
+    let onClick: ((String) -> Void)?
+
     public init(
-        image: UIImage?,
-        contractDisplayName: String,
+        displayNames: [String],
         contractExposureName: String,
         terminationMessage: String? = nil,
         activeFrom: String? = nil,
         activeInFuture: Bool? = nil,
         masterInceptionDate: String? = nil,
-        tierDisplayName: String?
+        tierDisplayName: String?,
+        typeOfContracts: [(type: TypeOfContract, id: String)],
+        onClick: ((String) -> Void)?
     ) {
-        self.image = image
-        self.contractDisplayName = contractDisplayName
+        self.displayNames = displayNames
         self.contractExposureName = contractExposureName
         self.terminationMessage = terminationMessage
 
@@ -99,6 +101,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         self.activeInFuture = activeInFuture
         self.masterInceptionDate = masterInceptionDate
         self.tierDisplayName = tierDisplayName
+        self.typeOfContracts = typeOfContracts
+        self.onClick = onClick
         var tagsToShow = [(text: String, type: PillType)]()
         if let tierDisplayName {
             tagsToShow.append((tierDisplayName, .tier))
@@ -129,32 +133,6 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         self.tagsToShow = tagsToShow
     }
 
-    @ViewBuilder var background: some View {
-        if let image {
-            HStack(alignment: .center, spacing: 0) {
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .background(
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .scaleEffect(1.32)
-                            .blur(radius: 20)
-                    )
-            }
-        } else {
-            hFillColor.Opaque.tertiary
-        }
-    }
-
-    @ViewBuilder var logo: some View {
-        Image(uiImage: HCoreUIAsset.helipadBig.image)
-            .resizable()
-            .frame(width: 24, height: 24)
-            .foregroundColor(hFillColor.Opaque.white)
-            .colorScheme(.dark)
-    }
-
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
@@ -172,24 +150,179 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             }
             Spacer()
             HStack {
-                hText(contractDisplayName)
-                    .foregroundColor(hTextColor.Opaque.white)
+                VStack(alignment: .leading) {
+                    ForEach(displayNames, id: \.self) { text in
+                        hText(text)
+                    }
+                }
+                .foregroundColor(textColor)
                 Spacer()
             }
-            hText(contractExposureName)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .colorScheme(.dark)
         }
         .padding(.padding16)
-        .frame(minHeight: 200)
+        .frame(minHeight: 300)
         .background(
             background
         )
         .border(hBorderColor.primary, width: 0.5)
         .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-        .hShadow()
         .contentShape(Rectangle())
     }
+
+    @ViewBuilder var background: some View {
+        ZStack {
+            homeView
+            dogView
+            carView
+        }
+    }
+
+    @ViewBuilder
+    private var homeView: some View {
+        if contractTypes.contains(.home) {
+            hCoreUIAssets.home.view
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .scaleEffect(1.1)
+                .onTapGesture {
+                    if let contractType = typeOfContracts.first(where: { $0.type.isHomeInsurance }) {
+                        onClick?(contractType.id)
+                    }
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var dogView: some View {
+        if contractTypes.contains(.dog) {
+            if displayNames.count == 1 {
+                hCoreUIAssets.dog.view
+                    .resizable()
+                    .scaleEffect(0.7)
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                hCoreUIAssets.dog.view
+                    .resizable()
+                    .scaleEffect(0.5)
+                    .aspectRatio(contentMode: .fit)
+                    .padding(.top, 170)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.trailing, 100)
+                    .onTapGesture {
+                        if let contractType = typeOfContracts.first(where: { $0.type.isPetInsurance }) {
+                            onClick?(contractType.id)
+                        }
+                    }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var carView: some View {
+        if contractTypes.contains(.car) {
+            if displayNames.count == 1 {
+                hCoreUIAssets.car.view
+                    .resizable()
+                    .scaleEffect(0.8)
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                hCoreUIAssets.car.view
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .scaleEffect(1.4)
+                    .padding(.top, 150)
+                    .padding(.leading, 240)
+                    .onTapGesture {
+                        if let contractType = typeOfContracts.first(where: { $0.type.isCarInsurance }) {
+                            onClick?(contractType.id)
+                        }
+                    }
+            }
+        }
+    }
+
+    private var contractImageView: Image {
+        if contractTypes.count == 3 {
+            return hCoreUIAssets.homeCarDog.view
+        } else if contractTypes.contains(.home) {
+            return hCoreUIAssets.home.view
+        } else if contractTypes.contains(.dog) {
+            return hCoreUIAssets.dog.view
+        } else {
+            return hCoreUIAssets.car.view
+        }
+    }
+
+    private var contractTypes: [ContractType] {
+        var listOfContracts: [ContractType] = []
+
+        let hasHomeInsurance = typeOfContracts.filter { contract in
+            switch contract.type {
+            case .seHouseBas, .seHouse, .seHouseMax, .seApartmentBrfBas, .seApartmentBrf, .seApartmentBrfMax,
+                .seApartmentRentBas, .seApartmentRent, .seApartmentRentMax, .seApartmentStudentBrf,
+                .seApartmentStudentRent, .seGroupApartmentBrf, .seGroupApartmentRent, .seQasaShortTermRental,
+                .seQasaLongTermRental:
+                return true
+            default:
+                return false
+            }
+        }
+
+        if !hasHomeInsurance.isEmpty {
+            listOfContracts.append(.home)
+        }
+
+        let hasPetInsurance = typeOfContracts.filter { contract in
+            switch contract.type {
+            case .seDogBasic, .seDogStandard, .seDogPremium, .seCatBasic, .seCatStandard, .seCatPremium:
+                return true
+            default:
+                return false
+            }
+        }
+
+        if !hasPetInsurance.isEmpty {
+            listOfContracts.append(.dog)
+        }
+
+        let hasCarInsurance = typeOfContracts.filter { contract in
+            switch contract.type {
+            case .seCarTraffic, .seCarHalf, .seCarFull, .seCarTrialFull, .seCarTrialHalf:
+                return true
+            default:
+                return false
+            }
+        }
+
+        if !hasCarInsurance.isEmpty {
+            listOfContracts.append(.car)
+        }
+
+        return listOfContracts
+    }
+
+    @ViewBuilder var logo: some View {
+        Image(uiImage: HCoreUIAsset.helipadBig.image)
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hFillColor.Opaque.black)
+            .colorScheme(.dark)
+    }
+
+    @hColorBuilder
+    private var textColor: some hColor {
+        if displayNames.count == 1 && !contractTypes.contains(.home) {
+            hTextColor.Opaque.black
+        } else {
+            hTextColor.Opaque.white
+        }
+    }
+}
+
+public enum ContractType {
+    case home
+    case dog
+    case car
 }
 
 @MainActor
@@ -228,11 +361,11 @@ private struct StatusPill: View {
 #Preview {
     hSection {
         ContractRow(
-            image: hCoreUIAssets.pillowHome.image,
             terminationMessage: "Active",
-            contractDisplayName: "Insurance",
+            displayNames: ["Home Insurance"],
             contractExposureName: "Address ∙ Coverage",
-            tierDisplayName: "tier display name"
+            tierDisplayName: "tier display name",
+            typeOfContracts: [(.seHouse, ""), (.seCarFull, ""), (.seDogBasic, "")]
         )
     }
 }
