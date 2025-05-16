@@ -362,10 +362,10 @@ private struct StatusPill: View {
     hSection {
         ContractRow(
             terminationMessage: "Active",
-            displayNames: ["Home Insurance"],
+            displayNames: ["Home Insurance", "", ""],
             contractExposureName: "Address ∙ Coverage",
             tierDisplayName: "tier display name",
-            typeOfContracts: [(.seHouse, ""), (.seCarFull, ""), (.seDogBasic, "")]
+            typeOfContracts: [(.seHouse, "fg"), (.seCarFull, "ghf"), (.seDogBasic, "grthy")]
         )
     }
 }
