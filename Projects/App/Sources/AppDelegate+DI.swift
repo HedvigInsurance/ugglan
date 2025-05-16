@@ -97,7 +97,7 @@ extension ApolloClient {
             let fetchClaimDetailsClient = FetchClaimDetailsClientOctopus()
             let crossSellClient = CrossSellClientOctopus()
             let insuranceEvidenceClient = InsuranceEvidenceClientOctopus()
-
+            let emailMessagesClient = EmailMessagesClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -129,6 +129,8 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
+                Dependencies.shared.add(module: Module { () -> EmailMessagesClient in emailMessagesClient })
+
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -159,6 +161,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
+                Dependencies.shared.add(module: Module { () -> EmailMessagesClient in emailMessagesClient })
             }
         }
     }

@@ -15,6 +15,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
     @Published var error: String?
     @Published var contentHeight: CGFloat = 0
     @Published var offset: CGFloat = 0
+    @Published var opacity: CGFloat = 0
 
     var contentSizeCancellable: AnyCancellable?
     public init(type: DocumentPreviewType) {
@@ -97,7 +98,7 @@ public struct DocumentPreview: View {
                     VideoPlayer(player: player)
                 } else {
                     DocumentPreviewWebView(documentPreviewModel: vm)
-                        .frame(maxHeight: vm.contentHeight)
+                        .frame(maxHeight: .infinity)
                         .offset(x: vm.offset)
                         .rotationEffect(.degrees(180 * Double(vm.offset) / 10000))
                         .gesture(
@@ -116,6 +117,7 @@ public struct DocumentPreview: View {
                                 }
                         )
                         .opacity(1 - Double(abs(vm.offset) / 1000))
+                        .opacity(vm.opacity)
                     if vm.isLoading {
                         DotsActivityIndicator(.standard)
                             .useDarkColor
@@ -194,8 +196,20 @@ struct DocumentPreviewWebView: UIViewRepresentable {
         vm.contentSizeCancellable = vm.webView.scrollView.publisher(for: \.contentSize)
             .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
             .sink(receiveValue: { @MainActor [weak vm] value in
-                withAnimation {
-                    vm?.contentHeight = value.height
+                switch vm?.type {
+                case .url:
+                    withAnimation {
+                        vm?.contentHeight = value.height
+                    }
+                case .data:
+                    if value.height > 0 {
+                        withAnimation(.defaultSpring) {
+                            vm?.contentHeight = value.height
+                            vm?.opacity = 1
+                        }
+                    }
+                case .none:
+                    break
                 }
             })
         vm.webView.scrollView.minimumZoomScale = 1

@@ -371,4 +371,5 @@ extension View {
     ScrollableSegmentedView(vm: vm) { id in
         hText("id")
     }
+    .frame(maxHeight: .infinity, alignment: .top)
 }

@@ -1,0 +1,13 @@
+query EmailMessages {
+  currentMember {
+    emailMessages {
+      id
+      recipient
+      subject
+      body
+      deliveryType
+      createdAt
+      category
+    }
+  }
+}
