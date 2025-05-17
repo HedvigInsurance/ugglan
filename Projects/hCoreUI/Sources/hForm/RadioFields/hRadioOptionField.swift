@@ -42,7 +42,7 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
                             )
                         )
                     if selectedValue == value {
-                        Image(uiImage: hCoreUIAssets.checkmark.image)
+                        hCoreUIAssets.checkmark.view
                             .foregroundColor(hTextColor.Opaque.negative)
                     }
                 }

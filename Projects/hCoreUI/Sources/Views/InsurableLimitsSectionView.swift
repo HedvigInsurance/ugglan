@@ -32,7 +32,7 @@ public struct InsurableLimitsSectionView: View {
                                 hText(" ")
                             }
                         }
-                        Image(uiImage: hCoreUIAssets.infoFilled.image)
+                        hCoreUIAssets.infoFilled.view
                             .resizable()
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .frame(width: 16, height: 16)

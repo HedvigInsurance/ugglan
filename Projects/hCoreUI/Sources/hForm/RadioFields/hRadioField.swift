@@ -145,7 +145,7 @@ struct hRadioField_Previews: PreviewProvider {
                     id: "id",
                     leftView: {
                         HStack {
-                            Image(uiImage: hCoreUIAssets.pillowHome.image)
+                            hCoreUIAssets.pillowHome.view
                                 .resizable()
                                 .frame(width: 32, height: 32)
 

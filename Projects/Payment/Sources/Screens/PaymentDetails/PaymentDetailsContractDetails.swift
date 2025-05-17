@@ -40,7 +40,7 @@ struct ContractDetails: View {
                     }
                     .layoutPriority(1)
 
-                    Image(uiImage: hCoreUIAssets.chevronDown.image)
+                    hCoreUIAssets.chevronDown.view
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hTextColor.Opaque.secondary)

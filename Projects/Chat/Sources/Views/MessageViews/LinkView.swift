@@ -25,7 +25,7 @@ struct LinkView: View {
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
             VStack(spacing: .padding8) {
-                Image(uiImage: model.image ?? hCoreUIAssets.helipadOutlined.image)
+                model.image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(minHeight: 200)

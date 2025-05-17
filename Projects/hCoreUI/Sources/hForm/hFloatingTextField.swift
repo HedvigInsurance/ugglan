@@ -411,7 +411,7 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
                         fieldText = ""
                     },
                     label: {
-                        Image(uiImage: hCoreUIAssets.close.image)
+                        hCoreUIAssets.close.view
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -419,7 +419,7 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
                 )
 
             } else if error != nil {
-                Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
+                hCoreUIAssets.warningTriangleFilled.view
                     .foregroundColor(hSignalColor.Amber.element)
             }
         }

@@ -112,7 +112,7 @@ struct CoInsuredSelectScreen: View {
                 content: .init(
                     title: L10n.generalAddNew,
                     buttonImage: .init(
-                        image: hCoreUIAssets.plusSmall.image,
+                        image: hCoreUIAssets.plusSmall.view,
                         alignment: .leading
                     )
                 ),

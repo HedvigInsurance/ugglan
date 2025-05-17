@@ -3,22 +3,23 @@ import Foundation
 import SwiftUI
 import hCore
 
+@MainActor
 public struct ToastBar {
     let type: NotificationType
-    let icon: UIImage?
+    let icon: Image
     let text: String
     let action: ToastBarAction?
     let duration: Double
 
     public init(
         type: NotificationType,
-        icon: UIImage? = nil,
+        icon: Image? = nil,
         text: String,
         action: ToastBarAction? = nil,
         duration: Double = 3
     ) {
         self.type = type
-        self.icon = icon
+        self.icon = icon ?? type.image
         self.text = text
         self.action = action
         self.duration = duration
@@ -49,8 +50,8 @@ public struct ToastBarView: View {
 
     public var body: some View {
         hSection {
-            HStack(spacing: 8) {
-                Image(uiImage: toastModel.icon ?? toastModel.type.image)
+            HStack(spacing: .padding8) {
+                toastModel.icon
                     .resizable()
                     .foregroundColor(iconColor)
                     .accessibilityHidden(true)
@@ -80,11 +81,7 @@ public struct ToastBarView: View {
 
     @hColorBuilder
     private var iconColor: some hColor {
-        if toastModel.icon != nil {
-            hSignalColor.Green.element
-        } else {
-            toastModel.type.imageColor
-        }
+        hSignalColor.Green.element
     }
 }
 
