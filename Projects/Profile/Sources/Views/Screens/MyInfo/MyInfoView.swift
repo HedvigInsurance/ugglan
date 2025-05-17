@@ -1,7 +1,6 @@
 import Combine
 import PresentableStore
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -11,109 +10,66 @@ public struct MyInfoView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            hSection {
-                VStack(spacing: 4) {
-                    hFloatingTextField(
-                        masking: .init(type: .digits),
-                        value: $vm.phone,
-                        equals: $vm.type,
-                        focusValue: .phone,
-                        placeholder: L10n.phoneNumberRowTitle,
-                        error: $vm.phoneError
-                    )
-                    hFloatingTextField(
-                        masking: .init(type: .email),
-                        value: $vm.email,
-                        equals: $vm.type,
-                        focusValue: .email,
-                        placeholder: L10n.emailRowTitle,
-                        error: $vm.emailError
-                    )
-                }
-                .disabled(vm.isLoading)
-            }
-            .padding(.top, .padding8)
-        }
-        .hFormAttachToBottom({
-            hSection {
-                hSaveButton {
-                    Task {
-                        withAnimation {
-                            vm.isLoading = true
+        hForm {}
+            .hFormAttachToBottom {
+                hSection {
+                    VStack(spacing: .padding16) {
+                        VStack(spacing: .padding4) {
+                            infoCardView
+                            emailField
+                            phoneNumberField
                         }
-                        await vm.save()
-                        withAnimation {
-                            vm.isLoading = false
-                            vm.checkForChanges()
-                        }
+                        buttonView
                     }
                 }
-                .hButtonIsLoading(vm.isLoading)
+                .sectionContainerStyle(.transparent)
+                .disabled(vm.viewState == .loading)
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.bottom, .padding8)
-            .opacity(vm.inEditMode ? 1 : 0)
-        })
-        .sectionContainerStyle(.transparent)
-        .introspect(.viewController, on: .iOS(.v13...)) { vc in
-            self.vm.vc = vc
-        }
-        .alert(isPresented: $vm.showAlert) {
-            cancelAlert
-        }
-        .navigationTitle(L10n.profileMyInfoRowTitle)
-
     }
 
-    @ToolbarContentBuilder
-    private var toolbars: some ToolbarContent {
-        Group {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(L10n.myInfoCancelButton) {
-                    vm.cancel()
-                }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .opacity(vm.inEditMode ? 1 : 0)
-                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-                .disabled(!vm.inEditMode)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if vm.isLoading {
-                    ProgressView().foregroundColor(hTextColor.Opaque.primary)
-                        .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-
-                } else {
-                    Button(L10n.generalDoneButton) {
-                        Task {
-                            withAnimation {
-                                vm.isLoading = true
-                            }
-                            await vm.save()
-                            withAnimation {
-                                vm.isLoading = false
-                                vm.checkForChanges()
-                            }
-                        }
-                    }
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .opacity(vm.inEditMode ? 1 : 0)
-                    .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-                    .disabled(!vm.inEditMode)
-                }
-            }
+    @ViewBuilder
+    private var infoCardView: (some View)? {
+        if vm.showInfoCard {
+            InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
         }
     }
 
-    private var cancelAlert: SwiftUI.Alert {
-        return Alert(
-            title: Text(L10n.myInfoCancelAlertTitle),
-            message: Text(L10n.myInfoCancelAlertMessage),
-            primaryButton: .default(Text(L10n.myInfoCancelAlertButtonCancel)),
-            secondaryButton: .destructive(Text(L10n.myInfoCancelAlertButtonConfirm)) {
-                vm.vc?.navigationController?.popViewController(animated: true)
+    private var emailField: some View {
+        hFloatingTextField(
+            masking: .init(type: .digits),
+            value: $vm.phone,
+            equals: $vm.type,
+            focusValue: .phone,
+            placeholder: L10n.phoneNumberRowTitle,
+            error: $vm.phoneError
+        )
+    }
+
+    private var phoneNumberField: some View {
+        hFloatingTextField(
+            masking: .init(type: .email),
+            value: $vm.email,
+            equals: $vm.type,
+            focusValue: .email,
+            placeholder: L10n.emailRowTitle,
+            error: $vm.emailError
+        )
+    }
+
+    private var buttonView: some View {
+        hButton(
+            .large,
+            .primary,
+            content: .init(title: L10n.generalSaveButton),
+            {
+                Task {
+                    await vm.save()
+                }
             }
         )
+        .hButtonIsLoading(vm.viewState == .loading)
+        .disabled(vm.disabledSaveButton)
+        .padding(.bottom, .padding8)
     }
 }
 
@@ -126,14 +82,21 @@ public class MyInfoViewModel: ObservableObject {
     @Published var phoneError: String?
     @Published var email: String = ""
     @Published var emailError: String?
-    @Published var inEditMode: Bool = false
-    @Published var showAlert: Bool = false
-    @Published var isLoading: Bool = false
+    @Published var viewState: ProcessingState = .success
+    @Published var disabledSaveButton: Bool = false
 
-    weak var vc: UIViewController?
     private var originalPhone: String
     private var originalEmail: String
     private var cancellables = Set<AnyCancellable>()
+    var showInfoCard: Bool {
+        guard let phoneNumber = store.state.memberDetails?.phone, !phoneNumber.isEmpty else {
+            return true
+        }
+        guard let email = store.state.memberDetails?.email, !email.isEmpty else {
+            return true
+        }
+        return false
+    }
 
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
@@ -144,29 +107,35 @@ public class MyInfoViewModel: ObservableObject {
         $phone
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
-                self?.checkForChanges()
+                self?.isValid()
             }
             .store(in: &cancellables)
         $email
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
-                self?.checkForChanges()
+                self?.isValid()
             }
             .store(in: &cancellables)
     }
 
-    func checkForChanges() {
+    func isValid() {
         withAnimation {
-            inEditMode = originalPhone != phone || originalEmail != email
+            disabledSaveButton = (phone == "" || originalPhone == "") || (email == "" || originalEmail == "")
         }
     }
 
     @MainActor
     func save() async {
+        withAnimation {
+            viewState = .loading
+        }
         async let updatePhoneAsync: () = self.getPhoneFuture()
         async let updateEmailAsync: () = self.getEmailFuture()
         do {
             _ = try await [updatePhoneAsync, updateEmailAsync]
+            withAnimation {
+                viewState = .success
+            }
             Toasts.shared.displayToastBar(
                 toast: .init(
                     type: .campaign,
@@ -185,6 +154,9 @@ public class MyInfoViewModel: ObservableObject {
                     withAnimation {
                         self.phoneError = error.localizedDescription
                     }
+                }
+                withAnimation {
+                    viewState = .error(errorMessage: error.localizedDescription)
                 }
             }
         }
@@ -223,10 +195,6 @@ public class MyInfoViewModel: ObservableObject {
             }
 
         }
-    }
-
-    func cancel() {
-        showAlert = true
     }
 
     enum MyInfoViewEditType: hTextFieldFocusStateCompliant {

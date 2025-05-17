@@ -44,6 +44,9 @@ struct HomeBottomScrollView: View {
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                case .missingContactInfo:
+                    ContactInfoView()
+                        .environmentObject(navigationVm.router)
                 }
             }
         )
@@ -72,6 +75,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleRenewalCardView()
         handleTerminatedMessage()
         handleUpdateOfMemberId()
+        handleMissingContactInfo()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -189,7 +193,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handleUpdateOfMemberId() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .compactMap({ $0.memberId })
+            .compactMap({ $0.memberInfo?.id })
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { memberId in
@@ -248,6 +252,27 @@ class HomeBottomScrollViewModel: ObservableObject {
             handleItem(.terminated, with: false)
         }
     }
+
+    func handleMissingContactInfo() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
+            .map({ $0.memberInfo?.phoneNumber })
+            .sink(receiveValue: { [weak self] phoneNumber in
+                if phoneNumber == nil || phoneNumber?.isEmpty ?? true {
+                    self?.handleItem(.missingContactInfo, with: true)
+                } else {
+                    self?.handleItem(.missingContactInfo, with: false)
+                }
+            })
+            .store(in: &cancellables)
+
+        let phoneNumber = store.state.memberInfo?.phoneNumber
+        if phoneNumber == nil || phoneNumber?.isEmpty ?? true {
+            handleItem(.missingContactInfo, with: true)
+        } else {
+            handleItem(.missingContactInfo, with: false)
+        }
+    }
 }
 
 struct HomeBottomScrollView_Previews: PreviewProvider {
@@ -271,4 +296,5 @@ enum InfoCardType: Hashable, Comparable {
     case renewal
     case deletedView
     case terminated
+    case missingContactInfo
 }
