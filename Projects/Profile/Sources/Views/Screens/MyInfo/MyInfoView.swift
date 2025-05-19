@@ -129,10 +129,9 @@ public class MyInfoViewModel: ObservableObject {
         withAnimation {
             viewState = .loading
         }
-        async let updatePhoneAsync: () = self.getPhoneFuture()
-        async let updateEmailAsync: () = self.getEmailFuture()
+        async let updateAsync: () = self.getFuture()
         do {
-            _ = try await [updatePhoneAsync, updateEmailAsync]
+            _ = try await [updateAsync]
             withAnimation {
                 viewState = .success
             }
@@ -162,36 +161,32 @@ public class MyInfoViewModel: ObservableObject {
         }
     }
 
-    private func getPhoneFuture() async throws {
-        if originalPhone != phone {
+    private func getFuture() async throws {
+        if originalPhone != phone || originalEmail != email {
             if phone.isEmpty {
                 throw MyInfoSaveError.phoneNumberEmpty
-            }
-            do {
-                let newPhone = try await profileService.update(phone: phone)
-                self.originalPhone = newPhone
-                self.store.send(.setMemberPhone(phone: newPhone))
-            } catch {
-                throw MyInfoSaveError.phoneNumberMalformed
-            }
-
-        }
-    }
-
-    private func getEmailFuture() async throws {
-        if originalEmail != email {
-            if email.isEmpty {
+            } else if email.isEmpty {
                 throw MyInfoSaveError.emailEmpty
             }
+
             if !Masking(type: .email).isValid(text: email) {
                 throw MyInfoSaveError.emailMalformed
             }
+
             do {
-                let newEmail = try await profileService.update(email: email)
+
+                let updatedContactData = try await profileService.update(email: email, phone: phone)
+
+                let newPhone = updatedContactData.phone
+                let newEmail = updatedContactData.email
+
+                self.originalPhone = newPhone
                 self.originalEmail = newEmail
+
+                self.store.send(.setMemberPhone(phone: newPhone))
                 self.store.send(.setMemberEmail(email: newEmail))
-            } catch {
-                throw MyInfoSaveError.emailMalformed
+            } catch let exception {
+                MyInfoSaveError.phoneNumberMalformed  // TODO: Change
             }
 
         }

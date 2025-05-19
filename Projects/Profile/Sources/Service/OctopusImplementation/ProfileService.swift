@@ -27,14 +27,9 @@ class ProfileService {
         return try await client.updateLanguage()
     }
 
-    func update(email: String) async throws -> String {
-        log.info("ProfileService: update(email)", error: nil, attributes: nil)
-        return try await client.update(email: email)
-    }
-
-    func update(phone: String) async throws -> String {
-        log.info("ProfileService: update(phone)", error: nil, attributes: nil)
-        return try await client.update(phone: phone)
+    public func update(email: String?, phone: String?) async throws -> (email: String, phone: String) {
+        log.info("ProfileService: update", error: nil, attributes: nil)
+        return try await client.update(email: email ?? "", phone: phone ?? "")
     }
 
     func update(eurobonus: String) async throws -> PartnerData {

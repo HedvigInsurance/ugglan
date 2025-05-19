@@ -23,8 +23,9 @@ public class ProfileClientDemo: ProfileClient {
 
     public func postDeleteRequest() async throws {}
 
-    public func update(email: String) async throws -> String { return email }
-    public func update(phone: String) async throws -> String { return phone }
+    public func update(email: String, phone: String) async throws -> (email: String, phone: String) {
+        return (email, phone)
+    }
 
     public func updateSubscriptionPreference(to subscribed: Bool) async throws {
 
