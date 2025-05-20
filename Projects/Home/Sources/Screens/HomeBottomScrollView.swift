@@ -256,22 +256,14 @@ class HomeBottomScrollViewModel: ObservableObject {
     func handleMissingContactInfo() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .map({ $0.memberInfo?.phoneNumber })
-            .sink(receiveValue: { [weak self] phoneNumber in
-                if phoneNumber == nil || phoneNumber?.isEmpty ?? true {
-                    self?.handleItem(.missingContactInfo, with: true)
-                } else {
-                    self?.handleItem(.missingContactInfo, with: false)
-                }
+            .compactMap({ $0.memberInfo?.isContactInfoUpdateNeeded })
+            .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
+                self?.handleItem(.missingContactInfo, with: isContactInfoUpdateNeeded)
             })
             .store(in: &cancellables)
 
-        let phoneNumber = store.state.memberInfo?.phoneNumber
-        if phoneNumber == nil || phoneNumber?.isEmpty ?? true {
-            handleItem(.missingContactInfo, with: true)
-        } else {
-            handleItem(.missingContactInfo, with: false)
-        }
+        let isContactInfoUpdateNeeded = store.state.memberInfo?.isContactInfoUpdateNeeded ?? false
+        handleItem(.missingContactInfo, with: isContactInfoUpdateNeeded)
     }
 }
 

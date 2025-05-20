@@ -1,7 +1,6 @@
 query Home {
   currentMember {
     id
-    phoneNumber
     activeContracts {
         ...ContractFragment
     }
@@ -9,6 +8,9 @@ query Home {
       externalInsuranceCancellationHandledByHedvig
       exposureDisplayName
       id
+    }
+    memberActions {
+        isContactInfoUpdateNeeded
     }
   }
 }

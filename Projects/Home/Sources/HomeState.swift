@@ -10,14 +10,14 @@ import hCoreUI
 
 public struct MemberInfo: Codable, Equatable, Sendable {
     let id: String
-    let phoneNumber: String?
+    let isContactInfoUpdateNeeded: Bool
 
     public init(
         id: String,
-        phoneNumber: String?
+        isContactInfoUpdateNeeded: Bool
     ) {
         self.id = id
-        self.phoneNumber = phoneNumber
+        self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
     }
 }
 
