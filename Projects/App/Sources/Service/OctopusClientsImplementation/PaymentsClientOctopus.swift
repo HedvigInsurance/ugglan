@@ -45,10 +45,13 @@ extension PaymentStatusData {
 
             return data.currentMember.paymentInformation.status.asPayinMethodStatus
         }()
+        let displayName = data.currentMember.paymentInformation.connection?.displayName
+        let descriptor = data.currentMember.paymentInformation.connection?.descriptor
+
         self.init(
             status: status,
-            displayName: data.currentMember.paymentInformation.connection?.displayName,
-            descriptor: data.currentMember.paymentInformation.connection?.descriptor
+            displayName: displayName != "-" ? displayName : nil,
+            descriptor: descriptor != "-" ? descriptor : nil
         )
     }
 }

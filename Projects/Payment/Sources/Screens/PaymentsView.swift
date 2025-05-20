@@ -52,10 +52,8 @@ public struct PaymentsView: View {
                             paymentHistory
                         }
                     }
-
                 }
                 .sectionContainerStyle(.transparent)
-
             }
             .padding(.vertical, .padding8)
         }
