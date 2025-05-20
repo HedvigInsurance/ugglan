@@ -25,8 +25,8 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
     private var cancellables = Set<AnyCancellable>()
-    public init() {
 
+    public init() {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
 
@@ -91,15 +91,5 @@ public class HomeNavigationViewModel: ObservableObject {
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
-}
-
-public enum HomeRouterActions: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        switch self {
-        case .contactInfo:
-            return .init(describing: "MyInfoView".self)
-        }
-    }
-
-    case contactInfo
+    public var pushToProfile: (() -> Void)?
 }

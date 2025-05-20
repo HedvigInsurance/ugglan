@@ -339,6 +339,7 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
+
     var body: some View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
@@ -349,14 +350,6 @@ struct HomeTab: View {
                     InboxView()
                         .configureTitle(L10n.chatConversationInbox)
                         .environmentObject(homeNavigationVm)
-                }
-                .routerDestination(for: HomeRouterActions.self) { action in
-                    switch action {
-                    case .contactInfo:
-                        self.loggedInVm.selectedTab = 4
-                        self.loggedInVm.profileNavigationVm.pushToProfile()
-                        return HomeScreen()
-                    }
                 }
         }
         .environmentObject(homeNavigationVm)
@@ -580,6 +573,10 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
     init() {
         setupObservers()
+        self.homeNavigationVm.pushToProfile = {
+            self.selectedTab = 4
+            self.profileNavigationVm.pushToProfile()
+        }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)

@@ -44,9 +44,8 @@ struct HomeBottomScrollView: View {
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
-                case .missingContactInfo:
+                case .updateContactInfo:
                     ContactInfoView()
-                        .environmentObject(navigationVm.router)
                 }
             }
         )
@@ -75,7 +74,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleRenewalCardView()
         handleTerminatedMessage()
         handleUpdateOfMemberId()
-        handleMissingContactInfo()
+        handleUpdateContactInfo()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -253,17 +252,17 @@ class HomeBottomScrollViewModel: ObservableObject {
         }
     }
 
-    func handleMissingContactInfo() {
+    func handleUpdateContactInfo() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
             .compactMap({ $0.memberInfo?.isContactInfoUpdateNeeded })
             .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
-                self?.handleItem(.missingContactInfo, with: isContactInfoUpdateNeeded)
+                self?.handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
             })
             .store(in: &cancellables)
 
         let isContactInfoUpdateNeeded = store.state.memberInfo?.isContactInfoUpdateNeeded ?? false
-        handleItem(.missingContactInfo, with: isContactInfoUpdateNeeded)
+        handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
     }
 }
 
@@ -288,5 +287,5 @@ enum InfoCardType: Hashable, Comparable {
     case renewal
     case deletedView
     case terminated
-    case missingContactInfo
+    case updateContactInfo
 }

@@ -4,6 +4,7 @@ import hCoreUI
 
 struct ContactInfoView: View {
     @EnvironmentObject var router: Router
+    @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     var body: some View {
         InfoCard(
@@ -15,11 +16,10 @@ struct ContactInfoView: View {
                 .init(
                     buttonTitle: L10n.missingContactInfoCardButton,
                     buttonAction: {
-                        router.push(HomeRouterActions.contactInfo)
+                        homeVm.pushToProfile?()
                     }
                 )
             ]
         )
     }
-
 }
