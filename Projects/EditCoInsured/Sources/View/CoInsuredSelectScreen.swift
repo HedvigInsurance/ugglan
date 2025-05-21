@@ -108,13 +108,9 @@ struct CoInsuredSelectScreen: View {
         .hItemPickerBottomAttachedView {
             hButton(
                 .large,
-                .ghost,
+                .secondary,
                 content: .init(
-                    title: L10n.generalAddNew,
-                    buttonImage: .init(
-                        image: hCoreUIAssets.plusSmall.image,
-                        alignment: .leading
-                    )
+                    title: L10n.generalAddNew
                 ),
                 {
                     editCoInsuredNavigation.coInsuredInputModel = .init(

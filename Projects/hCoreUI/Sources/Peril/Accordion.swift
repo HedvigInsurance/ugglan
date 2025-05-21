@@ -76,7 +76,7 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
                     .padding(.horizontal, .padding4)
                     .padding(.vertical, .padding2)
                 }
-                hText(title, style: fieldSize == .large ? .heading2 : .heading1)
+                hText(title, style: .body1)
                     .lineLimit(extended ? nil : 1)
                     .foregroundColor(getTextColor)
                 Spacer()
