@@ -61,6 +61,7 @@ struct PaymentStatusView: View {
 struct PaymentStatusView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return VStack {
             PaymentStatusView(status: .pending) { _ in }
             PaymentStatusView(status: .success) { _ in }

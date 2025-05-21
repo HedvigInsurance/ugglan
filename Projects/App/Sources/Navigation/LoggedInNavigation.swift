@@ -437,7 +437,6 @@ struct HomeTab: View {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
-                .withDismissButton()
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: LoggedInNavigationDetentType.firstVet

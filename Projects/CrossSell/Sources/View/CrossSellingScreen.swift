@@ -29,7 +29,7 @@ public struct CrossSellingScreen: View {
             .padding(.bottom, .padding8)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(title: L10n.crossSellTitle, subTitle: L10n.crossSellSubtitle)
+        .configureTitleView(title: L10n.crossSellSubtitle)
         .hFormAttachToBottom {
             hSection {
                 hCloseButton {

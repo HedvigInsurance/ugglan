@@ -54,13 +54,11 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder
     private var paymentDetailsSection: some View {
-        hSection {
-            carriedAdjustmentView
-            settlementAdjustmentView
-            total
-            paymentDue
-            bankDetails
+
+        hSection(paymentViewItems, id: \.id) { view in
+            view.view
         }
+
         .withHeader(
             title: L10n.PaymentDetails.NavigationBar.title,
             infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription,
@@ -69,6 +67,19 @@ struct PaymentDetailsView: View {
         .sectionContainerStyle(.transparent)
         .hSectionHeaderWithDivider
         .hWithoutHorizontalPadding([.row, .divider])
+    }
+
+    private var paymentViewItems: [(id: String, view: AnyView)] {
+        var list: [(id: String, view: AnyView)] = []
+
+        list.append(("carriedAdjustment", AnyView(carriedAdjustmentView)))
+        list.append(("settlementAdjustment", AnyView(settlementAdjustmentView)))
+        list.append(("total", AnyView(total)))
+        list.append(("paymentDue", AnyView(paymentDue)))
+        if let paymentDetails = data.paymentDetails {
+            list.append(("bankDetails", AnyView(bankDetails(paymentDetails: paymentDetails))))
+        }
+        return list
     }
 
     @ViewBuilder
@@ -153,16 +164,14 @@ struct PaymentDetailsView: View {
     }
 
     @ViewBuilder
-    private var bankDetails: some View {
-        if let paymentDetails = data.paymentDetails {
-            hSection(paymentDetails.getDisplayList, id: \.key) { item in
-                hRow {
-                    HStack {
-                        hText(item.key)
-                        Spacer()
-                        hText(item.value)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
+    private func bankDetails(paymentDetails: PaymentData.PaymentDetails) -> some View {
+        hSection(paymentDetails.getDisplayList, id: \.key) { item in
+            hRow {
+                HStack {
+                    hText(item.key)
+                    Spacer()
+                    hText(item.value)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .hWithoutHorizontalPadding([.section, .row, .divider])
