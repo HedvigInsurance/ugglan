@@ -68,11 +68,16 @@ public class ProfileClientOctopus: ProfileClient {
         let mutation = OctopusGraphQL.MemberUpdateContactInfoMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
 
+        if let userError = data.memberUpdateContactInfo.userError?.message {
+            throw ProfileError.error(message: userError)
+        }
+
         if let email = data.memberUpdateContactInfo.member?.email,
             let phone = data.memberUpdateContactInfo.member?.phoneNumber
         {
             return (email, phone)
         }
+
         throw ProfileError.error(message: L10n.General.errorBody)
     }
 

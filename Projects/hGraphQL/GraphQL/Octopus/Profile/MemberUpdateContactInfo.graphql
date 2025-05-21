@@ -1,8 +1,11 @@
 mutation MemberUpdateContactInfo($input: MemberUpdateContactInfoInput!) {
   memberUpdateContactInfo(input: $input) {
     member {
-      email
-      phoneNumber
+        email
+        phoneNumber
+    }
+    userError {
+        message
     }
   }
 }
