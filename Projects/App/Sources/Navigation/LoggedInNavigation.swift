@@ -878,6 +878,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                 Task {
                     await self.handleClaimDetails(claimId: claimId)
                 }
+            case .submitClaim:
+                self.selectedTab = 0
+                self.homeNavigationVm.isSubmitClaimPresented = true
             case nil:
                 let isDeeplink = Environment.current.isDeeplink(url)
                 if !isDeeplink {

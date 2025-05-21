@@ -221,7 +221,7 @@ private struct StatusPill: View {
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
         .background(type.getBackgroundColor).colorScheme(.light)
-        .cornerRadius(.cornerRadiusS)
+        .cornerRadius(.cornerRadiusXS)
     }
 }
 
