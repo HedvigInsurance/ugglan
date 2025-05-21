@@ -10,11 +10,11 @@ struct PaymentStatusView: View {
         case .upcoming:
             InfoCard(text: L10n.paymentsUpcomingPayment, type: .info)
         case .success:
-            HStack(spacing: 8) {
+            HStack(spacing: .padding8) {
                 Spacer()
                 Image(uiImage: hCoreUIAssets.checkmark.image)
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 20)
                     .foregroundColor(hSignalColor.Green.element)
                 hText(L10n.paymentsPaymentSuccessful, style: .label)
                     .foregroundColor(hSignalColor.Green.text)

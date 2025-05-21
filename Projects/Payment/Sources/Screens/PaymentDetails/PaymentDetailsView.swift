@@ -132,8 +132,10 @@ struct PaymentDetailsView: View {
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
-                hText(data.payment.net.formattedAmount)
-                hText(" ")
+                ZStack {
+                    hText(data.payment.net.formattedAmount)
+                    hText(" ")
+                }
             }
         }
         .accessibilityElement(children: .combine)
