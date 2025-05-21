@@ -10,13 +10,29 @@ public class ProfileClientDemo: ProfileClient {
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
     ) {
         return (
-            MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false), nil,
+            MemberDetails(
+                id: "",
+                firstName: "",
+                lastName: "",
+                phone: "",
+                email: "",
+                hasTravelCertificate: false,
+                isContactInfoUpdateNeeded: true
+            ), nil,
             false
         )
     }
 
     public func getMemberDetails() async throws -> MemberDetails {
-        return MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false)
+        return MemberDetails(
+            id: "",
+            firstName: "",
+            lastName: "",
+            phone: "",
+            email: "",
+            hasTravelCertificate: false,
+            isContactInfoUpdateNeeded: true
+        )
     }
 
     public func updateLanguage() async throws {}

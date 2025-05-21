@@ -37,7 +37,7 @@ public struct MyInfoView: View {
     private var emailField: some View {
         hFloatingTextField(
             masking: .init(type: .digits),
-            value: $vm.phone,
+            value: $vm.currentPhoneInput,
             equals: $vm.type,
             focusValue: .phone,
             placeholder: L10n.phoneNumberRowTitle,
@@ -48,7 +48,7 @@ public struct MyInfoView: View {
     private var phoneNumberField: some View {
         hFloatingTextField(
             masking: .init(type: .email),
-            value: $vm.email,
+            value: $vm.currentEmailInput,
             equals: $vm.type,
             focusValue: .email,
             placeholder: L10n.emailRowTitle,
@@ -78,50 +78,61 @@ public class MyInfoViewModel: ObservableObject {
     var profileService = ProfileService()
     @PresentableStore var store: ProfileStore
     @Published var type: MyInfoViewEditType?
-    @Published var phone: String = ""
+    @Published var currentPhoneInput: String = ""
     @Published var phoneError: String?
-    @Published var email: String = ""
+    @Published var currentEmailInput: String = ""
     @Published var emailError: String?
+    @Published var error: String?
     @Published var viewState: ProcessingState = .success
     @Published var disabledSaveButton: Bool = false
 
     private var originalPhone: String
     private var originalEmail: String
     private var cancellables = Set<AnyCancellable>()
-    var showInfoCard: Bool {
-        guard let phoneNumber = store.state.memberDetails?.phone, !phoneNumber.isEmpty else {
-            return true
-        }
-        guard let email = store.state.memberDetails?.email, !email.isEmpty else {
-            return true
-        }
-        return false
-    }
+    @Published var showInfoCard: Bool
 
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
+        showInfoCard = store.state.memberDetails?.isContactInfoUpdateNeeded ?? false
         originalPhone = store.state.memberDetails?.phone ?? ""
         originalEmail = store.state.memberDetails?.email ?? ""
-        phone = store.state.memberDetails?.phone ?? ""
-        email = store.state.memberDetails?.email ?? ""
-        $phone
+        currentPhoneInput = store.state.memberDetails?.phone ?? ""
+        currentEmailInput = store.state.memberDetails?.email ?? ""
+        $currentPhoneInput
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.isValid()
             }
             .store(in: &cancellables)
-        $email
+        $currentEmailInput
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.isValid()
+            }
+            .store(in: &cancellables)
+
+        store.stateSignal
+            .receive(on: RunLoop.main)
+            .map(\.memberDetails?.isContactInfoUpdateNeeded)
+            .removeDuplicates()
+            .sink { [weak self] state in
+                self?.showInfoCard = state ?? false
             }
             .store(in: &cancellables)
     }
 
     func isValid() {
         withAnimation {
-            disabledSaveButton = (phone == "" || originalPhone == "") || (email == "" || originalEmail == "")
+            disabledSaveButton = !hasValidPhoneNumber || !hasValidEmail
         }
+    }
+
+    private var hasValidPhoneNumber: Bool {
+        currentPhoneInput.isValidPhone && phoneError == nil
+    }
+
+    private var hasValidEmail: Bool {
+        return currentEmailInput != "" && emailError == nil
     }
 
     @MainActor
@@ -153,29 +164,37 @@ public class MyInfoViewModel: ObservableObject {
                     withAnimation {
                         self.phoneError = error.localizedDescription
                     }
+                case .error(let message):
+                    withAnimation {
+                        self.error = message
+                    }
                 }
                 withAnimation {
                     viewState = .error(errorMessage: error.localizedDescription)
                 }
             }
+            isValid()
         }
     }
 
     private func getFuture() async throws {
-        if originalPhone != phone || originalEmail != email {
-            if phone.isEmpty {
+        if originalPhone != currentPhoneInput || originalEmail != currentEmailInput {
+            if currentPhoneInput.isEmpty {
                 throw MyInfoSaveError.phoneNumberEmpty
-            } else if email.isEmpty {
+            } else if currentEmailInput.isEmpty {
                 throw MyInfoSaveError.emailEmpty
             }
 
-            if !Masking(type: .email).isValid(text: email) {
+            if !Masking(type: .email).isValid(text: currentEmailInput) {
                 throw MyInfoSaveError.emailMalformed
             }
 
             do {
 
-                let updatedContactData = try await profileService.update(email: email, phone: phone)
+                let updatedContactData = try await profileService.update(
+                    email: currentEmailInput,
+                    phone: currentPhoneInput
+                )
 
                 let newPhone = updatedContactData.phone
                 let newEmail = updatedContactData.email
@@ -186,9 +205,8 @@ public class MyInfoViewModel: ObservableObject {
                 self.store.send(.setMemberPhone(phone: newPhone))
                 self.store.send(.setMemberEmail(email: newEmail))
             } catch let exception {
-                MyInfoSaveError.phoneNumberMalformed  // TODO: Change
+                throw MyInfoSaveError.error(message: exception.localizedDescription)
             }
-
         }
     }
 
@@ -222,7 +240,8 @@ struct MyInfoView_Previews: PreviewProvider {
                     lastName: "",
                     phone: "",
                     email: "sladjann@gmail.com",
-                    hasTravelCertificate: true
+                    hasTravelCertificate: true,
+                    isContactInfoUpdateNeeded: true
                 )
             )
         )

@@ -24,7 +24,8 @@ public class ProfileClientOctopus: ProfileClient {
                 lastName: currentMember.lastName,
                 phone: currentMember.phoneNumber ?? "",
                 email: currentMember.email,
-                hasTravelCertificate: currentMember.memberActions?.isTravelCertificateEnabled ?? false
+                hasTravelCertificate: currentMember.memberActions?.isTravelCertificateEnabled ?? false,
+                isContactInfoUpdateNeeded: currentMember.memberActions?.isContactInfoUpdateNeeded ?? false
             )
 
         let partner = PartnerData(with: data.currentMember.fragments.partnerDataFragment)
@@ -125,7 +126,8 @@ extension MemberDetails {
             lastName: memberData.lastName,
             phone: memberData.phoneNumber,
             email: memberData.email,
-            hasTravelCertificate: false
+            hasTravelCertificate: false,
+            isContactInfoUpdateNeeded: false
         )
     }
 }
