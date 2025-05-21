@@ -25,7 +25,7 @@ public struct ListItems<T>: View {
             }
             .sectionContainerStyle(.transparent)
         } else {
-            VStack(spacing: 4) {
+            VStack(spacing: .padding4) {
                 ForEach(items, id: \.displayName) { item in
                     hSection {
                         ListItem(
@@ -64,9 +64,9 @@ public struct ListItem: View {
                     getMainContent
                 }
                 .withChevronAccessory
-                .verticalPadding(rowStyle == .filled ? 0 : 16)
-                .topPadding(rowStyle == .filled ? getTopPadding : 0)
-                .bottomPadding(rowStyle == .filled ? getBottomPadding : 0)
+                .verticalPadding(0)
+                .topPadding(getTopPadding)
+                .bottomPadding(getBottomPadding)
                 .onTap {
                     onClick()
                 }
@@ -74,9 +74,9 @@ public struct ListItem: View {
                 hRow {
                     getMainContent
                 }
-                .verticalPadding(rowStyle == .filled ? 0 : 16)
-                .topPadding(rowStyle == .filled ? getTopPadding : 0)
-                .bottomPadding(rowStyle == .filled ? getBottomPadding : 0)
+                .verticalPadding(0)
+                .topPadding(getTopPadding)
+                .bottomPadding(getBottomPadding)
                 .withCustomAccessory {
                     if style == .radioOption {
                         getRadioField
@@ -95,7 +95,7 @@ public struct ListItem: View {
 
     @ViewBuilder
     private var getMainContent: some View {
-        hText(title, style: .heading2)
+        hText(title, style: fieldSize == .large ? .heading2 : .heading1)
             .fixedSize()
             .foregroundColor(hTextColor.Opaque.primary)
         Spacer()
