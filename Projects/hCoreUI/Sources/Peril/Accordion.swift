@@ -120,7 +120,6 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, .padding32)
-                .padding(.bottom, .padding24)
             }
         }
         .padding(.horizontal, .padding16)
