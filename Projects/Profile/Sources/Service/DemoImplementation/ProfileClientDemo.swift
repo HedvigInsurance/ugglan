@@ -10,21 +10,38 @@ public class ProfileClientDemo: ProfileClient {
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
     ) {
         return (
-            MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false), nil,
+            MemberDetails(
+                id: "",
+                firstName: "",
+                lastName: "",
+                phone: "",
+                email: "",
+                hasTravelCertificate: false,
+                isContactInfoUpdateNeeded: true
+            ), nil,
             false
         )
     }
 
     public func getMemberDetails() async throws -> MemberDetails {
-        return MemberDetails(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false)
+        return MemberDetails(
+            id: "",
+            firstName: "",
+            lastName: "",
+            phone: "",
+            email: "",
+            hasTravelCertificate: false,
+            isContactInfoUpdateNeeded: true
+        )
     }
 
     public func updateLanguage() async throws {}
 
     public func postDeleteRequest() async throws {}
 
-    public func update(email: String) async throws -> String { return email }
-    public func update(phone: String) async throws -> String { return phone }
+    public func update(email: String, phone: String) async throws -> (email: String, phone: String) {
+        return (email, phone)
+    }
 
     public func updateSubscriptionPreference(to subscribed: Bool) async throws {
 

@@ -1,0 +1,11 @@
+mutation MemberUpdateContactInfo($input: MemberUpdateContactInfoInput!) {
+  memberUpdateContactInfo(input: $input) {
+    member {
+        email
+        phoneNumber
+    }
+    userError {
+        message
+    }
+  }
+}

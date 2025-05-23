@@ -209,7 +209,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     self?.logout()
 
                     let toast = ToastBar(
-                        type: .info,
+                        type: .neutral,
                         text: L10n.forceLogoutMessageTitle
                     )
                     Toasts.shared.displayToastBar(toast: toast)
