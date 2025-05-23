@@ -18,6 +18,13 @@ public struct MyInfoView: View {
                             infoCardView
                             emailField
                             phoneNumberField
+
+                            if let error = vm.error {
+                                hText(error, style: .label)
+                                    .foregroundColor(hSignalColor.Amber.text)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
                         }
                         buttonView
                     }
@@ -137,6 +144,7 @@ public class MyInfoViewModel: ObservableObject {
 
     @MainActor
     func save() async {
+        error = nil
         withAnimation {
             viewState = .loading
         }
