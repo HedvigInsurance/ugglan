@@ -15,6 +15,7 @@ query MemberActions {
       isConnectPaymentEnabled
       isEditCoInsuredEnabled
       isCancelInsuranceEnabled
+      isContactInfoUpdateNeeded
       isChangeTierEnabled
       firstVetAction {
         sections {

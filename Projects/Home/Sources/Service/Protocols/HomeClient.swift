@@ -10,13 +10,18 @@ public protocol HomeClient {
 }
 
 public struct MemberState: Sendable {
-    let id: String
+    let memberInfo: MemberInfo
     let contracts: [HomeContract]
     let contractState: MemberContractState
     let futureState: FutureStatus
 
-    public init(id: String, contracts: [HomeContract], contractState: MemberContractState, futureState: FutureStatus) {
-        self.id = id
+    public init(
+        memberInfo: MemberInfo,
+        contracts: [HomeContract],
+        contractState: MemberContractState,
+        futureState: FutureStatus
+    ) {
+        self.memberInfo = memberInfo
         self.contracts = contracts
         self.contractState = contractState
         self.futureState = futureState

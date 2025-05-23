@@ -339,6 +339,7 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
+
     var body: some View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
@@ -571,6 +572,10 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
     init() {
         setupObservers()
+        self.homeNavigationVm.pushToProfile = {
+            self.selectedTab = 4
+            self.profileNavigationVm.pushToProfile()
+        }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
