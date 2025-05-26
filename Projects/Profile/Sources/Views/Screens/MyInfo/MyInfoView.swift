@@ -186,35 +186,33 @@ public class MyInfoViewModel: ObservableObject {
     }
 
     private func getFuture() async throws {
-        if originalPhone != currentPhoneInput || originalEmail != currentEmailInput {
-            if currentPhoneInput.isEmpty {
-                throw MyInfoSaveError.phoneNumberEmpty
-            } else if currentEmailInput.isEmpty {
-                throw MyInfoSaveError.emailEmpty
-            }
+        if currentPhoneInput.isEmpty {
+            throw MyInfoSaveError.phoneNumberEmpty
+        } else if currentEmailInput.isEmpty {
+            throw MyInfoSaveError.emailEmpty
+        }
 
-            if !Masking(type: .email).isValid(text: currentEmailInput) {
-                throw MyInfoSaveError.emailMalformed
-            }
+        if !Masking(type: .email).isValid(text: currentEmailInput) {
+            throw MyInfoSaveError.emailMalformed
+        }
 
-            do {
+        do {
 
-                let updatedContactData = try await profileService.update(
-                    email: currentEmailInput,
-                    phone: currentPhoneInput
-                )
+            let updatedContactData = try await profileService.update(
+                email: currentEmailInput,
+                phone: currentPhoneInput
+            )
 
-                let newPhone = updatedContactData.phone
-                let newEmail = updatedContactData.email
+            let newPhone = updatedContactData.phone
+            let newEmail = updatedContactData.email
 
-                self.originalPhone = newPhone
-                self.originalEmail = newEmail
+            self.originalPhone = newPhone
+            self.originalEmail = newEmail
 
-                self.store.send(.setMemberPhone(phone: newPhone))
-                self.store.send(.setMemberEmail(email: newEmail))
-            } catch let exception {
-                throw MyInfoSaveError.error(message: exception.localizedDescription)
-            }
+            self.store.send(.setMemberPhone(phone: newPhone))
+            self.store.send(.setMemberEmail(email: newEmail))
+        } catch let exception {
+            throw MyInfoSaveError.error(message: exception.localizedDescription)
         }
     }
 
