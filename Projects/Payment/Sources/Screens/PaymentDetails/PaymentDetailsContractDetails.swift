@@ -53,6 +53,8 @@ struct ContractDetails: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
+            .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
+            .animation(nil, value: expandedContracts)
         }
         .withEmptyAccessory
         .onTap {
