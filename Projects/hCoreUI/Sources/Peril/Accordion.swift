@@ -57,11 +57,10 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
     let description: String
 
     @Binding var extended: Bool
-    @Environment(\.hFieldSize) var fieldSize
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
-            HStack(alignment: .top, spacing: 8) {
+            HStack(alignment: .top, spacing: .padding8) {
                 if let color = peril?.color {
                     Group {
                         if peril?.isDisabled ?? false {
@@ -72,9 +71,8 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
                                 .fill(Color(hexString: color))
                         }
                     }
-                    .frame(width: fieldSize == .small ? 20 : 24, height: fieldSize == .small ? 20 : 24)
-                    .padding(.horizontal, .padding4)
-                    .padding(.vertical, .padding2)
+                    .frame(width: 16, height: 16)
+                    .padding([.horizontal, .vertical], .padding4)
                 }
                 hText(title, style: .body1)
                     .lineLimit(extended ? nil : 1)
@@ -123,8 +121,8 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
             }
         }
         .padding(.horizontal, .padding16)
-        .padding(.top, fieldSize == .small ? 15 : .padding16)
-        .padding(.bottom, fieldSize == .small ? 17 : 18)
+        .padding(.top, 15)
+        .padding(.bottom, 17)
         .contentShape(Rectangle())
 
     }
