@@ -194,7 +194,7 @@ struct DocumentPreviewWebView: UIViewRepresentable {
         vm.contentSizeCancellable = vm.webView.scrollView.publisher(for: \.contentSize)
             .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
             .sink(receiveValue: { @MainActor [weak vm] value in
-                withAnimation {
+                withAnimation(.none) {
                     vm?.contentHeight = value.height
                 }
             })
