@@ -18,10 +18,14 @@ struct ContractDetails: View {
         hRow {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top, spacing: .padding8) {
-                    hText(contract.title)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: expandedContracts.contains(contract.id))
-                        .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
+                    if expandedContracts.contains(contract.id) {
+                        hText(contract.title)
+                            .multilineTextAlignment(.leading)
+                    } else {
+                        hText(contract.title)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(1)
+                    }
                     Spacer()
 
                     HStack(spacing: .padding8) {
@@ -53,8 +57,6 @@ struct ContractDetails: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
-            .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
-            .animation(nil, value: expandedContracts)
         }
         .withEmptyAccessory
         .onTap {
@@ -137,43 +139,46 @@ struct ContractDetails: View {
     @Previewable @State var isExpanded: [String] = ["id1"]
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 
-    return ContractDetails(
-        expandedContracts: $isExpanded,
-        contract: .init(
-            id: "id1",
-            title: "title",
-            subtitle: "subtitle",
-            netAmount: .sek(250),
-            grossAmount: .sek(200),
-            discounts: [
-                .init(
-                    code: "TOGETHER",
-                    amount: .init(amount: "10", currency: "SEK"),
-                    title: "15% discount for 12 months",
-                    listOfAffectedInsurances: [],
-                    validUntil: nil,
-                    canBeDeleted: true,
-                    discountId: "id"
-                )
-            ],
-            periods: [
-                .init(
-                    id: "1",
-                    from: "2023-11-10",
-                    to: "2023-11-23",
-                    amount: .sek(100),
-                    isOutstanding: false,
-                    desciption: "description"
-                ),
-                .init(
-                    id: "2",
-                    from: "2023-11-23",
-                    to: "2023-11-30",
-                    amount: .sek(80),
-                    isOutstanding: true,
-                    desciption: nil
-                ),
-            ]
+    return VStack {
+        ContractDetails(
+            expandedContracts: $isExpanded,
+            contract: .init(
+                id: "id1",
+                title: "title long title thatgoes 2 lines",
+                subtitle: "subtitle",
+                netAmount: .sek(250),
+                grossAmount: .sek(200),
+                discounts: [
+                    .init(
+                        code: "TOGETHER",
+                        amount: .init(amount: "10", currency: "SEK"),
+                        title: "15% discount for 12 months",
+                        listOfAffectedInsurances: [],
+                        validUntil: nil,
+                        canBeDeleted: true,
+                        discountId: "id"
+                    )
+                ],
+                periods: [
+                    .init(
+                        id: "1",
+                        from: "2023-11-10",
+                        to: "2023-11-23",
+                        amount: .sek(100),
+                        isOutstanding: false,
+                        desciption: "description"
+                    ),
+                    .init(
+                        id: "2",
+                        from: "2023-11-23",
+                        to: "2023-11-30",
+                        amount: .sek(80),
+                        isOutstanding: true,
+                        desciption: nil
+                    ),
+                ]
+            )
         )
-    )
+        Spacer()
+    }
 }
