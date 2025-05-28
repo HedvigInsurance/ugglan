@@ -15,6 +15,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
     @Published var error: String?
     @Published var contentHeight: CGFloat = 0
     @Published var offset: CGFloat = 0
+    @Published var opacity: Double = 0
 
     var contentSizeCancellable: AnyCancellable?
     public init(type: DocumentPreviewType) {
@@ -116,6 +117,7 @@ public struct DocumentPreview: View {
                                 }
                         )
                         .opacity(1 - Double(abs(vm.offset) / 1000))
+                        .opacity(vm.opacity)
                     if vm.isLoading {
                         DotsActivityIndicator(.standard)
                             .useDarkColor
@@ -161,6 +163,9 @@ extension DocumentPreviewModel: WKNavigationDelegate {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.contentSizeCancellable = nil
+        }
+        withAnimation(.easeInOut(duration: 0.1)) {
+            self.opacity = 1
         }
     }
 
