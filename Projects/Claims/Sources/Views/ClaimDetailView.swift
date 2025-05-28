@@ -265,6 +265,7 @@ public struct ClaimDetailView: View {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .sectionContainerStyle(.transparent)
+                    .padding(.top, .padding8)
                 }
 
                 if vm.canAddFiles {

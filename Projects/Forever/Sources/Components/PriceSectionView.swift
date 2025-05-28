@@ -16,7 +16,7 @@ struct PriceSectionView: View {
                 hText(monthlyDiscountAnimate.negative.formattedAmount + "/" + L10n.monthAbbreviationLabel)
                 hCoreUIAssets.infoFilled.view
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 20)
                     .onTapGesture {
                         didPressInfo()
                     }

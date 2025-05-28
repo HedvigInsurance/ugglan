@@ -346,7 +346,7 @@ extension View {
 }
 
 private struct EnvironmentHFieldSize: EnvironmentKey {
-    static let defaultValue: hFieldSize = .large
+    static let defaultValue: hFieldSize = .medium
 }
 
 public enum hFieldSize: Hashable, Sendable {

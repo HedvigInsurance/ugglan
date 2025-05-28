@@ -165,7 +165,8 @@ struct AppInfoView_Previews: PreviewProvider {
                             lastName: "LAST NAME",
                             phone: "PHNE",
                             email: "EMAIL",
-                            hasTravelCertificate: true
+                            hasTravelCertificate: true,
+                            isContactInfoUpdateNeeded: true
                         )
                     )
                 )

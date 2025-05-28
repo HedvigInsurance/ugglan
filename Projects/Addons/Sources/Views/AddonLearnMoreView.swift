@@ -26,7 +26,6 @@ struct AddonLearnMoreView: View {
 
                 VStack(spacing: .padding4) {
                     PerilCollection(perils: model.perils)
-                        .hFieldSize(.small)
                 }
             }
         }

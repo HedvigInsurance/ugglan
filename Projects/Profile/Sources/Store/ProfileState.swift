@@ -24,10 +24,10 @@ public struct ProfileState: StateProtocol {
     @MainActor
     public var canCreateTravelInsurance: Bool {
         let store: ContractStore = globalPresentableStoreContainer.get()
-        let numerOfContractsEligibleForCreatingTravelCertificate = store.state.activeContracts.filter({
+        let numberOfContractsEligibleForCreatingTravelCertificate = store.state.activeContracts.filter({
             $0.supportsTravelCertificate
         })
-        return numerOfContractsEligibleForCreatingTravelCertificate.count > 0
+        return numberOfContractsEligibleForCreatingTravelCertificate.count > 0
     }
 
     public init() {

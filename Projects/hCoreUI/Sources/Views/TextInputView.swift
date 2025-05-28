@@ -60,8 +60,7 @@ public struct TextInputView: View {
                         .disabled(vm.isLoading)
                     }
                 }
-
-                .padding(.vertical, .padding16)
+                .padding(.top, .padding16)
             }
         }
         .hFormContentPosition(.compact)

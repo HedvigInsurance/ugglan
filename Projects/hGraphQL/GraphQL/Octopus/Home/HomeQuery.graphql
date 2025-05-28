@@ -9,5 +9,8 @@ query Home {
       exposureDisplayName
       id
     }
+    memberActions {
+        isContactInfoUpdateNeeded
+    }
   }
 }

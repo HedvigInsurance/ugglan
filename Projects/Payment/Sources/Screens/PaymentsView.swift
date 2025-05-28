@@ -116,10 +116,10 @@ public struct PaymentsView: View {
                         )
                         Spacer()
                         hText(paymentData.payment.net.formattedAmount)
-                        hCoreUIAssets.chevronRightSmall.view
+                        Image(uiImage: hCoreUIAssets.chevronRight.image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 16, height: 16)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                     .foregroundColor(.primary)

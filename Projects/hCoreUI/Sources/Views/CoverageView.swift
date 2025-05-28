@@ -39,7 +39,6 @@ public struct CoverageView: View {
                             PerilCollection(
                                 perils: perils.perils
                             )
-                            .hFieldSize(.small)
                         }
                     }
                 }
