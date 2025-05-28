@@ -17,8 +17,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @State var inputText: String = ""
     @State var inputTextError: String?
     @State var animateField: Bool = false
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @AccessibilityFocusState private var saveAndContinueFocused: Bool
 
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let onSubmit: (_ url: URL) -> Void
 
     public init(
@@ -53,7 +54,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
         } else {
             mainContent
         }
-
     }
 
     private var mainContent: some View {
@@ -124,6 +124,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     minutes = 0
                     seconds = 0
                 }
+
             hButton(
                 .large,
                 .primary,
@@ -148,6 +149,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
             )
             .disabled(audioRecordingVm.viewState == .loading)
             .hButtonIsLoading(audioRecordingVm.viewState == .loading)
+            .accessibilityFocused($saveAndContinueFocused)
+            .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
+
             hButton(
                 .large,
                 .ghost,
@@ -178,6 +182,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .transition(
                 .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
             )
+
             if !audioRecorder.isRecording {
                 let audioRecordingStep = claimsNavigationVm.audioRecordingModel
                 if audioRecordingStep?.optionalAudio == true {
@@ -191,18 +196,16 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             }
                         }
                     )
-
                 } else {
                     hText(L10n.claimsStartRecordingLabel, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
-
                 }
             } else {
                 let minutesToString = String(format: "%02d", minutes)
                 let secondsToString = String(format: "%02d", seconds)
                 hText("\(minutesToString):\(secondsToString)", style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
-                    .onReceive(timer) { time in
+                    .onReceive(timer) { _ in
                         if ((seconds % 59) == 0) && seconds != 0 {
                             minutes += 1
                             seconds = 0
@@ -210,6 +213,16 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             seconds += 1
                         }
                     }
+            }
+        }
+        .onChange(of: audioRecorder.isRecording) { isRecording in
+            if !isRecording {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    UIAccessibility.post(notification: .announcement, argument: " ")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        saveAndContinueFocused = true
+                    }
+                }
             }
         }
         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -284,7 +297,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
     private func validate() -> Bool {
         withAnimation {
             let minCharacters = 50
-            print(self.inputText.count)
             if self.inputText.count < minCharacters {
                 inputTextError = L10n.claimsTextInputMinCharactersError(minCharacters)
             } else {
@@ -342,7 +354,7 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
         navigation.audioRecordingModel = .init(
             id: "id",
             questions: [
-                "QUESTGION 1 very long how much time it should take to complete this task"
+                "QUESTION 1 very long how much time it should take to complete this task"
             ],
             textQuestions: [],
             inputTextContent: nil,
