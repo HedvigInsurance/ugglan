@@ -38,7 +38,6 @@ public struct SubmitClaimSummaryScreen: View {
                 .withHeader(title: L10n.changeAddressDetails)
                 .padding(.top, .padding16)
                 .sectionContainerStyle(.transparent)
-                .accessibilityElement(children: .combine)
 
                 hSection {
                     hRowDivider()
@@ -177,6 +176,7 @@ public struct SubmitClaimSummaryScreen: View {
                 Spacer()
                 value.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
             }
+            .accessibilityElement(children: .combine)
         }
     }
 
