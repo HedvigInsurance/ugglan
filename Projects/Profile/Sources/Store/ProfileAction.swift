@@ -9,7 +9,8 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
     case setCanCreateInsuranceEvidence(to: Bool)
-    case isTravelCertificateEnabled(has: Bool)
+    case hasTravelCertificates(to: Bool)
+    case canCreateTravelCertificate(to: Bool)
     case fetchProfileStateCompleted
     case setMemberDetails(details: MemberDetails)
     case fetchMemberDetails
