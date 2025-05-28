@@ -114,6 +114,7 @@ public struct NotLoggedInView: View {
                     } label: {
                         Image(uiImage: Localization.Locale.currentLocale.value.icon)
                             .padding(.padding8)
+                            .accessibilityLabel(L10n.voiceoverSelectLanguage)
                     }
 
                 }
