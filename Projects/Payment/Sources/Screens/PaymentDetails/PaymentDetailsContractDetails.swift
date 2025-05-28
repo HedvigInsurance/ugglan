@@ -57,6 +57,8 @@ struct ContractDetails: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
+            .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
+
         }
         .withEmptyAccessory
         .onTap {
@@ -145,7 +147,7 @@ struct ContractDetails: View {
             contract: .init(
                 id: "id1",
                 title: "title long title thatgoes 2 lines",
-                subtitle: "subtitle",
+                subtitle: "subtitle which is long so it takes 2 so we can see how it looks",
                 netAmount: .sek(250),
                 grossAmount: .sek(200),
                 discounts: [
