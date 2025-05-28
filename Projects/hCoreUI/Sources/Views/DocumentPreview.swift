@@ -15,6 +15,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
     @Published var error: String?
     @Published var contentHeight: CGFloat = 0
     @Published var offset: CGFloat = 0
+    @Published var opacity: Double = 0
 
     var contentSizeCancellable: AnyCancellable?
     public init(type: DocumentPreviewType) {
@@ -116,6 +117,7 @@ public struct DocumentPreview: View {
                                 }
                         )
                         .opacity(1 - Double(abs(vm.offset) / 1000))
+                        .opacity(vm.opacity)
                     if vm.isLoading {
                         DotsActivityIndicator(.standard)
                             .useDarkColor
@@ -162,6 +164,9 @@ extension DocumentPreviewModel: WKNavigationDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.contentSizeCancellable = nil
         }
+        withAnimation(.easeInOut(duration: 0.1)) {
+            self.opacity = 1
+        }
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
@@ -194,7 +199,7 @@ struct DocumentPreviewWebView: UIViewRepresentable {
         vm.contentSizeCancellable = vm.webView.scrollView.publisher(for: \.contentSize)
             .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
             .sink(receiveValue: { @MainActor [weak vm] value in
-                withAnimation {
+                withAnimation(.none) {
                     vm?.contentHeight = value.height
                 }
             })

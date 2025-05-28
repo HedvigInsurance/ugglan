@@ -339,6 +339,7 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
+
     var body: some View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
@@ -437,7 +438,6 @@ struct HomeTab: View {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
-                .withDismissButton()
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: LoggedInNavigationDetentType.firstVet
@@ -572,6 +572,10 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
     init() {
         setupObservers()
+        self.homeNavigationVm.pushToProfile = {
+            self.selectedTab = 4
+            self.profileNavigationVm.pushToProfile()
+        }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
@@ -873,6 +877,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                 Task {
                     await self.handleClaimDetails(claimId: claimId)
                 }
+            case .submitClaim:
+                self.selectedTab = 0
+                self.homeNavigationVm.isSubmitClaimPresented = true
             case nil:
                 let isDeeplink = Environment.current.isDeeplink(url)
                 if !isDeeplink {

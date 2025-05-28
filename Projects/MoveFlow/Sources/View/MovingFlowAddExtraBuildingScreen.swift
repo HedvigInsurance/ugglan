@@ -76,7 +76,6 @@ struct MovingFlowAddExtraBuildingScreen: View {
             title: L10n.changeAddressExtraBuildingsWaterInputLabel,
             isOn: $vm.connectedToWater.animation(.default)
         )
-        .hFieldSize(.large)
         .onTapGesture {
             withAnimation {
                 vm.connectedToWater.toggle()

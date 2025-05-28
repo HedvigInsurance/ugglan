@@ -8,8 +8,7 @@ public protocol ProfileClient {
     func getMemberDetails() async throws -> MemberDetails
     func updateLanguage() async throws
     func postDeleteRequest() async throws
-    func update(email: String) async throws -> String
-    func update(phone: String) async throws -> String
+    func update(email: String, phone: String) async throws -> (email: String, phone: String)
     func update(eurobonus: String) async throws -> PartnerData
     func updateSubscriptionPreference(to subscribed: Bool) async throws
 }

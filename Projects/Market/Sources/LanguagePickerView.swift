@@ -49,7 +49,11 @@ public struct LanguagePickerView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hSaveButton {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.generalSaveButton)
+                    ) {
                         Localization.Locale.currentLocale.send(currentLocale)
                         onSave()
                     }
@@ -58,7 +62,7 @@ public struct LanguagePickerView: View {
                     }
                 }
             }
-            .padding(.vertical, .padding16)
+            .padding(.top, .padding16)
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }

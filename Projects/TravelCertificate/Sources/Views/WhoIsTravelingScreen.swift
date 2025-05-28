@@ -61,7 +61,6 @@ struct WhoIsTravelingScreen: View {
         ItemPickerScreen<CoInsuredModel>(
             config: itemPickerConfig
         )
-        .hFieldSize(.large)
         .hFormContentPosition(.bottom)
         .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whoIsTraveling, alignment: .leading))
         .disabled(vm.isLoading)

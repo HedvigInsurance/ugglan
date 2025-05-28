@@ -44,6 +44,8 @@ struct HomeBottomScrollView: View {
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
+                case .updateContactInfo:
+                    ContactInfoView()
                 }
             }
         )
@@ -72,6 +74,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleRenewalCardView()
         handleTerminatedMessage()
         handleUpdateOfMemberId()
+        handleUpdateContactInfo()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -189,7 +192,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handleUpdateOfMemberId() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .compactMap({ $0.memberId })
+            .compactMap({ $0.memberInfo?.id })
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { memberId in
@@ -248,6 +251,19 @@ class HomeBottomScrollViewModel: ObservableObject {
             handleItem(.terminated, with: false)
         }
     }
+
+    func handleUpdateContactInfo() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
+            .compactMap({ $0.memberInfo?.isContactInfoUpdateNeeded })
+            .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
+                self?.handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
+            })
+            .store(in: &cancellables)
+
+        let isContactInfoUpdateNeeded = store.state.memberInfo?.isContactInfoUpdateNeeded ?? false
+        handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
+    }
 }
 
 struct HomeBottomScrollView_Previews: PreviewProvider {
@@ -271,4 +287,5 @@ enum InfoCardType: Hashable, Comparable {
     case renewal
     case deletedView
     case terminated
+    case updateContactInfo
 }
