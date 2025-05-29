@@ -56,7 +56,7 @@ public struct hCounterField: View {
                                 decrease()
                             }
                         } label: {
-                            Image(uiImage: hCoreUIAssets.minus.image)
+                            hCoreUIAssets.minus.view
                                 .foregroundColor(
                                     foregroundColor.opacity(value == 0 ? 0.4 : 1)
                                 )
@@ -68,7 +68,7 @@ public struct hCounterField: View {
                                 increase()
                             }
                         } label: {
-                            Image(uiImage: hCoreUIAssets.plus.image)
+                            hCoreUIAssets.plus.view
                                 .foregroundColor(foregroundColor.opacity(maxValue == value ? 0.4 : 1))
                                 .frame(width: 35, height: 35)
                                 .accessibilityLabel(L10n.generalAddButton)

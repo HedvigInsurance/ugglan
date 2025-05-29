@@ -23,7 +23,7 @@ public struct FirstVetView: View {
                         hRow {
                             VStack(alignment: .leading, spacing: .padding16) {
                                 HStack(spacing: .padding8) {
-                                    Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
+                                    hCoreUIAssets.firstVetQuickNav.view
                                     hText(partner.title ?? "")
                                     Spacer()
                                 }

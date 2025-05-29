@@ -157,7 +157,7 @@ public class MyInfoViewModel: ObservableObject {
             Toasts.shared.displayToastBar(
                 toast: .init(
                     type: .campaign,
-                    icon: hCoreUIAssets.edit.image,
+                    icon: hCoreUIAssets.edit.view,
                     text: L10n.profileMyInfoSaveSuccessToastBody
                 )
             )

@@ -15,7 +15,7 @@ struct DiscountCodeSectionView: View {
                     Toasts.shared.displayToastBar(
                         toast: .init(
                             type: .campaign,
-                            icon: hCoreUIAssets.checkmark.image,
+                            icon: hCoreUIAssets.checkmark.view,
                             text: L10n.ReferralsActiveToast.text
                         )
                     )
@@ -51,7 +51,7 @@ private struct DiscountCodeField: View {
                 onTap: onTap
             )
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
+                hCoreUIAssets.copy.view
                     .accessibilityHidden(true)
             }
         }

@@ -37,7 +37,7 @@ public struct ContractOwnerField: View {
                     hText(fullName)
                         .foregroundColor(getTitleColor)
                     Spacer()
-                    Image(uiImage: hCoreUIAssets.lock.image)
+                    hCoreUIAssets.lock.view
                         .foregroundColor(hTextColor.Opaque.tertiary)
                 }
                 hText(SSN, style: .label)

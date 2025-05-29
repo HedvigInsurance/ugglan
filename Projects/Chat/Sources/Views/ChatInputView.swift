@@ -33,7 +33,7 @@ struct ChatInputView: View {
                 self.vm.showBottomMenu.toggle()
             }
         } label: {
-            Image(uiImage: hCoreUIAssets.plus.image)
+            hCoreUIAssets.plus.view
                 .resizable().frame(width: 24, height: 24)
                 .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
                 .foregroundColor(hTextColor.Opaque.primary)
@@ -77,17 +77,26 @@ struct ChatInputView: View {
     private var bottomMenu: some View {
         HStack(spacing: .padding8) {
             VStack(spacing: .padding8) {
-                bottomMenuItem(with: hCoreUIAssets.camera.image) {
-                    vm.openCamera()
-                }
+                bottomMenuItem(
+                    with: hCoreUIAssets.camera.view,
+                    action: {
+                        vm.openCamera()
+                    }
+                )
                 .accessibilityValue(L10n.voiceoverChatCamera)
-                bottomMenuItem(with: hCoreUIAssets.image.image) {
-                    vm.openImagePicker()
-                }
+                bottomMenuItem(
+                    with: hCoreUIAssets.image.view,
+                    action: {
+                        vm.openImagePicker()
+                    }
+                )
                 .accessibilityValue(L10n.voiceoverChatCameraroll)
-                bottomMenuItem(with: hCoreUIAssets.document.image) {
-                    vm.openFilePicker()
-                }
+                bottomMenuItem(
+                    with: hCoreUIAssets.document.view,
+                    action: {
+                        vm.openFilePicker()
+                    }
+                )
                 .accessibilityValue(L10n.voiceoverChatFiles)
             }
             ImagesView(vm: vm.imagesViewModel)
@@ -96,11 +105,11 @@ struct ChatInputView: View {
         .padding(.leading, .padding16)
     }
 
-    private func bottomMenuItem(with image: UIImage, action: @escaping () -> Void) -> some View {
+    private func bottomMenuItem(with image: Image, action: @escaping () -> Void) -> some View {
         Button {
             action()
         } label: {
-            Image(uiImage: image)
+            image
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)

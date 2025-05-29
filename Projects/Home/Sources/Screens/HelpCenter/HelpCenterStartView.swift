@@ -38,7 +38,7 @@ public struct HelpCenterStartView: View {
                         } else {
                             HStack {
                                 Spacer()
-                                Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
+                                hCoreUIAssets.bigPillowBlack.view
                                     .resizable()
                                     .frame(width: 160, height: 160)
                                     .padding(.bottom, 26)

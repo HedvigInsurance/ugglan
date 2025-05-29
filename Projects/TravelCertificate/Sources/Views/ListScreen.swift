@@ -23,7 +23,7 @@ public struct ListScreen: View {
         hForm {
             if vm.list.isEmpty && !vm.isLoading {
                 VStack(spacing: .padding16) {
-                    Image(uiImage: hCoreUIAssets.infoFilled.image)
+                    hCoreUIAssets.infoFilled.view
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColor.Blue.element)

@@ -2,12 +2,12 @@ import SwiftUI
 import hCore
 
 extension Localization.Locale {
-    public var icon: UIImage {
+    public var icon: Image {
         switch self {
         case .sv_SE:
-            return hCoreUIAssets.flagSE.image
+            return hCoreUIAssets.flagSE.view
         case .en_SE:
-            return hCoreUIAssets.flagUK.image
+            return hCoreUIAssets.flagUK.view
         }
     }
 }
