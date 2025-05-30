@@ -14,13 +14,15 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
         switch action {
         case .fetchProfileState:
             do {
-                let (member, partner, canCreateInsuranceEvidence) = try await self.profileService.getProfileState()
+                let (member, partner, canCreateInsuranceEvidence, hasTravelInsurances) = try await self.profileService
+                    .getProfileState()
                 self.removeLoading(for: .fetchProfileState)
 
                 send(.setEurobonusNumber(partnerData: partner))
                 send(.setCanCreateInsuranceEvidence(to: canCreateInsuranceEvidence))
                 send(.setMember(memberData: member))
-                send(.isTravelCertificateEnabled(has: member.isTravelCertificateEnabled))
+                send(.canCreateTravelCertificate(to: member.isTravelCertificateEnabled))
+                send(.hasTravelCertificates(to: hasTravelInsurances))
                 send(.fetchProfileStateCompleted)
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchProfileState)
@@ -71,8 +73,10 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             newState.pushNotificationStatus = status
         case let .setPushNotificationsTo(date):
             newState.pushNotificationsSnoozeDate = date
-        case let .isTravelCertificateEnabled(hasTravelCertificates):
+        case let .hasTravelCertificates(hasTravelCertificates):
             newState.hasTravelCertificates = hasTravelCertificates
+        case let .canCreateTravelCertificate(canCreate):
+            newState.canCreateTravelInsurance = canCreate
         default:
             break
         }

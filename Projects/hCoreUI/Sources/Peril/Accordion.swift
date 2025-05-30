@@ -135,6 +135,8 @@ struct AccordionBody: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, .padding32)
+        .accessibilityAddTraits(extended ? .isSelected : [])
+        .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
     }
 
     @hColorBuilder
