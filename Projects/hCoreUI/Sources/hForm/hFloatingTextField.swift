@@ -81,7 +81,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 .padding(.top, size.topPadding)
                 .padding(.bottom, size.bottomPadding)
             }
-            .accessibilityAddTraits(.allowsDirectInteraction)
             rightAttachedView
         }
         .addFieldBackground(animate: $animate, error: $error)

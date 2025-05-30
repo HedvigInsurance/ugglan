@@ -127,7 +127,8 @@ struct ClaimStatusBar: View {
                         .cornerRadius(.cornerRadiusXS)
                     hText(segment.title, style: .label)
                         .foregroundColor(textColor(segment: segment))
-                        .lineLimit(1)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: true, vertical: false)
                 }
                 .frame(maxWidth: .infinity)
                 .accessibilityLabel(accessibilityText(segment: segment) ?? "")
@@ -138,22 +139,27 @@ struct ClaimStatusBar: View {
 
 struct ClaimStatusBar_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            HStack {
-                ClaimStatusBar(status: .submitted, outcome: .none)
+        hForm {
+            hSection {
+                VStack {
+                    HStack {
+                        ClaimStatusBar(status: .submitted, outcome: .none)
+                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .beingHandled, outcome: .none)
+                    //                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .closed, outcome: .paid)
+                    //                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .closed, outcome: .notCovered)
+                    //                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .closed, outcome: .notCompensated)
+                    //                    }
+                }
             }
-            HStack {
-                ClaimStatusBar(status: .beingHandled, outcome: .none)
-            }
-            HStack {
-                ClaimStatusBar(status: .closed, outcome: .paid)
-            }
-            HStack {
-                ClaimStatusBar(status: .closed, outcome: .notCovered)
-            }
-            HStack {
-                ClaimStatusBar(status: .closed, outcome: .notCompensated)
-            }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
