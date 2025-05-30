@@ -10,6 +10,7 @@ struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
     @ObservedObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
     let itemPickerConfig: ItemConfig<CoInsuredModel>
+
     init(vm: WhoIsTravelingViewModel, travelCertificateNavigationVm: TravelCertificateNavigationViewModel) {
         self.vm = vm
         self.travelCertificateNavigationVm = travelCertificateNavigationVm
