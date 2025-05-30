@@ -5,125 +5,136 @@ public struct AccordionView: View {
     let peril: Perils?
     let title: String
     let description: String
-    @State var extended = false
+    @State private var extended = false
 
-    public init(
-        peril: Perils
-    ) {
+    public init(peril: Perils) {
         self.peril = peril
         self.title = peril.title
         self.description = peril.description
     }
 
-    public init(
-        title: String,
-        description: String
-    ) {
+    public init(title: String, description: String) {
         self.title = title
         self.description = description
         self.peril = nil
     }
 
     public var body: some View {
-        SwiftUI.Button {
-            withAnimation {
-                extended.toggle()
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: {
+                withAnimation {
+                    extended.toggle()
+                    UIAccessibility.post(notification: .layoutChanged, argument: nil)
+                }
+            }) {
+                AccordionHeader(
+                    peril: peril,
+                    title: title,
+                    extended: extended
+                )
+                .padding(.horizontal, .padding16)
+                .padding(.vertical, 17)
             }
-        } label: {
-            EmptyView()
+            .accessibilityLabel("\(title)")
+            .accessibilityAddTraits(.isButton)
+            .modifier(
+                BackgorundColorAnimation(
+                    animationTrigger: $extended,
+                    color: hSurfaceColor.Opaque.primary,
+                    animationColor: hSurfaceColor.Opaque.secondary
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+
+            if extended {
+                AccordionBody(peril: peril, description: description)
+                    .padding(.bottom, .padding8)
+                    .accessibilityElement(children: .contain)
+            }
         }
-        .buttonStyle(
-            AccordionButtonStyle(
-                peril: peril,
-                title: title,
-                description: description,
-                extended: $extended
-            )
-        )
-        .modifier(
-            BackgorundColorAnimation(
-                animationTrigger: $extended,
-                color: hSurfaceColor.Opaque.primary,
-                animationColor: hSurfaceColor.Opaque.secondary
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
     }
 }
 
-struct AccordionButtonStyle: SwiftUI.ButtonStyle {
-    var peril: Perils?
+struct AccordionHeader: View {
+    let peril: Perils?
     let title: String
-    let description: String
+    let extended: Bool
 
-    @Binding var extended: Bool
-
-    func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .center, spacing: 11) {
-            HStack(alignment: .top, spacing: .padding8) {
-                if let color = peril?.color {
-                    Group {
-                        if peril?.isDisabled ?? false {
-                            Circle()
-                                .fill(hFillColor.Opaque.disabled)
-                        } else {
-                            Circle()
-                                .fill(Color(hexString: color))
-                        }
+    var body: some View {
+        HStack(alignment: .top, spacing: .padding8) {
+            if let color = peril?.color {
+                Group {
+                    if peril?.isDisabled ?? false {
+                        Circle()
+                            .fill(hFillColor.Opaque.disabled)
+                    } else {
+                        Circle()
+                            .fill(Color(hexString: color))
                     }
-                    .frame(width: 16, height: 16)
-                    .padding([.horizontal, .vertical], .padding4)
                 }
-                hText(title, style: .body1)
-                    .lineLimit(extended ? nil : 1)
-                    .foregroundColor(getTextColor)
-                Spacer()
-                ZStack {
-                    Group {
-                        Image(
-                            uiImage: hCoreUIAssets.minus.image
-                        )
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .transition(.opacity.animation(.easeOut))
-                        .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 270))
-                        Image(
-                            uiImage: hCoreUIAssets.minus.image
-                        )
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .transition(.opacity.animation(.easeOut))
-                        .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
-                    }
-                    .foregroundColor(getTextColor)
-                }
+                .frame(width: 16, height: 16)
+                .padding([.horizontal, .vertical], .padding4)
             }
-
-            if extended {
-                VStack(alignment: .leading, spacing: .padding12) {
-                    hText(description, style: peril != nil ? .label : .body1)
-                        .padding(.bottom, .padding12)
-                        .foregroundColor(getTextColor)
-                    if let perilCover = peril?.covered {
-                        ForEach(Array(perilCover.enumerated()), id: \.offset) { index, item in
-                            HStack(alignment: .top, spacing: 8) {
-                                if perilCover.count > 1 {
-                                    hText(String(format: "%02d", index + 1), style: .label)
-                                        .foregroundColor(hTextColor.Opaque.tertiary)
-                                }
-                                hText(item, style: .label)
-                            }
-                        }
-                    }
+            hText(title, style: .body1)
+                .lineLimit(extended ? nil : 1)
+                .foregroundColor(getTextColor)
+            Spacer()
+            ZStack {
+                Group {
+                    Image(
+                        uiImage: hCoreUIAssets.minus.image
+                    )
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .transition(.opacity.animation(.easeOut))
+                    .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 270))
+                    Image(
+                        uiImage: hCoreUIAssets.minus.image
+                    )
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .transition(.opacity.animation(.easeOut))
+                    .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, .padding32)
+                .foregroundColor(getTextColor)
             }
         }
-        .padding(.horizontal, .padding16)
-        .padding(.top, 15)
-        .padding(.bottom, 17)
-        .contentShape(Rectangle())
+        .accessibilityAddTraits(extended ? .isHeader : [])
+    }
+
+    @hColorBuilder
+    var getTextColor: some hColor {
+        if peril?.isDisabled ?? false {
+            hTextColor.Opaque.disabled
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
+}
+
+struct AccordionBody: View {
+    let peril: Perils?
+    let description: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: .padding12) {
+            hText(description, style: peril != nil ? .label : .body1)
+                .padding(.bottom, .padding12)
+                .foregroundColor(getTextColor)
+            if let perilCover = peril?.covered {
+                ForEach(Array(perilCover.enumerated()), id: \.offset) { index, item in
+                    HStack(alignment: .top, spacing: 8) {
+                        if perilCover.count > 1 {
+                            hText(String(format: "%02d", index + 1), style: .label)
+                                .foregroundColor(hTextColor.Opaque.tertiary)
+                        }
+                        hText(item, style: .label)
+                    }
+                }
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, .padding32)
         .accessibilityAddTraits(extended ? .isSelected : [])
         .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
     }
