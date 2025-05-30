@@ -30,7 +30,7 @@ public struct AccordionView: View {
                 AccordionHeader(
                     peril: peril,
                     title: title,
-                    extended: extended
+                    extended: $extended
                 )
                 .padding(.horizontal, .padding16)
                 .padding(.vertical, 17)
@@ -47,7 +47,7 @@ public struct AccordionView: View {
             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
 
             if extended {
-                AccordionBody(peril: peril, description: description)
+                AccordionBody(peril: peril, description: description, extended: $extended)
                     .padding(.bottom, .padding8)
                     .accessibilityElement(children: .contain)
             }
@@ -58,7 +58,7 @@ public struct AccordionView: View {
 struct AccordionHeader: View {
     let peril: Perils?
     let title: String
-    let extended: Bool
+    @Binding var extended: Bool
 
     var body: some View {
         HStack(alignment: .top, spacing: .padding8) {
@@ -115,6 +115,7 @@ struct AccordionHeader: View {
 struct AccordionBody: View {
     let peril: Perils?
     let description: String
+    @Binding var extended: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: .padding12) {
