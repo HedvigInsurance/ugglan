@@ -47,12 +47,12 @@ struct AskForPushNotifications: View {
                     .accessibilityHidden(true)
                 VStack(spacing: 0) {
                     hText(L10n.activateNotificationsTitle)
+                        .accessibilityAddTraits(.isHeader)
                     hText(text)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, .padding32)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                .accessibilityElement(children: .combine)
                 hButton(
                     .medium,
                     .primary,

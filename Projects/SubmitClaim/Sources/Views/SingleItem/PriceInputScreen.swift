@@ -67,3 +67,7 @@ struct PriceInputScreen: View {
         }
     }
 }
+
+#Preview {
+    PriceInputScreen(claimsNavigationVm: .init())
+}

@@ -52,34 +52,27 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     public var body: some View {
-        HStack(spacing: 8) {
-            VStack {
-                ZStack(alignment: .leading) {
-                    hFieldLabel(
-                        placeholder: placeholder,
-                        animate: $animate,
-                        error: $error,
-                        shouldMoveLabel: $shouldMoveLabel
-                    )
-                    .offset(y: shouldMoveLabel ? size.labelOffset : 0)
-                    HStack {
-                        getTextField
-                            .showClearButtonOrError(
-                                $innerValue,
-                                equals: $equals,
-                                animationEnabled: $animationEnabled,
-                                error: $error,
-                                focusValue: focusValue
-                            )
-                        if !(suffix ?? "").isEmpty {
-                            getSuffixLabel
-                        }
+        HStack(spacing: .padding8) {
+            hFieldContainer(
+                placeholder: placeholder,
+                customLabelOffset: nil,
+                animate: $animate,
+                error: $error,
+                shouldMoveLabel: $shouldMoveLabel
+            ) {
+                HStack {
+                    getTextField
+                        .showClearButtonOrError(
+                            $innerValue,
+                            equals: $equals,
+                            animationEnabled: $animationEnabled,
+                            error: $error,
+                            focusValue: focusValue
+                        )
+                    if !(suffix ?? "").isEmpty {
+                        getSuffixLabel
                     }
-                    .offset(y: shouldMoveLabel ? size.fieldOffset : 0)
-
                 }
-                .padding(.top, size.topPadding)
-                .padding(.bottom, size.bottomPadding)
             }
             rightAttachedView
         }

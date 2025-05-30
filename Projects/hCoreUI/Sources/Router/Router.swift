@@ -356,6 +356,7 @@ extension View {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(title, style: .heading1)
                         .foregroundColor(titleViewColor(titleColor))
+                        .accessibilityAddTraits(.isHeader)
                     hText(subTitle, style: .heading1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }

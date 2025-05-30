@@ -11,16 +11,17 @@ struct AddonLearnMoreView: View {
                 hSection {
                     VStack(alignment: .leading, spacing: .padding4) {
                         hText(model.title, style: .body2)
+                            .accessibilityAddTraits(.isHeader)
                         hText(model.description, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                     .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityElement(children: .combine)
 
                     hPill(text: L10n.addonLearnMoreLabel, color: .blue)
                         .hFieldSize(.medium)
                         .padding(.top, .padding32)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.isHeader)
                 }
                 .sectionContainerStyle(.transparent)
 
