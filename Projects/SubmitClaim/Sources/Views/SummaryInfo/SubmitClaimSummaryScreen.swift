@@ -171,10 +171,12 @@ public struct SubmitClaimSummaryScreen: View {
     @ViewBuilder
     func createRow(with title: String?, and value: String?) -> some View {
         if let title, let value {
-            HStack {
+            HStack(alignment: .top) {
                 title.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
                 Spacer()
                 value.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.trailing)
             }
             .accessibilityElement(children: .combine)
         }
