@@ -74,9 +74,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     }
                 }
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityAddTraits(.allowsDirectInteraction)
-
             rightAttachedView
         }
         .addFieldBackground(animate: $animate, error: $error)
