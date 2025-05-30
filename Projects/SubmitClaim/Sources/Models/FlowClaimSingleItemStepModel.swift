@@ -71,12 +71,11 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
             .map({ $0.displayName })
         if !availableItemProblems.isEmpty {
             var finalString = availableItemProblems[0]
-            if availableItemProblems.count > 1 {
-                finalString.append(", \(availableItemProblems[1])")
+
+            availableItemProblems.forEach {
+                finalString.append(", \($0)")
             }
-            if availableItemProblems.count > 2 {
-                finalString.append(" ...")
-            }
+
             return finalString
         }
         return nil
