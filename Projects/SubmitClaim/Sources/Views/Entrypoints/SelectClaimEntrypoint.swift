@@ -326,6 +326,9 @@ struct ShowTagList: View {
                     } else {
                         withAnimation {
                             notValid = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                UIAccessibility.post(notification: .announcement, argument: L10n.claimsSelectCategory)
+                            }
                         }
                         selection = ""
                     }
