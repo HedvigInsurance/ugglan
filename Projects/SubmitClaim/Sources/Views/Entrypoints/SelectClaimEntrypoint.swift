@@ -280,7 +280,7 @@ struct ShowTagList: View {
 
     var body: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 showNotValid
                 TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
                     if showTags {
@@ -316,6 +316,7 @@ struct ShowTagList: View {
                             )
                         )
                         .accessibilityAddTraits(.isButton)
+                        .accessibilityAddTraits(selection == tag ? .isSelected : [])
                     }
                 }
                 hContinueButton {

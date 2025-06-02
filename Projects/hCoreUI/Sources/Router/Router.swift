@@ -368,6 +368,7 @@ extension View {
         }
         .padding(.top, .padding8)
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
     }
 
     @hColorBuilder
