@@ -6,7 +6,8 @@ class ProfileService {
     @Inject var client: ProfileClient
 
     public func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
+        hasTravelInsurances: Bool
     ) {
         log.info("ProfileService: getProfileState", error: nil, attributes: nil)
         return try await client.getProfileState()

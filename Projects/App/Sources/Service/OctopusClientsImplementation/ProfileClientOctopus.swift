@@ -8,7 +8,8 @@ public class ProfileClientOctopus: ProfileClient {
     public init() {}
 
     public func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
+        hasTravelInsurances: Bool
     ) {
         let data = try await self.octopus.client
             .fetch(
@@ -28,8 +29,13 @@ public class ProfileClientOctopus: ProfileClient {
                 isContactInfoUpdateNeeded: currentMember.memberActions?.isContactInfoUpdateNeeded ?? false
             )
 
+        let hasTravelInsurances = !currentMember.travelCertificates.isEmpty
+
         let partner = PartnerData(with: data.currentMember.fragments.partnerDataFragment)
-        return (memberData, partner, currentMember.memberActions?.isCreatingOfInsuranceEvidenceEnabled ?? false)
+        return (
+            memberData, partner, currentMember.memberActions?.isCreatingOfInsuranceEvidenceEnabled ?? false,
+            hasTravelInsurances
+        )
     }
 
     public func getMemberDetails() async throws -> MemberDetails {

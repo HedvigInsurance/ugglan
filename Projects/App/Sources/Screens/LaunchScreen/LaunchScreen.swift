@@ -21,5 +21,6 @@ struct LaunchScreen: View {
                     }
                 }
             }
+            .accessibilityHidden(true)
     }
 }
