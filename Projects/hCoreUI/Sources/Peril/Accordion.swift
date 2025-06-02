@@ -124,7 +124,8 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
         .padding(.top, 15)
         .padding(.bottom, 17)
         .contentShape(Rectangle())
-
+        .accessibilityAddTraits(extended ? .isSelected : [])
+        .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
     }
 
     @hColorBuilder
