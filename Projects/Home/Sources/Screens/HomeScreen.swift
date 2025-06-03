@@ -30,7 +30,7 @@ extension HomeScreen {
             and: "HomeView",
             action: { type in
                 switch type {
-                case .newOffer:
+                case .newOffer, .newOfferNotification:
                     NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true

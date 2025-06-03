@@ -5,6 +5,7 @@ import hCore
 
 public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case newOffer
+    case newOfferNotification
     case firstVet
     case chat
     case chatNotification(lastMessageTimeStamp: Date?)
@@ -24,6 +25,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return hCoreUIAssets.inboxNotification.image
         case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.image
+        case .newOfferNotification:
+            return hCoreUIAssets.campaignQuickNavNotification.image
         }
     }
 
@@ -39,6 +42,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
+        case .newOfferNotification:
+            return L10n.hcQuickActionsFirstvetTitle
         }
     }
 
@@ -46,6 +51,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         switch self {
         case .newOffer:
             return "newOfferHint"
+        case .newOfferNotification:
+            return "newOfferHintNotification"
         case .firstVet:
             return "firstVetHint"
         case .chat:
@@ -74,6 +81,8 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return nil
         case .firstVet:
             return nil
+        case .newOfferNotification:
+            return "New offer available"
         case .chat:
             return L10n.HomeTab.chatHintText
         case .chatNotification:
@@ -85,7 +94,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
 
     var showAsTooltip: Bool {
         switch self {
-        case .newOffer, .firstVet:
+        case .firstVet, .chat, .newOffer:
             return false
         default:
             return true
@@ -159,6 +168,9 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             onShow()
             return true
 
+        case .newOfferNotification:
+            /* TODO: DON'T SHOW IF CHAT IS SHOWING */
+            return true
         default:
             return false
         }
@@ -174,12 +186,24 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
     }
 
     @hColorBuilder @MainActor
-    var tooltipColor: some hColor {
+    var tooltipBackgroundColor: some hColor {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             hFillColor.Opaque.primary
+        case .newOfferNotification:
+            hSignalColor.Green.fill
         default:
             hFillColor.Opaque.secondary
+        }
+    }
+
+    @hColorBuilder @MainActor
+    var tooltipTextColor: some hColor {
+        switch self {
+        case .newOfferNotification:
+            hSignalColor.Green.text
+        default:
+            hTextColor.Opaque.negative
         }
     }
 

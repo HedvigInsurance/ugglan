@@ -38,6 +38,7 @@ public struct HomeState: StateProtocol {
     public var hasSentOrRecievedAtLeastOneMessage = false
     public var latestConversationTimeStamp = Date()
     public var latestChatTimeStamp = Date()
+    public var showNewOfferNotification = false
 
     func getImportantMessageToShow() -> [ImportantMessage] {
         return importantMessages.filter { importantMessage in
@@ -82,6 +83,7 @@ public enum HomeAction: ActionProtocol {
     case setChatNotificationConversationTimeStamp(date: Date)
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
     case hideImportantMessage(id: String)
+    case setNewOfferNotification(hasNew: Bool)
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -193,6 +195,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
             setToolbarTypes(&newState)
+        case let .setNewOfferNotification(hasNew):
+            newState.showNewOfferNotification = hasNew
+            setToolbarTypes(&newState)
         default:
             break
         }
@@ -202,7 +207,12 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
-        types.append(.newOffer)
+
+        if state.showNewOfferNotification {
+            types.append(.newOfferNotification)
+        } else {
+            types.append(.newOffer)
+        }
 
         if state.quickActions.hasFirstVet {
             types.append(.firstVet)
