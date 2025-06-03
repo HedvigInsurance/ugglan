@@ -303,37 +303,43 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
             }
             var scrollTo: CGFloat = 0
             var useAnimationEarlier = false
+            let offsets = getPagesOffset()
+            let maxIndex = pageModels.count - 1
             if let currentIndex = pageModels.firstIndex(where: { $0.id == currentId }) {
-                if velocity.x > 1 && currentIndex != pageModels.count - 1 {
-                    scrollTo = getPagesOffset()[min(currentIndex + 1, pageModels.count - 1)]
+                if velocity.x > 1 && currentIndex != maxIndex {
+                    scrollTo = offsets[min(currentIndex + 1, maxIndex)]
                     useAnimationEarlier = true
                 } else if velocity.x < -1 && currentIndex > 0 {
-                    scrollTo = getPagesOffset()[max(currentIndex - 1, 0)]
+                    scrollTo = offsets[max(currentIndex - 1, 0)]
                     useAnimationEarlier = true
                 } else {
                     scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
                 }
             }
             if useAnimationEarlier {
-                if let index = self.getPagesOffset().firstIndex(where: { $0 == scrollTo }) {
+                if let index = offsets.firstIndex(where: { $0 == scrollTo }) {
                     let idToScrollTo = self.pageModels[index].id
                     self.setSelectedTab(with: idToScrollTo)
                 }
             }
-            scrollView.layer.removeAllAnimations()
             DispatchQueue.main.async { [weak scrollView] in
                 UIView.animate(
                     withDuration: 0.2,
                     delay: 0,
-                    options: [UIView.AnimationOptions.curveEaseOut, UIView.AnimationOptions.allowUserInteraction],
+                    options: [
+                        UIView.AnimationOptions.curveEaseOut, UIView.AnimationOptions.allowUserInteraction,
+                        UIView.AnimationOptions.allowAnimatedContent,
+                    ],
                     animations: {
                         scrollView?.contentOffset.x = scrollTo
                     },
                     completion: { [weak self] _ in
-                        if let index = self?.getPagesOffset().firstIndex(where: { $0 == scrollTo }),
-                            let idToScrollTo = self?.pageModels[index].id
-                        {
-                            self?.setSelectedTab(with: idToScrollTo)
+                        if !useAnimationEarlier {
+                            if let index = offsets.firstIndex(where: { $0 == scrollTo }),
+                                let idToScrollTo = self?.pageModels[index].id
+                            {
+                                self?.setSelectedTab(with: idToScrollTo)
+                            }
                         }
                     }
                 )
