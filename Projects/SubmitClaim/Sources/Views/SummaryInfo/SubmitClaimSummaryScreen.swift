@@ -175,7 +175,6 @@ public struct SubmitClaimSummaryScreen: View {
                 title.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
                 Spacer()
                 value.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.trailing)
             }
             .accessibilityElement(children: .combine)
