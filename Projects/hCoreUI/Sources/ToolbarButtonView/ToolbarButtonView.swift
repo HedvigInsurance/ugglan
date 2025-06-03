@@ -82,7 +82,7 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         case .firstVet:
             return nil
         case .newOfferNotification:
-            return "New offer available"
+            return L10n.Toast.newoffer
         case .chat:
             return L10n.HomeTab.chatHintText
         case .chatNotification:
