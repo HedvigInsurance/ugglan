@@ -169,7 +169,15 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
             return true
 
         case .newOfferNotification:
-            /* TODO: DON'T SHOW IF CHAT IS SHOWING */
+            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
+                let timeIntervalSincePast = abs(
+                    pastDate.timeIntervalSince(Date())
+                )
+
+                if timeIntervalSincePast > timeInterval {
+                    return false
+                }
+            }
             return true
         default:
             return false
