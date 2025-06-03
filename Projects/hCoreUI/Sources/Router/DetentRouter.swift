@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
+import hCore
 
 extension View {
     public func detent<SwiftUIContent: View>(
@@ -114,21 +115,17 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
                 presentationViewModel.style = style
-                let vcToPresent: UIViewController? = {
-                    if options.contains(.alwaysOpenOnTop) {
-                        let vc = UIApplication.shared.getTopViewController()
-                        if vc?.isBeingDismissed == true {
-                            return vc?.presentingViewController
-                        }
-                        return vc
-                    }
-                    return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
+                let vcToPresent = self.getPresentationTarget()
 
-                }()
                 let content = self.content()
                 let vc = hHostingController(
                     rootView: content
                 )
+
+                if options.contains(.withBannerOnTop) {
+                    self.addBanner(to: vc)
+                }
+
                 let shouldUseBlur = style.contains(.height)
                 let delegate = DetentedTransitioningDelegate(
                     detents: style,
@@ -141,6 +138,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 } else {
                     vc.isModalInPresentation = false
                 }
+
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
                 vc.onDeinit = {
@@ -154,6 +152,53 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         } else {
             presentationViewModel.presentingVC?.dismiss(animated: true)
         }
+    }
+
+    private func getPresentationTarget() -> UIViewController? {
+        if options.contains(.alwaysOpenOnTop) {
+            let vc = UIApplication.shared.getTopViewController()
+            if vc?.isBeingDismissed == true {
+                return vc?.presentingViewController
+            }
+            return vc
+        } else {
+            return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
+        }
+    }
+
+    private func addBanner(to vc: UIViewController) {
+        let banner = bannerUIView
+        vc.view.addSubview(banner)
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            banner.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
+            banner.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
+        ])
+    }
+
+    var bannerUIView: UIView {
+        let view: UIView = UIHostingController(
+            rootView: bannerView
+        )
+        .view
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = true
+        return view
+    }
+
+    @ViewBuilder
+    private var bannerView: some View {
+        HStack(spacing: .padding8) {
+            hCoreUIAssets.campaign.view
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundColor(hSignalColor.Green.element)
+            hText(L10n.crossSellBannerText, style: .label)
+                .foregroundColor(hSignalColor.Green.text)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, .padding10)
+        .background(hSignalColor.Green.fill)
     }
 }
 
@@ -276,6 +321,7 @@ public struct DetentPresentationOption: OptionSet, Sendable {
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
     public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
+    public static let withBannerOnTop = DetentPresentationOption(rawValue: 1 << 4)
 
     nonisolated public init(rawValue: UInt) {
         self.rawValue = rawValue

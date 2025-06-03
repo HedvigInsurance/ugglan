@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import UIKit
-import hCore
 
 @MainActor
 public protocol TrackingViewNameProtocol {
@@ -332,71 +331,6 @@ extension View {
                 titleColor: titleColor ?? .default
             )
         }
-    }
-
-    public var showTopBanner: some View {
-        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
-            let bannerHeight: CGFloat = 40
-            let bannerView = UIView()
-
-            let schema = UITraitCollection.current.userInterfaceStyle == .light ? ColorScheme.light : .dark
-            bannerView.backgroundColor = hSignalColor.Green.fill.colorFor(schema, .base).color.uiColor()
-
-            bannerView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            bannerView.clipsToBounds = true
-
-            let labelView = bannerTextView
-            bannerView.addSubview(labelView)
-
-            NSLayoutConstraint.activate([
-                labelView.centerXAnchor.constraint(equalTo: bannerView.centerXAnchor),
-                labelView.centerYAnchor.constraint(equalTo: bannerView.centerYAnchor),
-            ])
-
-            vc.view.addSubview(bannerView)
-            bannerView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                bannerView.topAnchor.constraint(equalTo: vc.view.topAnchor),
-                bannerView.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
-                bannerView.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
-                bannerView.heightAnchor.constraint(equalToConstant: bannerHeight),
-            ])
-        }
-    }
-
-    var bannerTextView: UIView {
-        let bannerContent = UIStackView()
-        bannerContent.axis = .horizontal
-        bannerContent.alignment = .center
-        bannerContent.spacing = .padding8
-        bannerContent.translatesAutoresizingMaskIntoConstraints = false
-
-        let imageView = UIImageView(image: hCoreUIAssets.campaign.image)
-        imageView.tintColor = hSignalColor.Green.element
-            .colorFor(
-                UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark,
-                .base
-            )
-            .color.uiColor()
-        imageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
-        imageView.contentMode = .scaleAspectFit
-
-        let textView = UILabel()
-        textView.text = L10n.crossSellBannerText
-        textView.textAlignment = .center
-        textView.textColor = hSignalColor.Green.text
-            .colorFor(
-                UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark,
-                .base
-            )
-            .color.uiColor()
-        textView.font = Fonts.fontFor(style: .label)
-
-        bannerContent.addArrangedSubview(imageView)
-        bannerContent.addArrangedSubview(textView)
-
-        return bannerContent
     }
 
     @MainActor public var enableModalInPresentation: some View {
