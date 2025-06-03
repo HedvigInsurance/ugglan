@@ -13,8 +13,6 @@ struct LoginVideoView: UIViewRepresentable {
 
 private class PlayerUIView: UIView {
     private let playerLayer = AVPlayerLayer()
-    private var queuePlayer: AVQueuePlayer?
-    private var looper: AVPlayerLooper?
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -27,56 +25,68 @@ private class PlayerUIView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        // Load video resource
-        guard let fileUrl = Bundle.main.url(forResource: "9x16_pillow", withExtension: "mp4") else {
-            print("❌ Video file not found")
-            return
-        }
+        // Load the resource
+        let fileUrl = Bundle.main.url(forResource: "9x16_pillow", withExtension: "mp4")!
 
-        let asset = AVAsset(url: fileUrl)
-        let playerItem = AVPlayerItem(asset: asset)
+        // Setup the player
+        let player = AVPlayer(playerItem: AVPlayerItem(url: fileUrl))
 
-        // Setup player and looper
-        let player = AVQueuePlayer()
-        let looper = AVPlayerLooper(player: player, templateItem: playerItem)
-
-        self.queuePlayer = player
-        self.looper = looper
-
-        player.isMuted = true
-        player.play()
-
-        // Setup layer
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspectFill
-        playerLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(playerLayer)
 
-        // Resume playback on foreground
+        // Setup looping
+        player.actionAtItemEnd = .none
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didEnterForeground),
+            selector: #selector(playerItemDidReachEnd(notification:)),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem
+        )
+
+        let audioSession = AVAudioSession.sharedInstance()
+
+        do {
+            try audioSession.setCategory(.playback, mode: .default, options: .mixWithOthers)
+            try audioSession.setActive(true)
+        } catch {}
+
+        // Start the movie
+        player.playImmediately(atRate: 1)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didEnterForeground(notification:)),
             name: UIApplication.willEnterForegroundNotification,
             object: nil
         )
 
-        // Setup audio session (optional, if video has sound and should play silently)
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print("⚠️ Failed to configure audio session: \(error)")
+    }
+
+    @objc
+    func didEnterForeground(notification: Notification) {
+        playerLayer.player?.play()
+    }
+    @objc
+    func playerItemDidReachEnd(notification: Notification) {
+        if let view = self.snapshotView(afterScreenUpdates: false) {
+            self.addSubview(view)
+            view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            UIView.animate(withDuration: 0.1, delay: 0.1) {
+                view.alpha = 0
+            } completion: { finished in
+                view.removeFromSuperview()
+            }
+
+            playerLayer.player?.seek(to: .zero)
+            playerLayer.player?.play()
         }
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds
-        playerLayer.contentsScale = UIScreen.main.scale
-    }
-
-    @objc
-    func didEnterForeground() {
-        queuePlayer?.play()
     }
 }
