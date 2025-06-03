@@ -187,7 +187,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                         if lowerBoundry == upperBoundry {
                             Task { @MainActor in
                                 try? await Task.sleep(nanoseconds: 50_000_000)
-                                withAnimation(.easeInOut(duration: 0.2)) {
+                                withAnimation(.easeInOut(duration: 0.15)) {
                                     self.selectedIndicatorOffset = sortedTitlePositions[lowerBoundry]
                                 }
                             }
@@ -301,20 +301,45 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
             if #available(iOS 17.4, *) {
                 scrollView.stopScrollingAndZooming()
             }
-            let scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
+            var scrollTo: CGFloat = 0
+            var useAnimationEarlier = false
+            let offsets = getPagesOffset()
+            let maxIndex = pageModels.count - 1
+            if let currentIndex = pageModels.firstIndex(where: { $0.id == currentId }) {
+                if velocity.x > 1 && currentIndex != maxIndex {
+                    scrollTo = offsets[min(currentIndex + 1, maxIndex)]
+                    useAnimationEarlier = true
+                } else if velocity.x < -1 && currentIndex > 0 {
+                    scrollTo = offsets[max(currentIndex - 1, 0)]
+                    useAnimationEarlier = true
+                } else {
+                    scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
+                }
+            }
+            if useAnimationEarlier {
+                if let index = offsets.firstIndex(where: { $0 == scrollTo }) {
+                    let idToScrollTo = self.pageModels[index].id
+                    self.setSelectedTab(with: idToScrollTo)
+                }
+            }
             DispatchQueue.main.async { [weak scrollView] in
                 UIView.animate(
-                    withDuration: 0.3,
+                    withDuration: 0.2,
                     delay: 0,
-                    options: UIView.AnimationOptions.curveEaseOut,
+                    options: [
+                        UIView.AnimationOptions.curveEaseOut, UIView.AnimationOptions.allowUserInteraction,
+                        UIView.AnimationOptions.allowAnimatedContent,
+                    ],
                     animations: {
                         scrollView?.contentOffset.x = scrollTo
                     },
                     completion: { [weak self] _ in
-                        if let index = self?.getPagesOffset().firstIndex(where: { $0 == scrollTo }),
-                            let idToScrollTo = self?.pageModels[index].id
-                        {
-                            self?.setSelectedTab(with: idToScrollTo)
+                        if !useAnimationEarlier {
+                            if let index = offsets.firstIndex(where: { $0 == scrollTo }),
+                                let idToScrollTo = self?.pageModels[index].id
+                            {
+                                self?.setSelectedTab(with: idToScrollTo)
+                            }
                         }
                     }
                 )
@@ -369,6 +394,10 @@ extension View {
         currentId: "1"
     )
     ScrollableSegmentedView(vm: vm) { id in
-        hText("id")
+        VStack {
+            hText("id")
+            Spacer()
+            hText("id2")
+        }
     }
 }
