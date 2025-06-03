@@ -53,7 +53,7 @@ public struct ToastBarView: View {
             HStack(spacing: .padding8) {
                 toastModel.icon
                     .resizable()
-                    .foregroundColor(iconColor)
+                    .foregroundColor(hSignalColor.Green.element)
                     .accessibilityHidden(true)
                     .frame(width: 20, height: 20)
                 hText(toastModel.text, style: .label)
@@ -77,11 +77,6 @@ public struct ToastBarView: View {
         }
         .sectionContainerStyle(.transparent)
         .accessibilityLabel(L10n.voiceoverNotificationAlert + "\n" + toastModel.text)
-    }
-
-    @hColorBuilder
-    private var iconColor: some hColor {
-        hSignalColor.Green.element
     }
 }
 

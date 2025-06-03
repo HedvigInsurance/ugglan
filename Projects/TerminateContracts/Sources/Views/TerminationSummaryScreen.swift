@@ -69,7 +69,11 @@ struct TerminationSummaryScreen: View {
     @ViewBuilder
     private var mainContent: some View {
         HStack(spacing: .padding12) {
-            terminationNavigationVm.config?.typeOfContract?.pillowType.bgImage
+            let image =
+                terminationNavigationVm.config?.typeOfContract?.pillowType.bgImage ?? hCoreUIAssets.pillowHome.view
+
+            image
+            hCoreUIAssets.pillowHome.view
                 .resizable()
                 .frame(width: 48, height: 48)
             VStack(alignment: .leading, spacing: 0) {

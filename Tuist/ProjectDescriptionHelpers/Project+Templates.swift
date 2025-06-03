@@ -241,13 +241,12 @@ extension Project {
                 options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
             )
         }
-        let shouldDisableGeneratingAccessors = true
         return Project(
             name: name,
             organizationName: "Hedvig",
             options: .options(
-                disableBundleAccessors: shouldDisableGeneratingAccessors,
-                disableSynthesizedResourceAccessors: shouldDisableGeneratingAccessors
+                disableBundleAccessors: true,
+                disableSynthesizedResourceAccessors: true
             ),
             packages: [],
             settings: .settings(configurations: projectConfigurations),
