@@ -149,7 +149,17 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     }
                 }
                 presentationViewModel.presentingVC = vc
-                vcToPresent?.present(vc, animated: true)
+                UIAccessibility.post(notification: .screenChanged, argument: vc.view)
+                vcToPresent?
+                    .present(
+                        vc,
+                        animated: true,
+                        completion: { [weak vc] in
+                            Task {
+                                UIAccessibility.post(notification: .screenChanged, argument: vc?.view)
+                            }
+                        }
+                    )
             }
         } else {
             presentationViewModel.presentingVC?.dismiss(animated: true)
