@@ -443,27 +443,12 @@ struct HomeTab: View {
                     tracking: LoggedInNavigationDetentType.firstVet
                 )
         }
-        .detent(
+        .pageSheet(
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: [.height],
-            options: .constant(.alwaysOpenOnTop)
+            style: [.large],
+            options: .constant([.alwaysOpenOnTop, .withoutGrabber])
         ) { claimInfo in
-            CrossSellingScreen(
-                addonCardOnClick: { contractIds in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
-
-                    loggedInVm.isAddonPresented = .init(
-                        addonSource: .crossSell,
-                        contractConfigs: addonConfigs
-                    )
-                },
-                info: claimInfo
-            )
-            .embededInNavigation(
-                options: .navigationType(type: .large),
-                tracking: LoggedInNavigationDetentType.crossSelling
-            )
+            CrossSellPopUpScreen()
         }
         .detent(
             item: $homeNavigationVm.openChat,
@@ -518,8 +503,6 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
             return .init(describing: SubmitClaimDeflectScreen.self)
         case .firstVet:
             return .init(describing: FirstVetView.self)
-        case .crossSelling:
-            return .init(describing: CrossSellingScreen.self)
         case .error:
             return .init(describing: GenericErrorView.self)
         }
@@ -527,7 +510,6 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
 
     case submitClaimDeflect
     case firstVet
-    case crossSelling
     case error
 }
 
