@@ -13,7 +13,7 @@ jobs:
           fetch-depth: 0
       - uses: swift-actions/setup-swift@v2
         with:
-          swift-version: '6.0'
+          swift-version: '5'
       - name: Cache
         uses: actions/cache@v3
         with:
