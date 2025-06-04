@@ -168,39 +168,47 @@ final class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransi
 }
 
 final class CenteredModalPresentationController: UIPresentationController {
-    private let dimmingView = UIView()
+    private let blurView: PassThroughEffectView?
 
     override init(
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?
     ) {
-        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        dimmingView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        dimmingView.alpha = 0
+        if UITraitCollection.current.userInterfaceStyle == .dark {
+            blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light))
+        } else {
+            blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light))
+        }
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapOutside))
-        dimmingView.addGestureRecognizer(tapGesture)
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        blurView?.alpha = 0
+
+        // Dismiss on tap outside
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissOnTapOutside))
+        blurView?.addGestureRecognizer(tapGesture)
     }
 
-    @objc private func handleTapOutside() {
+    @objc private func dismissOnTapOutside() {
         presentedViewController.dismiss(animated: true, completion: nil)
     }
 
     override func presentationTransitionWillBegin() {
-        guard let containerView else { return }
-        dimmingView.frame = containerView.bounds
-        containerView.insertSubview(dimmingView, at: 0)
+        guard let containerView, let blurView else { return }
+
+        blurView.frame = containerView.bounds
+        containerView.insertSubview(blurView, at: 0)
 
         presentedViewController.transitionCoordinator?
             .animate(alongsideTransition: { _ in
-                self.dimmingView.alpha = 1
+                blurView.alpha = 1
             })
     }
 
     override func dismissalTransitionWillBegin() {
+        guard let blurView else { return }
         presentedViewController.transitionCoordinator?
             .animate(alongsideTransition: { _ in
-                self.dimmingView.alpha = 0
+                blurView.alpha = 0
             })
     }
 
@@ -218,9 +226,8 @@ final class CenteredModalPresentationController: UIPresentationController {
 
     override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
+        blurView?.frame = containerView?.bounds ?? .zero
         presentedView?.frame = frameOfPresentedViewInContainerView
-        dimmingView.frame = containerView?.bounds ?? .zero
-
         presentedView?.layer.cornerRadius = 20
         presentedView?.layer.masksToBounds = true
     }
