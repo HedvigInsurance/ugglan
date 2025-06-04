@@ -509,7 +509,21 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
 }
 
 public class PassThroughEffectView: UIVisualEffectView {
+    let isPageSheet: Bool
+
+    public init(effect: UIVisualEffect?, isPageSheet: Bool? = false) {
+        self.isPageSheet = isPageSheet ?? false
+        super.init(effect: effect)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if isPageSheet {
+            return bounds.contains(point) ? self : nil
+        }
         let hitView = super.hitTest(point, with: event)
 
         if hitView == self {

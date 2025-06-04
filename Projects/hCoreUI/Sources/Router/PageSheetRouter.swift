@@ -175,9 +175,9 @@ final class CenteredModalPresentationController: UIPresentationController {
         presenting presentingViewController: UIViewController?
     ) {
         if UITraitCollection.current.userInterfaceStyle == .dark {
-            blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light))
+            blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), isPageSheet: true)
         } else {
-            blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light))
+            blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), isPageSheet: true)
         }
 
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
