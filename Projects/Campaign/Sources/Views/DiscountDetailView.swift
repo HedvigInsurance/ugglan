@@ -25,7 +25,7 @@ public struct DiscountDetailView: View {
                             .foregroundColor(getCodeTextColor)
                             .padding(.vertical, .padding4)
                         if vm.shouldShowRemove {
-                            Image(uiImage: hCoreUIAssets.close.image)
+                            hCoreUIAssets.close.view
                                 .resizable()
                                 .frame(width: 16, height: 16)
                         }

@@ -111,7 +111,7 @@ public struct ChangeTierLandingScreen: View {
                     ) {}
                     .hBackgroundOption(option: [.locked, .secondary, .negative])
                     .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.lock.image)
+                        hCoreUIAssets.lock.view
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                     hText(L10n.tierFlowLockedInfoDescription, style: .label)
@@ -142,7 +142,7 @@ public struct ChangeTierLandingScreen: View {
                 ) {}
                 .hBackgroundOption(option: [.locked, .secondary, .negative])
                 .hFieldTrailingView {
-                    Image(uiImage: hCoreUIAssets.lock.image)
+                    hCoreUIAssets.lock.view
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }

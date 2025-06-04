@@ -24,7 +24,7 @@ public struct InfoViewHolder: View {
         SwiftUI.Button {
             showInfoView()
         } label: {
-            Image(uiImage: type.image)
+            type.image
                 .foregroundColor(type.color)
         }
         .detent(
@@ -57,12 +57,12 @@ public struct InfoViewHolder: View {
         case regular
         case navigation
 
-        var image: UIImage {
+        var image: some View {
             switch self {
             case .regular:
-                hCoreUIAssets.infoFilled.image
+                hCoreUIAssets.infoFilled.view
             case .navigation:
-                hCoreUIAssets.infoOutlined.image
+                hCoreUIAssets.infoOutlined.view
             }
         }
 

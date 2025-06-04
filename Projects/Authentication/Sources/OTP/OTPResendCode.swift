@@ -13,7 +13,7 @@ struct ResendOTPCode: View {
                     vm.resendCode(for: otpVM)
                 } label: {
                     HStack(spacing: 8) {
-                        Image(uiImage: hCoreUIAssets.refresh.image)
+                        hCoreUIAssets.refresh.view
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 20, height: 20)
@@ -89,7 +89,7 @@ class ResendOTPCodeViewModel: ObservableObject {
         Toasts.shared.displayToastBar(
             toast: .init(
                 type: .campaign,
-                icon: hCoreUIAssets.refresh.image,
+                icon: hCoreUIAssets.refresh.view,
                 text: L10n.Login.Snackbar.codeResent
             )
         )

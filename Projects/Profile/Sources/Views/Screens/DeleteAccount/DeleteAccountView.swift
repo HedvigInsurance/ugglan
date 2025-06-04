@@ -24,7 +24,7 @@ public struct DeleteAccountView: View {
                 hSection {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
                         if let topIcon = vm.topIcon {
-                            Image(uiImage: topIcon)
+                            topIcon
                                 .foregroundColor(hSignalColor.Amber.element)
                                 .padding(.bottom, .padding16)
                         }
@@ -140,11 +140,11 @@ extension DeleteAccountViewModel {
         }
     }
 
-    var topIcon: UIImage? {
+    var topIcon: Image? {
         if self.hasActiveContracts {
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         } else if self.hasActiveClaims {
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         } else {
             return nil
         }
