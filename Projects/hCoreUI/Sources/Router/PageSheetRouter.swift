@@ -177,6 +177,13 @@ final class CenteredModalPresentationController: UIPresentationController {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         dimmingView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         dimmingView.alpha = 0
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapOutside))
+        dimmingView.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func handleTapOutside() {
+        presentedViewController.dismiss(animated: true, completion: nil)
     }
 
     override func presentationTransitionWillBegin() {
