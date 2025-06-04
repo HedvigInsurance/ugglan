@@ -46,43 +46,37 @@ struct SlideToConfirm: View {
                     .frame(maxWidth: .infinity)
                     .opacity(updateUIForFinished ? 0 : (1 - Double(progress / width)))
             }
-            Group {
-                if updateUIForFinished {
-                    hCoreUIAssets.checkmark.view
-                } else {
-                    hCoreUIAssets.chevronRight.view
-                }
-            }
-            .foregroundColor(hTextColor.Opaque.negative)
-            .frame(width: 50, height: 50)
-            .background(getIconBackgroundColor)
-            .colorScheme(.light)
-            .clipShape(Circle())
-            .scaleEffect(bounceSliderButton ? 0.8 : 1)
-            .offset(x: max(0, min(progress, width - 58)))
-            .padding(.horizontal, 4)
-            .gesture(
-                DragGesture()
-                    .onChanged { gesture in
-                        if didFinished {
-                            return
+            Image(uiImage: updateUIForFinished ? hCoreUIAssets.checkmark.image : hCoreUIAssets.chevronRight.image)
+                .foregroundColor(hTextColor.Opaque.negative)
+                .frame(width: 50, height: 50)
+                .background(getIconBackgroundColor)
+                .colorScheme(.light)
+                .clipShape(Circle())
+                .scaleEffect(bounceSliderButton ? 0.8 : 1)
+                .offset(x: max(0, min(progress, width - 58)))
+                .padding(.horizontal, 4)
+                .gesture(
+                    DragGesture()
+                        .onChanged { gesture in
+                            if didFinished {
+                                return
+                            }
+                            withAnimation(.defaultSpring.speed(4)) {
+                                progress = (gesture.translation.width + gesture.startLocation.x - 29)
+                            }
+                            if progress + 58 >= width {
+                                promiseConfirmed()
+                            }
                         }
-                        withAnimation(.defaultSpring.speed(4)) {
-                            progress = (gesture.translation.width + gesture.startLocation.x - 29)
+                        .onEnded { _ in
+                            if didFinished {
+                                return
+                            }
+                            withAnimation(.defaultSpring.speed(2)) {
+                                progress = 0
+                            }
                         }
-                        if progress + 58 >= width {
-                            promiseConfirmed()
-                        }
-                    }
-                    .onEnded { _ in
-                        if didFinished {
-                            return
-                        }
-                        withAnimation(.defaultSpring.speed(2)) {
-                            progress = 0
-                        }
-                    }
-            )
+                )
         }
         .frame(height: 58)
         .frame(maxWidth: .infinity)
