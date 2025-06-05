@@ -191,90 +191,12 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             return delegate
         case .pageSheet:
             let delegate = CenteredModalTransitioningDelegate()
-            presentationViewModel.transitionDelegate = delegate
             vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
         }
     }
 
 }
-
-//private struct PageSheetSizeModifier<SwiftUIContent>: ViewModifier where SwiftUIContent: View {
-//    @Binding var presented: Bool
-//    let content: () -> SwiftUIContent
-//    private let style: [Detent]
-//    @Binding var options: DetentPresentationOption
-//    @StateObject private var presentationViewModel = PageSheetPresentationViewModel()
-//
-//    init(
-//        presented: Binding<Bool>,
-//        style: [Detent],
-//        options: Binding<DetentPresentationOption>,
-//        @ViewBuilder content: @escaping () -> SwiftUIContent
-//    ) {
-//        _presented = presented
-//        self.content = content
-//        self.style = style
-//        self._options = options
-//    }
-//
-//    func body(content: Content) -> some View {
-//        content
-//            .introspect(.viewController, on: .iOS(.v13...)) { vc in
-//                presentationViewModel.rootVC = vc
-//            }
-//            .onAppear { handle(isPresent: presented) }
-//            .onChange(of: presented) { isPresent in handle(isPresent: isPresent) }
-//    }
-//
-//    private func handle(isPresent: Bool) {
-//        if isPresent {
-//            var withDelay = false
-//            if !options.contains(.alwaysOpenOnTop) {
-//                if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
-//                    presentedVC.dismiss(animated: true)
-//                    withDelay = true
-//                }
-//            }
-//
-//            DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
-//                presentationViewModel.style = style
-//                let vcToPresent = getPresentationTarget()
-//                let content = self.content()
-//                let vc = hHostingController(rootView: content)
-//
-//                let delegate = CenteredModalTransitioningDelegate()
-//                presentationViewModel.transitionDelegate = delegate
-//                vc.transitioningDelegate = delegate
-//                vc.modalPresentationStyle = .custom
-//                vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
-//
-//                vc.onDeinit = {
-//                    Task { @MainActor in
-//                        presented = false
-//                    }
-//                }
-//
-//                if let presentingVC = vcToPresent {
-//                    presentingVC.present(vc, animated: true)
-//                } else {
-//                    assertionFailure("No valid view controller to present from.")
-//                }
-//            }
-//        } else {
-//            presentationViewModel.presentingVC?.dismiss(animated: true)
-//        }
-//    }
-//
-//    private func getPresentationTarget() -> UIViewController? {
-//        if options.contains(.alwaysOpenOnTop) {
-//            let vc = UIApplication.shared.getTopViewController()
-//            return vc?.isBeingDismissed == true ? vc?.presentingViewController : vc
-//        } else {
-//            return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
-//        }
-//    }
-//}
 
 @MainActor
 class PresentationViewModel: ObservableObject {
