@@ -131,9 +131,14 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let vcToPresent = self.getPresentationTarget()
 
                 let content = self.content()
-                let vc = hHostingController(
-                    rootView: content
+                let vc = hHostingController<AnyView>(rootView: AnyView(EmptyView()))
+                let observedContent = AnyView(
+                    content
+                        .readSize { size in
+                            vc.updatePreferredContentHeight(size.height)
+                        }
                 )
+                vc.rootView = observedContent
 
                 var shouldUseBlur: Bool {
                     if case .detent(let style) = transitionType {
@@ -262,7 +267,25 @@ public struct DetentPresentationOption: OptionSet, Sendable {
     nonisolated public init(rawValue: UInt) {
         self.rawValue = rawValue
     }
+}
 
+private struct SizePreferenceKey: @preconcurrency PreferenceKey {
+    @MainActor static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+extension View {
+    func readSize(_ onChange: @escaping (CGSize) -> Void) -> some View {
+        background(
+            GeometryReader { proxy in
+                Color.clear
+                    .preference(key: SizePreferenceKey.self, value: proxy.size)
+            }
+        )
+        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
+    }
 }
 
 @MainActor public var logStartView: ((_ key: String, _ name: String) -> Void) = { _, _ in }
