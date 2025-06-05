@@ -61,7 +61,7 @@ public class HomeNavigationViewModel: ObservableObject {
             [weak self] notification in
             if let crossSellInfo = notification.object as? CrossSellInfo {
                 Task { @MainActor in
-                    try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                    try await Task.sleep(nanoseconds: crossSellInfo.type?.delayInNanoSeconds ?? .zero)
                     self?.navBarItems.isNewOfferPresented = crossSellInfo
                 }
             }

@@ -8,16 +8,25 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
     }
 
     public let id: String = UUID().uuidString
-    public let type: CrossSellInfoType
+    public let type: CrossSellInfoType?
+    public let crossSell: CrossSell?
     let additionalInfo: (any Encodable & Sendable)?
 
     public init<T>(type: CrossSellInfoType, additionalInfo: T) where T: Encodable & Codable & Sendable {
         self.type = type
         self.additionalInfo = additionalInfo
+        self.crossSell = nil
     }
 
     public init(type: CrossSellInfoType) {
         self.type = type
+        self.additionalInfo = nil
+        self.crossSell = nil
+    }
+
+    public init(crossSell: CrossSell) {
+        self.crossSell = crossSell
+        self.type = nil
         self.additionalInfo = nil
     }
 
@@ -41,7 +50,7 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
 
     fileprivate func asLogData() -> [AttributeKey: AttributeValue] {
         var data = [AttributeKey: AttributeValue]()
-        data["source"] = type.rawValue
+        data["source"] = type?.rawValue
         data["info"] = additionalInfo
         return data
     }

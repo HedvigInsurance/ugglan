@@ -447,8 +447,16 @@ struct HomeTab: View {
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
             transitionType: .pageSheet,
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
-        ) { claimInfo in
-            CrossSellPopUpScreen()
+        ) { crossSellInfo in
+            /* TODO: FIX THIS DETENT */
+            CrossSellPopUpScreen(
+                crossSell: crossSellInfo.crossSell
+                    ?? .init(
+                        title: "Accident Insurance",
+                        description: "Help when you need it the most",
+                        type: .accident
+                    )
+            )
         }
         .detent(
             item: $homeNavigationVm.openChat,

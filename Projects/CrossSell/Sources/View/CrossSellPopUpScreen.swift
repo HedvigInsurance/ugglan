@@ -3,8 +3,13 @@ import hCore
 import hCoreUI
 
 public struct CrossSellPopUpScreen: View {
+    let crossSell: CrossSell
 
-    public init() {}
+    public init(
+        crossSell: CrossSell
+    ) {
+        self.crossSell = crossSell
+    }
 
     public var body: some View {
         ZStack {
@@ -22,26 +27,26 @@ public struct CrossSellPopUpScreen: View {
                             .frame(width: 140, height: 140)
 
                         VStack {
-                            hText("Accident Insurance")
-                            hText("Help when you need it the most")
+                            hText(crossSell.title)
+                            hText(crossSell.description)
                                 .foregroundColor(hTextColor.Translucent.secondary)
                         }
                     }
                 }
-                //                .hFormContentPosition(.compact)
+                .hFormContentPosition(.center)
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: .padding16) {
                             hButton(
                                 .large,
                                 .primary,
-                                content: .init(title: "Explore insurance"),
+                                content: .init(title: L10n.crossSellButton),
                                 {
 
                                 }
                             )
 
-                            hText("Easy to use, digital convenience and no lock-in period.", style: .finePrint)
+                            hText(L10n.crossSellLabel, style: .finePrint)
                                 .foregroundColor(hTextColor.Translucent.secondary)
                         }
                     }
@@ -69,5 +74,5 @@ public struct CrossSellPopUpScreen: View {
 }
 
 #Preview {
-    CrossSellPopUpScreen()
+    CrossSellPopUpScreen(crossSell: .init(title: "", description: "", type: .accident))
 }
