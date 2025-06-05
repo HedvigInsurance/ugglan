@@ -77,6 +77,102 @@ extension View {
     }
 }
 
+struct hFieldContainer<Content: View>: View {
+    let placeholder: String
+    let customLabelOffset: Bool?
+    @Binding var animate: Bool
+    @Binding var error: String?
+    @Binding var shouldMoveLabel: Bool
+    @ViewBuilder var textField: () -> Content
+
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.hFieldSize) var size
+    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hBackgroundOption) var backgroundOption
+
+    var body: some View {
+        ZStack(alignment: .leading) {
+            hFieldLabel(
+                placeholder: placeholder,
+                animate: $animate,
+                error: $error,
+                shouldMoveLabel: $shouldMoveLabel
+            )
+            .offset(y: (customLabelOffset ?? shouldMoveLabel) ? labelOffset : 0)
+
+            textField()
+                .offset(y: (customLabelOffset ?? shouldMoveLabel) ? fieldOffset : 0)
+        }
+        .padding(.top, topPadding)
+        .padding(.bottom, bottomPadding)
+    }
+
+    private var isAccessibilitySize: Bool {
+        dynamicTypeSize >= .accessibility1
+    }
+
+    private var topPadding: CGFloat {
+        if isAccessibilitySize {
+            if dynamicTypeSize > .accessibility3 {
+                return 30
+            } else {
+                return 16
+            }
+        } else {
+            return size.topPadding
+        }
+    }
+
+    private var bottomPadding: CGFloat {
+        if isAccessibilitySize {
+            return topPadding + 2
+        } else {
+            return size.bottomPadding
+        }
+    }
+
+    private var labelOffset: CGFloat {
+        if isAccessibilitySize {
+            if dynamicTypeSize > .accessibility3 {
+                return -40
+            } else {
+                return -20
+            }
+        } else {
+            return size.labelOffset
+        }
+    }
+
+    private var fieldOffset: CGFloat {
+        if isAccessibilitySize {
+            if dynamicTypeSize > .accessibility3 {
+                return 40
+            } else {
+                return 20
+            }
+        } else {
+            return size.fieldOffset
+        }
+    }
+
+    @hColorBuilder
+    private func getTextColor() -> some hColor {
+        if error != nil && animate {
+            hSignalColor.Amber.text
+        } else if animate {
+            hTextColor.Translucent.secondary
+        } else if isEnabled || backgroundOption.contains(.withoutDisabled) {
+            hTextColor.Translucent.secondary
+        } else if backgroundOption.contains(.locked) {
+            hTextColor.Translucent.disabled
+        } else if shouldMoveLabel && !isEnabled {
+            hTextColor.Translucent.secondary
+        } else {
+            hTextColor.Translucent.disabled
+        }
+    }
+}
+
 struct hFieldLabel: View {
     let placeholder: String
     let useScaleEffect: Bool

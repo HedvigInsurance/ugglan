@@ -80,6 +80,7 @@ public struct hFloatingField: View {
         HStack(spacing: 0) {
             hText(value, style: size == .large ? .body2 : .body1)
                 .foregroundColor(foregroundColor)
+                .fixedSize(horizontal: false, vertical: true)
             hText(" ")
         }
     }
