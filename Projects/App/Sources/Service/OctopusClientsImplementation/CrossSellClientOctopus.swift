@@ -63,6 +63,14 @@ extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
                 return .accident
             case .pet:
                 return .pet
+            case .apartmentBrf:
+                return .apartmentBrf
+            case .apartmentRent:
+                return .apartmentRent
+            case .petCat:
+                return .petCat
+            case .petDog:
+                return .petDog
             }
         case .unknown:
             return .unknown
