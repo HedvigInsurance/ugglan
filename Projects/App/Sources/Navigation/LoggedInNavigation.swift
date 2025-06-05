@@ -93,7 +93,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isAddonErrorPresented,
-            style: [.height],
+            transitionType: .detent(style: [.height]),
             options: .constant([.alwaysOpenOnTop])
         ) { error in
             GenericErrorView(description: error, formPosition: .compact)
@@ -134,7 +134,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isFaqTopicPresented,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { topic in
             HelpCenterTopicNavigation(topic: topic)
@@ -144,7 +144,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isFaqPresented,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { question in
             HelpCenterQuestionNavigation(question: question)
@@ -357,7 +357,7 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: [.height],
+            transitionType: .detent(style: [.height]),
             options: .constant(.withoutGrabber)
         ) {
             ClaimsMainNavigation(from: .generic)
@@ -433,7 +433,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -445,29 +445,22 @@ struct HomeTab: View {
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: [.height],
-            options: .constant(.alwaysOpenOnTop)
-        ) { claimInfo in
-            CrossSellingScreen(
-                addonCardOnClick: { contractIds in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
-
-                    loggedInVm.isAddonPresented = .init(
-                        addonSource: .crossSell,
-                        contractConfigs: addonConfigs
+            transitionType: .pageSheet,
+            options: .constant([.alwaysOpenOnTop, .withoutGrabber])
+        ) { crossSellInfo in
+            /* TODO: FIX THIS DETENT */
+            CrossSellPopUpScreen(
+                crossSell: crossSellInfo.crossSell
+                    ?? .init(
+                        title: "Accident Insurance",
+                        description: "Help when you need it the most",
+                        type: .accident
                     )
-                },
-                info: claimInfo
-            )
-            .embededInNavigation(
-                options: .navigationType(type: .large),
-                tracking: LoggedInNavigationDetentType.crossSelling
             )
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
@@ -518,8 +511,6 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
             return .init(describing: SubmitClaimDeflectScreen.self)
         case .firstVet:
             return .init(describing: FirstVetView.self)
-        case .crossSelling:
-            return .init(describing: CrossSellingScreen.self)
         case .error:
             return .init(describing: GenericErrorView.self)
         }
@@ -527,7 +518,6 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
 
     case submitClaimDeflect
     case firstVet
-    case crossSelling
     case error
 }
 

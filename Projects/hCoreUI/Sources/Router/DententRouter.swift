@@ -2,18 +2,24 @@ import Combine
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
+import hCore
+
+public enum TransitionType: Equatable {
+    case detent(style: [Detent])
+    case pageSheet
+}
 
 extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
-        style: [Detent],
+        transitionType: TransitionType,
         options: Binding<DetentPresentationOption> = .constant([]),
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(
             DetentSizeModifier(
                 presented: presented,
-                style: style,
+                transitionType: transitionType,
                 options: options,
                 content: content
             )
@@ -22,12 +28,17 @@ extension View {
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
-        style: [Detent],
+        transitionType: TransitionType,
         options: Binding<DetentPresentationOption> = .constant([]),
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
         return modifier(
-            DetentSizeModifierModal(item: item, style: style, options: options, content: content)
+            DetentSizeModifierModal(
+                item: item,
+                transitionType: transitionType,
+                options: options,
+                content: content
+            )
         )
     }
 }
@@ -37,13 +48,13 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @Binding var item: Item?
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
-    let style: [Detent]
+    let transitionType: TransitionType
     @Binding var options: DetentPresentationOption
-
     var content: (Item) -> SwiftUIContent
+
     func body(content: Content) -> some View {
         Group {
-            content.detent(presented: $present, style: style, options: $options) {
+            content.detent(presented: $present, transitionType: transitionType, options: $options) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }
@@ -73,18 +84,18 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
-    private let style: [Detent]
+    let transitionType: TransitionType
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
     init(
         presented: Binding<Bool>,
-        style: [Detent],
+        transitionType: TransitionType,
         options: Binding<DetentPresentationOption>,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
-        self.style = style
+        self.transitionType = transitionType
         self._options = options
     }
 
@@ -113,34 +124,30 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
-                presentationViewModel.style = style
-                let vcToPresent: UIViewController? = {
-                    if options.contains(.alwaysOpenOnTop) {
-                        let vc = UIApplication.shared.getTopViewController()
-                        if vc?.isBeingDismissed == true {
-                            return vc?.presentingViewController
-                        }
-                        return vc
-                    }
-                    return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
-
-                }()
-                let content = self.content()
-                let vc = hHostingController(
-                    rootView: content
-                )
-                let shouldUseBlur = style.contains(.height)
-                let delegate = DetentedTransitioningDelegate(
-                    detents: style,
-                    options: shouldUseBlur ? [PresentationOptions.useBlur] : [],
-                    wantsGrabber: options.contains(.withoutGrabber) ? false : true,
-                    viewController: vc
-                )
-                if options.contains(.disableDismissOnScroll) {
-                    vc.isModalInPresentation = true
-                } else {
-                    vc.isModalInPresentation = false
+                if case .detent(let style) = transitionType {
+                    presentationViewModel.style = style
                 }
+
+                let vcToPresent = self.getPresentationTarget()
+
+                let content = self.content()
+                let vc = hHostingController<AnyView>(rootView: AnyView(EmptyView()))
+                let observedContent = AnyView(
+                    content
+                        .readSize { size in
+                            vc.updatePreferredContentHeight(size.height)
+                        }
+                )
+                vc.rootView = observedContent
+
+                var shouldUseBlur: Bool {
+                    if case .detent(let style) = transitionType {
+                        return style.contains(.height)
+                    }
+                    return false
+                }
+
+                let delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
                 vc.onDeinit = {
@@ -148,6 +155,15 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         presented = false
                     }
                 }
+
+                vc.onDismiss = {
+                    Task { @MainActor in
+                        presented = false
+                        presentationViewModel.presentingVC = nil
+                        presentationViewModel.transitionDelegate = nil
+                    }
+                }
+
                 presentationViewModel.presentingVC = vc
                 vcToPresent?.present(vc, animated: true)
             }
@@ -155,12 +171,60 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             presentationViewModel.presentingVC?.dismiss(animated: true)
         }
     }
+
+    private func getPresentationTarget() -> UIViewController? {
+        if options.contains(.alwaysOpenOnTop) {
+            let vc = UIApplication.shared.getTopViewController()
+            if vc?.isBeingDismissed == true {
+                return vc?.presentingViewController
+            }
+            return vc
+        } else {
+            return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
+        }
+    }
+
+    private func getDelegate(
+        for vc: UIViewController,
+        shouldUseBlur: Bool
+    ) -> (any UIViewControllerTransitioningDelegate) {
+        switch transitionType {
+        case .detent:
+            let delegate = DetentTransitioningDelegate(
+                detents: transitionType,
+                options: shouldUseBlur ? [PresentationOptions.useBlur] : [],
+                wantsGrabber: options.contains(.withoutGrabber) ? false : true,
+                viewController: vc
+            )
+
+            if options.contains(.disableDismissOnScroll) {
+                vc.isModalInPresentation = true
+            } else {
+                vc.isModalInPresentation = false
+            }
+            return delegate
+        case .pageSheet:
+            let delegate = CenteredModalTransitioningDelegate(bottomView: closeButton.asAnyView)
+            vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
+            return delegate
+        }
+    }
+
+    private var closeButton: some View {
+        hSection {
+            hCloseButton {
+                presentationViewModel.presentingVC?.dismiss(animated: true)
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
 }
 
 @MainActor
 class PresentationViewModel: ObservableObject {
     weak var rootVC: UIViewController?
     var style: [Detent] = []
+    var transitionDelegate: UIViewControllerTransitioningDelegate?
     weak var presentingVC: UIViewController? {
         didSet {
             if style.contains(.height) {
@@ -201,67 +265,6 @@ class PresentationViewModel: ObservableObject {
         }
     }
     private var formContentSizeChanged: AnyCancellable?
-
-}
-
-@MainActor
-public class hHostingController<Content: View>: UIHostingController<Content>, Sendable {
-    var onViewWillLayoutSubviews: () -> Void = {}
-    var onViewDidLayoutSubviews: () -> Void = {}
-    var onViewWillAppear: () -> Void = {}
-    var onViewWillDisappear: () -> Void = {}
-    private let key = UUID().uuidString
-    var onDeinit: @Sendable () -> Void = {}
-    private let contentName: String?
-    public init(rootView: Content, contentName: String? = nil) {
-        self.contentName = contentName
-        super.init(rootView: rootView)
-    }
-
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        onViewDidLayoutSubviews()
-    }
-
-    public override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        onViewWillLayoutSubviews()
-    }
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if let name = self.debugDescription.getViewName() {
-            logStartView(key, name)
-        }
-        onViewWillAppear()
-    }
-
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if self.debugDescription.getViewName() != nil {
-            logStopView(key)
-        }
-        onViewWillDisappear()
-    }
-    @MainActor required dynamic init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag, completion: completion)
-    }
-
-    deinit {
-        self.onDeinit()
-    }
-
-    @objc func onCloseButton() {
-        self.dismiss(animated: true)
-    }
-
-    public override var debugDescription: String {
-        return contentName ?? ""
-    }
 }
 
 extension UIViewController {
@@ -276,19 +279,29 @@ public struct DetentPresentationOption: OptionSet, Sendable {
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
     public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
+    public static let withBannerOnTop = DetentPresentationOption(rawValue: 1 << 4)
 
     nonisolated public init(rawValue: UInt) {
         self.rawValue = rawValue
     }
-
 }
 
-extension String {
-    fileprivate func getViewName() -> String? {
-        if self.lowercased().contains("AnyView".lowercased()) || self.isEmpty || self.contains("Navigation") {
-            return nil
-        }
-        return self
+private struct SizePreferenceKey: @preconcurrency PreferenceKey {
+    @MainActor static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+extension View {
+    func readSize(_ onChange: @escaping (CGSize) -> Void) -> some View {
+        background(
+            GeometryReader { proxy in
+                Color.clear
+                    .preference(key: SizePreferenceKey.self, value: proxy.size)
+            }
+        )
+        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
     }
 }
 

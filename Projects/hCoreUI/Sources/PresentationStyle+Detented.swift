@@ -68,15 +68,15 @@ public struct PresentationOptions: OptionSet, Sendable {
 
 }
 
-class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    var detents: [Detent]
+class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    var detents: TransitionType
     var options: PresentationOptions
     var wantsGrabber: Bool
     var viewController: UIViewController
     var keyboardFrame: CGRect = .zero
 
     init(
-        detents: [Detent],
+        detents: TransitionType,
         options: PresentationOptions,
         wantsGrabber: Bool,
         viewController: UIViewController
@@ -132,14 +132,15 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         }
 
         Detent.set(
-            [
+            .detent(style: [
                 .custom(
                     "zero",
                     { viewController, containerView in
                         return -50
                     }
                 )
-            ],
+            ]
+            ),
             on: presentationController,
             viewController: viewController,
             unanimated: false
@@ -162,6 +163,166 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         setGrabber(on: presentationController, to: wantsGrabber)
 
         return presentationController
+    }
+}
+
+@MainActor
+class PageSheetPresentationViewModel: ObservableObject {
+    weak var rootVC: UIViewController?
+    var style: [Detent] = []
+    weak var presentingVC: UIViewController?
+    var transitionDelegate: UIViewControllerTransitioningDelegate?
+}
+
+final class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    var bottomView: AnyView?
+
+    init(
+        bottomView: AnyView? = nil
+    ) {
+        self.bottomView = bottomView
+    }
+
+    func presentationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController?,
+        source: UIViewController
+    )
+        -> UIPresentationController?
+    {
+        CenteredModalPresentationController(
+            presentedViewController: presented,
+            presenting: presenting,
+            bottomView: bottomView
+        )
+    }
+}
+
+final class CenteredModalPresentationController: UIPresentationController {
+    private let blurView: PassThroughEffectView?
+    let bottomView: AnyView?
+    private var bottomHostingController: UIHostingController<AnyView>?
+
+    init(
+        presentedViewController: UIViewController,
+        presenting presentingViewController: UIViewController?,
+        bottomView: AnyView?
+    ) {
+        self.bottomView = bottomView
+        blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), options: [.pageSheet, .gradient])
+
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        blurView?.alpha = 0
+
+        if let bottomView = bottomView {
+            bottomHostingController = UIHostingController(rootView: bottomView)
+            bottomHostingController?.view.backgroundColor = .clear
+        }
+
+        // Dismiss on tap outside
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissOnTapOutside))
+        blurView?.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func dismissOnTapOutside() {
+        presentedViewController.dismiss(animated: true, completion: nil)
+    }
+
+    override func presentationTransitionWillBegin() {
+        guard let containerView = containerView, let blurView = blurView else { return }
+
+        blurView.frame = containerView.bounds
+        containerView.insertSubview(blurView, at: 0)
+
+        if let bottomHostingView = bottomHostingController?.view {
+            bottomHostingView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview(bottomHostingView)
+
+            NSLayoutConstraint.activate([
+                bottomHostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                bottomHostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                bottomHostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+                bottomHostingView.heightAnchor.constraint(equalToConstant: 100),
+            ])
+        }
+
+        presentedViewController.transitionCoordinator?
+            .animate(alongsideTransition: { _ in
+                blurView.alpha = 1
+            })
+    }
+
+    override func dismissalTransitionWillBegin() {
+        guard let blurView = blurView else { return }
+        presentedViewController.transitionCoordinator?
+            .animate(
+                alongsideTransition: { _ in
+                    blurView.alpha = 0
+                    self.bottomHostingController?.view.alpha = 0
+                },
+                completion: { _ in
+                    self.bottomHostingController?.view.removeFromSuperview()
+                }
+            )
+    }
+
+    override var frameOfPresentedViewInContainerView: CGRect {
+        guard let container = containerView else { return .zero }
+        let width: CGFloat = min(container.bounds.width - 40, 400)
+        let height: CGFloat = 500
+        return CGRect(
+            x: (container.bounds.width - width) / 2,
+            y: (container.bounds.height - height) / 2,
+            width: width,
+            height: height
+        )
+    }
+
+    override func containerViewWillLayoutSubviews() {
+        super.containerViewWillLayoutSubviews()
+        blurView?.frame = containerView?.bounds ?? .zero
+
+        guard let containerView = containerView,
+            let presentedView = presentedView
+        else { return }
+
+        let modalFrame = frameOfPresentedViewInContainerView
+        let shadowWrapper = createShadowWrapper(for: presentedView, frame: modalFrame, cornerRadius: .cornerRadiusXL)
+        containerView.addSubview(shadowWrapper)
+    }
+
+    private func createShadowWrapper(for contentView: UIView, frame: CGRect, cornerRadius: CGFloat) -> UIView {
+        let shadowWrapper = UIView(frame: frame)
+        shadowWrapper.backgroundColor = .clear
+        shadowWrapper.layer.masksToBounds = false
+
+        // Shadow 1
+        let shadow1 = CALayer()
+        shadow1.shadowColor = UIColor.black.cgColor
+        shadow1.shadowOpacity = 0.05
+        shadow1.shadowOffset = CGSize(width: 0, height: 4)
+        shadow1.shadowRadius = 5
+        shadow1.shadowPath = UIBezierPath(roundedRect: shadowWrapper.bounds, cornerRadius: cornerRadius).cgPath
+        shadow1.frame = shadowWrapper.bounds
+        shadowWrapper.layer.insertSublayer(shadow1, at: 0)
+
+        // Shadow 2
+        let shadow2 = CALayer()
+        shadow2.shadowColor = UIColor.black.cgColor
+        shadow2.shadowOpacity = 0.1
+        shadow2.shadowOffset = CGSize(width: 0, height: 2)
+        shadow2.shadowRadius = 1
+        shadow2.shadowPath = UIBezierPath(roundedRect: shadowWrapper.bounds, cornerRadius: cornerRadius).cgPath
+        shadow2.frame = shadowWrapper.bounds
+        shadowWrapper.layer.insertSublayer(shadow2, at: 0)
+
+        contentView.removeFromSuperview()
+        contentView.frame = shadowWrapper.bounds
+        contentView.layer.cornerRadius = cornerRadius
+        contentView.layer.masksToBounds = true
+
+        shadowWrapper.addSubview(contentView)
+        return shadowWrapper
     }
 }
 
@@ -288,7 +449,7 @@ public enum Detent: Equatable {
                 viewController.navigationController ?? findNavigationController(from: viewController)
             let transitioningDelegate =
                 navigationController?.transitioningDelegate
-                as? DetentedTransitioningDelegate
+                as? DetentTransitioningDelegate
             let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
             let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
@@ -353,19 +514,20 @@ public enum Detent: Equatable {
 
     @MainActor
     static func set(
-        _ detents: [Detent],
+        _ detents: TransitionType,
         on presentationController: UIPresentationController,
         viewController: UIViewController,
         lastDetentIndex: Int? = nil,
         unanimated: Bool
     ) {
-        guard !detents.isEmpty else { return }
+
+        guard case .detent(let style) = detents, !style.isEmpty else { return }
         weak var weakViewController = viewController
         weak var weakPresentationController = presentationController
         func apply() {
             if #available(iOS 16.0, *) {
                 weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
-                weakViewController?.appliedDetents = detents
+                weakViewController?.appliedDetents = style
                 weakViewController?.sheetPresentationController?.detents =
                     weakViewController?.appliedDetents
                     .map({
@@ -391,12 +553,12 @@ public enum Detent: Equatable {
             } else {
                 let key = ["_", "set", "Detents", ":"]
                 let selector = NSSelectorFromString(key.joined())
-                weakViewController?.appliedDetents = detents
+                weakViewController?.appliedDetents = style
                 if let weakViewController {
                     weakPresentationController?
                         .perform(
                             selector,
-                            with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
+                            with: NSArray(array: style.map { $0.getDetent(weakViewController) })
                         )
 
                 }
@@ -448,11 +610,9 @@ public enum Detent: Equatable {
         }
     }
 }
-//}
 
 @available(iOS 16.0, *)
 public class BlurredSheetPresenationController: UISheetPresentationController {
-
     var effectView: PassThroughEffectView?
 
     init(
@@ -461,7 +621,7 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: getBlurEffectStyle)) : nil
+        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .light)) : nil
         effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
@@ -471,14 +631,6 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
                 return 0
             })
         ]
-    }
-
-    var getBlurEffectStyle: UIBlurEffect.Style {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .light
-        } else {
-            return .light
-        }
     }
 
     public override func presentationTransitionWillBegin() {
@@ -508,8 +660,50 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
     }
 }
 
+public enum PassThroughEffectOptions {
+    case pageSheet
+    case gradient
+}
+
 public class PassThroughEffectView: UIVisualEffectView {
+    let options: [PassThroughEffectOptions]
+    private let gradientLayer = CAGradientLayer()
+
+    public init(effect: UIVisualEffect?, options: [PassThroughEffectOptions]? = []) {
+        self.options = options ?? []
+        super.init(effect: effect)
+        if self.options.contains(.gradient) {
+            setupGradient()
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupGradient() {
+        gradientLayer.colors = [
+            UIColor.clear.cgColor,
+            UIColor.white.cgColor,
+            UIColor.white.cgColor,
+        ]
+
+        gradientLayer.locations = [0.0, 0.6, 1.0]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+
+        contentView.layer.insertSublayer(gradientLayer, at: 0)
+    }
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer.frame = contentView.bounds
+    }
+
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if options.contains(.pageSheet) {
+            return bounds.contains(point) ? self : nil
+        }
         let hitView = super.hitTest(point, with: event)
 
         if hitView == self {

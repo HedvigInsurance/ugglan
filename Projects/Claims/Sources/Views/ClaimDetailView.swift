@@ -90,7 +90,7 @@ public struct ClaimDetailView: View {
         }
         .detent(
             item: $vm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }
