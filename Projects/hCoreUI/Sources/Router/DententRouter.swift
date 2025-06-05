@@ -155,6 +155,15 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         presented = false
                     }
                 }
+
+                vc.onDismiss = {
+                    Task { @MainActor in
+                        presented = false
+                        presentationViewModel.presentingVC = nil
+                        presentationViewModel.transitionDelegate = nil
+                    }
+                }
+
                 presentationViewModel.presentingVC = vc
                 vcToPresent?.present(vc, animated: true)
             }

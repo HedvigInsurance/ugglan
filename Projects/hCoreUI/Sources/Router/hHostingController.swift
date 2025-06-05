@@ -9,6 +9,7 @@ public class hHostingController<Content: View>: UIHostingController<Content>, Se
     private let key = UUID().uuidString
     var onDeinit: @Sendable () -> Void = {}
     private let contentName: String?
+    var onDismiss: (() -> Void)? = nil
 
     public init(rootView: Content, contentName: String? = nil) {
         self.contentName = contentName
@@ -41,6 +42,14 @@ public class hHostingController<Content: View>: UIHostingController<Content>, Se
         }
         onViewWillDisappear()
     }
+
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isBeingDismissed {
+            onDismiss?()
+        }
+    }
+
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
