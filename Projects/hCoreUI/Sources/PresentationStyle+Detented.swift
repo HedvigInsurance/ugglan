@@ -193,7 +193,7 @@ final class CenteredModalPresentationController: UIPresentationController {
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?
     ) {
-        blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), isPageSheet: true)
+        blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), options: [.pageSheet, .gradient])
 
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         blurView?.alpha = 0
@@ -532,11 +532,9 @@ public enum Detent: Equatable {
         }
     }
 }
-//}
 
 @available(iOS 16.0, *)
 public class BlurredSheetPresenationController: UISheetPresentationController {
-
     var effectView: PassThroughEffectView?
 
     init(
@@ -545,7 +543,7 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: getBlurEffectStyle)) : nil
+        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .light)) : nil
         effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
@@ -555,14 +553,6 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
                 return 0
             })
         ]
-    }
-
-    var getBlurEffectStyle: UIBlurEffect.Style {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .light
-        } else {
-            return .light
-        }
     }
 
     public override func presentationTransitionWillBegin() {
@@ -592,20 +582,48 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
     }
 }
 
-public class PassThroughEffectView: UIVisualEffectView {
-    let isPageSheet: Bool
+public enum PassThroughEffectOptions {
+    case pageSheet
+    case gradient
+}
 
-    public init(effect: UIVisualEffect?, isPageSheet: Bool? = false) {
-        self.isPageSheet = isPageSheet ?? false
+public class PassThroughEffectView: UIVisualEffectView {
+    let options: [PassThroughEffectOptions]
+    private let gradientLayer = CAGradientLayer()
+
+    public init(effect: UIVisualEffect?, options: [PassThroughEffectOptions]? = []) {
+        self.options = options ?? []
         super.init(effect: effect)
+        if self.options.contains(.gradient) {
+            setupGradient()
+        }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private func setupGradient() {
+        gradientLayer.colors = [
+            UIColor.clear.cgColor,
+            UIColor.white.cgColor,
+            UIColor.white.cgColor,
+        ]
+
+        gradientLayer.locations = [0.0, 0.6, 1.0]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+
+        contentView.layer.insertSublayer(gradientLayer, at: 0)
+    }
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer.frame = contentView.bounds
+    }
+
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if isPageSheet {
+        if options.contains(.pageSheet) {
             return bounds.contains(point) ? self : nil
         }
         let hitView = super.hitTest(point, with: event)
