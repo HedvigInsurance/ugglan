@@ -26,7 +26,7 @@ struct TooltipView: View {
                             Spacer()
                         }
                         Triangle()
-                            .fill(type.tooltipColor)
+                            .fill(type.tooltipBackgroundColor)
                             .frame(width: triangleWidth, height: 6)
                             .padding(.horizontal, trianglePadding)
                         if placement == .leading {
@@ -85,8 +85,8 @@ struct TooltipView: View {
             .padding(.horizontal, .padding12)
             .padding(.top, 6.5)
             .padding(.bottom, 7.5)
-            .foregroundColor(hTextColor.Opaque.negative)
-            .background(type.tooltipColor)
+            .foregroundColor(type.tooltipTextColor)
+            .background(type.tooltipBackgroundColor)
             .cornerRadius(.cornerRadiusS)
     }
 }
