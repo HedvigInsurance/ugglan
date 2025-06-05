@@ -175,6 +175,14 @@ class PageSheetPresentationViewModel: ObservableObject {
 }
 
 final class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    var bottomView: AnyView?
+
+    init(
+        bottomView: AnyView? = nil
+    ) {
+        self.bottomView = bottomView
+    }
+
     func presentationController(
         forPresented presented: UIViewController,
         presenting: UIViewController?,
@@ -182,21 +190,34 @@ final class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransi
     )
         -> UIPresentationController?
     {
-        CenteredModalPresentationController(presentedViewController: presented, presenting: presenting)
+        CenteredModalPresentationController(
+            presentedViewController: presented,
+            presenting: presenting,
+            bottomView: bottomView
+        )
     }
 }
 
 final class CenteredModalPresentationController: UIPresentationController {
     private let blurView: PassThroughEffectView?
+    let bottomView: AnyView?
+    private var bottomHostingController: UIHostingController<AnyView>?
 
-    override init(
+    init(
         presentedViewController: UIViewController,
-        presenting presentingViewController: UIViewController?
+        presenting presentingViewController: UIViewController?,
+        bottomView: AnyView?
     ) {
+        self.bottomView = bottomView
         blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), options: [.pageSheet, .gradient])
 
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         blurView?.alpha = 0
+
+        if let bottomView = bottomView {
+            bottomHostingController = UIHostingController(rootView: bottomView)
+            bottomHostingController?.view.backgroundColor = .clear
+        }
 
         // Dismiss on tap outside
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissOnTapOutside))
@@ -208,10 +229,22 @@ final class CenteredModalPresentationController: UIPresentationController {
     }
 
     override func presentationTransitionWillBegin() {
-        guard let containerView, let blurView else { return }
+        guard let containerView = containerView, let blurView = blurView else { return }
 
         blurView.frame = containerView.bounds
         containerView.insertSubview(blurView, at: 0)
+
+        if let bottomHostingView = bottomHostingController?.view {
+            bottomHostingView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview(bottomHostingView)
+
+            NSLayoutConstraint.activate([
+                bottomHostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                bottomHostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                bottomHostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+                bottomHostingView.heightAnchor.constraint(equalToConstant: 100),
+            ])
+        }
 
         presentedViewController.transitionCoordinator?
             .animate(alongsideTransition: { _ in
@@ -220,11 +253,17 @@ final class CenteredModalPresentationController: UIPresentationController {
     }
 
     override func dismissalTransitionWillBegin() {
-        guard let blurView else { return }
+        guard let blurView = blurView else { return }
         presentedViewController.transitionCoordinator?
-            .animate(alongsideTransition: { _ in
-                blurView.alpha = 0
-            })
+            .animate(
+                alongsideTransition: { _ in
+                    blurView.alpha = 0
+                    self.bottomHostingController?.view.alpha = 0
+                },
+                completion: { _ in
+                    self.bottomHostingController?.view.removeFromSuperview()
+                }
+            )
     }
 
     override var frameOfPresentedViewInContainerView: CGRect {
@@ -242,9 +281,48 @@ final class CenteredModalPresentationController: UIPresentationController {
     override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         blurView?.frame = containerView?.bounds ?? .zero
-        presentedView?.frame = frameOfPresentedViewInContainerView
-        presentedView?.layer.cornerRadius = 20
-        presentedView?.layer.masksToBounds = true
+
+        guard let containerView = containerView,
+            let presentedView = presentedView
+        else { return }
+
+        let modalFrame = frameOfPresentedViewInContainerView
+        let shadowWrapper = createShadowWrapper(for: presentedView, frame: modalFrame, cornerRadius: .cornerRadiusXL)
+        containerView.addSubview(shadowWrapper)
+    }
+
+    private func createShadowWrapper(for contentView: UIView, frame: CGRect, cornerRadius: CGFloat) -> UIView {
+        let shadowWrapper = UIView(frame: frame)
+        shadowWrapper.backgroundColor = .clear
+        shadowWrapper.layer.masksToBounds = false
+
+        // Shadow 1
+        let shadow1 = CALayer()
+        shadow1.shadowColor = UIColor.black.cgColor
+        shadow1.shadowOpacity = 0.05
+        shadow1.shadowOffset = CGSize(width: 0, height: 4)
+        shadow1.shadowRadius = 5
+        shadow1.shadowPath = UIBezierPath(roundedRect: shadowWrapper.bounds, cornerRadius: cornerRadius).cgPath
+        shadow1.frame = shadowWrapper.bounds
+        shadowWrapper.layer.insertSublayer(shadow1, at: 0)
+
+        // Shadow 2
+        let shadow2 = CALayer()
+        shadow2.shadowColor = UIColor.black.cgColor
+        shadow2.shadowOpacity = 0.1
+        shadow2.shadowOffset = CGSize(width: 0, height: 2)
+        shadow2.shadowRadius = 1
+        shadow2.shadowPath = UIBezierPath(roundedRect: shadowWrapper.bounds, cornerRadius: cornerRadius).cgPath
+        shadow2.frame = shadowWrapper.bounds
+        shadowWrapper.layer.insertSublayer(shadow2, at: 0)
+
+        contentView.removeFromSuperview()
+        contentView.frame = shadowWrapper.bounds
+        contentView.layer.cornerRadius = cornerRadius
+        contentView.layer.masksToBounds = true
+
+        shadowWrapper.addSubview(contentView)
+        return shadowWrapper
     }
 }
 

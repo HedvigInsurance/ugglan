@@ -204,12 +204,20 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             }
             return delegate
         case .pageSheet:
-            let delegate = CenteredModalTransitioningDelegate()
+            let delegate = CenteredModalTransitioningDelegate(bottomView: closeButton.asAnyView)
             vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
         }
     }
 
+    private var closeButton: some View {
+        hSection {
+            hCloseButton {
+                presentationViewModel.presentingVC?.dismiss(animated: true)
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
 }
 
 @MainActor
