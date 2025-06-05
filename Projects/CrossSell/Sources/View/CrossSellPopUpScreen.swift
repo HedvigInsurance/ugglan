@@ -68,14 +68,6 @@ public struct CrossSellPopUpScreen: View {
     }
 }
 
-//struct GradientBackground: View {
-////    let colors: [Color]
-//    var body: some View {
-//        BackgroundView()
-////        LinearGradient(gradient: .init(colors: colors), startPoint: .top, endPoint: .bottom)
-//    }
-//}
-
 #Preview {
     CrossSellPopUpScreen()
 }

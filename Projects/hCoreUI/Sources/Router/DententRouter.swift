@@ -4,17 +4,22 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
+public enum TransitionType: Equatable {
+    case detent(style: [Detent])
+    case pageSheet
+}
+
 extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
-        style: [Detent],
+        transitionType: TransitionType,
         options: Binding<DetentPresentationOption> = .constant([]),
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(
             DetentSizeModifier(
                 presented: presented,
-                style: style,
+                transitionType: transitionType,
                 options: options,
                 content: content
             )
@@ -23,12 +28,17 @@ extension View {
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
-        style: [Detent],
+        transitionType: TransitionType,
         options: Binding<DetentPresentationOption> = .constant([]),
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
         return modifier(
-            DetentSizeModifierModal(item: item, style: style, options: options, content: content)
+            DetentSizeModifierModal(
+                item: item,
+                transitionType: transitionType,
+                options: options,
+                content: content
+            )
         )
     }
 }
@@ -38,13 +48,13 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @Binding var item: Item?
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
-    let style: [Detent]
+    let transitionType: TransitionType
     @Binding var options: DetentPresentationOption
-
     var content: (Item) -> SwiftUIContent
+
     func body(content: Content) -> some View {
         Group {
-            content.detent(presented: $present, style: style, options: $options) {
+            content.detent(presented: $present, transitionType: transitionType, options: $options) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }
@@ -74,18 +84,18 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
-    private let style: [Detent]
+    let transitionType: TransitionType
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
     init(
         presented: Binding<Bool>,
-        style: [Detent],
+        transitionType: TransitionType,
         options: Binding<DetentPresentationOption>,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
-        self.style = style
+        self.transitionType = transitionType
         self._options = options
     }
 
@@ -114,7 +124,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
-                presentationViewModel.style = style
+                if case .detent(let style) = transitionType {
+                    presentationViewModel.style = style
+                }
+
                 let vcToPresent = self.getPresentationTarget()
 
                 let content = self.content()
@@ -122,23 +135,14 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     rootView: content
                 )
 
-                if options.contains(.withBannerOnTop) {
-                    self.addBanner(to: vc)
+                var shouldUseBlur: Bool {
+                    if case .detent(let style) = transitionType {
+                        return style.contains(.height)
+                    }
+                    return false
                 }
 
-                let shouldUseBlur = style.contains(.height)
-                let delegate = DetentedTransitioningDelegate(
-                    detents: style,
-                    options: shouldUseBlur ? [PresentationOptions.useBlur] : [],
-                    wantsGrabber: options.contains(.withoutGrabber) ? false : true,
-                    viewController: vc
-                )
-                if options.contains(.disableDismissOnScroll) {
-                    vc.isModalInPresentation = true
-                } else {
-                    vc.isModalInPresentation = false
-                }
-
+                let delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
                 vc.onDeinit = {
@@ -166,41 +170,111 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         }
     }
 
-    private func addBanner(to vc: UIViewController) {
-        let banner = bannerUIView
-        vc.view.addSubview(banner)
-        banner.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            banner.leadingAnchor.constraint(equalTo: vc.view.leadingAnchor),
-            banner.trailingAnchor.constraint(equalTo: vc.view.trailingAnchor),
-        ])
-    }
+    private func getDelegate(
+        for vc: UIViewController,
+        shouldUseBlur: Bool
+    ) -> (any UIViewControllerTransitioningDelegate) {
+        switch transitionType {
+        case .detent:
+            let delegate = DetentTransitioningDelegate(
+                detents: transitionType,
+                options: shouldUseBlur ? [PresentationOptions.useBlur] : [],
+                wantsGrabber: options.contains(.withoutGrabber) ? false : true,
+                viewController: vc
+            )
 
-    var bannerUIView: UIView {
-        let view: UIView = UIHostingController(
-            rootView: bannerView
-        )
-        .view
-        view.backgroundColor = .clear
-        view.isUserInteractionEnabled = true
-        return view
-    }
-
-    @ViewBuilder
-    private var bannerView: some View {
-        HStack(spacing: .padding8) {
-            hCoreUIAssets.campaign.view
-                .resizable()
-                .frame(width: 20, height: 20)
-                .foregroundColor(hSignalColor.Green.element)
-            hText(L10n.crossSellBannerText, style: .label)
-                .foregroundColor(hSignalColor.Green.text)
+            if options.contains(.disableDismissOnScroll) {
+                vc.isModalInPresentation = true
+            } else {
+                vc.isModalInPresentation = false
+            }
+            return delegate
+        case .pageSheet:
+            let delegate = CenteredModalTransitioningDelegate()
+            presentationViewModel.transitionDelegate = delegate
+            vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
+            return delegate
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, .padding10)
-        .background(hSignalColor.Green.fill)
     }
+
 }
+
+//private struct PageSheetSizeModifier<SwiftUIContent>: ViewModifier where SwiftUIContent: View {
+//    @Binding var presented: Bool
+//    let content: () -> SwiftUIContent
+//    private let style: [Detent]
+//    @Binding var options: DetentPresentationOption
+//    @StateObject private var presentationViewModel = PageSheetPresentationViewModel()
+//
+//    init(
+//        presented: Binding<Bool>,
+//        style: [Detent],
+//        options: Binding<DetentPresentationOption>,
+//        @ViewBuilder content: @escaping () -> SwiftUIContent
+//    ) {
+//        _presented = presented
+//        self.content = content
+//        self.style = style
+//        self._options = options
+//    }
+//
+//    func body(content: Content) -> some View {
+//        content
+//            .introspect(.viewController, on: .iOS(.v13...)) { vc in
+//                presentationViewModel.rootVC = vc
+//            }
+//            .onAppear { handle(isPresent: presented) }
+//            .onChange(of: presented) { isPresent in handle(isPresent: isPresent) }
+//    }
+//
+//    private func handle(isPresent: Bool) {
+//        if isPresent {
+//            var withDelay = false
+//            if !options.contains(.alwaysOpenOnTop) {
+//                if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
+//                    presentedVC.dismiss(animated: true)
+//                    withDelay = true
+//                }
+//            }
+//
+//            DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
+//                presentationViewModel.style = style
+//                let vcToPresent = getPresentationTarget()
+//                let content = self.content()
+//                let vc = hHostingController(rootView: content)
+//
+//                let delegate = CenteredModalTransitioningDelegate()
+//                presentationViewModel.transitionDelegate = delegate
+//                vc.transitioningDelegate = delegate
+//                vc.modalPresentationStyle = .custom
+//                vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
+//
+//                vc.onDeinit = {
+//                    Task { @MainActor in
+//                        presented = false
+//                    }
+//                }
+//
+//                if let presentingVC = vcToPresent {
+//                    presentingVC.present(vc, animated: true)
+//                } else {
+//                    assertionFailure("No valid view controller to present from.")
+//                }
+//            }
+//        } else {
+//            presentationViewModel.presentingVC?.dismiss(animated: true)
+//        }
+//    }
+//
+//    private func getPresentationTarget() -> UIViewController? {
+//        if options.contains(.alwaysOpenOnTop) {
+//            let vc = UIApplication.shared.getTopViewController()
+//            return vc?.isBeingDismissed == true ? vc?.presentingViewController : vc
+//        } else {
+//            return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
+//        }
+//    }
+//}
 
 @MainActor
 class PresentationViewModel: ObservableObject {

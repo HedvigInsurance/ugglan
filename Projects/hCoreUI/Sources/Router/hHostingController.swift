@@ -12,7 +12,7 @@ public class hHostingController<Content: View>: UIHostingController<Content>, Se
     public init(rootView: Content, contentName: String? = nil) {
         self.contentName = contentName
         super.init(rootView: rootView)
-        modalPresentationStyle = .custom  // for page
+        modalPresentationStyle = .custom
     }
 
     public override func viewDidLayoutSubviews() {

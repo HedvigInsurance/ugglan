@@ -93,7 +93,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isAddonErrorPresented,
-            style: [.height],
+            transitionType: .detent(style: [.height]),
             options: .constant([.alwaysOpenOnTop])
         ) { error in
             GenericErrorView(description: error, formPosition: .compact)
@@ -134,7 +134,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isFaqTopicPresented,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { topic in
             HelpCenterTopicNavigation(topic: topic)
@@ -144,7 +144,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isFaqPresented,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { question in
             HelpCenterQuestionNavigation(question: question)
@@ -357,7 +357,7 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: [.height],
+            transitionType: .detent(style: [.height]),
             options: .constant(.withoutGrabber)
         ) {
             ClaimsMainNavigation(from: .generic)
@@ -433,7 +433,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -443,16 +443,16 @@ struct HomeTab: View {
                     tracking: LoggedInNavigationDetentType.firstVet
                 )
         }
-        .pageSheet(
+        .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: [.large],
+            transitionType: .pageSheet,
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
         ) { claimInfo in
             CrossSellPopUpScreen()
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(

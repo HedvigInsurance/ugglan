@@ -16,7 +16,7 @@ struct LoginNavigation: View {
         RouterHost(router: router, options: .navigationBarHidden, tracking: LoginDetentType.notLoggedIn) {
             NotLoggedInView(vm: vm)
         }
-        .detent(presented: $vm.showLanguagePicker, style: [.height]) {
+        .detent(presented: $vm.showLanguagePicker, transitionType: .detent(style: [.height])) {
             LanguagePickerView {
                 let store: ProfileStore = globalPresentableStoreContainer.get()
                 store.send(.updateLanguage)
@@ -30,7 +30,7 @@ struct LoginNavigation: View {
                 tracking: LoginDetentType.languagePicker
             )
         }
-        .detent(presented: $vm.showLogin, style: [.large]) {
+        .detent(presented: $vm.showLogin, transitionType: .detent(style: [.large])) {
             Group {
                 BankIDLoginQRView {
                     let store: UgglanStore = globalPresentableStoreContainer.get()

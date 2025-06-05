@@ -68,15 +68,15 @@ public struct PresentationOptions: OptionSet, Sendable {
 
 }
 
-class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    var detents: [Detent]
+class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    var detents: TransitionType
     var options: PresentationOptions
     var wantsGrabber: Bool
     var viewController: UIViewController
     var keyboardFrame: CGRect = .zero
 
     init(
-        detents: [Detent],
+        detents: TransitionType,
         options: PresentationOptions,
         wantsGrabber: Bool,
         viewController: UIViewController
@@ -132,14 +132,15 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         }
 
         Detent.set(
-            [
+            .detent(style: [
                 .custom(
                     "zero",
                     { viewController, containerView in
                         return -50
                     }
                 )
-            ],
+            ]
+            ),
             on: presentationController,
             viewController: viewController,
             unanimated: false
@@ -162,6 +163,88 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         setGrabber(on: presentationController, to: wantsGrabber)
 
         return presentationController
+    }
+}
+
+@MainActor
+class PageSheetPresentationViewModel: ObservableObject {
+    weak var rootVC: UIViewController?
+    var style: [Detent] = []
+    weak var presentingVC: UIViewController?
+    var transitionDelegate: UIViewControllerTransitioningDelegate?
+}
+
+final class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    func presentationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController?,
+        source: UIViewController
+    )
+        -> UIPresentationController?
+    {
+        CenteredModalPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+}
+
+final class CenteredModalPresentationController: UIPresentationController {
+    private let blurView: PassThroughEffectView?
+
+    override init(
+        presentedViewController: UIViewController,
+        presenting presentingViewController: UIViewController?
+    ) {
+        blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), isPageSheet: true)
+
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        blurView?.alpha = 0
+
+        // Dismiss on tap outside
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissOnTapOutside))
+        blurView?.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func dismissOnTapOutside() {
+        presentedViewController.dismiss(animated: true, completion: nil)
+    }
+
+    override func presentationTransitionWillBegin() {
+        guard let containerView, let blurView else { return }
+
+        blurView.frame = containerView.bounds
+        containerView.insertSubview(blurView, at: 0)
+
+        presentedViewController.transitionCoordinator?
+            .animate(alongsideTransition: { _ in
+                blurView.alpha = 1
+            })
+    }
+
+    override func dismissalTransitionWillBegin() {
+        guard let blurView else { return }
+        presentedViewController.transitionCoordinator?
+            .animate(alongsideTransition: { _ in
+                blurView.alpha = 0
+            })
+    }
+
+    override var frameOfPresentedViewInContainerView: CGRect {
+        guard let container = containerView else { return .zero }
+        let width: CGFloat = min(container.bounds.width - 40, 400)
+        let height: CGFloat = 500
+        return CGRect(
+            x: (container.bounds.width - width) / 2,
+            y: (container.bounds.height - height) / 2,
+            width: width,
+            height: height
+        )
+    }
+
+    override func containerViewWillLayoutSubviews() {
+        super.containerViewWillLayoutSubviews()
+        blurView?.frame = containerView?.bounds ?? .zero
+        presentedView?.frame = frameOfPresentedViewInContainerView
+        presentedView?.layer.cornerRadius = 20
+        presentedView?.layer.masksToBounds = true
     }
 }
 
@@ -288,7 +371,7 @@ public enum Detent: Equatable {
                 viewController.navigationController ?? findNavigationController(from: viewController)
             let transitioningDelegate =
                 navigationController?.transitioningDelegate
-                as? DetentedTransitioningDelegate
+                as? DetentTransitioningDelegate
             let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
             let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
@@ -353,19 +436,20 @@ public enum Detent: Equatable {
 
     @MainActor
     static func set(
-        _ detents: [Detent],
+        _ detents: TransitionType,
         on presentationController: UIPresentationController,
         viewController: UIViewController,
         lastDetentIndex: Int? = nil,
         unanimated: Bool
     ) {
-        guard !detents.isEmpty else { return }
+
+        guard case .detent(let style) = detents, !style.isEmpty else { return }
         weak var weakViewController = viewController
         weak var weakPresentationController = presentationController
         func apply() {
             if #available(iOS 16.0, *) {
                 weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
-                weakViewController?.appliedDetents = detents
+                weakViewController?.appliedDetents = style
                 weakViewController?.sheetPresentationController?.detents =
                     weakViewController?.appliedDetents
                     .map({
@@ -391,12 +475,12 @@ public enum Detent: Equatable {
             } else {
                 let key = ["_", "set", "Detents", ":"]
                 let selector = NSSelectorFromString(key.joined())
-                weakViewController?.appliedDetents = detents
+                weakViewController?.appliedDetents = style
                 if let weakViewController {
                     weakPresentationController?
                         .perform(
                             selector,
-                            with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
+                            with: NSArray(array: style.map { $0.getDetent(weakViewController) })
                         )
 
                 }

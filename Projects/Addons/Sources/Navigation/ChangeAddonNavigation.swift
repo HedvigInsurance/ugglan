@@ -126,7 +126,7 @@ public struct ChangeAddonNavigation: View {
         }
         .detent(
             item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,
-            style: [.height],
+            transitionType: .detent(style: [.height]),
             options: .constant(.alwaysOpenOnTop)
         ) { addOn in
             AddonSelectSubOptionScreen(addonOffer: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
@@ -138,7 +138,7 @@ public struct ChangeAddonNavigation: View {
         }
         .detent(
             presented: $changeAddonNavigationVm.isConfirmAddonPresented,
-            style: [.height],
+            transitionType: .detent(style: [.height]),
             options: .constant(.alwaysOpenOnTop),
             content: {
                 ConfirmChangeAddonScreen()
@@ -151,7 +151,7 @@ public struct ChangeAddonNavigation: View {
         )
         .detent(
             item: $changeAddonNavigationVm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }

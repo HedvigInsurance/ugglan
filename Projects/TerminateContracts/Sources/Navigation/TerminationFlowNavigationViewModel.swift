@@ -388,13 +388,13 @@ struct TerminationFlowNavigation: View {
         .environmentObject(vm)
         .detent(
             presented: $vm.isDatePickerPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             openSetTerminationDatePickerScreen()
         }
         .detent(
             presented: $vm.isConfirmTerminationPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             openConfirmTerminationScreen()
                 .environmentObject(vm)
