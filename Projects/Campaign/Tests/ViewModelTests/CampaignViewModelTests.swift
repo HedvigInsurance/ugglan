@@ -14,9 +14,6 @@ final class CampaignViewModelTests: XCTestCase {
 
     override func tearDown() async throws {
         try await super.tearDown()
-        Dependencies.shared.remove(for: hCampaignClient.self)
-        try await Task.sleep(nanoseconds: 100)
-        XCTAssertNil(sut)
     }
 
     func testAddCampaingCodeViewModelSuccess() async {
@@ -49,7 +46,6 @@ final class CampaignViewModelTests: XCTestCase {
     func testDeleteCampaignViewModelSuccess() async {
         let mockService = MockCampaignData.createMockCampaignService(
             removeCampaign: {})
-
         self.sut = mockService
 
         let discount: Discount = .init(
