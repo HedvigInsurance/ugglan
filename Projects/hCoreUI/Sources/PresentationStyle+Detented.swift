@@ -201,6 +201,7 @@ final class CenteredModalPresentationController: UIPresentationController {
     private let blurView: PassThroughEffectView?
     let bottomView: AnyView?
     private var bottomHostingController: UIHostingController<AnyView>?
+    private var shadowWrapper: UIView?
 
     init(
         presentedViewController: UIViewController,
@@ -258,9 +259,12 @@ final class CenteredModalPresentationController: UIPresentationController {
                 alongsideTransition: { _ in
                     blurView.alpha = 0
                     self.bottomHostingController?.view.alpha = 0
+                    self.shadowWrapper?.alpha = 0
                 },
                 completion: { _ in
                     self.bottomHostingController?.view.removeFromSuperview()
+                    self.shadowWrapper?.removeFromSuperview()
+                    self.shadowWrapper = nil
                 }
             )
     }
@@ -274,8 +278,15 @@ final class CenteredModalPresentationController: UIPresentationController {
         else { return }
 
         let modalFrame = frameOfPresentedViewInContainerView
-        let shadowWrapper = createShadowWrapper(for: presentedView, frame: modalFrame, cornerRadius: .cornerRadiusXL)
-        containerView.addSubview(shadowWrapper)
+        if let existingShadowWrapper = shadowWrapper {
+            existingShadowWrapper.frame = modalFrame
+            presentedView.frame = existingShadowWrapper.bounds
+        } else {
+            shadowWrapper = createShadowWrapper(for: presentedView, frame: modalFrame, cornerRadius: .cornerRadiusXL)
+            if let shadowWrapper = shadowWrapper {
+                containerView.addSubview(shadowWrapper)
+            }
+        }
     }
 
     private func createShadowWrapper(for contentView: UIView, frame: CGRect, cornerRadius: CGFloat) -> UIView {
