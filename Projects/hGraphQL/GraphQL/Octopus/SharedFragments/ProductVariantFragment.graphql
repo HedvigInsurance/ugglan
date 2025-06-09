@@ -18,15 +18,6 @@ fragment ProductVariantFragment on ProductVariant {
     }
 }
 
-fragment CrossSellFragment on Member {
-    crossSells {
-      title
-      description
-      storeUrl
-      type
-    }
-}
-
 fragment InsuranceDocumentFragment on InsuranceDocument {
     displayName
     type
