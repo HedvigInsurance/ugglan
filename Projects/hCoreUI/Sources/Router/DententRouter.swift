@@ -4,6 +4,7 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
+@preconcurrency
 public enum TransitionType: Equatable {
     case detent(style: [Detent])
     case pageSheet
@@ -13,14 +14,14 @@ extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
         transitionType: TransitionType,
-        options: Binding<DetentPresentationOption> = .constant([]),
+        options: Binding<DetentPresentationOption>? = .constant([]),
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(
             DetentSizeModifier(
                 presented: presented,
                 transitionType: transitionType,
-                options: options,
+                options: options ?? .constant([]),
                 content: content
             )
         )
@@ -29,14 +30,14 @@ extension View {
     public func detent<Item, Content>(
         item: Binding<Item?>,
         transitionType: TransitionType,
-        options: Binding<DetentPresentationOption> = .constant([]),
+        options: Binding<DetentPresentationOption>? = .constant([]),
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
         return modifier(
             DetentSizeModifierModal(
                 item: item,
                 transitionType: transitionType,
-                options: options,
+                options: options ?? .constant([]),
                 content: content
             )
         )

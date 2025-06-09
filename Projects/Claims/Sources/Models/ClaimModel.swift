@@ -155,9 +155,11 @@ extension ClaimModel: TrackingViewNameProtocol {
 }
 
 extension ClaimModel {
-    public var asCrossSellInfo: CrossSellInfo {
+    public var asCrossSellInfo: CrossSellPresentModel {
         let additionalInfo = ClaimCrossSellAdditionalInfo.fromClaim(self)
-        return .init(type: .closedClaim, additionalInfo: additionalInfo)
+        return .init(
+            model: .init(type: .closedClaim, additionalInfo: additionalInfo)
+        )
     }
 }
 

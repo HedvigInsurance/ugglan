@@ -59,9 +59,9 @@ public class HomeNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
             [weak self] notification in
-            if let crossSellInfo = notification.object as? CrossSellInfo {
+            if let crossSellInfo = notification.object as? CrossSellPresentModel {
                 Task { @MainActor in
-                    try await Task.sleep(nanoseconds: crossSellInfo.type?.delayInNanoSeconds ?? .zero)
+                    try await Task.sleep(nanoseconds: crossSellInfo.model.type?.delayInNanoSeconds ?? .zero)
                     self?.navBarItems.isNewOfferPresented = crossSellInfo
                 }
             }
@@ -80,7 +80,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct NavBarItems {
         public var isFirstVetPresented = false
-        public var isNewOfferPresented: CrossSellInfo?
+        public var isNewOfferPresented: CrossSellPresentModel?
     }
 
     deinit {
