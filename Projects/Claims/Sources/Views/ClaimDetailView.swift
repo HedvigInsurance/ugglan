@@ -140,9 +140,9 @@ public struct ClaimDetailView: View {
                         Spacer()
 
                         if vm.toolbarOptionType.contains(.chat) {
-                            Image(uiImage: hCoreUIAssets.inbox.image)
+                            hCoreUIAssets.inbox.view
                         } else {
-                            Image(uiImage: hCoreUIAssets.inboxNotification.image)
+                            hCoreUIAssets.inboxNotification.view
                         }
                     }
                 }

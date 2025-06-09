@@ -7,7 +7,7 @@ import hCoreUI
 public struct ContractRow: View {
     @State var frameWidth: CGFloat = 0
 
-    let image: UIImage?
+    let image: Image?
     let terminationMessage: String?
     let contractDisplayName: String
     let contractExposureName: String
@@ -19,7 +19,7 @@ public struct ContractRow: View {
     let onClick: (() -> Void)?
 
     public init(
-        image: UIImage?,
+        image: Image?,
         terminationMessage: String?,
         contractDisplayName: String,
         contractExposureName: String,
@@ -71,7 +71,7 @@ public struct ContractRow: View {
 }
 
 private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
-    let image: UIImage?
+    let image: Image?
     let contractDisplayName: String
     let contractExposureName: String
     let terminationMessage: String?
@@ -81,7 +81,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let tierDisplayName: String?
     let tagsToShow: [(text: String, type: PillType)]
     public init(
-        image: UIImage?,
+        image: Image?,
         contractDisplayName: String,
         contractExposureName: String,
         terminationMessage: String? = nil,
@@ -135,7 +135,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 Rectangle()
                     .foregroundColor(.clear)
                     .background(
-                        Image(uiImage: image)
+                        image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .scaleEffect(1.32)
@@ -148,7 +148,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     @ViewBuilder var logo: some View {
-        Image(uiImage: HCoreUIAsset.helipadBig.image)
+        hCoreUIAssets.helipadBig.view
             .resizable()
             .frame(width: 24, height: 24)
             .foregroundColor(hFillColor.Opaque.white)
@@ -228,7 +228,7 @@ private struct StatusPill: View {
 #Preview {
     hSection {
         ContractRow(
-            image: hCoreUIAssets.pillowHome.image,
+            image: hCoreUIAssets.pillowHome.view,
             terminationMessage: "Active",
             contractDisplayName: "Insurance",
             contractExposureName: "Address ∙ Coverage",

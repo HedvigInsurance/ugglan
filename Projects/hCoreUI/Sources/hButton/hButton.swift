@@ -50,7 +50,7 @@ public struct hButton: View {
     @ViewBuilder
     private func imageView(for alignment: HorizontalAlignment) -> some View {
         if let image = content.buttonImage, image.alignment == alignment {
-            Image(uiImage: image.image)
+            image.image
                 .resizable()
                 .frame(width: .padding16, height: .padding16)
         }
@@ -72,11 +72,11 @@ public struct hButtonContent: Equatable {
 
     @MainActor
     public struct hButtonImage: Equatable {
-        let image: UIImage
+        let image: Image
         let alignment: HorizontalAlignment
 
         public init(
-            image: UIImage,
+            image: Image,
             alignment: HorizontalAlignment = .center
         ) {
             self.image = image
