@@ -45,7 +45,11 @@ extension CrossSell {
         case .car: return hCoreUIAssets.bigPillowCar.view
         case .accident: return hCoreUIAssets.bigPillowAccident.view
         case .pet: return hCoreUIAssets.bigPillowPet.view
+        case .apartmentBrf: return hCoreUIAssets.bigPillowHomeowner.view
+        case .apartmentRent: return hCoreUIAssets.bigPillowRental.view
         case .unknown: return hCoreUIAssets.bigPillowHome.view
+        case .petDog: return hCoreUIAssets.bigPillowDog.view
+        case .petCat: return hCoreUIAssets.bigPillowCat.view
         }
     }
 }
@@ -53,7 +57,11 @@ extension CrossSell {
 public enum CrossSellType: String, Codable, Hashable, Sendable {
     case car
     case home
+    case apartmentBrf
+    case apartmentRent
     case accident
     case pet
+    case petDog
+    case petCat
     case unknown
 }
