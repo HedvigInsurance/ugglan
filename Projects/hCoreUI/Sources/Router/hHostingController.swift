@@ -69,18 +69,6 @@ public class hHostingController<Content: View>: UIHostingController<Content>, Se
     public override var debugDescription: String {
         return contentName ?? ""
     }
-
-    func updatePreferredContentHeight(_ height: CGFloat) {
-        if preferredContentSize.height != height {
-            preferredContentSize = CGSize(width: view.bounds.width, height: height)
-            if let sheet = sheetPresentationController {
-                if #available(iOS 16.0, *) {
-                    sheet.invalidateDetents()
-                } else {
-                }
-            }
-        }
-    }
 }
 
 extension String {

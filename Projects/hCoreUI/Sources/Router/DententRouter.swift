@@ -132,13 +132,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
                 let content = self.content()
                 let vc = hHostingController<AnyView>(rootView: AnyView(EmptyView()))
-                let observedContent = AnyView(
-                    content
-                        .readSize { size in
-                            vc.updatePreferredContentHeight(size.height)
-                        }
-                )
-                vc.rootView = observedContent
+                vc.rootView = content.asAnyView
 
                 var shouldUseBlur: Bool {
                     if case .detent(let style) = transitionType {
@@ -197,11 +191,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 viewController: vc
             )
 
-            if options.contains(.disableDismissOnScroll) {
-                vc.isModalInPresentation = true
-            } else {
-                vc.isModalInPresentation = false
-            }
+            vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
         case .pageSheet:
             let delegate = CenteredModalTransitioningDelegate(bottomView: closeButton.asAnyView)
@@ -283,25 +273,6 @@ public struct DetentPresentationOption: OptionSet, Sendable {
 
     nonisolated public init(rawValue: UInt) {
         self.rawValue = rawValue
-    }
-}
-
-private struct SizePreferenceKey: @preconcurrency PreferenceKey {
-    @MainActor static var defaultValue: CGSize = .zero
-    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
-        value = nextValue()
-    }
-}
-
-extension View {
-    func readSize(_ onChange: @escaping (CGSize) -> Void) -> some View {
-        background(
-            GeometryReader { proxy in
-                Color.clear
-                    .preference(key: SizePreferenceKey.self, value: proxy.size)
-            }
-        )
-        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
     }
 }
 

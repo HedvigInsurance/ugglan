@@ -174,23 +174,22 @@ class PageSheetPresentationViewModel: ObservableObject {
     var transitionDelegate: UIViewControllerTransitioningDelegate?
 }
 
-final class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var bottomView: AnyView?
 
     init(
         bottomView: AnyView? = nil
     ) {
         self.bottomView = bottomView
+        super.init()
     }
 
     func presentationController(
         forPresented presented: UIViewController,
         presenting: UIViewController?,
         source: UIViewController
-    )
-        -> UIPresentationController?
-    {
-        CenteredModalPresentationController(
+    ) -> UIPresentationController? {
+        return CenteredModalPresentationController(
             presentedViewController: presented,
             presenting: presenting,
             bottomView: bottomView
@@ -266,18 +265,6 @@ final class CenteredModalPresentationController: UIPresentationController {
             )
     }
 
-    override var frameOfPresentedViewInContainerView: CGRect {
-        guard let container = containerView else { return .zero }
-        let width: CGFloat = min(container.bounds.width - 40, 400)
-        let height: CGFloat = 500
-        return CGRect(
-            x: (container.bounds.width - width) / 2,
-            y: (container.bounds.height - height) / 2,
-            width: width,
-            height: height
-        )
-    }
-
     override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         blurView?.frame = containerView?.bounds ?? .zero
@@ -323,6 +310,19 @@ final class CenteredModalPresentationController: UIPresentationController {
 
         shadowWrapper.addSubview(contentView)
         return shadowWrapper
+    }
+
+    override var frameOfPresentedViewInContainerView: CGRect {
+        guard let containerView else { return .zero }
+
+        let width: CGFloat = min(containerView.bounds.width - 40, 400)
+        let calculatedHeight = Detent.calculateScrollViewContentHeight(for: presentedViewController)
+
+        let height = min(calculatedHeight, containerView.bounds.height - 40)
+        let originX = (containerView.bounds.width - width) / 2
+        let originY = (containerView.bounds.height - height) / 2
+
+        return CGRect(x: originX, y: originY, width: width, height: height)
     }
 }
 
@@ -608,6 +608,77 @@ public enum Detent: Equatable {
                 Double(containerViewBlock(presentedViewController, view))
             }
         }
+    }
+}
+
+@MainActor
+extension Detent {
+    public static func calculateScrollViewContentHeight(for viewController: UIViewController) -> CGFloat {
+        let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
+        guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
+            return 0
+        }
+
+        scrollView.setNeedsLayout()
+        scrollView.layoutIfNeeded()
+
+        let contentSizeHeight = scrollView.contentSize.height
+        let fittingSize =
+            scrollView.systemLayoutSizeFitting(
+                CGSize(width: scrollView.bounds.width, height: UIView.layoutFittingCompressedSize.height),
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+            .height
+
+        let contentHeight =
+            max(contentSizeHeight, fittingSize) + scrollView.adjustedContentInset.top
+            + scrollView.adjustedContentInset.bottom
+
+        let navigationController = viewController.navigationController ?? findNavigationController(from: viewController)
+        let transitioningDelegate = navigationController?.transitioningDelegate as? DetentTransitioningDelegate
+        let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
+
+        let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
+        let hasLargeTitle =
+            (navigationController?.navigationBar.prefersLargeTitles ?? false)
+            && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
+        let hasNavigationBar =
+            navigationController?.navigationBar != nil
+            && !(navigationController?.isNavigationBarHidden ?? true)
+
+        let navigationBarHeight: CGFloat = {
+            if hasLargeTitle {
+                return 107
+            } else {
+                return navigationController?.navigationBar.frame.height ?? 52
+            }
+        }()
+
+        let navInsets = navigationController?.additionalSafeAreaInsets ?? .zero
+        let vcInsets = viewController.additionalSafeAreaInsets
+
+        var totalHeight =
+            contentHeight
+            + (hasNavigationBar ? navigationBarHeight : 0)
+            + navInsets.top + navInsets.bottom
+            + vcInsets.top + vcInsets.bottom
+
+        totalHeight += 100
+        totalHeight *= 1.1
+
+        if keyboardHeight > 0 {
+            if let keyWindow = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first?
+                .windows
+                .first(where: \.isKeyWindow)
+            {
+                totalHeight -= keyWindow.safeAreaInsets.bottom
+            }
+        }
+
+        return totalHeight
     }
 }
 
