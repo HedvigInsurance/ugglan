@@ -13,6 +13,7 @@ final class CampaignViewModelTests: XCTestCase {
     }
 
     override func tearDown() async throws {
+        try await super.tearDown()
         Dependencies.shared.remove(for: hCampaignClient.self)
         try await Task.sleep(nanoseconds: 100)
         XCTAssertNil(sut)

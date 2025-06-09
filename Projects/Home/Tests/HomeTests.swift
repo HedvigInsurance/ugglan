@@ -48,7 +48,7 @@ final class HomeTests: XCTestCase {
 
     func testGetMemberStateSuccess() async {
         let memberState: MemberState = .init(
-            id: "id",
+            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
             contracts: [
                 .init(
                     upcomingRenewal: nil,
@@ -126,7 +126,7 @@ final class HomeTests: XCTestCase {
         let randomIndex = Int(arc4random()) % futureStatuses.count
         let futureStatus = futureStatuses[randomIndex]
         let memberState = MemberState.init(
-            id: "id",
+            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
             contracts: [],
             contractState: MemberContractState.allCases.randomElement() ?? .active,
             futureState: futureStatus

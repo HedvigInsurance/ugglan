@@ -1,6 +1,7 @@
 @preconcurrency import XCTest
 import hCore
 
+@testable import Claims
 @testable import SubmitClaim
 
 @MainActor
@@ -86,6 +87,7 @@ final class SubmitClaimTests: XCTestCase {
         let audioRecordingType: SubmitAudioRecordingType = .audio(url: URL(string: "/file")!)
         let fileUploaderClient: MockFileUploaderService = .init(
             uploadFile: { flowId, file in
+
                 return .init(audioUrl: "/file")
             }
         )

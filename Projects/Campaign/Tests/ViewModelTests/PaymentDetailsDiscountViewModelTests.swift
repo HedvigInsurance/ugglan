@@ -10,16 +10,15 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        sut = nil
     }
 
     override func tearDown() async throws {
-        try await Task.sleep(nanoseconds: 100)
+        try await super.tearDown()
         Dependencies.shared.remove(for: hCampaignClient.self)
         XCTAssertNil(sut)
     }
 
-    func testPaymentDetailsDiscountViewModelRemoveTrueSuccess() async {
+    func testPaymentDetailsDiscountViewModelRemoveTrueSuccess() async throws {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [
             .enableRemoving, .forPayment, .showExpire,
         ]
@@ -36,16 +35,15 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
 
         let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
         self.sut = mockService
-
+        //
         let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
         assert(model.shouldShowExpire == false)
         assert(model.shouldShowRemove == true)
     }
 
-    func testPaymentDetailsDiscountViewModelRemoveFalseSuccess() async {
+    func testPaymentDetailsDiscountViewModelRemoveFalseSuccess() async throws {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [.forPayment, .showExpire]
-
         let discount: Discount = .init(
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
@@ -65,9 +63,10 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         assert(model.shouldShowRemove == false)
     }
 
-    func testPaymentDetailsDiscountViewModelExpireTrueSuccess() async {
+    func testPaymentDetailsDiscountViewModelExpireTrueSuccess() async throws {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [.forPayment, .showExpire]
-
+        let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
+        self.sut = mockService
         if let date = "2024-07-07".localDateToDate {
             let nonValidServerBasedDate = date.localDateString
 
@@ -80,9 +79,6 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
                 canBeDeleted: true,
                 discountId: "id"
             )
-
-            let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
-            self.sut = mockService
 
             let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
