@@ -23,6 +23,7 @@ public struct CoverageView: View {
             ) { limit in
                 didTapInsurableLimit(limit)
             }
+            .hWithoutHorizontalPadding([.row, .divider])
             VStack(spacing: .padding32) {
                 ForEach(perils, id: \.title) { perils in
                     VStack(spacing: .padding8) {
@@ -43,6 +44,7 @@ public struct CoverageView: View {
                     }
                 }
             }
+            .hWithoutHorizontalPadding([.section, .divider])
         }
     }
 }
