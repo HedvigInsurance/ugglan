@@ -43,6 +43,7 @@ struct StartDateScreen: View {
                             text: L10n.TravelCertificate.startDateInfo(vm.specification.maxDuration),
                             type: .info
                         )
+                        .accessibilitySortPriority(2)
                         hContinueButton {
                             Task {
                                 await submit()

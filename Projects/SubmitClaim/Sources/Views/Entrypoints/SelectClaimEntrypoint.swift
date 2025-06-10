@@ -351,7 +351,7 @@ struct ShowTagList: View {
     var showNotValid: some View {
         if notValid {
             HStack {
-                Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
+                hCoreUIAssets.infoFilledSmall.view
                     .foregroundColor(hAmberColor.amber600)
                 hText(L10n.claimsSelectCategory, style: .body1)
             }

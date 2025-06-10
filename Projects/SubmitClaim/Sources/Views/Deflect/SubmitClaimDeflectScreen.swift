@@ -20,10 +20,12 @@ public struct SubmitClaimDeflectScreen: View {
                 if let infoText = model.infoText {
                     hSection {
                         InfoCard(text: infoText, type: .info)
+                            .accessibilitySortPriority(2)
                     }
                 } else if let warningText = model.warningText {
                     hSection {
                         InfoCard(text: warningText, type: .attention)
+                            .accessibilitySortPriority(2)
                     }
                 }
 

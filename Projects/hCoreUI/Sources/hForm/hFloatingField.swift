@@ -119,19 +119,19 @@ struct hFloatingField_Previews: PreviewProvider {
             }
             .hFieldSize(.large)
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
+                hCoreUIAssets.copy.view
             }
             hFloatingField(value: value, placeholder: "ni", error: nil) {
             }
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
+                hCoreUIAssets.copy.view
             }
             .hFieldSize(.medium)
 
             hFloatingField(value: value, placeholder: "ni", error: nil) {
             }
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
+                hCoreUIAssets.copy.view
             }
             .hFieldSize(.small)
         }

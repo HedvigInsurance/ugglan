@@ -61,6 +61,7 @@ public struct SubmitClaimSingleItemScreen: View {
                 ? L10n.claimsSingleItemNoticeLabel : L10n.claimsSingleItemNoticeWithoutPriceLabel,
             type: .info
         )
+        .accessibilitySortPriority(2)
         .padding(.vertical, .padding12)
     }
 

@@ -9,18 +9,18 @@ public enum NotificationType {
     case campaign
     case neutral
 
-    var image: UIImage {
+    var image: Image {
         switch self {
         case .info:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         case .attention:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .error:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .campaign:
-            return hCoreUIAssets.campaignSmall.image
+            return hCoreUIAssets.campaignSmall.view
         case .neutral:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         }
     }
 

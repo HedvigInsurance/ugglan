@@ -174,14 +174,6 @@ let template = Template(
     attributes: [nameAttribute, .optional("platform", default: "iOS")],
     items: [
         .string(path: "\(nameAttribute)/Example/Sources/AppDelegate.swift", contents: appDelegateContents),
-        .string(
-            path: "\(nameAttribute)/Example/Resources/Assets.xcassets/contents.json",
-            contents: xcassetsContents
-        ),
-        .string(
-            path: "\(nameAttribute)/Example/Resources/Assets.xcassets/AppIcon.appiconset/contents.json",
-            contents: xcassetsAppIconContents
-        ),
         .string(path: "\(nameAttribute)/GraphQL/ExampleQuery.graphql", contents: graphqlExampleQueryContents),
         .string(path: "\(nameAttribute)/Sources/\(nameAttribute).swift", contents: exampleContents),
         .string(path: "\(nameAttribute)/Tests/\(nameAttribute)Tests.swift", contents: testContents),
