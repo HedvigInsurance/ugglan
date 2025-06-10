@@ -150,12 +150,14 @@ extension View {
                 ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
                     action()
                 }
+                .accessibilityValue(L10n.Toast.readMore)
             }
         case .trailing:
             self.setToolbarTrailing {
                 ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
                     action()
                 }
+                .accessibilityValue(L10n.Toast.readMore)
             }
         }
     }
