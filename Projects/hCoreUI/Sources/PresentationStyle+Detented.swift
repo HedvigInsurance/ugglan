@@ -166,14 +166,6 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
     }
 }
 
-@MainActor
-class PageSheetPresentationViewModel: ObservableObject {
-    weak var rootVC: UIViewController?
-    var style: [Detent] = []
-    weak var presentingVC: UIViewController?
-    var transitionDelegate: UIViewControllerTransitioningDelegate?
-}
-
 class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var bottomView: AnyView?
 
@@ -201,7 +193,6 @@ final class CenteredModalPresentationController: UIPresentationController {
     private let blurView: PassThroughEffectView?
     let bottomView: AnyView?
     private var bottomHostingController: UIHostingController<AnyView>?
-    private var shadowWrapper: UIView?
 
     init(
         presentedViewController: UIViewController,
@@ -209,7 +200,7 @@ final class CenteredModalPresentationController: UIPresentationController {
         bottomView: AnyView?
     ) {
         self.bottomView = bottomView
-        blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), options: [.pageSheet, .gradient])
+        blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), options: [.centeredSheet, .gradient])
 
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         blurView?.alpha = 0
@@ -237,13 +228,9 @@ final class CenteredModalPresentationController: UIPresentationController {
         if let bottomHostingView = bottomHostingController?.view {
             bottomHostingView.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(bottomHostingView)
-
-            NSLayoutConstraint.activate([
-                bottomHostingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-                bottomHostingView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-                bottomHostingView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-                bottomHostingView.heightAnchor.constraint(equalToConstant: 100),
-            ])
+            bottomHostingView.snp.makeConstraints { make in
+                make.leading.trailing.bottom.equalToSuperview()
+            }
         }
 
         presentedViewController.transitionCoordinator?
@@ -258,13 +245,7 @@ final class CenteredModalPresentationController: UIPresentationController {
             .animate(
                 alongsideTransition: { _ in
                     blurView.alpha = 0
-                    self.bottomHostingController?.view.alpha = 0
-                    self.shadowWrapper?.alpha = 0
-                },
-                completion: { _ in
                     self.bottomHostingController?.view.removeFromSuperview()
-                    self.shadowWrapper?.removeFromSuperview()
-                    self.shadowWrapper = nil
                 }
             )
     }
@@ -278,49 +259,7 @@ final class CenteredModalPresentationController: UIPresentationController {
         else { return }
 
         let modalFrame = frameOfPresentedViewInContainerView
-        if let existingShadowWrapper = shadowWrapper {
-            existingShadowWrapper.frame = modalFrame
-            presentedView.frame = existingShadowWrapper.bounds
-        } else {
-            shadowWrapper = createShadowWrapper(for: presentedView, frame: modalFrame, cornerRadius: .cornerRadiusXL)
-            if let shadowWrapper = shadowWrapper {
-                containerView.addSubview(shadowWrapper)
-            }
-        }
-    }
-
-    private func createShadowWrapper(for contentView: UIView, frame: CGRect, cornerRadius: CGFloat) -> UIView {
-        let shadowWrapper = UIView(frame: frame)
-        shadowWrapper.backgroundColor = .clear
-        shadowWrapper.layer.masksToBounds = false
-
-        // Shadow 1
-        let shadow1 = CALayer()
-        shadow1.shadowColor = UIColor.black.cgColor
-        shadow1.shadowOpacity = 0.05
-        shadow1.shadowOffset = CGSize(width: 0, height: 4)
-        shadow1.shadowRadius = 5
-        shadow1.shadowPath = UIBezierPath(roundedRect: shadowWrapper.bounds, cornerRadius: cornerRadius).cgPath
-        shadow1.frame = shadowWrapper.bounds
-        shadowWrapper.layer.insertSublayer(shadow1, at: 0)
-
-        // Shadow 2
-        let shadow2 = CALayer()
-        shadow2.shadowColor = UIColor.black.cgColor
-        shadow2.shadowOpacity = 0.1
-        shadow2.shadowOffset = CGSize(width: 0, height: 2)
-        shadow2.shadowRadius = 1
-        shadow2.shadowPath = UIBezierPath(roundedRect: shadowWrapper.bounds, cornerRadius: cornerRadius).cgPath
-        shadow2.frame = shadowWrapper.bounds
-        shadowWrapper.layer.insertSublayer(shadow2, at: 0)
-
-        contentView.removeFromSuperview()
-        contentView.frame = shadowWrapper.bounds
-        contentView.layer.cornerRadius = cornerRadius
-        contentView.layer.masksToBounds = true
-
-        shadowWrapper.addSubview(contentView)
-        return shadowWrapper
+        presentedView.frame = modalFrame
     }
 
     override var frameOfPresentedViewInContainerView: CGRect {
@@ -329,7 +268,10 @@ final class CenteredModalPresentationController: UIPresentationController {
         let width: CGFloat = min(containerView.bounds.width - 40, 400)
         let calculatedHeight = Detent.calculateScrollViewContentHeight(for: presentedViewController)
 
-        let height = min(calculatedHeight, containerView.bounds.height - 40)
+        let height = min(
+            calculatedHeight,
+            containerView.bounds.height - (bottomHostingController?.view.frame.height ?? .zero) * 2
+        )
         let originX = (containerView.bounds.width - width) / 2
         let originY = (containerView.bounds.height - height) / 2
 
@@ -675,9 +617,6 @@ extension Detent {
             + navInsets.top + navInsets.bottom
             + vcInsets.top + vcInsets.bottom
 
-        totalHeight += 100
-        totalHeight *= 1.1
-
         if keyboardHeight > 0 {
             if let keyWindow = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
@@ -743,7 +682,7 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
 }
 
 public enum PassThroughEffectOptions {
-    case pageSheet
+    case centeredSheet
     case gradient
 }
 
@@ -783,7 +722,7 @@ public class PassThroughEffectView: UIVisualEffectView {
     }
 
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if options.contains(.pageSheet) {
+        if options.contains(.centeredSheet) {
             return bounds.contains(point) ? self : nil
         }
         let hitView = super.hitTest(point, with: event)

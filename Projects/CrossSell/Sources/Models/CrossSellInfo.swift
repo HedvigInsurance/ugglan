@@ -2,20 +2,6 @@ import Foundation
 import Logger
 import hCore
 
-public struct CrossSellPresentModel: Identifiable, Equatable, Sendable {
-    public var id = UUID().uuidString
-    public let model: CrossSellInfo
-    public let pageSheet: Bool
-
-    public init(
-        model: CrossSellInfo,
-        pageSheet: Bool? = true
-    ) {
-        self.model = model
-        self.pageSheet = pageSheet ?? true
-    }
-}
-
 public struct CrossSellInfo: Identifiable, Equatable, Sendable {
     public static func == (lhs: CrossSellInfo, rhs: CrossSellInfo) -> Bool {
         lhs.id == rhs.id

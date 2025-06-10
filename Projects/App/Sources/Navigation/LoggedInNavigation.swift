@@ -444,26 +444,18 @@ struct HomeTab: View {
                 )
         }
         .detent(
-            item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            transitionType: homeNavigationVm.navBarItems.isNewOfferPresented?.pageSheet ?? true
-                ? .pageSheet : .detent(style: [.large]),
-            options: homeNavigationVm.navBarItems.isNewOfferPresented?.pageSheet ?? true
-                ? nil : .constant([.alwaysOpenOnTop, .withoutGrabber])
+            item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
+            transitionType: .center,
+            options: .constant([.alwaysOpenOnTop])
         ) { crossSellInfo in
-            let view = CrossSellingScreen(
-                crossSellInfo: crossSellInfo.model,
-                style: crossSellInfo.pageSheet ? .pageSheet : .detent(style: [.large])
-            )
-
-            if crossSellInfo.pageSheet {
-                view
-            } else {
-                view
-                    .withDismissButton(reducedTopSpacing: -50)
-                    .embededInNavigation(
-                        tracking: LoggedInNavigationDetentType.crossSell
-                    )
-            }
+            CrossSellingCentered(crossSellInfo: crossSellInfo)
+        }
+        .detent(
+            item: $homeNavigationVm.navBarItems.isNewOfferPresentedModal,
+            transitionType: .detent(style: [.large]),
+            options: .constant([.alwaysOpenOnTop, .withoutGrabber])
+        ) { crossSellInfo in
+            CrossSellingModal(crossSellInfo: crossSellInfo)
         }
         .detent(
             item: $homeNavigationVm.openChat,
@@ -500,7 +492,7 @@ struct HomeTab: View {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
                         if let claim = claim {
-                            NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
+                            NotificationCenter.default.post(name: .openCrossSellCenter, object: claim.asCrossSellInfo)
                             let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                             try await service.acknowledgeClosedStatus(claimId: claim.id)
                             claimsStore.send(.fetchClaims)
@@ -520,15 +512,12 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
             return .init(describing: FirstVetView.self)
         case .error:
             return .init(describing: GenericErrorView.self)
-        case .crossSell:
-            return .init(describing: CrossSellingScreen.self)
         }
     }
 
     case submitClaimDeflect
     case firstVet
     case error
-    case crossSell
 }
 
 @MainActor
@@ -637,7 +626,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
-        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellPresentModel(model: .init(type: .addon)))
+        NotificationCenter.default.post(name: .openCrossSellCenter, object: CrossSellInfo.init(type: .addon))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

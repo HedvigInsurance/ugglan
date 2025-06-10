@@ -24,8 +24,8 @@ struct ChangeTierProcessingView: View {
         .onDeinit { [weak vm] in
             if vm?.viewState == .success {
                 NotificationCenter.default.post(
-                    name: .openCrossSell,
-                    object: CrossSellPresentModel(model: .init(type: .changeTier))
+                    name: .openCrossSellCenter,
+                    object: CrossSellInfo(type: .changeTier)
                 )
             }
         }

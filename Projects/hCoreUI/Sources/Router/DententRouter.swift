@@ -7,7 +7,7 @@ import hCore
 @preconcurrency
 public enum TransitionType: Equatable {
     case detent(style: [Detent])
-    case pageSheet
+    case center
 }
 
 extension View {
@@ -130,8 +130,8 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 }
 
                 let vcToPresent = self.getPresentationTarget()
+                let content = getContent()
 
-                let content = self.content()
                 let vc = hHostingController<AnyView>(rootView: AnyView(EmptyView()))
                 vc.rootView = content.asAnyView
 
@@ -167,6 +167,18 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         }
     }
 
+    @ViewBuilder
+    private func getContent() -> some View {
+        if transitionType == .center {
+            self.content()
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
+                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4))
+                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2))
+        } else {
+            self.content()
+        }
+    }
+
     private func getPresentationTarget() -> UIViewController? {
         if options.contains(.alwaysOpenOnTop) {
             let vc = UIApplication.shared.getTopViewController()
@@ -194,8 +206,9 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
             vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
-        case .pageSheet:
+        case .center:
             let delegate = CenteredModalTransitioningDelegate(bottomView: closeButton.asAnyView)
+            vc.view.backgroundColor = .clear
             vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
         }
