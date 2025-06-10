@@ -159,7 +159,7 @@ struct LoggedInNavigation: View {
         HomeTab(homeNavigationVm: vm.homeNavigationVm, loggedInVm: vm)
             .environmentObject(router)
             .tabItem {
-                Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
+                vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.view : hCoreUIAssets.homeTab.view
                 hText(L10n.tabHomeTitle)
             }
             .tag(0)
@@ -209,10 +209,8 @@ struct LoggedInNavigation: View {
         }
         .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm)
         .tabItem {
-            Image(
-                uiImage: vm.selectedTab == 1
-                    ? hCoreUIAssets.contractTabActive.image : hCoreUIAssets.contractTab.image
-            )
+            vm.selectedTab == 1
+                ? hCoreUIAssets.contractTabActive.view : hCoreUIAssets.contractTab.view
             hText(L10n.tabInsurancesTitle)
         }
         .tag(1)
@@ -222,9 +220,7 @@ struct LoggedInNavigation: View {
         ForeverNavigation(useOwnNavigation: true)
             .environmentObject(foreverRouter)
             .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.image : hCoreUIAssets.foreverTab.image
-                )
+                vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.view : hCoreUIAssets.foreverTab.view
                 hText(L10n.tabReferralsTitle)
             }
             .tag(2)
@@ -234,10 +230,8 @@ struct LoggedInNavigation: View {
         PaymentsNavigation(paymentsNavigationVm: vm.paymentsNavigationVm)
             .environmentObject(paymentsRouter)
             .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 3
-                        ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
-                )
+                vm.selectedTab == 3
+                    ? hCoreUIAssets.paymentsTabActive.view : hCoreUIAssets.paymentsTab.view
                 hText(L10n.tabPaymentsTitle)
             }
             .tag(3)
@@ -317,9 +311,7 @@ struct LoggedInNavigation: View {
             }
         }
         .tabItem {
-            Image(
-                uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
-            )
+            vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.view : hCoreUIAssets.profileTab.view
             hText(L10n.ProfileTab.title)
         }
         .tag(4)

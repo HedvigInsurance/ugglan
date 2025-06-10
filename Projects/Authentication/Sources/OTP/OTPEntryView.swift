@@ -75,7 +75,7 @@ class OTPEntryViewModel: ObservableObject {
                     otpState.canResendAt = Date().addingTimeInterval(60)
                     otpState.isResending = false
                     otpState.maskedEmail = data.maskedEmail
-                    self?.router?.push(AuthentificationRouterType.otpCodeEntry)
+                    self?.router?.push(AuthenticationRouterType.otpCodeEntry)
                 }
             } catch let error {
                 otpState?.isLoading = false

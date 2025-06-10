@@ -51,6 +51,7 @@ public struct SubmitClaimSummaryScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
+                        .accessibilitySortPriority(2)
                         .padding(.bottom, .padding8)
                     hButton(
                         .large,

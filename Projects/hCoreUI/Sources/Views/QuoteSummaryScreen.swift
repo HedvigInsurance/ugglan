@@ -277,6 +277,7 @@ public struct QuoteSummaryScreen: View {
                 detailsView(for: contract, isExpanded: isExpanded)
                     .frame(height: isExpanded ? nil : 0, alignment: .top)
                     .clipped()
+                    .accessibilityHidden(!isExpanded)
                 if vm.removedContracts.contains(contract.id) {
                     hButton(
                         .medium,
@@ -451,7 +452,7 @@ public struct QuoteSummaryScreen: View {
             )
             .padding(.horizontal, -6)
             Spacer()
-            Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
+            hCoreUIAssets.arrowNorthEast.view
                 .resizable()
                 .frame(width: 24, height: 24)
         }

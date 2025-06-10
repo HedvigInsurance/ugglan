@@ -44,8 +44,8 @@ public struct FileView: View {
                 }
             } else {
                 GeometryReader { geometry in
-                    VStack(spacing: 4) {
-                        Image(uiImage: fileImage)
+                    VStack(spacing: .padding4) {
+                        fileImage
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -69,12 +69,12 @@ public struct FileView: View {
         }
     }
 
-    private var fileImage: UIImage {
+    private var fileImage: Image {
         switch file.mimeType {
         case .PDF:
-            return hCoreUIAssets.pdf.image
+            return hCoreUIAssets.pdf.view
         default:
-            return hCoreUIAssets.file.image
+            return hCoreUIAssets.file.view
         }
     }
 

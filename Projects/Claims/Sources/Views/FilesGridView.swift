@@ -45,7 +45,7 @@ public struct FilesGridView: View {
                                             .frame(width: 24, height: 24)
                                             .hShadow()
                                             .overlay(
-                                                Image(uiImage: HCoreUIAsset.closeSmall.image)
+                                                hCoreUIAssets.closeSmall.view
                                                     .resizable()
                                                     .frame(width: 16, height: 16)
                                                     .foregroundColor(hTextColor.Opaque.secondary)
