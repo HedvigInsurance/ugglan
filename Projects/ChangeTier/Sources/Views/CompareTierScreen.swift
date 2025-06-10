@@ -50,7 +50,7 @@ struct CompareTierScreen: View {
             HStack(alignment: .top, spacing: .padding4) {
                 Group {
                     Text(peril.title)
-                        + Text(Image(uiImage: plusImage).renderingMode(.template))
+                        + Text(plusImage.renderingMode(.template))
                         .foregroundColor(
                             hFillColor.Translucent.secondary.colorFor(colorSchema == .light ? .light : .dark, .base)
                                 .color
@@ -304,7 +304,7 @@ extension Perils {
         )
 }
 extension UIImage {
-    fileprivate func getImageFor(style: HFontTextStyle) -> UIImage {
+    fileprivate func getImageFor(style: HFontTextStyle) -> Image {
         let height = 24 * style.multiplier
         let renderFormat = UIGraphicsImageRendererFormat.default()
         renderFormat.opaque = false
@@ -314,6 +314,6 @@ extension UIImage {
             self.draw(in: CGRect(x: 0, y: height * 0.2, width: height, height: height))
         }
 
-        return newImage
+        return Image(uiImage: newImage)
     }
 }

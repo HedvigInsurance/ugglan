@@ -49,11 +49,12 @@ where MainContent: View, BottomContent: View {
                     hText(title)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
-                hText(subTitle ?? " ", style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-
+                if let subTitle = subTitle {
+                    hText(subTitle, style: .label)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
             }
-            .padding(.horizontal, .padding16)
+            .padding([.horizontal, .top], .padding16)
 
             if withDivider && bottomComponent != nil {
                 hRowDivider()

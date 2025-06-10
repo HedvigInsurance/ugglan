@@ -23,7 +23,7 @@ public struct ListScreen: View {
         hForm {
             if vm.list.isEmpty && !vm.isLoading {
                 VStack(spacing: .padding16) {
-                    Image(uiImage: hCoreUIAssets.infoFilled.image)
+                    hCoreUIAssets.infoFilled.view
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColor.Blue.element)
@@ -150,12 +150,14 @@ extension View {
                 ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
                     action()
                 }
+                .accessibilityValue(L10n.Toast.readMore)
             }
         case .trailing:
             self.setToolbarTrailing {
                 ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
                     action()
                 }
+                .accessibilityValue(L10n.Toast.readMore)
             }
         }
     }

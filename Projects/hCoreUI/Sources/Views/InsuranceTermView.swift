@@ -35,7 +35,7 @@ public struct InsuranceTermView: View {
                             .id("sds_\(document.displayName)")
                         }
                         .withCustomAccessory {
-                            Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
+                            hCoreUIAssets.arrowNorthEast.view
                         }
                         .onTap {
                             onDocumentTap(document)
