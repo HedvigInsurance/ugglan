@@ -100,6 +100,7 @@ private struct CertificateInfoCard: View {
             text: L10n.TravelCertificate.startDateInfo(maxDuration),
             type: .info
         )
+        .accessibilitySortPriority(2)
     }
 }
 
