@@ -51,13 +51,13 @@ public struct hDatePickerField: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            
+
             hFieldContainer(
                 placeholder: config.placeholder,
                 customLabelOffset: !(selectedDate?.localDateString.isEmpty ?? true),
                 animate: $animate,
                 error: $error,
-                shouldMoveLabel: shouldMoveLabel,
+                shouldMoveLabel: shouldMoveLabel
             ) {
                 getValueLabel()
             }
