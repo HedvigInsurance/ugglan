@@ -110,8 +110,8 @@ public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
 
 @MainActor
 extension PillowType {
-    public var bgImage: UIImage {
-        asset.image
+    public var bgImage: Image {
+        asset.view
     }
 
     private var asset: ImageAsset {

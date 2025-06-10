@@ -13,20 +13,20 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case insuranceEvidence
 
     @MainActor
-    var image: UIImage {
+    var image: Image {
         switch self {
         case .newOffer:
-            return hCoreUIAssets.campaignQuickNav.image
+            return hCoreUIAssets.campaignQuickNav.view
         case .firstVet:
-            return hCoreUIAssets.firstVetQuickNav.image
+            return hCoreUIAssets.firstVetQuickNav.view
         case .chat:
-            return hCoreUIAssets.inbox.image
+            return hCoreUIAssets.inbox.view
         case .chatNotification:
-            return hCoreUIAssets.inboxNotification.image
+            return hCoreUIAssets.inboxNotification.view
         case .travelCertificate, .insuranceEvidence:
-            return hCoreUIAssets.infoOutlined.image
+            return hCoreUIAssets.infoOutlined.view
         case .newOfferNotification:
-            return hCoreUIAssets.campaignQuickNavNotification.image
+            return hCoreUIAssets.campaignQuickNavNotification.view
         }
     }
 
@@ -279,7 +279,7 @@ public struct ToolbarButtonView: View {
                         }
                         action(type)
                     }) {
-                        Image(uiImage: type.image)
+                        type.image
                             .resizable()
                             .scaledToFill()
                             .frame(width: type.imageSize, height: type.imageSize)

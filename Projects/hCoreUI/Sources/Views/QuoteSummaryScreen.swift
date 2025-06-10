@@ -451,7 +451,7 @@ public struct QuoteSummaryScreen: View {
             )
             .padding(.horizontal, -6)
             Spacer()
-            Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
+            hCoreUIAssets.arrowNorthEast.view
                 .resizable()
                 .frame(width: 24, height: 24)
         }

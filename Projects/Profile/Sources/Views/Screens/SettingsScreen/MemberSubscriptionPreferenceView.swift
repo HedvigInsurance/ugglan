@@ -73,7 +73,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
             try await profileService.updateSubscriptionPreference(to: isUnsubscribed)
             let toast = ToastBar(
                 type: .campaign,
-                icon: hCoreUIAssets.checkmarkOutlined.image,
+                icon: hCoreUIAssets.checkmarkOutlined.view,
                 text: (isUnsubscribed) ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
             )
             Toasts.shared.displayToastBar(toast: toast)
