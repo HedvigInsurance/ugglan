@@ -74,6 +74,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             }
             InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
                 .padding(.vertical, .padding16)
+                .accessibilitySortPriority(2)
         }
     }
 
