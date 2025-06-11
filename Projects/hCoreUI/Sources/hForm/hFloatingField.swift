@@ -80,6 +80,7 @@ public struct hFloatingField: View {
         HStack(spacing: 0) {
             hText(value, style: size == .large ? .body2 : .body1)
                 .foregroundColor(foregroundColor)
+                .fixedSize(horizontal: false, vertical: true)
             hText(" ")
         }
     }
@@ -118,19 +119,19 @@ struct hFloatingField_Previews: PreviewProvider {
             }
             .hFieldSize(.large)
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
+                hCoreUIAssets.copy.view
             }
             hFloatingField(value: value, placeholder: "ni", error: nil) {
             }
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
+                hCoreUIAssets.copy.view
             }
             .hFieldSize(.medium)
 
             hFloatingField(value: value, placeholder: "ni", error: nil) {
             }
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
+                hCoreUIAssets.copy.view
             }
             .hFieldSize(.small)
         }

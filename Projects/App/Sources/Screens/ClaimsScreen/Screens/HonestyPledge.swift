@@ -125,9 +125,9 @@ struct SlideToConfirm: View {
     @hColorBuilder
     private var getLabelColor: some hColor {
         if didFinished {
-            hTextColor.Opaque.disabled
+            hTextColor.Translucent.disabled
         } else {
-            hTextColor.Opaque.secondary
+            hTextColor.Translucent.secondary
         }
     }
 
@@ -164,7 +164,6 @@ struct HonestyPledge: View {
                     }
                     .padding(.bottom, .padding32)
                 }
-                .accessibilityElement(children: .combine)
 
                 SlideToConfirm(onConfirmAction: {
                     onConfirmAction?()

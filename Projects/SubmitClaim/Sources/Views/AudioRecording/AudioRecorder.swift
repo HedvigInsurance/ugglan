@@ -3,7 +3,8 @@ import Combine
 import SwiftUI
 import hCoreUI
 
-public class AudioRecorder: ObservableObject {
+@MainActor
+public class AudioRecorder: @preconcurrency ObservableObject {
     public static let audioFileExtension = "m4a"
     private let filePath: URL
 
@@ -84,6 +85,14 @@ public class AudioRecorder: ObservableObject {
     private func stopRecording() {
         recorder?.stop()
         isRecording = false
+
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("Failed to reset AVAudioSession: \(error)")
+        }
+
         if FileManager.default.fileExists(atPath: filePath.relativePath) {
             self.recording = Recording(url: filePath, created: Date(), sample: decibelScale)
         }

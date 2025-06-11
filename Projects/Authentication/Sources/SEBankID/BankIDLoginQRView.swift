@@ -83,7 +83,7 @@ public struct BankIDLoginQRView: View {
                                     content: .init(
                                         title: L10n.authenticationBankidOpenButton,
                                         buttonImage: .init(
-                                            image: hCoreUIAssets.bankID.image,
+                                            image: hCoreUIAssets.bankID.view,
                                             alignment: .leading
                                         )
                                     ),
@@ -249,6 +249,7 @@ class BankIDViewModel: ObservableObject {
         }
         let processedImage = UIImage(cgImage: cgImage).withRenderingMode(.alwaysTemplate)
         return processedImage
+
     }
 }
 
