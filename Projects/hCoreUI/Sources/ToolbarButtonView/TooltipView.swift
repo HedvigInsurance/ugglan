@@ -45,99 +45,73 @@ struct TooltipViewModifier: ViewModifier {
     }
 }
 
+/// A SwiftUI view that displays a tooltip with a triangle pointer and custom content.
 struct TooltipView: View {
+    // MARK: - Properties
     let type: ToolbarOptionType
     let timeInterval: TimeInterval
     let placement: ListToolBarPlacement
     private let triangleWidth: CGFloat = 12
     private let trianglePadding: CGFloat = .padding16
-    @State var internalShowTooltip: Bool = false
+
+    @State private var isTooltipVisible: Bool = false
     @State private var xOffset: CGFloat = 0
     @State private var yOffset: CGFloat = 0
     @StateObject private var toolTipManager = ToolTipManager.shared
+
+    // MARK: - Init
     init(type: ToolbarOptionType, placement: ListToolBarPlacement) {
         self.type = type
         self.timeInterval = type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
         self.placement = placement
     }
 
+    // MARK: - Body
     var body: some View {
         VStack {
-            if internalShowTooltip == true {
+            if isTooltipVisible {
                 VStack(spacing: 0) {
-                    HStack {
-                        if placement == .trailing {
-                            Spacer()
-                        }
-                        Triangle()
-                            .fill(type.tooltipBackgroundColor)
-                            .frame(width: triangleWidth, height: 6)
-                            .padding(.horizontal, trianglePadding)
-                        if placement == .leading {
-                            Spacer()
-                        }
-                    }
-                    content
+                    tooltipTriangle
+                    tooltipContent
                 }
                 .fixedSize()
-                .transition(.scale(scale: 0, anchor: UnitPoint(x: 0.5, y: 1)).combined(with: .opacity))
+                .transition(
+                    .scale(scale: 0, anchor: UnitPoint(x: 0.5, y: 1))
+                        .combined(with: .opacity)
+                )
                 .offset(x: xOffset, y: yOffset)
-                .onAppear {
-                    Task {
-                        try await Task.sleep(nanoseconds: 4_000_000_000)
-                        if #available(iOS 17.0, *) {
-                            withAnimation(.defaultSpring) {
-                                internalShowTooltip = false
-                            } completion: {
-                                toolTipManager.removeTooltip(type)
-                            }
-                        } else {
-                            withAnimation(.defaultSpring) {
-                                internalShowTooltip = false
-                            }
-                            toolTipManager.removeTooltip(type)
-                        }
-                    }
-                }
+                .onAppear(perform: startAutoHideTimer)
             }
         }
         .background {
-            content
+            // GeometryReader for offset calculation (invisible)
+            tooltipContent
                 .background {
                     GeometryReader { proxy in
                         Color.clear
-                            .onAppear {
-                                let imageSize = type.imageSize
-                                if placement == .trailing {
-                                    xOffset = -(proxy.size.width - imageSize) / 2 + (44 - imageSize) / 2
-                                } else {
-                                    xOffset = (proxy.size.width - imageSize) / 2 - (44 - imageSize) / 2
-                                }
-                                yOffset = imageSize + (40 - imageSize) / 2
-                            }
-                            .onChange(of: proxy.size) { value in
-                                let imageSize = type.imageSize
-                                if placement == .trailing {
-                                    xOffset = -(value.width - imageSize) / 2 + (44 - imageSize) / 2
-                                } else {
-                                    xOffset = (value.width - imageSize) / 2 - (44 - imageSize) / 2
-                                }
-                                yOffset = imageSize + (40 - imageSize) / 2
-                            }
+                            .onAppear { updateOffsets(proxy: proxy) }
+                            .onChange(of: proxy.size) { _ in updateOffsets(proxy: proxy) }
                     }
                 }
                 .opacity(0)
         }
-        .onAppear {
-            Task {
-                withAnimation(.defaultSpring.delay(type.delay)) {
-                    internalShowTooltip = true
-                }
-            }
+        .onAppear(perform: showTooltipWithDelay)
+    }
+
+    // MARK: - Tooltip Triangle
+    private var tooltipTriangle: some View {
+        HStack {
+            if placement == .trailing { Spacer() }
+            Triangle()
+                .fill(type.tooltipBackgroundColor)
+                .frame(width: triangleWidth, height: 6)
+                .padding(.horizontal, trianglePadding)
+            if placement == .leading { Spacer() }
         }
     }
 
-    var content: some View {
+    // MARK: - Tooltip Content
+    private var tooltipContent: some View {
         hText(type.textToShow ?? "", style: .label)
             .padding(.horizontal, .padding12)
             .padding(.top, 6.5)
@@ -145,6 +119,44 @@ struct TooltipView: View {
             .foregroundColor(type.tooltipTextColor)
             .background(type.tooltipBackgroundColor)
             .cornerRadius(.cornerRadiusS)
+    }
+
+    // MARK: - Offset Calculation
+    private func updateOffsets(proxy: GeometryProxy) {
+        let imageSize = type.imageSize
+        if placement == .trailing {
+            xOffset = -(proxy.size.width - imageSize) / 2 + (44 - imageSize) / 2
+        } else {
+            xOffset = (proxy.size.width - imageSize) / 2 - (44 - imageSize) / 2
+        }
+        yOffset = imageSize + (40 - imageSize) / 2
+    }
+
+    // MARK: - Tooltip Animation & Timer
+    private func showTooltipWithDelay() {
+        Task {
+            withAnimation(.defaultSpring.delay(type.delay)) {
+                isTooltipVisible = true
+            }
+        }
+    }
+
+    private func startAutoHideTimer() {
+        Task {
+            try await Task.sleep(nanoseconds: 4_000_000_000)
+            if #available(iOS 17.0, *) {
+                withAnimation(.defaultSpring) {
+                    isTooltipVisible = false
+                } completion: {
+                    toolTipManager.removeTooltip(type)
+                }
+            } else {
+                withAnimation(.defaultSpring) {
+                    isTooltipVisible = false
+                }
+                toolTipManager.removeTooltip(type)
+            }
+        }
     }
 }
 
@@ -225,244 +237,4 @@ class ToolTipManager: ObservableObject {
         toolTipsToShow.remove(type)
         displayedTooltip = nil
     }
-}
-public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
-    case newOffer
-    case newOfferNotification
-    case firstVet
-    case chat
-    case chatNotification
-    case travelCertificate
-    case insuranceEvidence
-
-    @MainActor
-    var image: UIImage {
-        switch self {
-        case .newOffer:
-            return hCoreUIAssets.campaignQuickNav.image
-        case .firstVet:
-            return hCoreUIAssets.firstVetQuickNav.image
-        case .chat:
-            return hCoreUIAssets.inbox.image
-        case .chatNotification:
-            return hCoreUIAssets.inboxNotification.image
-        case .travelCertificate, .insuranceEvidence:
-            return hCoreUIAssets.infoOutlined.image
-        case .newOfferNotification:
-            return hCoreUIAssets.campaignQuickNavNotification.image
-        }
-    }
-
-    var displayName: String {
-        switch self {
-        case .newOffer:
-            return L10n.InsuranceTab.CrossSells.title
-        case .firstVet:
-            return L10n.hcQuickActionsFirstvetTitle
-        case .chat:
-            return L10n.CrossSell.Info.faqChatButton
-        case .chatNotification:
-            return L10n.Toast.newMessage
-        case .travelCertificate, .insuranceEvidence:
-            return L10n.InsuranceEvidence.documentTitle
-        case .newOfferNotification:
-            return L10n.hcQuickActionsFirstvetTitle
-        }
-    }
-
-    var tooltipId: String {
-        switch self {
-        case .newOffer:
-            return "newOfferHint"
-        case .newOfferNotification:
-            return "newOfferHintNotification"
-        case .firstVet:
-            return "firstVetHint"
-        case .chat:
-            return "chatHint"
-        case .chatNotification:
-            return "chatHintNotification"
-        case .travelCertificate:
-            return "travelCertHint"
-        case .insuranceEvidence:
-            return "insuranceEvidenceHint"
-        }
-    }
-
-    var identifiableId: String {
-        tooltipId
-    }
-
-    var textToShow: String? {
-        switch self {
-        case .newOffer:
-            return nil
-        case .firstVet:
-            return nil
-        case .newOfferNotification:
-            return L10n.Toast.newOffer
-        case .chat:
-            return L10n.HomeTab.chatHintText
-        case .chatNotification:
-            return L10n.Toast.newMessage
-        case .travelCertificate, .insuranceEvidence:
-            return L10n.Toast.readMore
-        }
-    }
-
-    var showAsTooltip: Bool {
-        switch self {
-        case .firstVet, .chat, .newOffer:
-            return false
-        default:
-            return true
-        }
-    }
-
-    var timeIntervalForShowingAgain: TimeInterval? {
-        switch self {
-        case .chat:
-            return .days(numberOfDays: 30)
-        case .chatNotification:
-            return 10
-        case .travelCertificate, .insuranceEvidence:
-            return 60
-        case .newOfferNotification:
-            return 10
-        default:
-            return nil
-        }
-    }
-
-    var delay: TimeInterval {
-        switch self {
-        case .chat:
-            return 1.5
-        case .chatNotification, .travelCertificate, .insuranceEvidence:
-            return 0.5
-        default:
-            return 0
-        }
-    }
-
-    var delayInNanoseconds: UInt64 {
-        return UInt64(delay * 1_000_000_000)  // Convert seconds to nanoseconds
-    }
-
-    func shouldShowTooltip(for timeInterval: TimeInterval) -> Bool {
-        switch self {
-        case .chat:
-            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
-                let timeIntervalSincePast = abs(
-                    pastDate.timeIntervalSince(Date())
-                )
-
-                if timeIntervalSincePast > timeInterval {
-                    return true
-                }
-
-                return false
-            }
-            return true
-        case .chatNotification:
-            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
-                let timeIntervalSincePast = abs(
-                    pastDate.timeIntervalSince(Date())
-                )
-
-                if timeIntervalSincePast > timeInterval {
-                    return true
-                }
-                return false
-            }
-            return true
-        case .travelCertificate, .insuranceEvidence:
-            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
-                let timeIntervalSincePast = abs(
-                    pastDate.timeIntervalSince(Date())
-                )
-
-                if timeIntervalSincePast > timeInterval {
-                    return true
-                }
-                return false
-            }
-            return true
-
-        case .newOfferNotification, .newOffer:
-            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
-                let timeIntervalSincePast = abs(
-                    pastDate.timeIntervalSince(Date())
-                )
-
-                if timeIntervalSincePast > timeInterval {
-                    return true
-                }
-                return false
-            }
-            return true
-        default:
-            return false
-        }
-    }
-
-    var imageSize: CGFloat {
-        switch self {
-        case .travelCertificate, .insuranceEvidence:
-            return 24
-        default:
-            return 40
-        }
-    }
-
-    @hColorBuilder @MainActor
-    var tooltipBackgroundColor: some hColor {
-        switch self {
-        case .travelCertificate, .insuranceEvidence:
-            hFillColor.Opaque.primary
-        case .newOfferNotification:
-            hSignalColor.Green.fill
-        default:
-            hFillColor.Opaque.secondary
-        }
-    }
-
-    @hColorBuilder @MainActor
-    var tooltipTextColor: some hColor {
-        switch self {
-        case .newOfferNotification:
-            hSignalColor.Green.text
-        default:
-            hTextColor.Opaque.negative
-        }
-    }
-
-    var shadowColor: Color {
-        switch self {
-        case .travelCertificate, .insuranceEvidence:
-            return Color.clear
-        default:
-            return .black.opacity(0.15)
-        }
-    }
-
-    func onShow() {
-        switch self {
-        case .chat:
-            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
-        case .chatNotification:
-            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
-        case .travelCertificate, .insuranceEvidence:
-            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
-        case .newOfferNotification, .newOffer:
-            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
-        default:
-            break
-        }
-    }
-
-    var userDefaultsKey: String {
-        "tooltip_\(tooltipId)_past_date"
-    }
-
 }
