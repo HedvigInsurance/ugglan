@@ -97,6 +97,7 @@ struct SubmitClaimFilesUploadScreen: View {
                                     InfoCard(text: error, type: .attention)
                                 } else {
                                     InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
+                                        .accessibilitySortPriority(2)
                                 }
                                 VStack(spacing: .padding8) {
                                     hButton(

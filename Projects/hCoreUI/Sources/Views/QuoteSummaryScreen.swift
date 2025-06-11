@@ -277,6 +277,7 @@ public struct QuoteSummaryScreen: View {
                 detailsView(for: contract, isExpanded: isExpanded)
                     .frame(height: isExpanded ? nil : 0, alignment: .top)
                     .clipped()
+                    .accessibilityHidden(!isExpanded)
                 if vm.removedContracts.contains(contract.id) {
                     hButton(
                         .medium,

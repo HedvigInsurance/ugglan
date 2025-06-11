@@ -20,6 +20,7 @@ public struct SubmitClaimCheckoutScreen: View {
                     let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
                     if repairCost == nil {
                         InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
+                            .accessibilitySortPriority(2)
                     }
                     hButton(
                         .large,
@@ -117,6 +118,7 @@ public struct SubmitClaimCheckoutScreen: View {
                     )
                     if repairCost != nil {
                         InfoCard(text: L10n.claimsCheckoutRepairInfoText, type: .info)
+                            .accessibilitySortPriority(2)
                     }
                 }
             }
