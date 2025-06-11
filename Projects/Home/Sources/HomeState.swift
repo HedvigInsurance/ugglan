@@ -208,11 +208,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
 
-        if state.showNewOfferNotification {
-            types.append(.newOfferNotification)
-        } else {
-            types.append(.newOffer)
-        }
+        //        if state.showNewOfferNotification {
+        types.append(.newOfferNotification)
+        //        } else {
+        //            types.append(.newOffer)
+        //        }
 
         if state.quickActions.hasFirstVet {
             types.append(.firstVet)
@@ -220,7 +220,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
         if state.hasSentOrRecievedAtLeastOneMessage {
             if state.showChatNotification {
-                types.append(.chatNotification(lastMessageTimeStamp: self.state.latestConversationTimeStamp))
+                types.append(.chatNotification)
             } else {
                 types.append(.chat)
             }

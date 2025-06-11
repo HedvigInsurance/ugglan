@@ -8,6 +8,14 @@ public class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
     public init() {}
 
+    public func getCrossSell() async throws -> [CrossSell] {
+        let query = OctopusGraphQL.CrossSellsQuery()
+        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        return crossSells.currentMember.crossSells.compactMap({
+            CrossSell($0.fragments.crossSellFragment)
+        })
+    }
+
     public func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
         let query = OctopusGraphQL.CrossSellQuery(
             source: GraphQLEnum<OctopusGraphQL.CrossSellSource>(source.asGraphQLSource)

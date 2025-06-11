@@ -11,6 +11,14 @@ query CrossSell($source: CrossSellSource!) {
   }
 }
 
+query CrossSells {
+  currentMember {
+    crossSells {
+	...CrossSellFragment
+    }
+  }
+}
+
 fragment CrossSellFragment on CrossSell {
        id
        description

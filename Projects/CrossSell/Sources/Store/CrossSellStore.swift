@@ -11,14 +11,8 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
         switch action {
         case .fetchCrossSell:
             do {
-                let crossSells = try await self.crossSellService.getCrossSell(source: .home)
-                let allCrossSells: [CrossSell] = {
-                    if let recommended = crossSells.recommended {
-                        return crossSells.others + [recommended]
-                    }
-                    return crossSells.others
-                }()
-                send(.setCrossSells(crossSells: allCrossSells))
+                let crossSells = try await self.crossSellService.getCrossSell()
+                send(.setCrossSells(crossSells: crossSells))
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchCrossSell)
             }
