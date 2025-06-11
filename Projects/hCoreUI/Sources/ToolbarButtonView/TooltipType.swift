@@ -100,7 +100,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         case .chat:
             return .days(numberOfDays: 30)
         case .chatNotification:
-            return 60
+            return 30
         case .travelCertificate, .insuranceEvidence:
             return 60
         case .newOfferNotification:
