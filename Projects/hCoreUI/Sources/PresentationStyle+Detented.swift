@@ -69,14 +69,14 @@ public struct PresentationOptions: OptionSet, Sendable {
 }
 
 class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    var detents: TransitionType
+    var detents: [Detent]
     var options: PresentationOptions
     var wantsGrabber: Bool
     var viewController: UIViewController
     var keyboardFrame: CGRect = .zero
 
     init(
-        detents: TransitionType,
+        detents: [Detent],
         options: PresentationOptions,
         wantsGrabber: Bool,
         viewController: UIViewController
@@ -132,15 +132,14 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
         }
 
         Detent.set(
-            .detent(style: [
+            [
                 .custom(
                     "zero",
                     { viewController, containerView in
                         return -50
                     }
                 )
-            ]
-            ),
+            ],
             on: presentationController,
             viewController: viewController,
             unanimated: false
@@ -243,9 +242,9 @@ final class CenteredModalPresentationController: UIPresentationController {
         guard let blurView = blurView else { return }
         presentedViewController.transitionCoordinator?
             .animate(
-                alongsideTransition: { _ in
+                alongsideTransition: { [weak self] _ in
                     blurView.alpha = 0
-                    self.bottomHostingController?.view.removeFromSuperview()
+                    self?.bottomHostingController?.view.removeFromSuperview()
                 }
             )
     }
@@ -258,15 +257,14 @@ final class CenteredModalPresentationController: UIPresentationController {
             let presentedView = presentedView
         else { return }
 
-        let modalFrame = frameOfPresentedViewInContainerView
-        presentedView.frame = modalFrame
+        presentedView.frame = frameOfPresentedViewInContainerView
     }
 
     override var frameOfPresentedViewInContainerView: CGRect {
         guard let containerView else { return .zero }
 
         let width: CGFloat = min(containerView.bounds.width - 40, 400)
-        let calculatedHeight = Detent.calculateScrollViewContentHeight(for: presentedViewController)
+        let calculatedHeight = UIViewController.calculateScrollViewContentHeight(for: presentedViewController)
 
         let height = min(
             calculatedHeight,
@@ -467,20 +465,20 @@ public enum Detent: Equatable {
 
     @MainActor
     static func set(
-        _ detents: TransitionType,
+        _ detents: [Detent],
         on presentationController: UIPresentationController,
         viewController: UIViewController,
         lastDetentIndex: Int? = nil,
         unanimated: Bool
     ) {
 
-        guard case .detent(let style) = detents, !style.isEmpty else { return }
+        guard !detents.isEmpty else { return }
         weak var weakViewController = viewController
         weak var weakPresentationController = presentationController
         func apply() {
             if #available(iOS 16.0, *) {
                 weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
-                weakViewController?.appliedDetents = style
+                weakViewController?.appliedDetents = detents
                 weakViewController?.sheetPresentationController?.detents =
                     weakViewController?.appliedDetents
                     .map({
@@ -506,12 +504,12 @@ public enum Detent: Equatable {
             } else {
                 let key = ["_", "set", "Detents", ":"]
                 let selector = NSSelectorFromString(key.joined())
-                weakViewController?.appliedDetents = style
+                weakViewController?.appliedDetents = detents
                 if let weakViewController {
                     weakPresentationController?
                         .perform(
                             selector,
-                            with: NSArray(array: style.map { $0.getDetent(weakViewController) })
+                            with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
                         )
 
                 }
@@ -565,8 +563,8 @@ public enum Detent: Equatable {
 }
 
 @MainActor
-extension Detent {
-    public static func calculateScrollViewContentHeight(for viewController: UIViewController) -> CGFloat {
+extension UIViewController {
+    static func calculateScrollViewContentHeight(for viewController: UIViewController) -> CGFloat {
         let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
         guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
             return 0
@@ -629,6 +627,16 @@ extension Detent {
         }
 
         return totalHeight
+    }
+
+    @MainActor
+    private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
+        if let viewController = vc?.children.first(where: { $0.isKind(of: UINavigationController.self) })
+            as? UINavigationController
+        {
+            return viewController
+        }
+        return nil
     }
 }
 

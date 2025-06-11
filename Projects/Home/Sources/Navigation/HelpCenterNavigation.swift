@@ -135,7 +135,7 @@ public struct HelpCenterNavigation<Content: View>: View {
 
         .detent(
             item: $helpCenterVm.quickActions.editContractActions,
-            transitionType: .detent(style: [.height]),
+
             content: { actionsWrapper in
                 EditContractScreen(
                     editTypes: actionsWrapper.quickActions.compactMap({ $0.asEditType }),

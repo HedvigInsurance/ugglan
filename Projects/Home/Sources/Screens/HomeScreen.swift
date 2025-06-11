@@ -32,7 +32,7 @@ extension HomeScreen {
                 switch type {
                 case .newOffer:
                     NotificationCenter.default.post(
-                        name: .openCrossSellModal,
+                        name: .openCrossSell,
                         object: CrossSellInfo(type: .home)
                     )
                     break

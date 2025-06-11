@@ -255,7 +255,7 @@ public struct MovingFlowNavigation: View {
         }
         .detent(
             item: $movingFlowNavigationVm.isBuildingTypePickerPresented,
-            transitionType: .detent(style: [.height]),
+
             options: .constant([.alwaysOpenOnTop])
         ) { model in
             openTypeOfBuildingPicker(

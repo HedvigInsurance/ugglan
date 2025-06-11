@@ -25,7 +25,7 @@ public struct CrossSellingCentered: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrossSellBannerComponent()
+                CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
                 CrossSellButtonComponent(crossSell: crossSell)
             }
@@ -35,9 +35,9 @@ public struct CrossSellingCentered: View {
     }
 }
 
-//struct CrossSellingScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-//        return CrossSellingCenteredSheet(crossSellInfo: .init(type: .home))
-//    }
-//}
+struct CrossSellingCentered_Previews: PreviewProvider {
+    static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
+        return CrossSellingCentered(crossSellInfo: .init(type: .home))
+    }
+}

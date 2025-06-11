@@ -27,7 +27,7 @@ struct MovingFlowProcessingScreen: View {
         .onDeinit { [weak movingFlowConfirmVm] in
             if movingFlowConfirmVm?.viewState == .success {
                 NotificationCenter.default.post(
-                    name: .openCrossSellCenter,
+                    name: .openCrossSell,
                     object: CrossSellInfo(type: .movingFlow)
                 )
             }

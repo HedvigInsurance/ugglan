@@ -119,7 +119,7 @@ public struct TravelCertificateNavigation: View {
         }
         .detent(
             presented: $vm.isInfoViewPresented,
-            transitionType: .detent(style: [.height]),
+
             options: .constant(.withoutGrabber)
         ) {
             InfoView(

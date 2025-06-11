@@ -57,22 +57,17 @@ public class HomeNavigationViewModel: ObservableObject {
             }
         }
 
-        NotificationCenter.default.addObserver(forName: .openCrossSellModal, object: nil, queue: nil) {
+        NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
             [weak self] notification in
             if let crossSellInfo = notification.object as? CrossSellInfo {
                 Task { @MainActor in
-                    try await Task.sleep(nanoseconds: crossSellInfo.type?.delayInNanoSeconds ?? .zero)
-                    self?.navBarItems.isNewOfferPresentedModal = crossSellInfo
-                }
-            }
-        }
-
-        NotificationCenter.default.addObserver(forName: .openCrossSellCenter, object: nil, queue: nil) {
-            [weak self] notification in
-            if let crossSellInfo = notification.object as? CrossSellInfo {
-                Task { @MainActor in
-                    try await Task.sleep(nanoseconds: crossSellInfo.type?.delayInNanoSeconds ?? .zero)
-                    self?.navBarItems.isNewOfferPresentedCenter = crossSellInfo
+                    try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                    switch crossSellInfo.type {
+                    case .home:
+                        self?.navBarItems.isNewOfferPresentedModal = crossSellInfo
+                    default:
+                        self?.navBarItems.isNewOfferPresentedCenter = crossSellInfo
+                    }
                 }
             }
         }

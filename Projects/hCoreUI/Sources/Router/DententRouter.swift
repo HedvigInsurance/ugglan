@@ -13,14 +13,14 @@ public enum TransitionType: Equatable {
 extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
-        transitionType: TransitionType,
+        transitionType: TransitionType? = .detent(style: [.height]),
         options: Binding<DetentPresentationOption>? = .constant([]),
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(
             DetentSizeModifier(
                 presented: presented,
-                transitionType: transitionType,
+                transitionType: transitionType ?? .detent(style: [.height]),
                 options: options ?? .constant([]),
                 content: content
             )
@@ -29,14 +29,14 @@ extension View {
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
-        transitionType: TransitionType,
+        transitionType: TransitionType? = .detent(style: [.height]),
         options: Binding<DetentPresentationOption>? = .constant([]),
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
         return modifier(
             DetentSizeModifierModal(
                 item: item,
-                transitionType: transitionType,
+                transitionType: transitionType ?? .detent(style: [.height]),
                 options: options ?? .constant([]),
                 content: content
             )
@@ -132,8 +132,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let vcToPresent = self.getPresentationTarget()
                 let content = getContent()
 
-                let vc = hHostingController<AnyView>(rootView: AnyView(EmptyView()))
-                vc.rootView = content.asAnyView
+                let vc = hHostingController(rootView: content)
 
                 var shouldUseBlur: Bool {
                     if case .detent(let style) = transitionType {
@@ -155,7 +154,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     Task { @MainActor in
                         presented = false
                         presentationViewModel.presentingVC = nil
-                        presentationViewModel.transitionDelegate = nil
                     }
                 }
 
@@ -196,9 +194,9 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         shouldUseBlur: Bool
     ) -> (any UIViewControllerTransitioningDelegate) {
         switch transitionType {
-        case .detent:
+        case let .detent(style):
             let delegate = DetentTransitioningDelegate(
-                detents: transitionType,
+                detents: style,
                 options: shouldUseBlur ? [PresentationOptions.useBlur] : [],
                 wantsGrabber: options.contains(.withoutGrabber) ? false : true,
                 viewController: vc
@@ -228,7 +226,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 class PresentationViewModel: ObservableObject {
     weak var rootVC: UIViewController?
     var style: [Detent] = []
-    var transitionDelegate: UIViewControllerTransitioningDelegate?
     weak var presentingVC: UIViewController? {
         didSet {
             if style.contains(.height) {
@@ -283,7 +280,6 @@ public struct DetentPresentationOption: OptionSet, Sendable {
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
     public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
-    public static let withBannerOnTop = DetentPresentationOption(rawValue: 1 << 4)
 
     nonisolated public init(rawValue: UInt) {
         self.rawValue = rawValue

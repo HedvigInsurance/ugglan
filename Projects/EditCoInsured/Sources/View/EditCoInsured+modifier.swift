@@ -47,7 +47,7 @@ struct EditCoInsured: ViewModifier {
             }
             .detent(
                 item: $vm.editCoInsuredModelError,
-                transitionType: .detent(style: [.height]),
+
                 options: .constant([.alwaysOpenOnTop])
             ) { errorModel in
                 GenericErrorView(description: errorModel.errorMessage, formPosition: .compact)

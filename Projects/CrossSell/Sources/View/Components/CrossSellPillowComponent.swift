@@ -6,7 +6,7 @@ struct CrossSellPillowComponent: View {
 
     public var body: some View {
         VStack(spacing: .padding16) {
-            hCoreUIAssets.bigPillowAccident.view
+            crossSell.image
                 .resizable()
                 .frame(width: 140, height: 140)
 

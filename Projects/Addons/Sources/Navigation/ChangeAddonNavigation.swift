@@ -126,7 +126,6 @@ public struct ChangeAddonNavigation: View {
         }
         .detent(
             item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,
-            transitionType: .detent(style: [.height]),
             options: .constant(.alwaysOpenOnTop)
         ) { addOn in
             AddonSelectSubOptionScreen(addonOffer: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
@@ -138,7 +137,7 @@ public struct ChangeAddonNavigation: View {
         }
         .detent(
             presented: $changeAddonNavigationVm.isConfirmAddonPresented,
-            transitionType: .detent(style: [.height]),
+
             options: .constant(.alwaysOpenOnTop),
             content: {
                 ConfirmChangeAddonScreen()

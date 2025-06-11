@@ -93,7 +93,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isAddonErrorPresented,
-            transitionType: .detent(style: [.height]),
+
             options: .constant([.alwaysOpenOnTop])
         ) { error in
             GenericErrorView(description: error, formPosition: .compact)
@@ -357,7 +357,7 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            transitionType: .detent(style: [.height]),
+
             options: .constant(.withoutGrabber)
         ) {
             ClaimsMainNavigation(from: .generic)
@@ -492,7 +492,7 @@ struct HomeTab: View {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     if claim?.showClaimClosedFlow ?? false {
                         if let claim = claim {
-                            NotificationCenter.default.post(name: .openCrossSellCenter, object: claim.asCrossSellInfo)
+                            NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                             let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                             try await service.acknowledgeClosedStatus(claimId: claim.id)
                             claimsStore.send(.fetchClaims)
@@ -626,7 +626,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
-        NotificationCenter.default.post(name: .openCrossSellCenter, object: CrossSellInfo.init(type: .addon))
+        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo.init(type: .addon))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

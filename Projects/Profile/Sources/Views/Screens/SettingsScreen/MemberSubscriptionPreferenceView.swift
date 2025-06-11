@@ -25,7 +25,7 @@ struct MemberSubscriptionPreferenceView: View {
             }
             .detent(
                 presented: $profileNavigationVm.isConfirmEmailPreferencesPresented,
-                transitionType: .detent(style: [.height]),
+
                 content: {
                     EmailPreferencesConfirmView(vm: vm)
                         .environmentObject(profileNavigationVm)

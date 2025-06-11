@@ -229,7 +229,7 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             item: $changeTierNavigationVm.isInsurableLimitPresented,
-            transitionType: .detent(style: [.height]),
+
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
@@ -266,7 +266,7 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             presented: $changeTierNavigationVm.isConfirmTierPresented,
-            transitionType: .detent(style: [.height]),
+
             options: .constant(.alwaysOpenOnTop),
             content: {
                 ConfirmChangeTierScreen()

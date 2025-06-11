@@ -365,7 +365,6 @@ extension View {
                 hText(title, style: .heading1)
                     .foregroundColor(titleViewColor(titleColor))
             }
-
         }
         .padding(.top, .padding8)
         .accessibilityElement(children: .combine)
