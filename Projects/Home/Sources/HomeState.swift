@@ -1,6 +1,8 @@
 import Apollo
 import Chat
+import Combine
 import Contracts
+import CrossSell
 import EditCoInsuredShared
 import Foundation
 @preconcurrency import PresentableStore
@@ -38,7 +40,6 @@ public struct HomeState: StateProtocol {
     public var hasSentOrRecievedAtLeastOneMessage = false
     public var latestConversationTimeStamp = Date()
     public var latestChatTimeStamp = Date()
-    public var showNewOfferNotification = false
 
     func getImportantMessageToShow() -> [ImportantMessage] {
         return importantMessages.filter { importantMessage in
@@ -83,7 +84,7 @@ public enum HomeAction: ActionProtocol {
     case setChatNotificationConversationTimeStamp(date: Date)
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
     case hideImportantMessage(id: String)
-    case setNewOfferNotification(hasNew: Bool)
+    case recommendedProductUpdated
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -100,6 +101,16 @@ public enum HomeLoadingType: LoadingProtocol {
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var homeService: HomeClient
+    private var newOfferSubscription: AnyCancellable?
+    required init() {
+        super.init()
+        let store: CrossSellStore = globalPresentableStoreContainer.get()
+        newOfferSubscription = store.stateSignal.map({ $0.hasNewOffer }).removeDuplicates()
+            .sink { [weak self] value in
+                self?.send(.recommendedProductUpdated)
+            }
+
+    }
 
     public override func effects(
         _ getState: @escaping () -> HomeState,
@@ -195,8 +206,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
             setToolbarTypes(&newState)
-        case let .setNewOfferNotification(hasNew):
-            newState.showNewOfferNotification = hasNew
+        case .recommendedProductUpdated:
             setToolbarTypes(&newState)
         default:
             break
@@ -207,12 +217,13 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
 
-        //        if state.showNewOfferNotification {
-        types.append(.newOfferNotification)
-        //        } else {
-        //            types.append(.newOffer)
-        //        }
+        if crossSellStore.state.hasNewOffer {
+            types.append(.newOfferNotification)
+        } else {
+            types.append(.newOffer)
+        }
 
         if state.quickActions.hasFirstVet {
             types.append(.firstVet)

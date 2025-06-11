@@ -13,6 +13,7 @@ public struct CrossSells: Codable, Equatable, Hashable, Sendable {
 }
 
 public struct CrossSell: Codable, Equatable, Hashable, Sendable {
+    public var id: String
     public var title: String
     public var description: String
     public var webActionURL: String?
@@ -33,12 +34,14 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable {
     }
 
     public init(
+        id: String,
         title: String,
         description: String,
         webActionURL: String? = nil,
         hasBeenSeen: Bool = false,
         type: CrossSellType
     ) {
+        self.id = id
         self.title = title
         self.description = description
         self.webActionURL = webActionURL

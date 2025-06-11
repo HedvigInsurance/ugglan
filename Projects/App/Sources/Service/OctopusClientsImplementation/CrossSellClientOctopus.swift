@@ -24,8 +24,16 @@ public class CrossSellClientOctopus: CrossSellClient {
         let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSell.otherCrossSells.compactMap({
             CrossSell($0.fragments.crossSellFragment)
         })
+        let recommendedCrossSell: CrossSell? = {
+            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell?.fragments
+                .crossSellFragment
+            {
+                return CrossSell(crossSellFragment)
+            }
+            return nil
+        }()
 
-        return .init(recommended: nil, others: otherCrossSells)
+        return .init(recommended: recommendedCrossSell, others: otherCrossSells)
     }
 
     public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
@@ -51,6 +59,7 @@ extension CrossSell {
         let type = data.type.crossSellType
         guard type != .unknown else { return nil }
         self.init(
+            id: data.id,
             title: data.title,
             description: data.description,
             webActionURL: data.storeUrl,

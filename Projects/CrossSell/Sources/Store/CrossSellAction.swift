@@ -3,8 +3,10 @@ import PresentableStore
 
 public enum CrossSellAction: ActionProtocol, Hashable {
     case fetchCrossSell
+    case fetchRecommendedCrossSellId
     case fetchAddonBanner
     case setCrossSells(crossSells: [CrossSell])
+    case setHasNewRecommendedCrossSell(hasNew: Bool)
     case setAddonBannerData(addonBanner: AddonBannerModel?)
 }
 

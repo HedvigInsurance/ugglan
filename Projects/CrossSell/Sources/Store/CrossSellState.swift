@@ -1,4 +1,5 @@
 import Addons
+import Foundation
 import PresentableStore
 
 public struct CrossSellState: StateProtocol {
@@ -9,5 +10,14 @@ public struct CrossSellState: StateProtocol {
 
     public var hasUnseenCrossSell: Bool {
         crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
+    }
+    public var hasNewOffer = false
+
+    internal var lastSeenRecommendedProductId: String? {
+        return UserDefaults.standard.string(forKey: "lastSeenRecommendedProductId")
+    }
+
+    internal func setLastSeenRecommendedProductId(_ id: String?) {
+        UserDefaults.standard.set(id, forKey: "lastSeenRecommendedProductId")
     }
 }

@@ -157,6 +157,8 @@ class HomeVM: ObservableObject {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+        crossSellStore.send(.fetchRecommendedCrossSellId)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()

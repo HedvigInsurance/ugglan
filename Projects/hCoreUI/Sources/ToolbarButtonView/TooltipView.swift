@@ -296,7 +296,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     var textToShow: String? {
         switch self {
         case .newOffer:
-            return "HEJ HEJ HEJ HEJ HEJ"
+            return nil
         case .firstVet:
             return nil
         case .newOfferNotification:
