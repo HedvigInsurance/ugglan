@@ -164,7 +164,6 @@ struct HonestyPledge: View {
                     }
                     .padding(.bottom, .padding32)
                 }
-                .accessibilityElement(children: .combine)
 
                 SlideToConfirm(onConfirmAction: {
                     onConfirmAction?()
