@@ -36,6 +36,11 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
         }
     }
 
+    public var asCgColor: CGColor {
+        let scheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        return colorFor(scheme, .base).color.uiColor().cgColor
+    }
+
     init(
         left: Left
     ) {

@@ -97,7 +97,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .ignoresSafeArea()
         .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
@@ -114,7 +114,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             getSubmitClaimDeflectScreen()
         }
@@ -135,7 +135,7 @@ public struct HelpCenterNavigation<Content: View>: View {
 
         .detent(
             item: $helpCenterVm.quickActions.editContractActions,
-            style: [.height],
+
             content: { actionsWrapper in
                 EditContractScreen(
                     editTypes: actionsWrapper.quickActions.compactMap({ $0.asEditType }),
