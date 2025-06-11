@@ -226,6 +226,8 @@ final class CenteredModalPresentationController: UIPresentationController {
             make.edges.equalToSuperview()
         }
 
+        containerView.layoutIfNeeded()
+
         if let bottomHostingView = bottomHostingController?.view {
             bottomHostingView.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(bottomHostingView)
