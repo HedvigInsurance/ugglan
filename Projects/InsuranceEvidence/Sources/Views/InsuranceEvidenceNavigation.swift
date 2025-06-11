@@ -33,7 +33,7 @@ public struct InsuranceEvidenceNavigation: View {
         }
         .detent(
             presented: $vm.isInfoViewPresented,
-            style: [.height],
+
             options: .constant(.withoutGrabber)
         ) {
             InfoView(

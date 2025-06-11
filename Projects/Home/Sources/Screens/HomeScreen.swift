@@ -31,7 +31,11 @@ extension HomeScreen {
             action: { type in
                 switch type {
                 case .newOffer:
-                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
+                    NotificationCenter.default.post(
+                        name: .openCrossSell,
+                        object: CrossSellInfo(type: .home)
+                    )
+                    break
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:

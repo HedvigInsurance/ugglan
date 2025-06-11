@@ -89,6 +89,7 @@ private struct CloseButtonModifier: ViewModifier {
                 } label: {
                     hCoreUIAssets.close.view
                         .offset(y: CGFloat(-reducedTopSpacing))
+                        .foregroundColor(hFillColor.Opaque.primary)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
                 .accessibilityLabel(L10n.a11YBack)
