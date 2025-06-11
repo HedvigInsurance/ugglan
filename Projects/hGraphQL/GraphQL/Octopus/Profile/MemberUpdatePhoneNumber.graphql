@@ -1,7 +1,0 @@
-mutation MemberUpdatePhoneNumber($input: MemberUpdatePhoneNumberInput!) {
-  memberUpdatePhoneNumber(input: $input) {
-    member {
-      phoneNumber
-    }
-  }
-}

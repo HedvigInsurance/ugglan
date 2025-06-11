@@ -14,20 +14,12 @@ public struct ProfileState: StateProtocol {
 
     var hasTravelCertificates: Bool = false
     var canCreateInsuranceEvidence: Bool = false
+    var canCreateTravelInsurance: Bool = false
 
     @MainActor
     var showTravelCertificate: Bool {
         let flags: FeatureFlags = Dependencies.shared.resolve()
         return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
-    }
-
-    @MainActor
-    public var canCreateTravelInsurance: Bool {
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        let numerOfContractsEligibleForCreatingTravelCertificate = store.state.activeContracts.filter({
-            $0.supportsTravelCertificate
-        })
-        return numerOfContractsEligibleForCreatingTravelCertificate.count > 0
     }
 
     public init() {
@@ -36,7 +28,6 @@ public struct ProfileState: StateProtocol {
             let status = settings.authorizationStatus.rawValue
             let store: ProfileStore = await globalPresentableStoreContainer.get()
             store.send(.setPushNotificationStatus(status: status))
-
         }
     }
 

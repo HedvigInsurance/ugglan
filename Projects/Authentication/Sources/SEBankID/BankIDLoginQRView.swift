@@ -83,7 +83,7 @@ public struct BankIDLoginQRView: View {
                                     content: .init(
                                         title: L10n.authenticationBankidOpenButton,
                                         buttonImage: .init(
-                                            image: hCoreUIAssets.bankID.image,
+                                            image: hCoreUIAssets.bankID.view,
                                             alignment: .leading
                                         )
                                     ),
@@ -98,7 +98,7 @@ public struct BankIDLoginQRView: View {
                                 .ghost,
                                 content: .init(title: L10n.BankidMissingLogin.emailButton),
                                 {
-                                    router.push(AuthentificationRouterType.emailLogin)
+                                    router.push(AuthenticationRouterType.emailLogin)
                                     vm.cancelLogin()
                                 }
                             )
@@ -155,7 +155,7 @@ class BankIDViewModel: ObservableObject {
                         }
                 } catch let error {
                     self?.seBankIdState = .init()
-                    self?.router?.push(AuthentificationRouterType.error(message: error.localizedDescription))
+                    self?.router?.push(AuthenticationRouterType.error(message: error.localizedDescription))
                 }
             }
             .eraseToAnyCancellable()
@@ -249,6 +249,7 @@ class BankIDViewModel: ObservableObject {
         }
         let processedImage = UIImage(cgImage: cgImage).withRenderingMode(.alwaysTemplate)
         return processedImage
+
     }
 }
 
@@ -260,13 +261,13 @@ struct BankIDLoginQR_Previews: PreviewProvider {
     }
 }
 
-public enum AuthentificationRouterType: Hashable {
+public enum AuthenticationRouterType: Hashable {
     case emailLogin
     case otpCodeEntry
     case error(message: String)
 }
 
-extension AuthentificationRouterType: TrackingViewNameProtocol {
+extension AuthenticationRouterType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .emailLogin:

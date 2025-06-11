@@ -3,13 +3,13 @@ import Foundation
 @MainActor
 public protocol ProfileClient {
     func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
+        hasTravelInsurances: Bool
     )
     func getMemberDetails() async throws -> MemberDetails
     func updateLanguage() async throws
     func postDeleteRequest() async throws
-    func update(email: String) async throws -> String
-    func update(phone: String) async throws -> String
+    func update(email: String, phone: String) async throws -> (email: String, phone: String)
     func update(eurobonus: String) async throws -> PartnerData
     func updateSubscriptionPreference(to subscribed: Bool) async throws
 }

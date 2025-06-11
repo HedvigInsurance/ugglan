@@ -33,7 +33,7 @@ struct SubmitClaimCarView: View {
                     content: .init(
                         title: L10n.submitClaimCarReportClaimButton,
                         buttonImage: .init(
-                            image: hCoreUIAssets.arrowNorthEast.image,
+                            image: hCoreUIAssets.arrowNorthEast.view,
                             alignment: .trailing
                         )
                     ),

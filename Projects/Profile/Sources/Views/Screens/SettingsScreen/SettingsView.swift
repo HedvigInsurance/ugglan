@@ -72,7 +72,8 @@ struct SettingsView: View {
                             lastName: "",
                             phone: "",
                             email: "",
-                            hasTravelCertificate: false
+                            hasTravelCertificate: false,
+                            isContactInfoUpdateNeeded: false
                         )
                 }
             ) { memberDetails in

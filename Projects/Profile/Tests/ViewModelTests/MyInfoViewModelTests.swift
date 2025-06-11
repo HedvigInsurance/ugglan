@@ -51,9 +51,9 @@ final class MyInfoViewModelTests: XCTestCase {
         await store.sendAsync(.setMemberPhone(phone: mockPhoneNumber))
 
         let model = MyInfoViewModel()
-        model.phone = mockPhoneNumber
+        model.currentPhoneInput = mockPhoneNumber
         await model.save()
-        assert(model.phone == mockPhoneNumber)
+        assert(model.currentPhoneInput == mockPhoneNumber)
     }
 
     func testPhoneUpdateFailure() async throws {
@@ -85,7 +85,7 @@ final class MyInfoViewModelTests: XCTestCase {
         await store.sendAsync(.setMemberPhone(phone: mockPhoneNumber))
 
         let model = MyInfoViewModel()
-        model.phone = mockPhoneNumber
+        model.currentPhoneInput = mockPhoneNumber
         await model.save()
         assert(model.phoneError == MyInfoSaveError.phoneNumberMalformed.localizedDescription)
     }
@@ -119,9 +119,9 @@ final class MyInfoViewModelTests: XCTestCase {
         await store.sendAsync(.setMemberEmail(email: mockEmail))
 
         let model = MyInfoViewModel()
-        model.email = mockEmail
+        model.currentEmailInput = mockEmail
         await model.save()
-        assert(model.email == mockEmail)
+        assert(model.currentEmailInput == mockEmail)
     }
 
     func testEmailUpdateFailure() async throws {
@@ -150,7 +150,7 @@ final class MyInfoViewModelTests: XCTestCase {
         )
         assert(store.state.memberDetails?.email == mockEmail)
         let model = MyInfoViewModel()
-        model.email = mockEmail
+        model.currentEmailInput = mockEmail
         await model.save()
         assert(model.emailError == MyInfoSaveError.emailMalformed.localizedDescription)
     }

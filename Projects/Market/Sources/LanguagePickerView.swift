@@ -29,7 +29,7 @@ public struct LanguagePickerView: View {
                                 id: locale.lprojCode,
                                 leftView: {
                                     HStack(spacing: .padding16) {
-                                        Image(uiImage: locale.icon)
+                                        locale.icon
                                             .resizable()
                                             .frame(width: 24, height: 24)
                                         hText(locale.displayName, style: .heading2)
@@ -49,7 +49,11 @@ public struct LanguagePickerView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hSaveButton {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.generalSaveButton)
+                    ) {
                         Localization.Locale.currentLocale.send(currentLocale)
                         onSave()
                     }
@@ -58,7 +62,7 @@ public struct LanguagePickerView: View {
                     }
                 }
             }
-            .padding(.vertical, .padding16)
+            .padding(.top, .padding16)
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }

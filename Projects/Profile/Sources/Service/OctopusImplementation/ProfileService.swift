@@ -6,7 +6,8 @@ class ProfileService {
     @Inject var client: ProfileClient
 
     public func getProfileState() async throws -> (
-        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool
+        memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
+        hasTravelInsurances: Bool
     ) {
         log.info("ProfileService: getProfileState", error: nil, attributes: nil)
         return try await client.getProfileState()
@@ -27,14 +28,9 @@ class ProfileService {
         return try await client.updateLanguage()
     }
 
-    func update(email: String) async throws -> String {
-        log.info("ProfileService: update(email)", error: nil, attributes: nil)
-        return try await client.update(email: email)
-    }
-
-    func update(phone: String) async throws -> String {
-        log.info("ProfileService: update(phone)", error: nil, attributes: nil)
-        return try await client.update(phone: phone)
+    public func update(email: String?, phone: String?) async throws -> (email: String, phone: String) {
+        log.info("ProfileService: update", error: nil, attributes: nil)
+        return try await client.update(email: email ?? "", phone: phone ?? "")
     }
 
     func update(eurobonus: String) async throws -> PartnerData {

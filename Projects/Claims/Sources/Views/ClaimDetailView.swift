@@ -140,9 +140,9 @@ public struct ClaimDetailView: View {
                         Spacer()
 
                         if vm.toolbarOptionType.contains(.chat) {
-                            Image(uiImage: hCoreUIAssets.inbox.image)
+                            hCoreUIAssets.inbox.view
                         } else {
-                            Image(uiImage: hCoreUIAssets.inboxNotification.image)
+                            hCoreUIAssets.inboxNotification.view
                         }
                     }
                 }
@@ -265,6 +265,7 @@ public struct ClaimDetailView: View {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .sectionContainerStyle(.transparent)
+                    .padding(.top, .padding8)
                 }
 
                 if vm.canAddFiles {

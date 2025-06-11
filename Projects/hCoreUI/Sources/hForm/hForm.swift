@@ -116,6 +116,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 formTitle
                     .layoutPriority(1)
                 content
+                    .layoutPriority(2)
                 Spacer(minLength: 0)
                     .layoutPriority(1)
                 getBottomAttachedView
@@ -166,6 +167,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
             .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 

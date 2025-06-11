@@ -88,7 +88,7 @@ public struct PaymentsView: View {
 
                 if state.ongoingPaymentData.isEmpty && state.paymentData == nil {
                     VStack(spacing: 16) {
-                        Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
+                        hCoreUIAssets.infoFilledSmall.view
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(hSignalColor.Blue.element)
@@ -116,10 +116,10 @@ public struct PaymentsView: View {
                         )
                         Spacer()
                         hText(paymentData.payment.net.formattedAmount)
-                        Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
+                        Image(uiImage: hCoreUIAssets.chevronRight.image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 16, height: 16)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                     .foregroundColor(.primary)
@@ -136,7 +136,7 @@ public struct PaymentsView: View {
 
     private var discounts: some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.campaign.image)
+            hCoreUIAssets.campaign.view
                 .foregroundColor(hSignalColor.Green.element)
             hText(L10n.paymentsDiscountsSectionTitle)
             Spacer()
@@ -152,7 +152,7 @@ public struct PaymentsView: View {
 
     private var paymentHistory: some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.clock.image)
+            hCoreUIAssets.clock.view
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.paymentsPaymentHistoryButtonLabel)
             Spacer()
@@ -168,7 +168,7 @@ public struct PaymentsView: View {
     @ViewBuilder
     private func connectedPaymentMethod(displayName: String, descriptor: String) -> some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.payments.image)
+            hCoreUIAssets.payments.view
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)

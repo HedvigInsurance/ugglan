@@ -36,7 +36,7 @@ public struct PaymentHistoryView: View {
         ) { history in
             if history.isEmpty {
                 VStack(spacing: .padding16) {
-                    Image(uiImage: hCoreUIAssets.infoFilled.image)
+                    hCoreUIAssets.infoFilled.view
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColor.Blue.element)
@@ -74,7 +74,7 @@ public struct PaymentHistoryView: View {
                                                 .fixedSize()
 
                                         }
-                                        Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
+                                        hCoreUIAssets.chevronRightSmall.view
                                             .foregroundColor(hTextColor.Opaque.secondary)
                                         if month.paymentData.status.hasFailed {
                                             Spacer()

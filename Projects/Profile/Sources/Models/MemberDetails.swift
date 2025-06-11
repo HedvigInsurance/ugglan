@@ -7,6 +7,7 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendabl
     public var firstName: String
     public var lastName: String
     let isTravelCertificateEnabled: Bool
+    let isContactInfoUpdateNeeded: Bool
 
     public var displayName: String {
         firstName + " " + lastName
@@ -18,7 +19,8 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendabl
         lastName: String,
         phone: String?,
         email: String?,
-        hasTravelCertificate: Bool
+        hasTravelCertificate: Bool,
+        isContactInfoUpdateNeeded: Bool
     ) {
         self.id = id
         self.firstName = firstName
@@ -26,5 +28,6 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendabl
         self.phone = phone
         self.email = email
         self.isTravelCertificateEnabled = hasTravelCertificate
+        self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
     }
 }

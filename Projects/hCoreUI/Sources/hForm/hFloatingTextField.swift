@@ -52,37 +52,28 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     public var body: some View {
-        HStack(spacing: 8) {
-            VStack {
-                ZStack(alignment: .leading) {
-                    hFieldLabel(
-                        placeholder: placeholder,
-                        animate: $animate,
-                        error: $error,
-                        shouldMoveLabel: $shouldMoveLabel
-                    )
-                    .offset(y: shouldMoveLabel ? size.labelOffset : 0)
-                    HStack {
-                        getTextField
-                            .showClearButtonOrError(
-                                $innerValue,
-                                equals: $equals,
-                                animationEnabled: $animationEnabled,
-                                error: $error,
-                                focusValue: focusValue
-                            )
-                        if !(suffix ?? "").isEmpty {
-                            getSuffixLabel
-                        }
+        HStack(spacing: .padding8) {
+            hFieldContainer(
+                placeholder: placeholder,
+                customLabelOffset: nil,
+                animate: $animate,
+                error: $error,
+                shouldMoveLabel: $shouldMoveLabel
+            ) {
+                HStack {
+                    getTextField
+                        .showClearButtonOrError(
+                            $innerValue,
+                            equals: $equals,
+                            animationEnabled: $animationEnabled,
+                            error: $error,
+                            focusValue: focusValue
+                        )
+                    if !(suffix ?? "").isEmpty {
+                        getSuffixLabel
                     }
-                    .offset(y: shouldMoveLabel ? size.fieldOffset : 0)
-
                 }
-                .padding(.top, size.topPadding)
-                .padding(.bottom, size.bottomPadding)
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityAddTraits(.allowsDirectInteraction)
             rightAttachedView
         }
         .addFieldBackground(animate: $animate, error: $error)
@@ -346,7 +337,7 @@ extension View {
 }
 
 private struct EnvironmentHFieldSize: EnvironmentKey {
-    static let defaultValue: hFieldSize = .large
+    static let defaultValue: hFieldSize = .medium
 }
 
 public enum hFieldSize: Hashable, Sendable {
@@ -411,7 +402,7 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
                         fieldText = ""
                     },
                     label: {
-                        Image(uiImage: hCoreUIAssets.close.image)
+                        hCoreUIAssets.close.view
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -419,7 +410,7 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
                 )
 
             } else if error != nil {
-                Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
+                hCoreUIAssets.warningTriangleFilled.view
                     .foregroundColor(hSignalColor.Amber.element)
             }
         }
