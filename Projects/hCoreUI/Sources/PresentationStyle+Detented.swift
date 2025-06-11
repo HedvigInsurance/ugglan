@@ -221,8 +221,10 @@ final class CenteredModalPresentationController: UIPresentationController {
     override func presentationTransitionWillBegin() {
         guard let containerView = containerView, let blurView = blurView else { return }
 
-        blurView.frame = containerView.bounds
-        containerView.insertSubview(blurView, at: 0)
+        containerView.addSubview(blurView)
+        blurView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
 
         if let bottomHostingView = bottomHostingController?.view {
             bottomHostingView.translatesAutoresizingMaskIntoConstraints = false
@@ -243,6 +245,7 @@ final class CenteredModalPresentationController: UIPresentationController {
         presentedViewController.transitionCoordinator?
             .animate(
                 alongsideTransition: { [weak self] _ in
+                    blurView.alpha = 0
                     blurView.alpha = 0
                     self?.bottomHostingController?.view.removeFromSuperview()
                 }
