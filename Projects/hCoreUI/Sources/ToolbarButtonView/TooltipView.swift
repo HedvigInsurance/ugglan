@@ -33,8 +33,11 @@ struct TooltipViewModifier: ViewModifier {
                 }
             }
             .onAppear {
-                toolTipManager.checkIfDisplayIsNeeded(type)
-                self.showTooltip = toolTipManager.displayedTooltip == type
+                Task {
+                    try await Task.sleep(nanoseconds: 200_000_000)
+                    toolTipManager.checkIfDisplayIsNeeded(type)
+                    self.showTooltip = toolTipManager.displayedTooltip == type
+                }
             }
             .onDisappear {
                 toolTipManager.removeForType(type: type)
@@ -82,7 +85,6 @@ struct TooltipView: View {
                 .onAppear {
                     Task {
                         try await Task.sleep(nanoseconds: 4_000_000_000)
-
                         if #available(iOS 17.0, *) {
                             withAnimation(.defaultSpring) {
                                 internalShowTooltip = false
@@ -211,11 +213,9 @@ class ToolTipManager: ObservableObject {
     }
 
     fileprivate func removeTooltip(_ tooltip: ToolbarOptionType) {
-        if displayedTooltip == tooltip {
-            displayedTooltip = nil
-            removeForType(type: tooltip)
-            tooltip.onShow()
-        }
+        displayedTooltip = nil
+        removeForType(type: tooltip)
+        tooltip.onShow()
         if let first = toolTipsToShow.first {
             presentTooltip(first)
         }
@@ -324,11 +324,11 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         case .chat:
             return .days(numberOfDays: 30)
         case .chatNotification:
-            return 30
+            return 10
         case .travelCertificate, .insuranceEvidence:
             return 60
         case .newOfferNotification:
-            return 30
+            return 10
         default:
             return nil
         }
