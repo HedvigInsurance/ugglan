@@ -715,10 +715,13 @@ public class PassThroughEffectView: UIVisualEffectView {
     }
 
     private func setupGradient() {
+        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        let blurColor = colorScheme == .light ? UIColor.white.cgColor : UIColor.black.cgColor
+
         gradientLayer.colors = [
             UIColor.clear.cgColor,
-            UIColor.white.cgColor,
-            UIColor.white.cgColor,
+            blurColor,
+            blurColor,
         ]
 
         gradientLayer.locations = [0.0, 0.6, 1.0]
