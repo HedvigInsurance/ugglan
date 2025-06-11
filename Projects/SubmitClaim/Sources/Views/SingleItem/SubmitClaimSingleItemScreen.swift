@@ -48,7 +48,7 @@ public struct SubmitClaimSingleItemScreen: View {
 
     @ViewBuilder
     func getFields(singleItemStep: FlowClaimSingleItemStepModel?) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: .padding4) {
             displayBrandAndModelField(singleItemStep: singleItemStep)
             displayDateField(claim: singleItemStep)
             if let singleItemStep, singleItemStep.purchasePriceApplicable {
@@ -158,6 +158,9 @@ enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
 
 struct SubmitClaimSingleItem_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimSingleItemScreen()
+        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+
+        return SubmitClaimSingleItemScreen()
+            .environmentObject(SubmitClaimNavigationViewModel())
     }
 }
