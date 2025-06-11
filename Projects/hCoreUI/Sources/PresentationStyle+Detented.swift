@@ -246,7 +246,6 @@ final class CenteredModalPresentationController: UIPresentationController {
             .animate(
                 alongsideTransition: { [weak self] _ in
                     blurView.alpha = 0
-                    blurView.alpha = 0
                     self?.bottomHostingController?.view.removeFromSuperview()
                 }
             )
