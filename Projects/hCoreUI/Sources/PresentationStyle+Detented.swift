@@ -715,15 +715,6 @@ public class PassThroughEffectView: UIVisualEffectView {
     }
 
     private func setupGradient() {
-        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-        let blurColor = colorScheme == .light ? UIColor.white.cgColor : UIColor.black.cgColor
-
-        gradientLayer.colors = [
-            UIColor.clear.cgColor,
-            blurColor,
-            blurColor,
-        ]
-
         gradientLayer.locations = [0.0, 0.6, 1.0]
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
@@ -733,6 +724,13 @@ public class PassThroughEffectView: UIVisualEffectView {
 
     override public func layoutSubviews() {
         super.layoutSubviews()
+        let blurColor = hBackgroundColor.primary.asCgColor
+
+        gradientLayer.colors = [
+            UIColor.clear.cgColor,
+            blurColor,
+            blurColor,
+        ]
         gradientLayer.frame = contentView.bounds
     }
 
