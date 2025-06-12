@@ -71,6 +71,10 @@ public class HomeNavigationViewModel: ObservableObject {
                         self?.navBarItems.isNewOfferPresentedModal = crossSells
                     }
                     crossSellInfo.logCrossSellEvent()
+                    if let recommended = crossSells.recommended {
+                        let store: CrossSellStore = globalPresentableStoreContainer.get()
+                        store.send(.setHasSeenRecommendedWith(id: recommended.id))
+                    }
                 }
             }
         }

@@ -6,6 +6,7 @@ public enum CrossSellAction: ActionProtocol, Hashable {
     case fetchRecommendedCrossSellId
     case fetchAddonBanner
     case setCrossSells(crossSells: [CrossSell])
+    case setHasSeenRecommendedWith(id: String)
     case setHasNewRecommendedCrossSell(hasNew: Bool)
     case setAddonBannerData(addonBanner: AddonBannerModel?)
 }
