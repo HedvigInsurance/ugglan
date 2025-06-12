@@ -58,7 +58,6 @@ struct PaymentDetailsView: View {
         hSection(paymentViewItems, id: \.id) { view in
             view.view
         }
-
         .withHeader(
             title: L10n.PaymentDetails.NavigationBar.title,
             infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription,
@@ -176,8 +175,8 @@ struct PaymentDetailsView: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .hWithoutHorizontalPadding([.section, .row, .divider])
         }
+        .hWithoutHorizontalPadding([.section, .row, .divider])
     }
 }
 

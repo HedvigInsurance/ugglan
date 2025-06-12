@@ -65,6 +65,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 textSection(questions: audioRecordingStep?.textQuestions)
             }
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .hFormObserveKeyboard(to: false)
         .hFormAlwaysAttachToBottom {
             Group {
                 if isAudioInput {
@@ -274,7 +276,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .frame(height: 300)
     }
 
     @ViewBuilder
