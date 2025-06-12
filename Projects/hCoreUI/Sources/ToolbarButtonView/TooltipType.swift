@@ -104,7 +104,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         case .travelCertificate, .insuranceEvidence:
             return 60
         case .newOfferNotification:
-            return 60
+            return 60 * 10  // 10 minutes
         default:
             return nil
         }
@@ -239,6 +239,10 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
 
     var userDefaultsKey: String {
         "tooltip_\(tooltipId)_past_date"
+    }
+
+    public func resetTooltipDisplayState() {
+        UserDefaults.standard.removeObject(forKey: userDefaultsKey)
     }
 
 }
