@@ -1,39 +1,8 @@
-import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
-public struct CrossSellingView: View {
-    let withHeader: Bool
-    @PresentableStore var store: CrossSellStore
-
-    public init(
-        withHeader: Bool
-    ) {
-        self.withHeader = withHeader
-    }
-
-    public var body: some View {
-        VStack {
-            PresentableStoreLens(
-                CrossSellStore.self,
-                getter: { state in
-                    state.crossSells
-                }
-            ) { crossSells in
-                if !crossSells.isEmpty {
-                    CrosssSellStackView(crossSells: crossSells, withHeader: withHeader)
-                }
-            }
-        }
-        .task {
-            store.send(.fetchCrossSell)
-        }
-    }
-}
-
-struct CrosssSellStackView: View {
+struct CrosssSellStackComponent: View {
     let crossSells: [CrossSell]
     let withHeader: Bool
     public var body: some View {
@@ -68,9 +37,4 @@ struct CrosssSellStackView: View {
             .transition(.slide)
         }
     }
-}
-
-#Preview {
-    Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingView(withHeader: true)
 }
