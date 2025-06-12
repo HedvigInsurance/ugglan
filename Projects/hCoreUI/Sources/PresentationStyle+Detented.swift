@@ -193,6 +193,11 @@ final class CenteredModalPresentationController: UIPresentationController {
     let bottomView: AnyView?
     private var bottomHostingController: UIHostingController<AnyView>?
 
+    private var startDragPosition: CGFloat = 0
+    private var dragPercentage: CGFloat = 0
+    private var dragOffset: CGFloat = 0
+    private var dragState: ModalScaleState = .presentation
+
     init(
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?,
@@ -208,10 +213,6 @@ final class CenteredModalPresentationController: UIPresentationController {
             bottomHostingController = UIHostingController(rootView: bottomView)
             bottomHostingController?.view.backgroundColor = .clear
         }
-
-        // Dismiss on tap outside
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissOnTapOutside))
-        blurView?.addGestureRecognizer(tapGesture)
     }
 
     @objc private func dismissOnTapOutside() {
@@ -225,9 +226,8 @@ final class CenteredModalPresentationController: UIPresentationController {
         blurView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-
         containerView.layoutIfNeeded()
-
+        addGestures()
         if let bottomHostingView = bottomHostingController?.view {
             bottomHostingView.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview(bottomHostingView)
@@ -240,6 +240,15 @@ final class CenteredModalPresentationController: UIPresentationController {
             .animate(alongsideTransition: { _ in
                 blurView.alpha = 1
             })
+    }
+
+    private func addGestures() {
+        guard let containerView = containerView, let blurView = blurView else { return }
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gesture:)))
+        containerView.addGestureRecognizer(panGesture)
+        // Dismiss on tap outside
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissOnTapOutside))
+        blurView.addGestureRecognizer(tapGesture)
     }
 
     override func dismissalTransitionWillBegin() {
@@ -257,11 +266,14 @@ final class CenteredModalPresentationController: UIPresentationController {
         super.containerViewWillLayoutSubviews()
         blurView?.frame = containerView?.bounds ?? .zero
 
-        guard let containerView = containerView,
-            let presentedView = presentedView
+        guard let presentedView = presentedView
         else { return }
-
-        presentedView.frame = frameOfPresentedViewInContainerView
+        switch dragState {
+        case .presentation:
+            presentedView.frame = frameOfPresentedViewInContainerView
+        case .interaction:
+            presentedView.frame.size = frameOfPresentedViewInContainerView.size
+        }
     }
 
     override var frameOfPresentedViewInContainerView: CGRect {
@@ -278,6 +290,84 @@ final class CenteredModalPresentationController: UIPresentationController {
         let originY = (containerView.bounds.height - height) / 2
 
         return CGRect(x: originX, y: originY, width: width, height: height)
+    }
+
+    enum ModalScaleState {
+        case presentation
+        case interaction
+    }
+}
+
+//drag gesture part
+extension CenteredModalPresentationController {
+    @objc private func panGestureHandler(gesture: UIPanGestureRecognizer) {
+        guard let view = gesture.view, let superView = view.superview,
+            let presented = presentedView, let container = containerView
+        else { return }
+
+        let location = gesture.translation(in: superView)
+        let x = gesture.location(in: containerView).y
+
+        switch gesture.state {
+        case .began:
+            presented.frame.size.height = container.frame.height
+            startDragPosition = gesture.location(in: containerView).y
+            dragState = .interaction
+        case .changed:
+            switch dragState {
+            case .interaction:
+                var trueOffset = x - startDragPosition
+
+                if trueOffset < 0 {
+                    trueOffset = trueOffset / 5
+                }
+                let percentage = 1 - (trueOffset / view.frame.size.height)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0,
+                    usingSpringWithDamping: 0.5,
+                    initialSpringVelocity: 0.9,
+                    options: .curveEaseInOut,
+                    animations: {
+                        presented.transform = CGAffineTransform.init(translationX: 0, y: trueOffset)
+                    }
+                )
+                dragPercentage = percentage
+                dragOffset = trueOffset
+                blurView?.alpha = percentage
+            case .presentation:
+                presented.frame.origin.y = location.y
+            }
+        case .ended:
+            if dragOffset <= 100 {
+                dragPercentage = 1
+                dragOffset = 0
+                resetDrag()
+            } else {
+                presentedViewController.dismiss(animated: true, completion: nil)
+                gesture.isEnabled = false
+            }
+        default:
+            resetDrag()
+        }
+    }
+
+    private func resetDrag() {
+        guard let presented = presentedView else { return }
+        UIView.animate(
+            withDuration: 0.6,
+            delay: 0,
+            usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 1,
+            options: .curveEaseInOut,
+            animations: { [weak self] in
+                presented.transform = CGAffineTransform.identity
+                self?.blurView?.alpha = self?.dragPercentage ?? 0
+            },
+            completion: { [weak self] _ in
+                self?.dragState = .presentation
+            }
+        )
     }
 }
 
@@ -570,66 +660,59 @@ public enum Detent: Equatable {
 extension UIViewController {
     static func calculateScrollViewContentHeight(for viewController: UIViewController) -> CGFloat {
         let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
-        guard let scrollView = allScrollViewDescendants.first(where: { _ in true }) else {
+
+        guard
+            let scrollView = allScrollViewDescendants.first(where: { _ in
+                true
+            })
+        else {
             return 0
         }
-
-        scrollView.setNeedsLayout()
-        scrollView.layoutIfNeeded()
-
-        let contentSizeHeight = scrollView.contentSize.height
-        let fittingSize =
-            scrollView.systemLayoutSizeFitting(
-                CGSize(width: scrollView.bounds.width, height: UIView.layoutFittingCompressedSize.height),
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .fittingSizeLevel
-            )
-            .height
-
-        let contentHeight =
-            max(contentSizeHeight, fittingSize) + scrollView.adjustedContentInset.top
-            + scrollView.adjustedContentInset.bottom
-
-        let navigationController = viewController.navigationController ?? findNavigationController(from: viewController)
-        let transitioningDelegate = navigationController?.transitioningDelegate as? DetentTransitioningDelegate
+        let navigationController =
+            viewController.navigationController ?? findNavigationController(from: viewController)
+        let transitioningDelegate =
+            navigationController?.transitioningDelegate
+            as? DetentTransitioningDelegate
         let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
         let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
+
         let hasLargeTitle =
             (navigationController?.navigationBar.prefersLargeTitles ?? false)
             && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
         let hasNavigationBar =
             navigationController?.navigationBar != nil
-            && !(navigationController?.isNavigationBarHidden ?? true)
+            && (navigationController?.isNavigationBarHidden ?? true) == false
 
-        let navigationBarHeight: CGFloat = {
-            if hasLargeTitle {
-                return 107
-            } else {
-                return navigationController?.navigationBar.frame.height ?? 52
-            }
-        }()
+        let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
 
-        let navInsets = navigationController?.additionalSafeAreaInsets ?? .zero
-        let vcInsets = viewController.additionalSafeAreaInsets
+        let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
 
-        var totalHeight =
-            contentHeight
+        let additionalNavigationSafeAreaInsets =
+            navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
+        let additionalNavigationHeight =
+            additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
+
+        let additionalViewHeight =
+            viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
+        var totalHeight: CGFloat =
+            scrollView.contentSize.height
             + (hasNavigationBar ? navigationBarHeight : 0)
-            + navInsets.top + navInsets.bottom
-            + vcInsets.top + vcInsets.bottom
-
+            + additionalNavigationHeight
+            + additionalViewHeight
         if keyboardHeight > 0 {
-            if let keyWindow = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
+            let keyWindow = UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive })
+                .map({ $0 as? UIWindowScene })
+                .compactMap({ $0 })
                 .first?
                 .windows
-                .first(where: \.isKeyWindow)
-            {
-                totalHeight -= keyWindow.safeAreaInsets.bottom
+                .filter({ $0.isKeyWindow }).first
+            if let keyWindow {
+                let bottomPadding = keyWindow.safeAreaInsets.bottom
+                totalHeight -= bottomPadding
             }
         }
-
         return totalHeight
     }
 
