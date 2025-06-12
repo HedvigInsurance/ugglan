@@ -67,6 +67,7 @@ struct ChatInputView: View {
                     .frame(width: 24, height: 24)
                     .padding(.padding8)
             }
+            .frame(width: 44, height: 44)
             .accessibilityValue(L10n.voiceoverChatSendMessageButton)
         }
         .padding(.leading, .padding4)
