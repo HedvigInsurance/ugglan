@@ -213,11 +213,7 @@ public struct StateViewButtonConfig {
     ) {
         self.actionButton = actionButton
         self.actionButtonAttachedToBottom = actionButtonAttachedToBottom
-        if let dismissButton {
-            self.dismissButton = .init(buttonAction: dismissButton.buttonAction)
-        } else {
-            self.dismissButton = dismissButton
-        }
+        self.dismissButton = dismissButton
     }
 
     public struct StateViewButton {
