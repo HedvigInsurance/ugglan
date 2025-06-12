@@ -439,15 +439,15 @@ struct HomeTab: View {
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
             transitionType: .center,
             options: .constant([.alwaysOpenOnTop])
-        ) { crossSellInfo in
-            CrossSellingCentered(crossSellInfo: crossSellInfo)
+        ) { crossSell in
+            CrossSellingCentered(crossSell: crossSell)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedModal,
             transitionType: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
-        ) { crossSellInfo in
-            CrossSellingModal(crossSellInfo: crossSellInfo)
+        ) { crossSells in
+            CrossSellingModal(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.openChat,

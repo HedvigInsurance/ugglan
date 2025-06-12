@@ -8,38 +8,17 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
     }
 
     public let id: String = UUID().uuidString
-    public let type: CrossSellInfoType
-    public let crossSell: CrossSell?
+    public let type: CrossSellSource
     let additionalInfo: (any Encodable & Sendable)?
 
-    public init<T>(type: CrossSellInfoType, additionalInfo: T) where T: Encodable & Codable & Sendable {
+    public init<T>(type: CrossSellSource, additionalInfo: T) where T: Encodable & Codable & Sendable {
         self.type = type
         self.additionalInfo = additionalInfo
-        self.crossSell = nil
     }
 
-    public init(type: CrossSellInfoType) {
+    public init(type: CrossSellSource) {
         self.type = type
         self.additionalInfo = nil
-        self.crossSell = nil
-    }
-
-    public enum CrossSellInfoType: String, Codable, Equatable, Sendable {
-        case home
-        case closedClaim
-        case changeTier
-        case addon
-        case editCoInsured
-        case movingFlow
-
-        public var delayInNanoSeconds: UInt64 {
-            switch self {
-            case .home, .closedClaim:
-                return 0
-            case .changeTier, .addon, .editCoInsured, .movingFlow:
-                return 1_200_000_000
-            }
-        }
     }
 
     fileprivate func asLogData() -> [AttributeKey: AttributeValue] {
@@ -50,7 +29,7 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
     }
 
     @MainActor
-    func logCrossSellEvent() {
+    public func logCrossSellEvent() {
         log.addUserAction(
             type: .custom,
             name: "crossSell",
@@ -59,4 +38,8 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
         )
     }
 
+    public func getCrossSell() async throws -> CrossSells {
+        return try await CrossSellService().getCrossSell(source: type)
+
+    }
 }

@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct CrossSellingStack: View {
+public struct CrossSellingView: View {
     let withHeader: Bool
     @PresentableStore var store: CrossSellStore
 
@@ -23,36 +23,7 @@ public struct CrossSellingStack: View {
                 }
             ) { crossSells in
                 if !crossSells.isEmpty {
-                    if withHeader {
-                        hSection {
-                            VStack(spacing: .padding16) {
-                                ForEach(crossSells, id: \.title) { crossSell in
-                                    CrossSellingItem(crossSell: crossSell)
-                                        .transition(.slide)
-                                }
-                            }
-                        }
-                        .withHeader(
-                            title: L10n.InsuranceTab.CrossSells.title,
-                            extraView: (
-                                view: CrossSellingUnseenCircle().asAnyView,
-                                alignment: .top
-                            )
-                        )
-                        .sectionContainerStyle(.transparent)
-                        .transition(.slide)
-                    } else {
-                        hSection {
-                            VStack(spacing: .padding16) {
-                                ForEach(crossSells, id: \.title) { crossSell in
-                                    CrossSellingItem(crossSell: crossSell)
-                                        .transition(.slide)
-                                }
-                            }
-                        }
-                        .sectionContainerStyle(.transparent)
-                        .transition(.slide)
-                    }
+                    CrosssSellStackView(crossSells: crossSells, withHeader: withHeader)
                 }
             }
         }
@@ -62,7 +33,44 @@ public struct CrossSellingStack: View {
     }
 }
 
+struct CrosssSellStackView: View {
+    let crossSells: [CrossSell]
+    let withHeader: Bool
+    public var body: some View {
+        if withHeader {
+            hSection {
+                VStack(spacing: .padding16) {
+                    ForEach(crossSells, id: \.title) { crossSell in
+                        CrossSellingItem(crossSell: crossSell)
+                            .transition(.slide)
+                    }
+                }
+            }
+            .withHeader(
+                title: L10n.InsuranceTab.CrossSells.title,
+                extraView: (
+                    view: CrossSellingUnseenCircle().asAnyView,
+                    alignment: .top
+                )
+            )
+            .sectionContainerStyle(.transparent)
+            .transition(.slide)
+        } else {
+            hSection {
+                VStack(spacing: .padding16) {
+                    ForEach(crossSells, id: \.title) { crossSell in
+                        CrossSellingItem(crossSell: crossSell)
+                            .transition(.slide)
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+            .transition(.slide)
+        }
+    }
+}
+
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingStack(withHeader: true)
+    return CrossSellingView(withHeader: true)
 }

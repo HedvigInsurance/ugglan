@@ -7,11 +7,19 @@ public protocol CrossSellClient: Sendable {
     func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel?
 }
 
-public enum CrossSellSource {
+public enum CrossSellSource: String, Codable, Equatable, Sendable {
     case home
-    case closedClam
+    case closedClaim
     case changeTier
     case addon
     case editCoinsured
     case movingFlow
+    public var delayInNanoSeconds: UInt64 {
+        switch self {
+        case .home, .closedClaim:
+            return 0
+        case .changeTier, .addon, .editCoinsured, .movingFlow:
+            return 1_200_000_000
+        }
+    }
 }

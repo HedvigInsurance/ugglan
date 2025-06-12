@@ -98,7 +98,7 @@ public class EditCoInsuredViewModel: ObservableObject {
             } else {
                 NotificationCenter.default.post(
                     name: .openCrossSell,
-                    object: CrossSellInfo(type: .editCoInsured)
+                    object: CrossSellInfo(type: .editCoinsured)
                 )
             }
 
