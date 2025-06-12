@@ -51,11 +51,10 @@ struct ChangeAppIconView: View {
 @MainActor
 enum AppIcon: String, CaseIterable {
     case primary = "AppIcon"
-    case green = "AppIconGreen"
-    case blue = "AppIconBlue"
-    case dog = "AppIconDog"
-    case home = "AppIconHome"
-    case car = "AppIconCar"
+    case purple = "AppIconPurple"
+    case darkPurple = "AppIconPurpleDark"
+    case grey = "AppIconGrey"
+    case white = "AppIconWhite"
 
     var iconValue: String? {
         switch self {
@@ -71,34 +70,32 @@ enum AppIcon: String, CaseIterable {
         switch self {
         case .primary:
             return "Default"
-        case .green:
-            return "Green"
-        case .blue:
-            return "Blue"
-        case .dog:
-            return "Dog"
-        case .home:
-            return "Home"
-        case .car:
-            return "Car"
+        case .purple:
+            return "Purple"
+        case .darkPurple:
+            return "Dark purple"
+        case .grey:
+            return "Grey"
+        case .white:
+            return "White"
         }
     }
 
     var previewImage: Image {
-        switch self {
-        case .primary:
-            return hCoreUIAssets.hedvigAppIcon.view
-        case .green:
-            return hCoreUIAssets.greenAppIcon.view
-        case .blue:
-            return hCoreUIAssets.blueAppIcon.view
-        case .dog:
-            return hCoreUIAssets.appIconDog.view
-        case .home:
-            return hCoreUIAssets.appIconHome.view
-        case .car:
-            return hCoreUIAssets.appIconHome.view
-        }
+        //        switch self {
+        //        case .primary:
+        return hCoreUIAssets.pillowHome.view
+        //        case .green:
+        //            return hCoreUIAssets.greenAppIcon.view
+        //        case .blue:
+        //            return hCoreUIAssets.blueAppIcon.view
+        //        case .dog:
+        //            return hCoreUIAssets.appIconDog.view
+        //        case .home:
+        //            return hCoreUIAssets.appIconHome.view
+        //        case .car:
+        //            return hCoreUIAssets.appIconHome.view
+        //        }
     }
 }
 

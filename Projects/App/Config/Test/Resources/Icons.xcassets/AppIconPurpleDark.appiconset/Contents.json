@@ -1,13 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-20x20@2x 1.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-60x60@1x.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "20x20"
@@ -18,7 +16,6 @@
       "size" : "29x29"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-29x29@2x 1.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "29x29"
@@ -29,37 +26,23 @@
       "size" : "29x29"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-40x40@2x 1.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-40x40@3x.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
-      "filename" : "icon-57.png",
-      "idiom" : "iphone",
-      "scale" : "1x",
-      "size" : "57x57"
-    },
-    {
-      "filename" : "icon-114.png",
-      "idiom" : "iphone",
-      "scale" : "2x",
-      "size" : "57x57"
-    },
-    {
-      "filename" : "Liquid Glass Icon-iOS-Dark-60x60@2x.png",
+      "filename" : "Liquid Glass Icon-iOS-TintedDark-60x60@2x.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-60x60@3x.png",
+      "filename" : "purpleDark180.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"
@@ -70,7 +53,6 @@
       "size" : "20x20"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-20x20@2x.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "20x20"
@@ -81,19 +63,16 @@
       "size" : "29x29"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-29x29@2x.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
-      "filename" : "Liquid Glass Icon-macOS-Dark-20x20@2x.png",
       "idiom" : "ipad",
       "scale" : "1x",
       "size" : "40x40"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-40x40@2x.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "40x40"
@@ -101,37 +80,14 @@
     {
       "idiom" : "ipad",
       "scale" : "1x",
-      "size" : "50x50"
-    },
-    {
-      "idiom" : "ipad",
-      "scale" : "2x",
-      "size" : "50x50"
-    },
-    {
-      "idiom" : "ipad",
-      "scale" : "1x",
-      "size" : "72x72"
-    },
-    {
-      "idiom" : "ipad",
-      "scale" : "2x",
-      "size" : "72x72"
-    },
-    {
-      "filename" : "Liquid Glass Icon-iOS-Dark-38x38@2x.png",
-      "idiom" : "ipad",
-      "scale" : "1x",
       "size" : "76x76"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-76x76@2x.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "76x76"
     },
     {
-      "filename" : "Liquid Glass Icon-iOS-Dark-83.5x83.5@2x.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "83.5x83.5"
