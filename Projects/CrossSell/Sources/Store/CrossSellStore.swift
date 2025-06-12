@@ -37,7 +37,8 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
                     send(.setHasNewRecommendedCrossSell(hasNew: false))
                 }
             } catch {}
-
+        case .setHasSeenRecommendedWith:
+            send(.setHasNewRecommendedCrossSell(hasNew: false))
         default:
             break
         }
@@ -52,6 +53,8 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
             newState.addonBanner = addonBanner
         case let .setHasNewRecommendedCrossSell(hasNew):
             newState.hasNewOffer = hasNew
+        case let .setHasSeenRecommendedWith(id):
+            newState.setLastSeenRecommendedProductId(id)
         default:
             break
         }

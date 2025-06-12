@@ -61,12 +61,19 @@ public class HomeNavigationViewModel: ObservableObject {
             [weak self] notification in
             if let crossSellInfo = notification.object as? CrossSellInfo {
                 Task { @MainActor in
-                    try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
-                    switch crossSellInfo.type {
-                    case .home:
-                        self?.navBarItems.isNewOfferPresentedModal = crossSellInfo
-                    default:
-                        self?.navBarItems.isNewOfferPresentedCenter = crossSellInfo
+                    async let waitMinimum: Void = Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                    async let crossSellsRequest = crossSellInfo.getCrossSell()
+                    try await waitMinimum
+                    let crossSells = try await crossSellsRequest
+                    if let recommended = crossSells.recommended, crossSells.others.isEmpty {
+                        self?.navBarItems.isNewOfferPresentedCenter = recommended
+                    } else {
+                        self?.navBarItems.isNewOfferPresentedModal = crossSells
+                    }
+                    crossSellInfo.logCrossSellEvent()
+                    if let recommended = crossSells.recommended {
+                        let store: CrossSellStore = globalPresentableStoreContainer.get()
+                        store.send(.setHasSeenRecommendedWith(id: recommended.id))
                     }
                 }
             }
@@ -85,8 +92,8 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct NavBarItems {
         public var isFirstVetPresented = false
-        public var isNewOfferPresentedModal: CrossSellInfo?
-        public var isNewOfferPresentedCenter: CrossSellInfo?
+        public var isNewOfferPresentedModal: CrossSells?
+        public var isNewOfferPresentedCenter: CrossSell?
     }
 
     deinit {

@@ -6,33 +6,24 @@ import hCoreUI
 
 public struct CrossSellingModal: View {
     @PresentableStore var store: CrossSellStore
-    let crossSell: CrossSell
+    let crossSells: CrossSells
 
     public init(
-        crossSellInfo: CrossSellInfo
+        crossSells: CrossSells
     ) {
-        self.crossSell =
-            crossSellInfo.crossSell
-            ?? .init(
-                id: "id",
-                title: "Accident Insurance",
-                description: "Help when you need it the most",
-                type: .accident
-            )
-        Task {
-            try await Task.sleep(nanoseconds: 200_000_000)
-            crossSellInfo.logCrossSellEvent()
-        }
+        self.crossSells = crossSells
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            CrossSellBannerComponent(crossSell: crossSell)
+            CrossSellBannerComponent()
             hForm {
                 VStack(spacing: .padding48) {
-                    CrossSellPillowComponent(crossSell: crossSell)
-                    CrossSellButtonComponent(crossSell: crossSell)
-                    CrossSellingStack(withHeader: true)
+                    if let recommended = crossSells.recommended {
+                        CrossSellPillowComponent(crossSell: recommended)
+                        CrossSellButtonComponent(crossSell: recommended)
+                    }
+                    CrosssSellStackComponent(crossSells: crossSells.others, withHeader: crossSells.recommended != nil)
                 }
                 .padding(.bottom, .padding16)
             }
@@ -54,6 +45,6 @@ extension CrossSellingModal: TrackingViewNameProtocol {
 struct CrossSellingModal_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingModal(crossSellInfo: .init(type: .home))
+        return CrossSellingModal(crossSells: .init(recommended: nil, others: []))
     }
 }

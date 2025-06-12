@@ -7,26 +7,15 @@ public struct CrossSellingCentered: View {
     let crossSell: CrossSell
 
     public init(
-        crossSellInfo: CrossSellInfo
+        crossSell: CrossSell
     ) {
-        self.crossSell =
-            crossSellInfo.crossSell
-            ?? .init(
-                id: "id",
-                title: "Accident Insurance",
-                description: "Help when you need it the most",
-                type: .accident
-            )
-        Task {
-            try await Task.sleep(nanoseconds: 200_000_000)
-            crossSellInfo.logCrossSellEvent()
-        }
+        self.crossSell = crossSell
     }
 
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrossSellBannerComponent(crossSell: crossSell)
+                CrossSellBannerComponent()
                 CrossSellPillowComponent(crossSell: crossSell)
                 CrossSellButtonComponent(crossSell: crossSell)
             }
@@ -39,6 +28,13 @@ public struct CrossSellingCentered: View {
 struct CrossSellingCentered_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingCentered(crossSellInfo: .init(type: .home))
+        return CrossSellingCentered(
+            crossSell: .init(
+                id: "id",
+                title: "Accident Insurance",
+                description: "Help when you need it the most",
+                type: .accident
+            )
+        )
     }
 }

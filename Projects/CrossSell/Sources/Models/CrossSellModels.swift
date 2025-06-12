@@ -2,9 +2,10 @@ import Foundation
 import SwiftUI
 import hCoreUI
 
-public struct CrossSells: Codable, Equatable, Hashable, Sendable {
-    let recommended: CrossSell?
-    let others: [CrossSell]
+public struct CrossSells: Codable, Equatable, Hashable, Sendable, Identifiable {
+    public let id = UUID()
+    public let recommended: CrossSell?
+    public let others: [CrossSell]
 
     public init(recommended: CrossSell?, others: [CrossSell]) {
         self.recommended = recommended
@@ -12,7 +13,7 @@ public struct CrossSells: Codable, Equatable, Hashable, Sendable {
     }
 }
 
-public struct CrossSell: Codable, Equatable, Hashable, Sendable {
+public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     public var id: String
     public var title: String
     public var description: String

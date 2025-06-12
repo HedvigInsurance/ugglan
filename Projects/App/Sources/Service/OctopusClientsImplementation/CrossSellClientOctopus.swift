@@ -103,7 +103,7 @@ extension CrossSellSource {
     fileprivate var asGraphQLSource: OctopusGraphQL.CrossSellSource {
         switch self {
         case .home: return .home
-        case .closedClam: return .closedClam
+        case .closedClaim: return .closedClam
         case .changeTier: return .changeTier
         case .addon: return .addon
         case .editCoinsured: return .editCoinsured

@@ -3,8 +3,6 @@ import hCore
 import hCoreUI
 
 struct CrossSellBannerComponent: View {
-    let crossSell: CrossSell
-
     var body: some View {
         HStack(alignment: .top, spacing: .padding8) {
             hCoreUIAssets.campaign.view
