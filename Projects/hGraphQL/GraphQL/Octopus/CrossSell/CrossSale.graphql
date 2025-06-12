@@ -1,5 +1,28 @@
+query CrossSell($source: CrossSellSource!) {
+  currentMember {
+    crossSell(source: $source) {
+      otherCrossSells {
+	...CrossSellFragment
+      }
+      recommendedCrossSell {
+	...CrossSellFragment
+      }
+    }
+  }
+}
+
 query CrossSells {
   currentMember {
-    ...CrossSellFragment
+    crossSells {
+	...CrossSellFragment
+    }
   }
+}
+
+fragment CrossSellFragment on CrossSell {
+       id
+       description
+       storeUrl
+       title
+       type
 }

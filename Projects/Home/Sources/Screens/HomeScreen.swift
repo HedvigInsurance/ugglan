@@ -30,12 +30,8 @@ extension HomeScreen {
             and: "HomeView",
             action: { type in
                 switch type {
-                case .newOffer:
-                    NotificationCenter.default.post(
-                        name: .openCrossSell,
-                        object: CrossSellInfo(type: .home)
-                    )
-                    break
+                case .newOffer, .newOfferNotification:
+                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
@@ -161,6 +157,8 @@ class HomeVM: ObservableObject {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+        crossSellStore.send(.fetchRecommendedCrossSellId)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()

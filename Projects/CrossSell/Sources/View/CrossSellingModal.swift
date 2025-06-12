@@ -14,6 +14,7 @@ public struct CrossSellingModal: View {
         self.crossSell =
             crossSellInfo.crossSell
             ?? .init(
+                id: "id",
                 title: "Accident Insurance",
                 description: "Help when you need it the most",
                 type: .accident
