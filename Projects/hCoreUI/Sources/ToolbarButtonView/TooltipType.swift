@@ -12,6 +12,9 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     case insuranceEvidence
 
     @MainActor
+    private static var animateOffer = true
+
+    @MainActor
     var image: UIImage {
         switch self {
         case .newOffer:
@@ -188,6 +191,20 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
             return 24
         default:
             return 40
+        }
+    }
+
+    @MainActor
+    var shouldAnimate: Bool {
+        switch self {
+        case .newOfferNotification, .newOffer:
+            Task {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+                ToolbarOptionType.animateOffer = false
+            }
+            return ToolbarOptionType.animateOffer
+        default:
+            return false
         }
     }
 

@@ -43,13 +43,36 @@ public struct ToolbarButtonView: View {
                             .foregroundColor(hFillColor.Opaque.primary)
                             .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
                             .accessibilityValue(type.displayName)
-
+                            .overlay {
+                                if type.shouldAnimate {
+                                    rotationOverlay(for: type)
+                                }
+                            }
                     }
                 }
                 .showTooltip(type: type, placement: placement)
             }
         }
     }
+
+    private func rotationOverlay(for type: ToolbarOptionType) -> some View {
+        Color.clear
+            .frame(width: type.imageSize * 0.5, height: type.imageSize * 0.5)
+            .background {
+                Image(uiImage: type.image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: type.imageSize, height: type.imageSize)
+                    .foregroundColor(hFillColor.Opaque.primary)
+                    .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
+                    .accessibilityValue(type.displayName)
+            }
+            .clipShape(
+                Circle()
+            )
+            .rotate()
+    }
+
 }
 
 public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
