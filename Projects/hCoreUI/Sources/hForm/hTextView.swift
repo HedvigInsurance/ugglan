@@ -497,6 +497,11 @@ private class TextView: UITextView, UITextViewDelegate {
             self.becomeFirstResponder()
         }
         updateHeight()
+        Task { [weak self] in
+            // Delay to ensure the view is fully laid out before updating height
+            try await Task.sleep(nanoseconds: 300_000_000)
+            self?.updateHeight()
+        }
     }
 
     @objc private func handleDoneButtonTap() {
@@ -555,7 +560,6 @@ private class TextView: UITextView, UITextViewDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             withAnimation {
-
                 if self.frame.width > 0 {
                     let contentSize = self.sizeThatFits(.init(width: self.frame.width, height: .infinity)).height
                     let labelHeight = self.placeholderView
