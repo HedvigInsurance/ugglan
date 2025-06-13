@@ -79,7 +79,7 @@ public struct ForeverNavigation: View {
         }
         .detent(
             presented: $foreverNavigationVm.isChangeCodePresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             ChangeCodeView(foreverNavigationVm: foreverNavigationVm)
                 .routerDestination(for: ForeverRouterActions.self, options: .hidesBackButton) { routerAction in

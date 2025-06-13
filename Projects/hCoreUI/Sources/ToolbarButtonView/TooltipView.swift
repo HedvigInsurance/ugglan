@@ -2,92 +2,161 @@ import Foundation
 import SwiftUI
 import hCore
 
+extension View {
+    public func showTooltip(
+        type: ToolbarOptionType,
+        placement: ListToolBarPlacement
+    ) -> some View {
+        return self.modifier(TooltipViewModifier(type: type, placement: placement))
+    }
+}
+
+struct TooltipViewModifier: ViewModifier {
+    let type: ToolbarOptionType
+    let placement: ListToolBarPlacement
+    @StateObject private var toolTipManager = ToolTipManager.shared
+    @State var showTooltip = false
+    @State var xOffset: CGFloat = 0
+    func body(content: Content) -> some View {
+        content
+            .background {
+                if showTooltip {
+                    TooltipView(
+                        type: type,
+                        placement: placement
+                    )
+                }
+            }
+            .onChange(of: toolTipManager.displayedTooltip) { newValue in
+                withAnimation {
+                    self.showTooltip = newValue == type
+                }
+            }
+            .onAppear {
+                Task {
+                    try await Task.sleep(nanoseconds: 200_000_000)
+                    toolTipManager.checkIfDisplayIsNeeded(type)
+                    self.showTooltip = toolTipManager.displayedTooltip == type
+                }
+            }
+            .onDisappear {
+                toolTipManager.removeForType(type: type)
+            }
+    }
+}
+
+/// A SwiftUI view that displays a tooltip with a triangle pointer and custom content.
 struct TooltipView: View {
-    @Binding var displayTooltip: Bool
+    // MARK: - Properties
     let type: ToolbarOptionType
     let timeInterval: TimeInterval
     let placement: ListToolBarPlacement
     private let triangleWidth: CGFloat = 12
     private let trianglePadding: CGFloat = .padding16
-    @State var xPosition: CGFloat = 0
-    func canShowTooltip() -> Bool {
-        if type.showAsTooltip {
-            return type.shouldShowTooltip(for: timeInterval)
-        }
-        return false
+
+    @State private var isTooltipVisible: Bool = false
+    @State private var xOffset: CGFloat = 0
+    @State private var yOffset: CGFloat = 0
+    @StateObject private var toolTipManager = ToolTipManager.shared
+
+    // MARK: - Init
+    init(type: ToolbarOptionType, placement: ListToolBarPlacement) {
+        self.type = type
+        self.timeInterval = type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
+        self.placement = placement
     }
 
+    // MARK: - Body
     var body: some View {
         VStack {
-            if displayTooltip {
+            if isTooltipVisible {
                 VStack(spacing: 0) {
-                    HStack {
-                        if placement == .trailing {
-                            Spacer()
-                        }
-                        Triangle()
-                            .fill(type.tooltipColor)
-                            .frame(width: triangleWidth, height: 6)
-                            .padding(.horizontal, trianglePadding)
-                        if placement == .leading {
-                            Spacer()
-                        }
-                    }
-                    content
+                    tooltipTriangle
+                    tooltipContent
                 }
                 .fixedSize()
-                .transition(.scale(scale: 0, anchor: UnitPoint(x: xPosition, y: 0)).combined(with: .opacity))
+                .transition(
+                    .scale(scale: 0, anchor: UnitPoint(x: 0.5, y: 1))
+                        .combined(with: .opacity)
+                )
+                .offset(x: xOffset, y: yOffset)
+                .onAppear(perform: startAutoHideTimer)
             }
         }
         .background {
-            if displayTooltip {
-                //used to calculate the anchor of the tooltip
-                content
-                    .background {
-                        GeometryReader { proxy in
-                            Color.clear
-                                .onAppear {
-                                    let percentageOffset =
-                                        (proxy.size.width - (proxy.size.width - triangleWidth / 2 - trianglePadding))
-                                        / proxy.size.width
-                                    xPosition = placement == .leading ? percentageOffset : 1 - percentageOffset
-                                }
-                                .onChange(of: proxy.size) { value in
-                                    let percentageOffset =
-                                        (value.width - (value.width - triangleWidth / 2 - trianglePadding))
-                                        / value.width
-                                    xPosition = placement == .leading ? percentageOffset : 1 - percentageOffset
-                                }
-                        }
+            // GeometryReader for offset calculation (invisible)
+            tooltipContent
+                .background {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear { updateOffsets(proxy: proxy) }
+                            .onChange(of: proxy.size) { _ in updateOffsets(proxy: proxy) }
                     }
-                    .opacity(0)
-            }
+                }
+                .opacity(0)
         }
-        .onAppear {
-            if canShowTooltip() {
-                DispatchQueue.main.asyncAfter(deadline: .now() + type.delay) {
-                    withAnimation(.defaultSpring) {
-                        displayTooltip = true
-                    }
-                }
+        .onAppear(perform: showTooltipWithDelay)
+    }
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + type.delay + 4) {
-                    withAnimation(.defaultSpring) {
-                        displayTooltip = false
-                    }
-                }
-            }
+    // MARK: - Tooltip Triangle
+    private var tooltipTriangle: some View {
+        HStack {
+            if placement == .trailing { Spacer() }
+            Triangle()
+                .fill(type.tooltipBackgroundColor)
+                .frame(width: triangleWidth, height: 6)
+                .padding(.horizontal, trianglePadding)
+            if placement == .leading { Spacer() }
         }
     }
 
-    var content: some View {
+    // MARK: - Tooltip Content
+    private var tooltipContent: some View {
         hText(type.textToShow ?? "", style: .label)
             .padding(.horizontal, .padding12)
             .padding(.top, 6.5)
             .padding(.bottom, 7.5)
-            .foregroundColor(hTextColor.Opaque.negative)
-            .background(type.tooltipColor)
+            .foregroundColor(type.tooltipTextColor)
+            .background(type.tooltipBackgroundColor)
             .cornerRadius(.cornerRadiusS)
+    }
+
+    // MARK: - Offset Calculation
+    private func updateOffsets(proxy: GeometryProxy) {
+        let imageSize = type.imageSize
+        if placement == .trailing {
+            xOffset = -(proxy.size.width - imageSize) / 2 + (44 - imageSize) / 2
+        } else {
+            xOffset = (proxy.size.width - imageSize) / 2 - (44 - imageSize) / 2
+        }
+        yOffset = imageSize + (40 - imageSize) / 2
+    }
+
+    // MARK: - Tooltip Animation & Timer
+    private func showTooltipWithDelay() {
+        Task {
+            withAnimation(.defaultSpring.delay(type.delay)) {
+                isTooltipVisible = true
+            }
+        }
+    }
+
+    private func startAutoHideTimer() {
+        Task {
+            try await Task.sleep(nanoseconds: 4_000_000_000)
+            if #available(iOS 17.0, *) {
+                withAnimation(.defaultSpring) {
+                    isTooltipVisible = false
+                } completion: {
+                    toolTipManager.removeTooltip(type)
+                }
+            } else {
+                withAnimation(.defaultSpring) {
+                    isTooltipVisible = false
+                }
+                toolTipManager.removeTooltip(type)
+            }
+        }
     }
 }
 
@@ -121,6 +190,51 @@ struct Triangle: Shape {
 
 #Preview {
     VStack {
-        TooltipView(displayTooltip: .constant(true), type: .travelCertificate, timeInterval: 1, placement: .trailing)
+        TooltipView(type: .travelCertificate, placement: .trailing)
+    }
+}
+
+@MainActor
+class ToolTipManager: ObservableObject {
+
+    static let shared = ToolTipManager()
+
+    private init() {
+    }
+    @Published fileprivate var displayedTooltip: ToolbarOptionType?
+    @Published private var toolTipsToShow: Set<ToolbarOptionType> = Set()
+
+    func checkIfDisplayIsNeeded(_ tooltip: ToolbarOptionType) {
+        if tooltip.shouldShowTooltip(for: tooltip.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)) {
+            toolTipsToShow.insert(tooltip)
+            Task {
+                try await Task.sleep(nanoseconds: 500_000_000)
+                if let first = Array(toolTipsToShow).sorted(by: { $0.rawValue < $1.rawValue }).first {
+                    presentTooltip(first)
+                }
+            }
+        }
+    }
+
+    private func presentTooltip(_ tooltip: ToolbarOptionType) {
+        if toolTipsToShow.contains(tooltip) {
+            if self.displayedTooltip == nil {
+                self.displayedTooltip = tooltip
+            }
+        }
+    }
+
+    fileprivate func removeTooltip(_ tooltip: ToolbarOptionType) {
+        displayedTooltip = nil
+        removeForType(type: tooltip)
+        tooltip.onShow()
+        if let first = toolTipsToShow.first {
+            presentTooltip(first)
+        }
+    }
+
+    fileprivate func removeForType(type: ToolbarOptionType) {
+        toolTipsToShow.remove(type)
+        displayedTooltip = nil
     }
 }

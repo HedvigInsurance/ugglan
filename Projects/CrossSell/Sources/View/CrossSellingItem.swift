@@ -70,6 +70,7 @@ struct CrossSellingItem: View {
 #Preview {
     CrossSellingItem(
         crossSell: .init(
+            id: "id",
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
             type: .accident

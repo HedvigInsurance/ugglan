@@ -30,7 +30,7 @@ public struct CampaignNavigation: View {
             .environmentObject(campaignNavigationVm)
             .detent(
                 presented: $campaignNavigationVm.isAddCampaignPresented,
-                style: [.height]
+                transitionType: .detent(style: [.height])
             ) {
                 AddCampaignCodeView(
                     campaignNavigationVm: campaignNavigationVm,
@@ -46,7 +46,7 @@ public struct CampaignNavigation: View {
             }
             .detent(
                 item: $campaignNavigationVm.isDeleteCampaignPresented,
-                style: [.height]
+                transitionType: .detent(style: [.height])
             ) { discount in
                 DeleteCampaignView(
                     vm: .init(

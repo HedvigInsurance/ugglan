@@ -68,7 +68,7 @@ struct ContractTable: View {
                     }
 
                     movingToANewHomeView
-                    CrossSellingStack(withHeader: true)
+                    CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
                     PresentableStoreLens(

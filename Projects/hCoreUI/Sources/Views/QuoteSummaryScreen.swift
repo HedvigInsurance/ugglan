@@ -200,7 +200,7 @@ public struct QuoteSummaryScreen: View {
         )
         .detent(
             item: $vm.removeModel,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { removeModel in
             InfoView(
                 title: removeModel.title,
