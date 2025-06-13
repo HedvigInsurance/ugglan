@@ -37,14 +37,6 @@ public struct AccordionView: View {
             }
             .accessibilityLabel("\(title)")
             .accessibilityAddTraits(.isButton)
-            .modifier(
-                BackgorundColorAnimation(
-                    animationTrigger: $extended,
-                    color: hSurfaceColor.Opaque.primary,
-                    animationColor: hSurfaceColor.Opaque.secondary
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
 
             if extended {
                 AccordionBody(peril: peril, description: description, extended: $extended)
@@ -52,6 +44,13 @@ public struct AccordionView: View {
                     .accessibilityElement(children: .contain)
             }
         }
+        .modifier(
+            BackgorundColorAnimation(
+                animationTrigger: $extended,
+                color: hSurfaceColor.Opaque.primary,
+                animationColor: hSurfaceColor.Opaque.secondary
+            )
+        )
     }
 }
 
@@ -77,7 +76,7 @@ struct AccordionHeader: View {
             }
             hText(title, style: .body1)
                 .lineLimit(extended ? nil : 1)
-                .foregroundColor(getTextColor)
+                .foregroundColor(peril?.textColor)
             Spacer()
             ZStack {
                 Group {
@@ -96,19 +95,10 @@ struct AccordionHeader: View {
                     .transition(.opacity.animation(.easeOut))
                     .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
-                .foregroundColor(getTextColor)
+                .foregroundColor(peril?.textColor)
             }
         }
         .accessibilityAddTraits(extended ? .isHeader : [])
-    }
-
-    @hColorBuilder
-    var getTextColor: some hColor {
-        if peril?.isDisabled ?? false {
-            hTextColor.Opaque.disabled
-        } else {
-            hTextColor.Opaque.primary
-        }
     }
 }
 
@@ -121,7 +111,7 @@ struct AccordionBody: View {
         VStack(alignment: .leading, spacing: .padding12) {
             hText(description, style: peril != nil ? .label : .body1)
                 .padding(.bottom, .padding12)
-                .foregroundColor(getTextColor)
+                .foregroundColor(peril?.textColor)
             if let perilCover = peril?.covered {
                 ForEach(Array(perilCover.enumerated()), id: \.offset) { index, item in
                     HStack(alignment: .top, spacing: 8) {
@@ -136,13 +126,17 @@ struct AccordionBody: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, .padding32)
+        .padding(.bottom, .padding16)
         .accessibilityAddTraits(extended ? .isSelected : [])
         .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
     }
+}
 
+@MainActor
+extension Perils {
     @hColorBuilder
-    var getTextColor: some hColor {
-        if peril?.isDisabled ?? false {
+    var textColor: some hColor {
+        if self.isDisabled {
             hTextColor.Opaque.disabled
         } else {
             hTextColor.Opaque.primary
