@@ -30,19 +30,15 @@ public struct AccordionView: View {
                 AccordionHeader(
                     peril: peril,
                     title: title,
+                    description: description,
                     extended: $extended
                 )
                 .padding(.horizontal, .padding16)
-                .padding(.vertical, 17)
+                .padding(.top, 17)
+                .padding(.bottom, .padding24)
             }
             .accessibilityLabel("\(title)")
             .accessibilityAddTraits(.isButton)
-
-            if extended {
-                AccordionBody(peril: peril, description: description, extended: $extended)
-                    .padding(.bottom, .padding8)
-                    .accessibilityElement(children: .contain)
-            }
         }
         .modifier(
             BackgorundColorAnimation(
@@ -57,6 +53,7 @@ public struct AccordionView: View {
 struct AccordionHeader: View {
     let peril: Perils?
     let title: String
+    let description: String
     @Binding var extended: Bool
 
     var body: some View {
@@ -74,9 +71,17 @@ struct AccordionHeader: View {
                 .frame(width: 16, height: 16)
                 .padding([.horizontal, .vertical], .padding4)
             }
-            hText(title, style: .body1)
-                .lineLimit(extended ? nil : 1)
-                .foregroundColor(peril?.textColor)
+            VStack(alignment: .leading, spacing: 17) {
+                hText(title, style: .body1)
+                    .lineLimit(extended ? nil : 1)
+                    .foregroundColor(peril?.textColor)
+
+                if extended {
+                    AccordionBody(peril: peril, description: description, extended: $extended)
+                        .multilineTextAlignment(.leading)
+                        .accessibilityElement(children: .contain)
+                }
+            }
             Spacer()
             ZStack {
                 Group {
@@ -125,8 +130,6 @@ struct AccordionBody: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
-        .padding(.horizontal, .padding32)
-        .padding(.bottom, .padding16)
         .accessibilityAddTraits(extended ? .isSelected : [])
         .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
     }
