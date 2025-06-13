@@ -125,7 +125,7 @@ struct SlideToConfirm: View {
     @hColorBuilder
     private var getLabelColor: some hColor {
         if didFinished {
-            hTextColor.Translucent.disabled
+            hTextColor.Opaque.disabled
         } else {
             hTextColor.Translucent.secondary
         }

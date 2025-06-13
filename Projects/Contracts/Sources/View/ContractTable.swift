@@ -147,7 +147,7 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
-                        .fixedSize(horizontal: false, vertical: sizeCategory > .large ? true : false)
+                        .fixedSize(horizontal: false, vertical: true)
                         .transition(.slide)
                     }
                 }
