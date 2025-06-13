@@ -39,7 +39,7 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
     }
 
     public func getCrossSell() async throws -> CrossSells {
-        return try await CrossSellService().getCrossSell(source: .changeTier)
+        return try await CrossSellService().getCrossSell(source: type)
 
     }
 }
