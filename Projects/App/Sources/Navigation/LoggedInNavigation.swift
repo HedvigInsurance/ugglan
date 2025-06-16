@@ -450,6 +450,13 @@ struct HomeTab: View {
             CrossSellingModal(crossSells: crossSells)
         }
         .detent(
+            item: $homeNavigationVm.navBarItems.isNewOfferPresentedDetent,
+            transitionType: .detent(style: [.height]),
+            options: .constant([.alwaysOpenOnTop])
+        ) { crossSells in
+            CrossSellingDetent(crossSells: crossSells)
+        }
+        .detent(
             item: $homeNavigationVm.openChat,
             transitionType: .detent(style: [.large]),
             options: $homeNavigationVm.openChatOptions,

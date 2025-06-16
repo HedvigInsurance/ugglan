@@ -5,7 +5,6 @@ import hCore
 import hCoreUI
 
 public struct CrossSellingModal: View {
-    @PresentableStore var store: CrossSellStore
     let crossSells: CrossSells
 
     public init(
@@ -29,9 +28,6 @@ public struct CrossSellingModal: View {
             }
             .withDismissButton()
             .embededInNavigation(tracking: self)
-        }
-        .task {
-            store.send(.fetchAddonBanner)
         }
     }
 }

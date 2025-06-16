@@ -65,11 +65,16 @@ public class HomeNavigationViewModel: ObservableObject {
                     async let crossSellsRequest = crossSellInfo.getCrossSell()
                     try await waitMinimum
                     let crossSells = try await crossSellsRequest
-                    if let recommended = crossSells.recommended, crossSells.others.isEmpty {
-                        self?.navBarItems.isNewOfferPresentedCenter = recommended
+                    if let recommended = crossSells.recommended {
+                        if crossSells.others.isEmpty {
+                            self?.navBarItems.isNewOfferPresentedCenter = recommended
+                        } else {
+                            self?.navBarItems.isNewOfferPresentedModal = crossSells
+                        }
                     } else {
-                        self?.navBarItems.isNewOfferPresentedModal = crossSells
+                        self?.navBarItems.isNewOfferPresentedDetent = crossSells
                     }
+
                     crossSellInfo.logCrossSellEvent()
                     if let recommended = crossSells.recommended {
                         let store: CrossSellStore = globalPresentableStoreContainer.get()
@@ -94,6 +99,7 @@ public class HomeNavigationViewModel: ObservableObject {
         public var isFirstVetPresented = false
         public var isNewOfferPresentedModal: CrossSells?
         public var isNewOfferPresentedCenter: CrossSell?
+        public var isNewOfferPresentedDetent: CrossSells?
     }
 
     deinit {
