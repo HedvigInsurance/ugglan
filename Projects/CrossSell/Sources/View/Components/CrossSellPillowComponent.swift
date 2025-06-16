@@ -15,6 +15,7 @@ struct CrossSellPillowComponent: View {
                 hText(crossSell.description)
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
+            .multilineTextAlignment(.center)
         }
     }
 }
