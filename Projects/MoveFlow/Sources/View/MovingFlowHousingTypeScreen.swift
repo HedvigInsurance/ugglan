@@ -41,7 +41,7 @@ public struct MovingFlowHousingTypeScreen: View {
                                     hRadioField(
                                         id: type.rawValue,
                                         leftView: {
-                                            hText(type.title, style: .heading2)
+                                            hText(type.title, style: .body1)
                                                 .asAnyView
                                         },
                                         selected: $vm.selectedHousingType
