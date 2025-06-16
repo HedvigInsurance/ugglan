@@ -129,6 +129,9 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     }
 
     func shouldShowTooltip(for timeInterval: TimeInterval) -> Bool {
+        guard showAsTooltip else {
+            return false
+        }
         switch self {
         case .chat:
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
