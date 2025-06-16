@@ -74,6 +74,7 @@ struct AccordionHeader: View {
             VStack(alignment: .leading, spacing: 17) {
                 hText(title, style: .body1)
                     .lineLimit(extended ? nil : 1)
+                    .multilineTextAlignment(.leading)
                     .foregroundColor(peril?.textColor)
 
                 if extended {
