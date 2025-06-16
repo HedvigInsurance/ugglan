@@ -10,23 +10,27 @@ struct AskForPushNotifications: View {
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
     let wrapWithForm: Bool
+    let height: CGFloat
 
     init(
         text: String,
         onActionExecuted: @escaping () -> Void,
-        wrapWithForm: Bool = false
+        wrapWithForm: Bool = false,
+        height: CGFloat? = nil
     ) {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
         self.wrapWithForm = wrapWithForm
+        self.height = height ?? 0
     }
 
     var body: some View {
         if wrapWithForm {
             hForm {
                 mainContent
+                    .frame(height: height)
             }
             .hFormContentPosition(.compact)
         } else {
