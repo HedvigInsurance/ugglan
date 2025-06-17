@@ -45,7 +45,8 @@ public struct ContractOwnerField: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             if hasContentBelow {
-                Divider()
+                hRowDivider()
+                    .hWithoutHorizontalPadding([.divider])
             }
         }
         .padding(.bottom, hasContentBelow ? 0 : 16)

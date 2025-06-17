@@ -103,7 +103,7 @@ struct ChatInputView: View {
             ImagesView(vm: vm.imagesViewModel)
         }
         .transition(.move(edge: .bottom).combined(with: .opacity))
-        .padding(.leading, .padding16)
+        .padding(.leading, .padding8)
     }
 
     private func bottomMenuItem(with image: Image, action: @escaping () -> Void) -> some View {

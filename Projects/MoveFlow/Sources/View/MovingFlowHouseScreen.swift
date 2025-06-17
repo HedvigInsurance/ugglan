@@ -152,7 +152,8 @@ struct MovingFlowHouseScreen: View {
                         }
                         .padding(.vertical, .padding12)
                         if offset + 1 < houseInformationInputvm.extraBuildings.count {
-                            Divider()
+                            hRowDivider()
+                                .hWithoutHorizontalPadding([.divider])
                         }
                     }
                     hButton(
