@@ -43,7 +43,7 @@ struct HideViewController: ViewModifier {
             if let navigation = vc.navigationController {
                 return findProperVC(from: navigation)
             } else {
-                if vc.presentationController is BlurredSheetPresenationController {
+                if vc.presentationController is BlurredSheetPresentationController {
                     return vc
                 } else if let superviewVc = vc.view.superview?.viewController {
                     return findProperVC(from: superviewVc)

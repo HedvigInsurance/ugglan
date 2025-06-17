@@ -103,7 +103,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     ) -> UIPresentationController? {
         let presentationController: UIPresentationController = {
             if #available(iOS 16.0, *) {
-                let presentationController = BlurredSheetPresenationController(
+                let presentationController = BlurredSheetPresentationController(
                     presentedViewController: presented,
                     presenting: presenting,
                     useBlur: options.contains(.useBlur)
@@ -122,10 +122,10 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         }()
 
         if #available(iOS 16.0, *) {
-            if let presentationController = presentationController as? BlurredSheetPresenationController {
+            if let presentationController = presentationController as? BlurredSheetPresentationController {
                 presentationController.detents = [
                     .custom(resolver: { context in
-                        return -50
+                        return 0
                     })
                 ]
             }
@@ -136,7 +136,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 .custom(
                     "zero",
                     { viewController, containerView in
-                        return -50
+                        return 0
                     }
                 )
             ],
@@ -448,10 +448,9 @@ public enum Detent: Equatable {
         }
     }
 }
-//}
 
 @available(iOS 16.0, *)
-public class BlurredSheetPresenationController: UISheetPresentationController {
+public class BlurredSheetPresentationController: UISheetPresentationController {
 
     var effectView: PassThroughEffectView?
 
