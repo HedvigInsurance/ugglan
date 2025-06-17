@@ -9,63 +9,75 @@ struct SupportView: View {
     @Environment(\.sizeCategory) private var sizeCategory
 
     var body: some View {
-        hSection {
-            VStack(spacing: .padding40) {
-                VStack(spacing: .padding16) {
+        VStack(spacing: .padding40) {
+            ZStack(alignment: .top) {
+                RoundedRectangle(cornerRadius: .cornerRadiusL)
+                    .fill(hSurfaceColor.Opaque.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, -20)
 
-                    hCoreUIAssets.infoFilled.view
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hSignalColor.Blue.element)
-                        .accessibilityHidden(true)
+                VStack(spacing: .padding40) {
+                    VStack(spacing: .padding16) {
+                        hSection {
+                            hCoreUIAssets.infoFilled.view
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(hSignalColor.Blue.element)
+                                .accessibilityHidden(true)
 
-                    VStack(spacing: 0) {
-                        hText(L10n.hcChatQuestion)
-                            .accessibilityAddTraits(.isHeader)
-                        hText(L10n.hcChatAnswer)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                            .multilineTextAlignment(.center)
+                            VStack(spacing: 0) {
+                                hText(L10n.hcChatQuestion)
+                                    .accessibilityAddTraits(.isHeader)
+                                hText(L10n.hcChatAnswer)
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(.horizontal, .padding32)
+                        }
+                        .hWithoutHorizontalPadding([.section])
                     }
-                    .padding(.horizontal, .padding32)
+
+                    buttonView
                 }
-                buttonView
+                .padding(.vertical, .padding32)
+                .padding(.bottom, .padding8)
             }
-            .padding(.vertical, .padding32)
-            .padding(.bottom, .padding8)
         }
-        .hWithoutHorizontalPadding([.section])
     }
 
     private var buttonView: some View {
         PresentableStoreLens(HomeStore.self) { state in
             state.hasSentOrRecievedAtLeastOneMessage
         } _: { hasSentOrRecievedAtLeastOneMessage in
-            hRow {
-                HStack(spacing: .padding4) {
-                    hButton(
-                        .medium,
-                        .secondary,
-                        content: .init(title: L10n.newMessageButton)
-                    ) {
-                        NotificationCenter.default.post(
-                            name: .openChat,
-                            object: ChatType.newConversation
-                        )
-                    }
-
-                    if hasSentOrRecievedAtLeastOneMessage {
+            hSection {
+                hRow {
+                    HStack(spacing: .padding4) {
                         hButton(
                             .medium,
-                            .primary,
-                            content: .init(title: L10n.hcChatGoToInbox)
+                            .secondary,
+                            content: .init(title: L10n.newMessageButton)
                         ) {
-                            router.push(HelpCenterNavigationRouterType.inbox)
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatType.newConversation
+                            )
+                        }
+
+                        if hasSentOrRecievedAtLeastOneMessage {
+                            hButton(
+                                .medium,
+                                .primary,
+                                content: .init(title: L10n.hcChatGoToInbox)
+                            ) {
+                                router.push(HelpCenterNavigationRouterType.inbox)
+                            }
                         }
                     }
+                    .hButtonTakeFullWidth(true)
                 }
-                .hButtonTakeFullWidth(true)
+                .verticalPadding(0)
             }
-            .verticalPadding(0)
+            .sectionContainerStyle(.transparent)
         }
         .presentableStoreLensAnimation(.default)
     }
