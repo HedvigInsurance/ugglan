@@ -30,7 +30,7 @@ struct AskForPushNotifications: View {
         if wrapWithForm {
             hForm {
                 mainContent
-                    .frame(height: height)
+                    .frame(minHeight: height)
             }
             .hFormContentPosition(.compact)
         } else {
