@@ -34,6 +34,7 @@ struct SupportView: View {
             .padding(.bottom, .padding8)
         }
         .hWithoutHorizontalPadding([.section])
+        .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
     }
 
     private var buttonView: some View {
