@@ -460,7 +460,7 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        effectView = useBlur ? PassThroughEffectView(effect: nil) : nil
+        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial)) : nil
         effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
@@ -500,32 +500,6 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
 }
 
 public class PassThroughEffectView: UIVisualEffectView {
-    override init(effect: UIVisualEffect?) {
-        super.init(effect: nil)
-        setupDimmingOverlay()
-        isUserInteractionEnabled = false
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupDimmingOverlay()
-    }
-
-    private func setupDimmingOverlay() {
-        let dimmingOverlay = UIView()
-        dimmingOverlay.translatesAutoresizingMaskIntoConstraints = false
-        let color = hGrayscaleTranslucent.greyScaleTranslucent700.colorFor(.light, .base).color.uiColor()
-        dimmingOverlay.backgroundColor = color
-        contentView.addSubview(dimmingOverlay)
-
-        NSLayoutConstraint.activate([
-            dimmingOverlay.topAnchor.constraint(equalTo: contentView.topAnchor),
-            dimmingOverlay.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            dimmingOverlay.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            dimmingOverlay.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-        ])
-    }
-
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let hitView = super.hitTest(point, with: event)
 
