@@ -9,13 +9,12 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hFormContentPosition) var contentPosition
     @Environment(\.hEnableScrollBounce) var hEnableScrollBounce
-    @Environment(\.hKeyboardObserving) var hKeyboardObserving
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.verticalSizeClass) var verticalSizeClass
-
+    @State private var ignoreKeyboard = false
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
     var content: Content
@@ -48,6 +47,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         }
                 }
             }
+            .ignoresSafeArea(.keyboard, edges: ignoreKeyboard ? .bottom : [])
         }
         .task {
             vm.scrollBounces = hEnableScrollBounce
@@ -79,13 +79,15 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 guard let vm else { return }
                 if scrollView != vm.scrollView {
                     vm.scrollView = scrollView
-                    if hKeyboardObserving {
-                        vm.keyboardCancellable = keyboardPublisher.sink { _ in
-                        } receiveValue: { [weak vm] keyboardHeight in
+                    vm.keyboardCancellable = keyboardPublisher.sink { _ in
+                    } receiveValue: { [weak vm] keyboardHeight in
+                        if vm?.vc?.presentedViewController == nil {
                             vm?.keyboardVisible = keyboardHeight != nil
+                            ignoreKeyboard = false
+                        } else {
+                            vm?.keyboardVisible = false
+                            ignoreKeyboard = true
                         }
-                    } else {
-                        vm.keyboardCancellable = nil
                     }
                 }
             }
@@ -297,28 +299,6 @@ extension View {
     /// false : always off
     public func hSetScrollBounce(to value: Bool?) -> some View {
         self.environment(\.hEnableScrollBounce, value)
-    }
-}
-
-//MARK: hKeyboardObserving
-private struct EnvironmentHKeyboardObserving: EnvironmentKey {
-    static let defaultValue: Bool = true
-}
-
-extension EnvironmentValues {
-    public var hKeyboardObserving: Bool {
-        get { self[EnvironmentHKeyboardObserving.self] }
-        set { self[EnvironmentHKeyboardObserving.self] = newValue }
-    }
-}
-
-extension View {
-    /// Used to determine if we should bounce effect on the scroll view
-    /// nil: default behaviour depending on the content position and content size
-    /// true: always on
-    /// false : always off
-    public func hFormObserveKeyboard(to value: Bool) -> some View {
-        self.environment(\.hKeyboardObserving, value)
     }
 }
 

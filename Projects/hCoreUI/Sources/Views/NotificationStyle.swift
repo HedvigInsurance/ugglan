@@ -77,10 +77,6 @@ struct NotificationStyle: ViewModifier {
             content
                 .background(backgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                .overlay(
-                    RoundedRectangle(cornerRadius: .cornerRadiusL)
-                        .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
-                )
         }
     }
 
