@@ -19,7 +19,7 @@ public enum CrossSellSource: String, Codable, Equatable, Sendable {
         case .home, .closedClaim:
             return 0
         case .changeTier, .addon, .editCoinsured, .movingFlow:
-            return 1_200_000_000
+            return 900_000_000
         }
     }
 }

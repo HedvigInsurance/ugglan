@@ -59,27 +59,28 @@ public class HomeNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
             [weak self] notification in
-            if let crossSellInfo = notification.object as? CrossSellInfo {
-                Task { @MainActor in
-                    async let waitMinimum: Void = Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
-                    async let crossSellsRequest = crossSellInfo.getCrossSell()
-                    try await waitMinimum
-                    let crossSells = try await crossSellsRequest
-                    if let recommended = crossSells.recommended {
-                        if crossSells.others.isEmpty {
-                            self?.navBarItems.isNewOfferPresentedCenter = recommended
-                        } else {
-                            self?.navBarItems.isNewOfferPresentedModal = crossSells
-                        }
-                    } else {
-                        self?.navBarItems.isNewOfferPresentedDetent = crossSells
-                    }
+            guard let crossSellInfo = notification.object as? CrossSellInfo else { return }
 
-                    crossSellInfo.logCrossSellEvent()
-                    if let recommended = crossSells.recommended {
-                        let store: CrossSellStore = globalPresentableStoreContainer.get()
-                        store.send(.setHasSeenRecommendedWith(id: recommended.id))
+            Task { @MainActor in
+                async let sleep: Void = Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                let crossSells = try await crossSellInfo.getCrossSell()
+                try await sleep
+
+                if let recommended = crossSells.recommended {
+                    if crossSells.others.isEmpty {
+                        self?.navBarItems.isNewOfferPresentedCenter = recommended
+                    } else {
+                        self?.navBarItems.isNewOfferPresentedModal = crossSells
                     }
+                } else {
+                    self?.navBarItems.isNewOfferPresentedDetent = crossSells
+                }
+
+                crossSellInfo.logCrossSellEvent()
+
+                if let recommended = crossSells.recommended {
+                    let store: CrossSellStore = globalPresentableStoreContainer.get()
+                    store.send(.setHasSeenRecommendedWith(id: recommended.id))
                 }
             }
         }

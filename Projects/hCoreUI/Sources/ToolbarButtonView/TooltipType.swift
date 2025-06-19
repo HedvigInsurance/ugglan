@@ -124,10 +124,6 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         }
     }
 
-    var delayInNanoseconds: UInt64 {
-        return UInt64(delay * 1_000_000_000)  // Convert seconds to nanoseconds
-    }
-
     func shouldShowTooltip(for timeInterval: TimeInterval) -> Bool {
         guard showAsTooltip else {
             return false
