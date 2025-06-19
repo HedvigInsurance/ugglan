@@ -87,23 +87,6 @@ extension CrossSell {
 
         )
     }
-
-    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
-        let crossSellFragment = data.crossSell.fragments.crossSellFragment
-        let type = crossSellFragment.type.crossSellType
-        guard type != .unknown else { return nil }
-        self.init(
-            id: crossSellFragment.id,
-            title: crossSellFragment.title,
-            description: crossSellFragment.description,
-            webActionURL: crossSellFragment.storeUrl,
-            hasBeenSeen: UserDefaults.standard.bool(
-                forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
-            ),
-            type: type
-
-        )
-    }
 }
 
 extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
