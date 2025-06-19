@@ -15,7 +15,7 @@ public struct CrossSellingCentered: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrossSellBannerComponent()
+                CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
                 CrossSellButtonComponent(crossSell: crossSell)
             }
