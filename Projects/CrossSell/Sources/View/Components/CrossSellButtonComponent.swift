@@ -11,7 +11,7 @@ struct CrossSellButtonComponent: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: L10n.crossSellButton),
+                    content: .init(title: crossSell.buttonText ?? L10n.crossSellButton),
                     {
                         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
                             UIApplication.shared.open(url)
@@ -20,8 +20,7 @@ struct CrossSellButtonComponent: View {
                         }
                     }
                 )
-
-                hText(L10n.crossSellLabel, style: .finePrint)
+                hText(crossSell.discountText == nil ? L10n.crossSellLabel : L10n.crossSellLabelLimitedOffer, style: .finePrint)
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
         }

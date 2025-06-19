@@ -5,7 +5,12 @@ query CrossSell($source: CrossSellSource!) {
 	...CrossSellFragment
       }
       recommendedCrossSell {
-	...CrossSellFragment
+	bannerText
+        buttonText
+        crossSell {
+          ...CrossSellFragment
+        }
+        discountText
       }
     }
   }

@@ -19,6 +19,9 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     public var description: String
     public var webActionURL: String?
     public var type: CrossSellType
+    public var bannerText: String?
+    public var buttonText: String?
+    public var discountText: String?
     public var hasBeenSeen: Bool {
         didSet {
             UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue))
@@ -39,15 +42,21 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         title: String,
         description: String,
         webActionURL: String? = nil,
-        hasBeenSeen: Bool = false,
-        type: CrossSellType
+        type: CrossSellType,
+        bannerText: String? = nil,
+        buttonText: String? = nil,
+        discountText: String? = nil,
+        hasBeenSeen: Bool = false
     ) {
         self.id = id
         self.title = title
         self.description = description
         self.webActionURL = webActionURL
-        self.hasBeenSeen = hasBeenSeen
         self.type = type
+        self.bannerText = bannerText
+        self.buttonText = buttonText
+        self.discountText = discountText
+        self.hasBeenSeen = hasBeenSeen
     }
 }
 
@@ -64,6 +73,7 @@ extension CrossSell {
         case .unknown: return hCoreUIAssets.bigPillowHome.view
         case .petDog: return hCoreUIAssets.bigPillowDog.view
         case .petCat: return hCoreUIAssets.bigPillowCat.view
+        case .house: return hCoreUIAssets.bigPillowVilla.view
         }
     }
 }
@@ -71,6 +81,7 @@ extension CrossSell {
 public enum CrossSellType: String, Codable, Hashable, Sendable {
     case car
     case home
+    case house
     case apartmentBrf
     case apartmentRent
     case accident

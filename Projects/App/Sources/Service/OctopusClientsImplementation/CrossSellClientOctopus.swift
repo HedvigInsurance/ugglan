@@ -25,8 +25,7 @@ public class CrossSellClientOctopus: CrossSellClient {
             CrossSell($0.fragments.crossSellFragment)
         })
         let recommendedCrossSell: CrossSell? = {
-            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell?.fragments
-                .crossSellFragment
+            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell
             {
                 return CrossSell(crossSellFragment)
             }
@@ -63,10 +62,30 @@ extension CrossSell {
             title: data.title,
             description: data.description,
             webActionURL: data.storeUrl,
+            type: type,
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
             ),
-            type: type
+        )
+    }
+    
+    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
+        let crossSellFragment = data.crossSell.fragments.crossSellFragment
+        let type = crossSellFragment.type.crossSellType
+        guard type != .unknown else { return nil }
+        self.init(
+            id: crossSellFragment.id,
+            title: crossSellFragment.title,
+            description: crossSellFragment.description,
+            webActionURL: crossSellFragment.storeUrl,
+            type: type,
+            bannerText: data.bannerText,
+            buttonText: data.buttonText,
+            discountText: data.discountText,
+            hasBeenSeen: UserDefaults.standard.bool(
+                forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
+            )
+
         )
     }
 }
@@ -92,6 +111,8 @@ extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
                 return .petCat
             case .petDog:
                 return .petDog
+            case .house:
+                return .house
             }
         case .unknown:
             return .unknown

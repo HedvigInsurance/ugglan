@@ -15,7 +15,9 @@ public struct CrossSellingModal: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            CrossSellBannerComponent()
+            if let recommended = crossSells.recommended {
+                CrossSellBannerComponent(crossSell: recommended)
+            }
             hForm {
                 VStack(spacing: .padding48) {
                     if let recommended = crossSells.recommended {
