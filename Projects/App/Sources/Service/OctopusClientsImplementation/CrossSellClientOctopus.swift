@@ -71,6 +71,8 @@ extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
                 return .petCat
             case .petDog:
                 return .petDog
+            case .house:
+                return .house
             }
         case .unknown:
             return .unknown
