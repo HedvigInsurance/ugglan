@@ -15,10 +15,12 @@ public struct ClaimsMainNavigation: View {
     @StateObject var claimsRouter = Router()
     @StateObject private var claimsNavigationVm = ClaimsMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false
+    @State private var measuredHeight: CGFloat = 0
 
     public var body: some View {
         RouterHost(router: claimsRouter, tracking: self) {
             honestyPledge(from: from)
+                .captureHeight(in: $measuredHeight)
                 .onDisappear {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchClaims)
@@ -36,7 +38,8 @@ public struct ClaimsMainNavigation: View {
                                     claimsNavigationVm?.isClaimsFlowPresented = true
                                 }
                             },
-                            wrapWithForm: true
+                            wrapWithForm: true,
+                            height: measuredHeight
                         )
                         .onDisappear {
                             let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -77,5 +80,27 @@ extension ClaimsMainNavigation: TrackingViewNameProtocol {
         return .init(describing: HonestyPledge.self)
 
     }
+}
 
+private struct SizePreferenceKey: @preconcurrency PreferenceKey {
+    @MainActor static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+extension View {
+    func captureHeight(in binding: Binding<CGFloat>) -> some View {
+        background(
+            GeometryReader { proxy in
+                Color.clear
+                    .preference(key: SizePreferenceKey.self, value: proxy.size.height)
+            }
+        )
+        .onPreferenceChange(SizePreferenceKey.self) { height in
+            DispatchQueue.main.async {
+                binding.wrappedValue = height
+            }
+        }
+    }
 }
