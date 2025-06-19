@@ -25,8 +25,7 @@ public class CrossSellClientOctopus: CrossSellClient {
             CrossSell($0.fragments.crossSellFragment)
         })
         let recommendedCrossSell: CrossSell? = {
-            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell
-            {
+            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell {
                 return CrossSell(crossSellFragment)
             }
             return nil
@@ -85,6 +84,23 @@ extension CrossSell {
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
             )
+
+        )
+    }
+
+    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
+        let crossSellFragment = data.crossSell.fragments.crossSellFragment
+        let type = crossSellFragment.type.crossSellType
+        guard type != .unknown else { return nil }
+        self.init(
+            id: crossSellFragment.id,
+            title: crossSellFragment.title,
+            description: crossSellFragment.description,
+            webActionURL: crossSellFragment.storeUrl,
+            hasBeenSeen: UserDefaults.standard.bool(
+                forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
+            ),
+            type: type
 
         )
     }
