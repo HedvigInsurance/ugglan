@@ -73,7 +73,6 @@ struct TerminationSummaryScreen: View {
                 terminationNavigationVm.config?.typeOfContract?.pillowType.bgImage ?? hCoreUIAssets.pillowHome.view
 
             image
-            hCoreUIAssets.pillowHome.view
                 .resizable()
                 .frame(width: 48, height: 48)
             VStack(alignment: .leading, spacing: 0) {
