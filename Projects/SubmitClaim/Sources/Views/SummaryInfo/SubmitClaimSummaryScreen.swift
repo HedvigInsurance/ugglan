@@ -38,7 +38,6 @@ public struct SubmitClaimSummaryScreen: View {
                 .withHeader(title: L10n.changeAddressDetails)
                 .padding(.top, .padding16)
                 .sectionContainerStyle(.transparent)
-                .accessibilityElement(children: .combine)
 
                 hSection {
                     hRowDivider()
@@ -51,6 +50,7 @@ public struct SubmitClaimSummaryScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
+                        .accessibilitySortPriority(2)
                         .padding(.bottom, .padding8)
                     hButton(
                         .large,
@@ -172,11 +172,13 @@ public struct SubmitClaimSummaryScreen: View {
     @ViewBuilder
     func createRow(with title: String?, and value: String?) -> some View {
         if let title, let value {
-            HStack {
+            HStack(alignment: .top) {
                 title.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
                 Spacer()
                 value.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
+                    .multilineTextAlignment(.trailing)
             }
+            .accessibilityElement(children: .combine)
         }
     }
 

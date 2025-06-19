@@ -22,11 +22,10 @@ public struct hRowDivider: View {
     public init() {}
 
     public var body: some View {
-        let noPaddingInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         RoundedRectangle(cornerRadius: 1, style: .circular)
             .fill(hBorderColor.secondary)
             .frame(height: 1)
-            .padding(hWithoutHorizontalPadding.contains(.divider) ? noPaddingInsets : settings.insets)
+            .padding(hWithoutHorizontalPadding.contains(.divider) ? .init() : settings.insets)
     }
 }
 

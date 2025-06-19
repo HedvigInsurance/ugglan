@@ -131,7 +131,8 @@ public struct ClaimDetailView: View {
                     hRow {
                         hText(statusParagraph, style: .body1)
                     }
-                    Divider()
+                    hRowDivider()
+                        .hWithoutHorizontalPadding([.divider])
                 }
 
                 hRow {
@@ -140,9 +141,9 @@ public struct ClaimDetailView: View {
                         Spacer()
 
                         if vm.toolbarOptionType.contains(.chat) {
-                            Image(uiImage: hCoreUIAssets.inbox.image)
+                            hCoreUIAssets.inbox.view
                         } else {
-                            Image(uiImage: hCoreUIAssets.inboxNotification.image)
+                            hCoreUIAssets.inboxNotification.view
                         }
                     }
                 }

@@ -150,7 +150,7 @@ struct InsuredPeopleScreen: View {
                 hText(text)
             }
             if let icon = type.icon {
-                Image(uiImage: icon.image)
+                icon.view
                     .foregroundColor(type.iconColor)
             }
         }

@@ -26,22 +26,22 @@ enum ProfileRowType {
         }
     }
     @MainActor
-    var icon: UIImage {
+    var icon: Image {
         switch self {
         case .myInfo:
-            return hCoreUIAssets.id.image
+            return hCoreUIAssets.id.view
         case .appInfo:
-            return hCoreUIAssets.infoOutlined.image
+            return hCoreUIAssets.infoOutlined.view
         case .settings:
-            return hCoreUIAssets.settings.image
+            return hCoreUIAssets.settings.view
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
-                return hCoreUIAssets.euroBonusWithValueRowIcon.image
+                return hCoreUIAssets.euroBonusWithValueRowIcon.view
             } else {
-                return hCoreUIAssets.eurobonus.image
+                return hCoreUIAssets.eurobonus.view
             }
         case .travelCertificate, .certificates, .insuranceEvidence:
-            return hCoreUIAssets.document.image
+            return hCoreUIAssets.document.view
         }
     }
 

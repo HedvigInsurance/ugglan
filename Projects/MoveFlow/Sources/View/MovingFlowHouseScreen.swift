@@ -144,7 +144,7 @@ struct MovingFlowHouseScreen: View {
                                     houseInformationInputvm.remove(extraBuilding: extraBuilding)
                                 }
                             } label: {
-                                Image(uiImage: hCoreUIAssets.closeSmall.image)
+                                hCoreUIAssets.closeSmall.view
                                     .resizable()
                                     .frame(width: 16, height: 16)
                                     .foregroundColor(hTextColor.Opaque.primary)
@@ -152,7 +152,8 @@ struct MovingFlowHouseScreen: View {
                         }
                         .padding(.vertical, .padding12)
                         if offset + 1 < houseInformationInputvm.extraBuildings.count {
-                            Divider()
+                            hRowDivider()
+                                .hWithoutHorizontalPadding([.divider])
                         }
                     }
                     hButton(
@@ -161,7 +162,7 @@ struct MovingFlowHouseScreen: View {
                         content: .init(
                             title: L10n.changeAddressAddBuilding,
                             buttonImage: .init(
-                                image: hCoreUIAssets.plusSmall.image,
+                                image: hCoreUIAssets.plusSmall.view,
                                 alignment: .leading
                             )
                         ),

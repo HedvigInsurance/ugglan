@@ -37,18 +37,20 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable {
     }
 }
 
+@MainActor
 extension CrossSell {
-    public var image: UIImage {
+    public var image: Image {
         switch type {
-        case .home: return HCoreUIAsset.bigPillowHome.image
-        case .car: return HCoreUIAsset.bigPillowCar.image
-        case .accident: return HCoreUIAsset.bigPillowAccident.image
-        case .pet: return HCoreUIAsset.bigPillowPet.image
-        case .apartmentBrf: return HCoreUIAsset.bigPillowHomeowner.image
-        case .apartmentRent: return HCoreUIAsset.bigPillowRental.image
-        case .unknown: return HCoreUIAsset.bigPillowHome.image
-        case .petDog: return HCoreUIAsset.bigPillowDog.image
-        case .petCat: return HCoreUIAsset.bigPillowCat.image
+        case .home: return hCoreUIAssets.bigPillowHome.view
+        case .car: return hCoreUIAssets.bigPillowCar.view
+        case .accident: return hCoreUIAssets.bigPillowAccident.view
+        case .pet: return hCoreUIAssets.bigPillowPet.view
+        case .apartmentBrf: return hCoreUIAssets.bigPillowHomeowner.view
+        case .apartmentRent: return hCoreUIAssets.bigPillowRental.view
+        case .unknown: return hCoreUIAssets.bigPillowHome.view
+        case .petDog: return hCoreUIAssets.bigPillowDog.view
+        case .petCat: return hCoreUIAssets.bigPillowCat.view
+        case .house: return hCoreUIAssets.bigPillowVilla.view
         }
     }
 }
@@ -56,6 +58,7 @@ extension CrossSell {
 public enum CrossSellType: String, Codable, Hashable, Sendable {
     case car
     case home
+    case house
     case apartmentBrf
     case apartmentRent
     case accident
