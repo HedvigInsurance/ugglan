@@ -82,7 +82,7 @@ public struct ProfileNavigation<Content: View>: View {
         .environmentObject(profileNavigationViewModel)
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
-            style: [.height],
+
             options: .constant(.withoutGrabber)
         ) { memberDetails in
             redirect(
@@ -93,7 +93,7 @@ public struct ProfileNavigation<Content: View>: View {
         }
         .detent(
             presented: $profileNavigationViewModel.isLanguagePickerPresented,
-            style: [.height],
+
             content: {
                 redirect(.pickLanguage)
                     .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)

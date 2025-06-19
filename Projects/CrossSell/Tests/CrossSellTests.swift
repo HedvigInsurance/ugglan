@@ -18,11 +18,13 @@ final class CrossSellTests: XCTestCase {
     func testGetCrossSellSuccess() async {
         let crossSell: [CrossSell] = [
             .init(
+                id: "1",
                 title: "car",
                 description: "description",
                 type: .car
             ),
             .init(
+                id: "2",
                 title: "pet",
                 description: "description",
                 type: .pet

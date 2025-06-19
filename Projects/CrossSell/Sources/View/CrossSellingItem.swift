@@ -37,8 +37,8 @@ struct CrossSellingItem: View {
                     Spacer()
 
                     hButton(
-                        .medium,
-                        .primaryAlt,
+                        .small,
+                        .secondary,
                         content: .init(title: L10n.crossSellGetPrice),
                         {
                             fieldIsClicked.toggle()
@@ -70,6 +70,7 @@ struct CrossSellingItem: View {
 #Preview {
     CrossSellingItem(
         crossSell: .init(
+            id: "id",
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
             type: .accident

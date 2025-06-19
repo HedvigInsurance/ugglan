@@ -1,6 +1,8 @@
 import Apollo
 import Chat
+import Combine
 import Contracts
+import CrossSell
 import EditCoInsuredShared
 import Foundation
 @preconcurrency import PresentableStore
@@ -82,6 +84,7 @@ public enum HomeAction: ActionProtocol {
     case setChatNotificationConversationTimeStamp(date: Date)
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
     case hideImportantMessage(id: String)
+    case recommendedProductUpdated
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -98,6 +101,16 @@ public enum HomeLoadingType: LoadingProtocol {
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var homeService: HomeClient
+    private var newOfferSubscription: AnyCancellable?
+    required init() {
+        super.init()
+        let store: CrossSellStore = globalPresentableStoreContainer.get()
+        newOfferSubscription = store.stateSignal.map({ $0.hasNewOffer }).removeDuplicates()
+            .sink { [weak self] value in
+                self?.send(.recommendedProductUpdated)
+            }
+
+    }
 
     public override func effects(
         _ getState: @escaping () -> HomeState,
@@ -193,6 +206,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
             setToolbarTypes(&newState)
+        case .recommendedProductUpdated:
+            setToolbarTypes(&newState)
         default:
             break
         }
@@ -202,7 +217,13 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
-        types.append(.newOffer)
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+
+        if crossSellStore.state.hasNewOffer {
+            types.append(.newOfferNotification)
+        } else {
+            types.append(.newOffer)
+        }
 
         if state.quickActions.hasFirstVet {
             types.append(.firstVet)
@@ -210,7 +231,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
         if state.hasSentOrRecievedAtLeastOneMessage {
             if state.showChatNotification {
-                types.append(.chatNotification(lastMessageTimeStamp: self.state.latestConversationTimeStamp))
+                types.append(.chatNotification)
             } else {
                 types.append(.chat)
             }

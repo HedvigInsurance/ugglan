@@ -5,6 +5,11 @@ import hCore
 class CrossSellService {
     @Inject var service: CrossSellClient
 
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+        log.info("CrossSellService: getCrossSell", error: nil, attributes: nil)
+        return try await service.getCrossSell(source: source)
+    }
+
     func getCrossSell() async throws -> [CrossSell] {
         log.info("CrossSellService: getCrossSell", error: nil, attributes: nil)
         return try await service.getCrossSell()
