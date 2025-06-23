@@ -742,11 +742,19 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
 
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
+        effectView?.addGestureRecognizer(tap)
+        effectView?.isUserInteractionEnabled = true
+
         self.detents = [
             .custom(resolver: { context in
                 return 0
             })
         ]
+    }
+
+    @objc private func didTapBackground() {
+        presentedViewController.dismiss(animated: true)
     }
 
     public override func presentationTransitionWillBegin() {

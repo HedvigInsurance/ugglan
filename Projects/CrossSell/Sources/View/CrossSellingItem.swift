@@ -45,7 +45,6 @@ struct CrossSellingItem: View {
                             openExternal()
                         }
                     )
-                    .hUseLightMode
                 }
             }
             .accessibilityElement(children: .combine)
