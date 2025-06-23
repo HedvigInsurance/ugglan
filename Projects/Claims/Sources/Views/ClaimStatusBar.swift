@@ -118,20 +118,20 @@ struct ClaimStatusBar: View {
     }
 
     var body: some View {
-        ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
-            if !(segment == .none || segment == .reopened) {
-                VStack {
-                    Rectangle()
-                        .fill(barColor(segment: segment))
-                        .frame(height: 4)
-                        .cornerRadius(.cornerRadiusXS)
-                    hText(segment.title, style: .label)
-                        .foregroundColor(textColor(segment: segment))
-                        .lineLimit(2)
-                        .fixedSize(horizontal: true, vertical: false)
+        HStack(alignment: .top, spacing: .padding6) {
+            ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
+                if !(segment == .none || segment == .reopened) {
+                    VStack {
+                        Rectangle()
+                            .fill(barColor(segment: segment))
+                            .frame(height: 4)
+                            .cornerRadius(.cornerRadiusXS)
+                        hText(segment.title, style: .label)
+                            .foregroundColor(textColor(segment: segment))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .accessibilityLabel(accessibilityText(segment: segment) ?? "")
                 }
-                .frame(maxWidth: .infinity)
-                .accessibilityLabel(accessibilityText(segment: segment) ?? "")
             }
         }
     }
