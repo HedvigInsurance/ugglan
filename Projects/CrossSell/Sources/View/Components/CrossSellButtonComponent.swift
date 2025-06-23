@@ -20,11 +20,14 @@ struct CrossSellButtonComponent: View {
                         }
                     }
                 )
+                .accessibilityHint(L10n.crossSellButton)
 
                 hText(L10n.crossSellLabel, style: .finePrint)
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
+            .accessibilityElement(children: .combine)
         }
         .sectionContainerStyle(.transparent)
+
     }
 }
