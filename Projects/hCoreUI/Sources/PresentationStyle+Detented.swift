@@ -460,7 +460,7 @@ public class BlurredSheetPresentationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: getBlurEffectStyle)) : nil
+        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial)) : nil
         effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
@@ -470,14 +470,6 @@ public class BlurredSheetPresentationController: UISheetPresentationController {
                 return 0
             })
         ]
-    }
-
-    var getBlurEffectStyle: UIBlurEffect.Style {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .light
-        } else {
-            return .light
-        }
     }
 
     public override func presentationTransitionWillBegin() {
