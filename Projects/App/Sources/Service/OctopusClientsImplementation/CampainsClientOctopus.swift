@@ -58,7 +58,12 @@ extension Discount {
             amount: amountFromPaymentData,
             title: data.description,
             listOfAffectedInsurances: data.onlyApplicableToContracts?
-                .compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) }) ?? [],
+                .compactMap({
+                    .init(
+                        id: $0.id,
+                        displayName: $0.getDisplayName
+                    )
+                }) ?? [],
             validUntil: data.expiresAt,
             canBeDeleted: true,
             discountId: data.id
@@ -181,5 +186,15 @@ extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
         case .unknown:
             return .unknown
         }
+    }
+}
+
+extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
+    fileprivate var getDisplayName: String {
+        return [
+            self.currentAgreement.productVariant.displayNameShort ?? self.currentAgreement.productVariant.displayName,
+            self.exposureDisplayNameShort,
+        ]
+        .displayName
     }
 }

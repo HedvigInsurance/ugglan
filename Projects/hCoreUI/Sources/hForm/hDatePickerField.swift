@@ -51,18 +51,16 @@ public struct hDatePickerField: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .leading) {
-                hFieldLabel(
-                    placeholder: config.placeholder,
-                    animate: $animate,
-                    error: $error,
-                    shouldMoveLabel: shouldMoveLabel
-                )
-                .offset(y: !(selectedDate?.localDateString.isEmpty ?? true) ? size.labelOffset : 0)
+
+            hFieldContainer(
+                placeholder: config.placeholder,
+                customLabelOffset: !(selectedDate?.localDateString.isEmpty ?? true),
+                animate: $animate,
+                error: $error,
+                shouldMoveLabel: shouldMoveLabel
+            ) {
                 getValueLabel()
             }
-            .padding(.top, size.topPadding)
-            .padding(.bottom, size.bottomPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .onChange(of: selectedDate) { date in
                 if let date {
@@ -118,8 +116,6 @@ public struct hDatePickerField: View {
             .foregroundColor(foregroundColor)
             Spacer()
         }
-        .offset(y: !(selectedDate?.localDateString.isEmpty ?? true) ? size.fieldOffset : 0)
-
     }
 
     @hColorBuilder

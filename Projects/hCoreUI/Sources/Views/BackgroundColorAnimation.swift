@@ -15,6 +15,7 @@ public struct BackgorundColorAnimation<InitialColor: hColor, AnimationColor: hCo
     public func body(content: Content) -> some View {
         content
             .background(backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
             .onChange(of: animationTrigger) { animate in
                 withAnimation(.easeIn(duration: 0.2)) {
                     showAnimation = true

@@ -92,18 +92,15 @@ struct GenericErrorTrackName: TrackingViewNameProtocol {
 struct LoadingViewWithButtonLoadingForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
     public func body(content: Content) -> some View {
-        ZStack {
-            BackgroundView().edgesIgnoringSafeArea(.all)
-            switch state {
-            case .success, .loading:
-                content.transition(.opacity.animation(.easeInOut(duration: 0.2))).hButtonIsLoading(state == .loading)
-            case .error(let errorMessage):
-                GenericErrorView(
-                    description: errorMessage,
-                    formPosition: nil
-                )
-                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-            }
+        switch state {
+        case .success, .loading:
+            content.transition(.opacity.animation(.easeInOut(duration: 0.2))).hButtonIsLoading(state == .loading)
+        case .error(let errorMessage):
+            GenericErrorView(
+                description: errorMessage,
+                formPosition: nil
+            )
+            .transition(.opacity.animation(.easeInOut(duration: 0.2)))
         }
     }
 

@@ -131,7 +131,8 @@ public struct ClaimDetailView: View {
                     hRow {
                         hText(statusParagraph, style: .body1)
                     }
-                    Divider()
+                    hRowDivider()
+                        .hWithoutHorizontalPadding([.divider])
                 }
 
                 hRow {

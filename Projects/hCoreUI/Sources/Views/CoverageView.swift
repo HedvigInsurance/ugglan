@@ -44,7 +44,6 @@ public struct CoverageView: View {
                     }
                 }
             }
-            .hWithoutHorizontalPadding([.section, .divider])
         }
     }
 }
