@@ -9,7 +9,7 @@ public class CrossSellClientDemo: CrossSellClient {
                 id: "1",
                 title: "title",
                 description: "description",
-                type: .home,
+                imageUrl: nil,
                 buttonDescription: "buttonDescription"
             )
         ]
@@ -21,7 +21,7 @@ public class CrossSellClientDemo: CrossSellClient {
                 id: "1",
                 title: "title",
                 description: "description",
-                type: .home,
+                imageUrl: nil,
                 buttonDescription: "buttonDescription"
             )
         ]

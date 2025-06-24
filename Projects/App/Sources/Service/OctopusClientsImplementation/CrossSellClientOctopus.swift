@@ -54,69 +54,35 @@ public class CrossSellClientOctopus: CrossSellClient {
 
 extension CrossSell {
     public init?(_ data: OctopusGraphQL.CrossSellFragment) {
-        let type = data.type.crossSellType
-        guard type != .unknown else { return nil }
         self.init(
             id: data.id,
             title: data.title,
             description: data.description,
             webActionURL: data.storeUrl,
-            type: type,
+            imageUrl: URL(string: data.pillowImageSmall.src),
             buttonDescription: "",
             hasBeenSeen: UserDefaults.standard.bool(
-                forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
+                forKey: Self.hasBeenSeenKey(typeOfContract: data.id)
             )
         )
     }
 
     public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
         let crossSellFragment = data.crossSell.fragments.crossSellFragment
-        let type = crossSellFragment.type.crossSellType
-        guard type != .unknown else { return nil }
         self.init(
             id: crossSellFragment.id,
             title: crossSellFragment.title,
             description: crossSellFragment.description,
             webActionURL: crossSellFragment.storeUrl,
-            type: type,
             bannerText: data.bannerText,
             buttonText: data.buttonText,
             discountText: data.discountText,
+            imageUrl: URL(string: crossSellFragment.pillowImageLarge.src),
             buttonDescription: data.buttonDescription,
             hasBeenSeen: UserDefaults.standard.bool(
-                forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
+                forKey: Self.hasBeenSeenKey(typeOfContract: crossSellFragment.id)
             )
         )
-    }
-}
-
-extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
-    var crossSellType: CrossSellType {
-        switch self {
-        case .case(let t):
-            switch t {
-            case .car:
-                return .car
-            case .home:
-                return .home
-            case .accident:
-                return .accident
-            case .pet:
-                return .pet
-            case .apartmentBrf:
-                return .apartmentBrf
-            case .apartmentRent:
-                return .apartmentRent
-            case .petCat:
-                return .petCat
-            case .petDog:
-                return .petDog
-            case .house:
-                return .house
-            }
-        case .unknown:
-            return .unknown
-        }
     }
 }
 
