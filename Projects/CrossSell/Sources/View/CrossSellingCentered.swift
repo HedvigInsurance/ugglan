@@ -33,7 +33,8 @@ struct CrossSellingCentered_Previews: PreviewProvider {
                 id: "id",
                 title: "Accident Insurance",
                 description: "Help when you need it the most",
-                type: .accident
+                type: .accident,
+                buttonDescription: "buttonDescription"
             )
         )
     }

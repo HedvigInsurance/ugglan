@@ -36,6 +36,13 @@ struct CrossSellPillowComponent: View {
 
 #Preview {
     CrossSellPillowComponent(
-        crossSell: .init(id: "id", title: "title", description: "description", type: .accident, discountText: "50%")
+        crossSell: .init(
+            id: "id",
+            title: "title",
+            description: "description",
+            type: .accident,
+            discountText: "50%",
+            buttonDescription: "buttonDescription"
+        )
     )
 }

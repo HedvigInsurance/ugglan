@@ -21,7 +21,7 @@ struct CrossSellButtonComponent: View {
                     }
                 )
                 hText(
-                    crossSell.discountText == nil ? L10n.crossSellLabel : L10n.crossSellLabelLimitedOffer,
+                    crossSell.buttonDescription,
                     style: .finePrint
                 )
                 .foregroundColor(hTextColor.Translucent.secondary)
