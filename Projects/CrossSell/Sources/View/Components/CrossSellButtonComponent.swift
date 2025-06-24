@@ -20,13 +20,12 @@ struct CrossSellButtonComponent: View {
                         }
                     }
                 )
-                hText(
-                    crossSell.buttonDescription,
-                    style: .finePrint
-                )
-                .foregroundColor(hTextColor.Translucent.secondary)
+                .accessibilityHint(L10n.crossSellButton)
+                hText(crossSell.buttonDescription, style: .finePrint)
+                    .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
         .sectionContainerStyle(.transparent)
+
     }
 }
