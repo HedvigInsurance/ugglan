@@ -25,7 +25,6 @@ struct CrossSellButtonComponent: View {
                 hText(L10n.crossSellLabel, style: .finePrint)
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
-            .accessibilityElement(children: .combine)
         }
         .sectionContainerStyle(.transparent)
 
