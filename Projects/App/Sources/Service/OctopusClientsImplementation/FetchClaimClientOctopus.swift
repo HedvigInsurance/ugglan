@@ -31,7 +31,7 @@ extension ClaimModel {
             memberFreeText: claim.memberFreeText,
             payoutAmount: MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment),
             targetFileUploadUri: claim.targetFileUploadUri,
-            claimType: claim.claimType ?? "",
+            claimType: claim.claimType ?? L10n.Claim.Casetype.insuranceCase,
             productVariant: .init(data: claim.productVariant?.fragments.productVariantFragment),
             conversation: .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim),
             appealInstructionsUrl: claim.appealInstructionsUrl,
