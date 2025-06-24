@@ -61,13 +61,13 @@ extension CrossSell {
             title: data.title,
             description: data.description,
             webActionURL: data.storeUrl,
+            type: type,
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
             ),
-            type: type
         )
     }
-
+    
     public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
         let crossSellFragment = data.crossSell.fragments.crossSellFragment
         let type = crossSellFragment.type.crossSellType
@@ -77,10 +77,13 @@ extension CrossSell {
             title: crossSellFragment.title,
             description: crossSellFragment.description,
             webActionURL: crossSellFragment.storeUrl,
+            type: type,
+            bannerText: data.bannerText,
+            buttonText: data.buttonText,
+            discountText: data.discountText,
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
-            ),
-            type: type
+            )
 
         )
     }
