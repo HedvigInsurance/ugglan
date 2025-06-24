@@ -10,23 +10,27 @@ struct AskForPushNotifications: View {
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
     let wrapWithForm: Bool
+    let height: CGFloat
 
     init(
         text: String,
         onActionExecuted: @escaping () -> Void,
-        wrapWithForm: Bool = false
+        wrapWithForm: Bool = false,
+        height: CGFloat? = nil
     ) {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
         self.wrapWithForm = wrapWithForm
+        self.height = height ?? 0
     }
 
     var body: some View {
         if wrapWithForm {
             hForm {
                 mainContent
+                    .frame(minHeight: height)
             }
             .hFormContentPosition(.compact)
         } else {
@@ -36,7 +40,7 @@ struct AskForPushNotifications: View {
 
     var mainContent: some View {
         hSection {
-            VStack(spacing: .padding24) {
+            VStack(spacing: .padding16) {
                 if !wrapWithForm {
                     Spacer()
                 }
@@ -53,36 +57,58 @@ struct AskForPushNotifications: View {
                         .padding(.horizontal, .padding32)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                hButton(
-                    .medium,
-                    .primary,
-                    content: .init(title: L10n.claimsActivateNotificationsCta),
-                    {
-                        Task {
-                            await UIApplication.shared.appDelegate.registerForPushNotifications()
-                            onActionExecuted()
-                        }
-                    }
-                )
-                if !wrapWithForm {
-                    Spacer()
-                }
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.claimsActivateNotificationsDismiss),
-                    {
-                        onActionExecuted()
-                        let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.setPushNotificationStatus(status: nil))
-                    }
-                )
-                .padding(.bottom, .padding16)
+                buttonsView
             }
         }
         .sectionContainerStyle(.transparent)
         .background(
             BackgroundView().ignoresSafeArea()
+        )
+    }
+
+    @ViewBuilder
+    var buttonsView: some View {
+        if wrapWithForm {
+            VStack(spacing: .padding4) {
+                activateNotificationsButton
+                if !wrapWithForm {
+                    Spacer()
+                }
+                closeButton
+            }
+        } else {
+            activateNotificationsButton
+            if !wrapWithForm {
+                Spacer()
+            }
+            closeButton
+        }
+    }
+
+    var activateNotificationsButton: some View {
+        hButton(
+            .medium,
+            .primary,
+            content: .init(title: L10n.claimsActivateNotificationsCta),
+            {
+                Task {
+                    await UIApplication.shared.appDelegate.registerForPushNotifications()
+                    onActionExecuted()
+                }
+            }
+        )
+    }
+
+    var closeButton: some View {
+        hButton(
+            .large,
+            .ghost,
+            content: .init(title: L10n.claimsActivateNotificationsDismiss),
+            {
+                onActionExecuted()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                store.send(.setPushNotificationStatus(status: nil))
+            }
         )
     }
 }
