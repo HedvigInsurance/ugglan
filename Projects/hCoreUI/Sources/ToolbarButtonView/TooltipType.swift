@@ -17,18 +17,14 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     @MainActor
     var image: UIImage {
         switch self {
-        case .newOffer:
+        case .newOffer, .newOfferNotification:
             return hCoreUIAssets.campaignQuickNav.image
         case .firstVet:
             return hCoreUIAssets.firstVetQuickNav.image
-        case .chat:
+        case .chat, .chatNotification:
             return hCoreUIAssets.inbox.image
-        case .chatNotification:
-            return hCoreUIAssets.inboxNotification.image
         case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.image
-        case .newOfferNotification:
-            return hCoreUIAssets.campaignQuickNavNotification.image
         }
     }
 
@@ -95,6 +91,15 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
             return false
         default:
             return true
+        }
+    }
+
+    var showBadge: Bool {
+        switch self {
+        case .chatNotification, .newOfferNotification:
+            return true
+        default:
+            return false
         }
     }
 
