@@ -64,10 +64,10 @@ extension CrossSell {
             type: type,
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
-            ),
+            )
         )
     }
-    
+
     public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
         let crossSellFragment = data.crossSell.fragments.crossSellFragment
         let type = crossSellFragment.type.crossSellType
@@ -84,7 +84,6 @@ extension CrossSell {
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
             )
-
         )
     }
 }
