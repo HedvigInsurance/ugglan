@@ -220,8 +220,8 @@ struct ContractInformationView: View {
         {
             hSection {
                 InfoCard(
-                    text: days == 0
-                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days),
+                    text: days == 1
+                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days + 1),
                     type: .info
                 )
                 .buttons([
