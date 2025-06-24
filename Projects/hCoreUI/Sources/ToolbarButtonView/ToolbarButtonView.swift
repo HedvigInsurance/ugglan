@@ -36,18 +36,20 @@ public struct ToolbarButtonView: View {
                         }
                         action(type)
                     }) {
-                        Image(uiImage: type.image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: type.imageSize, height: type.imageSize)
-                            .foregroundColor(hFillColor.Opaque.primary)
-                            .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
-                            .accessibilityValue(type.displayName)
-                            .overlay {
-                                if type.shouldAnimate {
-                                    rotationOverlay(for: type)
-                                }
+                        ZStack(alignment: .topTrailing) {
+                            if type.shouldAnimate {
+                                imageFor(type: type)
+                                    .rotate()
+                            } else {
+                                imageFor(type: type)
                             }
+                            if type.showBadge {
+                                Circle()
+                                    .fill(hSignalColor.Red.element)
+                                    .frame(width: 10, height: 10)
+                                    .offset(x: -.padding4, y: .padding4)
+                            }
+                        }
                     }
                 }
                 .showTooltip(type: type, placement: placement)
@@ -55,24 +57,15 @@ public struct ToolbarButtonView: View {
         }
     }
 
-    private func rotationOverlay(for type: ToolbarOptionType) -> some View {
-        Color.clear
-            .frame(width: type.imageSize * 0.5, height: type.imageSize * 0.5)
-            .background {
-                Image(uiImage: type.image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: type.imageSize, height: type.imageSize)
-                    .foregroundColor(hFillColor.Opaque.primary)
-                    .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
-                    .accessibilityValue(type.displayName)
-            }
-            .clipShape(
-                Circle()
-            )
-            .rotate()
+    private func imageFor(type: ToolbarOptionType) -> some View {
+        Image(uiImage: type.image)
+            .resizable()
+            .scaledToFill()
+            .frame(width: type.imageSize, height: type.imageSize)
+            .foregroundColor(hFillColor.Opaque.primary)
+            .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
+            .accessibilityValue(type.displayName)
     }
-
 }
 
 public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
