@@ -225,9 +225,35 @@ extension EnvironmentValues {
     }
 }
 
+extension View {
+    /// set section container style
+    public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
+        self.environment(\.hSectionContainerStyle, style)
+    }
+}
+
+@MainActor
+private struct EnvironmentHSectionContainerMaskerCorners: @preconcurrency EnvironmentKey {
+    static let defaultValue = UIRectCorner.allCorners
+}
+
+extension EnvironmentValues {
+    var hSectionContainerCornerMaskedCorners: UIRectCorner {
+        get { self[EnvironmentHSectionContainerMaskerCorners.self] }
+        set { self[EnvironmentHSectionContainerMaskerCorners.self] = newValue }
+    }
+}
+
+extension View {
+    /// set section container style
+    public func sectionContainerCornerMaskerCorners(_ corners: UIRectCorner) -> some View {
+        self.environment(\.hSectionContainerCornerMaskedCorners, corners)
+    }
+}
+
 struct hSectionContainerStyleModifier: ViewModifier {
     @Environment(\.hSectionContainerStyle) var containerStyle
-
+    @Environment(\.hSectionContainerCornerMaskedCorners) var maskedCorners
     public func body(content: Content) -> some View {
         switch containerStyle {
         case .transparent:
@@ -236,7 +262,7 @@ struct hSectionContainerStyleModifier: ViewModifier {
             content.background(
                 hSurfaceColor.Opaque.primary
             )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
         case .black:
             content.background(
                 hColorScheme(
@@ -307,13 +333,6 @@ extension EnvironmentValues {
 extension View {
     public var hSectionHeaderWithDivider: some View {
         self.environment(\.hSectionHeaderWithDivider, true)
-    }
-}
-
-extension View {
-    /// set section container style
-    public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
-        self.environment(\.hSectionContainerStyle, style)
     }
 }
 
