@@ -20,13 +20,12 @@ struct CrossSellButtonComponent: View {
                         }
                     }
                 )
-                hText(
-                    crossSell.discountText == nil ? L10n.crossSellLabel : L10n.crossSellLabelLimitedOffer,
-                    style: .finePrint
-                )
-                .foregroundColor(hTextColor.Translucent.secondary)
+                .accessibilityHint(L10n.crossSellButton)
+                hText(crossSell.buttonDescription, style: .finePrint)
+                    .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
         .sectionContainerStyle(.transparent)
+
     }
 }

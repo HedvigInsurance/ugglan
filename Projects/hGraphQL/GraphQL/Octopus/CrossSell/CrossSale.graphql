@@ -11,6 +11,7 @@ query CrossSell($source: CrossSellSource!) {
           ...CrossSellFragment
         }
         discountText
+	buttonDescription
       }
     }
   }

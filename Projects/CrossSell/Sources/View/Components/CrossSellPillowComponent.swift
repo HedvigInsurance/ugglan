@@ -36,11 +36,19 @@ struct CrossSellPillowComponent: View {
             }
             .multilineTextAlignment(.center)
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
 #Preview {
     CrossSellPillowComponent(
-        crossSell: .init(id: "id", title: "title", description: "description", discountText: "50%", imageUrl: nil)
+        crossSell: .init(
+            id: "id",
+            title: "title",
+            description: "description",
+            discountText: "50%",
+            imageUrl: nil,
+            buttonDescription: "buttonDescription"
+        )
     )
 }

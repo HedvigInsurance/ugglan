@@ -16,5 +16,6 @@ struct CrossSellBannerComponent: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, .padding10)
         .background(hSignalColor.Green.fill)
+        .accessibilityElement(children: .combine)
     }
 }
