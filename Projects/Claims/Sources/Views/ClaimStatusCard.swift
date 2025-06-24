@@ -17,9 +17,7 @@ struct ClaimStatusCard: View {
             subTitle: getSubTitle,
             bottomComponent: {
                 VStack(spacing: .padding16) {
-                    HStack(spacing: .padding6) {
-                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
-                    }
+                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
                     if enableTap {
                         hButton(
                             .medium,
@@ -32,7 +30,6 @@ struct ClaimStatusCard: View {
                         .hButtonTakeFullWidth(true)
                     }
                 }
-                .fixedSize(horizontal: false, vertical: true)
             }
         )
     }
