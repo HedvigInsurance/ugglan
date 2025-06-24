@@ -90,7 +90,7 @@ public struct ClaimDetailView: View {
         }
         .detent(
             item: $vm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }
@@ -504,7 +504,7 @@ public class ClaimDetailViewModel: ObservableObject {
         let timeStamp = conversation.newestMessage?.sentAt
         withAnimation {
             self.toolbarOptionType =
-                hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+                hasNewMessage ? [.chatNotification] : [.chat]
         }
     }
 

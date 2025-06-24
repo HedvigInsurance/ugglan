@@ -59,10 +59,28 @@ public class HomeNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
             [weak self] notification in
-            if let crossSellInfo = notification.object as? CrossSellInfo {
-                Task { @MainActor in
-                    try await Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
-                    self?.navBarItems.isNewOfferPresented = crossSellInfo
+            guard let crossSellInfo = notification.object as? CrossSellInfo else { return }
+
+            Task { @MainActor in
+                async let sleep: Void = Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
+                let crossSells = try await crossSellInfo.getCrossSell()
+                try await sleep
+
+                if let recommended = crossSells.recommended {
+                    if crossSells.others.isEmpty {
+                        self?.navBarItems.isNewOfferPresentedCenter = recommended
+                    } else {
+                        self?.navBarItems.isNewOfferPresentedModal = crossSells
+                    }
+                } else {
+                    self?.navBarItems.isNewOfferPresentedDetent = crossSells
+                }
+
+                crossSellInfo.logCrossSellEvent()
+
+                if let recommended = crossSells.recommended {
+                    let store: CrossSellStore = globalPresentableStoreContainer.get()
+                    store.send(.setHasSeenRecommendedWith(id: recommended.id))
                 }
             }
         }
@@ -80,7 +98,9 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct NavBarItems {
         public var isFirstVetPresented = false
-        public var isNewOfferPresented: CrossSellInfo?
+        public var isNewOfferPresentedModal: CrossSells?
+        public var isNewOfferPresentedCenter: CrossSell?
+        public var isNewOfferPresentedDetent: CrossSells?
     }
 
     deinit {
