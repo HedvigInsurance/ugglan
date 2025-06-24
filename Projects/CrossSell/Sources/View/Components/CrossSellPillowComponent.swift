@@ -12,7 +12,7 @@ struct CrossSellPillowComponent: View {
                 if let discountText = crossSell.discountText {
                     hText(discountText, style: .label)
                         .padding(.horizontal, .padding6)
-                        .padding(.vertical, .padding4)
+                        .padding(.vertical, .padding3)
                         .background {
                             hHighlightColor.Green.fillOne
                         }
