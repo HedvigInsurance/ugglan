@@ -59,7 +59,7 @@ extension CrossSell {
             title: data.title,
             description: data.description,
             webActionURL: data.storeUrl,
-            imageUrl: URL(string: data.pillowImageSmall?.src ?? ""),
+            imageUrl: URL(string: data.pillowImageSmall.src),
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: data.id)
             )
@@ -73,7 +73,10 @@ extension CrossSell {
             title: crossSellFragment.title,
             description: crossSellFragment.description,
             webActionURL: crossSellFragment.storeUrl,
-            imageUrl: URL(string: crossSellFragment.pillowImageLarge?.src ?? ""),
+            bannerText: data.bannerText,
+            buttonText: data.buttonText,
+            discountText: data.discountText,
+            imageUrl: URL(string: crossSellFragment.pillowImageLarge.src),
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: crossSellFragment.id)
             )
