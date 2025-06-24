@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct CrossSellingCentered: View {
-    let crossSell: CrossSell
+    private let crossSell: CrossSell
 
     public init(
         crossSell: CrossSell
@@ -21,7 +21,7 @@ public struct CrossSellingCentered: View {
             }
             .padding(.bottom, .padding16)
         }
-        .hFormContentPosition(.compact)
+        .setViewController
     }
 }
 
