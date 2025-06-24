@@ -418,6 +418,7 @@ extension CGFloat {
 
 extension CGFloat {
     public static let padding2: CGFloat = 2
+    public static let padding3: CGFloat = 2
     public static let padding4: CGFloat = 4
     public static let padding6: CGFloat = 6
     public static let padding8: CGFloat = 8

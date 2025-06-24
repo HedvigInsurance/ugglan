@@ -45,7 +45,6 @@ struct CrossSellingItem: View {
                             openExternal()
                         }
                     )
-                    .hUseLightMode
                 }
             }
             .accessibilityElement(children: .combine)
@@ -73,7 +72,8 @@ struct CrossSellingItem: View {
             id: "id",
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
-            type: .accident
+            type: .accident,
+            buttonDescription: "button description"
         )
     )
 }

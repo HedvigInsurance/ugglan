@@ -15,7 +15,7 @@ public struct CrossSellingCentered: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrossSellBannerComponent()
+                CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
                 CrossSellButtonComponent(crossSell: crossSell)
             }
@@ -33,7 +33,8 @@ struct CrossSellingCentered_Previews: PreviewProvider {
                 id: "id",
                 title: "Accident Insurance",
                 description: "Help when you need it the most",
-                type: .accident
+                type: .accident,
+                buttonDescription: "buttonDescription"
             )
         )
     }

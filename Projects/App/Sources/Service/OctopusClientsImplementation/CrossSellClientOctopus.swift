@@ -61,10 +61,11 @@ extension CrossSell {
             title: data.title,
             description: data.description,
             webActionURL: data.storeUrl,
+            type: type,
+            buttonDescription: "",
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
-            ),
-            type: type
+            )
         )
     }
 
@@ -77,11 +78,14 @@ extension CrossSell {
             title: crossSellFragment.title,
             description: crossSellFragment.description,
             webActionURL: crossSellFragment.storeUrl,
+            type: type,
+            bannerText: data.bannerText,
+            buttonText: data.buttonText,
+            discountText: data.discountText,
+            buttonDescription: data.buttonDescription,
             hasBeenSeen: UserDefaults.standard.bool(
                 forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
-            ),
-            type: type
-
+            )
         )
     }
 }
