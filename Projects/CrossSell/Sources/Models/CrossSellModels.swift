@@ -7,6 +7,12 @@ public struct CrossSells: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let recommended: CrossSell?
     public let others: [CrossSell]
 
+    enum CodingKeys: String, CodingKey {
+        case id
+        case recommended
+        case others
+    }
+
     public init(recommended: CrossSell?, others: [CrossSell]) {
         self.recommended = recommended
         self.others = others

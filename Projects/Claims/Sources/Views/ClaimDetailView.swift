@@ -501,7 +501,6 @@ public class ClaimDetailViewModel: ObservableObject {
             return
         }
         let hasNewMessage = conversation.hasNewMessage
-        let timeStamp = conversation.newestMessage?.sentAt
         withAnimation {
             self.toolbarOptionType =
                 hasNewMessage ? [.chatNotification] : [.chat]
