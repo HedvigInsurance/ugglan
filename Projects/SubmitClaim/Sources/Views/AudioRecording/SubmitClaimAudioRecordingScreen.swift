@@ -282,6 +282,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             hTextView(
                 selectedValue: inputText,
                 placeholder: L10n.claimsTextInputPlaceholder,
+                popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
                 required: true,
                 maxCharacters: 2000
             ) { text in

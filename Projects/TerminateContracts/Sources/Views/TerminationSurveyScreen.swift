@@ -317,6 +317,7 @@ struct TerminationFlowSurveyStepFeedBackView: View {
         hTextView(
             selectedValue: vm.text,
             placeholder: L10n.terminationSurveyFeedbackHint,
+            popupPlaceholder: L10n.terminationSurveyFeedbackPopoverHint,
             required: vm.required,
             maxCharacters: 2000
         ) { [weak vm] text in
