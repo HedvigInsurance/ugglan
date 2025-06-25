@@ -73,7 +73,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     textElements
                 }
             }
-            .slideUpAppearAnimation()
+            .expandAppearAnimation()
         }
         .claimErrorTrackerForState($audioRecordingVm.viewState)
     }

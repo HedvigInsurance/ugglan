@@ -507,7 +507,7 @@ private class TextView: UITextView, UITextViewDelegate {
                         .sizeThatFits(.init(width: self.frame.width, height: .infinity)).height
                     let height = max(contentSize, labelHeight)
                     if disabled {
-                        self.height = max(min(height + 12, 120), 100)
+                        self.height = 100
                     } else {
                         self.height = max(height + 12, 100)
                     }
@@ -522,7 +522,26 @@ private class TextView: UITextView, UITextViewDelegate {
         let frameWidth = self.frame.width
         let labelSize = self.placeholderView.sizeThatFits(.init(width: self.frame.width, height: .infinity))
         self.placeholderView.frame = .init(x: 0, y: 0, width: frameWidth, height: labelSize.height)
+        if disabled {
+            let transparent = UIColor(white: 0, alpha: 0).cgColor
+            let opaque = UIColor(white: 0, alpha: 1).cgColor
 
+            let maskLayer = CALayer()
+            maskLayer.frame = self.bounds
+
+            let gradientLayer = CAGradientLayer()
+            gradientLayer.frame = CGRect(
+                x: self.bounds.origin.x,
+                y: 0,
+                width: self.bounds.size.width,
+                height: self.bounds.size.height
+            )
+            gradientLayer.colors = [transparent, opaque, opaque, transparent]
+            gradientLayer.locations = [0.0, 0.02, 0.98, 1.0]
+
+            maskLayer.addSublayer(gradientLayer)
+            self.layer.mask = maskLayer
+        }
     }
 }
 
