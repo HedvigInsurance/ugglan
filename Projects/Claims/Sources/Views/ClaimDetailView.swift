@@ -367,8 +367,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
         Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
         Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        let featureFlags = FeatureFlagsDemo()
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
 
         let claim = ClaimModel(
             id: "claimId",
