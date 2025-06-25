@@ -14,8 +14,6 @@ public struct hTextView: View {
     @State private var value: String = ""
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
-    @State private var numberOfLines: Int = 0
-    @State private var popoverNumberOfLines: Int = 0
     @Environment(\.colorScheme) var colorSchema
     private let onContinue: (_ text: String) -> Void
     public init(
@@ -37,7 +35,6 @@ public struct hTextView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             ZStack(alignment: .topTrailing) {
-                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                 hSection {
                     VStack(alignment: .trailing, spacing: 4) {
                         SwiftUITextView(
@@ -47,23 +44,24 @@ public struct hTextView: View {
                             disabled: true,
                             height: $height,
                             width: $width,
-                            numberOfLines: $numberOfLines,
                             inEdit: .constant(false),
                             onBeginEditing: {
                                 showFreeTextField()
                             }
                         )
-                        .frame(height: 100)
+                        .padding(.leading, -4)
+                        .frame(height: height)
                         HeroAnimationWrapper(id: "counter", cornerRadius: 0) {
                             HStack(spacing: .padding4) {
                                 Spacer()
                                 hText("\(value.count)/\(maxCharacters)", style: .label)
                                     .foregroundColor(hTextColor.Opaque.tertiary)
                             }
+                            .fixedSize()
                         }
-                        .padding(.bottom, .padding12)
                         .fixedSize()
                         .id(UUID().uuidString)
+                        .padding(.bottom, .padding12)
                     }
                 }
                 .padding(.top, .padding12)
@@ -72,15 +70,19 @@ public struct hTextView: View {
                     hCoreUIAssets.warningTriangleFilled.view
                         .foregroundColor(hSignalColor.Amber.element)
                         .frame(width: 24, height: 24)
-
                         .padding(.top, .padding12)
                         .padding(.trailing, .padding16)
                 }
             }
+            .background {
+                hSurfaceColor.Opaque.primary
+            }
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
             if let errorMessage {
                 hText(errorMessage, style: .label).foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.horizontal, .padding16)
             }
+
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(placeholder)
@@ -110,8 +112,7 @@ public struct hTextView: View {
             title: placeholder,
             placeholder: popupPlaceholder,
             maxCharacters: maxCharacters,
-            height: $popoverHeight,
-            numberOfLines: $popoverNumberOfLines
+            height: $popoverHeight
         )
         .hTextFieldError(errorMessage)
 
@@ -124,7 +125,9 @@ public struct hTextView: View {
             self.selectedValue = value
             self.value = value
             self.onContinue(value)
-            vc?.dismiss(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                vc?.dismiss(animated: true)
+            }
         }
         cancelAction.execute = { [weak vc] in
             vc?.dismiss(animated: true)
@@ -140,7 +143,7 @@ public struct hTextView: View {
 
     struct PreviewWrapper: View {
         @State var valuee =
-            "SUPER LONG TEXT THAT NEEDS MORE ROWS AND MORE ROWS AND MORE ROWS AND MORE ROWS AND MORE ROWS and MORE MORE MROE MORE MORE"
+            ""
         @State var error: String? = nil
 
         var body: some View {
@@ -184,7 +187,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     @State var showButtons = false
     @Environment(\.safeAreaInsets) private var safeAreaInsets
     @State var keyboard: CGFloat = 303.99
-    @Binding var numberOfLines: Int
     @State private var inEdit: Bool = false
     let initDate = Date()
     @Environment(\.hTextFieldError) var errorMessage
@@ -196,8 +198,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         title: String,
         placeholder: String,
         maxCharacters: Int,
-        height: Binding<CGFloat>,
-        numberOfLines: Binding<Int>
+        height: Binding<CGFloat>
     ) {
         self.title = title
         self.continueAction = continueAction
@@ -206,7 +207,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         self.placeholder = placeholder
         self.maxCharacters = maxCharacters
         self._height = height
-        self._numberOfLines = numberOfLines
     }
 
     public var body: some View {
@@ -239,9 +239,9 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                 disabled: false,
                                 height: $height,
                                 width: .constant(0),
-                                numberOfLines: $numberOfLines,
                                 inEdit: $inEdit
                             )
+                            .padding(.leading, -4)
                             .frame(maxHeight: max(height, 48))
                         }
                         .sectionContainerStyle(.transparent)
@@ -297,7 +297,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .onReceive(keyboardHeightPublisher) { newHeight in
-            print("New keyboard height: \(newHeight)")
             if let newHeight {
                 keyboard = newHeight - 44 + 12
             }
@@ -331,14 +330,11 @@ private struct SwiftUITextView: UIViewRepresentable {
     let disabled: Bool
     @Binding var height: CGFloat
     @Binding var width: CGFloat
-    @Binding var numberOfLines: Int
     @Binding var inEdit: Bool
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.hTextFieldError) var errorMessage
     var onBeginEditing: (() -> Void)? = nil
-    internal func makeUIView(context: Context) -> UIView {
-        let view = UIView()
-        view.backgroundColor = .clear
+    internal func makeUIView(context: Context) -> UITextView {
         let textView = TextView(
             placeholder: placeholder,
             inputText: $text,
@@ -346,28 +342,20 @@ private struct SwiftUITextView: UIViewRepresentable {
             width: $width,
             becomeFirstResponder: becomeFirstResponder,
             disabled: disabled,
-            numberOfLines: $numberOfLines,
             inEdit: $inEdit,
             onBeginEditing: onBeginEditing
         )
         textView.setText(text: text)
         textView.colorSchema = colorScheme
-        view.addSubview(textView)
-        textView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(-4)
-            make.trailing.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
-        }
         textView.updateHeight()
-        view.hero.id = "textViewHeroId"
-        view.heroModifiers = [.spring(stiffness: 450, damping: 35)]
+        textView.hero.id = "textViewHeroId"
+        textView.heroModifiers = [.spring(stiffness: 450, damping: 35)]
 
-        return view
+        return textView
     }
 
-    internal func updateUIView(_ uiView: UIView, context: Context) {
-        if let textView = uiView.subviews.first as? TextView {
+    internal func updateUIView(_ uiView: UITextView, context: Context) {
+        if let textView = uiView as? TextView {
             if disabled {
                 textView.setText(text: text)
                 textView.updateHeight()
@@ -387,7 +375,6 @@ private class TextView: UITextView, UITextViewDelegate {
     @Binding private var inputText: String
     @Binding private var height: CGFloat
     @Binding private var width: CGFloat
-    @Binding private var numberOfLines: Int
     @Binding private var inEdit: Bool
     private let placeholderView = UITextView()
     var onBeginEditing: (() -> Void)? = nil
@@ -410,14 +397,12 @@ private class TextView: UITextView, UITextViewDelegate {
         width: Binding<CGFloat>,
         becomeFirstResponder: Bool,
         disabled: Bool,
-        numberOfLines: Binding<Int>,
         inEdit: Binding<Bool>,
         onBeginEditing: (() -> Void)? = nil
     ) {
         self._inputText = inputText
         self.disabled = disabled
         self._height = height
-        self._numberOfLines = numberOfLines
         self._width = width
         self._inEdit = inEdit
         self.onBeginEditing = onBeginEditing
@@ -522,11 +507,10 @@ private class TextView: UITextView, UITextViewDelegate {
                         .sizeThatFits(.init(width: self.frame.width, height: .infinity)).height
                     let height = max(contentSize, labelHeight)
                     if disabled {
-                        self.height = 100  //min(height + 12, 100)
+                        self.height = max(min(height + 12, 120), 100)
                     } else {
                         self.height = max(height + 12, 100)
                     }
-                    self.numberOfLines = self.currentNumberOfLines()
                     self.width = self.frame.width
                 }
             }
@@ -564,21 +548,9 @@ extension EnvironmentValues {
 }
 
 extension UIEdgeInsets {
-
     fileprivate var insets: EdgeInsets {
         EdgeInsets(top: top, leading: left, bottom: bottom, trailing: right)
     }
-}
-
-extension UITextView {
-
-    func currentNumberOfLines() -> Int {
-        if let fontUnwrapped = self.font {
-            return Int(self.contentSize.height / fontUnwrapped.lineHeight)
-        }
-        return 0
-    }
-
 }
 
 extension TextView {
@@ -590,7 +562,6 @@ extension TextView {
             width: .constant(0),
             becomeFirstResponder: false,
             disabled: false,
-            numberOfLines: .constant(0),
             inEdit: .constant(false)
         )
         let textViewHeight = textView.sizeThatFits(.init(width: width, height: .infinity)).height
