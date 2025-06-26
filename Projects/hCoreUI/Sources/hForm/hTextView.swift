@@ -16,13 +16,14 @@ public struct hTextView: View {
     @State private var popoverHeight: CGFloat = 0
     @Environment(\.colorScheme) var colorSchema
     private let onContinue: (_ text: String) -> Void
-
+    private let enableTransition: Bool
     public init(
         selectedValue: String,
         placeholder: String,
         popupPlaceholder: String,
         required: Bool,
         maxCharacters: Int,
+        enableTransition: Bool,
         onContinue: @escaping (_ text: String) -> Void = { _ in }
     ) {
         self.selectedValue = selectedValue
@@ -30,6 +31,7 @@ public struct hTextView: View {
         self.popupPlaceholder = popupPlaceholder
         self.onContinue = onContinue
         self.required = required
+        self.enableTransition = enableTransition
         self.maxCharacters = maxCharacters
     }
 
@@ -46,13 +48,14 @@ public struct hTextView: View {
                             height: $height,
                             width: $width,
                             inEdit: .constant(false),
+                            enableTransition: enableTransition,
                             onBeginEditing: {
                                 showFreeTextField()
                             }
                         )
                         .padding(.leading, -4)
                         .frame(height: height)
-                        HeroAnimationWrapper(id: "counter", cornerRadius: 0) {
+                        HeroAnimationWrapper(id: "counter", cornerRadius: 0, enableTransition: enableTransition) {
                             HStack(spacing: .padding4) {
                                 Spacer()
                                 hText("\(value.count)/\(maxCharacters)", style: .label)
@@ -113,13 +116,16 @@ public struct hTextView: View {
             title: placeholder,
             placeholder: popupPlaceholder,
             maxCharacters: maxCharacters,
-            height: $popoverHeight
+            height: $popoverHeight,
+            enableTransition: enableTransition
         )
         .hTextFieldError(errorMessage)
 
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
         vc.modalPresentationStyle = .overFullScreen
-        vc.enableHero()
+        if enableTransition {
+            vc.enableHero()
+        }
         vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
 
         continueAction.execute = { [weak vc] in
@@ -160,7 +166,8 @@ public struct hTextView: View {
                                         placeholder: "Placeholder LONG ONE PLACE H O L D E R THAT NEEDS more rows",
                                         popupPlaceholder: "title",
                                         required: true,
-                                        maxCharacters: 2000
+                                        maxCharacters: 2000,
+                                        enableTransition: false
                                     ) { value in
                                         valuee = value
                                     }
@@ -183,6 +190,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     fileprivate let maxCharacters: Int
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
+    fileprivate let enableTransition: Bool
     @Binding fileprivate var value: String
     @Binding private var height: CGFloat
     @State var showButtons = false
@@ -201,7 +209,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         title: String,
         placeholder: String,
         maxCharacters: Int,
-        height: Binding<CGFloat>
+        height: Binding<CGFloat>,
+        enableTransition: Bool
     ) {
         self.title = title
         self.continueAction = continueAction
@@ -209,6 +218,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         self._value = value
         self.placeholder = placeholder
         self.maxCharacters = maxCharacters
+        self.enableTransition = enableTransition
         self._height = height
     }
 
@@ -242,7 +252,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                 disabled: false,
                                 height: $height,
                                 width: .constant(0),
-                                inEdit: $inEdit
+                                inEdit: $inEdit,
+                                enableTransition: enableTransition
                             )
                             .padding(.leading, -4)
                             .frame(maxHeight: max(height, 100))
@@ -253,7 +264,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                         hSection {
                             HStack {
                                 Spacer()
-                                HeroAnimationWrapper(id: "counter", cornerRadius: 0) {
+                                HeroAnimationWrapper(id: "counter", cornerRadius: 0, enableTransition: enableTransition)
+                                {
                                     HStack(spacing: .padding4) {
                                         Spacer()
                                         if value.count > maxCharacters {
@@ -340,6 +352,7 @@ private struct SwiftUITextView: UIViewRepresentable {
     @Binding var inEdit: Bool
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.hTextFieldError) var errorMessage
+    let enableTransition: Bool
     var onBeginEditing: (() -> Void)? = nil
     internal func makeUIView(context: Context) -> UITextView {
         let textView = TextView(
@@ -355,6 +368,7 @@ private struct SwiftUITextView: UIViewRepresentable {
         textView.setText(text: text)
         textView.colorSchema = colorScheme
         textView.updateHeight()
+        textView.hero.isEnabled = enableTransition
         textView.hero.id = "textViewHeroId"
         textView.heroModifiers = [.spring(stiffness: 450, damping: 35)]
 
