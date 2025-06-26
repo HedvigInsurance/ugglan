@@ -62,6 +62,7 @@ public struct TextInputView: View {
                 }
                 .padding(.top, .padding16)
             }
+            .padding(.top, .padding8)
         }
         .hFormContentPosition(.compact)
         .sectionContainerStyle(.transparent)
