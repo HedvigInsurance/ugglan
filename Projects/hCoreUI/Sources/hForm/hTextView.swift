@@ -147,10 +147,8 @@ public struct hTextView: View {
 }
 
 #Preview {
-
     struct PreviewWrapper: View {
-        @State var valuee =
-            ""
+        @State var valuee = ""
         @State var error: String? = nil
 
         var body: some View {
@@ -175,7 +173,6 @@ public struct hTextView: View {
                                 }
                                 .sectionContainerStyle(.transparent)
                             }
-
                         }
                 }
             }
@@ -227,23 +224,25 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
             VStack(spacing: 8) {
                 hSection {
                     VStack(spacing: 8) {
-                        HStack {
-                            hText(title, style: .body1)
-                            Spacer()
-                            Button(
-                                action: {
-                                    cancelAction.execute()
-                                },
-                                label: {
-                                    hCoreUIAssets.close.view
-                                        .resizable()
-                                        .frame(width: 24, height: 24)
-                                        .padding(12)
-                                        .foregroundColor(hFillColor.Opaque.primary)
-                                }
-                            )
+                        hSection {
+                            HStack {
+                                hText(title, style: .body1)
+                                Spacer()
+                                Button(
+                                    action: {
+                                        cancelAction.execute()
+                                    },
+                                    label: {
+                                        hCoreUIAssets.close.view
+                                            .resizable()
+                                            .frame(width: 24, height: 24)
+                                            .padding(12)
+                                            .foregroundColor(hFillColor.Opaque.primary)
+                                    }
+                                )
+                            }
                         }
-                        .padding(.horizontal, .padding16)
+                        .sectionContainerStyle(.transparent)
                         hSection {
                             SwiftUITextView(
                                 placeholder: placeholder,
@@ -447,7 +446,12 @@ private class TextView: UITextView, UITextViewDelegate {
         placeholderView.delegate = self
         if becomeFirstResponder {
             self.becomeFirstResponder()
+        } else {
+            isEditable = false
+            let gesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+            self.addGestureRecognizer(gesture)
         }
+
         updateHeight()
         Task { [weak self] in
             // Delay to ensure the view is fully laid out before updating height
@@ -456,8 +460,8 @@ private class TextView: UITextView, UITextViewDelegate {
         }
     }
 
-    @objc private func handleDoneButtonTap() {
-        self.resignFirstResponder()
+    @objc private func handleTapGesture() {
+        self.onBeginEditing?()
     }
 
     required init?(coder: NSCoder) {
