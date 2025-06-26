@@ -16,6 +16,7 @@ public struct hTextView: View {
     @State private var popoverHeight: CGFloat = 0
     @Environment(\.colorScheme) var colorSchema
     private let onContinue: (_ text: String) -> Void
+
     public init(
         selectedValue: String,
         placeholder: String,
@@ -191,6 +192,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     let initDate = Date()
     @Environment(\.hTextFieldError) var errorMessage
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+
     public init(
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
@@ -210,7 +213,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     }
 
     public var body: some View {
-        VStack {
+        hForm {
             VStack(spacing: 8) {
                 hSection {
                     VStack(spacing: 8) {
@@ -242,7 +245,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                 inEdit: $inEdit
                             )
                             .padding(.leading, -4)
-                            .frame(maxHeight: max(height, 48))
+                            .frame(maxHeight: max(height, 100))
+                            .frame(minHeight: 100)
                         }
                         .sectionContainerStyle(.transparent)
                         Spacer()
@@ -292,10 +296,13 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                 .sectionContainerStyle(.transparent)
                 .colorScheme(.dark)
             }
-            .frame(maxHeight: UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom - keyboard)
-            Spacer()
+            .frame(
+                maxHeight: verticalSizeClass == .compact
+                    ? nil : UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom - keyboard
+            )
         }
-        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .colorScheme(.dark)
+        .ignoresSafeArea(verticalSizeClass == .compact ? [] : .keyboard, edges: .bottom)
         .onReceive(keyboardHeightPublisher) { newHeight in
             if let newHeight {
                 keyboard = newHeight - 44 + 12
