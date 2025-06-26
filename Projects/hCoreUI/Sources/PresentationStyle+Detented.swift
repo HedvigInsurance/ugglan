@@ -125,7 +125,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
             if let presentationController = presentationController as? BlurredSheetPresenationController {
                 presentationController.detents = [
                     .custom(resolver: { context in
-                        return -50
+                        return 0
                     })
                 ]
             }
@@ -136,7 +136,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
                 .custom(
                     "zero",
                     { viewController, containerView in
-                        return -50
+                        return 0
                     }
                 )
             ],
@@ -727,7 +727,6 @@ extension UIViewController {
     }
 }
 
-@available(iOS 16.0, *)
 public class BlurredSheetPresenationController: UISheetPresentationController {
     var effectView: PassThroughEffectView?
 
@@ -745,12 +744,6 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
         effectView?.addGestureRecognizer(tap)
         effectView?.isUserInteractionEnabled = true
-
-        self.detents = [
-            .custom(resolver: { context in
-                return 0
-            })
-        ]
     }
 
     @objc private func didTapBackground() {

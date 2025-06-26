@@ -16,10 +16,10 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
             additionalHttpHeadersProvider: {
                 var headers = [String: String]()
                 let semaphore = DispatchSemaphore(value: 0)
-                Task {
-                    headers = await ApolloClient.headers()
-                    semaphore.signal()
-                }
+                //                Task {
+                //                    headers = await ApolloClient.headers()
+                semaphore.signal()
+                //                }
                 semaphore.wait()
                 return headers
             },

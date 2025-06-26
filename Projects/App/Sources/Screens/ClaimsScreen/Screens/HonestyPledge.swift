@@ -178,7 +178,7 @@ struct HonestyPledge: View {
             .fixedSize(horizontal: false, vertical: true)
         }
         .hFormContentPosition(.compact)
-        .padding(.top, -16)
+        .padding(.top, -8)
     }
 }
 
