@@ -248,7 +248,7 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
                 if let navigation = vc.navigationController {
                     return findProverVC(from: navigation)
                 } else {
-                    if vc.presentationController is BlurredSheetPresentationController {
+                    if vc.presentationController is BlurredSheetPresenationController {
                         return vc
                     } else if let superviewVc = vc.view.superview?.viewController {
                         return findProverVC(from: superviewVc)
