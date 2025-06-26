@@ -210,7 +210,7 @@ public struct ChangeTierNavigation: View {
         .environmentObject(changeTierNavigationVm)
         .detent(
             presented: $changeTierNavigationVm.isEditTierPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             EditTierScreen(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ChangeTierTrackingType.editTier)
@@ -218,7 +218,7 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             presented: $changeTierNavigationVm.isEditDeductiblePresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             EditDeductibleScreen(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(
@@ -229,7 +229,7 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             item: $changeTierNavigationVm.isInsurableLimitPresented,
-            style: [.height],
+
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
@@ -251,13 +251,13 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             item: $changeTierNavigationVm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }
         .detent(
             item: $changeTierNavigationVm.isInfoViewPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { info in
             InfoView(
                 title: info.title ?? "",
@@ -266,7 +266,7 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             presented: $changeTierNavigationVm.isConfirmTierPresented,
-            style: [.height],
+
             options: .constant(.alwaysOpenOnTop),
             content: {
                 ConfirmChangeTierScreen()

@@ -11,9 +11,27 @@ public class CrossSellClientOctopus: CrossSellClient {
     public func getCrossSell() async throws -> [CrossSell] {
         let query = OctopusGraphQL.CrossSellsQuery()
         let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        return crossSells.currentMember.fragments.crossSellFragment.crossSells.compactMap({
-            CrossSell($0)
+        return crossSells.currentMember.crossSells.compactMap({
+            CrossSell($0.fragments.crossSellFragment)
         })
+    }
+
+    public func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+        let query = OctopusGraphQL.CrossSellQuery(
+            source: GraphQLEnum<OctopusGraphQL.CrossSellSource>(source.asGraphQLSource)
+        )
+        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSell.otherCrossSells.compactMap({
+            CrossSell($0.fragments.crossSellFragment)
+        })
+        let recommendedCrossSell: CrossSell? = {
+            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell {
+                return CrossSell(crossSellFragment)
+            }
+            return nil
+        }()
+
+        return .init(recommended: recommendedCrossSell, others: otherCrossSells)
     }
 
     public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
@@ -35,47 +53,48 @@ public class CrossSellClientOctopus: CrossSellClient {
 }
 
 extension CrossSell {
-    public init?(_ data: OctopusGraphQL.CrossSellFragment.CrossSell) {
-        let type = data.type.crossSellType
-        guard type != .unknown else { return nil }
+    public init?(_ data: OctopusGraphQL.CrossSellFragment) {
         self.init(
+            id: data.id,
             title: data.title,
             description: data.description,
             webActionURL: data.storeUrl,
+            imageUrl: URL(string: data.pillowImageSmall.src),
+            buttonDescription: "",
             hasBeenSeen: UserDefaults.standard.bool(
-                forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
-            ),
-            type: type
+                forKey: Self.hasBeenSeenKey(typeOfContract: data.id)
+            )
+        )
+    }
+
+    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
+        let crossSellFragment = data.crossSell.fragments.crossSellFragment
+        self.init(
+            id: crossSellFragment.id,
+            title: crossSellFragment.title,
+            description: crossSellFragment.description,
+            webActionURL: crossSellFragment.storeUrl,
+            bannerText: data.bannerText,
+            buttonText: data.buttonText,
+            discountText: data.discountText,
+            imageUrl: URL(string: crossSellFragment.pillowImageLarge.src),
+            buttonDescription: data.buttonDescription,
+            hasBeenSeen: UserDefaults.standard.bool(
+                forKey: Self.hasBeenSeenKey(typeOfContract: crossSellFragment.id)
+            )
         )
     }
 }
 
-extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
-    var crossSellType: CrossSellType {
+extension CrossSellSource {
+    fileprivate var asGraphQLSource: OctopusGraphQL.CrossSellSource {
         switch self {
-        case .case(let t):
-            switch t {
-            case .car:
-                return .car
-            case .home:
-                return .home
-            case .accident:
-                return .accident
-            case .pet:
-                return .pet
-            case .apartmentBrf:
-                return .apartmentBrf
-            case .apartmentRent:
-                return .apartmentRent
-            case .petCat:
-                return .petCat
-            case .petDog:
-                return .petDog
-            case .house:
-                return .house
-            }
-        case .unknown:
-            return .unknown
+        case .home: return .home
+        case .closedClaim: return .closedClaim
+        case .changeTier: return .changeTier
+        case .addon: return .addon
+        case .editCoinsured: return .editCoinsured
+        case .movingFlow: return .movingFlow
         }
     }
 }

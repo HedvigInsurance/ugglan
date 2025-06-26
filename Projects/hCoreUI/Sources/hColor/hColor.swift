@@ -20,6 +20,8 @@ public protocol hColor: View {
     /// Returns color based on scheme and level
     func colorFor(_ scheme: ColorScheme, _ level: UIUserInterfaceLevel) -> hColorBase
 
+    var asCgColor: CGColor { get }
+
     func opacity(_ opacity: Double) -> OpacityModified
 
     /// Returns a hColor where values have been flipped
@@ -110,6 +112,11 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
         } else {
             return dark.colorFor(scheme, level)
         }
+    }
+
+    public var asCgColor: CGColor {
+        let scheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        return colorFor(scheme, .base).color.uiColor().cgColor
     }
 
     public func opacity(_ opacity: Double) -> some hColor {
@@ -218,6 +225,11 @@ public struct hColorLevel<InnerHColor: hColor>: hColor {
         }
     }
 
+    public var asCgColor: CGColor {
+        let scheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        return colorFor(scheme, .base).color.uiColor().cgColor
+    }
+
     public func opacity(_ opacity: Double) -> some hColor {
         hColorLevel<InnerHColor.OpacityModified>(
             base: base.opacity(opacity),
@@ -250,6 +262,11 @@ public struct hColorBase: hColor, View {
 
     public func colorFor(_ scheme: ColorScheme, _ level: UIUserInterfaceLevel) -> hColorBase {
         return self
+    }
+
+    public var asCgColor: CGColor {
+        let scheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        return colorFor(scheme, .base).color.uiColor().cgColor
     }
 
     public func opacity(_ opacity: Double) -> some hColor {

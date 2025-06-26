@@ -142,7 +142,7 @@ public struct RenewalCardView: View {
                 dismissButton: .default(Text(L10n.discountRedeemSuccessButton))
             )
         }
-        .detent(item: $document, style: [.large]) { document in
+        .detent(item: $document, transitionType: .detent(style: [.large])) { document in
             PDFPreview(document: document)
         }
     }

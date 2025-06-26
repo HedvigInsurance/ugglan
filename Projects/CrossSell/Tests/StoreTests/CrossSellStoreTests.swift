@@ -85,11 +85,13 @@ final class CrossSellStoreTests: XCTestCase {
 extension CrossSell {
     fileprivate static let getDefault: [CrossSell] = [
         .init(
+            id: "1",
             title: "car",
             description: "description",
             type: .car
         ),
         .init(
+            id: "2",
             title: "home",
             description: "description",
             type: .home
