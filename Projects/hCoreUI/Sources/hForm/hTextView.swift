@@ -275,6 +275,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                     .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.opaque)
+                .colorScheme(colorScheme)
                 hSection {
                     HStack(spacing: .padding8) {
                         hCancelButton {
@@ -294,7 +295,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                     .hButtonTakeFullWidth(true)
                 }
                 .sectionContainerStyle(.transparent)
-                .colorScheme(.dark)
             }
             .frame(
                 maxHeight: verticalSizeClass == .compact

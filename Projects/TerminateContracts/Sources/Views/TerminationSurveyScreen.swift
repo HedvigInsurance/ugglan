@@ -5,7 +5,6 @@ import hCoreUI
 
 struct TerminationSurveyScreen: View {
     @ObservedObject var vm: SurveyScreenViewModel
-    @Namespace var animationNamespace
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
     var body: some View {
@@ -53,9 +52,8 @@ struct TerminationSurveyScreen: View {
                             VStack(spacing: 4) {
                                 hRadioField(
                                     id: option.id,
-                                    leftView: {
-                                        hText(option.title).asAnyView
-                                    },
+                                    itemModel: .init(title: option.title, subTitle: nil),
+                                    leftView: nil,
                                     selected: $vm.selected
                                 )
                                 .hFieldSize(.medium)
@@ -151,7 +149,6 @@ class SurveyScreenViewModel: ObservableObject {
     let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
-    @Published var text: String = "test"
     @Published var continueEnabled = false
 
     @Published var selected: String? {
