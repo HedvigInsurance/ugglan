@@ -142,7 +142,21 @@ struct ContractInformationView: View {
                 hSection(vm.getListToDisplay(contract: contract)) { coInsured in
                     hRow {
                         if coInsured.coInsured.hasMissingInfo {
-                            addMissingCoInsuredView(contract: contract, coInsured: coInsured.coInsured)
+                            CoInsuredField(
+                                accessoryView: getAccessoryView(contract: contract, coInsured: coInsured.coInsured)
+                                    .foregroundColor(hSignalColor.Amber.element),
+                                date: coInsured.coInsured.terminatesOn ?? coInsured.coInsured.activatesOn
+                            )
+                            .onTapGesture {
+                                if contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil {
+                                    let contract: InsuredPeopleConfig = .init(
+                                        contract: contract,
+                                        fromInfoCard: false
+                                    )
+                                    contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                                }
+                            }
+                            .accessibilityElement(children: .combine)
                         } else {
                             CoInsuredField(
                                 coInsured: coInsured.coInsured,
@@ -173,33 +187,6 @@ struct ContractInformationView: View {
             return nil
         } else {
             return type
-        }
-    }
-
-    @ViewBuilder
-    private func addMissingCoInsuredView(contract: Contract, coInsured: CoInsuredModel) -> some View {
-        var statusPill: StatusPillType? {
-            if coInsured.terminatesOn != nil {
-                return .deleted
-            } else if coInsured.activatesOn != nil {
-                return .added
-            }
-            return nil
-        }
-
-        CoInsuredField(
-            accessoryView: getAccessoryView(contract: contract, coInsured: coInsured)
-                .foregroundColor(hSignalColor.Amber.element),
-            date: coInsured.terminatesOn ?? coInsured.activatesOn
-        )
-        .onTapGesture {
-            if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-                let contract: InsuredPeopleConfig = .init(
-                    contract: contract,
-                    fromInfoCard: false
-                )
-                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-            }
         }
     }
 
