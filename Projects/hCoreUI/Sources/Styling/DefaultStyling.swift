@@ -142,9 +142,18 @@ public struct DefaultStyling {
             NSAttributedString.Key.font: Fonts.fontFor(style: .body1, withoutFontMultipler: true),
         ]
 
+        let backImageInsets: UIEdgeInsets = {
+            if #available(iOS 26.0, *) {
+                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
+            } else {
+                UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
+            }
+        }()
+
         let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
-            UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
+            backImageInsets
         )
+
         appearance.setBackIndicatorImage(
             backImage,
             transitionMaskImage: backImage
