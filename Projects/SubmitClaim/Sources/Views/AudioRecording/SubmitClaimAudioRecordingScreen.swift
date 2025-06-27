@@ -73,7 +73,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     textElements
                 }
             }
-            .slideUpAppearAnimation()
+            .expandAppearAnimation()
         }
         .claimErrorTrackerForState($audioRecordingVm.viewState)
     }
@@ -282,8 +282,10 @@ public struct SubmitClaimAudioRecordingScreen: View {
             hTextView(
                 selectedValue: inputText,
                 placeholder: L10n.claimsTextInputPlaceholder,
+                popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
                 required: true,
-                maxCharacters: 2000
+                maxCharacters: 2000,
+                enableTransition: true
             ) { text in
                 inputText = text
                 inputTextError = nil
