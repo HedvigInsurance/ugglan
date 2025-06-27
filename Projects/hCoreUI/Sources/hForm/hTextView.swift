@@ -223,7 +223,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         hForm {
             VStack(spacing: 8) {
                 hSection {
-                    VStack(spacing: 8) {
+                    VStack(spacing: 0) {
                         hSection {
                             HStack {
                                 hText(title, style: .body1)
@@ -242,6 +242,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                 )
                             }
                         }
+                        .padding(.bottom, -.padding8)
                         .sectionContainerStyle(.transparent)
                         hSection {
                             SwiftUITextView(
@@ -283,7 +284,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                         }
                         .sectionContainerStyle(.transparent)
                     }
-                    .padding(.vertical, .padding16)
+                    .padding(.bottom, .padding16)
                 }
                 .sectionContainerStyle(.opaque)
                 .colorScheme(colorScheme)
