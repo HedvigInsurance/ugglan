@@ -37,7 +37,6 @@ public struct AccordionView: View {
                 .padding(.top, 17)
                 .padding(.bottom, .padding24)
             }
-            .accessibilityLabel("\(title)")
             .accessibilityAddTraits(.isButton)
         }
         .modifier(
@@ -76,11 +75,12 @@ struct AccordionHeader: View {
                     .lineLimit(extended ? nil : 1)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(peril?.textColor)
+                    .accessibilityLabel("\(title)")
+                    .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
 
                 if extended {
                     AccordionBody(peril: peril, description: description, extended: $extended)
                         .multilineTextAlignment(.leading)
-                        .accessibilityElement(children: .contain)
                 }
             }
             Spacer()
@@ -103,8 +103,8 @@ struct AccordionHeader: View {
                 }
                 .foregroundColor(peril?.textColor)
             }
+
         }
-        .accessibilityAddTraits(extended ? .isHeader : [])
     }
 }
 
@@ -131,8 +131,7 @@ struct AccordionBody: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
-        .accessibilityAddTraits(extended ? .isSelected : [])
-        .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
+        .accessibilityElement(children: .combine)
     }
 }
 
