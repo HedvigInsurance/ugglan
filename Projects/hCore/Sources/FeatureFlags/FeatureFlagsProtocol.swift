@@ -81,8 +81,7 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var isMovingFlowEnabled = false  //migrated
     @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false  //no need
 
-    private init() {
-    }
+    private init() {}
 
     public func setup(with context: [String: String]) async throws {
         let client: FeatureFlagsClient = Dependencies.shared.resolve()
