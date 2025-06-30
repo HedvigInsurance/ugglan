@@ -82,7 +82,7 @@ public struct EditContractScreen: View {
 
     @ViewBuilder
     var infoView: some View {
-        if selectedType == .coInsured && !Dependencies.featureFlags().isEditCoInsuredEnabled {
+        if selectedType == .coInsured {
             hSection {
                 InfoCard(
                     text: L10n.InsurancesTab.contactUsToEditCoInsured,

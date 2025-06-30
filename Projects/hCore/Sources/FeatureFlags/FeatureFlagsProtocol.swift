@@ -9,7 +9,6 @@ public protocol FeatureFlagsClient {
 }
 
 public struct FeatureData: Codable, Equatable {
-    public let isEditCoInsuredEnabled: Bool
     public let isTerminationFlowEnabled: Bool
     public let isUpdateNecessary: Bool
     public let isChatDisabled: Bool
@@ -24,7 +23,6 @@ public struct FeatureData: Codable, Equatable {
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
 
     public init(
-        isEditCoInsuredEnabled: Bool,
         isTerminationFlowEnabled: Bool,
         isUpdateNecessary: Bool,
         isChatDisabled: Bool,
@@ -38,7 +36,6 @@ public struct FeatureData: Codable, Equatable {
         isMovingFlowEnabled: Bool,
         isAddonsRemovalFromMovingFlowEnabled: Bool
     ) {
-        self.isEditCoInsuredEnabled = isEditCoInsuredEnabled
         self.isTerminationFlowEnabled = isTerminationFlowEnabled
         self.isUpdateNecessary = isUpdateNecessary
         self.isChatDisabled = isChatDisabled
@@ -71,7 +68,6 @@ public class FeatureFlags: ObservableObject {
     public static let shared = FeatureFlags()
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
-    @Published public private(set) var isEditCoInsuredEnabled = false
     @Published public private(set) var isTerminationFlowEnabled = false  //need rework
     @Published public private(set) var isUpdateNecessary = false  //migrated
     @Published public private(set) var isChatDisabled = false  //need to reintroduce
@@ -100,7 +96,6 @@ public class FeatureFlags: ObservableObject {
                         attributes: ["featureFlags": data]
                     )
                 }
-                self.isEditCoInsuredEnabled = data.isEditCoInsuredEnabled
                 self.isTerminationFlowEnabled = data.isTerminationFlowEnabled
                 self.isUpdateNecessary = data.isUpdateNecessary
                 self.isChatDisabled = data.isChatDisabled

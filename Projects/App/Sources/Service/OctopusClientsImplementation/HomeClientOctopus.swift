@@ -54,7 +54,7 @@ class HomeClientOctopus: HomeClient {
         let actions = data.currentMember.memberActions
         var contractAction = [QuickAction]()
 
-        if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
+        if actions?.isEditCoInsuredEnabled == true {
             contractAction.append(.editCoInsured)
         }
 

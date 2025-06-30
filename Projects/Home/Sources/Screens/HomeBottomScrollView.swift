@@ -67,9 +67,7 @@ class HomeBottomScrollViewModel: ObservableObject {
 
     init() {
         handlePayments()
-        if Dependencies.featureFlags().isEditCoInsuredEnabled {
-            handleMissingCoInsured()
-        }
+        handleMissingCoInsured()
         handleImportantMessages()
         handleRenewalCardView()
         handleTerminatedMessage()
