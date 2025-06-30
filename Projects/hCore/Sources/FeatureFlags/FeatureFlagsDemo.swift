@@ -24,7 +24,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,
-            isAddonsEnabled: false,
             isDemoMode: true,
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false
@@ -44,7 +43,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,
-            isAddonsEnabled: false,
             isDemoMode: true,
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false

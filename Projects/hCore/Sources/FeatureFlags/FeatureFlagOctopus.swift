@@ -90,7 +90,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             isSubmitClaimEnabled: true,
             osVersionTooLow: unleashClient.isEnabled(name: "update_os_version"),
             emailPreferencesEnabled: true,
-            isAddonsEnabled: unleashClient.isEnabled(name: "enable_addons"),
             isDemoMode: false,
             isMovingFlowEnabled: unleashClient.isEnabled(name: "moving_flow"),
             isAddonsRemovalFromMovingFlowEnabled: unleashClient.isEnabled(

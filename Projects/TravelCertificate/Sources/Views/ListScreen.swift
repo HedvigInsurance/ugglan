@@ -90,7 +90,7 @@ public struct ListScreen: View {
 
     @ViewBuilder
     private var addonView: some View {
-        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+        if let banner = vm.addonBannerModel {
             AddonCardView(
                 openAddon: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()

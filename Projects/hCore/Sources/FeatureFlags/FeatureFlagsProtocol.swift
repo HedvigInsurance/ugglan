@@ -20,7 +20,6 @@ public struct FeatureData: Codable, Equatable {
     public let isSubmitClaimEnabled: Bool
     public let osVersionTooLow: Bool
     public let emailPreferencesEnabled: Bool
-    public let isAddonsEnabled: Bool
     public let isDemoMode: Bool
     public let isMovingFlowEnabled: Bool
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
@@ -37,7 +36,6 @@ public struct FeatureData: Codable, Equatable {
         isSubmitClaimEnabled: Bool,
         osVersionTooLow: Bool,
         emailPreferencesEnabled: Bool,
-        isAddonsEnabled: Bool,
         isDemoMode: Bool,
         isMovingFlowEnabled: Bool,
         isAddonsRemovalFromMovingFlowEnabled: Bool
@@ -53,7 +51,6 @@ public struct FeatureData: Codable, Equatable {
         self.isSubmitClaimEnabled = isSubmitClaimEnabled
         self.osVersionTooLow = osVersionTooLow
         self.emailPreferencesEnabled = emailPreferencesEnabled
-        self.isAddonsEnabled = isAddonsEnabled
         self.isDemoMode = isDemoMode
         self.isMovingFlowEnabled = isMovingFlowEnabled
         self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
@@ -88,7 +85,6 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var isSubmitClaimEnabled = false  //migrated
     @Published public private(set) var osVersionTooLow = false  //migrated
     @Published public private(set) var emailPreferencesEnabled = false  //migrated
-    @Published public private(set) var isAddonsEnabled = false
     @Published public private(set) var isDemoMode = false
     @Published public private(set) var isMovingFlowEnabled = false
     @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false
@@ -119,7 +115,6 @@ public class FeatureFlags: ObservableObject {
                 self.isSubmitClaimEnabled = data.isSubmitClaimEnabled
                 self.osVersionTooLow = data.osVersionTooLow
                 self.emailPreferencesEnabled = data.emailPreferencesEnabled
-                self.isAddonsEnabled = data.isAddonsEnabled
                 self.isDemoMode = data.isDemoMode
                 self.isMovingFlowEnabled = data.isMovingFlowEnabled
                 self.isAddonsRemovalFromMovingFlowEnabled = data.isAddonsRemovalFromMovingFlowEnabled

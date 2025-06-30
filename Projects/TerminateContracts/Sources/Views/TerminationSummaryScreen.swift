@@ -23,8 +23,7 @@ struct TerminationSummaryScreen: View {
                 )
             )
             .hFormAttachToBottom {
-                let withAddonView =
-                    Dependencies.featureFlags().isAddonsEnabled && !terminationNavigationVm.extraCoverage.isEmpty
+                let withAddonView = !terminationNavigationVm.extraCoverage.isEmpty
 
                 VStack(spacing: .padding16) {
                     hSection {

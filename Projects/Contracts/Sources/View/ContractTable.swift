@@ -51,7 +51,7 @@ struct ContractTable: View {
                 )
             if !showTerminated {
                 VStack(spacing: .padding8) {
-                    if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+                    if let banner = vm.addonBannerModel {
                         hSection {
                             let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
                             AddonCardView(
