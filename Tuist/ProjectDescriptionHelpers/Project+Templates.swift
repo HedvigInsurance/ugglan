@@ -213,7 +213,9 @@ extension Project {
                 settings: .settings(
                     base: [
                         "PROVISIONING_PROFILE_SPECIFIER":
-                            "match Development com.hedvig.example.*"
+                            "match Development com.hedvig.example.*",
+                        "CODE_SIGN_STYLE": "automatic",
+
                     ],
                     configurations: appConfigurations
                 )

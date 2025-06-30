@@ -21,13 +21,15 @@ final class CrossSellTests: XCTestCase {
                 id: "1",
                 title: "car",
                 description: "description",
-                type: .car
+                imageUrl: nil,
+                buttonDescription: "button desription"
             ),
             .init(
                 id: "2",
                 title: "pet",
                 description: "description",
-                type: .pet
+                imageUrl: nil,
+                buttonDescription: "button desription"
             ),
         ]
 
