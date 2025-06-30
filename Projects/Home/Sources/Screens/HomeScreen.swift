@@ -30,7 +30,7 @@ extension HomeScreen {
             and: "HomeView",
             action: { type in
                 switch type {
-                case .newOffer:
+                case .newOffer, .newOfferNotification:
                     NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
@@ -57,7 +57,10 @@ extension HomeScreen {
         case .active, .terminated:
             MainHomeView()
         case .future:
-            hText(L10n.hedvigNameText, style: .heading3)
+            hCoreUIAssets.hedvig.view
+                .resizable()
+                .scaledToFit()
+                .frame(height: 40)
         case .loading:
             EmptyView()
         }
@@ -157,6 +160,8 @@ class HomeVM: ObservableObject {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+        crossSellStore.send(.fetchRecommendedCrossSellId)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
@@ -208,9 +213,19 @@ class HomeVM: ObservableObject {
     }
 }
 
-struct Active_Preview: PreviewProvider {
+@MainActor private func fetchDependenciesForPreview() {
+    Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+}
+
+struct Active_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
+        fetchDependenciesForPreview()
 
         return HomeScreen()
             .onAppear {
@@ -223,13 +238,13 @@ struct Active_Preview: PreviewProvider {
                 )
                 store.send(.setFutureStatus(status: .none))
             }
-
     }
 }
 
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
+        fetchDependenciesForPreview()
+
         return HomeScreen()
             .onAppear {
                 ApolloClient.removeDeleteAccountStatus(for: "ID")
@@ -242,13 +257,13 @@ struct ActiveInFuture_Previews: PreviewProvider {
                 )
                 store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
             }
-
     }
 }
 
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
+        fetchDependenciesForPreview()
+
         return HomeScreen()
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
@@ -260,13 +275,13 @@ struct TerminatedToday_Previews: PreviewProvider {
                 )
                 store.send(.setFutureStatus(status: .pendingSwitchable))
             }
-
     }
 }
 
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
+        fetchDependenciesForPreview()
+
         return HomeScreen()
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
@@ -278,13 +293,13 @@ struct Terminated_Previews: PreviewProvider {
                 )
                 store.send(.setFutureStatus(status: .pendingSwitchable))
             }
-
     }
 }
 
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
+        fetchDependenciesForPreview()
+
         return HomeScreen()
             .onAppear {
                 ApolloClient.saveDeleteAccountStatus(for: "ID")
@@ -297,6 +312,5 @@ struct Deleted_Previews: PreviewProvider {
                 )
                 store.send(.setFutureStatus(status: .pendingSwitchable))
             }
-
     }
 }

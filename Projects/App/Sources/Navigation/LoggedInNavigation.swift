@@ -94,7 +94,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isAddonErrorPresented,
-            style: [.height],
+
             options: .constant([.alwaysOpenOnTop])
         ) { error in
             GenericErrorView(description: error, formPosition: .compact)
@@ -135,7 +135,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isFaqTopicPresented,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { topic in
             HelpCenterTopicNavigation(topic: topic)
@@ -145,7 +145,7 @@ struct LoggedInNavigation: View {
         }
         .detent(
             item: $vm.isFaqPresented,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { question in
             HelpCenterQuestionNavigation(question: question)
@@ -350,7 +350,7 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: [.height],
+
             options: .constant(.withoutGrabber)
         ) {
             ClaimsMainNavigation(from: .generic)
@@ -426,7 +426,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -437,30 +437,29 @@ struct HomeTab: View {
                 )
         }
         .detent(
-            item: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: [.height],
-            options: .constant(.alwaysOpenOnTop)
-        ) { claimInfo in
-            CrossSellingScreen(
-                addonCardOnClick: { contractIds in
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
-
-                    loggedInVm.isAddonPresented = .init(
-                        addonSource: .crossSell,
-                        contractConfigs: addonConfigs
-                    )
-                },
-                info: claimInfo
-            )
-            .embededInNavigation(
-                options: .navigationType(type: .large),
-                tracking: LoggedInNavigationDetentType.crossSelling
-            )
+            item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
+            transitionType: .center,
+            options: .constant([.alwaysOpenOnTop])
+        ) { crossSell in
+            CrossSellingCentered(crossSell: crossSell)
+        }
+        .detent(
+            item: $homeNavigationVm.navBarItems.isNewOfferPresentedModal,
+            transitionType: .detent(style: [.large]),
+            options: .constant([.alwaysOpenOnTop, .withoutGrabber])
+        ) { crossSells in
+            CrossSellingModal(crossSells: crossSells)
+        }
+        .detent(
+            item: $homeNavigationVm.navBarItems.isNewOfferPresentedDetent,
+            transitionType: .detent(style: [.height]),
+            options: .constant([.alwaysOpenOnTop])
+        ) { crossSells in
+            CrossSellingDetent(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
@@ -511,8 +510,6 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
             return .init(describing: SubmitClaimDeflectScreen.self)
         case .firstVet:
             return .init(describing: FirstVetView.self)
-        case .crossSelling:
-            return .init(describing: CrossSellingScreen.self)
         case .error:
             return .init(describing: GenericErrorView.self)
         }
@@ -520,7 +517,6 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
 
     case submitClaimDeflect
     case firstVet
-    case crossSelling
     case error
 }
 
@@ -630,7 +626,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
-        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
+        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo.init(type: .addon))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

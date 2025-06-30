@@ -126,7 +126,8 @@ public struct SubmitClaimCheckoutScreen: View {
 
             if repairCost == nil {
                 hSection {
-                    Divider()
+                    hRowDivider()
+                        .hWithoutHorizontalPadding([.divider])
                 }
             }
 

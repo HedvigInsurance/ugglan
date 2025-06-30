@@ -86,6 +86,7 @@ public struct ContractDetail: View {
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding8)
+                Spacer(minLength: 0)
             }
             .presentableStoreLensAnimation(.default)
             .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in

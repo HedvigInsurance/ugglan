@@ -54,7 +54,7 @@ where MainContent: View, BottomContent: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .padding([.horizontal, .top], .padding16)
+            .padding([.horizontal], .padding16)
 
             if withDivider && bottomComponent != nil {
                 hRowDivider()

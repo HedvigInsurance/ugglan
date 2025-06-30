@@ -74,13 +74,21 @@ struct NotificationStyle: ViewModifier {
                         )
                 )
         case .defaultStyle:
-            content
-                .background(backgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                .overlay(
-                    RoundedRectangle(cornerRadius: .cornerRadiusL)
-                        .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
-                )
+            switch type {
+            case .neutral:
+                content
+                    .background(backgroundColor)
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: .cornerRadiusL)
+                            .strokeBorder(hBorderColor.primary, lineWidth: 1)
+                    )
+            default:
+                content
+                    .background(backgroundColor)
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+            }
+
         }
     }
 

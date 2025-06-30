@@ -82,7 +82,6 @@ struct SlideToConfirm: View {
         .frame(maxWidth: .infinity)
         .background(
             GeometryReader { proxy in
-
                 hSurfaceColor.Opaque.secondary
                     .onAppear {
                         width = proxy.size.width
@@ -125,7 +124,7 @@ struct SlideToConfirm: View {
     @hColorBuilder
     private var getLabelColor: some hColor {
         if didFinished {
-            hTextColor.Translucent.disabled
+            hTextColor.Opaque.disabled
         } else {
             hTextColor.Translucent.secondary
         }

@@ -95,7 +95,7 @@ public struct RenewalCardView: View {
                     if upcomingRenewalContracts.count == 1 {
                         InfoCard(
                             text: L10n.dashboardRenewalPrompterBody(
-                                renewalDate.daysBetween(start: Date())
+                                renewalDate.daysBetween(start: Date()) + 1
                             ),
                             type: .info
                         )
@@ -112,8 +112,9 @@ public struct RenewalCardView: View {
                             .daysBetween(start: Date())
                     {
                         InfoCard(
-                            text: days == 0
-                                ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days),
+                            text: days == 1
+                                ? L10n.dashboardRenewalPrompterBodyTomorrow
+                                : L10n.dashboardRenewalPrompterBody(days + 1),
                             type: .info
                         )
                         .buttons([
@@ -141,7 +142,7 @@ public struct RenewalCardView: View {
                 dismissButton: .default(Text(L10n.discountRedeemSuccessButton))
             )
         }
-        .detent(item: $document, style: [.large]) { document in
+        .detent(item: $document, transitionType: .detent(style: [.large])) { document in
             PDFPreview(document: document)
         }
     }

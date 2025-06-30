@@ -58,6 +58,7 @@ extension ForeverRouterActions: TrackingViewNameProtocol {
 
 public struct ForeverNavigation: View {
     @EnvironmentObject var router: Router
+    private var changeCodeRouter = Router()
     @StateObject var foreverNavigationVm = ForeverNavigationViewModel()
     let useOwnNavigation: Bool
 
@@ -79,22 +80,23 @@ public struct ForeverNavigation: View {
         }
         .detent(
             presented: $foreverNavigationVm.isChangeCodePresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             ChangeCodeView(foreverNavigationVm: foreverNavigationVm)
                 .routerDestination(for: ForeverRouterActions.self, options: .hidesBackButton) { routerAction in
                     switch routerAction {
                     case .success:
-                        SuccessScreen(title: L10n.ReferralsChange.codeChanged)
-                            .onAppear { [weak router] in
+                        SuccessScreen(title: L10n.ReferralsChange.codeChanged, formPosition: .compact)
+                            .onAppear { [weak changeCodeRouter] in
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    router?.dismiss()
+                                    changeCodeRouter?.dismiss()
                                 }
                             }
                     }
                 }
                 .configureTitle(L10n.ReferralsChange.changeCode)
                 .embededInNavigation(
+                    router: changeCodeRouter,
                     options: [.navigationType(type: .large)],
                     tracking: ForeverNavigationDetentType.changeCode
                 )

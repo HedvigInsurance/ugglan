@@ -14,7 +14,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.verticalSizeClass) var verticalSizeClass
-
+    @State private var ignoreKeyboard = false
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
     var content: Content
@@ -47,6 +47,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         }
                 }
             }
+            .ignoresSafeArea(.keyboard, edges: ignoreKeyboard ? .bottom : [])
         }
         .task {
             vm.scrollBounces = hEnableScrollBounce
@@ -80,7 +81,13 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     vm.scrollView = scrollView
                     vm.keyboardCancellable = keyboardPublisher.sink { _ in
                     } receiveValue: { [weak vm] keyboardHeight in
-                        vm?.keyboardVisible = keyboardHeight != nil
+                        if vm?.vc?.presentedViewController == nil {
+                            vm?.keyboardVisible = keyboardHeight != nil
+                            ignoreKeyboard = false
+                        } else {
+                            vm?.keyboardVisible = false
+                            ignoreKeyboard = true
+                        }
                     }
                 }
             }

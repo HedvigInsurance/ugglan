@@ -290,34 +290,35 @@ public enum hButtonTextColor {
     case red
 }
 
-#Preview {
-    @State var isLoading = false
-    @State var disabled = false
-
-    let buttons = VStack(alignment: .leading) {
-        ForEach(hButtonSize.allCases, id: \.self) { size in
-            ForEach(hButtonConfigurationType.allCases, id: \.self) { type in
-                hButton(
-                    size,
-                    type,
-                    content: .init(title: "TEXT"),
-                    {}
-                )
+struct hButton_Previews: PreviewProvider {
+    static var previews: some View {
+        @State var isLoading = false
+        @State var disabled = false
+        let buttons = VStack(alignment: .leading) {
+            ForEach(hButtonSize.allCases, id: \.self) { size in
+                ForEach(hButtonConfigurationType.allCases, id: \.self) { type in
+                    hButton(
+                        size,
+                        type,
+                        content: .init(title: "TEXT"),
+                        {}
+                    )
+                }
             }
         }
-    }
 
-    hSection {
-        VStack(alignment: .leading) {
-            buttons
-                .colorScheme(.dark)
+        return hSection {
+            VStack(alignment: .leading) {
+                buttons
+                    .colorScheme(.dark)
 
-            buttons
-                .colorScheme(.light)
+                buttons
+                    .colorScheme(.light)
+            }
         }
+        .background(hBackgroundColor.primary)
+        .hButtonIsLoading(isLoading)
+        .disabled(disabled)
+        .sectionContainerStyle(.transparent)
     }
-    .background(hBackgroundColor.primary)
-    .hButtonIsLoading(isLoading)
-    .disabled(disabled)
-    .sectionContainerStyle(.transparent)
 }

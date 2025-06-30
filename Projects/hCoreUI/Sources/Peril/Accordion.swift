@@ -30,34 +30,30 @@ public struct AccordionView: View {
                 AccordionHeader(
                     peril: peril,
                     title: title,
+                    description: description,
                     extended: $extended
                 )
                 .padding(.horizontal, .padding16)
-                .padding(.vertical, 17)
+                .padding(.top, 17)
+                .padding(.bottom, .padding24)
             }
             .accessibilityLabel("\(title)")
             .accessibilityAddTraits(.isButton)
-            .modifier(
-                BackgorundColorAnimation(
-                    animationTrigger: $extended,
-                    color: hSurfaceColor.Opaque.primary,
-                    animationColor: hSurfaceColor.Opaque.secondary
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-
-            if extended {
-                AccordionBody(peril: peril, description: description, extended: $extended)
-                    .padding(.bottom, .padding8)
-                    .accessibilityElement(children: .contain)
-            }
         }
+        .modifier(
+            BackgorundColorAnimation(
+                animationTrigger: $extended,
+                color: hSurfaceColor.Opaque.primary,
+                animationColor: hSurfaceColor.Opaque.secondary
+            )
+        )
     }
 }
 
 struct AccordionHeader: View {
     let peril: Perils?
     let title: String
+    let description: String
     @Binding var extended: Bool
 
     var body: some View {
@@ -75,9 +71,18 @@ struct AccordionHeader: View {
                 .frame(width: 16, height: 16)
                 .padding([.horizontal, .vertical], .padding4)
             }
-            hText(title, style: .body1)
-                .lineLimit(extended ? nil : 1)
-                .foregroundColor(getTextColor)
+            VStack(alignment: .leading, spacing: 17) {
+                hText(title, style: .body1)
+                    .lineLimit(extended ? nil : 1)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(peril?.textColor)
+
+                if extended {
+                    AccordionBody(peril: peril, description: description, extended: $extended)
+                        .multilineTextAlignment(.leading)
+                        .accessibilityElement(children: .contain)
+                }
+            }
             Spacer()
             ZStack {
                 Group {
@@ -96,19 +101,10 @@ struct AccordionHeader: View {
                     .transition(.opacity.animation(.easeOut))
                     .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
-                .foregroundColor(getTextColor)
+                .foregroundColor(peril?.textColor)
             }
         }
         .accessibilityAddTraits(extended ? .isHeader : [])
-    }
-
-    @hColorBuilder
-    var getTextColor: some hColor {
-        if peril?.isDisabled ?? false {
-            hTextColor.Opaque.disabled
-        } else {
-            hTextColor.Opaque.primary
-        }
     }
 }
 
@@ -121,7 +117,7 @@ struct AccordionBody: View {
         VStack(alignment: .leading, spacing: .padding12) {
             hText(description, style: peril != nil ? .label : .body1)
                 .padding(.bottom, .padding12)
-                .foregroundColor(getTextColor)
+                .foregroundColor(peril?.textColor)
             if let perilCover = peril?.covered {
                 ForEach(Array(perilCover.enumerated()), id: \.offset) { index, item in
                     HStack(alignment: .top, spacing: 8) {
@@ -135,14 +131,16 @@ struct AccordionBody: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
-        .padding(.horizontal, .padding32)
         .accessibilityAddTraits(extended ? .isSelected : [])
         .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
     }
+}
 
+@MainActor
+extension Perils {
     @hColorBuilder
-    var getTextColor: some hColor {
-        if peril?.isDisabled ?? false {
+    var textColor: some hColor {
+        if self.isDisabled {
             hTextColor.Opaque.disabled
         } else {
             hTextColor.Opaque.primary

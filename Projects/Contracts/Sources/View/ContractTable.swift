@@ -68,7 +68,7 @@ struct ContractTable: View {
                     }
 
                     movingToANewHomeView
-                    CrossSellingStack(withHeader: true)
+                    CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
                     PresentableStoreLens(
@@ -147,7 +147,7 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
-                        .fixedSize(horizontal: false, vertical: sizeCategory > .large ? true : false)
+                        .fixedSize(horizontal: false, vertical: true)
                         .transition(.slide)
                     }
                 }

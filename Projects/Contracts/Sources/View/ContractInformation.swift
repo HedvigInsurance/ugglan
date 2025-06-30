@@ -220,8 +220,8 @@ struct ContractInformationView: View {
         {
             hSection {
                 InfoCard(
-                    text: days == 0
-                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days),
+                    text: days == 1
+                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days + 1),
                     type: .info
                 )
                 .buttons([
@@ -237,7 +237,6 @@ struct ContractInformationView: View {
                     )
                 ])
             }
-            .padding(.top, .padding8)
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
@@ -266,7 +265,6 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
-                        .padding(.top, .padding8)
                     } else {
                         InfoCard(
                             text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
@@ -282,7 +280,6 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
-                        .padding(.top, .padding8)
                     }
                 }
             }

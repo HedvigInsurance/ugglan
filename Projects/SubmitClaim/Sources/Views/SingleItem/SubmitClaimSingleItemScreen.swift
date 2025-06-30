@@ -11,39 +11,42 @@ public struct SubmitClaimSingleItemScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {}
-            .hFormTitle(
-                title: .init(
-                    .small,
-                    .heading2,
-                    L10n.claimsSingleItemDetails,
-                    alignment: .leading
-                )
+        hForm {
+            hSection {
+                getFields(singleItemStep: claimsNavigationVm.singleItemModel)
+            }
+        }
+        .hFormContentPosition(.bottom)
+        .hFormTitle(
+            title: .init(
+                .small,
+                .heading2,
+                L10n.claimsSingleItemDetails,
+                alignment: .leading
             )
-            .hFormAttachToBottom {
-                hSection {
-                    getFields(singleItemStep: claimsNavigationVm.singleItemModel)
+        )
+        .hFormAttachToBottom {
+            hSection {
+                hContinueButton {
+                    if let singleItemModel = claimsNavigationVm.singleItemModel {
+                        Task {
+                            let step = await vm.singleItemRequest(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                model: singleItemModel
+                            )
 
-                    hContinueButton {
-                        if let singleItemModel = claimsNavigationVm.singleItemModel {
-                            Task {
-                                let step = await vm.singleItemRequest(
-                                    context: claimsNavigationVm.currentClaimContext ?? "",
-                                    model: singleItemModel
-                                )
-
-                                if let step {
-                                    claimsNavigationVm.navigate(data: step)
-                                }
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
                             }
                         }
                     }
-                    .hButtonIsLoading(vm.viewState == .loading)
-                    .disabled(vm.viewState == .loading)
                 }
-                .sectionContainerStyle(.transparent)
+                .hButtonIsLoading(vm.viewState == .loading)
+                .disabled(vm.viewState == .loading)
             }
-            .claimErrorTrackerForState($vm.viewState)
+        }
+        .sectionContainerStyle(.transparent)
+        .claimErrorTrackerForState($vm.viewState)
     }
 
     @ViewBuilder

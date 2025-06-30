@@ -166,7 +166,7 @@ extension InfoCardScrollViewModel: UIScrollViewDelegate {
                     animations: {
                         scrollView?.contentOffset.x = offsetToScrollTo
                     },
-                    completion: { [weak self] _ in
+                    completion: { _ in
                     }
                 )
             }

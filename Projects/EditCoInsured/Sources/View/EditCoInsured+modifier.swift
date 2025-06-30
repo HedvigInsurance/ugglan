@@ -19,7 +19,7 @@ struct EditCoInsured: ViewModifier {
         content
             .detent(
                 item: $vm.editCoInsuredModelDetent,
-                style: [.height]
+                transitionType: .detent(style: [.height])
             ) { coInsuredModel in
                 let contractsSupportingCoInsured = coInsuredModel.contractsSupportingCoInsured
                 if contractsSupportingCoInsured.count > 1 {
@@ -39,7 +39,7 @@ struct EditCoInsured: ViewModifier {
             }
             .detent(
                 item: $vm.editCoInsuredModelMissingAlert,
-                style: [.height]
+                transitionType: .detent(style: [.height])
             ) { config in
                 getMissingCoInsuredAlertView(
                     missingContractConfig: config
@@ -47,7 +47,7 @@ struct EditCoInsured: ViewModifier {
             }
             .detent(
                 item: $vm.editCoInsuredModelError,
-                style: [.height],
+
                 options: .constant([.alwaysOpenOnTop])
             ) { errorModel in
                 GenericErrorView(description: errorModel.errorMessage, formPosition: .compact)

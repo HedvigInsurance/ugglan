@@ -4,13 +4,16 @@ import hCore
 public struct SuccessScreen: View {
     let title: String?
     let subTitle: String?
+    let formPosition: ContentPosition?
 
     public init(
         title: String? = nil,
-        subtitle: String? = nil
+        subtitle: String? = nil,
+        formPosition: ContentPosition? = nil
     ) {
         self.title = title
         self.subTitle = subtitle
+        self.formPosition = formPosition
     }
 
     public init(
@@ -19,13 +22,15 @@ public struct SuccessScreen: View {
     ) {
         self.title = successViewTitle
         self.subTitle = successViewBody
+        self.formPosition = nil
     }
 
     public var body: some View {
         StateView(
             type: .success,
             title: title ?? "",
-            bodyText: subTitle
+            bodyText: subTitle,
+            formPosition: formPosition
         )
     }
 }

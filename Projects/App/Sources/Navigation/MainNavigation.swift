@@ -152,6 +152,10 @@ class MainNavigationViewModel: ObservableObject {
             }
         }
         configureAppBadgeTracking()
+
+        //we want to show it initially when app launches if there is any
+        ToolbarOptionType.newOfferNotification.resetTooltipDisplayState()
+        ToolbarOptionType.chatNotification.resetTooltipDisplayState()
     }
 
     private func checkForFeatureFlags() async {

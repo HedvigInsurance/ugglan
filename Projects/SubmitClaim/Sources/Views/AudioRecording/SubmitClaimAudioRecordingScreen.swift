@@ -274,7 +274,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .frame(height: 300)
     }
 
     @ViewBuilder
