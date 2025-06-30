@@ -87,7 +87,7 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var isHelpCenterEnabled = false  //migrated
     @Published public private(set) var isSubmitClaimEnabled = false  //migrated
     @Published public private(set) var osVersionTooLow = false  //migrated
-    @Published public private(set) var emailPreferencesEnabled = false
+    @Published public private(set) var emailPreferencesEnabled = false  //migrated
     @Published public private(set) var isAddonsEnabled = false
     @Published public private(set) var isDemoMode = false
     @Published public private(set) var isMovingFlowEnabled = false
@@ -124,6 +124,7 @@ public class FeatureFlags: ObservableObject {
                 self.isMovingFlowEnabled = data.isMovingFlowEnabled
                 self.isAddonsRemovalFromMovingFlowEnabled = data.isAddonsRemovalFromMovingFlowEnabled
             }
+
         self.client = client
         try await client.setup(with: context)
     }
