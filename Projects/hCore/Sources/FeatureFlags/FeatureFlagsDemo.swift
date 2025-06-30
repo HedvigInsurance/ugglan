@@ -14,7 +14,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
     public func setup(with context: [String: String]) async throws {
         let data = FeatureData(
             isEditCoInsuredEnabled: true,
-            isTravelInsuranceEnabled: false,
             isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
             isChatDisabled: false,
@@ -33,7 +32,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
     public func updateContext(context: [String: String]) {
         let data = FeatureData(
             isEditCoInsuredEnabled: true,
-            isTravelInsuranceEnabled: false,
             isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
             isChatDisabled: false,

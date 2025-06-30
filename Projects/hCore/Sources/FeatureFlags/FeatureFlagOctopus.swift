@@ -80,7 +80,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         }
         let data = FeatureData(
             isEditCoInsuredEnabled: unleashClient.isEnabled(name: "edit_coinsured"),
-            isTravelInsuranceEnabled: unleashClient.isEnabled(name: "travel_insurance"),
             isTerminationFlowEnabled: unleashClient.isEnabled(name: "termination_flow"),
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
             isChatDisabled: unleashClient.isEnabled(name: "disable_chat"),

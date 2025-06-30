@@ -77,7 +77,7 @@ class HomeClientOctopus: HomeClient {
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)
         }
-        if actions?.isTravelCertificateEnabled == true && featureFlags.isTravelInsuranceEnabled {
+        if actions?.isTravelCertificateEnabled == true {
             quickActions.append(.travelInsurance)
         }
         if let firstVetSections = actions?.firstVetAction?.sections {

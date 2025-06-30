@@ -10,7 +10,6 @@ public protocol FeatureFlagsClient {
 
 public struct FeatureData: Codable, Equatable {
     public let isEditCoInsuredEnabled: Bool
-    public let isTravelInsuranceEnabled: Bool
     public let isTerminationFlowEnabled: Bool
     public let isUpdateNecessary: Bool
     public let isChatDisabled: Bool
@@ -26,7 +25,6 @@ public struct FeatureData: Codable, Equatable {
 
     public init(
         isEditCoInsuredEnabled: Bool,
-        isTravelInsuranceEnabled: Bool,
         isTerminationFlowEnabled: Bool,
         isUpdateNecessary: Bool,
         isChatDisabled: Bool,
@@ -41,7 +39,6 @@ public struct FeatureData: Codable, Equatable {
         isAddonsRemovalFromMovingFlowEnabled: Bool
     ) {
         self.isEditCoInsuredEnabled = isEditCoInsuredEnabled
-        self.isTravelInsuranceEnabled = isTravelInsuranceEnabled
         self.isTerminationFlowEnabled = isTerminationFlowEnabled
         self.isUpdateNecessary = isUpdateNecessary
         self.isChatDisabled = isChatDisabled
@@ -75,10 +72,9 @@ public class FeatureFlags: ObservableObject {
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
     @Published public private(set) var isEditCoInsuredEnabled = false
-    @Published public private(set) var isTravelInsuranceEnabled = false
-    @Published public private(set) var isTerminationFlowEnabled = false
+    @Published public private(set) var isTerminationFlowEnabled = false  //need rework
     @Published public private(set) var isUpdateNecessary = false  //migrated
-    @Published public private(set) var isChatDisabled = false
+    @Published public private(set) var isChatDisabled = false  //need to reintroduce
     @Published public private(set) var isPaymentScreenEnabled = false  //migrated
     @Published public private(set) var isConnectPaymentEnabled = false  //no need
     @Published public private(set) var isHelpCenterEnabled = false  //migrated
@@ -87,7 +83,7 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var emailPreferencesEnabled = false  //migrated
     @Published public private(set) var isDemoMode = false
     @Published public private(set) var isMovingFlowEnabled = false  //migrated
-    @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false
+    @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false  //no need
 
     private init() {
     }
@@ -105,7 +101,6 @@ public class FeatureFlags: ObservableObject {
                     )
                 }
                 self.isEditCoInsuredEnabled = data.isEditCoInsuredEnabled
-                self.isTravelInsuranceEnabled = data.isTravelInsuranceEnabled
                 self.isTerminationFlowEnabled = data.isTerminationFlowEnabled
                 self.isUpdateNecessary = data.isUpdateNecessary
                 self.isChatDisabled = data.isChatDisabled
