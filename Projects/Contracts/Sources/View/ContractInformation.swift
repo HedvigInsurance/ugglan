@@ -12,7 +12,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
-
+    @InjectObservableObject private var featureFlags: FeatureFlags
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -300,7 +300,7 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func moveAddressButton(contract: Contract) -> some View {
         let contractsThatSupportsMoving = store.state.activeContracts.filter({ $0.supportsAddressChange })
-        if contract.supportsAddressChange && Dependencies.featureFlags().isMovingFlowEnabled
+        if contract.supportsAddressChange && featureFlags.isMovingFlowEnabled
             && contractsThatSupportsMoving.count < 2 && !contract.isTerminated
         {
             hSection {
