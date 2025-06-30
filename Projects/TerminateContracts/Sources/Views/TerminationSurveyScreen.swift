@@ -45,34 +45,32 @@ struct TerminationSurveyScreen: View {
 
     private var content: some View {
         hSection {
-            VStack(spacing: 16) {
-                VStack(spacing: 4) {
-                    ForEach(vm.options) { option in
-                        ZStack {
-                            VStack(spacing: 4) {
-                                hRadioField(
-                                    id: option.id,
-                                    itemModel: .init(title: option.title, subTitle: nil),
-                                    leftView: nil,
-                                    selected: $vm.selected
-                                )
-                                .hFieldSize(.medium)
-                                .zIndex(1)
-                            }
+            VStack(spacing: 4) {
+                ForEach(vm.options) { option in
+                    ZStack {
+                        VStack(spacing: 4) {
+                            hRadioField(
+                                id: option.id,
+                                itemModel: .init(title: option.title, subTitle: nil),
+                                leftView: nil,
+                                selected: $vm.selected
+                            )
+                            .hFieldSize(.medium)
+                            .zIndex(1)
                         }
-
-                    }
-                    if let suggestion = vm.selectedOption?.suggestion {
-                        suggestionView(for: suggestion)
                     }
 
-                    if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
-                        optionId == vm.selectedOption?.id
-                    {
-                        TerminationFlowSurveyStepFeedBackView(
-                            vm: feedBack
-                        )
-                    }
+                }
+                if let suggestion = vm.selectedOption?.suggestion {
+                    suggestionView(for: suggestion)
+                }
+
+                if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
+                    optionId == vm.selectedOption?.id
+                {
+                    TerminationFlowSurveyStepFeedBackView(
+                        vm: feedBack
+                    )
                 }
             }
         }
