@@ -32,7 +32,6 @@ struct LoggedInNavigation: View {
     @StateObject private var foreverRouter = Router()
     @StateObject private var paymentsRouter = Router()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
-
     @InjectObservableObject private var features: FeatureFlags
     var body: some View {
         TabView(selection: $vm.selectedTab) {

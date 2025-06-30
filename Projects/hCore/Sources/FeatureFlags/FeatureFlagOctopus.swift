@@ -98,11 +98,5 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             )
         )
         featureDataPublisher.send(data)
-        //        Task {
-        //            log.info(
-        //                "Feature flag set",
-        //                attributes: ["featureFlags": featureFlags]
-        //            )
-        //        }
     }
 }

@@ -82,9 +82,9 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var isTerminationFlowEnabled = false
     @Published public private(set) var isUpdateNecessary = false
     @Published public private(set) var isChatDisabled = false
-    @Published public private(set) var isPaymentScreenEnabled = false
-    @Published public private(set) var isConnectPaymentEnabled = false
-    @Published public private(set) var isHelpCenterEnabled = false
+    @Published public private(set) var isPaymentScreenEnabled = false  //migrated
+    @Published public private(set) var isConnectPaymentEnabled = false  //no need
+    @Published public private(set) var isHelpCenterEnabled = false  //migrated
     @Published public private(set) var isSubmitClaimEnabled = false
     @Published public private(set) var osVersionTooLow = false
     @Published public private(set) var emailPreferencesEnabled = false
@@ -102,6 +102,12 @@ public class FeatureFlags: ObservableObject {
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { data in
+                Task {
+                    log.info(
+                        "Feature flag set",
+                        attributes: ["featureFlags": data]
+                    )
+                }
                 self.isEditCoInsuredEnabled = data.isEditCoInsuredEnabled
                 self.isTravelInsuranceEnabled = data.isTravelInsuranceEnabled
                 self.isTerminationFlowEnabled = data.isTerminationFlowEnabled
