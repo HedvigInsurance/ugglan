@@ -1,3 +1,4 @@
+import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
@@ -17,7 +18,13 @@ struct CrossSellingItem: View {
     var body: some View {
         HStack {
             HStack(spacing: .padding16) {
-                crossSell.image
+                KFImage(crossSell.imageUrl)
+                    .placeholder({
+                        hCoreUIAssets.bigPillowHome.view
+                            .resizable()
+                            .frame(width: 48, height: 48)
+                    })
+                    .fade(duration: 0.25)
                     .resizable()
                     .frame(width: 48, height: 48)
                     .aspectRatio(contentMode: .fill)
@@ -37,15 +44,14 @@ struct CrossSellingItem: View {
                     Spacer()
 
                     hButton(
-                        .medium,
-                        .primaryAlt,
+                        .small,
+                        .secondary,
                         content: .init(title: L10n.crossSellGetPrice),
                         {
                             fieldIsClicked.toggle()
                             openExternal()
                         }
                     )
-                    .hUseLightMode
                 }
             }
             .accessibilityElement(children: .combine)
@@ -70,9 +76,11 @@ struct CrossSellingItem: View {
 #Preview {
     CrossSellingItem(
         crossSell: .init(
+            id: "id",
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
-            type: .accident
+            imageUrl: nil,
+            buttonDescription: "button description"
         )
     )
 }

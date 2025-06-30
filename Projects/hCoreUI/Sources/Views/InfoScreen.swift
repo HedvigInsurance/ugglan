@@ -3,7 +3,7 @@ import hCore
 
 extension View {
     public func showInfoScreen(text: Binding<String?>, dismissButtonTitle: String) -> some View {
-        self.detent(item: text, style: [.height]) { text in
+        self.detent(item: text, transitionType: .detent(style: [.height])) { text in
             InfoScreenWrapper(text: text, dismissButtonTitle: dismissButtonTitle)
         }
     }

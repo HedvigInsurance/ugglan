@@ -235,7 +235,7 @@ public struct MovingFlowNavigation: View {
         .environmentObject(movingFlowNavigationVm)
         .detent(
             item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { houseInformationInputModel in
             MovingFlowAddExtraBuildingScreen(
                 houseInformationInputVm: houseInformationInputModel
@@ -249,13 +249,13 @@ public struct MovingFlowNavigation: View {
         }
         .detent(
             item: $movingFlowNavigationVm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }
         .detent(
             item: $movingFlowNavigationVm.isBuildingTypePickerPresented,
-            style: [.height],
+
             options: .constant([.alwaysOpenOnTop])
         ) { model in
             openTypeOfBuildingPicker(

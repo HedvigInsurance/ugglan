@@ -40,7 +40,7 @@ public struct hRow<Content: View, Accessory: View>: View {
     @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
     @Environment(\.hWithoutDivider) var hWithoutDivider
     @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
-
+    @Environment(\.hRowContentAlignment) var contentAlignment
     var content: Content
     var accessory: Accessory
     var horizontalPadding: CGFloat = 16
@@ -85,7 +85,7 @@ public struct hRow<Content: View, Accessory: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading) {
-                HStack(alignment: .top) {
+                HStack(alignment: contentAlignment) {
                     content
                     accessory
                 }
@@ -176,6 +176,23 @@ extension hRow {
         hRow<Content, EmptyAccessory>(EmptyAccessory()) {
             content
         }
+    }
+}
+
+private struct EnvironmentHRowContentAlignment: EnvironmentKey {
+    static let defaultValue: VerticalAlignment = .top
+}
+
+extension EnvironmentValues {
+    var hRowContentAlignment: VerticalAlignment {
+        get { self[EnvironmentHRowContentAlignment.self] }
+        set { self[EnvironmentHRowContentAlignment.self] = newValue }
+    }
+}
+
+extension View {
+    public func hRowContentAlignment(_ alignment: VerticalAlignment) -> some View {
+        self.environment(\.hRowContentAlignment, alignment)
     }
 }
 
