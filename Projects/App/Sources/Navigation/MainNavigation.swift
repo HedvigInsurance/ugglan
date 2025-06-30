@@ -15,17 +15,22 @@ import hCoreUI
 
 @main
 struct MainNavigation: App {
+
+    init() {
+        DI.initServices()
+    }
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
+    @InjectObservableObject var featureFlags: FeatureFlags
     var body: some Scene {
         WindowGroup {
             ZStack {
                 Group {
-                    if vm.osVersionTooLow {
+                    if featureFlags.osVersionTooLow {
                         UpdateOSScreen()
                             .trackViewName(name: .init(describing: UpdateOSScreen.self))
-                    } else if vm.shouldUpdateApp {
+                    } else if featureFlags.isUpdateNecessary {
                         UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
                             .trackViewName(name: .init(describing: UpdateAppScreen.self))
                     } else if vm.hasLaunchFinished {
@@ -85,13 +90,10 @@ class MainNavigationViewModel: ObservableObject {
         }
     }
     @Published var showLaunchScreen = true
-    @Published var shouldUpdateApp = false
-    @Published var osVersionTooLow = false
     lazy var notLoggedInVm = NotLoggedViewModel()
     var loggedInVm = LoggedInNavigationViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
-    private var featureFlagsCancellable = Set<AnyCancellable>()
     var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {
         didSet {
             Task {
@@ -159,19 +161,6 @@ class MainNavigationViewModel: ObservableObject {
     }
 
     private func checkForFeatureFlags() async {
-        let featureFlags: FeatureFlags = Dependencies.shared.resolve()
-        featureFlagsCancellable.removeAll()
-        featureFlags.$isUpdateNecessary
-            .prepend()
-            .sink { [weak self] data in
-                self?.shouldUpdateApp = data
-            }
-            .store(in: &featureFlagsCancellable)
-        featureFlags.$osVersionTooLow
-            .sink { [weak self] data in
-                self?.osVersionTooLow = data
-            }
-            .store(in: &featureFlagsCancellable)
         await fetchFeatureFlag()
     }
 

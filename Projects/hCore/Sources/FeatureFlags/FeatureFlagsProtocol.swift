@@ -80,13 +80,13 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var isEditCoInsuredEnabled = false
     @Published public private(set) var isTravelInsuranceEnabled = false
     @Published public private(set) var isTerminationFlowEnabled = false
-    @Published public private(set) var isUpdateNecessary = false
+    @Published public private(set) var isUpdateNecessary = false  //migrated
     @Published public private(set) var isChatDisabled = false
     @Published public private(set) var isPaymentScreenEnabled = false  //migrated
     @Published public private(set) var isConnectPaymentEnabled = false  //no need
     @Published public private(set) var isHelpCenterEnabled = false  //migrated
-    @Published public private(set) var isSubmitClaimEnabled = false
-    @Published public private(set) var osVersionTooLow = false
+    @Published public private(set) var isSubmitClaimEnabled = false  //migrated
+    @Published public private(set) var osVersionTooLow = false  //migrated
     @Published public private(set) var emailPreferencesEnabled = false
     @Published public private(set) var isAddonsEnabled = false
     @Published public private(set) var isDemoMode = false

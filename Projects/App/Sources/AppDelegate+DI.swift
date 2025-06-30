@@ -25,14 +25,17 @@ import hCore
 import hGraphQL
 
 @MainActor
-extension ApolloClient {
+enum DI {
+    public static func initServices() {
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+    }
+
     public static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         let dateService = DateService()
         Dependencies.shared.add(module: Module { () -> DateService in dateService })
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         if ugglanStore.state.isDemoMode {
             let featureFlagsClient = FeatureFlagsDemo()
             let hPaymentService = hPaymentClientDemo()
@@ -164,8 +167,8 @@ extension ApolloClient {
         }
     }
 
-    public static func initNetwworkClients() async {
-        let hApollo = await self.createClient()
+    public static func initNetworkClients() async {
+        let hApollo = await ApolloClient.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
     }
 
