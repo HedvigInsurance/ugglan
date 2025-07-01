@@ -96,7 +96,7 @@ private struct CloseButtonModifier: ViewModifier {
                         .frame(minWidth: 44, minHeight: 44)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
-                .accessibilityLabel(L10n.a11YBack)
+                .accessibilityLabel(L10n.a11YClose)
                 .accessibilityAddTraits(.isButton)
             }
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
