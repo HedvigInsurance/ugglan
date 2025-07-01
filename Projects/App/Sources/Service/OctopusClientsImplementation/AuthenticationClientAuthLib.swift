@@ -6,16 +6,6 @@ import Foundation
 import hCore
 import hGraphQL
 
-protocol HttpClientEngine {
-    func send(request: URLRequest) async throws -> (Data, URLResponse)
-}
-
-struct URLSessionHttpClientEngine: HttpClientEngine {
-    func send(request: URLRequest) async throws -> (Data, URLResponse) {
-        try await URLSession.shared.data(for: request)
-    }
-}
-
 final public class AuthenticationClientAuthLib: AuthenticationClient {
     public init() {}
 
@@ -106,8 +96,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
         do {
             let authUrl = Environment.current.authUrl
             AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
-            let repository = self.networkAuthRepository
-            let data = try await repository.startLoginAttempt(
+            let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
                 market: .se,
                 personalNumber: nil,
