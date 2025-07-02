@@ -2,7 +2,6 @@ import Foundation
 import MarkdownKit
 import SnapKit
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 public struct MarkdownView: View {
@@ -25,7 +24,7 @@ public struct MarkdownView: View {
                 width: $width
             )
             .frame(maxWidth: maxWidth)
-            .frame(height: height)
+            .frame(width: width, height: height)
         } else {
             GeometryReader { geo in
                 Color.clear.background(
@@ -76,8 +75,9 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     }
     func updateUIView(_ uiView: CustomTextView, context: Context) {
         uiView.setContent(from: config.text)
-        uiView.calculateHeight()
-        uiView.accessibilityLabel = accessibilityLabel
+        if let accessibilityLabel {
+            uiView.accessibilityLabel = accessibilityLabel
+        }
     }
 }
 
@@ -133,7 +133,6 @@ class CustomTextView: UITextView, UITextViewDelegate {
         self.isUserInteractionEnabled = true
         self.isScrollEnabled = false
         self.isSelectable = true
-        self.backgroundColor = .clear
         self.dataDetectorTypes = [.address, .link, .phoneNumber]
         self.clipsToBounds = false
         accessibilityTraits = .staticText
@@ -149,7 +148,6 @@ class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func setContent(from text: String) {
-        configureTextView()
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: config.fontStyle),
             color: config.color.colorFor(colorScheme, .base).color.uiColor()
