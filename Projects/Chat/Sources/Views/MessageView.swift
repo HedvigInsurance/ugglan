@@ -17,6 +17,7 @@ struct MessageView: View {
                 messageFailContent
             } else {
                 messageContent
+                    .modifier(MessageViewBackground(message: message, conversationStatus: conversationStatus))
             }
         }
         .frame(
@@ -34,13 +35,43 @@ struct MessageView: View {
         .modifier(MessageViewConfirmationDialog(message: message, showRetryOptions: $showRetryOptions, vm: vm))
     }
 
+    @ViewBuilder
     private var messageContent: some View {
-        Group {
-            switch message.type {
-            case .text:
+        switch message.type {
+        case .text:
+            MarkdownView(
+                config: .init(
+                    text: message.trimmedText,
+                    fontStyle: .body1,
+                    color: message.textColor,
+                    linkColor: hTextColor.Opaque.primary,
+                    linkUnderlineStyle: .thick,
+                    maxWidth: 300,
+                    onUrlClicked: { url in
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                    }
+                )
+            )
+            .hEnvironmentAccessibilityLabel(message.timeStampString)
+        case let .file(file):
+            ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
+                .accessibilityLabel(file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile)
+        case let .crossSell(url):
+            LinkView(vm: .init(url: url))
+                .accessibilityLabel(L10n.chatSentALink)
+        case let .deepLink(url):
+            if let type = DeepLink.getType(from: url) {
+                Button {
+                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                } label: {
+                    hText(type.getDeeplinkTextFor(contractName: url.contractName))
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .multilineTextAlignment(.leading)
+                }
+            } else {
                 MarkdownView(
                     config: .init(
-                        text: message.trimmedText,
+                        text: url.absoluteString,
                         fontStyle: .body1,
                         color: message.textColor,
                         linkColor: hTextColor.Opaque.primary,
@@ -51,45 +82,36 @@ struct MessageView: View {
                         }
                     )
                 )
-
-            case let .file(file):
-                ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
-            case let .crossSell(url):
-                LinkView(vm: .init(url: url))
-            case let .deepLink(url):
-                if let type = DeepLink.getType(from: url) {
-                    Button {
-                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                    } label: {
-                        hText(type.getDeeplinkTextFor(contractName: url.contractName))
-                            .foregroundColor(hTextColor.Opaque.primary)
-                            .multilineTextAlignment(.leading)
-                    }
-                } else {
-                    MarkdownView(
-                        config: .init(
-                            text: url.absoluteString,
-                            fontStyle: .body1,
-                            color: message.textColor,
-                            linkColor: hTextColor.Opaque.primary,
-                            linkUnderlineStyle: .thick,
-                            maxWidth: 300,
-                            onUrlClicked: { url in
-                                NotificationCenter.default.post(name: .openDeepLink, object: url)
-                            }
-                        )
-                    )
-                }
-            case let .otherLink(url):
-                LinkView(
-                    vm: .init(url: url)
-                )
-            case let .action(action):
-                ActionView(action: action)
-            case .unknown: Text("")
+                .hEnvironmentAccessibilityLabel(message.timeStampString)
             }
+        case let .otherLink(url):
+            LinkView(
+                vm: .init(url: url)
+            )
+            .accessibilityLabel(accessilityLabel(for: message))
+        case let .action(action):
+            ActionView(action: action)
+                .accessibilityLabel(accessilityLabel(for: message))
+        case .unknown: Text("")
         }
-        .modifier(MessageViewBackground(message: message, conversationStatus: conversationStatus))
+    }
+
+    private func accessilityLabel(for message: Message) -> String {
+        var displayString: String = ""
+        switch message.type {
+        case .text:
+            displayString = message.trimmedText
+        case let .file(file):
+            displayString = file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile
+        case let .deepLink(url):
+            displayString = L10n.chatSentALink
+
+        case let .otherLink(url):
+            displayString = L10n.chatSentALink
+        default:
+            break
+        }
+        return displayString + "\n" + message.timeStampString
     }
 
     @ViewBuilder
