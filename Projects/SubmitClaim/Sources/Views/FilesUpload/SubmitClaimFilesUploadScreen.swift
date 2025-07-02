@@ -81,50 +81,47 @@ struct SubmitClaimFilesUploadScreen: View {
                     }
                 }
             } else {
-                hForm {}
-                    .hFormTitle(
-                        title: .init(
-                            .small,
-                            .heading2,
-                            L10n.claimsFileUploadTitle,
-                            alignment: .leading
-                        )
-                    )
-                    .hFormAlwaysAttachToBottom {
-                        hSection {
-                            VStack(spacing: .padding16) {
-                                if let error = vm.error {
-                                    InfoCard(text: error, type: .attention)
-                                } else {
-                                    InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
-                                        .accessibilitySortPriority(2)
-                                }
-                                VStack(spacing: .padding8) {
-                                    hButton(
-                                        .large,
-                                        .primary,
-                                        content: .init(title: L10n.ClaimStatusDetail.addFiles),
-                                        {
-                                            showFilePickerAlert()
-                                        }
-                                    )
-                                    .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
-                                    .disabled(vm.isLoading && vm.skipPressed)
-                                    hButton(
-                                        .large,
-                                        .ghost,
-                                        content: .init(title: L10n.NavBar.skip),
-                                        {
-                                            skip()
-                                        }
-                                    )
-                                    .disabled(vm.isLoading && !vm.skipPressed)
-                                    .hButtonIsLoading(vm.isLoading && vm.skipPressed)
-                                }
-                            }
-                        }
-                        .sectionContainerStyle(.transparent)
+                hForm {
+                    hSection {
+                        infoView
                     }
+                }
+                .hFormContentPosition(.bottom)
+                .hFormTitle(
+                    title: .init(
+                        .small,
+                        .heading2,
+                        L10n.claimsFileUploadTitle,
+                        alignment: .leading
+                    )
+                )
+                .hFormAlwaysAttachToBottom {
+                    hSection {
+                        VStack(spacing: .padding8) {
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.ClaimStatusDetail.addFiles),
+                                {
+                                    showFilePickerAlert()
+                                }
+                            )
+                            .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
+                            .disabled(vm.isLoading && vm.skipPressed)
+                            hButton(
+                                .large,
+                                .ghost,
+                                content: .init(title: L10n.NavBar.skip),
+                                {
+                                    skip()
+                                }
+                            )
+                            .disabled(vm.isLoading && !vm.skipPressed)
+                            .hButtonIsLoading(vm.isLoading && vm.skipPressed)
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
             }
         }
         .sheet(isPresented: $showImagePicker) {
@@ -156,6 +153,16 @@ struct SubmitClaimFilesUploadScreen: View {
 
             }
             .ignoresSafeArea()
+        }
+    }
+
+    @ViewBuilder
+    private var infoView: some View {
+        if let error = vm.error {
+            InfoCard(text: error, type: .attention)
+        } else {
+            InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
+                .accessibilitySortPriority(2)
         }
     }
 
