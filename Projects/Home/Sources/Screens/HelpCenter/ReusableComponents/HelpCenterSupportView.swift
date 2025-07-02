@@ -31,7 +31,7 @@ struct SupportView: View {
                 buttonView
             }
             .padding(.vertical, .padding32)
-            .padding(.bottom, .padding8)
+            .supportViewBottomPadding
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
@@ -69,6 +69,21 @@ struct SupportView: View {
             .verticalPadding(0)
         }
         .presentableStoreLensAnimation(.default)
+    }
+}
+
+extension View {
+    var supportViewBottomPadding: some View {
+        self.padding(
+            .bottom,
+            {
+                if #available(iOS 26.0, *) {
+                    return .padding56
+                } else {
+                    return .padding8
+                }
+            }()
+        )
     }
 }
 
