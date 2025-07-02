@@ -9,32 +9,38 @@ import hGraphQL
 final public class AuthenticationClientAuthLib: AuthenticationClient {
     public init() {}
 
-    @MainActor
-    private var networkAuthRepository: NetworkAuthRepository = {
-        NetworkAuthRepository(
+    private lazy var networkAuthRepository: NetworkAuthRepository = { [weak self] in
+        return NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
             additionalHttpHeadersProvider: {
-                var headers = [String: String]()
-                let semaphore = DispatchSemaphore(value: 0)
-                //                Task {
-                //                    headers = await ApolloClient.headers()
-                semaphore.signal()
-                //                }
-                semaphore.wait()
+                var headers = self?.getHeaders() ?? [:]
                 return headers
             },
             httpClientEngine: nil
         )
     }()
 
+    private func getHeaders() -> [String: String] {
+        var headers = [String: String]()
+        let semaphore = DispatchSemaphore(value: 0)
+        Task {
+            headers = await ApolloClient.headers()
+            semaphore.signal()
+        }
+        semaphore.wait()
+        return headers
+    }
+
     public func submit(otpState: OTPState) async throws -> String {
         if let verifyUrl = otpState.verifyUrl {
             do {
                 try await Task.sleep(nanoseconds: 5 * 100_000_000)
-                let data = try await networkAuthRepository.submitOtp(
-                    verifyUrl: verifyUrl.absoluteString,
-                    otp: otpState.code
-                )
+                let data =
+                    try await networkAuthRepository
+                    .submitOtp(
+                        verifyUrl: verifyUrl.absoluteString,
+                        otp: otpState.code
+                    )
                 if let data = data as? SubmitOtpResultSuccess {
                     return data.loginAuthorizationCode.code
                 } else {
@@ -57,12 +63,13 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
             return otpState.input
         }()
         do {
-            let data = try await self.networkAuthRepository.startLoginAttempt(
-                loginMethod: .otp,
-                market: .se,
-                personalNumber: personalNumber,
-                email: email
-            )
+            let data = try await self.networkAuthRepository
+                .startLoginAttempt(
+                    loginMethod: .otp,
+                    market: .se,
+                    personalNumber: personalNumber,
+                    email: email
+                )
             try await Task.sleep(nanoseconds: 5 * 100_000_000)
             if let otpProperties = data as? AuthAttemptResultOtpProperties,
                 let verifyUrl = URL(string: otpProperties.verifyUrl),
@@ -95,6 +102,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 personalNumber: nil,
                 email: nil
             )
+
             AuthenticationService.logAuthResourceStop(
                 authUrl.absoluteString,
                 HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
@@ -103,9 +111,11 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
             switch onEnum(of: data) {
             case let .bankIdProperties(data):
                 updateStatusTo(.started(code: data.autoStartToken))
-                for await status in self.networkAuthRepository.observeLoginStatus(
-                    statusUrl: .init(url: data.statusUrl.url)
-                ) {
+                for await status in self.networkAuthRepository
+                    .observeLoginStatus(
+                        statusUrl: .init(url: data.statusUrl.url)
+                    )
+                {
                     let key = UUID().uuidString
                     AuthenticationService.logAuthResourceStart(key, authUrl)
 
