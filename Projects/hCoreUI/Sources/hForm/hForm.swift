@@ -180,19 +180,21 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 
     @ViewBuilder
     private var getBottomAttachedView: some View {
-        Group {
-            if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
-                bottomAttachedView
-            } else {
-                bottomAttachedView?.padding(.bottom, .padding16)
+        if let bottomAttachedView {
+            Group {
+                if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
+                    bottomAttachedView
+                } else {
+                    bottomAttachedView.padding(.bottom, .padding16)
+                }
             }
+            .padding(.top, verticalSizeClass == .compact ? .padding8 : 0)
         }
-        .padding(.top, verticalSizeClass == .compact ? .padding8 : 0)
     }
 
     @ViewBuilder
     private var getAlwaysVisibleBottomView: some View {
-        hFormAlwaysVisibleBottomAttachedView
+        hFormAlwaysVisibleBottomAttachedView?
             .padding(.top, .padding16)
             .padding(.bottom, hFormIgnoreBottomPadding ? 0 : .padding16)
             .background {
