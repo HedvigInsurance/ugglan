@@ -69,17 +69,17 @@ public class FeatureFlags: ObservableObject {
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
     @Published public private(set) var isTerminationFlowEnabled = false  //need rework
-    @Published public private(set) var isUpdateNecessary = false  //migrated
+    @Published public private(set) var isUpdateNecessary = false
     @Published public private(set) var isChatDisabled = false  //need to reintroduce
-    @Published public private(set) var isPaymentScreenEnabled = false  //migrated
-    @Published public private(set) var isConnectPaymentEnabled = false  //no need
-    @Published public private(set) var isHelpCenterEnabled = false  //migrated
-    @Published public private(set) var isSubmitClaimEnabled = false  //migrated
-    @Published public private(set) var osVersionTooLow = false  //migrated
-    @Published public private(set) var emailPreferencesEnabled = false  //migrated
+    @Published public private(set) var isPaymentScreenEnabled = false
+    @Published public private(set) var isConnectPaymentEnabled = false
+    @Published public private(set) var isHelpCenterEnabled = false
+    @Published public private(set) var isSubmitClaimEnabled = false
+    @Published public private(set) var osVersionTooLow = false
+    @Published public private(set) var emailPreferencesEnabled = false
     @Published public private(set) var isDemoMode = false
-    @Published public private(set) var isMovingFlowEnabled = false  //migrated
-    @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false  //no need
+    @Published public private(set) var isMovingFlowEnabled = false
+    @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false
 
     private init() {}
 
