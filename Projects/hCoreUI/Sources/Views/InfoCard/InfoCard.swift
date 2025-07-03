@@ -50,7 +50,7 @@ public struct InfoCard: View {
         .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
-        .accessibilityElement(children: buttonsConfig?.count ?? 0 == 0 ? .contain : .combine)
+        .accessibilityElement(children: buttonsConfig?.count ?? 0 != 1 ? .contain : .combine)
         .hButtonTakeFullWidth(true)
     }
 
