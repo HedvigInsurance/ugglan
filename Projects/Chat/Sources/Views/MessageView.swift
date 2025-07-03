@@ -55,7 +55,7 @@ struct MessageView: View {
             .hEnvironmentAccessibilityLabel(message.timeStampString)
         case let .file(file):
             ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
-                .accessibilityLabel(file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile)
+                .accessibilityLabel(accessilityLabel(for: message))
         case let .crossSell(url):
             LinkView(vm: .init(url: url))
                 .accessibilityLabel(L10n.chatSentALink)
@@ -105,13 +105,12 @@ struct MessageView: View {
             displayString = file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile
         case let .deepLink(url):
             displayString = L10n.chatSentALink
-
         case let .otherLink(url):
             displayString = L10n.chatSentALink
         default:
             break
         }
-        return displayString + "\n" + message.timeStampString
+        return message.timeStampString + " " + displayString
     }
 
     @ViewBuilder
