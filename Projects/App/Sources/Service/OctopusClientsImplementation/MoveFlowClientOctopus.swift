@@ -171,7 +171,6 @@ extension MoveAddress {
             id: data.id,
             displayTitle: data.displayTitle,
             displaySubtitle: data.displaySubtitle,
-            oldAddressCoverageDurationDays: data.oldAddressCoverageDurationDays,
             maxMovingDate: minMaxMovingDate.max,
             minMovingDate: minMaxMovingDate.min,
             suggestedNumberCoInsured: data.suggestedNumberCoInsured
