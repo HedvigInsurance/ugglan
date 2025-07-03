@@ -7,6 +7,15 @@ struct SupportView: View {
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
     @Environment(\.sizeCategory) private var sizeCategory
+    let withExtraPadding: Bool
+
+    init(
+        router: Router,
+        withExtraPadding: Bool? = false
+    ) {
+        self.router = router
+        self.withExtraPadding = withExtraPadding ?? false
+    }
 
     var body: some View {
         hSection {
@@ -31,7 +40,7 @@ struct SupportView: View {
                 buttonView
             }
             .padding(.vertical, .padding32)
-            .supportViewBottomPadding
+            .supportViewBottomPadding(withPadding: withExtraPadding)
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
@@ -73,11 +82,11 @@ struct SupportView: View {
 }
 
 extension View {
-    var supportViewBottomPadding: some View {
+    func supportViewBottomPadding(withPadding: Bool) -> some View {
         self.padding(
             .bottom,
             {
-                if #available(iOS 26.0, *) {
+                if withPadding, #available(iOS 26.0, *) {
                     return .padding56
                 } else {
                     return .padding8
