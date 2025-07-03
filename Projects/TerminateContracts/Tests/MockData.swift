@@ -24,7 +24,8 @@ struct MockData {
                         minDate: Date().localDateString,
                         extraCoverageItem: [
                             .init(displayName: "Travel plus", displayValue: "45 days")
-                        ]
+                        ],
+                        notification: nil
                     )
                 ),
                 progress: 0

@@ -55,6 +55,16 @@ public enum NotificationType {
             hFillColor.Opaque.secondary
         }
     }
+
+    @hColorBuilder
+    public var toastImageColor: some hColor {
+        switch self {
+        case .info:
+            hSignalColor.Green.element
+        default:
+            imageColor
+        }
+    }
 }
 
 struct NotificationStyle: ViewModifier {
