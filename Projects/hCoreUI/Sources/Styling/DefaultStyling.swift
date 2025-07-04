@@ -337,24 +337,28 @@ public struct DefaultStyling {
                 let selectedColor = hFillColor.Opaque.primary.colorFor(.init(style) ?? .light, .base).color.uiColor()
                 let nonSelecetedColor = hFillColor.Translucent.secondary.colorFor(.init(style) ?? .light, .base).color
                     .uiColor()
+
+                let font = Fonts.fontFor(style: .tabBar, withoutFontMultipler: true)
+
                 itemAppearance.normal.iconColor = nonSelecetedColor
                 itemAppearance.normal.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: nonSelecetedColor,
                 ]
+
                 itemAppearance.selected.iconColor = selectedColor
                 itemAppearance.selected.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: selectedColor,
                 ]
                 itemAppearance.focused.iconColor = selectedColor
                 itemAppearance.focused.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: selectedColor,
                 ]
                 itemAppearance.disabled.iconColor = nonSelecetedColor
                 itemAppearance.disabled.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: nonSelecetedColor,
                 ]
             }
