@@ -88,13 +88,14 @@ public struct ChatScreen: View {
             }
             VStack(alignment: message.sender.alignment.horizontal, spacing: .padding4) {
                 MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
+
                 messageTimeStamp(message: message)
+                    .accessibilityHidden(true)
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(accessilityLabel(for: message))
             if message.sender == .hedvig {
                 Spacer()
             }
+
         }
         .id(message.id)
     }
@@ -121,21 +122,6 @@ public struct ChatScreen: View {
         .padding(.bottom, 3)
     }
 
-    private func accessilityLabel(for message: Message) -> String {
-        var displayString: String = ""
-        switch message.type {
-        case .text:
-            displayString = message.trimmedText
-        case let .file(file):
-            displayString = file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile
-        case .deepLink, .otherLink:
-            displayString = L10n.chatSentALink
-        default:
-            displayString = ""
-        }
-        return displayString + "\n" + message.timeStampString
-    }
-
     @ViewBuilder
     private var infoCard: some View {
         if conversationVm.shouldShowBanner {
@@ -157,13 +143,6 @@ public struct ChatScreen: View {
                     }
                     .hInfoCardLayoutStyle(.bannerStyle)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .accessibilityElement(children: .combine)
-                    .accessibilityAddTraits(.isButton)
-                    .accessibilityLabel(
-                        (conversationVm.conversationStatus == .closed)
-                            ? L10n.chatConversationClosedInfo : banner
-                    )
-                    .accessibilityHint(L10n.voiceOverInfoHelpcenter)
             }
         }
     }

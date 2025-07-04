@@ -8,6 +8,8 @@ public struct MarkdownView: View {
     private let config: CustomTextViewRepresentableConfig
     @State private var height: CGFloat = 20
     @State private var width: CGFloat = 0
+    @Environment(\.colorScheme) var colorScheme
+
     public init(
         config: CustomTextViewRepresentableConfig
     ) {
@@ -21,6 +23,7 @@ public struct MarkdownView: View {
                 height: $height,
                 width: $width
             )
+            .frame(maxWidth: maxWidth)
             .frame(width: width, height: height)
         } else {
             GeometryReader { geo in
@@ -45,6 +48,8 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding private var height: CGFloat
     @Binding private var width: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
+    @Environment(\.hEnvironmentAccessibilityLabel) var accessibilityLabel
+
     init(
         config: CustomTextViewRepresentableConfig,
         fixedWidth: CGFloat,
@@ -57,7 +62,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         _width = width
     }
 
-    func makeUIView(context: Context) -> some UIView {
+    func makeUIView(context: Context) -> CustomTextView {
         let textView = CustomTextView(
             config: config,
             fixedWidth: fixedWidth,
@@ -65,19 +70,38 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
             width: $width,
             colorScheme: colorScheme
         )
+        textView.accessibilityLabel = accessibilityLabel
         return textView
     }
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        if let uiView = uiView as? CustomTextView {
-            uiView.setContent(from: config.text)
+    func updateUIView(_ uiView: CustomTextView, context: Context) {
+        uiView.setContent(from: config.text)
+        if let accessibilityLabel {
+            uiView.accessibilityLabel = accessibilityLabel
         }
     }
 }
 
-class CustomTextView: UIView, UITextViewDelegate {
+@MainActor
+private struct EnvironmentAccessibilityLabel: @preconcurrency EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+extension EnvironmentValues {
+    public var hEnvironmentAccessibilityLabel: String? {
+        get { self[EnvironmentAccessibilityLabel.self] }
+        set { self[EnvironmentAccessibilityLabel.self] = newValue }
+    }
+}
+
+extension View {
+    public func hEnvironmentAccessibilityLabel(_ label: String?) -> some View {
+        self.environment(\.hEnvironmentAccessibilityLabel, label)
+    }
+}
+
+class CustomTextView: UITextView, UITextViewDelegate {
     let config: CustomTextViewRepresentableConfig
     let fixedWidth: CGFloat
-    let textView: UITextView
     @Binding var height: CGFloat
     @Binding var width: CGFloat
     var colorScheme: ColorScheme
@@ -92,59 +116,56 @@ class CustomTextView: UIView, UITextViewDelegate {
         _width = width
         self.config = config
         self.fixedWidth = fixedWidth
-        self.textView = UITextView()
         self.colorScheme = colorScheme
-        super.init(frame: .zero)
-        self.addSubview(textView)
+        super.init(frame: .zero, textContainer: nil)
         configureTextView()
         setContent(from: config.text)
         calculateHeight()
         self.clipsToBounds = false
+        self.snp.makeConstraints { make in
+            make.width.lessThanOrEqualTo(fixedWidth)
+        }
     }
 
     private func configureTextView() {
         self.backgroundColor = .clear
-        textView.isEditable = false
-        textView.isUserInteractionEnabled = true
-        textView.isScrollEnabled = false
-        textView.isSelectable = true
-        textView.backgroundColor = .clear
-        textView.dataDetectorTypes = [.address, .link, .phoneNumber]
-        textView.clipsToBounds = false
+        self.isEditable = false
+        self.isUserInteractionEnabled = true
+        self.isScrollEnabled = false
+        self.isSelectable = true
+        self.dataDetectorTypes = [.address, .link, .phoneNumber]
+        self.clipsToBounds = false
+        accessibilityTraits = .staticText
         var linkTextAttributes = [NSAttributedString.Key: Any]()
         linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
         linkTextAttributes[.underlineColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
         if let linkUnderlineStyle = config.linkUnderlineStyle {
             linkTextAttributes[.underlineStyle] = linkUnderlineStyle.rawValue
         }
-        textView.linkTextAttributes = linkTextAttributes
-        textView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(-6)
-            make.trailing.equalToSuperview().offset(6)
-            make.top.equalToSuperview()
-        }
-        textView.textContainerInset = .zero
-        textView.delegate = self
+        self.linkTextAttributes = linkTextAttributes
+        self.textContainerInset = .zero
+        self.delegate = self
     }
 
     func setContent(from text: String) {
-        configureTextView()
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: config.fontStyle),
             color: config.color.colorFor(colorScheme, .base).color.uiColor()
         )
         let attributedString = markdownParser.parse(text)
+
         if !text.isEmpty {
             let mutableAttributedString = NSMutableAttributedString(
                 attributedString: attributedString
             )
-            textView.attributedText = mutableAttributedString
-            textView.textAlignment = config.textAlignment
+            self.attributedText = mutableAttributedString
+            self.textAlignment = config.textAlignment
         }
     }
 
-    private func calculateHeight() {
+    func calculateHeight() {
         let newSize = getSize()
+        self.frame.size = newSize
         DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
             self?.width = newSize.width - 12
@@ -152,7 +173,7 @@ class CustomTextView: UIView, UITextViewDelegate {
     }
 
     private func getSize() -> CGSize {
-        let newSize = textView.sizeThatFits(
+        let newSize = self.sizeThatFits(
             CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude)
         )
         return newSize

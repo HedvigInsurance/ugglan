@@ -47,6 +47,7 @@ struct LinkView: View {
                 }
                 .padding([.horizontal, .bottom], .padding16)
             }
+            .accessibilityElement(children: .combine)
             .transition(.opacity)
             .frame(width: 300)
         } else {
