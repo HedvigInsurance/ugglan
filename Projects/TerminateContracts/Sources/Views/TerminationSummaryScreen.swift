@@ -23,8 +23,7 @@ struct TerminationSummaryScreen: View {
                 )
             )
             .hFormAttachToBottom {
-                let withAddonView =
-                    Dependencies.featureFlags().isAddonsEnabled && !terminationNavigationVm.extraCoverage.isEmpty
+                let withAddonView = !terminationNavigationVm.extraCoverage.isEmpty
 
                 VStack(spacing: .padding16) {
                     hSection {
@@ -105,7 +104,7 @@ struct TerminationSummaryScreen: View {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     return TerminationSummaryScreen()
         .environmentObject(
             TerminationFlowNavigationViewModel(

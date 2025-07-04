@@ -25,7 +25,11 @@ import hCore
 import hGraphQL
 
 @MainActor
-extension ApolloClient {
+enum DI {
+    public static func initServices() {
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+    }
+
     public static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
@@ -33,7 +37,7 @@ extension ApolloClient {
         let dateService = DateService()
         Dependencies.shared.add(module: Module { () -> DateService in dateService })
         if ugglanStore.state.isDemoMode {
-            let featureFlags = FeatureFlagsDemo()
+            let featureFlagsClient = FeatureFlagsDemo()
             let hPaymentService = hPaymentClientDemo()
             let fetchClaimsService = FetchClaimsClientDemo()
             let hClaimFileUploadService = hClaimFileUploadClientDemo()
@@ -51,7 +55,7 @@ extension ApolloClient {
             let crossSellClient = CrossSellClientDemo()
             let campaignClient = hCampaignClientDemo()
             let insuranceEvidenceClient = InsuranceEvidenceClientDemo()
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
+            Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
             Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in fetchClaimsService })
             Dependencies.shared.add(module: Module { () -> hClaimFileUploadClient in hClaimFileUploadService })
@@ -85,7 +89,7 @@ extension ApolloClient {
             let fetchContractsService = FetchContractsClientOctopus()
             let hFetchClaimsService = FetchClaimsClientOctopus()
             let travelInsuranceService = TravelInsuranceClientOctopus()
-            let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
+            let featureFlagsClientUnleash = FeatureFlagsUnleash(environment: Environment.current)
             let analyticsService = AnalyticsClientOctopus()
             let notificationService = NotificationClientOctopus()
             let hFetchEntrypointsClient = FetchEntrypointsClientOctopus()
@@ -100,7 +104,7 @@ extension ApolloClient {
 
             switch Environment.current {
             case .staging:
-                Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
+                Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
@@ -130,7 +134,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
             case .production, .custom:
-                Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
+                Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
@@ -163,8 +167,8 @@ extension ApolloClient {
         }
     }
 
-    public static func initNetwworkClients() async {
-        let hApollo = await self.createClient()
+    public static func initNetworkClients() async {
+        let hApollo = await ApolloClient.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
     }
 

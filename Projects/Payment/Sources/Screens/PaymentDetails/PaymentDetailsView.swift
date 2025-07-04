@@ -184,7 +184,7 @@ struct PaymentDetails_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
         let data = PaymentData(
             id: "id",
             payment: .init(
