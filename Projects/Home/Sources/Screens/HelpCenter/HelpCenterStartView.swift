@@ -66,7 +66,7 @@ public struct HelpCenterStartView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 if !vm.searchInProgress {
-                    SupportView(router: router)
+                    SupportView(router: router, withExtraPadding: true)
                         .padding(.top, .padding40)
                 }
             }

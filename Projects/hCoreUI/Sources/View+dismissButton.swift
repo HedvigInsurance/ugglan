@@ -91,7 +91,7 @@ private struct CloseButtonModifier: ViewModifier {
                     vm.vc?.dismiss(animated: true)
                 } label: {
                     hCoreUIAssets.close.view
-                        .offset(y: CGFloat(-reducedTopSpacing))
+                        .closeButtonOffset(y: CGFloat(-reducedTopSpacing))
                         .foregroundColor(hFillColor.Opaque.primary)
                         .frame(minWidth: 44, minHeight: 44)
                 }
@@ -102,5 +102,16 @@ private struct CloseButtonModifier: ViewModifier {
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
             }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func closeButtonOffset(y: CGFloat) -> some View {
+        if #available(iOS 26, *) {
+            self
+        } else {
+            self.offset(y: y)
+        }
     }
 }
