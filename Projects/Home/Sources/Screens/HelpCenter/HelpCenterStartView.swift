@@ -82,8 +82,8 @@ public struct HelpCenterStartView: View {
 
             if !vm.didSetInitialSearchAppearance {
                 vc.navigationItem.hidesSearchBarWhenScrolling = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    vc.navigationItem.hidesSearchBarWhenScrolling = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vc] in
+                    vc?.navigationItem.hidesSearchBarWhenScrolling = true
                 }
                 vm.didSetInitialSearchAppearance = true
             }

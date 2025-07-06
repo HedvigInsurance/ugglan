@@ -40,15 +40,13 @@ struct HelpCenterQuestionView: View {
 
     var body: some View {
         hForm {
-            VStack(alignment: .leading, spacing: .padding32) {
-                hSection {
-                    VStack(alignment: .leading, spacing: .padding32) {
-                        questionView
-                        answerView
-                    }
+            hSection {
+                VStack(alignment: .leading, spacing: .padding32) {
+                    questionView
+                    answerView
                 }
-                .sectionContainerStyle(.transparent)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .hFormAttachToBottom {
