@@ -1,5 +1,5 @@
 import Foundation
-import authlib
+import HedvigShared
 import hCore
 
 @MainActor
