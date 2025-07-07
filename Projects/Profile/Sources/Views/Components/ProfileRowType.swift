@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 enum ProfileRowType {
-    case myInfo, appInfo, settings, travelCertificate, certificates, insuranceEvidence
+    case myInfo, appInfo, settings, travelCertificate, certificates, insuranceEvidence, claimHistory
     case eurobonus(hasEnteredNumber: Bool)
 
     var title: String {
@@ -23,6 +23,8 @@ enum ProfileRowType {
             return L10n.Profile.Certificates.title
         case .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
+        case .claimHistory:
+            return "Claim history"
         }
     }
     @MainActor
@@ -42,12 +44,14 @@ enum ProfileRowType {
             }
         case .travelCertificate, .certificates, .insuranceEvidence:
             return hCoreUIAssets.document.view
+        case .claimHistory:
+            return hCoreUIAssets.clock.view
         }
     }
 
     var imageSize: CGFloat {
         switch self {
-        case .myInfo, .appInfo, .settings, .travelCertificate, .certificates, .insuranceEvidence:
+        case .myInfo, .appInfo, .settings, .travelCertificate, .certificates, .insuranceEvidence, .claimHistory:
             return 40
         case let .eurobonus(hasEnteredNumber):
             return hasEnteredNumber ? 25 : 40

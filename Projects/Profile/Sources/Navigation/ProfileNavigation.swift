@@ -1,3 +1,4 @@
+import Claims
 import EditCoInsuredShared
 import InsuranceEvidence
 import Market
@@ -63,7 +64,14 @@ public struct ProfileNavigation<Content: View>: View {
                         CertificatesScreen()
                             .configureTitle(L10n.Profile.Certificates.title)
                             .environmentObject(profileNavigationViewModel)
-
+                    case .claimHistory:
+                        ClaimHistory { claim in
+                            profileNavigationViewModel.profileRouter.push(ProfileRouterType.claimsCard(claim: claim))
+                        }
+                        .configureTitle("Claim history")
+                    case let .claimsCard(claim):
+                        ClaimDetailView(claim: claim, type: .claim(id: claim.id))
+                            .configureTitle("Your claim")
                     }
                 }
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in
@@ -121,6 +129,8 @@ public enum ProfileRouterType: Hashable {
     case settings
     case euroBonus
     case certificates
+    case claimHistory
+    case claimsCard(claim: ClaimModel)
 }
 
 enum ProfileDetentType: TrackingViewNameProtocol {
@@ -153,6 +163,10 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: EuroBonusView.self)
         case .certificates:
             return .init(describing: CertificatesScreen.self)
+        case .claimHistory:
+            return .init(describing: ClaimHistory.self)
+        case .claimsCard:
+            return .init(describing: ClaimsCard.self)
         }
     }
 }
