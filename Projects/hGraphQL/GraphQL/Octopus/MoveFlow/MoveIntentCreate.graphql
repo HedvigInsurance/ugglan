@@ -29,7 +29,6 @@ fragment MoveAddressFragment on MoveAddress {
     displayTitle
     maxMovingDate
     minMovingDate
-    oldAddressCoverageDurationDays
     suggestedNumberCoInsured
 }
 

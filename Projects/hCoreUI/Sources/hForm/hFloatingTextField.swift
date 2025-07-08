@@ -134,32 +134,18 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             if masking.keyboardType == .numberPad {
                 let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
                 let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-                if (equals?.next) != nil {
-                    let button = UIButton(type: .custom)
-                    button.setTitle(L10n.generalDoneButton, for: .normal)
-                    button.backgroundColor = .clear
 
-                    let color = UIColor.BrandColorNew.primaryText().color
-                    button.setTitleColor(color, for: .normal)
-                    let nextButton = UIBarButtonItem(customView: button)
-                    button.addTarget(vm, action: #selector(vm?.goToTheNextField(_:)), for: .touchUpInside)
-                    toolbar.setItems([space, nextButton], animated: false)
-                } else {
-                    let doneButton = UIBarButtonItem(
-                        barButtonSystemItem: .done,
-                        target: self,
-                        action: #selector(textField.dismissKeyboad)
-                    )
-                    toolbar.setItems([space, doneButton], animated: false)
-                }
+                let doneButton = UIBarButtonItem(
+                    barButtonSystemItem: .done,
+                    target: self,
+                    action: #selector(textField.dismissKeyboad)
+                )
+                toolbar.setItems([space, doneButton], animated: false)
                 vm?.textField?.inputAccessoryView = toolbar
             }
         }
         .onAppear {
             updateMoveLabel(false)
-        }
-        .onChange(of: vm.goToNext) { _ in
-            equals = equals?.next
         }
         .onChange(of: vm.onBeginEditing) { _ in
             withAnimation {
@@ -254,14 +240,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 class TextFieldVM: ObservableObject {
     weak var textField: UITextField?
     var observer = TextFieldObserver()
-    @Published var goToNext: Date?
     @Published var onBeginEditing: Date?
     @Published var onDidEndEditing: Date?
     @Published var onReturnTap: Date?
-
-    @objc func goToTheNextField(_ sender: UIButton) {
-        goToNext = Date()
-    }
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {

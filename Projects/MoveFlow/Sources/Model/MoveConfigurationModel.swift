@@ -75,7 +75,6 @@ public struct MoveAddress: Codable, Equatable, Hashable, Sendable {
     let id: String
     let displayTitle: String
     let displaySubtitle: String?
-    let oldAddressCoverageDurationDays: Int?
     let maxMovingDate: String
     let minMovingDate: String
     let suggestedNumberCoInsured: Int
@@ -84,7 +83,6 @@ public struct MoveAddress: Codable, Equatable, Hashable, Sendable {
         id: String,
         displayTitle: String,
         displaySubtitle: String?,
-        oldAddressCoverageDurationDays: Int?,
         maxMovingDate: String,
         minMovingDate: String,
         suggestedNumberCoInsured: Int
@@ -92,7 +90,6 @@ public struct MoveAddress: Codable, Equatable, Hashable, Sendable {
         self.id = id
         self.displayTitle = displayTitle
         self.displaySubtitle = displaySubtitle
-        self.oldAddressCoverageDurationDays = oldAddressCoverageDurationDays
         self.maxMovingDate = maxMovingDate
         self.minMovingDate = minMovingDate
         self.suggestedNumberCoInsured = suggestedNumberCoInsured
