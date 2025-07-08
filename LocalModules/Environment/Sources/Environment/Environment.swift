@@ -140,11 +140,20 @@ public enum Environment: Hashable {
     public var deepLinkUrls: [URL] {
         switch self {
         case .staging:
-            return [URL(string: "https://hedvigtest.page.link")!, URL(string: "https://dev.hedvigit.com/deeplink/")!]
+            return [
+                URL(string: "https://hedvigtest.page.link")!, URL(string: "https://dev.hedvigit.com/deeplink/")!,
+                URL(string: "https://link.dev.hedvigit.com")!,
+            ]
         case .production:
-            return [URL(string: "https://hedvig.page.link")!, URL(string: "https://www.hedvig.com/deeplink/")!]
+            return [
+                URL(string: "https://hedvig.page.link")!, URL(string: "https://www.hedvig.com/deeplink/")!,
+                URL(string: "https://link.hedvig.com")!,
+            ]
         case .custom(_, _, _, _):
-            return [URL(string: "https://hedvig.page.link")!, URL(string: "https://www.hedvig.com/deeplink/")!]
+            return [
+                URL(string: "https://hedvig.page.link")!, URL(string: "https://www.hedvig.com/deeplink/")!,
+                URL(string: "https://link.hedvig.com")!,
+            ]
         }
     }
 
@@ -154,6 +163,9 @@ public enum Environment: Hashable {
         }
         if deepLinkUrls[1].host == url.host {
             return url.pathComponents.contains("deeplink")
+        }
+        if deepLinkUrls[2].host == url.host {
+            return true
         }
         return false
     }
