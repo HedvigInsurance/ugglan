@@ -2,7 +2,7 @@ import Apollo
 import Authentication
 import Environment
 import Foundation
-@preconcurrency import authlib
+@preconcurrency import HedvigShared
 import hCore
 import hGraphQL
 
@@ -277,7 +277,7 @@ extension AuthenticationError: LocalizedError {
     }
 }
 
-extension authlib.AuthTokenResultError {
+extension HedvigShared.AuthTokenResultError {
     var errorMessage: String {
         switch onEnum(of: self) {
         case .backendErrorResponse(let error): return error.message
