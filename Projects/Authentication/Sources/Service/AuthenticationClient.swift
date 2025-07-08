@@ -1,5 +1,4 @@
 import Foundation
-import HedvigShared
 import hCore
 
 @MainActor
