@@ -82,8 +82,8 @@ extension ClaimsMainNavigation: TrackingViewNameProtocol {
     }
 }
 
-private struct SizePreferenceKey: @preconcurrency PreferenceKey {
-    @MainActor static var defaultValue: CGFloat = 0
+private struct SizePreferenceKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = max(value, nextValue())
     }

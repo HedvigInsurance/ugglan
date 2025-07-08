@@ -73,9 +73,8 @@ public struct HelpCenterStartView: View {
         }
         .hFormBottomBackgroundColor(
             vm.searchInProgress
-                ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
+                ? .default : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
-        .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
             guard let vm else { return }
