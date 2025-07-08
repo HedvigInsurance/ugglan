@@ -20,23 +20,7 @@ struct SupportView: View {
     var body: some View {
         hSection {
             VStack(spacing: .padding40) {
-                VStack(spacing: .padding16) {
-
-                    hCoreUIAssets.infoFilled.view
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hSignalColor.Blue.element)
-                        .accessibilityHidden(true)
-
-                    VStack(spacing: 0) {
-                        hText(L10n.hcChatQuestion)
-                            .accessibilityAddTraits(.isHeader)
-                        hText(L10n.hcChatAnswer)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.horizontal, .padding32)
-                }
+                textView
                 buttonView
             }
             .padding(.vertical, .padding32)
@@ -44,6 +28,25 @@ struct SupportView: View {
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
+    }
+
+    private var textView: some View {
+        VStack(spacing: .padding16) {
+            hCoreUIAssets.infoFilled.view
+                .resizable()
+                .frame(width: 40, height: 40)
+                .foregroundColor(hSignalColor.Blue.element)
+                .accessibilityHidden(true)
+
+            VStack(spacing: 0) {
+                hText(L10n.hcChatQuestion)
+                    .accessibilityAddTraits(.isHeader)
+                hText(L10n.hcChatAnswer)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, .padding32)
+        }
     }
 
     private var buttonView: some View {
