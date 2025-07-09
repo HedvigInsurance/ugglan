@@ -38,7 +38,7 @@ public enum ExternalDependencies: CaseIterable {
         switch self {
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.4"))]
         case .apollo:
-            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.17.0"))]
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.23.0"))]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -77,15 +77,15 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.7.0"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "2.2.0"))
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.17.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.23.0"))
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.5.0"))
+                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.6.1")))
             ]
         case .presentableStore:
             return [

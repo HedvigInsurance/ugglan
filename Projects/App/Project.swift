@@ -269,8 +269,5 @@ let project = Project(
             ),
             runAction: .runAction(executable: "Hedvig")
         ),
-    ],
-    additionalFiles: [
-        .folderReference(path: "GraphQL")
     ]
 )
