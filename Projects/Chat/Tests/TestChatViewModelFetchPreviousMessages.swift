@@ -23,7 +23,7 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
             fetchPreviousMessages: {
                 .init(
                     with: [
-                        Message(remoteId: message.id, type: message.type, sender: message.sender, date: message.sentAt)
+                        Message(id: message.id, type: message.type, sender: message.sender, date: message.sentAt)
                     ],
                     hasPreviousMessages: false
                 )
@@ -70,7 +70,7 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
             mockService.fetchPreviousMessages = {
                 .init(
                     with: [
-                        Message(remoteId: message.id, type: message.type, sender: message.sender, date: message.sentAt)
+                        Message(id: message.id, type: message.type, sender: message.sender, date: message.sentAt)
                     ],
                     hasPreviousMessages: false
                 )

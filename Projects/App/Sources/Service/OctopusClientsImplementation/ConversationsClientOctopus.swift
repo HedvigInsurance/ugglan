@@ -67,6 +67,7 @@ public class ConversationClientOctopus: ConversationClient {
         }
         let input = OctopusGraphQL.ConversationSendMessageInput(
             id: conversationId,
+            messageId: .init(optionalValue: message.id),
             text: .init(optionalValue: textToSend),
             fileUploadToken: .init(optionalValue: fileUplaodTokenToSend)
         )
@@ -140,7 +141,7 @@ extension OctopusGraphQL.ConversationFragment {
 extension OctopusGraphQL.MessageFragment {
     func asMessage() -> Message {
         return .init(
-            remoteId: id,
+            id: id,
             type: messageType,
             sender: self.sender == .hedvig ? .hedvig : .member,
             date: self.sentAt.localDateToIso8601Date ?? Date()
