@@ -121,6 +121,12 @@ struct TerminationSummaryScreen: View {
             }
         }
     }
+    
+    
+    
+    
+    
+    
 }
 
 #Preview {
