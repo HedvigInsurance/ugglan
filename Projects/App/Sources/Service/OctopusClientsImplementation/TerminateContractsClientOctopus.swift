@@ -308,11 +308,33 @@ extension TerminationFlowDateNextStepModel {
             maxDate: data.maxDate,
             minDate: data.minDate,
             date: nil,
-            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
+            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) }),
+            notification: {
+                if let notification = data.notification {
+                    return .init(message: notification.message, type: notification.type.asNotificationType)
+                }
+                return nil
+            }()
         )
     }
 }
 
+extension GraphQLEnum<OctopusGraphQL.FlowTerminationNotificationType> {
+    var asNotificationType: TerminationNotificationType {
+        switch self {
+        case .case(let t):
+            switch t {
+            case .info:
+                return .info
+            case .warning:
+                return .warning
+            }
+        default:
+            return .info
+        }
+
+    }
+}
 extension ExtraCoverageItem {
     init(
         fragment: OctopusGraphQL.ExtraCoverageItemFragment
