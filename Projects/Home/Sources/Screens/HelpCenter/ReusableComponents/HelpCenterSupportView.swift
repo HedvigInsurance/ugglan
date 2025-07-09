@@ -7,34 +7,46 @@ struct SupportView: View {
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
     @Environment(\.sizeCategory) private var sizeCategory
+    let withExtraPadding: Bool
+
+    init(
+        router: Router,
+        withExtraPadding: Bool? = false
+    ) {
+        self.router = router
+        self.withExtraPadding = withExtraPadding ?? false
+    }
 
     var body: some View {
         hSection {
             VStack(spacing: .padding40) {
-                VStack(spacing: .padding16) {
-
-                    hCoreUIAssets.infoFilled.view
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hSignalColor.Blue.element)
-                        .accessibilityHidden(true)
-
-                    VStack(spacing: 0) {
-                        hText(L10n.hcChatQuestion)
-                            .accessibilityAddTraits(.isHeader)
-                        hText(L10n.hcChatAnswer)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.horizontal, .padding32)
-                }
+                textView
                 buttonView
             }
             .padding(.vertical, .padding32)
-            .padding(.bottom, .padding8)
+            .supportViewBottomPadding(withPadding: withExtraPadding)
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
+    }
+
+    private var textView: some View {
+        VStack(spacing: .padding16) {
+            hCoreUIAssets.infoFilled.view
+                .resizable()
+                .frame(width: 40, height: 40)
+                .foregroundColor(hSignalColor.Blue.element)
+                .accessibilityHidden(true)
+
+            VStack(spacing: 0) {
+                hText(L10n.hcChatQuestion)
+                    .accessibilityAddTraits(.isHeader)
+                hText(L10n.hcChatAnswer)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, .padding32)
+        }
     }
 
     private var buttonView: some View {
@@ -69,6 +81,21 @@ struct SupportView: View {
             .verticalPadding(0)
         }
         .presentableStoreLensAnimation(.default)
+    }
+}
+
+extension View {
+    func supportViewBottomPadding(withPadding: Bool) -> some View {
+        self.padding(
+            .bottom,
+            {
+                if withPadding, #available(iOS 26.0, *) {
+                    return .padding56
+                } else {
+                    return .padding8
+                }
+            }()
+        )
     }
 }
 
