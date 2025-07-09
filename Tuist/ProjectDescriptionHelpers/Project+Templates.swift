@@ -227,7 +227,7 @@ extension Project {
                 [
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "\(name)Tests"),
-                        isParallelizable: false
+                        parallelization: .enabled
                     )
                 ],
                 arguments: Arguments.arguments(
