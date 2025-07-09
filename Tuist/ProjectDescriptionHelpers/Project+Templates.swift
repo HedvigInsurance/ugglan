@@ -271,7 +271,7 @@ extension Project {
                     ) : nil,
             ]
             .compactMap { $0 },
-            additionalFiles: [nil].compactMap { $0 }
+            additionalFiles: name == "hGraphQL" ? [.folderReference(path: "GraphQL")] : []
         )
     }
 }
