@@ -15,6 +15,7 @@ public struct ProfileState: StateProtocol {
     var hasTravelCertificates: Bool = false
     var canCreateInsuranceEvidence: Bool = false
     var canCreateTravelInsurance: Bool = false
+    var hasClaims: Bool = false
 
     @MainActor
     var showTravelCertificate: Bool {

@@ -11,6 +11,7 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case setCanCreateInsuranceEvidence(to: Bool)
     case hasTravelCertificates(to: Bool)
     case canCreateTravelCertificate(to: Bool)
+    case hasClaims(to: Bool)
     case fetchProfileStateCompleted
     case setMemberDetails(details: MemberDetails)
     case fetchMemberDetails

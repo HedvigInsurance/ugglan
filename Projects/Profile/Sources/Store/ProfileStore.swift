@@ -14,7 +14,8 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
         switch action {
         case .fetchProfileState:
             do {
-                let (member, partner, canCreateInsuranceEvidence, hasTravelInsurances) = try await self.profileService
+                let (member, partner, canCreateInsuranceEvidence, hasTravelInsurances, hasClaims) =
+                    try await self.profileService
                     .getProfileState()
                 self.removeLoading(for: .fetchProfileState)
 
@@ -23,6 +24,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
                 send(.setMember(memberData: member))
                 send(.canCreateTravelCertificate(to: member.isTravelCertificateEnabled))
                 send(.hasTravelCertificates(to: hasTravelInsurances))
+                send(.hasClaims(to: hasClaims))
                 send(.fetchProfileStateCompleted)
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchProfileState)
@@ -77,6 +79,8 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             newState.hasTravelCertificates = hasTravelCertificates
         case let .canCreateTravelCertificate(canCreate):
             newState.canCreateTravelInsurance = canCreate
+        case let .hasClaims(to: hasClaims):
+            newState.hasClaims = hasClaims
         default:
             break
         }
