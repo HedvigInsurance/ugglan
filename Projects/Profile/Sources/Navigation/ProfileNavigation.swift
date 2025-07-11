@@ -66,9 +66,18 @@ public struct ProfileNavigation<Content: View>: View {
                             .environmentObject(profileNavigationViewModel)
                     case .claimHistory:
                         ClaimHistory { claim in
-                            profileNavigationViewModel.profileRouter.push(ProfileRouterType.claimsCard(claim: claim))
+                            profileNavigationViewModel.profileRouter.push(
+                                ProfileRouterTypeWithHiddenBottomBar.claimsCard(claim: claim)
+                            )
                         }
                         .configureTitle(L10n.Profile.ClaimHistory.title)
+                    }
+                }
+                .routerDestination(
+                    for: ProfileRouterTypeWithHiddenBottomBar.self,
+                    options: [.hidesBottomBarWhenPushed]
+                ) { redirectType in
+                    switch redirectType {
                     case let .claimsCard(claim):
                         ClaimDetailView(claim: claim, type: .claim(id: claim.id))
                             .configureTitle(L10n.claimsYourClaim)
@@ -130,6 +139,9 @@ public enum ProfileRouterType: Hashable {
     case euroBonus
     case certificates
     case claimHistory
+}
+
+public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
     case claimsCard(claim: ClaimModel)
 }
 
@@ -165,6 +177,13 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: CertificatesScreen.self)
         case .claimHistory:
             return .init(describing: ClaimHistory.self)
+        }
+    }
+}
+
+extension ProfileRouterTypeWithHiddenBottomBar: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
         case .claimsCard:
             return .init(describing: ClaimsCard.self)
         }
