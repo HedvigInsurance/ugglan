@@ -227,7 +227,7 @@ extension Project {
                 [
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "\(name)Tests"),
-                        isParallelizable: false
+                        parallelization: .enabled
                     )
                 ],
                 arguments: Arguments.arguments(
@@ -271,7 +271,7 @@ extension Project {
                     ) : nil,
             ]
             .compactMap { $0 },
-            additionalFiles: [nil].compactMap { $0 }
+            additionalFiles: name == "hGraphQL" ? [.folderReference(path: "GraphQL")] : []
         )
     }
 }

@@ -23,8 +23,8 @@ struct SupportView: View {
                 textView
                 buttonView
             }
-            .padding(.vertical, .padding32)
-            .supportViewBottomPadding(withPadding: withExtraPadding)
+            .padding(.top, .padding32)
+            .padding(.bottom, .padding8)
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
@@ -81,21 +81,6 @@ struct SupportView: View {
             .verticalPadding(0)
         }
         .presentableStoreLensAnimation(.default)
-    }
-}
-
-extension View {
-    func supportViewBottomPadding(withPadding: Bool) -> some View {
-        self.padding(
-            .bottom,
-            {
-                if withPadding, #available(iOS 26.0, *) {
-                    return .padding56
-                } else {
-                    return .padding8
-                }
-            }()
-        )
     }
 }
 

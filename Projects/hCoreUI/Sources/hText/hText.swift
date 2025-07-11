@@ -47,6 +47,7 @@ public enum HFontTextStyle {
 
     case label
     case finePrint
+    case tabBar
 
     case displayXXLShort
     case displayXXLLong
@@ -83,6 +84,7 @@ public enum HFontTextStyle {
 
         case .label: return 14
         case .finePrint: return 12
+        case .tabBar: return 10
 
         // Big
         case .displayXXLShort: return 92
@@ -150,6 +152,7 @@ public enum HFontTextStyle {
         case .displaySLong: return .largeTitle
         case .displayXSShort: return .largeTitle
         case .displayXSLong: return .largeTitle
+        case .tabBar: return .callout
         }
     }
 
@@ -179,6 +182,7 @@ public enum HFontTextStyle {
         case .displaySLong: return .largeTitle
         case .displayXSShort: return .largeTitle
         case .displayXSLong: return .largeTitle
+        case .tabBar: return .callout
         }
     }
 }
