@@ -22,7 +22,7 @@ final class TestChatViewModelFetchNewMessages: XCTestCase {
         let mockService = MockData.createMockChatService(
             fetchNewMessages: {
                 .init(with: [
-                    .init(remoteId: message.id, type: message.type, sender: message.sender, date: message.sentAt)
+                    .init(id: message.id, type: message.type, sender: message.sender, date: message.sentAt)
                 ])
             }
         )

@@ -51,14 +51,14 @@ public class ConversationClientOctopus: ConversationClient {
 
     public func send(message: Message, for conversationId: String) async throws -> Message {
         var textToSend: String?
-        var fileUplaodTokenToSend: String?
+        var fileToken: String?
         switch message.type {
         case .text(let text):
             textToSend = text
         case .file(let file):
             do {
                 let uploadResponse = try await chatFileUploaderService.upload(files: [file]) { _ in }
-                fileUplaodTokenToSend = uploadResponse.first?.uploadToken ?? ""
+                fileToken = uploadResponse.first?.uploadToken ?? ""
             } catch _ {
                 throw ConversationsError.uploadFailed
             }
@@ -67,8 +67,9 @@ public class ConversationClientOctopus: ConversationClient {
         }
         let input = OctopusGraphQL.ConversationSendMessageInput(
             id: conversationId,
+            messageId: .init(optionalValue: message.id),
             text: .init(optionalValue: textToSend),
-            fileUploadToken: .init(optionalValue: fileUplaodTokenToSend)
+            fileUploadToken: .init(optionalValue: fileToken)
         )
         let mutation = hGraphQL.OctopusGraphQL.ConversationSendMessageMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
@@ -140,7 +141,7 @@ extension OctopusGraphQL.ConversationFragment {
 extension OctopusGraphQL.MessageFragment {
     func asMessage() -> Message {
         return .init(
-            remoteId: id,
+            id: id,
             type: messageType,
             sender: self.sender == .hedvig ? .hedvig : .member,
             date: self.sentAt.localDateToIso8601Date ?? Date()

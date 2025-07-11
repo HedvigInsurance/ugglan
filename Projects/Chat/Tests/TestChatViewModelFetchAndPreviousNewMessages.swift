@@ -19,13 +19,13 @@ final class TestChatViewModelFetchAndPreviousNewMessages: XCTestCase {
     func testFetchNewAndPreviousMessagesWithHasPreviousMessageSuccess() async {
         let message = Message(type: .text(text: "testMessage"))
         let newMessages = [
-            Message(remoteId: message.id, type: message.type, sender: message.sender, date: message.sentAt)
+            Message(id: message.id, type: message.type, sender: message.sender, date: message.sentAt)
         ]
 
         let previousMessage = Message(type: .text(text: "testMessage"))
         let previousMessages = [
             Message(
-                remoteId: previousMessage.id,
+                id: previousMessage.id,
                 type: previousMessage.type,
                 sender: previousMessage.sender,
                 date: previousMessage.sentAt

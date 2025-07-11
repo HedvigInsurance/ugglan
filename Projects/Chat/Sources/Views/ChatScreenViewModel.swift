@@ -58,7 +58,7 @@ public class ChatMessageViewModel: ObservableObject {
                     self.messages.append(contentsOf: newMessages)
                     self.messages.sort(by: { $0.sentAt > $1.sentAt })
                     self.lastDeliveredMessage = self.messages.first(where: {
-                        $0.sender == .member && $0.remoteId != nil
+                        $0.sender == .member
                     })
                 }
                 self.conversationVm.banner = chatData.banner
@@ -100,7 +100,7 @@ public class ChatMessageViewModel: ObservableObject {
                     }
                     self.messages.sort(by: { $0.sentAt > $1.sentAt })
                     self.lastDeliveredMessage = self.messages.first(where: {
-                        $0.sender == .member && $0.remoteId != nil
+                        $0.sender == .member
                     })
                 }
                 self.conversationVm.banner = chatData.banner
@@ -211,7 +211,7 @@ public class ChatMessageViewModel: ObservableObject {
         //add some delay so it looks smoother
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             withAnimation {
-                self?.lastDeliveredMessage = self?.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
+                self?.lastDeliveredMessage = self?.messages.first(where: { $0.sender == .member })
             }
         }
     }
