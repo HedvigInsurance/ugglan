@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-struct StateView: View {
+public struct StateView: View {
     let type: StateType
     let title: String
     let bodyText: String?
@@ -11,7 +11,7 @@ struct StateView: View {
     @Environment(\.hSuccessBottomAttachedView) var bottomAttachedView
     @Environment(\.hExtraTopPadding) var extraTopPadding
 
-    init(
+    public init(
         type: StateType,
         title: String,
         bodyText: String?,
@@ -25,7 +25,7 @@ struct StateView: View {
         self.attachContentToBottom = attachContentToBottom
     }
 
-    var body: some View {
+    public var body: some View {
         if let formPosition {
             hForm {
                 if !attachContentToBottom {
@@ -140,7 +140,7 @@ struct StateView: View {
 }
 
 @MainActor
-enum StateType {
+public enum StateType {
     case error
     case information
     case success

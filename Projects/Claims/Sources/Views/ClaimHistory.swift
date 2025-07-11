@@ -13,6 +13,18 @@ public struct ClaimHistory: View {
     }
 
     public var body: some View {
+        if vm.claims.isEmpty {
+            StateView(
+                type: .empty,
+                title: L10n.ClaimHistory.EmptyState.title,
+                bodyText: L10n.ClaimHistory.EmptyState.body
+            )
+        } else {
+            claimHistoryView
+        }
+    }
+
+    var claimHistoryView: some View {
         hForm {
             ForEach(vm.claims, id: \.id) { claim in
                 hSection {
