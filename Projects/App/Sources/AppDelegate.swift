@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        ApolloClient.initAndRegisterClient()
+        DI.initAndRegisterClient()
     }
 
     func logout() {
@@ -142,8 +142,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupSession() async {
-        await ApolloClient.initNetwworkClients()
-        ApolloClient.initAndRegisterClient()
+        await DI.initNetworkClients()
+        DI.initAndRegisterClient()
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
         }
