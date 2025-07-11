@@ -8,9 +8,6 @@ query Profile {
     travelCertificates {
       id
     }
-    claims {
-        id
-    }
   id
   email
   phoneNumber

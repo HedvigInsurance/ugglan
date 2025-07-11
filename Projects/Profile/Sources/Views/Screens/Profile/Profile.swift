@@ -40,9 +40,7 @@ public struct ProfileView: View {
                             row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
-                    if store.state.hasClaims {
-                        ProfileRow(row: .claimHistory)
-                    }
+                    ProfileRow(row: .claimHistory)
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider

@@ -7,8 +7,7 @@ class ProfileService {
 
     public func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
-        hasTravelInsurances: Bool,
-        hasClaims: Bool
+        hasTravelInsurances: Bool
     ) {
         log.info("ProfileService: getProfileState", error: nil, attributes: nil)
         return try await client.getProfileState()

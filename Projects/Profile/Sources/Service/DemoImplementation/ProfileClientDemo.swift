@@ -8,8 +8,7 @@ public class ProfileClientDemo: ProfileClient {
     public init() {}
     public func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
-        hasTravelInsurances: Bool,
-        hasClaims: Bool
+        hasTravelInsurances: Bool
     ) {
         return (
             MemberDetails(
@@ -21,7 +20,6 @@ public class ProfileClientDemo: ProfileClient {
                 hasTravelCertificate: false,
                 isContactInfoUpdateNeeded: true
             ), nil,
-            false,
             false,
             false
         )

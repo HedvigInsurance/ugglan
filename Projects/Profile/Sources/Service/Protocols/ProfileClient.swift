@@ -4,8 +4,7 @@ import Foundation
 public protocol ProfileClient {
     func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
-        hasTravelInsurances: Bool,
-        hasClaims: Bool
+        hasTravelInsurances: Bool
     )
     func getMemberDetails() async throws -> MemberDetails
     func updateLanguage() async throws
