@@ -54,7 +54,6 @@ struct HelpCenterQuestionView: View {
                 .padding(.top, .padding8)
         }
         .hFormIgnoreBottomPadding
-        .edgesIgnoringSafeArea(.bottom)
     }
 
     private var questionView: some View {
