@@ -68,10 +68,10 @@ public struct ProfileNavigation<Content: View>: View {
                         ClaimHistory { claim in
                             profileNavigationViewModel.profileRouter.push(ProfileRouterType.claimsCard(claim: claim))
                         }
-                        .configureTitle("Claim history")
+                        .configureTitle(L10n.Profile.ClaimHistory.title)
                     case let .claimsCard(claim):
                         ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                            .configureTitle("Your claim")
+                            .configureTitle(L10n.claimsYourClaim)
                     }
                 }
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in

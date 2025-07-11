@@ -24,7 +24,7 @@ enum ProfileRowType {
         case .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
         case .claimHistory:
-            return "Claim history"
+            return L10n.Profile.ClaimHistory.title
         }
     }
     @MainActor
