@@ -53,7 +53,7 @@ public struct ToastBarView: View {
             HStack(spacing: .padding8) {
                 toastModel.icon
                     .resizable()
-                    .foregroundColor(toastModel.type.imageColor)
+                    .foregroundColor(toastModel.type.toastImageColor)
                     .accessibilityHidden(true)
                     .frame(width: 20, height: 20)
                 hText(toastModel.text, style: .label)

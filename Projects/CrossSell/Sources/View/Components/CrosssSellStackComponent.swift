@@ -16,11 +16,7 @@ struct CrosssSellStackComponent: View {
                 }
             }
             .withHeader(
-                title: L10n.InsuranceTab.CrossSells.title,
-                extraView: (
-                    view: CrossSellingUnseenCircle().asAnyView,
-                    alignment: .top
-                )
+                title: L10n.InsuranceTab.CrossSells.title
             )
             .sectionContainerStyle(.transparent)
             .transition(.slide)

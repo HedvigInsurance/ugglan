@@ -6,8 +6,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
     private let date = Date()
     public init() {
         let newestMessage = Message(
-            localId: UUID().uuidString,
-            remoteId: UUID().uuidString,
+            id: "id1",
             type: .text(
                 text:
                     "I think someone took my computer"
@@ -29,7 +28,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
         messages["id1"] = [
             newestMessage,
             .init(
-                remoteId: UUID().uuidString,
+                id: "id2",
                 type: .text(text: "Hi, how may I help you?"),
                 sender: .hedvig,
                 date: date.addingTimeInterval(-60 * 60 * 21 * 2)

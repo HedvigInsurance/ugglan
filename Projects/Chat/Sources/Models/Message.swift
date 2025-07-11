@@ -3,29 +3,22 @@ import hCore
 
 public struct Message: Codable, Identifiable, Hashable, Sendable {
     public static func == (lhs: Message, rhs: Message) -> Bool {
-        return lhs.localId == rhs.localId || lhs.remoteId == rhs.remoteId
+        return lhs.id == rhs.id
     }
-
-    let localId: String?
-    let remoteId: String?
-    public var id: String {
-        return remoteId ?? localId ?? ""
-    }
+    public let id: String
     let sender: MessageSender
     public let sentAt: Date
     public let type: MessageType
     var status: MessageStatus
 
     init(
-        localId: String?,
-        remoteId: String?,
+        id: String,
         sender: MessageSender,
         sentAt: Date,
         type: MessageType,
         status: MessageStatus
     ) {
-        self.localId = localId
-        self.remoteId = remoteId
+        self.id = id
         self.sender = sender
         self.sentAt = sentAt
         self.type = type
@@ -33,35 +26,31 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
     }
 
     public init(type: MessageType) {
-        self.localId = UUID().uuidString
-        self.remoteId = nil
+        self.id = UUID().uuidString
         self.sender = .member
         self.type = type
         self.sentAt = Date()
         self.status = .draft
     }
 
-    public init(localId: String, remoteId: String, type: MessageType, date: Date) {
-        self.localId = localId
-        self.remoteId = remoteId
+    public init(id: String, type: MessageType, date: Date) {
+        self.id = id
         self.sender = .member
         self.type = type
         self.sentAt = date
         self.status = .sent
     }
 
-    public init(remoteId: String, type: MessageType, sender: MessageSender, date: Date) {
-        self.localId = nil
-        self.remoteId = remoteId
+    public init(id: String, type: MessageType, sender: MessageSender, date: Date) {
+        self.id = id
         self.sender = sender
         self.type = type
         self.sentAt = date
         self.status = sender == .hedvig ? .received : .sent
     }
 
-    private init(localId: String?, type: MessageType, date: Date, status: MessageStatus) {
-        self.localId = localId
-        self.remoteId = nil
+    private init(id: String, type: MessageType, date: Date, status: MessageStatus) {
+        self.id = id
         self.sender = .member
         self.type = type
         self.sentAt = date
@@ -69,11 +58,11 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
     }
 
     func asFailed(with error: String) -> Message {
-        return Message(localId: UUID().uuidString, type: type, date: sentAt, status: .failed(error: error))
+        return Message(id: UUID().uuidString, type: type, date: sentAt, status: .failed(error: error))
     }
 
     func copyWith(type: MessageType) -> Message {
-        return Message(localId: localId, remoteId: remoteId, sender: sender, sentAt: sentAt, type: type, status: status)
+        return Message(id: id, sender: sender, sentAt: sentAt, type: type, status: status)
     }
 
     var trimmedText: String {

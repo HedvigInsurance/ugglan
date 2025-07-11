@@ -27,6 +27,7 @@ struct TerminationSummaryScreen: View {
                     Dependencies.featureFlags().isAddonsEnabled && !terminationNavigationVm.extraCoverage.isEmpty
 
                 VStack(spacing: .padding16) {
+                    infoCard
                     hSection {
                         StatusCard(
                             onSelected: {},
@@ -102,23 +103,50 @@ struct TerminationSummaryScreen: View {
         }
         .foregroundColor(hTextColor.Translucent.secondary)
     }
+
+    @ViewBuilder
+    private var infoCard: some View {
+        if let notification = terminationNavigationVm.terminationDateStepModel?.notification {
+            let type: NotificationType = {
+                switch notification.type {
+                case .info:
+                    return .info
+                case .warning:
+                    return .attention
+                }
+
+            }()
+            hSection {
+                InfoCard(text: notification.message, type: type)
+            }
+        }
+    }
+
 }
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    let navigationModel = TerminationFlowNavigationViewModel(
+        configs: [
+            .init(
+                contractId: "",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            )
+        ],
+        terminateInsuranceViewModel: .init()
+    )
+    navigationModel.terminationDateStepModel = .init(
+        id: "id",
+        maxDate: "",
+        minDate: "",
+        extraCoverageItem: [],
+        notification: .init(message: "This is a message for the user to see in the notification.", type: .info)
+    )
     return TerminationSummaryScreen()
         .environmentObject(
-            TerminationFlowNavigationViewModel(
-                configs: [
-                    .init(
-                        contractId: "",
-                        contractDisplayName: "Homeowner",
-                        contractExposureName: "Bellmansgsatan 19A",
-                        activeFrom: "2024-12-15",
-                        typeOfContract: .seApartmentBrf
-                    )
-                ],
-                terminateInsuranceViewModel: .init()
-            )
+            navigationModel
         )
 }

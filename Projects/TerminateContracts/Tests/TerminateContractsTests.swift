@@ -31,7 +31,8 @@ final class TerminateContractsTests: XCTestCase {
             date: nil,
             extraCoverageItem: [
                 .init(displayName: "Travel plus", displayValue: "45 days")
-            ]
+            ],
+            notification: nil
         )
 
         let terminationDateResponse: TerminateStepResponse = .init(

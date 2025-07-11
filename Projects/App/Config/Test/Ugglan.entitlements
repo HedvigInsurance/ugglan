@@ -8,6 +8,7 @@
 	<array>
 		<string>applinks:hedvigtest.page.link</string>
 		<string>applinks:dev.hedvigit.com</string>
+		<string>applinks:link.dev.hedvigit.com</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
