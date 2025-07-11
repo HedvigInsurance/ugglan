@@ -15,6 +15,7 @@ struct MessageView: View {
         HStack(spacing: 0) {
             if case .failed = message.status {
                 messageFailContent
+                    .modifier(MessageViewBackground(message: message, conversationStatus: conversationStatus))
             } else {
                 messageContent
                     .modifier(MessageViewBackground(message: message, conversationStatus: conversationStatus))
@@ -115,21 +116,22 @@ struct MessageView: View {
 
     @ViewBuilder
     private var messageFailContent: some View {
-        hCoreUIAssets.refresh.view
-            .resizable()
-            .frame(width: 24, height: 24)
-            .foregroundColor(hSignalColor.Red.element)
-        messageContent
-            .environment(\.colorScheme, .light)
-        hCoreUIAssets.infoFilled.view
-            .resizable()
-            .frame(width: 24, height: 24)
-            .foregroundColor(hSignalColor.Red.element)
-            .padding(.leading, .padding8)
-            .padding(.vertical, .padding24)
-            .onTapGesture {
-                showRetryOptions = true
-            }
+        HStack(spacing: 0) {
+            hCoreUIAssets.refresh.view
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundColor(hSignalColor.Red.element)
+            messageContent
+                .environment(\.colorScheme, .light)
+            hCoreUIAssets.infoFilled.view
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundColor(hSignalColor.Red.element)
+                .padding(.leading, .padding8)
+                .onTapGesture {
+                    showRetryOptions = true
+                }
+        }
     }
 }
 
@@ -172,8 +174,7 @@ extension URL {
 
     return MessageView(
         message: .init(
-            localId: nil,
-            remoteId: nil,
+            id: "messageId",
             sender: .hedvig,
             sentAt: Date(),
             type: .action(

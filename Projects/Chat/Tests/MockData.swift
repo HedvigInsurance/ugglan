@@ -110,7 +110,7 @@ class MockConversationService: ChatServiceProtocol {
 
     func send(message: Message) async throws -> Message {
         events.append(.sendMessage)
-        let newMessage = Message(localId: message.id, remoteId: message.id, type: message.type, date: message.sentAt)
+        let newMessage = Message(id: message.id, type: message.type, date: message.sentAt)
         return try await sendMessage(newMessage)
     }
 }
