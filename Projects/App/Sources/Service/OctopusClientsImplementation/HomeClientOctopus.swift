@@ -54,7 +54,7 @@ class HomeClientOctopus: HomeClient {
         let actions = data.currentMember.memberActions
         var contractAction = [QuickAction]()
 
-        if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
+        if actions?.isEditCoInsuredEnabled == true {
             contractAction.append(.editCoInsured)
         }
 
@@ -77,7 +77,7 @@ class HomeClientOctopus: HomeClient {
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)
         }
-        if actions?.isTravelCertificateEnabled == true && featureFlags.isTravelInsuranceEnabled {
+        if actions?.isTravelCertificateEnabled == true {
             quickActions.append(.travelInsurance)
         }
         if let firstVetSections = actions?.firstVetAction?.sections {
