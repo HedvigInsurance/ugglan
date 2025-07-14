@@ -266,7 +266,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             withAnimation {
-                self.height = min(self.contentSize.height, 200)
+                self.height = min(self.contentSize.height, 150)
             }
         }
     }
