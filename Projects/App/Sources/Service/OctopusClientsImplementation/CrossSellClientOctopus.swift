@@ -87,7 +87,6 @@ extension CrossSellSource {
         case .closedClaim: return .closedClaim
         case .changeTier: return .changeTier
         case .addon: return .addon
-        case .editCoinsured: return .editCoinsured
         case .movingFlow: return .movingFlow
         }
     }
