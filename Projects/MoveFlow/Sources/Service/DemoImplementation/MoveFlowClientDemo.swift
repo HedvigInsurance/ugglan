@@ -16,7 +16,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
     }
 
     public func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
-        return MoveQuotesModel(homeQuotes: [], mtaQuotes: [], changeTierModel: nil)
+        return MoveQuotesModel(homeQuotes: [], mtaQuotes: [], quotes: [], changeTierModel: nil)
     }
 
     public func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {

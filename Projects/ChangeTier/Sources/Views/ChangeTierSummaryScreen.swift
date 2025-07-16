@@ -41,7 +41,8 @@ extension ChangeTierViewModel {
                 },
                 displayItems: displayItems,
                 insuranceLimits: self.selectedQuote?.productVariant?.insurableLimits ?? [],
-                typeOfContract: self.typeOfContract
+                typeOfContract: self.typeOfContract,
+                discountDisplayItems: [] /* TODO: ADD */
             )
         )
         for addon in self.selectedQuote?.addons ?? [] {
@@ -59,12 +60,14 @@ extension ChangeTierViewModel {
                     displayItems: addon.displayItems.compactMap({ .init(title: $0.title, value: $0.value) }),
                     insuranceLimits: [],
                     typeOfContract: nil,
-                    isAddon: true
+                    isAddon: true,
+                    discountDisplayItems: [] /* TODO: ADD */
                 )
             )
         }
         let vm = QuoteSummaryViewModel(
             contract: contracts,
+            activationDate: Date(), /* TODO: ADD */
             onConfirmClick: {
                 changeTierNavigationVm.isConfirmTierPresented = true
             }

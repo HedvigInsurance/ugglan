@@ -6,11 +6,18 @@ import hCoreUI
 public struct MoveQuotesModel: Sendable {
     let homeQuotes: [MovingFlowQuote]
     let mtaQuotes: [MovingFlowQuote]
+    let quotes: [MovingFlowQuote]
     let changeTierModel: ChangeTierIntentModel?
 
-    public init(homeQuotes: [MovingFlowQuote], mtaQuotes: [MovingFlowQuote], changeTierModel: ChangeTierIntentModel?) {
+    public init(
+        homeQuotes: [MovingFlowQuote],
+        mtaQuotes: [MovingFlowQuote],
+        quotes: [MovingFlowQuote],
+        changeTierModel: ChangeTierIntentModel?
+    ) {
         self.homeQuotes = homeQuotes
         self.mtaQuotes = mtaQuotes
+        self.quotes = quotes
         self.changeTierModel = changeTierModel
     }
 }
@@ -28,6 +35,7 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     let displayItems: [DisplayItem]
     let exposureName: String?
     let addons: [AddonDataModel]
+    let discountDisplayItems: [DisplayItem]
 
     public init(
         premium: MonetaryAmount,
@@ -40,7 +48,8 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         id: String,
         displayItems: [DisplayItem],
         exposureName: String?,
-        addons: [AddonDataModel]
+        addons: [AddonDataModel],
+        discountDisplayItems: [DisplayItem]
     ) {
         self.premium = premium
         self.startDate = startDate
@@ -53,6 +62,7 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         self.displayItems = displayItems
         self.exposureName = exposureName
         self.addons = addons
+        self.discountDisplayItems = discountDisplayItems
     }
 }
 

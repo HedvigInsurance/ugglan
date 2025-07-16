@@ -43,9 +43,7 @@ fragment QuoteFragment on MoveIntent {
             ...ProductVariantFragment
         }
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+            ...MoveQuoteDisplayItemFragment
         }
         addons {
             ...MoveAddonQuoteFragment
@@ -61,9 +59,7 @@ fragment QuoteFragment on MoveIntent {
         }
         defaultChoice
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+            ...MoveQuoteDisplayItemFragment
         }
         exposureName
         id
@@ -80,6 +76,9 @@ fragment QuoteFragment on MoveIntent {
             ...MoveAddonQuoteFragment
         }
       }
+      quotes {
+        ...MoveQuoteFragment
+      }
 }
 
 fragment MoveAddonQuoteFragment on MoveAddonQuote {
@@ -87,9 +86,7 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     displayName
     coverageDisplayName
     displayItems {
-        displayTitle
-        displaySubtitle
-        displayValue
+        ...MoveQuoteDisplayItemFragment
     }
     premium {
         ...MoneyFragment
@@ -99,3 +96,25 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
         ...AddonVariantFragment
     }
 }
+
+fragment MoveQuoteFragment on MoveQuote {
+    displayItems {
+        ...MoveQuoteDisplayItemFragment
+    }
+    exposureName
+    premium {
+        ...MoneyFragment
+    }
+    productVariant {
+        ...ProductVariantFragment
+    }
+    startDate
+}
+
+fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
+    displayTitle
+    displaySubtitle
+    displayValue
+}
+
+

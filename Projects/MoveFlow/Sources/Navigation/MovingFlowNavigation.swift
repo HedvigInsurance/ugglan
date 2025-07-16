@@ -81,7 +81,10 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                 ),
                 insuranceLimits: quote.insurableLimits,
-                typeOfContract: quote.contractType
+                typeOfContract: quote.contractType,
+                discountDisplayItems: quote.discountDisplayItems.map({
+                    .init(title: $0.displayTitle, value: $0.displayValue)
+                })
             )
             contractInfos.append(contractQuote)
 
@@ -95,7 +98,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         }
 
         let vm = QuoteSummaryViewModel(
-            contract: contractInfos
+            contract: contractInfos,
+            activationDate: Date() /* todo: add */
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
             Task {
@@ -409,7 +413,8 @@ extension AddonDataModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            removeModel: removeModel
+            removeModel: removeModel,
+            discountDisplayItems: []
         )
         return addonQuoteContractInfo
     }

@@ -1,138 +1,6 @@
 import SwiftUI
 import hCore
 
-public class QuoteSummaryViewModel: ObservableObject, Identifiable {
-    @Published public var contracts: [ContractInfo]
-    @Published var total: MonetaryAmount = .init(amount: "", currency: "")
-    @Published var expandedContracts: [String] = []
-    @Published var removedContracts: [String] = []
-    public var onConfirmClick: () -> Void
-    let isAddon: Bool
-    let showNoticeCard: Bool
-    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
-    @Published var isConfirmChangesPresented: Bool = false
-
-    func toggleContract(_ contract: ContractInfo) {
-        if expandedContracts.contains(contract.id) {
-            collapseContract(contract)
-        } else {
-            expandContract(contract)
-        }
-    }
-
-    public func getRemovedContractsIds() -> [String] {
-        removedContracts
-    }
-
-    private func expandContract(_ contract: ContractInfo) {
-        expandedContracts.append(contract.id)
-    }
-
-    private func collapseContract(_ contract: ContractInfo) {
-        expandedContracts.removeAll(where: { $0 == contract.id })
-    }
-
-    func removeContract(_ contractId: String) {
-        expandedContracts.removeAll(where: { $0 == contractId })
-        removedContracts.append(contractId)
-        calculateTotal()
-    }
-
-    func addContract(_ contract: ContractInfo) {
-        removedContracts.removeAll(where: { $0 == contract.id })
-        calculateTotal()
-    }
-
-    public struct ContractInfo: Identifiable {
-        public var id: String
-        let displayName: String
-        let exposureName: String
-        let newPremium: MonetaryAmount?
-        let currentPremium: MonetaryAmount?
-        let displayItems: [QuoteDisplayItem]
-        let documents: [hPDFDocument]
-        let onDocumentTap: (_ document: hPDFDocument) -> Void
-        let insuranceLimits: [InsurableLimits]
-        let typeOfContract: TypeOfContract?
-        let shouldShowDetails: Bool
-        let removeModel: RemoveModel?
-        let isAddon: Bool
-        public init(
-            id: String,
-            displayName: String,
-            exposureName: String,
-            newPremium: MonetaryAmount?,
-            currentPremium: MonetaryAmount?,
-            documents: [hPDFDocument],
-            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
-            displayItems: [QuoteDisplayItem],
-            insuranceLimits: [InsurableLimits],
-            typeOfContract: TypeOfContract?,
-            isAddon: Bool = false,
-            removeModel: RemoveModel? = nil
-        ) {
-            self.id = id
-            self.displayName = displayName
-            self.exposureName = exposureName
-            self.newPremium = newPremium
-            self.currentPremium = currentPremium
-            self.documents = documents
-            self.onDocumentTap = onDocumentTap
-            self.displayItems = displayItems
-            self.insuranceLimits = insuranceLimits
-            self.typeOfContract = typeOfContract
-            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
-            self.isAddon = isAddon
-            self.removeModel = removeModel
-        }
-
-        public struct RemoveModel: Identifiable, Equatable {
-            public var id: String
-            let title: String
-            let description: String
-            let confirmButtonTitle: String
-            let cancelRemovalButtonTitle: String
-
-            public init(
-                id: String,
-                title: String,
-                description: String,
-                confirmButtonTitle: String,
-                cancelRemovalButtonTitle: String
-            ) {
-                self.id = id
-                self.title = title
-                self.description = description
-                self.confirmButtonTitle = confirmButtonTitle
-                self.cancelRemovalButtonTitle = cancelRemovalButtonTitle
-            }
-        }
-    }
-
-    public init(
-        contract: [ContractInfo],
-        total: MonetaryAmount? = nil,
-        isAddon: Bool? = false,
-        onConfirmClick: (() -> Void)? = nil,
-    ) {
-        self.contracts = contract
-        self.isAddon = isAddon ?? false
-        self.onConfirmClick = onConfirmClick ?? {}
-        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
-        if let total = total {
-            self.total = total
-        } else {
-            calculateTotal()
-        }
-    }
-
-    func calculateTotal() {
-        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
-            .reduce(0, { $0 + ($1.newPremium?.value ?? 0) })
-        total = .init(amount: totalValue, currency: contracts.first?.newPremium?.currency ?? "")
-    }
-}
-
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
     private let showCoverageId = "showCoverageId"
@@ -215,8 +83,8 @@ public struct QuoteSummaryScreen: View {
 
             let confirmChangesView =
                 ConfirmChangesScreen(
-                    title: "Confirm changes",
-                    subTitle: "Please note that your updates will be effective on 10 jul 2025.",
+                    title: L10n.confirmChangesTitle,
+                    subTitle: L10n.confirmChangesSubtitle(vm.activationDate.displayDateDDMMMYYYYFormat),
                     buttons: .init(
                         mainButton: .init(buttonAction: {
                             vm.onConfirmClick()
@@ -554,6 +422,145 @@ public struct QuoteSummaryScreen: View {
     }
 }
 
+public class QuoteSummaryViewModel: ObservableObject, Identifiable {
+    @Published public var contracts: [ContractInfo]
+    @Published public var activationDate: Date
+    @Published var total: MonetaryAmount = .init(amount: "", currency: "")
+    @Published var expandedContracts: [String] = []
+    @Published var removedContracts: [String] = []
+    public var onConfirmClick: () -> Void
+    let isAddon: Bool
+    let showNoticeCard: Bool
+    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
+    @Published var isConfirmChangesPresented: Bool = false
+
+    func toggleContract(_ contract: ContractInfo) {
+        if expandedContracts.contains(contract.id) {
+            collapseContract(contract)
+        } else {
+            expandContract(contract)
+        }
+    }
+
+    public func getRemovedContractsIds() -> [String] {
+        removedContracts
+    }
+
+    private func expandContract(_ contract: ContractInfo) {
+        expandedContracts.append(contract.id)
+    }
+
+    private func collapseContract(_ contract: ContractInfo) {
+        expandedContracts.removeAll(where: { $0 == contract.id })
+    }
+
+    func removeContract(_ contractId: String) {
+        expandedContracts.removeAll(where: { $0 == contractId })
+        removedContracts.append(contractId)
+        calculateTotal()
+    }
+
+    func addContract(_ contract: ContractInfo) {
+        removedContracts.removeAll(where: { $0 == contract.id })
+        calculateTotal()
+    }
+
+    public struct ContractInfo: Identifiable {
+        public var id: String
+        let displayName: String
+        let exposureName: String
+        let newPremium: MonetaryAmount?
+        let currentPremium: MonetaryAmount?
+        let displayItems: [QuoteDisplayItem]
+        let documents: [hPDFDocument]
+        let onDocumentTap: (_ document: hPDFDocument) -> Void
+        let insuranceLimits: [InsurableLimits]
+        let typeOfContract: TypeOfContract?
+        let shouldShowDetails: Bool
+        let removeModel: RemoveModel?
+        let isAddon: Bool
+        let discountDisplayItems: [QuoteDisplayItem]
+
+        public init(
+            id: String,
+            displayName: String,
+            exposureName: String,
+            newPremium: MonetaryAmount?,
+            currentPremium: MonetaryAmount?,
+            documents: [hPDFDocument],
+            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
+            displayItems: [QuoteDisplayItem],
+            insuranceLimits: [InsurableLimits],
+            typeOfContract: TypeOfContract?,
+            isAddon: Bool = false,
+            removeModel: RemoveModel? = nil,
+            discountDisplayItems: [QuoteDisplayItem]
+        ) {
+            self.id = id
+            self.displayName = displayName
+            self.exposureName = exposureName
+            self.newPremium = newPremium
+            self.currentPremium = currentPremium
+            self.documents = documents
+            self.onDocumentTap = onDocumentTap
+            self.displayItems = displayItems
+            self.insuranceLimits = insuranceLimits
+            self.typeOfContract = typeOfContract
+            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.isAddon = isAddon
+            self.removeModel = removeModel
+            self.discountDisplayItems = discountDisplayItems
+        }
+
+        public struct RemoveModel: Identifiable, Equatable {
+            public var id: String
+            let title: String
+            let description: String
+            let confirmButtonTitle: String
+            let cancelRemovalButtonTitle: String
+
+            public init(
+                id: String,
+                title: String,
+                description: String,
+                confirmButtonTitle: String,
+                cancelRemovalButtonTitle: String
+            ) {
+                self.id = id
+                self.title = title
+                self.description = description
+                self.confirmButtonTitle = confirmButtonTitle
+                self.cancelRemovalButtonTitle = cancelRemovalButtonTitle
+            }
+        }
+    }
+
+    public init(
+        contract: [ContractInfo],
+        total: MonetaryAmount? = nil,
+        activationDate: Date,
+        isAddon: Bool? = false,
+        onConfirmClick: (() -> Void)? = nil,
+    ) {
+        self.contracts = contract
+        self.isAddon = isAddon ?? false
+        self.activationDate = activationDate
+        self.onConfirmClick = onConfirmClick ?? {}
+        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
+        if let total = total {
+            self.total = total
+        } else {
+            calculateTotal()
+        }
+    }
+
+    func calculateTotal() {
+        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
+            .reduce(0, { $0 + ($1.newPremium?.value ?? 0) })
+        total = .init(amount: totalValue, currency: contracts.first?.newPremium?.currency ?? "")
+    }
+}
+
 public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
     public let id: String?
     let displayTitle: String
@@ -607,7 +614,8 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
                 insuranceLimits: [],
-                typeOfContract: .seApartmentBrf
+                typeOfContract: .seApartmentBrf,
+                discountDisplayItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
             ),
             .init(
                 id: "id2",
@@ -636,7 +644,11 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                         "By removing this extended coverage, your insurance will no longer include extra protection while traveling.",
                     confirmButtonTitle: "Remove Travel Insurance Plus",
                     cancelRemovalButtonTitle: "Keep current coverage"
-                )
+                ),
+                discountDisplayItems: [
+                    .init(title: "15% bundle discount", value: "-30 kr/mo"),
+                    .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
+                ]
             ),
             .init(
                 id: "id3",
@@ -652,7 +664,8 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                     .init(label: "label2", limit: "limit2", description: "description2"),
                     .init(label: "label3", limit: "limit3", description: "description3"),
                 ],
-                typeOfContract: .seAccident
+                typeOfContract: .seAccident,
+                discountDisplayItems: []
             ),
             .init(
                 id: "id4",
@@ -664,7 +677,8 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 onDocumentTap: { document in },
                 displayItems: [],
                 insuranceLimits: [],
-                typeOfContract: .seAccident
+                typeOfContract: .seAccident,
+                discountDisplayItems: []
             ),
             .init(
                 id: "id5",
@@ -676,9 +690,11 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 onDocumentTap: { document in },
                 displayItems: [],
                 insuranceLimits: [],
-                typeOfContract: .seDogStandard
+                typeOfContract: .seDogStandard,
+                discountDisplayItems: []
             ),
         ],
+        activationDate: "2025-08-24".localDateToDate ?? Date(),
         onConfirmClick: {}
     )
 

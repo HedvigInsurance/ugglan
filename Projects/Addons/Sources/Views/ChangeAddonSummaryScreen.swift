@@ -41,13 +41,15 @@ extension ChangeAddonViewModel {
                     ),
                     insuranceLimits: [],
                     typeOfContract: nil,
-                    isAddon: true
+                    isAddon: true,
+                    discountDisplayItems: []
                 )
             ],
             total: getTotalPrice(
                 currentPrice: self.addonOffer?.currentAddon?.price,
                 newPrice: self.selectedQuote?.price
             ),
+            activationDate: self.addonOffer?.activationDate ?? Date(),
             isAddon: true
         ) {
             changeAddonNavigationVm.isConfirmAddonPresented = true
