@@ -10,6 +10,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let isAddon: Bool
     let showNoticeCard: Bool
     @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
+    @Published var isConfirmChangesPresented: Bool = false
 
     func toggleContract(_ contract: ContractInfo) {
         if expandedContracts.contains(contract.id) {
@@ -40,16 +41,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     func addContract(_ contract: ContractInfo) {
         removedContracts.removeAll(where: { $0 == contract.id })
         calculateTotal()
-    }
-
-    func strikeThroughPriceType(_ contractId: String) -> StrikeThroughPriceType {
-        if removedContracts.contains(contractId) {
-            return .crossNewPrice
-        }
-        if isAddon {
-            return .crossOldPrice
-        }
-        return .none
     }
 
     public struct ContractInfo: Identifiable {
@@ -122,7 +113,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         contract: [ContractInfo],
         total: MonetaryAmount? = nil,
         isAddon: Bool? = false,
-        onConfirmClick: (() -> Void)? = nil
+        onConfirmClick: (() -> Void)? = nil,
     ) {
         self.contracts = contract
         self.isAddon = isAddon ?? false
@@ -217,6 +208,30 @@ public struct QuoteSummaryScreen: View {
                 }
             )
         }
+        .detent(
+            presented: $vm.isConfirmChangesPresented,
+            options: .constant([.alwaysOpenOnTop])
+        ) {
+
+            let confirmChangesView =
+                ConfirmChangesScreen(
+                    title: "Confirm changes",
+                    subTitle: "Please note that your updates will be effective on 10 jul 2025.",
+                    buttons: .init(
+                        mainButton: .init(buttonAction: {
+                            vm.onConfirmClick()
+                        }),
+                        dismissButton: .init(buttonAction: {
+                            vm.isConfirmChangesPresented = false
+                        })
+                    )
+                )
+
+            confirmChangesView
+                .embededInNavigation(
+                    tracking: confirmChangesView
+                )
+        }
     }
 
     @ViewBuilder
@@ -240,16 +255,18 @@ public struct QuoteSummaryScreen: View {
         hSection {
             StatusCard(
                 onSelected: {},
-                mainContent: ContractInformation(
-                    displayName: contract.displayName,
-                    exposureName: vm.removedContracts.contains(contract.id) ? nil : contract.exposureName,
-                    pillowImage: contract.typeOfContract?.pillowType.bgImage,
-                    status: vm.removedContracts.contains(contract.id) ? L10n.contractStatusTerminated : nil
-                ),
+                mainContent:
+                    ContractInformation(
+                        displayName: contract.displayName,
+                        exposureName: vm.removedContracts.contains(contract.id) ? nil : contract.exposureName,
+                        pillowImage: contract.typeOfContract?.pillowType.bgImage,
+                        status: vm.removedContracts.contains(contract.id) ? L10n.contractStatusTerminated : nil
+                    ),
                 title: nil,
                 subTitle: nil,
                 bottomComponent: {
                     bottomComponent(for: contract, proxy: proxy, isExpanded: isExpanded)
+                        .padding(.top, .padding16)
                 }
             )
             .hCardWithoutSpacing
@@ -265,60 +282,73 @@ public struct QuoteSummaryScreen: View {
         isExpanded: Bool
     ) -> some View {
         VStack(spacing: .padding16) {
+            if contract.shouldShowDetails && !vm.isAddon {
+                showDetailsButton(contract, proxy: proxy)
+            }
+
+            if isExpanded {
+                VStack(spacing: 0) {
+                    detailsView(for: contract, isExpanded: isExpanded)
+                        .frame(height: isExpanded ? nil : 0, alignment: .top)
+                        .clipped()
+                        .accessibilityHidden(!isExpanded)
+                    if vm.removedContracts.contains(contract.id) {
+                        hButton(
+                            .medium,
+                            .secondary,
+                            content: .init(title: L10n.addonAddCoverage),
+                            {
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    vm.addContract(contract)
+                                }
+                            }
+                        )
+                        .transition(.scale)
+                    }
+                }
+            }
+
+            VStack(spacing: .padding8) {
+                rowItem(for: .init(title: "15% bundle discount", value: "-30 kr/mo"), fontSize: .label)
+                rowItem(for: .init(title: "50% discount for 3 months", value: "-99 kr/mo"), fontSize: .label)
+            }
+
+            hRowDivider()
+                .hWithoutHorizontalPadding([.divider])
+
             PriceField(
                 newPremium: contract.newPremium,
                 currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
             )
-            .hWithStrikeThroughPrice(
-                setTo: vm.strikeThroughPriceType(contract.id)
-            )
+            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+        }
+    }
 
-            VStack(spacing: 0) {
-                detailsView(for: contract, isExpanded: isExpanded)
-                    .frame(height: isExpanded ? nil : 0, alignment: .top)
-                    .clipped()
-                    .accessibilityHidden(!isExpanded)
-                if vm.removedContracts.contains(contract.id) {
-                    hButton(
-                        .medium,
-                        .secondary,
-                        content: .init(title: L10n.addonAddCoverage),
-                        {
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                vm.addContract(contract)
+    private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo, proxy: ScrollViewProxy) -> some View
+    {
+        hButton(
+            .medium,
+            .secondary,
+            content: .init(
+                title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+            ),
+            {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    vm.toggleContract(contract)
+                    Task { [weak vm] in
+                        guard let vm else { return }
+                        try await Task.sleep(nanoseconds: 200_000_000)
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            if vm.expandedContracts.contains(contract.id) {
+                                proxy.scrollTo(contract.id, anchor: .top)
                             }
                         }
-                    )
-                    .transition(.scale)
-
-                } else if contract.shouldShowDetails && !vm.isAddon {
-
-                    hButton(
-                        .medium,
-                        .secondary,
-                        content: .init(
-                            title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                                ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-                        ),
-                        {
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                vm.toggleContract(contract)
-                                Task { [weak vm] in
-                                    guard let vm else { return }
-                                    try await Task.sleep(nanoseconds: 200_000_000)
-                                    withAnimation(.easeInOut(duration: 0.4)) {
-                                        if vm.expandedContracts.contains(contract.id) {
-                                            proxy.scrollTo(contract.id, anchor: .top)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    )
-                    .hWithTransition(.scale)
+                    }
                 }
             }
-        }
+        )
+        .hWithTransition(.scale)
     }
 
     private var noticeComponent: some View {
@@ -417,9 +447,9 @@ public struct QuoteSummaryScreen: View {
         .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 : 0)
     }
 
-    func rowItem(for displayItem: QuoteDisplayItem) -> some View {
+    func rowItem(for displayItem: QuoteDisplayItem, fontSize: HFontTextStyle? = .body1) -> some View {
         HStack(alignment: .top) {
-            hText(displayItem.displayTitle)
+            hText(displayItem.displayTitle, style: fontSize ?? .body1)
             Spacer()
 
             if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
@@ -434,7 +464,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
 
-            hText(displayItem.displayValue)
+            hText(displayItem.displayValue, style: fontSize ?? .body1)
                 .multilineTextAlignment(.trailing)
                 .accessibilityLabel(
                     displayItem.displayValueOld != nil && displayItem.displayValueOld != displayItem.displayValue
@@ -496,7 +526,7 @@ public struct QuoteSummaryScreen: View {
                             title: vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer
                         ),
                         { [weak vm] in
-                            vm?.onConfirmClick()
+                            vm?.isConfirmChangesPresented = true
                         }
                     )
                 }
