@@ -220,7 +220,7 @@ extension MovingFlowQuote {
             discountDisplayItems: [],
         )
     }
-    
+
     init(from data: OctopusGraphQL.QuoteFragment.Quote) {
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         self.init(
