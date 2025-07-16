@@ -44,6 +44,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
         let model = QuoteSummaryViewModel(
             contract: [],
+            currentTotal: .init(amount: "399", currency: "SEK"),
             activationDate: Date(),
             isAddon: false
         ) {

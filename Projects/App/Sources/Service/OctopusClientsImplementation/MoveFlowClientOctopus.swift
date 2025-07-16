@@ -214,10 +214,10 @@ extension MovingFlowQuote {
             documents: productVariantFragment.documents.compactMap({ .init($0) }),
             contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
             id: data.id,
-            displayItems: [],
+            displayItems: data.displayItems.map({ .init($0.fragments.moveQuoteDisplayItemFragment) }),
             exposureName: data.exposureName,
             addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) }),
-            discountDisplayItems: data.displayItems.map({ .init($0.fragments.moveQuoteDisplayItemFragment) }),
+            discountDisplayItems: [],
         )
     }
     

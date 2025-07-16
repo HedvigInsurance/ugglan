@@ -84,7 +84,9 @@ public struct QuoteSummaryScreen: View {
             let confirmChangesView =
                 ConfirmChangesScreen(
                     title: L10n.confirmChangesTitle,
-                    subTitle: L10n.confirmChangesSubtitle(vm.activationDate.displayDateDDMMMYYYYFormat),
+                    subTitle: L10n.confirmChangesSubtitle(
+                        vm.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
+                    ),
                     buttons: .init(
                         mainButton: .init(buttonAction: {
                             vm.onConfirmClick()
@@ -176,13 +178,16 @@ public struct QuoteSummaryScreen: View {
                 }
             }
 
-            VStack(spacing: .padding8) {
-                rowItem(for: .init(title: "15% bundle discount", value: "-30 kr/mo"), fontSize: .label)
-                rowItem(for: .init(title: "50% discount for 3 months", value: "-99 kr/mo"), fontSize: .label)
-            }
+            if !contract.discountDisplayItems.isEmpty {
+                VStack(spacing: .padding8) {
+                    ForEach(contract.discountDisplayItems, id: \.displayTitle) { disocuntItem in
+                        rowItem(for: disocuntItem, fontSize: .label)
+                    }
+                }
 
-            hRowDivider()
-                .hWithoutHorizontalPadding([.divider])
+                hRowDivider()
+                    .hWithoutHorizontalPadding([.divider])
+            }
 
             PriceField(
                 newPremium: contract.newPremium,
@@ -365,27 +370,34 @@ public struct QuoteSummaryScreen: View {
     private func buttonComponent(proxy: ScrollViewProxy) -> some View {
         hSection {
             VStack(spacing: .padding16) {
-                HStack {
-                    hText(L10n.tierFlowTotal)
-                    Spacer()
 
-                    let amount = vm.total
+                let newPremium = vm.newTotal
+                let currentPremium = vm.currentTotal
 
-                    if vm.isAddon {
+                if vm.isAddon {
+                    HStack {
+                        hText(L10n.tierFlowTotal)
+                        Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
-                            if amount.value >= 0 {
-                                hText(L10n.addonFlowPriceLabel(amount.formattedAmount))
+                            if newPremium.value >= 0 {
+                                hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
                             } else {
-                                hText(amount.formattedAmountPerMonth)
+                                hText(newPremium.formattedAmountPerMonth)
                             }
                             hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                    } else {
-                        hText(amount.formattedAmountPerMonth)
                     }
+                    .accessibilityElement(children: .combine)
+                } else {
+                    PriceField(
+                        newPremium: newPremium,
+                        currentPremium: currentPremium,
+                        title: nil,
+                        subTitle: L10n.summaryTotalPriceSubtitle(vm.activationDate?.displayDateDDMMMYYYYFormat ?? "")
+                    )
+                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                 }
-                .accessibilityElement(children: .combine)
                 VStack(spacing: .padding8) {
                     hButton(
                         .large,
@@ -424,8 +436,9 @@ public struct QuoteSummaryScreen: View {
 
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]
-    @Published public var activationDate: Date
-    @Published var total: MonetaryAmount = .init(amount: "", currency: "")
+    @Published public var activationDate: Date?
+    @Published var newTotal: MonetaryAmount = .init(amount: "", currency: "")
+    @Published var currentTotal: MonetaryAmount = .init(amount: "", currency: "")
     @Published var expandedContracts: [String] = []
     @Published var removedContracts: [String] = []
     public var onConfirmClick: () -> Void
@@ -538,7 +551,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public init(
         contract: [ContractInfo],
         total: MonetaryAmount? = nil,
-        activationDate: Date,
+        currentTotal: MonetaryAmount?,
+        activationDate: Date?,
         isAddon: Bool? = false,
         onConfirmClick: (() -> Void)? = nil,
     ) {
@@ -548,16 +562,19 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         self.onConfirmClick = onConfirmClick ?? {}
         self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
         if let total = total {
-            self.total = total
+            self.newTotal = total
         } else {
             calculateTotal()
+        }
+        if let currentTotal {
+            self.currentTotal = currentTotal
         }
     }
 
     func calculateTotal() {
         let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
             .reduce(0, { $0 + ($1.newPremium?.value ?? 0) })
-        total = .init(amount: totalValue, currency: contracts.first?.newPremium?.currency ?? "")
+        newTotal = .init(amount: totalValue, currency: contracts.first?.newPremium?.currency ?? "")
     }
 }
 
@@ -594,6 +611,8 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
 }
 
 #Preview(body: {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     let documents: [hPDFDocument] = [
         .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
         .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
@@ -694,6 +713,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 discountDisplayItems: []
             ),
         ],
+        currentTotal: .init(amount: 399, currency: "SEK"),
         activationDate: "2025-08-24".localDateToDate ?? Date(),
         onConfirmClick: {}
     )

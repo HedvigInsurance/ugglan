@@ -99,7 +99,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
-            activationDate: Date() /* todo: add */
+            currentTotal: nil,
+            activationDate: movingFlowQuotes.first?.startDate.localDateToDate
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
             Task {
@@ -120,6 +121,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     private func getQuotes() -> [MovingFlowQuote] {
         var allQuotes = moveQuotesModel?.mtaQuotes ?? []
+        let quotes = moveQuotesModel?.quotes ?? []
+        allQuotes.append(contentsOf: quotes)
         if let selectedHomeQuote = selectedHomeQuote {
             allQuotes.insert(selectedHomeQuote, at: 0)
         }

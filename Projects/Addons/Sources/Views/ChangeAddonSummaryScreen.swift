@@ -49,7 +49,8 @@ extension ChangeAddonViewModel {
                 currentPrice: self.addonOffer?.currentAddon?.price,
                 newPrice: self.selectedQuote?.price
             ),
-            activationDate: self.addonOffer?.activationDate ?? Date(),
+            currentTotal: self.addonOffer?.currentAddon?.price,
+            activationDate: self.addonOffer?.activationDate,
             isAddon: true
         ) {
             changeAddonNavigationVm.isConfirmAddonPresented = true
