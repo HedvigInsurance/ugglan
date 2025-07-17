@@ -32,11 +32,26 @@ public struct DiscountDetailView: View {
                     }
                     .padding(.horizontal, .padding8)
                     .background(
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: .padding8)
                             .fill(hSurfaceColor.Translucent.primary)
                     )
                     .onTapGesture {
                         startRemoveCode()
+                    }
+                    Spacer()
+                    if let amount = vm.discount.amount {
+                        hText(amount.formattedNegativeAmountPerMonth)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                    } else if isReferral, let amount = vm.discount.amount {
+                        hText(amount.formattedNegativeAmountPerMonth)
+                    } else if vm.options.contains(.forPayment), let amount = vm.discount.amount {
+                        hText(amount.formattedNegativeAmount)
+                    }
+                }
+                //                VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top) {
+                    if let title = vm.discount.title {
+                        hText(title, style: .label)
                     }
                     Spacer()
                     if let validUntil = vm.discount.validUntil {
@@ -46,31 +61,15 @@ public struct DiscountDetailView: View {
                         } else {
                             hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
                         }
-                    } else if isReferral, let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmountPerMonth)
-                    } else if vm.options.contains(.forPayment), let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmount)
                     }
+                    //                    if vm.options.contains(.forPayment) {
+                    //                        VStack(alignment: .leading, spacing: 0) {
+                    //                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
+                    //                                hText(affectedInsurance.displayName, style: .label)
+                    //                            }
+                    //                        }
                 }
-                VStack(alignment: .leading, spacing: 0) {
-                    if let title = vm.discount.title {
-                        hText(title, style: .label)
-                    }
-                    if !vm.discount.listOfAffectedInsurances.isEmpty {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                hText(affectedInsurance.displayName, style: .label)
-                            }
-                        }
-                    }
-                    if vm.options.contains(.forPayment) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                hText(affectedInsurance.displayName, style: .label)
-                            }
-                        }
-                    }
-                }
+                //                }
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
