@@ -33,8 +33,8 @@ extension ChangeTierViewModel {
                 id: self.currentTier?.id ?? "",
                 displayName: self.displayName ?? "",
                 exposureName: activationDate,
-                newPremium: self.newPremium,
-                currentPremium: self.currentPremium,
+                netPremium: self.newPremium,
+                grossPremium: self.currentPremium,
                 documents: self.selectedQuote?.productVariant?.documents ?? [],
                 onDocumentTap: { [weak changeTierNavigationVm] document in
                     changeTierNavigationVm?.document = document
@@ -51,8 +51,8 @@ extension ChangeTierViewModel {
                     id: addon.addonId,
                     displayName: addon.displayName,
                     exposureName: activationDate,
-                    newPremium: addon.premium,
-                    currentPremium: addon.previousPremium,
+                    netPremium: addon.premium,
+                    grossPremium: addon.previousPremium,
                     documents: addon.addonVariant.documents,
                     onDocumentTap: { [weak changeTierNavigationVm] document in
                         changeTierNavigationVm?.document = document
@@ -68,7 +68,7 @@ extension ChangeTierViewModel {
 
         let vm = QuoteSummaryViewModel(
             contract: contracts,
-            currentTotal: self.currentPremium,
+            grossTotal: self.currentPremium,
             activationDate: self.activationDate,
             onConfirmClick: {
                 changeTierNavigationVm.isConfirmTierPresented = true

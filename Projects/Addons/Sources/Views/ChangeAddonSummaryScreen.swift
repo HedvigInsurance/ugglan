@@ -29,8 +29,8 @@ extension ChangeAddonViewModel {
                     exposureName: L10n.addonFlowSummaryActiveFrom(
                         self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
-                    newPremium: self.selectedQuote?.price,
-                    currentPremium: self.addonOffer?.currentAddon?.price,
+                    netPremium: self.selectedQuote?.price,
+                    grossPremium: self.addonOffer?.currentAddon?.price,
                     documents: self.selectedQuote?.addonVariant?.documents ?? [],
                     onDocumentTap: { document in
                         changeAddonNavigationVm.document = document
@@ -45,11 +45,11 @@ extension ChangeAddonViewModel {
                     discountDisplayItems: []
                 )
             ],
-            total: getTotalPrice(
+            netTotal: getTotalPrice(
                 currentPrice: self.addonOffer?.currentAddon?.price,
                 newPrice: self.selectedQuote?.price
             ),
-            currentTotal: self.addonOffer?.currentAddon?.price,
+            grossTotal: self.addonOffer?.currentAddon?.price,
             activationDate: self.addonOffer?.activationDate,
             isAddon: true
         ) {

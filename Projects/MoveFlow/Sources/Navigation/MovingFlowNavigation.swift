@@ -70,8 +70,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
-                newPremium: quote.premium,
-                currentPremium: quote.premium,
+                netPremium: quote.premium,
+                grossPremium: quote.premium,
                 documents: quote.documents.map({
                     .init(displayName: $0.displayName, url: $0.url, type: .unknown)
                 }),
@@ -99,7 +99,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
-            currentTotal: nil,
+            grossTotal: nil,
             activationDate: movingFlowQuotes.first?.startDate.localDateToDate
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
@@ -404,8 +404,8 @@ extension AddonDataModel {
             id: self.id,
             displayName: self.quoteInfo.title ?? "",
             exposureName: self.coverageDisplayName,
-            newPremium: self.price,
-            currentPremium: nil,
+            netPremium: self.price,
+            grossPremium: nil,
             documents: self.addonVariant.documents,
             onDocumentTap: { document in
                 ondocumentClicked(document)

@@ -17,23 +17,18 @@ public struct QuoteSummaryScreen: View {
         ScrollViewReader { proxy in
             hForm {
                 VStack(spacing: .padding16) {
-                    VStack(spacing: 0) {
-                        ForEach(vm.contracts, id: \.id) { contract in
-                            contractInfoView(for: contract, proxy: proxy)
-                                .id(contract.id)
-                        }
-                    }
-                    .background(
-                        GeometryReader { proxy in
-                            Color.clear
-                                .onAppear {
-                                    spacingCoverage = max(totalHeight - proxy.size.height, 0)
-                                }
-                                .onChange(of: proxy.size) { size in
-                                    spacingCoverage = max(totalHeight - size.height, 0)
-                                }
-                        }
-                    )
+                    ContractCardView(vm: vm, proxy: proxy)
+                        .background(
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        spacingCoverage = max(totalHeight - proxy.size.height, 0)
+                                    }
+                                    .onChange(of: proxy.size) { size in
+                                        spacingCoverage = max(totalHeight - size.height, 0)
+                                    }
+                            }
+                        )
                 }
             }
             .hButtonTakeFullWidth(true)
@@ -42,7 +37,7 @@ public struct QuoteSummaryScreen: View {
                     if vm.showNoticeCard {
                         noticeComponent
                     }
-                    buttonComponent(proxy: proxy)
+                    PriceSummarySection(vm: vm)
                 }
             }
         }
@@ -80,32 +75,86 @@ public struct QuoteSummaryScreen: View {
             presented: $vm.isConfirmChangesPresented,
             options: .constant([.alwaysOpenOnTop])
         ) {
+            openConfirmChangesScreen
+        }
+    }
 
-            let confirmChangesView =
-                ConfirmChangesScreen(
-                    title: L10n.confirmChangesTitle,
-                    subTitle: L10n.confirmChangesSubtitle(
-                        vm.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
-                    ),
-                    buttons: .init(
-                        mainButton: .init(buttonAction: {
-                            vm.onConfirmClick()
-                        }),
-                        dismissButton: .init(buttonAction: {
-                            vm.isConfirmChangesPresented = false
-                        })
-                    )
+    private var openConfirmChangesScreen: some View {
+        let confirmChangesView =
+            ConfirmChangesScreen(
+                title: L10n.confirmChangesTitle,
+                subTitle: L10n.confirmChangesSubtitle(
+                    vm.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
+                ),
+                buttons: .init(
+                    mainButton: .init(buttonAction: {
+                        vm.onConfirmClick()
+                    }),
+                    dismissButton: .init(buttonAction: {
+                        vm.isConfirmChangesPresented = false
+                    })
                 )
+            )
 
+        return
             confirmChangesView
-                .embededInNavigation(
-                    tracking: confirmChangesView
-                )
+            .embededInNavigation(
+                tracking: confirmChangesView
+            )
+    }
+
+    private var noticeComponent: some View {
+        hSection {
+            InfoCard(
+                text:
+                    vm.isAddon
+                    ? L10n.addonFlowSummaryInfoText
+                    : L10n.changeAddressOtherInsurancesInfoText,
+                type: .info
+            )
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
+        light: hBlueColor.blue100,
+        dark: hBlueColor.blue900
+    )
+
+    @ViewBuilder
+    var chatComponent: some View {
+        VStack(spacing: 0) {
+            hText(L10n.changeAddressNoFind, style: .body1)
+            Spacing(height: 16)
+
+            hButton(
+                .small,
+                .primary,
+                content: .init(title: L10n.openChat),
+                {
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
+            )
+            .fixedSize()
+        }
+    }
+}
+
+private struct ContractCardView: View {
+    @ObservedObject var vm: QuoteSummaryViewModel
+    let proxy: ScrollViewProxy
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(vm.contracts, id: \.id) { contract in
+                contractInfoView(for: contract)
+                    .id(contract.id)
+            }
         }
     }
 
     @ViewBuilder
-    func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo, proxy: ScrollViewProxy) -> some View {
+    private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
         let isExpanded = vm.isAddon ? true : (index != nil)
 
@@ -135,7 +184,7 @@ public struct QuoteSummaryScreen: View {
                 title: nil,
                 subTitle: nil,
                 bottomComponent: {
-                    bottomComponent(for: contract, proxy: proxy, isExpanded: isExpanded)
+                    bottomComponent(for: contract, isExpanded: isExpanded)
                         .padding(.top, .padding16)
                 }
             )
@@ -148,12 +197,11 @@ public struct QuoteSummaryScreen: View {
     @ViewBuilder
     private func bottomComponent(
         for contract: QuoteSummaryViewModel.ContractInfo,
-        proxy: ScrollViewProxy,
         isExpanded: Bool
     ) -> some View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails && !vm.isAddon {
-                showDetailsButton(contract, proxy: proxy)
+                showDetailsButton(contract)
             }
 
             if isExpanded {
@@ -184,21 +232,24 @@ public struct QuoteSummaryScreen: View {
                         rowItem(for: disocuntItem, fontSize: .label)
                     }
                 }
+            }
 
+            if ((contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty)
+                && !contract.isAddon
+            {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
 
             PriceField(
-                newPremium: contract.newPremium,
-                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
+                newPremium: contract.netPremium,
+                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium
             )
             .hWithStrikeThroughPrice(setTo: .crossOldPrice)
         }
     }
 
-    private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo, proxy: ScrollViewProxy) -> some View
-    {
+    private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         hButton(
             .medium,
             .secondary,
@@ -224,100 +275,101 @@ public struct QuoteSummaryScreen: View {
         .hWithTransition(.scale)
     }
 
-    private var noticeComponent: some View {
-        hSection {
-            InfoCard(
-                text:
-                    vm.isAddon
-                    ? L10n.addonFlowSummaryInfoText
-                    : L10n.changeAddressOtherInsurancesInfoText,
-                type: .info
-            )
-        }
-        .sectionContainerStyle(.transparent)
-    }
-
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
         VStack(spacing: .padding16) {
-            hRowDivider()
-                .hWithoutHorizontalPadding([.divider])
+            displayItemsView(for: contract)
+            insuranceLimitsView(for: contract)
+            removeButtonView(for: contract, isExpanded: isExpanded)
+            documentsView(for: contract)
+        }
+        .padding(.bottom, (isExpanded && !contract.isAddon && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
+    }
 
-            if !contract.displayItems.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.summaryScreenOverview)
-                        .accessibilityAddTraits(.isHeader)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    ForEach(contract.displayItems, id: \.displayTitle) { item in
-                        rowItem(for: item)
-                    }
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityRemoveTraits(.isHeader)
-            }
-
-            if !contract.insuranceLimits.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.summaryScreenCoverage)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .accessibilityAddTraits(.isHeader)
-                    ZStack {
-                        VStack {
-                            ForEach(contract.insuranceLimits, id: \.limit) { limit in
-                                let displayItem: QuoteDisplayItem = .init(
-                                    title: limit.label,
-                                    value: limit.limit ?? "",
-                                    id: limit.id
-                                )
-                                rowItem(for: displayItem)
-                            }
-                        }
-                        hText(" ")
-                    }
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityRemoveTraits(.isHeader)
-            }
-
-            if !contract.documents.isEmpty {
-                VStack(alignment: .leading, spacing: .padding4) {
-                    hText(L10n.confirmationScreenDocumentTitle)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .accessibilityAddTraits(.isHeader)
-                    ForEach(contract.documents, id: \.displayName) { document in
-                        documentItem(for: document)
-                            .background(hSurfaceColor.Opaque.primary)
-                            .accessibilityElement(children: .combine)
-                            .onTapGesture {
-                                contract.onDocumentTap(document)
-                            }
-                            .accessibilityAction {
-                                contract.onDocumentTap(document)
-                            }
-                    }
+    @ViewBuilder
+    func displayItemsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+        if !contract.displayItems.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                hText(L10n.summaryScreenOverview)
+                    .accessibilityAddTraits(.isHeader)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ForEach(contract.displayItems, id: \.displayTitle) { item in
+                    rowItem(for: item)
                 }
             }
-            if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id),
-                isExpanded
-            {
-                hButton(
-                    .medium,
-                    .ghost,
-                    content: .init(title: L10n.General.remove),
-                    {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            vm.removeModel = removeModel
+            .accessibilityElement(children: .combine)
+            .accessibilityRemoveTraits(.isHeader)
+        }
+    }
+
+    @ViewBuilder
+    func insuranceLimitsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+        if !contract.insuranceLimits.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                hText(L10n.summaryScreenCoverage)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityAddTraits(.isHeader)
+                ZStack {
+                    VStack {
+                        ForEach(contract.insuranceLimits, id: \.limit) { limit in
+                            let displayItem: QuoteDisplayItem = .init(
+                                title: limit.label,
+                                value: limit.limit ?? "",
+                                id: limit.id
+                            )
+                            rowItem(for: displayItem)
                         }
                     }
-                )
-                .hWithTransition(.scale)
-                .background {
-                    RoundedRectangle(cornerRadius: .cornerRadiusM)
-                        .stroke(hBorderColor.primary, lineWidth: 1)
+                    hText(" ")
                 }
-                .padding(.bottom, .padding8)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityRemoveTraits(.isHeader)
+        }
+    }
+
+    @ViewBuilder
+    func documentsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+        if !contract.documents.isEmpty {
+            VStack(alignment: .leading, spacing: .padding4) {
+                hText(L10n.confirmationScreenDocumentTitle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityAddTraits(.isHeader)
+                ForEach(contract.documents, id: \.displayName) { document in
+                    documentItem(for: document)
+                        .background(hSurfaceColor.Opaque.primary)
+                        .accessibilityElement(children: .combine)
+                        .onTapGesture {
+                            contract.onDocumentTap(document)
+                        }
+                        .accessibilityAction {
+                            contract.onDocumentTap(document)
+                        }
+                }
             }
         }
-        .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 : 0)
+    }
+
+    @ViewBuilder
+    func removeButtonView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
+        if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id),
+            isExpanded
+        {
+            hButton(
+                .medium,
+                .secondary,
+                content: .init(title: L10n.General.remove),
+                {
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        vm.removeModel = removeModel
+                    }
+                }
+            )
+            .hWithTransition(.scale)
+            .background {
+                RoundedRectangle(cornerRadius: .cornerRadiusM)
+                    .stroke(hBorderColor.primary, lineWidth: 1)
+            }
+        }
     }
 
     func rowItem(for displayItem: QuoteDisplayItem, fontSize: HFontTextStyle? = .body1) -> some View {
@@ -361,18 +413,17 @@ public struct QuoteSummaryScreen: View {
         }
         .foregroundColor(hTextColor.Translucent.secondary)
     }
+}
 
-    private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
-        light: hBlueColor.blue100,
-        dark: hBlueColor.blue900
-    )
+private struct PriceSummarySection: View {
+    @ObservedObject var vm: QuoteSummaryViewModel
 
-    private func buttonComponent(proxy: ScrollViewProxy) -> some View {
+    var body: some View {
         hSection {
             VStack(spacing: .padding16) {
 
-                let newPremium = vm.newTotal
-                let currentPremium = vm.currentTotal
+                let newPremium = vm.netTotal
+                let currentPremium = vm.grossTotal
 
                 if vm.isAddon {
                     HStack {
@@ -414,200 +465,6 @@ public struct QuoteSummaryScreen: View {
         }
         .sectionContainerStyle(.transparent)
     }
-
-    @ViewBuilder
-    var chatComponent: some View {
-        VStack(spacing: 0) {
-            hText(L10n.changeAddressNoFind, style: .body1)
-            Spacing(height: 16)
-
-            hButton(
-                .small,
-                .primary,
-                content: .init(title: L10n.openChat),
-                {
-                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                }
-            )
-            .fixedSize()
-        }
-    }
-}
-
-public class QuoteSummaryViewModel: ObservableObject, Identifiable {
-    @Published public var contracts: [ContractInfo]
-    @Published public var activationDate: Date?
-    @Published var newTotal: MonetaryAmount = .init(amount: "", currency: "")
-    @Published var currentTotal: MonetaryAmount = .init(amount: "", currency: "")
-    @Published var expandedContracts: [String] = []
-    @Published var removedContracts: [String] = []
-    public var onConfirmClick: () -> Void
-    let isAddon: Bool
-    let showNoticeCard: Bool
-    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
-    @Published var isConfirmChangesPresented: Bool = false
-
-    func toggleContract(_ contract: ContractInfo) {
-        if expandedContracts.contains(contract.id) {
-            collapseContract(contract)
-        } else {
-            expandContract(contract)
-        }
-    }
-
-    public func getRemovedContractsIds() -> [String] {
-        removedContracts
-    }
-
-    private func expandContract(_ contract: ContractInfo) {
-        expandedContracts.append(contract.id)
-    }
-
-    private func collapseContract(_ contract: ContractInfo) {
-        expandedContracts.removeAll(where: { $0 == contract.id })
-    }
-
-    func removeContract(_ contractId: String) {
-        expandedContracts.removeAll(where: { $0 == contractId })
-        removedContracts.append(contractId)
-        calculateTotal()
-    }
-
-    func addContract(_ contract: ContractInfo) {
-        removedContracts.removeAll(where: { $0 == contract.id })
-        calculateTotal()
-    }
-
-    public struct ContractInfo: Identifiable {
-        public var id: String
-        let displayName: String
-        let exposureName: String
-        let newPremium: MonetaryAmount?
-        let currentPremium: MonetaryAmount?
-        let displayItems: [QuoteDisplayItem]
-        let documents: [hPDFDocument]
-        let onDocumentTap: (_ document: hPDFDocument) -> Void
-        let insuranceLimits: [InsurableLimits]
-        let typeOfContract: TypeOfContract?
-        let shouldShowDetails: Bool
-        let removeModel: RemoveModel?
-        let isAddon: Bool
-        let discountDisplayItems: [QuoteDisplayItem]
-
-        public init(
-            id: String,
-            displayName: String,
-            exposureName: String,
-            newPremium: MonetaryAmount?,
-            currentPremium: MonetaryAmount?,
-            documents: [hPDFDocument],
-            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
-            displayItems: [QuoteDisplayItem],
-            insuranceLimits: [InsurableLimits],
-            typeOfContract: TypeOfContract?,
-            isAddon: Bool = false,
-            removeModel: RemoveModel? = nil,
-            discountDisplayItems: [QuoteDisplayItem]
-        ) {
-            self.id = id
-            self.displayName = displayName
-            self.exposureName = exposureName
-            self.newPremium = newPremium
-            self.currentPremium = currentPremium
-            self.documents = documents
-            self.onDocumentTap = onDocumentTap
-            self.displayItems = displayItems
-            self.insuranceLimits = insuranceLimits
-            self.typeOfContract = typeOfContract
-            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
-            self.isAddon = isAddon
-            self.removeModel = removeModel
-            self.discountDisplayItems = discountDisplayItems
-        }
-
-        public struct RemoveModel: Identifiable, Equatable {
-            public var id: String
-            let title: String
-            let description: String
-            let confirmButtonTitle: String
-            let cancelRemovalButtonTitle: String
-
-            public init(
-                id: String,
-                title: String,
-                description: String,
-                confirmButtonTitle: String,
-                cancelRemovalButtonTitle: String
-            ) {
-                self.id = id
-                self.title = title
-                self.description = description
-                self.confirmButtonTitle = confirmButtonTitle
-                self.cancelRemovalButtonTitle = cancelRemovalButtonTitle
-            }
-        }
-    }
-
-    public init(
-        contract: [ContractInfo],
-        total: MonetaryAmount? = nil,
-        currentTotal: MonetaryAmount?,
-        activationDate: Date?,
-        isAddon: Bool? = false,
-        onConfirmClick: (() -> Void)? = nil,
-    ) {
-        self.contracts = contract
-        self.isAddon = isAddon ?? false
-        self.activationDate = activationDate
-        self.onConfirmClick = onConfirmClick ?? {}
-        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
-        if let total = total {
-            self.newTotal = total
-        } else {
-            calculateTotal()
-        }
-        if let currentTotal {
-            self.currentTotal = currentTotal
-        }
-    }
-
-    func calculateTotal() {
-        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
-            .reduce(0, { $0 + ($1.newPremium?.value ?? 0) })
-        newTotal = .init(amount: totalValue, currency: contracts.first?.newPremium?.currency ?? "")
-    }
-}
-
-public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
-    public let id: String?
-    let displayTitle: String
-    let displayValue: String
-    let displayValueOld: String?
-
-    public init(
-        title displayTitle: String,
-        value displayValue: String,
-        displayValueOld: String? = nil,
-        id: String? = nil
-    ) {
-        self.displayTitle = displayTitle
-        self.displayValue = displayValue
-        self.displayValueOld = displayValueOld
-        self.id = id
-    }
-}
-
-public struct FAQ: Codable, Equatable, Hashable, Sendable {
-    public var title: String
-    public var description: String?
-
-    public init(
-        title: String,
-        description: String?
-    ) {
-        self.title = title
-        self.description = description
-    }
 }
 
 #Preview(body: {
@@ -623,8 +480,8 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 id: "id1",
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
-                newPremium: .init(amount: 999, currency: "SEK"),
-                currentPremium: .init(amount: 599, currency: "SEK"),
+                netPremium: .init(amount: 999, currency: "SEK"),
+                grossPremium: .init(amount: 599, currency: "SEK"),
                 documents: documents,
                 onDocumentTap: { document in },
                 displayItems: [
@@ -640,8 +497,8 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 id: "id2",
                 displayName: "Travel addon",
                 exposureName: "Bellmansgtan 19A",
-                newPremium: .init(amount: 999, currency: "SEK"),
-                currentPremium: nil,
+                netPremium: .init(amount: 999, currency: "SEK"),
+                grossPremium: nil,
                 documents: documents,
                 onDocumentTap: { document in },
                 displayItems: [
@@ -664,17 +521,14 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                     confirmButtonTitle: "Remove Travel Insurance Plus",
                     cancelRemovalButtonTitle: "Keep current coverage"
                 ),
-                discountDisplayItems: [
-                    .init(title: "15% bundle discount", value: "-30 kr/mo"),
-                    .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
-                ]
+                discountDisplayItems: []
             ),
             .init(
                 id: "id3",
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
-                newPremium: .init(amount: 999, currency: "SEK"),
-                currentPremium: .init(amount: 599, currency: "SEK"),
+                netPremium: .init(amount: 999, currency: "SEK"),
+                grossPremium: .init(amount: 599, currency: "SEK"),
                 documents: documents,
                 onDocumentTap: { document in },
                 displayItems: [],
@@ -690,21 +544,24 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 id: "id4",
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
-                newPremium: .init(amount: 999, currency: "SEK"),
-                currentPremium: .init(amount: 599, currency: "SEK"),
+                netPremium: .init(amount: 999, currency: "SEK"),
+                grossPremium: .init(amount: 599, currency: "SEK"),
                 documents: [],
                 onDocumentTap: { document in },
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seAccident,
-                discountDisplayItems: []
+                discountDisplayItems: [
+                    .init(title: "15% bundle discount", value: "-30 kr/mo"),
+                    .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
+                ]
             ),
             .init(
                 id: "id5",
                 displayName: "Dog",
                 exposureName: "Bellmansgtan 19A",
-                newPremium: .init(amount: 999, currency: "SEK"),
-                currentPremium: .init(amount: 599, currency: "SEK"),
+                netPremium: .init(amount: 999, currency: "SEK"),
+                grossPremium: .init(amount: 599, currency: "SEK"),
                 documents: [],
                 onDocumentTap: { document in },
                 displayItems: [],
@@ -713,7 +570,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 discountDisplayItems: []
             ),
         ],
-        currentTotal: .init(amount: 399, currency: "SEK"),
+        grossTotal: .init(amount: 399, currency: "SEK"),
         activationDate: "2025-08-24".localDateToDate ?? Date(),
         onConfirmClick: {}
     )
