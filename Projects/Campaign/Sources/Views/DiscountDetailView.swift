@@ -40,7 +40,10 @@ public struct DiscountDetailView: View {
                     }
                     Spacer()
                     if let amount = vm.discount.amount {
-                        hText(amount.formattedNegativeAmountPerMonth)
+                        let formattedAmount =
+                            vm.options.contains(.forPayment)
+                            ? amount.formattedNegativeAmount : amount.formattedNegativeAmountPerMonth
+                        hText(formattedAmount)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     } else if isReferral, let amount = vm.discount.amount {
                         hText(amount.formattedNegativeAmountPerMonth)
@@ -48,7 +51,6 @@ public struct DiscountDetailView: View {
                         hText(amount.formattedNegativeAmount)
                     }
                 }
-                //                VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top) {
                     if let title = vm.discount.title {
                         hText(title, style: .label)
@@ -62,14 +64,7 @@ public struct DiscountDetailView: View {
                             hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
                         }
                     }
-                    //                    if vm.options.contains(.forPayment) {
-                    //                        VStack(alignment: .leading, spacing: 0) {
-                    //                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                    //                                hText(affectedInsurance.displayName, style: .label)
-                    //                            }
-                    //                        }
                 }
-                //                }
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
