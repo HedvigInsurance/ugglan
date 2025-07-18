@@ -136,7 +136,7 @@ extension MoveQuotesModel {
         self.init(
             homeQuotes: data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? [],
             mtaQuotes: data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? [],
-            quotes: data.quotes.compactMap({ MovingFlowQuote(from: $0) }),
+//            quotes: data.quotes.compactMap({ MovingFlowQuote(from: $0) }),
             changeTierModel: {
                 if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
                     return ChangeTierIntentModel.initWith(data: data)
@@ -220,25 +220,25 @@ extension MovingFlowQuote {
         )
     }
 
-    init(from data: OctopusGraphQL.QuoteFragment.Quote) {
-        let productVariantFragment = data.productVariant.fragments.productVariantFragment
-        self.init(
-            premium: .init(fragment: data.premium.fragments.moneyFragment),
-            startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
-            displayName: productVariantFragment.displayName,
-            insurableLimits: productVariantFragment.insurableLimits.compactMap({
-                .init(label: $0.label, limit: $0.limit, description: $0.description)
-            }),
-            perils: productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) }),
-            documents: productVariantFragment.documents.compactMap({ .init($0) }),
-            contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
-            id: UUID().uuidString,
-            displayItems: [],
-            exposureName: data.exposureName,
-            addons: [],
-            discountDisplayItems: data.displayItems.map({ .init($0.fragments.moveQuoteDisplayItemFragment) }),
-        )
-    }
+//    init(from data: OctopusGraphQL.QuoteFragment.Quote) {
+//        let productVariantFragment = data.productVariant.fragments.productVariantFragment
+//        self.init(
+//            premium: .init(fragment: data.premium.fragments.moneyFragment),
+//            startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
+//            displayName: productVariantFragment.displayName,
+//            insurableLimits: productVariantFragment.insurableLimits.compactMap({
+//                .init(label: $0.label, limit: $0.limit, description: $0.description)
+//            }),
+//            perils: productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) }),
+//            documents: productVariantFragment.documents.compactMap({ .init($0) }),
+//            contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
+//            id: UUID().uuidString,
+//            displayItems: [],
+//            exposureName: data.exposureName,
+//            addons: [],
+//            discountDisplayItems: data.displayItems.map({ .init($0.fragments.moveQuoteDisplayItemFragment) }),
+//        )
+//    }
 }
 
 extension InsuranceDocument {

@@ -121,8 +121,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     private func getQuotes() -> [MovingFlowQuote] {
         var allQuotes = moveQuotesModel?.mtaQuotes ?? []
-        let quotes = moveQuotesModel?.quotes ?? []
-        allQuotes.append(contentsOf: quotes)
+        //        let quotes = moveQuotesModel?.quotes ?? []
+        //        allQuotes.append(contentsOf: quotes)
         if let selectedHomeQuote = selectedHomeQuote {
             allQuotes.insert(selectedHomeQuote, at: 0)
         }
