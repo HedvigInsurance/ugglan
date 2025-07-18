@@ -76,9 +76,6 @@ fragment QuoteFragment on MoveIntent {
             ...MoveAddonQuoteFragment
         }
       }
-      quotes {
-        ...MoveQuoteFragment
-      }
 }
 
 fragment MoveAddonQuoteFragment on MoveAddonQuote {
@@ -95,20 +92,6 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
      addonVariant {
         ...AddonVariantFragment
     }
-}
-
-fragment MoveQuoteFragment on MoveQuote {
-    displayItems {
-        ...MoveQuoteDisplayItemFragment
-    }
-    exposureName
-    premium {
-        ...MoneyFragment
-    }
-    productVariant {
-        ...ProductVariantFragment
-    }
-    startDate
 }
 
 fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
