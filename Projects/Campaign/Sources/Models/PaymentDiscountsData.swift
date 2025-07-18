@@ -189,3 +189,9 @@ public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sen
         self.displayName = displayName
     }
 }
+
+public struct DiscountsData: Identifiable, Hashable {
+    public let id = UUID().uuidString
+    let insurance: AffectedInsurance
+    let discount: [Discount]
+}

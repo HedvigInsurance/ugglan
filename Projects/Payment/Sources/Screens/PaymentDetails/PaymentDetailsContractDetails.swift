@@ -28,21 +28,8 @@ struct ContractDetails: View {
                     }
                     Spacer()
 
-                    HStack(spacing: .padding8) {
-                        if contract.grossAmount != contract.netAmount {
-                            if #available(iOS 16.0, *) {
-                                hText(contract.grossAmount.formattedAmount)
-                                    .strikethrough()
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            } else {
-                                hText(contract.grossAmount.formattedAmount)
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            }
-                        }
-
-                        hText(contract.netAmount.formattedAmount)
-                    }
-                    .layoutPriority(1)
+                    hText(contract.netAmount.formattedAmount)
+                        .layoutPriority(1)
 
                     hCoreUIAssets.chevronDown.view
                         .resizable()
@@ -114,9 +101,10 @@ struct ContractDetails: View {
                         PriceField(
                             newPremium: contract.netAmount,
                             currentPremium: contract.grossAmount,
-                            title: L10n.paymentsSubtotal
+                            title: L10n.paymentsSubtotal,
+                            withoutPreviousPriceText: true
                         )
-                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                        .hWithStrikeThroughPrice(setTo: .none)
                         .hPriceFormatting(setTo: .month)
                     }
                 }
