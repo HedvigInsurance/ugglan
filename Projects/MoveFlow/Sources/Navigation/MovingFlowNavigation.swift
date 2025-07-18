@@ -70,8 +70,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
-                newPremium: quote.premium,
-                currentPremium: quote.premium,
+                netPremium: quote.premium,
+                grossPremium: quote.premium,
                 documents: quote.documents.map({
                     .init(displayName: $0.displayName, url: $0.url, type: .unknown)
                 }),
@@ -81,7 +81,10 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                 ),
                 insuranceLimits: quote.insurableLimits,
-                typeOfContract: quote.contractType
+                typeOfContract: quote.contractType,
+                discountDisplayItems: quote.discountDisplayItems.map({
+                    .init(title: $0.displayTitle, value: $0.displayValue)
+                })
             )
             contractInfos.append(contractQuote)
 
@@ -95,7 +98,9 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         }
 
         let vm = QuoteSummaryViewModel(
-            contract: contractInfos
+            contract: contractInfos,
+            grossTotal: nil,
+            activationDate: movingFlowQuotes.first?.startDate.localDateToDate
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
             Task {
@@ -116,6 +121,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     private func getQuotes() -> [MovingFlowQuote] {
         var allQuotes = moveQuotesModel?.mtaQuotes ?? []
+        //        let quotes = moveQuotesModel?.quotes ?? []
+        //        allQuotes.append(contentsOf: quotes)
         if let selectedHomeQuote = selectedHomeQuote {
             allQuotes.insert(selectedHomeQuote, at: 0)
         }
@@ -397,8 +404,8 @@ extension AddonDataModel {
             id: self.id,
             displayName: self.quoteInfo.title ?? "",
             exposureName: self.coverageDisplayName,
-            newPremium: self.price,
-            currentPremium: nil,
+            netPremium: self.price,
+            grossPremium: nil,
             documents: self.addonVariant.documents,
             onDocumentTap: { document in
                 ondocumentClicked(document)
@@ -409,7 +416,8 @@ extension AddonDataModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            removeModel: removeModel
+            removeModel: removeModel,
+            discountDisplayItems: []
         )
         return addonQuoteContractInfo
     }
