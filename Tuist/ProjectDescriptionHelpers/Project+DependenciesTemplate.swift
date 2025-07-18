@@ -11,7 +11,7 @@ public enum ExternalDependencies: CaseIterable {
     case markdownkit
     case reveal
     case datadog
-    case umbrella
+    case authlib
     case tagkit
     case introspect
     case svgkit
@@ -59,9 +59,9 @@ public enum ExternalDependencies: CaseIterable {
         case .reveal: return []
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.25.0"))]
-        case .umbrella:
+        case .authlib:
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
+                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.4.120241009085400"))
             ]
         case .tagkit:
             return [
@@ -143,9 +143,9 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogRUM"),
                 .package(product: "DatadogTrace"),
             ]
-        case .umbrella:
+        case .authlib:
             return [
-                .package(product: "HedvigShared")
+                .package(product: "authlib")
             ]
         case .tagkit:
             return [
