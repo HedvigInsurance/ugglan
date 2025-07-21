@@ -12,7 +12,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
-
+    @InjectObservableObject private var featureFlags: FeatureFlags
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -61,9 +61,7 @@ struct ContractInformationView: View {
                                             .secondary,
                                             content: .init(title: vm.getButtonText(contract)),
                                             {
-                                                if contract.onlyCoInsured()
-                                                    && Dependencies.featureFlags().isEditCoInsuredEnabled
-                                                {
+                                                if contract.onlyCoInsured() {
                                                     let contract: InsuredPeopleConfig = .init(
                                                         contract: contract,
                                                         fromInfoCard: false
@@ -110,74 +108,63 @@ struct ContractInformationView: View {
         VStack(spacing: 0) {
             hSection {
                 HStack {
-                    if Dependencies.featureFlags().isEditCoInsuredEnabled {
-                        hRow {
-                            insuredField(contract: contract)
-                        }
-                    } else {
-                        hRow {
-                            insuredField(contract: contract)
-                        }
-                        .hWithoutDivider
+                    hRow {
+                        insuredField(contract: contract)
                     }
                 }
 
-                if Dependencies.featureFlags().isEditCoInsuredEnabled {
-                    hRow {
-                        let hasContentBelow =
-                            !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
-                        ContractOwnerField(
-                            enabled: true,
-                            hasContentBelow: hasContentBelow,
-                            fullName: contract.fullName,
-                            SSN: contract.ssn ?? ""
+                hRow {
+                    let hasContentBelow =
+                        !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
+                    ContractOwnerField(
+                        enabled: true,
+                        hasContentBelow: hasContentBelow,
+                        fullName: contract.fullName,
+                        SSN: contract.ssn ?? ""
+                    )
+                }
+                .verticalPadding(0)
+                .padding(.top, .padding16)
+            }
+
+            hSection(vm.getListToDisplay(contract: contract)) { coInsured in
+                hRow {
+                    if coInsured.coInsured.hasMissingInfo {
+                        CoInsuredField(
+                            accessoryView: getAccessoryView(contract: contract, coInsured: coInsured.coInsured)
+                                .foregroundColor(hSignalColor.Amber.element),
+                            date: coInsured.coInsured.terminatesOn ?? coInsured.coInsured.activatesOn
+                        )
+                        .onTapGesture {
+                            if contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil {
+                                let contract: InsuredPeopleConfig = .init(
+                                    contract: contract,
+                                    fromInfoCard: false
+                                )
+                                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                            }
+                        }
+                        .accessibilityElement(children: .combine)
+                    } else {
+                        CoInsuredField(
+                            coInsured: coInsured.coInsured,
+                            accessoryView: EmptyView(),
+                            date: coInsured.date
                         )
                     }
-                    .verticalPadding(0)
-                    .padding(.top, .padding16)
                 }
             }
 
-            if Dependencies.featureFlags().isEditCoInsuredEnabled {
-                hSection(vm.getListToDisplay(contract: contract)) { coInsured in
-                    hRow {
-                        if coInsured.coInsured.hasMissingInfo {
-                            CoInsuredField(
-                                accessoryView: getAccessoryView(contract: contract, coInsured: coInsured.coInsured)
-                                    .foregroundColor(hSignalColor.Amber.element),
-                                date: coInsured.coInsured.terminatesOn ?? coInsured.coInsured.activatesOn
-                            )
-                            .onTapGesture {
-                                if contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil {
-                                    let contract: InsuredPeopleConfig = .init(
-                                        contract: contract,
-                                        fromInfoCard: false
-                                    )
-                                    contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-                                }
-                            }
-                            .accessibilityElement(children: .combine)
-                        } else {
-                            CoInsuredField(
-                                coInsured: coInsured.coInsured,
-                                accessoryView: EmptyView(),
-                                date: coInsured.date
-                            )
-                        }
-                    }
-                }
-
-                if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditCoInsuredInfo {
-                    hSection {
-                        CoInsuredInfoView(
-                            text: L10n.contractCoinsuredAddPersonalInfo,
-                            config: .init(contract: contract, fromInfoCard: true)
-                        )
-                        .padding(.bottom, .padding16)
-                        .accessibilityElement(children: .combine)
-                    }
+            if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditCoInsuredInfo {
+                hSection {
+                    CoInsuredInfoView(
+                        text: L10n.contractCoinsuredAddPersonalInfo,
+                        config: .init(contract: contract, fromInfoCard: true)
+                    )
+                    .padding(.bottom, .padding16)
                     .accessibilityElement(children: .combine)
                 }
+                .accessibilityElement(children: .combine)
             }
         }
     }
@@ -231,7 +218,7 @@ struct ContractInformationView: View {
                 HStack {
                     if contract.coInsured.first(where: {
                         return ($0.activatesOn != nil || $0.terminatesOn != nil)
-                    }) != nil, Dependencies.featureFlags().isEditCoInsuredEnabled {
+                    }) != nil {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
                                 contract.coInsured.filter({ !$0.isTerminated }).count,
@@ -287,7 +274,7 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func moveAddressButton(contract: Contract) -> some View {
         let contractsThatSupportsMoving = store.state.activeContracts.filter({ $0.supportsAddressChange })
-        if contract.supportsAddressChange && Dependencies.featureFlags().isMovingFlowEnabled
+        if contract.supportsAddressChange && featureFlags.isMovingFlowEnabled
             && contractsThatSupportsMoving.count < 2 && !contract.isTerminated
         {
             hSection {
@@ -322,9 +309,7 @@ private class ContractsInformationViewModel: ObservableObject {
 
     @MainActor
     func getButtonText(_ contract: Contract) -> String {
-        if contract.onlyCoInsured()
-            && Dependencies.featureFlags().isEditCoInsuredEnabled
-        {
+        if contract.onlyCoInsured() {
             return L10n.contractEditCoinsured
         } else {
             return L10n.contractEditInfoLabel

@@ -34,7 +34,7 @@ struct LoginNavigation: View {
                 BankIDLoginQRView {
                     let store: UgglanStore = globalPresentableStoreContainer.get()
                     await store.sendAsync(.setIsDemoMode(to: true))
-                    ApolloClient.initAndRegisterClient()
+                    DI.initAndRegisterClient()
                 }
             }
             .environmentObject(otpState)

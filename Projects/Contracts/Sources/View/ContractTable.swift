@@ -16,7 +16,7 @@ struct ContractTable: View {
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
     @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
-
+    @InjectObservableObject private var featureFlags: FeatureFlags
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
@@ -51,7 +51,7 @@ struct ContractTable: View {
                 )
             if !showTerminated {
                 VStack(spacing: .padding8) {
-                    if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+                    if let banner = vm.addonBannerModel {
                         hSection {
                             let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
                             AddonCardView(
@@ -166,7 +166,7 @@ struct ContractTable: View {
             }
         ) { activeContracts in
             if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty
-                && Dependencies.featureFlags().isMovingFlowEnabled
+                && featureFlags.isMovingFlowEnabled
             {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
