@@ -59,7 +59,6 @@ struct ChatInputView: View {
             }
             .frame(height: height)
             .frame(minHeight: 40)
-            .fixedSize(horizontal: false, vertical: verticalSizeClass == .regular ? false : true)
 
             Button {
                 vm.sendTextMessage()

@@ -31,6 +31,7 @@ public struct ChatScreen: View {
                 .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
                 .padding(.bottom, .padding16)
+                .layoutPriority(1)
         }
         .modifier(
             ChatScreenModifier(
