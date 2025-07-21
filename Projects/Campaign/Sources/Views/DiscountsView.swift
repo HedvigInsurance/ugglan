@@ -110,6 +110,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         code: "FURRY",
                         amount: .sek(199),
                         title: "50% discount for 6 months",
+                        discountPerReferral: .sek(10),
                         listOfAffectedInsurances: [
                             .init(id: "id1", displayName: "Dog Premium ∙ Fido")
                         ],
@@ -121,6 +122,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         code: "BUNDLE",
                         amount: .sek(24),
                         title: "15% bundle discount",
+                        discountPerReferral: .sek(10),
                         listOfAffectedInsurances: [
                             .init(id: "id1", displayName: "Dog Premium ∙ Fido")
                         ],
@@ -132,6 +134,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         code: "code 2",
                         amount: .sek(100),
                         title: "title 2",
+                        discountPerReferral: .sek(10),
                         listOfAffectedInsurances: [
                             .init(id: "id21", displayName: "name 2")
                         ],
@@ -143,6 +146,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         code: "TOGETHER",
                         amount: .sek(24),
                         title: "15% discount for 12 months",
+                        discountPerReferral: .sek(10),
                         listOfAffectedInsurances: [
                             .init(id: "id31", displayName: "House Standard ∙ Villagatan 25")
                         ],
@@ -154,6 +158,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         code: "BUNDLE",
                         amount: .sek(24),
                         title: "15% bundle discount",
+                        discountPerReferral: .sek(10),
                         listOfAffectedInsurances: [
                             .init(id: "id31", displayName: "House Standard ∙ Villagatan 25")
                         ],

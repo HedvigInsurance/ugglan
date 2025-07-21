@@ -142,6 +142,7 @@ struct DeleteCampaignView_Previews: PreviewProvider {
                     code: "CODE",
                     amount: nil,
                     title: "Title",
+                    discountPerReferral: .sek(10),
                     listOfAffectedInsurances: [],
                     validUntil: nil,
                     canBeDeleted: false,

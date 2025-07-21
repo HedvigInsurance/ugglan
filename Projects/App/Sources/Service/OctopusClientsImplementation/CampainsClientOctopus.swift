@@ -90,12 +90,14 @@ extension Discount {
 
     public init(
         with moneyFragment: OctopusGraphQL.MoneyFragment,
-        discountDto discount: ReedeemedCampaingDTO?
+        discountDto discount: ReedeemedCampaingDTO?,
+        discountPerReferral: MonetaryAmount?
     ) {
         self.init(
             code: discount?.code ?? "",
             amount: .init(fragment: moneyFragment),
             title: discount?.description ?? "",
+            discountPerReferral: discountPerReferral,
             listOfAffectedInsurances: [],
             validUntil: nil,
             canBeDeleted: false,
