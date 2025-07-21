@@ -7,7 +7,7 @@ struct MemberSubscriptionPreferenceView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
-    @Inject var featureFlags: FeatureFlags
+    @InjectObservableObject var featureFlags: FeatureFlags
     @ViewBuilder
     var body: some View {
         if featureFlags.emailPreferencesEnabled {
