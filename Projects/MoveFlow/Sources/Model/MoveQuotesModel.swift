@@ -6,18 +6,15 @@ import hCoreUI
 public struct MoveQuotesModel: Sendable {
     let homeQuotes: [MovingFlowQuote]
     let mtaQuotes: [MovingFlowQuote]
-    //    let quotes: [MovingFlowQuote]
     let changeTierModel: ChangeTierIntentModel?
 
     public init(
         homeQuotes: [MovingFlowQuote],
         mtaQuotes: [MovingFlowQuote],
-        //        quotes: [MovingFlowQuote],
         changeTierModel: ChangeTierIntentModel?
     ) {
         self.homeQuotes = homeQuotes
         self.mtaQuotes = mtaQuotes
-        //        self.quotes = quotes
         self.changeTierModel = changeTierModel
     }
 }
