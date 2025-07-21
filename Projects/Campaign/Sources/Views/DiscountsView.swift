@@ -14,8 +14,8 @@ struct DiscountsView: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                discounts
-                forever
+                discountsView
+                foreverView
             }
             .hWithoutHorizontalPadding([.row, .divider])
             .hSectionHeaderWithDivider
@@ -24,25 +24,12 @@ struct DiscountsView: View {
         .sectionContainerStyle(.transparent)
     }
 
-    private func getAllDiscountForAffectedInsurance() -> [DiscountsData] {
-
-        var discountsSorted: [AffectedInsurance: [Discount]] = [:]
-
-        data.discounts.forEach { discount in
-            discount.listOfAffectedInsurances.forEach { insurance in
-                discountsSorted[insurance, default: []].append(discount)
-            }
-        }
-
-        let discountData = discountsSorted.compactMap { discounts in
-            DiscountsData(insurance: discounts.key, discount: discounts.value)
-        }
-        return discountData
+    private var groupedDiscounts: [DiscountsData] {
+        data.getAllDiscountsForInsurance()
     }
 
-    private var discounts: some View {
-
-        ForEach(getAllDiscountForAffectedInsurance(), id: \.self) { discountData in
+    private var discountsView: some View {
+        ForEach(groupedDiscounts, id: \.id) { discountData in
             hSection(discountData.discount) { discount in
                 DiscountDetailView(
                     vm: .init(
@@ -56,9 +43,10 @@ struct DiscountsView: View {
     }
 
     @ViewBuilder
-    private var forever: some View {
+    private var foreverView: some View {
+        let numberOfReferrals = data.referralsData.referrals.count { !$0.invitedYou }
         hSection(data.referralsData.referrals, id: \.id) { referral in
-            getRefferalView(referral, nbOfReferrals: data.referralsData.referrals.count(where: { !$0.invitedYou }))
+            getReferralView(referral, nbOfReferrals: numberOfReferrals)
         }
         .withHeader(
             title: L10n.ReferralsInfoSheet.headline,
@@ -88,7 +76,7 @@ struct DiscountsView: View {
         }
     }
 
-    private func getRefferalView(_ referral: Referral, nbOfReferrals: Int) -> some View {
+    private func getReferralView(_ referral: Referral, nbOfReferrals: Int) -> some View {
         DiscountDetailView(
             isReferral: true,
             vm: .init(

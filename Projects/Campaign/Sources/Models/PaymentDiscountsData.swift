@@ -10,6 +10,20 @@ public struct PaymentDiscountsData: Codable, Equatable, Sendable {
         self.discounts = discounts
         self.referralsData = referralsData
     }
+
+    public func getAllDiscountsForInsurance() -> [DiscountsData] {
+        let sortedList = Dictionary(
+            grouping: discounts.flatMap { discount in
+                discount.listOfAffectedInsurances.map { insurance in
+                    (insurance, discount)
+                }
+            }
+        ) { $0.0 }
+
+        return sortedList.map { (insurance, pairs) in
+            DiscountsData(insurance: insurance, discount: pairs.map { $0.1 })
+        }
+    }
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
