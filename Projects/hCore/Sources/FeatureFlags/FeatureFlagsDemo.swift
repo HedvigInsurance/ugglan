@@ -5,7 +5,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
 
     public init() {}
     private let featureDataPublisher = PassthroughSubject<FeatureData, Never>()
-    //    public var featureDataCancellable: AnyCancellable?
 
     public var featureData: AnyPublisher<FeatureData, Never> {
         return featureDataPublisher.eraseToAnyPublisher()
