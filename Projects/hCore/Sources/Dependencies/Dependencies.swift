@@ -1,5 +1,7 @@
 import Apollo
+import Combine
 import Foundation
+import SwiftUICore
 
 @MainActor
 public class Dependencies {
@@ -52,4 +54,23 @@ public struct Module {
     public init() { name = nil }
 
     public init(_ name: String) { self.name = name }
+}
+
+@MainActor
+@propertyWrapper
+public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
+    @StateObject private var stateObject: T
+
+    public init() {
+
+        _stateObject = StateObject(wrappedValue: Dependencies.shared.resolve())
+    }
+
+    public var wrappedValue: T {
+        stateObject
+    }
+
+    public var projectedValue: ObservedObject<T>.Wrapper {
+        return $stateObject
+    }
 }
