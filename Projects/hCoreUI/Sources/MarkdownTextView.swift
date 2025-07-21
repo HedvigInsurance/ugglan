@@ -37,7 +37,6 @@ public struct MarkdownView: View {
                 )
             }
             .frame(height: height)
-
         }
     }
 }
@@ -71,10 +70,21 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
             colorScheme: colorScheme
         )
         textView.accessibilityLabel = accessibilityLabel
+        textView.setContent(from: config.text)
+        textView.calculateHeight()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak textView] in
+            textView?.setContent(from: config.text)
+            textView?.calculateHeight()
+        }
         return textView
     }
     func updateUIView(_ uiView: CustomTextView, context: Context) {
         uiView.setContent(from: config.text)
+        uiView.calculateHeight()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak uiView] in
+            uiView?.setContent(from: config.text)
+            uiView?.calculateHeight()
+        }
         if let accessibilityLabel {
             uiView.accessibilityLabel = accessibilityLabel
         }
@@ -119,9 +129,6 @@ class CustomTextView: UITextView, UITextViewDelegate {
         self.colorScheme = colorScheme
         super.init(frame: .zero, textContainer: nil)
         configureTextView()
-        setContent(from: config.text)
-        calculateHeight()
-        self.clipsToBounds = false
         self.snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(fixedWidth)
         }
@@ -134,7 +141,6 @@ class CustomTextView: UITextView, UITextViewDelegate {
         self.isScrollEnabled = false
         self.isSelectable = true
         self.dataDetectorTypes = [.address, .link, .phoneNumber]
-        self.clipsToBounds = false
         accessibilityTraits = .staticText
         var linkTextAttributes = [NSAttributedString.Key: Any]()
         linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
