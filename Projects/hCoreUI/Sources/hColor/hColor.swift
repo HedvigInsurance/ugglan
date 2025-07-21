@@ -720,7 +720,7 @@ public struct hBorderColor {
     public static var secondary: some hColor {
         hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent300,
-            dark: hGrayscaleTranslucentDark.greyScaleTranslucent800
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
         )
     }
 
