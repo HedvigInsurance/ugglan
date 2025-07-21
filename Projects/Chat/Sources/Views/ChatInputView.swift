@@ -56,7 +56,7 @@ struct ChatInputView: View {
             ) { file in
                 vm.sendMessage(.init(type: .file(file: file)))
             }
-            .frame(maxHeight: height)
+            .frame(height: height)
             .frame(minHeight: 40)
             .fixedSize(horizontal: false, vertical: true)
 
