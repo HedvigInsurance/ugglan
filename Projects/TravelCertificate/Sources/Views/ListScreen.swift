@@ -90,7 +90,7 @@ public struct ListScreen: View {
 
     @ViewBuilder
     private var addonView: some View {
-        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+        if let banner = vm.addonBannerModel {
             AddonCardView(
                 openAddon: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -211,7 +211,7 @@ class ListScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     return ListScreen(infoButtonPlacement: .trailing)
         .environmentObject(TravelCertificateNavigationViewModel())
 }
