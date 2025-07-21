@@ -24,7 +24,6 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
     public func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
-            apiVersion: .init(.v2TiersAndDeductibles),
             moveToAddress: .init(
                 street: input.addressInputModel.address,
                 postalCode: input.addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")

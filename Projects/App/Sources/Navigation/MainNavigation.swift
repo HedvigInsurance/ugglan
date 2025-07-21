@@ -1,4 +1,5 @@
 import Authentication
+import Combine
 import Contracts
 import Forever
 import Home
@@ -14,17 +15,22 @@ import hCoreUI
 
 @main
 struct MainNavigation: App {
+
+    init() {
+        DI.initServices()
+    }
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
+    @InjectObservableObject var featureFlags: FeatureFlags
     var body: some Scene {
         WindowGroup {
             ZStack {
                 Group {
-                    if vm.osVersionTooLow {
+                    if featureFlags.osVersionTooLow {
                         UpdateOSScreen()
                             .trackViewName(name: .init(describing: UpdateOSScreen.self))
-                    } else if vm.shouldUpdateApp {
+                    } else if featureFlags.isUpdateNecessary {
                         UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
                             .trackViewName(name: .init(describing: UpdateAppScreen.self))
                     } else if vm.hasLaunchFinished {
@@ -84,8 +90,6 @@ class MainNavigationViewModel: ObservableObject {
         }
     }
     @Published var showLaunchScreen = true
-    @Published var shouldUpdateApp = false
-    @Published var osVersionTooLow = false
     lazy var notLoggedInVm = NotLoggedViewModel()
     var loggedInVm = LoggedInNavigationViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -158,8 +162,6 @@ class MainNavigationViewModel: ObservableObject {
 
     private func checkForFeatureFlags() async {
         await fetchFeatureFlag()
-        shouldUpdateApp = Dependencies.featureFlags().isUpdateNecessary
-        osVersionTooLow = Dependencies.featureFlags().osVersionTooLow
     }
 
     func fetchFeatureFlag() async {
