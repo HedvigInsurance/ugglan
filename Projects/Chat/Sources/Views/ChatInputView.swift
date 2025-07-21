@@ -56,8 +56,9 @@ struct ChatInputView: View {
             ) { file in
                 vm.sendMessage(.init(type: .file(file: file)))
             }
-            .frame(height: height)
+            .frame(maxHeight: height)
             .frame(minHeight: 40)
+            .fixedSize(horizontal: false, vertical: true)
 
             Button {
                 vm.sendTextMessage()
