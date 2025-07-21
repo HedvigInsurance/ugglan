@@ -7,6 +7,7 @@ import hCore
 import hCoreUI
 
 struct ChatInputView: View {
+    @Environment(\.verticalSizeClass) var verticalSizeClass
     @StateObject var vm: ChatInputViewModel
     @State var height: CGFloat = 0
 
@@ -58,7 +59,7 @@ struct ChatInputView: View {
             }
             .frame(height: height)
             .frame(minHeight: 40)
-            .fixedSize(horizontal: false, vertical: true)
+            .fixedSize(horizontal: false, vertical: verticalSizeClass == .regular ? false : true)
 
             Button {
                 vm.sendTextMessage()
