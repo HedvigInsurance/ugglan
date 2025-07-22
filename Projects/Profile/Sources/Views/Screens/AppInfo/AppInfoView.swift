@@ -103,11 +103,17 @@ public struct AppInfoView: View {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         let memberId = store.state.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
+        let deviceId = vm.deviceId ?? "N/A"
         return OpenEmailClientButton(
             options: EmailOptions(
                 recipient: "ios@hedvig.com",
                 subject: L10n.AppInfo.SubmitBug.prefilledLetterSubject,
-                body: L10n.AppInfo.SubmitBug.prefilledLetterBody(memberId, Bundle.main.appVersion, systemVersion)
+                body: L10n.AppInfo.SubmitBug.prefilledLetterBody(
+                    memberId,
+                    deviceId,
+                    Bundle.main.appVersion,
+                    systemVersion
+                )
             ),
             buttonText: L10n.AppInfo.SubmitBug.button,
             hasAcceptedAlert: $hasPressedSubmitBugOk,
