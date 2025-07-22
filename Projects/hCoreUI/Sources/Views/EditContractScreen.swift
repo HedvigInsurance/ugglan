@@ -44,7 +44,7 @@ public struct EditContractScreen: View {
                         .accessibilityElement(children: .combine)
                     }
                 }
-                infoView
+
                 hSection {
                     VStack(spacing: .padding8) {
                         hButton(
@@ -77,20 +77,6 @@ public struct EditContractScreen: View {
         .hFormContentPosition(.compact)
         .onChange(of: selectedValue) { value in
             selectedType = EditType(rawValue: value ?? "")
-        }
-    }
-
-    @ViewBuilder
-    var infoView: some View {
-        if selectedType == .coInsured {
-            hSection {
-                InfoCard(
-                    text: L10n.InsurancesTab.contactUsToEditCoInsured,
-                    type: .info
-                )
-            }
-            .transition(.opacity)
-            .sectionContainerStyle(.transparent)
         }
     }
 
