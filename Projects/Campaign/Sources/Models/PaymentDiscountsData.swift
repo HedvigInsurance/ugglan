@@ -3,26 +3,12 @@ import hCore
 import hCoreUI
 
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
-    let discounts: [Discount]
+    let discountsData: [DiscountsDataForInsurance]
     let referralsData: ReferralsData
 
-    public init(discounts: [Discount], referralsData: ReferralsData) {
-        self.discounts = discounts
+    public init(discountsData: [DiscountsDataForInsurance], referralsData: ReferralsData) {
+        self.discountsData = discountsData
         self.referralsData = referralsData
-    }
-
-    public func getAllDiscountsForInsurance() -> [DiscountsData] {
-        let sortedList = Dictionary(
-            grouping: discounts.flatMap { discount in
-                discount.listOfAffectedInsurances.map { insurance in
-                    (insurance, discount)
-                }
-            }
-        ) { $0.0 }
-
-        return sortedList.map { (insurance, pairs) in
-            DiscountsData(insurance: insurance, discount: pairs.map { $0.1 })
-        }
     }
 }
 
@@ -32,7 +18,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let amount: MonetaryAmount?
     public let discountPerReferral: MonetaryAmount?
     let title: String?
-    let listOfAffectedInsurances: [AffectedInsurance]
+    public let listOfAffectedInsurances: [AffectedInsurance]?
     let validUntil: ServerBasedDate?
     let canBeDeleted: Bool
     let discountId: String
@@ -42,7 +28,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         amount: MonetaryAmount?,
         title: String?,
         discountPerReferral: MonetaryAmount? = nil,
-        listOfAffectedInsurances: [AffectedInsurance],
+        listOfAffectedInsurances: [AffectedInsurance]? = nil,
         validUntil: ServerBasedDate?,
         canBeDeleted: Bool,
         discountId: String
@@ -209,8 +195,14 @@ public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sen
     }
 }
 
-public struct DiscountsData: Identifiable, Hashable {
-    public let id = UUID().uuidString
+public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
+    public let id: String
     let insurance: AffectedInsurance
-    let discount: [Discount]
+    public var discount: [Discount]
+
+    public init(insurance: AffectedInsurance, discount: [Discount]) {
+        self.insurance = insurance
+        self.id = insurance.id
+        self.discount = discount
+    }
 }

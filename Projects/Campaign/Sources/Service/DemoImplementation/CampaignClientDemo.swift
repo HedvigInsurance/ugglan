@@ -12,27 +12,31 @@ public class hCampaignClientDemo: hCampaignClient {
     public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         return .init(
-            discounts: [
+            discountsData: [
                 .init(
-                    code: "CODE",
-                    amount: .sek(30),
-                    title: "15% off for 1 year",
-                    discountPerReferral: .sek(10),
-                    listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
-                    validUntil: "2023-12-10",
-                    canBeDeleted: true,
-                    discountId: "CODE"
-                ),
-                .init(
-                    code: "CODE 2",
-                    amount: .sek(30),
-                    title: "15% off for 1 year",
-                    discountPerReferral: .sek(10),
-                    listOfAffectedInsurances: [.init(id: "1", displayName: "Home insurace &*")],
-                    validUntil: "2023-11-03",
-                    canBeDeleted: false,
-                    discountId: "CODE 2"
-                ),
+                    insurance: .init(id: "1", displayName: "Car Insurance * ABH 234"),
+                    discount: [
+                        .init(
+                            code: "CODE",
+                            amount: .sek(30),
+                            title: "15% off for 1 year",
+                            discountPerReferral: .sek(10),
+                            validUntil: "2023-12-10",
+                            canBeDeleted: true,
+                            discountId: "CODE"
+                        ),
+                        .init(
+                            code: "CODE 2",
+                            amount: .sek(30),
+                            title: "15% off for 1 year",
+                            discountPerReferral: .sek(10),
+                            validUntil: "2023-11-03",
+                            canBeDeleted: false,
+                            discountId: "CODE 2"
+                        ),
+                    ]
+                )
+
             ],
             referralsData: .init(
                 code: "CODE",

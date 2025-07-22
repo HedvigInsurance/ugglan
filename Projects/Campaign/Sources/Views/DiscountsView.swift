@@ -24,12 +24,8 @@ struct DiscountsView: View {
         .sectionContainerStyle(.transparent)
     }
 
-    private var groupedDiscounts: [DiscountsData] {
-        data.getAllDiscountsForInsurance()
-    }
-
     private var discountsView: some View {
-        ForEach(groupedDiscounts, id: \.id) { discountData in
+        ForEach(data.discountsData, id: \.id) { discountData in
             hSection(discountData.discount) { discount in
                 DiscountDetailView(
                     vm: .init(
@@ -94,67 +90,54 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
 
         return DiscountsView(
             data: .init(
-                discounts: [
+                discountsData: [
                     .init(
-                        code: "FURRY",
-                        amount: .sek(199),
-                        title: "50% discount for 6 months",
-                        discountPerReferral: .sek(10),
-                        listOfAffectedInsurances: [
-                            .init(id: "id1", displayName: "Dog Premium ∙ Fido")
-                        ],
-                        validUntil: "2026-03-31",
-                        canBeDeleted: true,
-                        discountId: "id"
+                        insurance: .init(id: "insuranceId", displayName: "Dog Premium ∙ Fido"),
+                        discount: [
+                            .init(
+                                code: "FURRY",
+                                amount: .sek(199),
+                                title: "50% discount for 6 months",
+                                discountPerReferral: .sek(10),
+                                validUntil: "2026-03-31",
+                                canBeDeleted: true,
+                                discountId: "id"
+                            ),
+                            .init(
+                                code: "BUNDLE",
+                                amount: .sek(24),
+                                title: "15% bundle discount",
+                                discountPerReferral: .sek(10),
+                                validUntil: nil,
+                                canBeDeleted: true,
+                                discountId: "id1"
+                            ),
+                        ]
                     ),
                     .init(
-                        code: "BUNDLE",
-                        amount: .sek(24),
-                        title: "15% bundle discount",
-                        discountPerReferral: .sek(10),
-                        listOfAffectedInsurances: [
-                            .init(id: "id1", displayName: "Dog Premium ∙ Fido")
-                        ],
-                        validUntil: nil,
-                        canBeDeleted: true,
-                        discountId: "id1"
+                        insurance: .init(id: "id31", displayName: "House Standard ∙ Villagatan 25"),
+                        discount: [
+                            .init(
+                                code: "TOGETHER",
+                                amount: .sek(24),
+                                title: "15% discount for 12 months",
+                                discountPerReferral: .sek(10),
+                                validUntil: "2025-07-31",
+                                canBeDeleted: false,
+                                discountId: "id3"
+                            ),
+                            .init(
+                                code: "BUNDLE",
+                                amount: .sek(24),
+                                title: "15% bundle discount",
+                                discountPerReferral: .sek(10),
+                                validUntil: nil,
+                                canBeDeleted: false,
+                                discountId: "id31"
+                            ),
+                        ]
                     ),
-                    .init(
-                        code: "code 2",
-                        amount: .sek(100),
-                        title: "title 2",
-                        discountPerReferral: .sek(10),
-                        listOfAffectedInsurances: [
-                            .init(id: "id21", displayName: "name 2")
-                        ],
-                        validUntil: "2023-11-03",
-                        canBeDeleted: false,
-                        discountId: "id2"
-                    ),
-                    .init(
-                        code: "TOGETHER",
-                        amount: .sek(24),
-                        title: "15% discount for 12 months",
-                        discountPerReferral: .sek(10),
-                        listOfAffectedInsurances: [
-                            .init(id: "id31", displayName: "House Standard ∙ Villagatan 25")
-                        ],
-                        validUntil: "2025-07-31",
-                        canBeDeleted: false,
-                        discountId: "id3"
-                    ),
-                    .init(
-                        code: "BUNDLE",
-                        amount: .sek(24),
-                        title: "15% bundle discount",
-                        discountPerReferral: .sek(10),
-                        listOfAffectedInsurances: [
-                            .init(id: "id31", displayName: "House Standard ∙ Villagatan 25")
-                        ],
-                        validUntil: nil,
-                        canBeDeleted: false,
-                        discountId: "id31"
-                    ),
+
                 ],
                 referralsData: .init(
                     code: "CODE",
@@ -217,7 +200,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 
         return DiscountsView(
             data: .init(
-                discounts: [],
+                discountsData: [],
                 referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
             )
         )
