@@ -62,10 +62,7 @@ public class HomeNavigationViewModel: ObservableObject {
             guard let crossSellInfo = notification.object as? CrossSellInfo else { return }
 
             Task { @MainActor in
-                async let sleep: Void = Task.sleep(nanoseconds: crossSellInfo.type.delayInNanoSeconds)
                 let crossSells = try await crossSellInfo.getCrossSell()
-                try await sleep
-
                 if let recommended = crossSells.recommended {
                     if crossSells.others.isEmpty {
                         self?.navBarItems.isNewOfferPresentedCenter = recommended
