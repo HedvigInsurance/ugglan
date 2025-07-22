@@ -182,7 +182,8 @@ extension MovingFlowQuote {
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         self.init(
-            premium: .init(fragment: data.premium.fragments.moneyFragment),
+            grossPremium: .init(fragment: data.premium.fragments.moneyFragment),
+            netPremium: .init(fragment: data.premium.fragments.moneyFragment),
             startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
             displayName: productVariantFragment.displayName,
             insurableLimits: productVariantFragment.insurableLimits.compactMap({
@@ -202,7 +203,8 @@ extension MovingFlowQuote {
     init(from data: OctopusGraphQL.QuoteFragment.HomeQuote) {
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         self.init(
-            premium: .init(fragment: data.premium.fragments.moneyFragment),
+            grossPremium: .init(fragment: data.premium.fragments.moneyFragment),
+            netPremium: .init(fragment: data.premium.fragments.moneyFragment),
             startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
             displayName: productVariantFragment.displayName,
             insurableLimits: productVariantFragment.insurableLimits.compactMap({
@@ -324,9 +326,11 @@ extension AddonDataModel {
                 .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
             }),
             coverageDisplayName: fragment.coverageDisplayName,
-            price: .init(fragment: fragment.premium.fragments.moneyFragment),
+            grossPremium: .init(fragment: fragment.premium.fragments.moneyFragment),
+            netPremium: .init(fragment: fragment.premium.fragments.moneyFragment),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
             startDate: fragment.startDate.localDateToDate ?? Date(),
+            discountDisplayItems: [],
             removeDialogInfo: {
                 if Dependencies.featureFlags().isAddonsRemovalFromMovingFlowEnabled {
                     return .init(

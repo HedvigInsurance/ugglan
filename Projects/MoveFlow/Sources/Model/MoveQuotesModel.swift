@@ -21,7 +21,8 @@ public struct MoveQuotesModel: Sendable {
 
 public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     typealias KeyValue = (key: String, value: String)
-    let premium: MonetaryAmount
+    let grossPremium: MonetaryAmount
+    let netPremium: MonetaryAmount
     let startDate: String
     let displayName: String
     let insurableLimits: [InsurableLimits]
@@ -35,7 +36,8 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     let discountDisplayItems: [DisplayItem]
 
     public init(
-        premium: MonetaryAmount,
+        grossPremium: MonetaryAmount,
+        netPremium: MonetaryAmount,
         startDate: String,
         displayName: String,
         insurableLimits: [InsurableLimits],
@@ -48,7 +50,8 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         addons: [AddonDataModel],
         discountDisplayItems: [DisplayItem]
     ) {
-        self.premium = premium
+        self.grossPremium = grossPremium
+        self.netPremium = netPremium
         self.startDate = startDate
         self.displayName = displayName
         self.insurableLimits = insurableLimits
@@ -90,28 +93,34 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
     let quoteInfo: InfoViewDataModel
     let displayItems: [DisplayItem]
     let coverageDisplayName: String
-    let price: MonetaryAmount
+    let grossPremium: MonetaryAmount
+    let netPremium: MonetaryAmount
     let addonVariant: AddonVariant
     let startDate: Date
     let removeDialogInfo: RemoveDialogInfo?
+    let discountDisplayItems: [DisplayItem]
 
     public init(
         id: String,
         quoteInfo: InfoViewDataModel,
         displayItems: [DisplayItem],
         coverageDisplayName: String,
-        price: MonetaryAmount,
+        grossPremium: MonetaryAmount,
+        netPremium: MonetaryAmount,
         addonVariant: AddonVariant,
         startDate: Date,
-        removeDialogInfo: RemoveDialogInfo?
+        discountDisplayItems: [DisplayItem],
+        removeDialogInfo: RemoveDialogInfo?,
     ) {
         self.id = id
         self.quoteInfo = quoteInfo
         self.displayItems = displayItems
         self.coverageDisplayName = coverageDisplayName
-        self.price = price
+        self.grossPremium = grossPremium
+        self.netPremium = netPremium
         self.addonVariant = addonVariant
         self.startDate = startDate
+        self.discountDisplayItems = discountDisplayItems
         self.removeDialogInfo = removeDialogInfo
     }
 }
