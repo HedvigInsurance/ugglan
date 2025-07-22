@@ -90,7 +90,8 @@ struct DiscountsView: View {
 struct PaymentsDiscountView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+
         return DiscountsView(
             data: .init(
                 discounts: [
@@ -212,7 +213,8 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
 struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+
         return DiscountsView(
             data: .init(
                 discounts: [],

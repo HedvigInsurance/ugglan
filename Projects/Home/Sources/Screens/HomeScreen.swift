@@ -14,7 +14,7 @@ import hCoreUI
 
 public struct HomeScreen: View {
     @StateObject var vm = HomeVM()
-    @Inject var featureFlags: FeatureFlags
+    @InjectObservableObject var featureFlags: FeatureFlags
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
     public init() {}
@@ -216,7 +216,7 @@ class HomeVM: ObservableObject {
 @MainActor private func fetchDependenciesForPreview() {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
