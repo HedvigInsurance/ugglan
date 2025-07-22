@@ -37,12 +37,14 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     func removeContract(_ contractId: String) {
         expandedContracts.removeAll(where: { $0 == contractId })
         removedContracts.append(contractId)
-        calculateTotal()
+        calculateGrossTotal()
+        calculateNetTotal()
     }
 
     func addContract(_ contract: ContractInfo) {
         removedContracts.removeAll(where: { $0 == contract.id })
-        calculateTotal()
+        calculateGrossTotal()
+        calculateNetTotal()
     }
 
     public struct ContractInfo: Identifiable {
@@ -131,17 +133,25 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         if let netTotal = netTotal {
             self.netTotal = netTotal
         } else {
-            calculateTotal()
+            calculateNetTotal()
         }
         if let grossTotal {
             self.grossTotal = grossTotal
+        } else {
+            calculateGrossTotal()
         }
     }
 
-    func calculateTotal() {
+    func calculateNetTotal() {
         let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
             .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
         netTotal = .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
+    }
+
+    func calculateGrossTotal() {
+        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
+            .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
+        grossTotal = .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
     }
 }
 

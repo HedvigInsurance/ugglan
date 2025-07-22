@@ -70,8 +70,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
-                netPremium: quote.premium,
-                grossPremium: quote.premium,
+                netPremium: quote.netPremium,
+                grossPremium: quote.grossPremium,
                 documents: quote.documents.map({
                     .init(displayName: $0.displayName, url: $0.url, type: .unknown)
                 }),
@@ -121,8 +121,6 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     private func getQuotes() -> [MovingFlowQuote] {
         var allQuotes = moveQuotesModel?.mtaQuotes ?? []
-        //        let quotes = moveQuotesModel?.quotes ?? []
-        //        allQuotes.append(contentsOf: quotes)
         if let selectedHomeQuote = selectedHomeQuote {
             allQuotes.insert(selectedHomeQuote, at: 0)
         }
@@ -404,8 +402,8 @@ extension AddonDataModel {
             id: self.id,
             displayName: self.quoteInfo.title ?? "",
             exposureName: self.coverageDisplayName,
-            netPremium: self.price,
-            grossPremium: nil,
+            netPremium: self.netPremium,
+            grossPremium: self.grossPremium,
             documents: self.addonVariant.documents,
             onDocumentTap: { document in
                 ondocumentClicked(document)
@@ -417,7 +415,9 @@ extension AddonDataModel {
             typeOfContract: nil,
             isAddon: true,
             removeModel: removeModel,
-            discountDisplayItems: []
+            discountDisplayItems: self.discountDisplayItems.map({
+                .init(title: $0.displayTitle, value: $0.displayValue)
+            })
         )
         return addonQuoteContractInfo
     }
