@@ -117,11 +117,17 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     private func handle(isPresent: Bool) {
         if isPresent {
             var withDelay = false
-            if !options.contains(.alwaysOpenOnTop) {
-                if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
-                    presentedVC.dismiss(animated: true)
+            if options.contains(.alwaysOpenOnTop) {
+                // if we want to always open on top, we check if the top VC is being dismissed
+                // and if so, we wait a bit before presenting the new VC to avoid UI glitches
+                if UIApplication.shared.getTopViewController()?.isBeingDismissed == true {
                     withDelay = true
                 }
+            } else if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
+                // if we don't want to always open on top, we check if rootVC is presenting some VC and dismiss it
+                // also add some delay to avoid UI glitches
+                presentedVC.dismiss(animated: true)
+                withDelay = true
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
