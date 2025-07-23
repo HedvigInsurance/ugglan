@@ -100,7 +100,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
             grossTotal: nil,
-            activationDate: movingFlowQuotes.first?.startDate.localDateToDate
+            activationDate: movingFlowQuotes.first?.startDate
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
             Task {
@@ -128,7 +128,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     }
 
     var movingDate: String {
-        return selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate ?? ""
+        return (selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate)?.displayDateDDMMMYYYYFormat
+            ?? ""
     }
 }
 
