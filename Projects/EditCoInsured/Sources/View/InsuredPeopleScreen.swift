@@ -10,12 +10,12 @@ struct InsuredPeopleScreen: View {
     let type: CoInsuredFieldType?
 
     var body: some View {
+        let listToDisplay = vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
+
+        let hasContentBelow = vm.nbOfMissingCoInsuredExcludingDeleted > 0
+
         hForm {
             VStack(spacing: 0) {
-                let listToDisplay = vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
-
-                let hasContentBelow = vm.nbOfMissingCoInsuredExcludingDeleted > 0
-
                 Group {
                     contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || hasContentBelow)
                     coInsuredSection(list: listToDisplay)
@@ -29,14 +29,14 @@ struct InsuredPeopleScreen: View {
         }
         .hFormAttachToBottom {
             VStack(spacing: .padding8) {
-                if vm.showSavebutton {
-                    saveChangesButton
-                }
-
-                if vm.showConfirmChangesButton {
-                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
-                }
                 hSection {
+                    if vm.showSavebutton {
+                        saveChangesButton
+                    }
+
+                    if vm.showConfirmChangesButton {
+                        ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
+                    }
                     CancelButton()
                         .disabled(intentViewModel.isLoading)
                 }
@@ -46,28 +46,25 @@ struct InsuredPeopleScreen: View {
     }
 
     private var saveChangesButton: some View {
-        hSection {
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.generalSaveChangesButton),
-                {
-                    Task {
-                        await intentViewModel.performCoInsuredChanges(
-                            commitId: intentViewModel.intent.id
-                        )
-                    }
-                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
-                    editCoInsuredNavigation.editCoInsuredConfig = nil
+        hButton(
+            .large,
+            .primary,
+            content: .init(title: L10n.generalSaveChangesButton),
+            {
+                Task {
+                    await intentViewModel.performCoInsuredChanges(
+                        commitId: intentViewModel.intent.id
+                    )
                 }
-            )
-            .hButtonIsLoading(intentViewModel.isLoading)
-            .disabled(
-                (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
-                    < vm.config.numberOfMissingCoInsuredWithoutTermination
-            )
-        }
-        .sectionContainerStyle(.transparent)
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
+                editCoInsuredNavigation.editCoInsuredConfig = nil
+            }
+        )
+        .hButtonIsLoading(intentViewModel.isLoading)
+        .disabled(
+            (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
+                < vm.config.numberOfMissingCoInsuredWithoutTermination
+        )
     }
 
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
@@ -105,9 +102,7 @@ struct InsuredPeopleScreen: View {
                     .secondary,
                     content: .init(title: L10n.contractAddCoinsured),
                     {
-                        let hasExistingCoInsured = vm.config.preSelectedCoInsuredList
-                            .filter { !vm.coInsuredAdded.contains($0) }
-                        if hasExistingCoInsured.isEmpty {
+                        if !vm.hasExistingCoInsured {
                             editCoInsuredNavigation.coInsuredInputModel = .init(
                                 actionType: .add,
                                 coInsuredModel: CoInsuredModel(),
@@ -155,8 +150,7 @@ struct InsuredPeopleScreen: View {
             }
         }
         .onTapGesture {
-            let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
-            if type == .empty && !hasExistingCoInsured.isEmpty {
+            if type == .empty && vm.hasExistingCoInsured {
                 editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
             } else {
                 editCoInsuredNavigation.coInsuredInputModel = .init(

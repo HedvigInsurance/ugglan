@@ -12,6 +12,10 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     @Published var showSavebutton: Bool = false
     @Published var showInfoCard: Bool = false
 
+    var hasExistingCoInsured: Bool {
+        !config.preSelectedCoInsuredList.filter { !coInsuredAdded.contains($0) }.isEmpty
+    }
+
     var showConfirmChangesButton: Bool {
         (coInsuredAdded.count >= nbOfMissingCoInsuredExcludingDeleted && coInsuredAdded.count > 0)
             || coInsuredDeleted.count > 0
