@@ -23,7 +23,7 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     typealias KeyValue = (key: String, value: String)
     let grossPremium: MonetaryAmount
     let netPremium: MonetaryAmount
-    let startDate: String
+    let startDate: Date
     let displayName: String
     let insurableLimits: [InsurableLimits]
     let perils: [Perils]
@@ -38,7 +38,7 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     public init(
         grossPremium: MonetaryAmount,
         netPremium: MonetaryAmount,
-        startDate: String,
+        startDate: Date,
         displayName: String,
         insurableLimits: [InsurableLimits],
         perils: [Perils],

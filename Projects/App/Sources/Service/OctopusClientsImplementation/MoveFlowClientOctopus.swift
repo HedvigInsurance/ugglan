@@ -184,7 +184,7 @@ extension MovingFlowQuote {
         self.init(
             grossPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyGross.fragments.moneyFragment),
             netPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
-            startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
+            startDate: data.startDate.localDateToDate ?? Date(),
             displayName: productVariantFragment.displayName,
             insurableLimits: productVariantFragment.insurableLimits.compactMap({
                 .init(label: $0.label, limit: $0.limit, description: $0.description)
@@ -207,7 +207,7 @@ extension MovingFlowQuote {
         self.init(
             grossPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyGross.fragments.moneyFragment),
             netPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
-            startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
+            startDate: data.startDate.localDateToDate ?? Date(),
             displayName: productVariantFragment.displayName,
             insurableLimits: productVariantFragment.insurableLimits.compactMap({
                 .init(label: $0.label, limit: $0.limit, description: $0.description)
