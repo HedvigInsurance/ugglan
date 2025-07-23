@@ -130,13 +130,16 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
-        if coInsured.coInsured.hasMissingData && type != .delete {
-            getAccesoryView(for: .empty, coInsured: coInsured.coInsured)
-        } else if coInsured.locallyAdded {
-            getAccesoryView(for: .localEdit, coInsured: coInsured.coInsured)
-        } else {
-            getAccesoryView(for: .delete, coInsured: coInsured.coInsured)
+        var accessoryType: CoInsuredFieldType {
+            if coInsured.coInsured.hasMissingData && type != .delete {
+                return .empty
+            } else if coInsured.locallyAdded {
+                return .localEdit
+            } else {
+                return .delete
+            }
         }
+        getAccesoryView(for: accessoryType, coInsured: coInsured.coInsured)
     }
 
     private func getAccesoryView(for type: CoInsuredFieldType, coInsured: CoInsuredModel) -> some View {
@@ -150,16 +153,20 @@ struct InsuredPeopleScreen: View {
             }
         }
         .onTapGesture {
-            if type == .empty && vm.hasExistingCoInsured {
-                editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
-            } else {
-                editCoInsuredNavigation.coInsuredInputModel = .init(
-                    actionType: type.action,
-                    coInsuredModel: type == .empty ? CoInsuredModel() : coInsured,
-                    title: type.title,
-                    contractId: vm.config.contractId
-                )
-            }
+            onAccessoryViewTap(type: type, coInsured: coInsured)
+        }
+    }
+
+    private func onAccessoryViewTap(type: CoInsuredFieldType, coInsured: CoInsuredModel) {
+        if type == .empty && vm.hasExistingCoInsured {
+            editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+        } else {
+            editCoInsuredNavigation.coInsuredInputModel = .init(
+                actionType: type.action,
+                coInsuredModel: type == .empty ? CoInsuredModel() : coInsured,
+                title: type.title,
+                contractId: vm.config.contractId
+            )
         }
     }
 }
