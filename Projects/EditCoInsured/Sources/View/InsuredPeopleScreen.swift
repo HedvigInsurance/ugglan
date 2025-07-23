@@ -9,39 +9,41 @@ struct InsuredPeopleScreen: View {
     @ObservedObject var intentViewModel: IntentViewModel
     let type: CoInsuredFieldType?
 
+    private var listToDisplay: [CoInsuredListType] {
+        vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
+    }
+
     var body: some View {
-        let listToDisplay = vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
-
-        let hasContentBelow = vm.nbOfMissingCoInsuredExcludingDeleted > 0
-
         hForm {
             VStack(spacing: 0) {
-                Group {
-                    contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || hasContentBelow)
-                    coInsuredSection(list: listToDisplay)
-                    buttonSection
-                }
-                .hWithoutHorizontalPadding([.section])
+                contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || vm.hasContentBelow)
+                coInsuredSection(list: listToDisplay)
+                buttonSection
             }
+            .hWithoutHorizontalPadding([.section])
             .sectionContainerStyle(.transparent)
 
             infoCardSection
         }
         .hFormAttachToBottom {
-            VStack(spacing: .padding8) {
-                hSection {
-                    if vm.showSavebutton {
-                        saveChangesButton
-                    }
+            bottomContent
+        }
+    }
 
-                    if vm.showConfirmChangesButton {
-                        ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
-                    }
-                    CancelButton()
-                        .disabled(intentViewModel.isLoading)
+    private var bottomContent: some View {
+        VStack(spacing: .padding8) {
+            hSection {
+                if vm.showSavebutton {
+                    saveChangesButton
                 }
-                .sectionContainerStyle(.transparent)
+
+                if vm.showConfirmChangesButton {
+                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
+                }
+                CancelButton()
+                    .disabled(intentViewModel.isLoading)
             }
+            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -61,21 +63,15 @@ struct InsuredPeopleScreen: View {
             }
         )
         .hButtonIsLoading(intentViewModel.isLoading)
-        .disabled(
-            (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
-                < vm.config.numberOfMissingCoInsuredWithoutTermination
-        )
+        .disabled(!vm.shouldShowSaveChangesButton)
     }
 
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
         hSection {
-            hRow {
-                ContractOwnerField(
-                    hasContentBelow: hasContentBelow,
-                    config: vm.config
-                )
-            }
-            .verticalPadding(0)
+            ContractOwnerField(
+                hasContentBelow: hasContentBelow,
+                config: vm.config
+            )
             .padding(.top, .padding16)
         }
     }

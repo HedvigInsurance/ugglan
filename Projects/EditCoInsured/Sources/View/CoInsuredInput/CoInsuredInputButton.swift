@@ -155,7 +155,7 @@ public struct CoInsuredInputButton: View {
             }
             editCoInsuredNavigation.coInsuredInputModel = nil
         } else {
-            performErrorAction(for: action)
+            performErrorAction(for: .delete)
         }
 
         editCoInsuredNavigation.selectCoInsured = nil

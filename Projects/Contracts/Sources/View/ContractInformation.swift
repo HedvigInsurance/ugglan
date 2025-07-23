@@ -113,17 +113,14 @@ struct ContractInformationView: View {
                     }
                 }
 
-                hRow {
-                    let hasContentBelow =
-                        !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
-                    ContractOwnerField(
-                        enabled: true,
-                        hasContentBelow: hasContentBelow,
-                        fullName: contract.fullName,
-                        SSN: contract.ssn ?? ""
-                    )
-                }
-                .verticalPadding(0)
+                let hasContentBelow =
+                    !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
+                ContractOwnerField(
+                    enabled: true,
+                    hasContentBelow: hasContentBelow,
+                    fullName: contract.fullName,
+                    SSN: contract.ssn ?? ""
+                )
                 .padding(.top, .padding16)
             }
 
