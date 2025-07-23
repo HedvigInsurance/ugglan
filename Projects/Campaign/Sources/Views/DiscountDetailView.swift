@@ -32,11 +32,28 @@ public struct DiscountDetailView: View {
                     }
                     .padding(.horizontal, .padding8)
                     .background(
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: .padding8)
                             .fill(hSurfaceColor.Translucent.primary)
                     )
                     .onTapGesture {
                         startRemoveCode()
+                    }
+                    Spacer()
+                    if let amount = vm.discount.amount {
+                        let formattedAmount =
+                            vm.options.contains(.forPayment)
+                            ? amount.formattedNegativeAmount : amount.formattedNegativeAmountPerMonth
+                        hText(formattedAmount)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                    } else if isReferral, let amount = vm.discount.amount {
+                        hText(amount.formattedNegativeAmountPerMonth)
+                    } else if vm.options.contains(.forPayment), let amount = vm.discount.amount {
+                        hText(amount.formattedNegativeAmount)
+                    }
+                }
+                HStack(alignment: .top) {
+                    if let title = vm.discount.title {
+                        hText(title, style: .label)
                     }
                     Spacer()
                     if let validUntil = vm.discount.validUntil {
@@ -45,29 +62,6 @@ public struct DiscountDetailView: View {
                                 .foregroundColor(hSignalColor.Red.element)
                         } else {
                             hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
-                        }
-                    } else if isReferral, let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmountPerMonth)
-                    } else if vm.options.contains(.forPayment), let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmount)
-                    }
-                }
-                VStack(alignment: .leading, spacing: 0) {
-                    if let title = vm.discount.title {
-                        hText(title, style: .label)
-                    }
-                    if !vm.discount.listOfAffectedInsurances.isEmpty {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                hText(affectedInsurance.displayName, style: .label)
-                            }
-                        }
-                    }
-                    if vm.options.contains(.forPayment) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                hText(affectedInsurance.displayName, style: .label)
-                            }
                         }
                     }
                 }
@@ -134,6 +128,7 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             code: "231223",
             amount: .sek(100),
             title: "Very long name that needs to go into 2 rows so we can test it",
+            discountPerReferral: .sek(10),
             listOfAffectedInsurances: [
                 .init(id: "id 11", displayName: "DISPLAY NAME"),
                 .init(id: "id 12", displayName: "DISPLAY NAME 2"),
@@ -147,6 +142,7 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             code: "231223",
             amount: .sek(100),
             title: "Very long name that needs to go into 2 rows",
+            discountPerReferral: .sek(10),
             listOfAffectedInsurances: [
                 .init(id: "id 11", displayName: "DISPLAY NAME"),
                 .init(id: "id 12", displayName: "DISPLAY NAME 2"),
