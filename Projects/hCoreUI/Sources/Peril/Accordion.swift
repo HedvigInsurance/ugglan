@@ -6,7 +6,6 @@ public struct AccordionView: View {
     let title: String
     let description: String
     @State private var extended = false
-
     public init(peril: Perils) {
         self.peril = peril
         self.title = peril.title
@@ -20,22 +19,22 @@ public struct AccordionView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            AccordionHeader(peril: peril, title: title, extended: $extended)
-                .padding(.bottom, .padding18)
-                .accessibilityAddTraits(.isButton)
-            if extended {
-                AccordionBody(peril: peril, description: description, extended: $extended)
-            }
-        }
-        .sectionContainerStyle(.transparent)
-        .modifier(
-            BackgorundColorAnimation(
+        ZStack {
+            ColorAnimationView(
                 animationTrigger: $extended,
                 color: hSurfaceColor.Opaque.primary,
                 animationColor: hSurfaceColor.Opaque.secondary
             )
-        )
+            VStack(spacing: 0) {
+                AccordionHeader(peril: peril, title: title, extended: $extended)
+                    .padding(.bottom, .padding18)
+                    .accessibilityAddTraits(.isButton)
+                if extended {
+                    AccordionBody(peril: peril, description: description, extended: $extended)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
         .onTapGesture(count: 1) {
             withAnimation {
                 extended.toggle()
