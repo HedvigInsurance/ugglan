@@ -118,11 +118,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             switch contentPosition {
             case .top:
                 formTitle
-                    .layoutPriority(1)
+                    .layoutPriority(3)
                 content
                     .layoutPriority(2)
                 Spacer(minLength: 0)
-                    .layoutPriority(1)
+                    .layoutPriority(2)
                 getBottomAttachedView
                     .layoutPriority(2)
             case .center:
