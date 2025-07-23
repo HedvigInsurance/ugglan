@@ -45,7 +45,7 @@ struct PaymentDetailsView: View {
                     referralDiscount.discountPerReferral?.formattedAmount ?? "",
                 )
             )
-            
+
             .sectionContainerStyle(.transparent)
             .hSectionHeaderWithDivider
             .hWithoutHorizontalPadding([.row, .divider])
