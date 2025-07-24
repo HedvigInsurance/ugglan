@@ -2,7 +2,7 @@ import Chat
 import Combine
 import Contracts
 import CrossSell
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import Payment
 import PresentableStore

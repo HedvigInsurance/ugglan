@@ -1,5 +1,5 @@
 import Combine
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SwiftUI

@@ -1,5 +1,5 @@
 import Combine
-import EditCoInsuredShared
+import EditCoInsured
 import SwiftUI
 import hCore
 import hCoreUI

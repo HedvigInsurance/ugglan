@@ -1,6 +1,6 @@
 import Addons
 import Apollo
-import EditCoInsuredShared
+import EditCoInsured
 import PresentableStore
 import SwiftUI
 
@@ -60,7 +60,7 @@ extension ContractState {
 
 @MainActor
 extension ContractStore: ExistingCoInsured {
-    public func get(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
+    public func get(contractId: String) -> [CoInsuredModel] {
         return state.fetchAllCoInsuredNotInContract(contractId: contractId)
     }
 }

@@ -1,4 +1,4 @@
-import EditCoInsuredShared
+import EditCoInsured
 import SwiftUI
 
 @MainActor

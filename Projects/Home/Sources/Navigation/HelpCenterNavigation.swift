@@ -2,7 +2,7 @@ import Addons
 import ChangeTier
 import Chat
 import Contracts
-import EditCoInsuredShared
+import EditCoInsured
 import Payment
 import PresentableStore
 import SafariServices

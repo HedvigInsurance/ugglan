@@ -1,4 +1,4 @@
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import hCore
 
@@ -19,5 +19,10 @@ public class EditCoInsuredService {
     func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
         log.info("EditCoInsuredService: sendIntent", error: nil, attributes: nil)
         return try await service.sendIntent(contractId: contractId, coInsured: coInsured)
+    }
+
+    public func fetchContracts() async throws -> [Contract] {
+        log.info("EditCoInsuredSharedService: fetchContracts", error: nil, attributes: nil)
+        return try await service.fetchContracts()
     }
 }
