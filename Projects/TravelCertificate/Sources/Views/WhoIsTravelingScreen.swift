@@ -1,5 +1,5 @@
 import Contracts
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SwiftUI

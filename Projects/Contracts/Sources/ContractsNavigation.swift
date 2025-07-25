@@ -1,6 +1,6 @@
 import Addons
 import ChangeTier
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SafariServices

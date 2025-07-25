@@ -1,4 +1,4 @@
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import hCore
 
@@ -18,5 +18,22 @@ public class EditCoInsuredClientDemo: EditCoInsuredClient {
             id: "is",
             state: "state"
         )
+    }
+
+    public func fetchContracts() async throws -> [Contract] {
+        return [
+            Contract(
+                id: "",
+                exposureDisplayName: "",
+                supportsCoInsured: true,
+                upcomingChangedAgreement: nil,
+                currentAgreement: .init(activeFrom: nil, productVariant: .init(displayName: "")),
+                terminationDate: nil,
+                coInsured: [],
+                firstName: "first name",
+                lastName: "last name",
+                ssn: "ssn"
+            )
+        ]
     }
 }

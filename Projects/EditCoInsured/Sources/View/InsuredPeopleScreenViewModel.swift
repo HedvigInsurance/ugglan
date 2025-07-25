@@ -1,4 +1,4 @@
-import EditCoInsuredShared
+import EditCoInsured
 import SwiftUI
 
 @MainActor
@@ -11,6 +11,19 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var showSavebutton: Bool = false
     @Published var showInfoCard: Bool = false
+
+    var shouldShowSaveChangesButton: Bool {
+        let totalAddedCoInsured = config.contractCoInsured.count + coInsuredAdded.count
+        return totalAddedCoInsured < config.numberOfMissingCoInsuredWithoutTermination
+    }
+
+    var hasContentBelow: Bool {
+        nbOfMissingCoInsuredExcludingDeleted > 0
+    }
+
+    var hasExistingCoInsured: Bool {
+        !config.preSelectedCoInsuredList.filter { !coInsuredAdded.contains($0) }.isEmpty
+    }
 
     var showConfirmChangesButton: Bool {
         (coInsuredAdded.count >= nbOfMissingCoInsuredExcludingDeleted && coInsuredAdded.count > 0)
@@ -29,40 +42,36 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         coInsuredAdded: [CoInsuredModel]? = nil,
         coInsuredDeleted: [CoInsuredModel]? = nil
     ) -> [CoInsuredModel] {
-        let coInsuredAdded = coInsuredAdded ?? self.coInsuredAdded
-        let coInsuredDeleted = coInsuredDeleted ?? self.coInsuredDeleted
-        var filterList: [CoInsuredModel] = []
+        let added = coInsuredAdded ?? self.coInsuredAdded
+        let deleted = coInsuredDeleted ?? self.coInsuredDeleted
         let existingList = config.contractCoInsured
-        let nbOfCoInsured = config.numberOfMissingCoInsuredWithoutTermination
+        let missingCount = config.numberOfMissingCoInsuredWithoutTermination
         let allHasMissingInfo = existingList.allSatisfy({ $0.hasMissingInfo })
+        let shouldShowMissingCoInsuredPlaceholder: Bool =
+            missingCount > 0 && existingList.contains(CoInsuredModel()) && allHasMissingInfo
 
-        if nbOfCoInsured > 0, existingList.contains(CoInsuredModel()), allHasMissingInfo {
-            if coInsuredDeleted.count > 0 || coInsuredAdded.count > 0 {
-                var num: Int {
-                    if coInsuredDeleted.count > 0 {
-                        return nbOfCoInsured - coInsuredDeleted.count
-                    } else {
-                        return nbOfCoInsured - coInsuredAdded.count
-                    }
-                }
-                for _ in 0..<num {
-                    filterList.append(CoInsuredModel())
-                }
-                if coInsuredDeleted.count > 0 {
-                    return filterList
-                }
-            } else if nbOfCoInsured > 0 {
+        var filterList: [CoInsuredModel] = []
+
+        if shouldShowMissingCoInsuredPlaceholder {
+            if deleted.count > 0 {
+                let count = max(missingCount - deleted.count, 0)
+                return Array(repeating: CoInsuredModel(), count: count)
+            } else if added.count > 0 {
+                let count = max(missingCount - added.count, 0)
+                filterList = Array(repeating: CoInsuredModel(), count: count)
+            } else {
                 filterList = existingList
             }
         } else {
             filterList = existingList
         }
-        let finalList =
-            filterList.filter {
-                !coInsuredDeleted.contains($0)
-            } + coInsuredAdded
 
-        return finalList.filter({ $0.terminatesOn == nil })
+        let merged =
+            filterList
+            .filter { !deleted.contains($0) }
+            + added
+
+        return merged.filter { $0.terminatesOn == nil }
     }
 
     func listForGettingIntentFor(addCoInsured: CoInsuredModel) -> [CoInsuredModel] {
@@ -74,13 +83,8 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     func listForGettingIntentFor(removedCoInsured: CoInsuredModel) -> [CoInsuredModel] {
         var coInsuredAdded = self.coInsuredAdded
         var coInsuredDeleted = self.coInsuredDeleted
-        if let index = coInsuredAdded.firstIndex(where: { coInsured in
-            coInsured == removedCoInsured
-        }) {
-            coInsuredAdded.remove(at: index)
-        } else {
-            coInsuredDeleted.append(removedCoInsured)
-        }
+
+        removeCoInsured(removedCoInsured)
 
         return completeList(coInsuredAdded: coInsuredAdded, coInsuredDeleted: coInsuredDeleted)
     }

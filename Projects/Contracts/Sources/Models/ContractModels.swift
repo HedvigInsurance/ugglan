@@ -1,5 +1,5 @@
 import Addons
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import TerminateContracts

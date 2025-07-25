@@ -31,26 +31,29 @@ public struct ContractOwnerField: View {
     }
 
     public var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    hText(fullName)
-                        .foregroundColor(getTitleColor)
-                    Spacer()
-                    hCoreUIAssets.lock.view
-                        .foregroundColor(hTextColor.Opaque.tertiary)
+        hRow {
+            VStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        hText(fullName)
+                            .foregroundColor(getTitleColor)
+                        Spacer()
+                        hCoreUIAssets.lock.view
+                            .foregroundColor(hTextColor.Opaque.tertiary)
+                    }
+                    hText(SSN, style: .label)
+                        .foregroundColor(getSubTitleColor)
                 }
-                hText(SSN, style: .label)
-                    .foregroundColor(getSubTitleColor)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                if hasContentBelow {
+                    hRowDivider()
+                        .hWithoutHorizontalPadding([.divider])
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            if hasContentBelow {
-                hRowDivider()
-                    .hWithoutHorizontalPadding([.divider])
-            }
+            .padding(.bottom, hasContentBelow ? 0 : 16)
+            .accessibilityElement(children: .combine)
         }
-        .padding(.bottom, hasContentBelow ? 0 : 16)
-        .accessibilityElement(children: .combine)
+        .verticalPadding(0)
     }
 
     @hColorBuilder

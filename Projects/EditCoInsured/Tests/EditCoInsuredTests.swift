@@ -2,7 +2,6 @@ import Foundation
 @preconcurrency import XCTest
 
 @testable import EditCoInsured
-@testable import EditCoInsuredShared
 
 @MainActor
 final class ContractsEditInsuredCompleteListTests: XCTestCase {
