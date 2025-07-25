@@ -67,6 +67,7 @@ struct ChatFileView: View {
                 contentMode: .fill
             )
             .frame(width: 140, height: 140)
+            .contentShape(Rectangle())
         }
     }
 

@@ -53,7 +53,7 @@ public struct ToastBarView: View {
             HStack(spacing: .padding8) {
                 toastModel.icon
                     .resizable()
-                    .foregroundColor(hSignalColor.Green.element)
+                    .foregroundColor(toastModel.type.toastImageColor)
                     .accessibilityHidden(true)
                     .frame(width: 20, height: 20)
                 hText(toastModel.text, style: .label)
@@ -115,6 +115,9 @@ public class Toasts {
     public static let shared = Toasts()
     var list = [ToastBar]()
     public func displayToastBar(toast: ToastBar) {
+        if list.contains(where: { $0.text == toast.text }) {
+            return  // do not show same toast twice
+        }
         list.append(toast)
         if list.count == 1 {
             showNext()

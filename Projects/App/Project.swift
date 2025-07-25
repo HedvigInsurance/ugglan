@@ -243,7 +243,7 @@ let project = Project(
                     //                    TestableTarget.test
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "AppTests"),
-                        isParallelizable: true
+                        parallelization: .enabled
                     )
                 ],
                 arguments: Arguments.arguments(
@@ -270,7 +270,5 @@ let project = Project(
             runAction: .runAction(executable: "Hedvig")
         ),
     ],
-    additionalFiles: [
-        .folderReference(path: "GraphQL")
-    ]
+    additionalFiles: []
 )

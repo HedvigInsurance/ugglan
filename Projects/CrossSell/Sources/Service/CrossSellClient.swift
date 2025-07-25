@@ -12,14 +12,5 @@ public enum CrossSellSource: String, Codable, Equatable, Sendable {
     case closedClaim
     case changeTier
     case addon
-    case editCoinsured
     case movingFlow
-    public var delayInNanoSeconds: UInt64 {
-        switch self {
-        case .home, .closedClaim:
-            return 0
-        case .changeTier, .addon, .editCoinsured, .movingFlow:
-            return 900_000_000
-        }
-    }
 }

@@ -29,16 +29,6 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     public var buttonText: String?
     public var discountText: String?
     public var buttonDescription: String
-    public var hasBeenSeen: Bool {
-        didSet {
-            UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(typeOfContract: id))
-            UserDefaults.standard.synchronize()
-        }
-    }
-
-    public static func hasBeenSeenKey(typeOfContract: String) -> String {
-        "CrossSell-hasBeenSeen-\(typeOfContract)"
-    }
 
     public init(
         id: String,
@@ -49,8 +39,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         buttonText: String? = nil,
         discountText: String? = nil,
         imageUrl: URL?,
-        buttonDescription: String,
-        hasBeenSeen: Bool = false
+        buttonDescription: String
     ) {
         self.id = id
         self.title = title
@@ -60,7 +49,6 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         self.bannerText = bannerText
         self.buttonText = buttonText
         self.discountText = discountText
-        self.hasBeenSeen = hasBeenSeen
         self.buttonDescription = buttonDescription
     }
 }

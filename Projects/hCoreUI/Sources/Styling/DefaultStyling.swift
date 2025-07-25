@@ -142,9 +142,18 @@ public struct DefaultStyling {
             NSAttributedString.Key.font: Fonts.fontFor(style: .body1, withoutFontMultipler: true),
         ]
 
+        let backImageInsets: UIEdgeInsets = {
+            if #available(iOS 26.0, *) {
+                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
+            } else {
+                UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
+            }
+        }()
+
         let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
-            UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
+            backImageInsets
         )
+
         appearance.setBackIndicatorImage(
             backImage,
             transitionMaskImage: backImage
@@ -328,24 +337,28 @@ public struct DefaultStyling {
                 let selectedColor = hFillColor.Opaque.primary.colorFor(.init(style) ?? .light, .base).color.uiColor()
                 let nonSelecetedColor = hFillColor.Translucent.secondary.colorFor(.init(style) ?? .light, .base).color
                     .uiColor()
+
+                let font = Fonts.fontFor(style: .tabBar, withoutFontMultipler: true)
+
                 itemAppearance.normal.iconColor = nonSelecetedColor
                 itemAppearance.normal.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: nonSelecetedColor,
                 ]
+
                 itemAppearance.selected.iconColor = selectedColor
                 itemAppearance.selected.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: selectedColor,
                 ]
                 itemAppearance.focused.iconColor = selectedColor
                 itemAppearance.focused.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: selectedColor,
                 ]
                 itemAppearance.disabled.iconColor = nonSelecetedColor
                 itemAppearance.disabled.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
+                    .font: font,
                     .foregroundColor: nonSelecetedColor,
                 ]
             }
@@ -426,6 +439,7 @@ extension CGFloat {
     public static let padding12: CGFloat = 12
     public static let padding14: CGFloat = 14
     public static let padding16: CGFloat = 16
+    public static let padding18: CGFloat = 18
     public static let padding24: CGFloat = 24
     public static let padding32: CGFloat = 32
     public static let padding40: CGFloat = 40

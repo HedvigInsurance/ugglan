@@ -10,7 +10,7 @@ then
     echo "Skipping installing"
     cd ../
 else
-    git clone -b release/6.0 https://github.com/apple/swift-format.git
+    git clone -b release/6.1.1 https://github.com/apple/swift-format.git
 
     cd swift-format
 

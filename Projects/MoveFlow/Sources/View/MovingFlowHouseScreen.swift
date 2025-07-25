@@ -34,11 +34,6 @@ struct MovingFlowHouseScreen: View {
                 }
                 .hFieldSize(.medium)
                 .disabled(houseInformationInputvm.viewState == .loading)
-                if let days = movingFlowNavigationVm.selectedHomeAddress?.oldAddressCoverageDurationDays {
-                    hSection {
-                        InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
-                    }
-                }
             }
             .padding(.bottom, .padding8)
         }

@@ -7,34 +7,46 @@ struct SupportView: View {
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
     @Environment(\.sizeCategory) private var sizeCategory
+    let withExtraPadding: Bool
+
+    init(
+        router: Router,
+        withExtraPadding: Bool? = false
+    ) {
+        self.router = router
+        self.withExtraPadding = withExtraPadding ?? false
+    }
 
     var body: some View {
         hSection {
             VStack(spacing: .padding40) {
-                VStack(spacing: .padding16) {
-
-                    hCoreUIAssets.infoFilled.view
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(hSignalColor.Blue.element)
-                        .accessibilityHidden(true)
-
-                    VStack(spacing: 0) {
-                        hText(L10n.hcChatQuestion)
-                            .accessibilityAddTraits(.isHeader)
-                        hText(L10n.hcChatAnswer)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.horizontal, .padding32)
-                }
+                textView
                 buttonView
             }
-            .padding(.vertical, .padding32)
+            .padding(.top, .padding32)
             .padding(.bottom, .padding8)
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
+    }
+
+    private var textView: some View {
+        VStack(spacing: .padding16) {
+            hCoreUIAssets.infoFilled.view
+                .resizable()
+                .frame(width: 40, height: 40)
+                .foregroundColor(hSignalColor.Blue.element)
+                .accessibilityHidden(true)
+
+            VStack(spacing: 0) {
+                hText(L10n.hcChatQuestion)
+                    .accessibilityAddTraits(.isHeader)
+                hText(L10n.hcChatAnswer)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, .padding32)
+        }
     }
 
     private var buttonView: some View {

@@ -53,6 +53,7 @@ public struct CoInsuredField<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             statusPillView
         }
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder

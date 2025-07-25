@@ -66,28 +66,27 @@ public struct HelpCenterStartView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 if !vm.searchInProgress {
-                    SupportView(router: router)
+                    SupportView(router: router, withExtraPadding: true)
                         .padding(.top, .padding40)
                 }
             }
         }
         .hFormBottomBackgroundColor(
             vm.searchInProgress
-                ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
+                ? .default : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
-        .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
-            if !(vm?.didSetInitialSearchAppearance ?? false) {
+            guard let vm else { return }
+
+            if !vm.didSetInitialSearchAppearance {
                 vc.navigationItem.hidesSearchBarWhenScrolling = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vc] in
                     vc?.navigationItem.hidesSearchBarWhenScrolling = true
-
                 }
-                vm?.didSetInitialSearchAppearance = true
+                vm.didSetInitialSearchAppearance = true
             }
-        }
-        .introspect(.viewController, on: .iOS(.v13...)) { vc in
+
             vc.navigationItem.searchController = vm.searchController
             vc.definesPresentationContext = true
             vm.updateColors()
@@ -205,27 +204,18 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     }
 
     private func searchInQuestionsByQuery(query: String) -> [FAQModel] {
-        var results: [FAQModel] = [FAQModel]()
-        allQuestions.forEach { question in
-            if question.answer.lowercased().contains(query) || question.question.lowercased().contains(query) {
-                results.append(question)
-            }
+        allQuestions.filter {
+            $0.answer.lowercased().contains(query) || $0.question.lowercased().contains(query)
         }
-        return results
     }
 
     private func searchInQuickActionsByQuery(query: String) -> [QuickAction] {
         let query = query.lowercased()
-        var results: [QuickAction] = [QuickAction]()
-        quickActions.forEach { quickAction in
-            if quickAction.displayTitle.lowercased().contains(query)
-                || quickAction.displaySubtitle.lowercased().contains(query)
-            {
-                results.append(quickAction)
-            }
+        return quickActions.filter {
+            $0.displayTitle.lowercased().contains(query) || $0.displaySubtitle.lowercased().contains(query)
         }
-        return results
     }
+
 }
 
 extension HelpCenterStartViewModel: UISearchResultsUpdating {

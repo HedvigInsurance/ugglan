@@ -18,8 +18,7 @@ public struct ProfileState: StateProtocol {
 
     @MainActor
     var showTravelCertificate: Bool {
-        let flags: FeatureFlags = Dependencies.shared.resolve()
-        return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
+        return hasTravelCertificates || canCreateTravelInsurance
     }
 
     public init() {

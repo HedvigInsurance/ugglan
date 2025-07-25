@@ -38,8 +38,11 @@ private struct DismissButton: ViewModifier {
                         isPresented = true
                     } label: {
                         hCoreUIAssets.close.view
+                            .frame(minWidth: 44, minHeight: 44)
                     }
                     .foregroundColor(hTextColor.Opaque.primary)
+                    .accessibilityLabel(L10n.a11YClose)
+                    .accessibilityAddTraits(.isButton)
                 }
             }
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
@@ -88,15 +91,27 @@ private struct CloseButtonModifier: ViewModifier {
                     vm.vc?.dismiss(animated: true)
                 } label: {
                     hCoreUIAssets.close.view
-                        .offset(y: CGFloat(-reducedTopSpacing))
+                        .closeButtonOffset(y: CGFloat(-reducedTopSpacing))
                         .foregroundColor(hFillColor.Opaque.primary)
+                        .frame(minWidth: 44, minHeight: 44)
                 }
-                .frame(width: 44, height: 44)
                 .foregroundColor(hTextColor.Opaque.primary)
-                .accessibilityLabel(L10n.a11YBack)
+                .accessibilityLabel(L10n.a11YClose)
+                .accessibilityAddTraits(.isButton)
             }
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
             }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func closeButtonOffset(y: CGFloat) -> some View {
+        if #available(iOS 26, *) {
+            self
+        } else {
+            self.offset(y: y)
+        }
     }
 }
