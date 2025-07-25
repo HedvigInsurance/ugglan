@@ -14,6 +14,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
 
     override func tearDown() async throws {
         try await super.tearDown()
+        try await Task.sleep(nanoseconds: 100_000_000)
         Dependencies.shared.remove(for: hCampaignClient.self)
         XCTAssertNil(sut)
     }
