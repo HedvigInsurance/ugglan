@@ -39,7 +39,7 @@ struct SubmitClaimCarView: View {
                     ),
                     {
                         if let url = URL(string: model?.partners.first?.url) {
-                            UIApplication.shared.open(url)
+                            Dependencies.urlOpener.open(url)
                             let delayTime = 60.0 * 3
                             DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
                                 claimsNavigationVm.router.dismiss()

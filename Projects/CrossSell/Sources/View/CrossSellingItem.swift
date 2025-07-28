@@ -9,7 +9,7 @@ struct CrossSellingItem: View {
 
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
-            UIApplication.shared.open(url)
+            Dependencies.urlOpener.open(url)
         } else {
             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
         }
