@@ -21,7 +21,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
 
     func testPaymentDetailsDiscountViewModelRemoveTrueSuccess() async {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [
-            .enableRemoving, .forPayment, .showExpire,
+            .forPayment, .showExpire,
         ]
 
         let discount: Discount = .init(
@@ -34,13 +34,12 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             discountId: "id"
         )
 
-        let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
+        let mockService = MockCampaignData.createMockCampaignService()
         self.sut = mockService
 
         let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
         assert(model.shouldShowExpire == false)
-        assert(model.shouldShowRemove == true)
     }
 
     func testPaymentDetailsDiscountViewModelRemoveFalseSuccess() async {
@@ -56,13 +55,12 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             discountId: "id"
         )
 
-        let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
+        let mockService = MockCampaignData.createMockCampaignService()
         self.sut = mockService
 
         let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
         assert(model.shouldShowExpire == false)
-        assert(model.shouldShowRemove == false)
     }
 
     func testPaymentDetailsDiscountViewModelExpireTrueSuccess() async {
@@ -81,13 +79,12 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
                 discountId: "id"
             )
 
-            let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
+            let mockService = MockCampaignData.createMockCampaignService()
             self.sut = mockService
 
             let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
             assert(model.shouldShowExpire == true)
-            assert(model.shouldShowRemove == false)
         }
     }
 }
