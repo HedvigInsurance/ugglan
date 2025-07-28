@@ -6,8 +6,6 @@ import hCoreUI
 
 @MainActor
 class CampaignNavigationViewModel: ObservableObject {
-    @Published var isAddCampaignPresented = false
-    @Published var isDeleteCampaignPresented: Discount?
 }
 
 public struct CampaignNavigation: View {
@@ -28,55 +26,10 @@ public struct CampaignNavigation: View {
             }
             .configureTitle(L10n.paymentsDiscountsSectionTitle)
             .environmentObject(campaignNavigationVm)
-            .detent(
-                presented: $campaignNavigationVm.isAddCampaignPresented,
-                transitionType: .detent(style: [.height])
-            ) {
-                AddCampaignCodeView(
-                    campaignNavigationVm: campaignNavigationVm,
-                    vm: .init(
-                        onInputChange: onEditCode
-                    )
-                )
-                .configureTitle(L10n.paymentsAddCampaignCode)
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: CampaignDetentActions.addCampaign
-                )
-            }
-            .detent(
-                item: $campaignNavigationVm.isDeleteCampaignPresented,
-                transitionType: .detent(style: [.height])
-            ) { discount in
-                DeleteCampaignView(
-                    vm: .init(
-                        discount: discount,
-                        onInputChange: onEditCode
-                    )
-                )
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: CampaignDetentActions.deleteCampaign
-                )
-            }
             .routerDestination(for: CampaignRouterAction.self) { type in
                 ForeverNavigation(useOwnNavigation: false)
                     .hideToolbar()
             }
-    }
-}
-
-private enum CampaignDetentActions: TrackingViewNameProtocol {
-    case addCampaign
-    case deleteCampaign
-
-    var nameForTracking: String {
-        switch self {
-        case .addCampaign:
-            return .init(describing: AddCampaignCodeView.self)
-        case .deleteCampaign:
-            return .init(describing: DeleteCampaignView.self)
-        }
     }
 }
 
