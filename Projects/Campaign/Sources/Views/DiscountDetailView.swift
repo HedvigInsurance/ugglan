@@ -24,20 +24,12 @@ public struct DiscountDetailView: View {
                         hText(vm.discount.code.uppercased(), style: .label)
                             .foregroundColor(getCodeTextColor)
                             .padding(.vertical, .padding4)
-                        if vm.shouldShowRemove {
-                            hCoreUIAssets.close.view
-                                .resizable()
-                                .frame(width: 16, height: 16)
-                        }
                     }
                     .padding(.horizontal, .padding8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
                             .fill(hSurfaceColor.Translucent.primary)
                     )
-                    .onTapGesture {
-                        startRemoveCode()
-                    }
                     Spacer()
                     if let validUntil = vm.discount.validUntil {
                         if vm.shouldShowExpire {
@@ -84,12 +76,6 @@ public struct DiscountDetailView: View {
             hTextColor.Opaque.primary
         }
     }
-
-    func startRemoveCode() {
-        if vm.shouldShowRemove {
-            campaignNavigationVm.isDeleteCampaignPresented = vm.discount
-        }
-    }
 }
 
 @MainActor
@@ -118,11 +104,6 @@ public class PaymentDetailsDiscountViewModel: ObservableObject {
     var shouldShowExpire: Bool {
         options.contains(.showExpire) && !discount.isValid
     }
-
-    var shouldShowRemove: Bool {
-        options.contains(.enableRemoving) && discount.isValid && discount.canBeDeleted
-    }
-
 }
 
 struct PaymentDetailsDiscount_Previews: PreviewProvider {
