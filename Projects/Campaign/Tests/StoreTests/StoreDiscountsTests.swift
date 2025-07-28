@@ -37,17 +37,17 @@ final class StoreDiscountsTests: XCTestCase {
                 discountPerMember: .init(amount: "10", currency: "SEK"),
                 discount: .init(amount: "10", currency: "SEK"),
                 referrals: [
-                    .init(id: "referralId", name: "name", status: .active)
+                    .init(id: "referralId", name: "name", code: nil, description: "desciption", status: .active)
                 ]
             )
         )
 
         let mockService = MockCampaignData.createMockCampaignService(
-            fetchPaymentDiscountsData: { _ in discountsData }
+            fetchPaymentDiscountsData: { discountsData }
         )
         let store = CampaignStore()
         self.store = store
-        await store.sendAsync(.fetchDiscountsData(paymentDataDiscounts: discounts))
+        await store.sendAsync(.fetchDiscountsData)
         try await Task.sleep(nanoseconds: 100_000_000)
         assert(store.loadingState[.getDiscountsData] == nil)
         assert(store.state.paymentDiscountsData == discountsData)
@@ -57,11 +57,11 @@ final class StoreDiscountsTests: XCTestCase {
 
     func testFetchDiscountsFailure() async throws {
         let mockService = MockCampaignData.createMockCampaignService(
-            fetchPaymentDiscountsData: { _ in throw MockCampaignError.failure }
+            fetchPaymentDiscountsData: { throw MockCampaignError.failure }
         )
         let store = CampaignStore()
         self.store = store
-        await store.sendAsync(.fetchDiscountsData(paymentDataDiscounts: []))
+        await store.sendAsync(.fetchDiscountsData)
         try await Task.sleep(nanoseconds: 100_000_000)
         assert(store.loadingState[.getDiscountsData] != nil)
         assert(store.state.paymentDiscountsData == nil)
