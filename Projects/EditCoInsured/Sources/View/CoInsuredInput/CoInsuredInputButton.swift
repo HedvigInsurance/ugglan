@@ -27,8 +27,8 @@ public struct CoInsuredInputButton: View {
                         vm: vm,
                         intentViewModel:
                             intentViewModel,
-                        getIntent: {
-                            await getIntent(for: .delete)
+                        onTap: {
+                            await performIntent(for: .delete)
                         }
                     )
                 } else {
@@ -37,9 +37,9 @@ public struct CoInsuredInputButton: View {
                         title: vm.buttonDisplayText,
                         vm: vm,
                         intentViewModel: intentViewModel,
-                        getIntent: {
-                            await vm.handleAddOrEditAction(getIntent: {
-                                await getIntent(for: vm.actionType)
+                        onTap: {
+                            await vm.handleAddOrEditAction(performIntent: {
+                                await performIntent(for: vm.actionType)
                             })
                         }
                     )
@@ -80,7 +80,7 @@ public struct CoInsuredInputButton: View {
         }
     }
 
-    private func getIntent(for action: CoInsuredAction) async {
+    private func performIntent(for action: CoInsuredAction) async {
         if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
             switch action {
             case .delete:
@@ -124,20 +124,20 @@ private struct CoInsuredActionButton: View {
     let title: String
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    let getIntent: () async -> Void
+    let onTap: () async -> Void
 
     init(
         style: hButtonConfigurationType,
         title: String,
         vm: CoInusuredInputViewModel,
         intentViewModel: IntentViewModel,
-        getIntent: @escaping () async -> Void
+        onTap: @escaping () async -> Void
     ) {
         self.style = style
         self.title = title
         self.vm = vm
         self.intentViewModel = intentViewModel
-        self.getIntent = getIntent
+        self.onTap = onTap
     }
 
     var body: some View {
@@ -147,7 +147,7 @@ private struct CoInsuredActionButton: View {
             content: .init(title: vm.buttonDisplayText),
             {
                 Task {
-                    await getIntent()
+                    await onTap()
                 }
             }
         )
@@ -181,15 +181,11 @@ extension CoInusuredInputViewModel {
         return true
     }
 
-    func handleAddOrEditAction(getIntent: @escaping () async -> Void) async {
+    func handleAddOrEditAction(performIntent: @escaping () async -> Void) async {
         if !(buttonIsDisabled || nameFetchedFromSSN || noSSN) {
-            Task {
-                await getNameFromSSN(SSN: SSN)
-            }
+            await getNameFromSSN(SSN: SSN)
         } else if nameFetchedFromSSN || noSSN {
-            Task {
-                await getIntent()
-            }
+            await performIntent()
         }
     }
 }

@@ -14,7 +14,7 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
     @Published public var editCoInsuredModelError: EditCoInsuredErrorWrapper?
-    public let service = EditCoInsuredService()
+    private let service = EditCoInsuredService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
     let existingCoInsured: ExistingCoInsured
 
@@ -49,9 +49,7 @@ public class EditCoInsuredViewModel: ObservableObject {
                             )
                         })
                     if contractsSupportingCoInsured.count > 1 {
-                        editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                            return contractsSupportingCoInsured
-                        })
+                        editCoInsuredModelDetent = .init(contractsSupportingCoInsured: { contractsSupportingCoInsured })
                     } else if !contractsSupportingCoInsured.isEmpty {
                         editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                             return contractsSupportingCoInsured
