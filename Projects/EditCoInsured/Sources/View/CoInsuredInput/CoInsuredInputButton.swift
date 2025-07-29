@@ -21,74 +21,33 @@ public struct CoInsuredInputButton: View {
         hSection {
             HStack {
                 if vm.actionType == .delete {
-                    deleteCoInsuredButton
+                    CoInsuredActionButton(
+                        style: .alert,
+                        title: L10n.removeConfirmationButton,
+                        vm: vm,
+                        intentViewModel:
+                            intentViewModel,
+                        getIntent: {
+                            await getIntent(for: .delete)
+                        }
+                    )
                 } else {
-                    addCoInsuredButton
+                    CoInsuredActionButton(
+                        style: .primary,
+                        title: vm.buttonDisplayText,
+                        vm: vm,
+                        intentViewModel: intentViewModel,
+                        getIntent: {
+                            await vm.handleAddOrEditAction(getIntent: {
+                                await getIntent(for: vm.actionType)
+                            })
+                        }
+                    )
                 }
             }
         }
         .padding(.top, .padding12)
-        .disabled(buttonIsDisabled && !(vm.actionType == .delete))
-    }
-
-    private var deleteCoInsuredButton: some View {
-        hButton(
-            .large,
-            .alert,
-            content: .init(title: L10n.removeConfirmationButton),
-            {
-                Task {
-                    await getIntent(for: .delete)
-                }
-            }
-        )
-        .transition(.opacity.animation(.easeOut))
-        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
-    }
-
-    private var addCoInsuredButton: some View {
-        hButton(
-            .large,
-            .primary,
-            content: .init(title: buttonDisplayText),
-            {
-                if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
-                    Task {
-                        await vm.getNameFromSSN(SSN: vm.SSN)
-                    }
-                } else if vm.nameFetchedFromSSN || vm.noSSN {
-                    Task {
-                        await getIntent(for: vm.actionType)
-                    }
-                }
-            }
-        )
-        .transition(.opacity.animation(.easeOut))
-        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
-    }
-
-    var buttonDisplayText: String {
-        if !vm.noSSN && !vm.nameFetchedFromSSN {
-            return L10n.contractSsnFetchInfo
-        } else {
-            return L10n.contractAddCoinsured
-        }
-    }
-
-    var buttonIsDisabled: Bool {
-        if vm.noSSN {
-            let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: vm.birthday)
-            let firstNameValid = Masking(type: .firstName).isValid(text: vm.personalData.firstName)
-            let lastNameValid = Masking(type: .lastName).isValid(text: vm.personalData.lastName)
-            if birthdayIsValid && firstNameValid && lastNameValid {
-                return false
-            }
-        } else {
-            let masking = Masking(type: .personalNumber(minAge: 0))
-            let personalNumberValid = masking.isValid(text: vm.SSN)
-            return !personalNumberValid
-        }
-        return true
+        .disabled(vm.buttonIsDisabled && !(vm.actionType == .delete))
     }
 
     var coInsuredToDelete: CoInsuredModel {
@@ -157,5 +116,80 @@ public struct CoInsuredInputButton: View {
             coInsured: coInsuredModel
         )
         editCoInsuredNavigation.selectCoInsured = nil
+    }
+}
+
+private struct CoInsuredActionButton: View {
+    let style: hButtonConfigurationType
+    let title: String
+    @ObservedObject var vm: CoInusuredInputViewModel
+    @ObservedObject private var intentViewModel: IntentViewModel
+    let getIntent: () async -> Void
+
+    init(
+        style: hButtonConfigurationType,
+        title: String,
+        vm: CoInusuredInputViewModel,
+        intentViewModel: IntentViewModel,
+        getIntent: @escaping () async -> Void
+    ) {
+        self.style = style
+        self.title = title
+        self.vm = vm
+        self.intentViewModel = intentViewModel
+        self.getIntent = getIntent
+    }
+
+    var body: some View {
+        hButton(
+            .large,
+            style,
+            content: .init(title: vm.buttonDisplayText),
+            {
+                Task {
+                    await getIntent()
+                }
+            }
+        )
+        .transition(.opacity.animation(.easeOut))
+        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
+    }
+}
+
+extension CoInusuredInputViewModel {
+    var buttonDisplayText: String {
+        if !noSSN && !nameFetchedFromSSN {
+            return L10n.contractSsnFetchInfo
+        } else {
+            return L10n.contractAddCoinsured
+        }
+    }
+
+    var buttonIsDisabled: Bool {
+        if noSSN {
+            let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: birthday)
+            let firstNameValid = Masking(type: .firstName).isValid(text: personalData.firstName)
+            let lastNameValid = Masking(type: .lastName).isValid(text: personalData.lastName)
+            if birthdayIsValid && firstNameValid && lastNameValid {
+                return false
+            }
+        } else {
+            let masking = Masking(type: .personalNumber(minAge: 0))
+            let personalNumberValid = masking.isValid(text: SSN)
+            return !personalNumberValid
+        }
+        return true
+    }
+
+    func handleAddOrEditAction(getIntent: @escaping () async -> Void) async {
+        if !(buttonIsDisabled || nameFetchedFromSSN || noSSN) {
+            Task {
+                await getNameFromSSN(SSN: SSN)
+            }
+        } else if nameFetchedFromSSN || noSSN {
+            Task {
+                await getIntent()
+            }
+        }
     }
 }
