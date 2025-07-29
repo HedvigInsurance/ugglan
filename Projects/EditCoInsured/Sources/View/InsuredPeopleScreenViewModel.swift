@@ -1,4 +1,3 @@
-import EditCoInsured
 import SwiftUI
 
 @MainActor
@@ -81,8 +80,8 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     }
 
     func listForGettingIntentFor(removedCoInsured: CoInsuredModel) -> [CoInsuredModel] {
-        var coInsuredAdded = self.coInsuredAdded
-        var coInsuredDeleted = self.coInsuredDeleted
+        let coInsuredAdded = self.coInsuredAdded
+        let coInsuredDeleted = self.coInsuredDeleted
 
         removeCoInsured(removedCoInsured)
 
