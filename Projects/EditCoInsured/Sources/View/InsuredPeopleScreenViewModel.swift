@@ -74,16 +74,15 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     }
 
     func listForGettingIntentFor(addCoInsured: CoInsuredModel) -> [CoInsuredModel] {
-        var coInsuredAdded = self.coInsuredAdded
-        coInsuredAdded.append(addCoInsured)
-        return completeList(coInsuredAdded: coInsuredAdded)
+        self.addCoInsured(addCoInsured)
+        return completeList(coInsuredAdded: self.coInsuredAdded)
     }
 
     func listForGettingIntentFor(removedCoInsured: CoInsuredModel) -> [CoInsuredModel] {
+        removeCoInsured(removedCoInsured)
+
         let coInsuredAdded = self.coInsuredAdded
         let coInsuredDeleted = self.coInsuredDeleted
-
-        removeCoInsured(removedCoInsured)
 
         return completeList(coInsuredAdded: coInsuredAdded, coInsuredDeleted: coInsuredDeleted)
     }
