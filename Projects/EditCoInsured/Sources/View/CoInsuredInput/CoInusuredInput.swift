@@ -21,6 +21,7 @@ struct CoInusuredInputScreen: View {
         self.vm = vm
         self.title = title
         self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        insuredPeopleVm.previousValue = vm.coInsuredModel
     }
 
     var body: some View {
@@ -45,7 +46,6 @@ struct CoInusuredInputScreen: View {
             vm.SSNError = nil
             intentViewModel.errorMessageForInput = nil
             intentViewModel.errorMessageForCoinsuredList = nil
-            insuredPeopleVm.previousValue = vm.setUpPreviousValue()
         }
     }
 

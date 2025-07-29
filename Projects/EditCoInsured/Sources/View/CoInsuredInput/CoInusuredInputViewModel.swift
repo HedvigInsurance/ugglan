@@ -50,18 +50,6 @@ public class CoInusuredInputViewModel: ObservableObject {
         }
     }
 
-    func setUpPreviousValue() -> CoInsuredModel {
-        let hasSSN = SSN != ""
-        noSSN = hasSSN ? false : true
-        return CoInsuredModel(
-            firstName: personalData.firstName,
-            lastName: personalData.lastName,
-            SSN: hasSSN ? SSN : nil,
-            birthDate: !hasSSN ? birthday : nil,
-            needsMissingInfo: false
-        )
-    }
-
     @MainActor
     func getNameFromSSN(SSN: String) async {
         withAnimation {
