@@ -1,7 +1,0 @@
-mutation MemberCampaignsUnredeem($memberCampaignsUnredeemId: ID!) {
-  memberCampaignsUnredeem(id: $memberCampaignsUnredeemId) {
-    userError {
-      message
-    }
-  }
-}
