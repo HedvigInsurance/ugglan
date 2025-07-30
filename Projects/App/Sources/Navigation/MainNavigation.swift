@@ -193,7 +193,7 @@ class MainNavigationViewModel: ObservableObject {
         )
     }
 
-    @objc func resetBadge(notification: Notification) {
+    @objc func resetBadge() {
         UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
         if #available(iOS 16.0, *) {
             Task {

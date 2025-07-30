@@ -83,13 +83,7 @@ struct NotLoggedInView_Previews: PreviewProvider {
 
 @MainActor
 public class NotLoggedViewModel: ObservableObject {
-    @PresentableStore var store: MarketStore
-    @Published var blurHash: String = ""
-    @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
-    @Published var locale: Localization.Locale = .currentLocale.value
-    @Published var title: String = L10n.MarketLanguageScreen.title
-    @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var viewState: ViewState = .loading
     @Published var showLanguagePicker = false
     @Published var showLogin = false
@@ -98,17 +92,6 @@ public class NotLoggedViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
-        Localization.Locale.currentLocale
-            .removeDuplicates()
-            .delay(for: 0.1, scheduler: RunLoop.main)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                self?.locale = value
-                self?.title = L10n.MarketLanguageScreen.title
-                self?.buttonText = L10n.MarketLanguageScreen.continueButtonText
-            }
-            .store(in: &cancellables)
-
         $bootStrapped
             .receive(on: RunLoop.main)
             .sink { [weak self] value in

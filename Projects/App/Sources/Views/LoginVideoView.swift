@@ -39,7 +39,7 @@ private class PlayerUIView: UIView {
         player.actionAtItemEnd = .none
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerItemDidReachEnd(notification:)),
+            selector: #selector(playerItemDidReachEnd),
             name: .AVPlayerItemDidPlayToEndTime,
             object: player.currentItem
         )
@@ -56,7 +56,7 @@ private class PlayerUIView: UIView {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didEnterForeground(notification:)),
+            selector: #selector(didEnterForeground),
             name: UIApplication.willEnterForegroundNotification,
             object: nil
         )
@@ -64,11 +64,11 @@ private class PlayerUIView: UIView {
     }
 
     @objc
-    func didEnterForeground(notification: Notification) {
+    func didEnterForeground() {
         playerLayer.player?.play()
     }
     @objc
-    func playerItemDidReachEnd(notification: Notification) {
+    func playerItemDidReachEnd() {
         if let view = self.snapshotView(afterScreenUpdates: false) {
             self.addSubview(view)
             view.snp.makeConstraints { make in

@@ -546,7 +546,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isAddonErrorPresented: String?
     let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
-    @Published var isUrlPresented: URL?
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
 
@@ -620,7 +619,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         )
     }
 
-    @objc func addonAdded(notification: Notification) {
+    @objc func addonAdded() {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
@@ -638,7 +637,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    @objc func registerForPushNotification(notification: Notification) {
+    @objc func registerForPushNotification() {
         Task {
             await UIApplication.shared.appDelegate.registerForPushNotifications()
         }
@@ -656,7 +655,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    @objc func chatClosed(notification: Notification) {
+    @objc func chatClosed() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.send(.fetchChatNotifications)
     }

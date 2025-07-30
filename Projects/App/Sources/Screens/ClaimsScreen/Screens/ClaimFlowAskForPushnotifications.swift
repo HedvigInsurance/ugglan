@@ -8,7 +8,6 @@ import hCoreUI
 struct AskForPushNotifications: View {
     let onActionExecuted: () -> Void
     let text: String
-    let pushNotificationStatus: UNAuthorizationStatus
     let wrapWithForm: Bool
     let height: CGFloat
 
@@ -18,8 +17,6 @@ struct AskForPushNotifications: View {
         wrapWithForm: Bool = false,
         height: CGFloat? = nil
     ) {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
         self.wrapWithForm = wrapWithForm
