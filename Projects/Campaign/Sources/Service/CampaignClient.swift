@@ -3,8 +3,6 @@ import hCore
 
 @MainActor
 public protocol hCampaignClient {
-    func remove(codeId: String) async throws
-    func add(code: String) async throws
     func getPaymentDiscountsData() async throws -> PaymentDiscountsData
 }
 

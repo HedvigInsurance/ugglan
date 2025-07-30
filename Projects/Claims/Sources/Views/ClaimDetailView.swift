@@ -337,7 +337,7 @@ public struct ClaimDetailView: View {
                         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                             return
                         }
-                        await UIApplication.shared.open(settingsUrl)
+                        Dependencies.urlOpener.open(settingsUrl)
                     case .authorized, .limited:
                         showImagePicker = true
                     @unknown default:

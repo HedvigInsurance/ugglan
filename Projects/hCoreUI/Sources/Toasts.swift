@@ -115,6 +115,9 @@ public class Toasts {
     public static let shared = Toasts()
     var list = [ToastBar]()
     public func displayToastBar(toast: ToastBar) {
+        if list.contains(where: { $0.text == toast.text }) {
+            return  // do not show same toast twice
+        }
         list.append(toast)
         if list.count == 1 {
             showNext()

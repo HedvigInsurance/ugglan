@@ -897,7 +897,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 if Bundle.main.urlSchemes.contains(schema ?? "") {
                     return
                 }
-                UIApplication.shared.open(url)
+                Dependencies.urlOpener.open(url)
             }
         }
     }

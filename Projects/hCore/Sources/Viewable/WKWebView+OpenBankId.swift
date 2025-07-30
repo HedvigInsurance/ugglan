@@ -11,7 +11,7 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
         webView.stopLoading()
 
         if UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            Dependencies.urlOpener.open(url)
         } else {
             let alert = UIAlertController(
                 title: L10n.trustlyMissingBankIdAppAlertTitle,
