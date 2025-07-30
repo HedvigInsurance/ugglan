@@ -96,8 +96,8 @@ public class PaymentDetailsDiscountViewModel: ObservableObject {
         }
 
         public let rawValue: UInt
-        static let showExpire = PaymentDetailsDiscountOptions(rawValue: 1 << 1)
-        public static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 2)
+        static let showExpire = PaymentDetailsDiscountOptions(rawValue: 1 << 0)
+        public static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 1)
     }
 
     var shouldShowExpire: Bool {
