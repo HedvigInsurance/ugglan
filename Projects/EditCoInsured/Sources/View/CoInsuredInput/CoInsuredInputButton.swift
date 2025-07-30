@@ -144,7 +144,7 @@ private struct CoInsuredActionButton: View {
         hButton(
             .large,
             style,
-            content: .init(title: vm.buttonDisplayText),
+            content: .init(title: title),
             {
                 Task {
                     await onTap()
