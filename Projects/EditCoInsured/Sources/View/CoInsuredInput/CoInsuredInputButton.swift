@@ -81,20 +81,6 @@ public struct CoInsuredInputButton: View {
     }
 
     private func performIntent(for action: CoInsuredAction) async {
-        if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
-            switch action {
-            case .delete:
-                editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
-            case .edit:
-                editCoInsuredNavigation.coInsuredViewModel.editCoInsured(coInsuredPerformModel)
-            case .add:
-                break
-            }
-            editCoInsuredNavigation.coInsuredInputModel = nil
-        } else {
-            performErrorAction(for: .delete)
-        }
-
         let coInsuredModel: [CoInsuredModel] = {
             switch action {
             case .add:
@@ -102,7 +88,9 @@ public struct CoInsuredInputButton: View {
                     addCoInsured: coInsuredPerformModel
                 )
             case .edit:
-                return editCoInsuredNavigation.coInsuredViewModel.completeList()
+                return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
+                    editCoInsured: coInsuredPerformModel
+                )
             case .delete:
                 return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
                     removedCoInsured: coInsuredToDelete
@@ -115,6 +103,19 @@ public struct CoInsuredInputButton: View {
             origin: .coinsuredInput,
             coInsured: coInsuredModel
         )
+
+        if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
+            switch action {
+            case .delete:
+                editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
+            case .edit, .add:
+                break
+            }
+            editCoInsuredNavigation.coInsuredInputModel = nil
+        } else {
+            performErrorAction(for: action)
+        }
+
         editCoInsuredNavigation.selectCoInsured = nil
     }
 }
