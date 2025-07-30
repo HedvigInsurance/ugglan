@@ -92,9 +92,7 @@ extension OctopusGraphQL.MemberReferralInformationCodeFragment {
     public func asReedeemedCampaing() -> ReedeemedCampaingDTO {
         return .init(
             code: code,
-            description: L10n.paymentsReferralDiscount,
-            type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>(.referral),
-            id: code
+            description: L10n.paymentsReferralDiscount
         )
     }
 }
@@ -102,8 +100,6 @@ extension OctopusGraphQL.MemberReferralInformationCodeFragment {
 public struct ReedeemedCampaingDTO {
     let code: String
     let description: String
-    let type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>
-    let id: String
 }
 
 extension ReferralsData {
