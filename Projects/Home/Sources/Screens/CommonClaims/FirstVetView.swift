@@ -39,7 +39,7 @@ public struct FirstVetView: View {
                                         if let url = URL(
                                             string: partner.url
                                         ) {
-                                            UIApplication.shared.open(url)
+                                            Dependencies.urlOpener.open(url)
                                         }
                                     }
                                 )

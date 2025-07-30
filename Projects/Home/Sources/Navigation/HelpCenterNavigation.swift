@@ -181,7 +181,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         vc.preferredControlTintColor = .brand(.primaryText())
                         UIApplication.shared.getTopViewController()?.present(vc, animated: true)
                     } else {
-                        UIApplication.shared.open(url)
+                        Dependencies.urlOpener.open(url)
                     }
                 }
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:

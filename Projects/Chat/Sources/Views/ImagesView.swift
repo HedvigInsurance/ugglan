@@ -99,7 +99,7 @@ class ImagesViewModel: ObservableObject {
         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
             return
         }
-        UIApplication.shared.open(settingsUrl)
+        Dependencies.urlOpener.open(settingsUrl)
     }
 }
 
