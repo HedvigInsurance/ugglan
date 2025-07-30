@@ -352,7 +352,7 @@ struct HomeTab: View {
 
             options: .constant(.withoutGrabber)
         ) {
-            ClaimsMainNavigation(from: .generic)
+            ClaimsMainNavigation()
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented

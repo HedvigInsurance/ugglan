@@ -252,14 +252,9 @@ extension SubmitClaimRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 
 public struct SubmitClaimNavigation: View {
     @StateObject var claimsNavigationVm = SubmitClaimNavigationViewModel()
-    var origin: ClaimsOrigin
     @State var cancellable: AnyCancellable?
 
-    public init(
-        origin: ClaimsOrigin
-    ) {
-        self.origin = origin
-    }
+    public init() {}
 
     public var body: some View {
         RouterHost(
@@ -554,5 +549,5 @@ struct EntrypointState: Codable, Equatable, Hashable {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
-    return SubmitClaimNavigation(origin: .generic)
+    return SubmitClaimNavigation()
 }
