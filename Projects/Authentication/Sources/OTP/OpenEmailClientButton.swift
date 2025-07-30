@@ -21,7 +21,7 @@ struct EmailClient {
             return
         }
 
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        Dependencies.urlOpener.open(url)
     }
 }
 

@@ -9,66 +9,66 @@ struct CrossSellingItem: View {
 
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
-            UIApplication.shared.open(url)
+            Dependencies.urlOpener.open(url)
         } else {
             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
         }
     }
 
     var body: some View {
-        HStack {
-            HStack(spacing: .padding16) {
-                KFImage(crossSell.imageUrl)
-                    .placeholder({
-                        hCoreUIAssets.bigPillowHome.view
-                            .resizable()
-                            .frame(width: 48, height: 48)
-                    })
-                    .fade(duration: 0.25)
-                    .resizable()
-                    .frame(width: 48, height: 48)
-                    .aspectRatio(contentMode: .fill)
-                    .accessibilityHidden(true)
-                HStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
-                        MarqueeText(
-                            text: crossSell.description,
-                            font: Fonts.fontFor(style: .label),
-                            leftFade: 3,
-                            rightFade: 3,
-                            startDelay: 2
-                        )
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                    Spacer()
-
-                    hButton(
-                        .small,
-                        .secondary,
-                        content: .init(title: L10n.crossSellGetPrice),
-                        {
-                            fieldIsClicked.toggle()
-                            openExternal()
-                        }
-                    )
-                }
-            }
-            .accessibilityElement(children: .combine)
-            .onTapGesture {
-                fieldIsClicked.toggle()
-                openExternal()
-                ImpactGenerator.soft()
-            }
-        }
-        .padding(.vertical, .padding8)
-        .modifier(
-            BackgorundColorAnimation(
+        ZStack {
+            ColorAnimationView(
                 animationTrigger: $fieldIsClicked,
                 color: hBackgroundColor.clear,
                 animationColor: hSurfaceColor.Translucent.primary
             )
-        )
+            HStack {
+                HStack(spacing: .padding16) {
+                    KFImage(crossSell.imageUrl)
+                        .placeholder({
+                            hCoreUIAssets.bigPillowHome.view
+                                .resizable()
+                                .frame(width: 48, height: 48)
+                        })
+                        .fade(duration: 0.25)
+                        .resizable()
+                        .frame(width: 48, height: 48)
+                        .aspectRatio(contentMode: .fill)
+                        .accessibilityHidden(true)
+                    HStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
+                            MarqueeText(
+                                text: crossSell.description,
+                                font: Fonts.fontFor(style: .label),
+                                leftFade: 3,
+                                rightFade: 3,
+                                startDelay: 2
+                            )
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                        }
+                        Spacer()
+
+                        hButton(
+                            .small,
+                            .secondary,
+                            content: .init(title: L10n.crossSellGetPrice),
+                            {
+                                fieldIsClicked.toggle()
+                                openExternal()
+                            }
+                        )
+                    }
+                }
+                .accessibilityElement(children: .combine)
+                .onTapGesture {
+                    fieldIsClicked.toggle()
+                    openExternal()
+                    ImpactGenerator.soft()
+                }
+            }
+            .padding(.vertical, .padding8)
+        }
         .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
     }
 }

@@ -40,7 +40,7 @@ struct SettingsView: View {
                                     guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                                         return
                                     }
-                                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                                    DispatchQueue.main.async { Dependencies.urlOpener.open(settingsUrl) }
                                 } else {
                                     NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
 

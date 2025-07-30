@@ -41,7 +41,7 @@ public struct UpdateAppScreen: View {
                 .init(
                     buttonTitle: L10n.embarkUpdateAppButton,
                     buttonAction: {
-                        UIApplication.shared.open(Environment.current.appStoreURL)
+                        Dependencies.urlOpener.open(Environment.current.appStoreURL)
                         onSelected()
                     }
                 ),
