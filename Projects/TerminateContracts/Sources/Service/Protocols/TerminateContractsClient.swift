@@ -18,7 +18,7 @@ public protocol TerminateContractsClient {
         inputData: String?
     ) async throws -> TerminateStepResponse
 
-    func getNotificaiton(
+    func getNotification(
         contractId: String,
         date: Date
     ) async throws -> TerminationNotification?

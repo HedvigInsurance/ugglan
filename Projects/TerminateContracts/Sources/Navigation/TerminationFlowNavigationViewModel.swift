@@ -311,12 +311,30 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             }
         }
     }
-
+    var fetchNotificationTask: Task<Void, Never>?
     func fetchNotification() {
-        Task {
-            if let contractId = config?.contractId, let date = terminationDateStepModel?.date {
-                let data = try await terminateContractsService.getNotificaiton(contractId: contractId, date: date)
-                terminationDateStepModel?.notification = data
+        fetchNotificationTask?.cancel()
+        fetchNotificationTask = Task { [weak self] in
+            if let contractId = self?.config?.contractId, let date = self?.terminationDateStepModel?.date {
+                do {
+                    //check for cancellation before fetching and after fetching
+                    try Task.checkCancellation()
+                    let data = try await self?.terminateContractsService
+                        .getNotification(contractId: contractId, date: date)
+                    try Task.checkCancellation()
+                    self?.terminationDateStepModel?.notification = data
+                } catch let error {
+                    // if it fails check again after 1 second
+                    // if the task is cancelled, it will throw cancellation error
+                    do {
+                        try await Task.sleep(nanoseconds: 1_000_000_000)
+                        try Task.checkCancellation()
+                        self?.fetchNotification()
+                    } catch {
+                        //ignore since it only be cancellation error
+                    }
+
+                }
             }
         }
     }

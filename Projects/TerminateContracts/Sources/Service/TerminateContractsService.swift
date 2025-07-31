@@ -47,10 +47,10 @@ class TerminateContractsService {
         return response
     }
 
-    func getNotificaiton(
+    func getNotification(
         contractId: String,
         date: Date
     ) async throws -> TerminationNotification? {
-        try await client.getNotificaiton(contractId: contractId, date: date)
+        try await client.getNotification(contractId: contractId, date: date)
     }
 }

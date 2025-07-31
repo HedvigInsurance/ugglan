@@ -28,7 +28,7 @@ public class TerminateContractsClientDemo: TerminateContractsClient {
         return .init(context: "", step: .setSuccessStep(model: .init(terminationDate: nil)), progress: 0)
     }
 
-    public func getNotificaiton(contractId: String, date: Date) async throws -> TerminationNotification? {
+    public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         return nil
     }
 
