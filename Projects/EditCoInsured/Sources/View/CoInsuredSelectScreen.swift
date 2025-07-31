@@ -33,7 +33,6 @@ struct CoInsuredSelectScreen: View {
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
                     if let object = selectedCoinsured.0 {
-
                         vm.addCoInsured(
                             .init(
                                 firstName: object.firstName,
@@ -71,7 +70,6 @@ struct CoInsuredSelectScreen: View {
                                 )
                             }
                         }
-                        editCoInsuredNavigation.selectCoInsured = nil
                     }
                 }
             },
