@@ -91,7 +91,8 @@ struct CoInsuredSelectScreen: View {
                     actionType: .add,
                     contractId: contractId
                 ),
-                editCoInsuredNavigation: editCoInsuredNavigation
+                editCoInsuredNavigation: editCoInsuredNavigation,
+                showEnterManuallyButton: false
             )
         } else {
             picker

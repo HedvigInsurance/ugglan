@@ -6,19 +6,23 @@ struct CoInsuredInputErrorView: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
+    let showEnterManuallyButton: Bool
+
     init(
         vm: CoInusuredInputViewModel,
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel,
+        showEnterManuallyButton: Bool
     ) {
         self.editCoInsuredNavigation = editCoInsuredNavigation
         self.vm = vm
         self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        self.showEnterManuallyButton = showEnterManuallyButton
     }
 
     @ViewBuilder
     var body: some View {
         var actionButtonTitle: String {
-            if vm.enterManually {
+            if showEnterManuallyButton {
                 return L10n.coinsuredEnterManuallyButton
             }
             return L10n.generalRetry
@@ -38,6 +42,9 @@ struct CoInsuredInputErrorView: View {
                             vm.SSNError = nil
                             vm.noSSN = true
                         } else {
+                            if self.showEnterManuallyButton {
+                                vm.noSSN = true
+                            }
                             vm.SSNError = nil
                             intentViewModel.errorMessageForInput = nil
                             intentViewModel.errorMessageForCoinsuredList = nil
@@ -64,6 +71,7 @@ struct CoInsuredInputErrorView: View {
             actionType: .add,
             contractId: ""
         ),
-        editCoInsuredNavigation: .init(config: .init())
+        editCoInsuredNavigation: .init(config: .init()),
+        showEnterManuallyButton: false
     )
 }

@@ -27,7 +27,11 @@ struct CoInusuredInputScreen: View {
     var body: some View {
         Group {
             if showErrorView {
-                CoInsuredInputErrorView(vm: vm, editCoInsuredNavigation: editCoInsuredNavigation)
+                CoInsuredInputErrorView(
+                    vm: vm,
+                    editCoInsuredNavigation: editCoInsuredNavigation,
+                    showEnterManuallyButton: vm.actionType == .add && !vm.noSSN
+                )
             } else {
                 mainView.loading($vm.intentViewState)
                     .toolbar {
