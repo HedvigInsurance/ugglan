@@ -26,12 +26,12 @@ import hGraphQL
 
 @MainActor
 enum DI {
-    public static func initServices() {
+    static func initServices() {
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
     }
 
-    public static func initAndRegisterClient() {
+    static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
@@ -168,7 +168,7 @@ enum DI {
         }
     }
 
-    public static func initNetworkClients() async {
+    static func initNetworkClients() async {
         let hApollo = await ApolloClient.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
     }

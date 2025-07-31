@@ -4,9 +4,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class EditCoInsuredClientOctopus: EditCoInsuredClient {
+class EditCoInsuredClientOctopus: EditCoInsuredClient {
     @Inject var octopus: hOctopus
-    public init() {}
 
     public func sendMidtermChangeIntentCommit(commitId: String) async throws {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)

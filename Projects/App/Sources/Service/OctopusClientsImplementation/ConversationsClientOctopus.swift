@@ -4,9 +4,9 @@ import PresentableStore
 import hCore
 import hGraphQL
 
-public class ConversationsClientOctopus: ConversationsClient {
+class ConversationsClientOctopus: ConversationsClient {
     @Inject private var octopus: hOctopus
-    public init() {}
+
     public func getConversations() async throws -> [Conversation] {
         let query = hGraphQL.OctopusGraphQL.ConversationsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
@@ -43,11 +43,9 @@ public class ConversationsClientOctopus: ConversationsClient {
     }
 }
 
-public class ConversationClientOctopus: ConversationClient {
+class ConversationClientOctopus: ConversationClient {
     @Inject var octopus: hOctopus
     var chatFileUploaderService = ChatFileUploaderService()
-
-    public init() {}
 
     public func send(message: Message, for conversationId: String) async throws -> Message {
         var textToSend: String?

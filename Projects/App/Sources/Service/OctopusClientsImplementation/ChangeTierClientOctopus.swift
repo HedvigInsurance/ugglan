@@ -4,10 +4,8 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class ChangeTierClientOctopus: ChangeTierClient {
+class ChangeTierClientOctopus: ChangeTierClient {
     @Inject @preconcurrency var octopus: hOctopus
-
-    public init() {}
 
     public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {

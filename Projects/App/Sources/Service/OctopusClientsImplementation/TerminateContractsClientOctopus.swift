@@ -10,8 +10,7 @@ import TerminateContracts
 import hCore
 import hGraphQL
 
-public class TerminateContractsClientOctopus: TerminateContractsClient {
-    public init() {}
+class TerminateContractsClientOctopus: TerminateContractsClient {
 
     public func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(

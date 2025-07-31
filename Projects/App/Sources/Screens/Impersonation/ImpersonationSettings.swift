@@ -7,7 +7,6 @@ import hCoreUI
 
 struct ImpersonationSettings: View {
     @PresentableStore var marketStore: MarketStore
-    @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
 
     var body: some View {
         hForm {

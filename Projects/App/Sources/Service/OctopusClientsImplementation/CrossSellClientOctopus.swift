@@ -4,9 +4,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class CrossSellClientOctopus: CrossSellClient {
+class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
-    public init() {}
 
     public func getCrossSell() async throws -> [CrossSell] {
         let query = OctopusGraphQL.CrossSellsQuery()

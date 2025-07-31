@@ -10,7 +10,7 @@ private class ClaimsMainNavigationViewModel: ObservableObject {
     @Published var isClaimsFlowPresented = false
 }
 
-public struct ClaimsMainNavigation: View {
+struct ClaimsMainNavigation: View {
     @StateObject var claimsRouter = Router()
     @StateObject private var claimsNavigationVm = ClaimsMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false

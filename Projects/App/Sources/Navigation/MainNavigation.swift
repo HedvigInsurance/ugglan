@@ -21,7 +21,7 @@ struct MainNavigation: App {
     }
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
-    @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
+    @AppStorage(ApplicationState.key) var state: ApplicationState.Screen = .notLoggedIn
     @InjectObservableObject var featureFlags: FeatureFlags
     var body: some Scene {
         WindowGroup {

@@ -3,9 +3,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class EditCoInsuredSharedClientOctopus: EditCoInsuredSharedClient {
+class EditCoInsuredSharedClientOctopus: EditCoInsuredSharedClient {
     @Inject var octopus: hOctopus
-    public init() {}
 
     public func fetchContracts() async throws -> [Contract] {
         let query = OctopusGraphQL.ContractsQuery()

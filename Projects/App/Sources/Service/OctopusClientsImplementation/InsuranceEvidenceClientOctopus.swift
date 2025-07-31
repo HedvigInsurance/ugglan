@@ -2,10 +2,8 @@ import InsuranceEvidence
 import hCore
 import hGraphQL
 
-public class InsuranceEvidenceClientOctopus: InsuranceEvidenceClient {
+class InsuranceEvidenceClientOctopus: InsuranceEvidenceClient {
     @Inject var octopus: hOctopus
-
-    public init() {}
 
     public func getInitialData() async throws -> InsuranceEvidenceInitialData {
         let query = OctopusGraphQL.InsuranceEvidenceInitialDataQuery()

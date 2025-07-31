@@ -876,7 +876,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    public func openUrl(url: URL) {
+    func openUrl(url: URL) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
