@@ -43,7 +43,6 @@ struct SettingsView: View {
                                     DispatchQueue.main.async { Dependencies.urlOpener.open(settingsUrl) }
                                 } else {
                                     NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
-
                                 }
                             }
                         )
@@ -54,7 +53,6 @@ struct SettingsView: View {
                 .accessibilityAddTraits(.isButton)
                 NotificationsCardView()
                     .padding(.vertical, .padding16)
-
             }
             .padding(.top, .padding8)
         }

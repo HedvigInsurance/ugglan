@@ -19,7 +19,7 @@ public struct ClaimDetailView: View {
         claim: ClaimModel?,
         type: FetchClaimDetailsType
     ) {
-        self._vm = .init(wrappedValue: .init(claim: claim, type: type))
+        _vm = .init(wrappedValue: .init(claim: claim, type: type))
     }
 
     private var statusParagraph: String? {
@@ -66,7 +66,6 @@ public struct ClaimDetailView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     vm.showAddFiles(with: [file])
                 }
-
             }
             .ignoresSafeArea()
         }
@@ -86,7 +85,6 @@ public struct ClaimDetailView: View {
             .withDismissButton()
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
             .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
-
         }
         .detent(
             item: $vm.document,
@@ -239,7 +237,7 @@ public struct ClaimDetailView: View {
                         TrackPlayerView(
                             audioPlayer: player
                         )
-                        .onReceive(player.objectWillChange.filter({ $0.playbackState == .finished })) { player in }
+                        .onReceive(player.objectWillChange.filter { $0.playbackState == .finished }) { _ in }
                     }
                 }
                 if let fetchError = vm.fetchFilesError {
@@ -312,7 +310,7 @@ public struct ClaimDetailView: View {
             return nil
         }
 
-        let documents = [termsAndConditionsDocument, appealInstructionDocument].compactMap({ $0 })
+        let documents = [termsAndConditionsDocument, appealInstructionDocument].compactMap { $0 }
 
         if !documents.isEmpty {
             InsuranceTermView(
@@ -410,12 +408,13 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published public var document: hPDFDocument? = nil
     @Published private(set) var claim: ClaimModel? {
         didSet {
-            self.setupToolbarOptionType(for: claim)
+            setupToolbarOptionType(for: claim)
             if let url = URL(string: claim?.signedAudioURL) {
-                self.player = AudioPlayer(url: url)
+                player = AudioPlayer(url: url)
             }
         }
     }
+
     private(set) var player: AudioPlayer?
     private var claimDetailsService: FetchClaimDetailsService
     @Published var fetchFilesError: String?
@@ -432,11 +431,11 @@ public class ClaimDetailViewModel: ObservableObject {
         type: FetchClaimDetailsType
     ) {
         self.claim = claim
-        self.claimDetailsService = .init(type: type)
+        claimDetailsService = .init(type: type)
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         self.type = type
         let files = store.state.files[claim?.id ?? ""] ?? []
-        self.fileGridViewModel = .init(files: files, options: [])
+        fileGridViewModel = .init(files: files, options: [])
         Task {
             await fetchFiles()
         }
@@ -448,8 +447,7 @@ public class ClaimDetailViewModel: ObservableObject {
                 return false
             }
             .sink { _ in
-
-            } receiveValue: { [weak self] value in
+            } receiveValue: { [weak self] _ in
                 Task { [weak self] in
                     await self?.fetchFiles()
                 }
@@ -457,7 +455,6 @@ public class ClaimDetailViewModel: ObservableObject {
             .store(in: &cancellables)
         fileGridViewModel.$files
             .sink { _ in
-
             } receiveValue: { [weak self] files in
                 self?.hasFiles = !files.isEmpty
             }
@@ -467,7 +464,7 @@ public class ClaimDetailViewModel: ObservableObject {
         if let claim {
             claimProcessingState = .success
             if let url = URL(string: claim.signedAudioURL) {
-                self.player = AudioPlayer(url: url)
+                player = AudioPlayer(url: url)
             }
         } else {
             fetchClaimDetails()
@@ -475,7 +472,7 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     private func handleClaimChat() {
-        self.setupToolbarOptionType(for: claim)
+        setupToolbarOptionType(for: claim)
         Timer.publish(every: 5, on: .main, in: .common).autoconnect()
             .sink { [weak self] _ in
                 Task {
@@ -483,13 +480,10 @@ public class ClaimDetailViewModel: ObservableObject {
                         if let claim = try await self?.claimDetailsService.get() {
                             self?.setupToolbarOptionType(for: claim)
                         }
-                    } catch {
-
-                    }
+                    } catch {}
                 }
             }
             .store(in: &cancellables)
-
     }
 
     private func setupToolbarOptionType(for claimModel: ClaimModel?) {
@@ -546,11 +540,11 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     var showUploadedFiles: Bool {
-        return self.claim?.signedAudioURL != nil || !fileGridViewModel.files.isEmpty || canAddFiles
+        claim?.signedAudioURL != nil || !fileGridViewModel.files.isEmpty || canAddFiles
     }
 
     var canAddFiles: Bool {
-        return self.claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
+        claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
     }
 }
 

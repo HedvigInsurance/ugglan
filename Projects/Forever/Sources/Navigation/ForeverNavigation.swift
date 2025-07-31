@@ -17,7 +17,7 @@ public class ForeverNavigationViewModel: ObservableObject {
             }
         }
         do {
-            let data = try await self.foreverService.getMemberReferralInformation()
+            let data = try await foreverService.getMemberReferralInformation()
             foreverData = data
             withAnimation {
                 viewState = .success
@@ -46,6 +46,7 @@ public class ForeverNavigationViewModel: ObservableObject {
 enum ForeverRouterActions {
     case success
 }
+
 extension ForeverRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
@@ -53,7 +54,6 @@ extension ForeverRouterActions: TrackingViewNameProtocol {
             return .init(describing: SuccessScreen.self)
         }
     }
-
 }
 
 public struct ForeverNavigation: View {
@@ -102,7 +102,6 @@ public struct ForeverNavigation: View {
                 )
         }
         .environmentObject(foreverNavigationVm)
-
     }
 }
 
@@ -118,7 +117,6 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
 
     case forever
     case changeCode
-
 }
 
 #Preview {

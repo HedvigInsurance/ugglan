@@ -3,8 +3,11 @@ import Foundation
 public class SubmitClaimClientDemo: SubmitClaimClient {
     public init() {}
 
-    public func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+    public func startClaim(
+        entrypointId _: String?,
+        entrypointOptionId _: String?
+    ) async throws -> SubmitClaimStepResponse {
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -14,11 +17,11 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func updateContact(
-        phoneNumber: String,
-        context: String,
-        model: FlowClaimPhoneNumberStepModel
+        phoneNumber _: String,
+        context _: String,
+        model _: FlowClaimPhoneNumberStepModel
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -28,10 +31,10 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func dateOfOccurrenceAndLocationRequest(
-        context: String,
-        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
+        context _: String,
+        model _: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -41,12 +44,12 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func submitAudioRecording(
-        type: SubmitAudioRecordingType,
-        context: String,
-        currentClaimId: String,
-        model: FlowClaimAudioRecordingStepModel
+        type _: SubmitAudioRecordingType,
+        context _: String,
+        currentClaimId _: String,
+        model _: FlowClaimAudioRecordingStepModel
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -56,10 +59,10 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func singleItemRequest(
-        context: String,
-        model: FlowClaimSingleItemStepModel
+        context _: String,
+        model _: FlowClaimSingleItemStepModel
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -69,10 +72,10 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func summaryRequest(
-        context: String,
-        model: SubmitClaimStep.SummaryStepModels
+        context _: String,
+        model _: SubmitClaimStep.SummaryStepModels
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -82,10 +85,10 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func singleItemCheckoutRequest(
-        context: String,
-        model: FlowClaimSingleItemCheckoutStepModel
+        context _: String,
+        model _: FlowClaimSingleItemCheckoutStepModel
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -95,11 +98,11 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func contractSelectRequest(
-        contractId: String,
-        context: String,
-        model: FlowClaimContractSelectStepModel
+        contractId _: String,
+        context _: String,
+        model _: FlowClaimContractSelectStepModel
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -108,8 +111,9 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
         )
     }
 
-    public func emergencyConfirmRequest(isEmergency: Bool, context: String) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+    public func emergencyConfirmRequest(isEmergency _: Bool, context _: String) async throws -> SubmitClaimStepResponse
+    {
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
@@ -119,11 +123,11 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
     }
 
     public func submitFileUpload(
-        ids: [String],
-        context: String,
-        model: FlowClaimFileUploadStepModel
+        ids _: [String],
+        context _: String,
+        model _: FlowClaimFileUploadStepModel
     ) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(
+        SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,

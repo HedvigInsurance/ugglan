@@ -14,7 +14,6 @@ public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable, S
         self.displayName = displayName
         self.entrypoints = entrypoints
     }
-
 }
 
 public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable, Sendable {

@@ -129,7 +129,6 @@ struct ContractTable: View {
                 ContractStore.self,
                 getter: { state in
                     getContractsToShow(for: state)
-
                 }
             ) { contracts in
                 VStack(spacing: .padding8) {
@@ -165,8 +164,8 @@ struct ContractTable: View {
                 state.activeContracts
             }
         ) { activeContracts in
-            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty
-                && featureFlags.isMovingFlowEnabled
+            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty,
+                featureFlags.isMovingFlowEnabled
             {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
@@ -210,7 +209,7 @@ public class ContractTableViewModel: ObservableObject {
             }
 
         addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
-            [weak self] notification in
+            [weak self] _ in
             Task {
                 await self?.getAddonBanner()
             }

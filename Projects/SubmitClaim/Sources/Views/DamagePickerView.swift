@@ -8,10 +8,8 @@ struct DamagePickerView: View {
     var body: some View {
         ItemPickerScreen<ClaimFlowItemProblemOptionModel>(
             config: .init(
-                items: {
-                    return claimsNavigationVm.singleItemModel?.availableItemProblems
-                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
-                }(),
+                items: claimsNavigationVm.singleItemModel?.availableItemProblems
+                    .compactMap { (object: $0, displayName: .init(title: $0.displayName)) } ?? [],
                 preSelectedItems: {
                     if let singleItemStep = claimsNavigationVm.singleItemModel {
                         let preselected = singleItemStep.availableItemProblems

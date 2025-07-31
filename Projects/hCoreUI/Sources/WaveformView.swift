@@ -21,7 +21,7 @@ public struct WaveformView<StripeColor: hColor>: View {
     public var body: some View {
         VStack(alignment: .center) {
             GeometryReader { geometry in
-                self.makeView(geometry)
+                makeView(geometry)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: maxStripeHeight)
@@ -36,7 +36,7 @@ public struct WaveformView<StripeColor: hColor>: View {
         return HStack(spacing: stripeSpacing) {
             ForEach(heights, id: \.self) { height in
                 RoundedRectangle(cornerRadius: stripeWidth / 2)
-                    .fill(self.stripeColor)
+                    .fill(stripeColor)
                     .frame(width: stripeWidth, height: abs(CGFloat(height)))
             }
         }

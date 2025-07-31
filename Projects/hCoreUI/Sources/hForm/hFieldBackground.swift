@@ -43,6 +43,7 @@ struct hFieldBackgroundModifier: ViewModifier {
         }
     }
 }
+
 extension View {
     public func addFieldBackground(animate: Binding<Bool>, error: Binding<String?>) -> some View {
         modifier(hFieldBackgroundModifier(animate: animate, error: error))
@@ -58,7 +59,6 @@ struct hFieldErrorModifier: ViewModifier {
             content
             if let errorMessage = error {
                 HStack {
-
                     hText(errorMessage, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
@@ -165,7 +165,7 @@ struct hFieldContainer<Content: View>: View {
             hTextColor.Translucent.secondary
         } else if backgroundOption.contains(.locked) {
             hTextColor.Translucent.disabled
-        } else if shouldMoveLabel && !isEnabled {
+        } else if shouldMoveLabel, !isEnabled {
             hTextColor.Translucent.secondary
         } else {
             hTextColor.Translucent.disabled
@@ -192,9 +192,9 @@ struct hFieldLabel: View {
     ) {
         self.placeholder = placeholder
         self.useScaleEffect = useScaleEffect
-        self._animate = animate
-        self._error = error
-        self._shouldMoveLabel = shouldMoveLabel
+        _animate = animate
+        _error = error
+        _shouldMoveLabel = shouldMoveLabel
     }
 
     var body: some View {
@@ -229,7 +229,7 @@ struct hFieldLabel: View {
             hTextColor.Translucent.secondary
         } else if backgroundOption.contains(.locked) {
             hTextColor.Translucent.disabled
-        } else if shouldMoveLabel && !isEnabled {
+        } else if shouldMoveLabel, !isEnabled {
             hTextColor.Translucent.secondary
         } else {
             hTextColor.Translucent.disabled

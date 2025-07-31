@@ -27,8 +27,7 @@ public struct L10nDerivation {
 }
 
 extension String {
-    nonisolated(unsafe)
-        public static var derivedFromL10n: UInt8 = 0
+    public nonisolated(unsafe) static var derivedFromL10n: UInt8 = 0
 
     /// set when String is derived from a L10n key
     public var derivedFromL10n: L10nDerivation? {

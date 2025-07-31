@@ -36,15 +36,15 @@ public struct ProductVariant: Codable, Hashable, Sendable {
     public init(
         data: OctopusGraphQL.ProductVariantFragment
     ) {
-        self.displayName = data.displayName
-        self.termsVersion = data.termsVersion
-        self.typeOfContract = data.typeOfContract
-        self.partner = data.partner ?? ""
-        self.perils = data.perils.map({ .init(fragment: $0.fragments.perilFragment) })
-        self.insurableLimits = data.insurableLimits.map({ .init($0) })
-        self.documents = data.documents.map({ .init($0) })
-        self.displayNameTier = data.displayNameTier
-        self.tierDescription = data.tierDescription
+        displayName = data.displayName
+        termsVersion = data.termsVersion
+        typeOfContract = data.typeOfContract
+        partner = data.partner ?? ""
+        perils = data.perils.map { .init(fragment: $0.fragments.perilFragment) }
+        insurableLimits = data.insurableLimits.map { .init($0) }
+        documents = data.documents.map { .init($0) }
+        displayNameTier = data.displayNameTier
+        tierDescription = data.tierDescription
     }
 
     public init?(

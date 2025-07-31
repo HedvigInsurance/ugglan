@@ -12,7 +12,7 @@ public protocol EditCoInsuredClient {
 
 public enum CoInsuredAction: Codable, Identifiable {
     public var id: Self {
-        return self
+        self
     }
 
     case delete
@@ -22,7 +22,7 @@ public enum CoInsuredAction: Codable, Identifiable {
 
 extension CoInsuredAction: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: SuccessScreen.self)
+        .init(describing: SuccessScreen.self)
     }
 }
 

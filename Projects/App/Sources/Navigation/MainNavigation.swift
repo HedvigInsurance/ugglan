@@ -15,13 +15,13 @@ import hCoreUI
 
 @main
 struct MainNavigation: App {
-
     init() {
         DI.initServices()
     }
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
-    @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
+    @AppStorage(ApplicationState.key) var state: ApplicationState.Screen = .notLoggedIn
     @InjectObservableObject var featureFlags: FeatureFlags
     var body: some Scene {
         WindowGroup {
@@ -61,7 +61,7 @@ struct MainNavigation: App {
             .onOpenURL { url in
                 handle(url: url)
             }
-            .onChange(of: state) { value in
+            .onChange(of: state) { _ in
                 vm.state = state
             }
         }
@@ -89,6 +89,7 @@ class MainNavigationViewModel: ObservableObject {
             loggedInVm.hasLaunchFinished.send(hasLaunchFinished)
         }
     }
+
     @Published var showLaunchScreen = true
     lazy var notLoggedInVm = NotLoggedViewModel()
     var loggedInVm = LoggedInNavigationViewModel()
@@ -155,7 +156,7 @@ class MainNavigationViewModel: ObservableObject {
         }
         configureAppBadgeTracking()
 
-        //we want to show it initially when app launches if there is any
+        // we want to show it initially when app launches if there is any
         ToolbarOptionType.newOfferNotification.resetTooltipDisplayState()
         ToolbarOptionType.chatNotification.resetTooltipDisplayState()
     }
@@ -166,9 +167,9 @@ class MainNavigationViewModel: ObservableObject {
 
     func fetchFeatureFlag() async {
         do {
-            try await self.appDelegate.setupFeatureFlags()
+            try await appDelegate.setupFeatureFlags()
         } catch _ {
-            //we just ignore error since we should let the member in
+            // we just ignore error since we should let the member in
         }
     }
 

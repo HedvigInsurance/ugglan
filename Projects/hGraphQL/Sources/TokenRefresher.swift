@@ -5,7 +5,7 @@ import Foundation
 @MainActor
 public class TokenRefresher {
     public static let shared = TokenRefresher()
-    private var isRefreshing: CurrentValueSubject<Bool, Never> = CurrentValueSubject<Bool, Never>(false)
+    private var isRefreshing: CurrentValueSubject<Bool, Never> = .init(false)
     private var cancellables = Set<AnyCancellable>()
     private func needRefresh() async -> Bool {
         guard let token = try? await ApolloClient.retreiveToken() else {
@@ -23,19 +23,19 @@ public class TokenRefresher {
         }
 
         graphQlLogger.debug("Checking if access token refresh is needed")
-        guard await self.needRefresh() else {
+        guard await needRefresh() else {
             graphQlLogger.debug("Access token refresh is not needed")
             return
         }
 
-        if self.isRefreshing.value {
+        if isRefreshing.value {
             graphQlLogger.debug("Already refreshing waiting until that is complete")
             var returnedValue = false
             try await withCheckedThrowingContinuation {
-                [weak self] (inCont: CheckedContinuation<Void, Error>) -> Void in
+                [weak self] (inCont: CheckedContinuation<Void, Error>) in
                 guard let self = self else { return }
                 self.isRefreshing.first(where: { !$0 })
-                    .sink { value in
+                    .sink { _ in
                         graphQlLogger.debug("Refresh completed")
                         if !returnedValue {
                             returnedValue = true
@@ -53,12 +53,12 @@ public class TokenRefresher {
             }
             throw AuthError.refreshTokenExpired
         } else {
-            self.isRefreshing.send(true)
+            isRefreshing.send(true)
             graphQlLogger.info("Will start refreshing token")
 
             do {
                 try await onRefresh?(token.refreshToken)
-                self.isRefreshing.send(false)
+                isRefreshing.send(false)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.cancellables.removeAll()
                 }
@@ -75,7 +75,7 @@ public class TokenRefresher {
                         break
                     }
                 }
-                self.isRefreshing.send(false)
+                isRefreshing.send(false)
                 throw error
             }
         }

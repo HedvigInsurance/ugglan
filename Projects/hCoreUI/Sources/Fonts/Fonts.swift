@@ -23,15 +23,11 @@ public enum Fonts {
         return UIFont(name: fontName!, size: UIFont.labelFontSize)!
     }
 
-    public static var hedvigLettersStandard: UIFont = {
-        loadFont(resourceName: hedvigLettersStandardFontName)
-    }()
+    public static var hedvigLettersStandard: UIFont = loadFont(resourceName: hedvigLettersStandardFontName)
 
-    public static var hedvigLettersBig: UIFont = {
-        loadFont(resourceName: hedvigLettersBigFontName)
-    }()
+    public static var hedvigLettersBig: UIFont = loadFont(resourceName: hedvigLettersBigFontName)
 
-    public static var forceTraitCollection: UITraitCollection? = nil
+    public static var forceTraitCollection: UITraitCollection?
 
     public static func fontFor(style: HFontTextStyle, withoutFontMultipler: Bool = false) -> UIFont {
         func getFont(_ font: UIFont) -> UIFont {
@@ -69,6 +65,6 @@ extension EnvironmentValues {
 
 extension View {
     public var hWithoutFontMultiplier: some View {
-        self.environment(\.hWithoutFontMultiplier, true)
+        environment(\.hWithoutFontMultiplier, true)
     }
 }

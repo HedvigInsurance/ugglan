@@ -44,7 +44,7 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         .buttonCornerModifier(size)
     }
 
-    //content
+    // content
     struct Label: View {
         @Environment(\.isEnabled) var isEnabled
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType

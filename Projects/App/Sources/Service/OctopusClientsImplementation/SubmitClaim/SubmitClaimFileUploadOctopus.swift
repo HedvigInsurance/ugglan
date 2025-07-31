@@ -16,14 +16,14 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
         let request = try await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
-            let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
+            (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) in
+            let task = self.sessionClient.dataTask(with: request) { [weak self] data, response, error in
                 Task {
                     do {
                         if let uploadedFiles: [ClaimFileUploadResponse] = try await self?
                             .handleResponse(data: data, response: response, error: error)
                         {
-                            for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
+                            for file in uploadedFiles.compactMap(\.file).enumerated() {
                                 let localFileSource = files[file.offset].source
                                 switch localFileSource {
                                 case let .localFile(results):
@@ -36,7 +36,7 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
                                                 let processor = DownsamplingImageProcessor(
                                                     size: CGSize(width: 300, height: 300)
                                                 )
-                                                var options = KingfisherParsedOptionsInfo.init(nil)
+                                                var options = KingfisherParsedOptionsInfo(nil)
                                                 options.processor = processor
                                                 try? await ImageCache.default.store(
                                                     image,
@@ -48,14 +48,14 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
                                     }
                                 case .url:
                                     break
-                                case .data(let data):
+                                case let .data(data):
                                     if MimeType.findBy(mimeType: file.element.mimeType).isImage,
                                         let image = UIImage(data: data)
                                     {
                                         let processor = DownsamplingImageProcessor(
                                             size: CGSize(width: 300, height: 300)
                                         )
-                                        var options = KingfisherParsedOptionsInfo.init(nil)
+                                        var options = KingfisherParsedOptionsInfo(nil)
                                         options.processor = processor
                                         try? await ImageCache.default.store(
                                             image,
@@ -68,7 +68,7 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
 
                             inCont.resume(returning: uploadedFiles)
                         }
-                    } catch let error {
+                    } catch {
                         inCont.resume(throwing: error)
                     }
                 }
@@ -88,7 +88,7 @@ private enum ClaimsRequest {
     case uploadFile(endPoint: String, files: [File])
 
     private var baseUrl: URL {
-        return Environment.current.claimsApiURL
+        Environment.current.claimsApiURL
     }
 
     private var methodType: String {
@@ -109,11 +109,11 @@ private enum ClaimsRequest {
             for file in files {
                 var data: Data?
                 switch file.source {
-                case .data(let fileData):
+                case let .data(fileData):
                     data = fileData
                 case .url:
                     break
-                case .localFile(let results):
+                case let .localFile(results):
                     if let results {
                         data = try? await results.itemProvider.getData().data
                     }
@@ -128,10 +128,10 @@ private enum ClaimsRequest {
             }
             request = multipartFormDataRequest.asURLRequest()
         }
-        request.httpMethod = self.methodType
+        request.httpMethod = methodType
         try await TokenRefresher.shared.refreshIfNeeded()
         let headers = await ApolloClient.headers()
-        headers.forEach { element in
+        for element in headers {
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }
         return request

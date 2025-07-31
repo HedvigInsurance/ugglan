@@ -17,7 +17,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hTextStyle(_ style: HFontTextStyle? = nil) -> some View {
-        self.environment(\.defaultHTextStyle, style)
+        environment(\.defaultHTextStyle, style)
     }
 }
 
@@ -73,35 +73,26 @@ public enum HFontTextStyle {
         case .display1: return 54
         case .display2: return 68
         case .display3: return 84
-
         case .heading1: return 18
         case .heading2: return 24
         case .heading3: return 32
-
         case .body1: return 18
         case .body2: return 24
         case .body3: return 32
-
         case .label: return 14
         case .finePrint: return 12
         case .tabBar: return 10
-
         // Big
         case .displayXXLShort: return 92
         case .displayXXLLong: return 84
-
         case .displayXLShort: return 84
         case .displayXLLong: return 76
-
         case .displayLShort: return 76
         case .displayLLong: return 68
-
         case .displayMShort: return 68
         case .displayMLong: return 54
-
         case .displaySShort: return 48
         case .displaySLong: return 32
-
         case .displayXSShort: return 32
         case .displayXSLong: return 28
         }
@@ -126,6 +117,7 @@ public enum HFontTextStyle {
         }()
         return min(2.5, sizeMultiplier)
     }
+
     var fontTextStyle: Font.TextStyle {
         switch self {
         case .display1: return .title
@@ -139,7 +131,6 @@ public enum HFontTextStyle {
         case .body3: return .body
         case .label: return .footnote
         case .finePrint: return .footnote
-
         case .displayXXLShort: return .largeTitle
         case .displayXXLLong: return .largeTitle
         case .displayXLShort: return .largeTitle
@@ -169,7 +160,6 @@ public enum HFontTextStyle {
         case .body3: return .body
         case .label: return .footnote
         case .finePrint: return .footnote
-
         case .displayXXLShort: return .largeTitle
         case .displayXXLLong: return .largeTitle
         case .displayXLShort: return .largeTitle
@@ -195,13 +185,14 @@ public struct hFontModifier: ViewModifier {
     public init(style: HFontTextStyle) {
         self.style = style
     }
+
     var font: UIFont {
         Fonts.fontFor(style: style, withoutFontMultipler: withoutFontMultiplier)
     }
 
     public func body(content: Content) -> some View {
         content
-            .font(.custom(font.fontName, size: style.fontSize, relativeTo: self.style.fontTextStyle))
+            .font(.custom(font.fontName, size: style.fontSize, relativeTo: style.fontTextStyle))
     }
 }
 
@@ -245,7 +236,7 @@ public struct hText: View {
         _ text: String
     ) {
         self.text = text
-        self.style = nil
+        style = nil
     }
 
     public var body: some View {

@@ -35,7 +35,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         )
 
         let mockService = MockCampaignData.createMockCampaignService()
-        self.sut = mockService
+        sut = mockService
 
         let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
@@ -56,7 +56,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         )
 
         let mockService = MockCampaignData.createMockCampaignService()
-        self.sut = mockService
+        sut = mockService
 
         let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
@@ -80,7 +80,7 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             )
 
             let mockService = MockCampaignData.createMockCampaignService()
-            self.sut = mockService
+            sut = mockService
 
             let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 

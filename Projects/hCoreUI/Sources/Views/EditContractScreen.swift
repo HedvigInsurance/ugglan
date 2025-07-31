@@ -102,7 +102,6 @@ public struct EditContractScreen: View {
 struct EditContract_Previews: PreviewProvider {
     static var previews: some View {
         EditContractScreen(editTypes: []) { _ in
-
         }
     }
 }

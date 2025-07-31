@@ -4,6 +4,6 @@ import hCore
 
 extension Color {
     public func uiColor() -> UIColor {
-        return UIColor(self)
+        UIColor(self)
     }
 }

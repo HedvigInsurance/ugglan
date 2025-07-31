@@ -6,9 +6,9 @@ import hCore
 class FetchEntrypointsService {
     @Inject private var client: hFetchEntrypointsClient
 
-    public init() {}
+    init() {}
 
-    public func get() async throws -> [ClaimEntryPointGroupResponseModel] {
+    func get() async throws -> [ClaimEntryPointGroupResponseModel] {
         let data = try await client.get()
         log.info("\(FetchEntrypointsService.self): get ", error: nil, attributes: ["data": data])
         return data

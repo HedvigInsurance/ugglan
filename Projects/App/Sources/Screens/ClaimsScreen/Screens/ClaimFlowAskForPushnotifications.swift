@@ -112,8 +112,6 @@ struct AskForPushNotifications: View {
 
 struct AskForPushnotifications_Previews: PreviewProvider {
     static var previews: some View {
-        AskForPushNotifications(text: "TEXT") {
-
-        }
+        AskForPushNotifications(text: "TEXT") {}
     }
 }

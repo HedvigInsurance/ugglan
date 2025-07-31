@@ -43,7 +43,6 @@ struct LinkView: View {
                         }
                     )
                     .hButtonTakeFullWidth(true)
-
                 }
                 .padding([.horizontal, .bottom], .padding16)
             }
@@ -68,7 +67,6 @@ class LinkViewModel: ObservableObject {
     init(url: URL) {
         self.url = url
         getData()
-
     }
 
     @MainActor

@@ -10,7 +10,7 @@ public struct ProgressBarView: ViewModifier {
     public init(
         progress: Binding<Float?>
     ) {
-        self._progress = progress
+        _progress = progress
     }
 
     public func body(content: Content) -> some View {
@@ -19,7 +19,6 @@ public struct ProgressBarView: ViewModifier {
             if let navigationBar = (vc as? UINavigationController)?.navigationBar,
                 navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {
-
                 progressView.backgroundColor = UIColor.brand(.primaryBackground(false))
                 progressView.layer.cornerRadius = 2
                 progressView.tag = progressViewTag
@@ -47,7 +46,7 @@ public struct ProgressBarView: ViewModifier {
 
 extension View {
     public func resetProgressOnDismiss(to value: Float?, for progress: Binding<Float?>) -> some View {
-        self.modifier(ResetProgressViewModifier(toValue: value, progress: progress))
+        modifier(ResetProgressViewModifier(toValue: value, progress: progress))
     }
 }
 

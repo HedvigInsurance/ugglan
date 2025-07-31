@@ -24,7 +24,7 @@ struct ImportantMessageView: View {
                             .init(
                                 buttonTitle: linkInfo.text,
                                 buttonAction: {
-                                    self.urlLink = linkInfo.link
+                                    urlLink = linkInfo.link
                                     showSafariView = true
                                 }
                             ),

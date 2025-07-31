@@ -33,7 +33,7 @@ public struct RenewalCardView: View {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             URL(string: draftCertificateUrl) != nil
         {
-            self.document = hPDFDocument(
+            document = hPDFDocument(
                 displayName: contract.displayName,
                 url: contract.upcomingRenewal?.draftCertificateUrl ?? "",
                 type: .unknown

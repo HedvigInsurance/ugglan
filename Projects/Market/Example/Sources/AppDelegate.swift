@@ -2,10 +2,10 @@ import Foundation
 import SwiftUI
 import hCoreUI
 
-@UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
+@main class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    internal func application(
+    func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {

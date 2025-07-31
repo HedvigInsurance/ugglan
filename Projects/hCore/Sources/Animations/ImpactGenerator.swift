@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-public struct ImpactGenerator {
+public enum ImpactGenerator {
     public static func soft() {
         Task {
             let generator = await UIImpactFeedbackGenerator(style: .soft)

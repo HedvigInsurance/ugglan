@@ -17,10 +17,10 @@ public class ChatNavigationViewModel: ObservableObject {
         let status = await UNUserNotificationCenter.current().notificationSettings()
         switch status.authorizationStatus {
         case .notDetermined:
-            self.isAskForPushNotificationsPresented = true
+            isAskForPushNotificationsPresented = true
         case .denied:
             func createToast() -> ToastBar {
-                return ToastBar(
+                ToastBar(
                     type: .info,
                     text: L10n.chatToastPushNotificationsTitle,
                     action: .init(
@@ -55,12 +55,11 @@ extension ChatRedirectViewType: TrackingViewNameProtocol {
             return "ClaimDetailView"
         }
     }
-
 }
 
 public enum ChatNavigationViewName: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ChatScreen.self)
+        .init(describing: ChatScreen.self)
     }
 
     case chat
@@ -133,7 +132,7 @@ public struct ChatNavigation<Content: View>: View {
 }
 
 #Preview {
-    ChatNavigation(chatType: .newConversation) { type, onDone in
+    ChatNavigation(chatType: .newConversation) { _, _ in
         EmptyView()
     }
 }

@@ -18,7 +18,7 @@ struct MockData {
                 monthlyDiscountPerReferral: .init(amount: "10", currency: "SEK")
             )
         },
-        changeCode: @escaping ChangeCode = { code in }
+        changeCode: @escaping ChangeCode = { _ in }
     ) -> MockForeverService {
         let service = MockForeverService(
             fetchMemberReferralInformation: fetchMemberReferralInformation,

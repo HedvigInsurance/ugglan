@@ -20,6 +20,7 @@ public struct TravelInsuranceFormDTO: Encodable {
     public let coInsured: [CoInsuredDto]
     public let email: String
 }
+
 public struct CoInsuredDto: Encodable {
     public let fullName: String
     public let personalNumber: String?

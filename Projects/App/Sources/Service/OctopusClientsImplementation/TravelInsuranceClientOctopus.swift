@@ -40,7 +40,6 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         let input = dto.asOctopusInput
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
-
             let delayTask = Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
             }
@@ -64,15 +63,15 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
     ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
         do {
-            let data = try await self.octopus.client.fetch(
+            let data = try await octopus.client.fetch(
                 query: query,
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-            let listData = data.currentMember.travelCertificates.compactMap({
-                TravelCertificateModel.init($0)
-            })
+            let listData = data.currentMember.travelCertificates.compactMap {
+                TravelCertificateModel($0)
+            }
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
-                .filter({ $0.supportsTravelCertificate }).isEmpty
+                .filter(\.supportsTravelCertificate).isEmpty
 
             let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source.getSource))
             let bannerResponse = try await octopus.client.fetch(
@@ -98,22 +97,21 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             throw ex
         }
     }
-
 }
 
 extension TravelInsuranceFormDTO {
     fileprivate var asOctopusInput: OctopusGraphQL.TravelCertificateCreateInput {
-        return .init(
+        .init(
             contractId: contractId,
             startDate: startDate,
             isMemberIncluded: isMemberIncluded,
-            coInsured: coInsured.compactMap({
+            coInsured: coInsured.compactMap {
                 .init(
                     fullName: $0.fullName,
                     ssn: GraphQLNullable(optionalValue: $0.personalNumber),
                     dateOfBirth: GraphQLNullable(optionalValue: $0.birthDate)
                 )
-            }),
+            },
             email: email
         )
     }

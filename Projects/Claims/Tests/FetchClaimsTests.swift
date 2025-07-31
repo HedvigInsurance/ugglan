@@ -61,7 +61,7 @@ final class FetchClaimsTests: XCTestCase {
         let mockService = MockData.createMockFetchClaimService(
             fetch: { claims }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedClaims = try! await mockService.fetch()
         assert(respondedClaims == claims)
@@ -99,7 +99,7 @@ final class FetchClaimsTests: XCTestCase {
         let mockService = MockData.createMockFetchClaimService(
             fetchFiles: { files }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedFiles = try! await mockService.fetchFiles()
         assert(respondedFiles == files)

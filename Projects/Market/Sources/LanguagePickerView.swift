@@ -4,8 +4,8 @@ import hCore
 import hCoreUI
 
 public struct LanguagePickerView: View {
-    let onSave: (() -> Void)
-    let onCancel: (() -> Void)
+    let onSave: () -> Void
+    let onCancel: () -> Void
     @PresentableStore var store: MarketStore
 
     @State var currentLocale: Localization.Locale = .currentLocale.value

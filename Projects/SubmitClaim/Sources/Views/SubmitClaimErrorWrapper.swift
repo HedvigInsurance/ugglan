@@ -48,7 +48,7 @@ private struct ClaimErrorTrackerModifierForString: ViewModifier {
                     return .success
                 }()
             }
-            .onChange(of: error) { value in
+            .onChange(of: error) { _ in
                 processingState = {
                     if let error {
                         return .error(errorMessage: error)
@@ -63,6 +63,7 @@ extension View {
     func claimErrorTrackerForState(_ state: Binding<ProcessingState>) -> some View {
         modifier(ClaimErrorTrackerModifier(processingState: state))
     }
+
     func claimErrorTracker(for error: Binding<String?>) -> some View {
         modifier(ClaimErrorTrackerModifierForString(error: error))
     }

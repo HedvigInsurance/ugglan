@@ -13,6 +13,7 @@ public struct ForeverView: View {
             recalculateHeight()
         }
     }
+
     @State var headerHeight: CGFloat = 0 {
         didSet {
             recalculateHeight()

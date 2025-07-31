@@ -57,7 +57,7 @@ public struct ConversationMessagesData {
     var screenTitle: String {
         if isLegacy {
             return L10n.chatConversationHistoryTitle
-        } else if self.hasClaim {
+        } else if hasClaim {
             return claimType ?? L10n.chatConversationClaimTitle
         }
         return L10n.chatConversationQuestionTitle

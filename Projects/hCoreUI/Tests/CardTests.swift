@@ -2,10 +2,10 @@ import Flow
 import Form
 import Foundation
 import SnapshotTesting
+import TestDependencies
 import Testing
 import XCTest
 import hCoreUI
-import TestDependencies
 
 @testable import hCoreUI
 
@@ -29,7 +29,8 @@ final class CardTests: XCTestCase {
             )
         )
 
-        materializeViewable(card) { view in view.snp.makeConstraints { make in make.width.equalTo(400) }
+        materializeViewable(card) { view in
+            view.snp.makeConstraints { make in make.width.equalTo(400) }
 
             ciAssertSnapshot(matching: view, as: .image)
         }

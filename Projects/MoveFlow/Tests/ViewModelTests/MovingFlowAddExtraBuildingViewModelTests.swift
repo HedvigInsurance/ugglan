@@ -10,8 +10,7 @@ final class MovingFlowAddExtraBuildingViewModelTests: XCTestCase {
         super.setUp()
     }
 
-    override func tearDown() async throws {
-    }
+    override func tearDown() async throws {}
 
     func testSetExtraBuildingSuccess() async {
         let model = MovingFlowAddExtraBuildingViewModel()

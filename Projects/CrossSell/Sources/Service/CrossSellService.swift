@@ -19,5 +19,4 @@ class CrossSellService {
         log.info("CrossSellService: getAddonBannerModel", error: nil, attributes: nil)
         return try await service.getAddonBannerModel(source: source)
     }
-
 }

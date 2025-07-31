@@ -9,7 +9,7 @@ struct ChangeCodeView: View {
     init(
         foreverNavigationVm: ForeverNavigationViewModel
     ) {
-        self.vm = .init(input: foreverNavigationVm.foreverData?.discountCode ?? "", foreverVm: foreverNavigationVm)
+        vm = .init(input: foreverNavigationVm.foreverData?.discountCode ?? "", foreverVm: foreverNavigationVm)
     }
 
     var body: some View {
@@ -34,7 +34,7 @@ class ChangeCodeViewModel: ObservableObject {
     ) {
         self.foreverVm = foreverVm
 
-        self.inputVm = ChangeCodeViewModel.createInputViewModel(input: input)
+        inputVm = ChangeCodeViewModel.createInputViewModel(input: input)
 
         inputVm.onSave = { [weak self] text in
             try await self?.handleOnSave(text: text)
@@ -55,13 +55,13 @@ class ChangeCodeViewModel: ObservableObject {
     }
 
     private func dismissRouter() async throws {
-        self.router?.dismiss()
+        router?.dismiss()
     }
 
     private func handleOnSave(text: String) async throws {
-        try await self.foreverService.changeCode(code: text)
+        try await foreverService.changeCode(code: text)
         try await foreverVm?.fetchForeverData()
-        self.router?.push(ForeverRouterActions.success)
+        router?.push(ForeverRouterActions.success)
     }
 }
 

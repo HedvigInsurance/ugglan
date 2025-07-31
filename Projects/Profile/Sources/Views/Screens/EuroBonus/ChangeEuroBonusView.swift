@@ -52,10 +52,10 @@ private class ChangeEurobonusViewModel: ObservableObject {
         guard Masking(type: .euroBonus).isValid(text: text) else {
             throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
         }
-        let data = try await self.profileService.update(eurobonus: text)
+        let data = try await profileService.update(eurobonus: text)
         let store: ProfileStore = globalPresentableStoreContainer.get()
         store.send(.setEurobonusNumber(partnerData: data))
-        self.router?.push(EuroBonusRouterType.successChangeEuroBonus)
+        router?.push(EuroBonusRouterType.successChangeEuroBonus)
     }
 }
 
@@ -63,6 +63,6 @@ extension String {
     var toAlphaNumeric: String {
         let pattern = "[^A-Za-z0-9]+"
 
-        return self.replacingOccurrences(of: pattern, with: "", options: [.regularExpression])
+        return replacingOccurrences(of: pattern, with: "", options: [.regularExpression])
     }
 }

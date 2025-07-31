@@ -47,6 +47,7 @@ class WebMetaDataProvider {
         case somethingWentWrong(url: URL)
     }
 }
+
 extension WebMetaDataProvider.WebMetaDataProviderError: LocalizedError {
     var errorDescription: String? {
         switch self {
@@ -66,6 +67,4 @@ struct WebMetaDataProviderData: Sendable {
     }
 }
 
-extension LPLinkMetadata: @unchecked @retroactive Sendable {
-
-}
+extension LPLinkMetadata: @unchecked @retroactive Sendable {}

@@ -27,10 +27,10 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.preSelectedItems = preSelectedItems()
         self.onSelected = onSelected
         self.onCancel = onCancel
-        self.manualInput = manualInputConfig ?? .init(placeholder: nil)
+        manualInput = manualInputConfig ?? .init(placeholder: nil)
         self.buttonText = buttonText ?? L10n.generalSaveButton
         self.infoCard = infoCard
-        self.selectedItems = preSelectedItems()
+        selectedItems = preSelectedItems()
     }
 
     public struct ItemPickerInfoCard {
@@ -67,7 +67,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
             self.placeholder = placeholder
             if let brandName {
                 self.brandName = brandName
-                self.input = true
+                input = true
             }
         }
     }
@@ -234,9 +234,9 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     var sendSelectedItems: Void {
         if config.selectedItems.count > 1 {
             config.onSelected(
-                config.selectedItems.map({
+                config.selectedItems.map {
                     (object: $0, displayName: nil)
-                })
+                }
             )
         } else if config.selectedItems.count == 0 {
             if config.manualInput.input {
@@ -301,7 +301,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         ImpactGenerator.soft()
         withAnimation(.easeInOut(duration: 0.2)) {
             if !attributes.contains(.singleSelect) {
-                if let index = self.config.selectedItems.firstIndex(where: { $0 == item }) {
+                if let index = config.selectedItems.firstIndex(where: { $0 == item }) {
                     config.selectedItems.remove(at: index)
                 } else {
                     config.selectedItems.append(item)
@@ -318,7 +318,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
-    func selectionField(isSelected: Bool, _ item: T?, isManualInput: Bool) -> some View {
+    func selectionField(isSelected _: Bool, _ item: T?, isManualInput: Bool) -> some View {
         Group {
             ZStack {
                 let isSelected =
@@ -370,33 +370,29 @@ struct ItemPickerScreen_Previews: PreviewProvider {
         let id: String
         let name: ItemModel
     }
+
     static var previews: some View {
         VStack {
             ItemPickerScreen<ModelForPreview>(
                 config:
                     .init(
-                        items: {
-                            return [
-                                ModelForPreview(id: "id", name: .init(title: "name1")),
-                                ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
-                                ModelForPreview(
-                                    id: "id3",
-                                    name: .init(title: "title3", subTitle: "subtitle3")
-                                ),
-                                ModelForPreview(id: "id4", name: .init(title: "name4")),
-                                ModelForPreview(id: "id5", name: .init(title: "name5")),
-                                ModelForPreview(id: "id6", name: .init(title: "name6")),
-                                ModelForPreview(id: "id7", name: .init(title: "name7")),
-
-                            ]
-                            .compactMap({ (object: $0, displayName: $0.name) })
-                        }(),
+                        items: [
+                            ModelForPreview(id: "id", name: .init(title: "name1")),
+                            ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
+                            ModelForPreview(
+                                id: "id3",
+                                name: .init(title: "title3", subTitle: "subtitle3")
+                            ),
+                            ModelForPreview(id: "id4", name: .init(title: "name4")),
+                            ModelForPreview(id: "id5", name: .init(title: "name5")),
+                            ModelForPreview(id: "id6", name: .init(title: "name6")),
+                            ModelForPreview(id: "id7", name: .init(title: "name7")),
+                        ]
+                        .compactMap { (object: $0, displayName: $0.name) },
                         preSelectedItems: { [] },
-                        onSelected: { selectedLocation in
-
+                        onSelected: { _ in
                         },
-                        onCancel: {
-                        },
+                        onCancel: {},
                         manualInputConfig: .init(placeholder: "Enter brand name"),
                         buttonText: L10n.generalSaveButton
                     )
@@ -420,7 +416,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hItemPickerBottomAttachedView, AnyView(content()))
+        environment(\.hItemPickerBottomAttachedView, AnyView(content()))
     }
 }
 
@@ -444,13 +440,13 @@ extension EnvironmentValues {
 
 extension View {
     public func hItemPickerAttributes(_ attributes: [ItemPickerAttribute]) -> some View {
-        self.environment(\.hItemPickerAttributes, attributes)
+        environment(\.hItemPickerAttributes, attributes)
     }
 }
 
 enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
     static var last: ItemPickerFieldType {
-        return ItemPickerFieldType.inputField
+        ItemPickerFieldType.inputField
     }
 
     var next: ItemPickerFieldType? {
@@ -479,7 +475,7 @@ extension EnvironmentValues {
 
 extension View {
     public var hFieldLeftAttachedView: some View {
-        self.environment(\.hFieldLeftAttachedView, true)
+        environment(\.hFieldLeftAttachedView, true)
     }
 }
 
@@ -496,6 +492,6 @@ extension EnvironmentValues {
 
 extension View {
     public var hUseCheckbox: some View {
-        self.environment(\.hUseCheckbox, true)
+        environment(\.hUseCheckbox, true)
     }
 }

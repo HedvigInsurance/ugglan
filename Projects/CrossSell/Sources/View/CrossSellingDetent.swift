@@ -33,13 +33,12 @@ public struct CrossSellingDetent: View {
         .hFormContentPosition(.compact)
         .configureTitleView(title: L10n.crossSellSubtitle)
         .embededInNavigation(router: router, options: [.navigationType(type: .large)], tracking: self)
-
     }
 }
 
 extension CrossSellingDetent: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return "CrossSellingDetent"
+        "CrossSellingDetent"
     }
 }
 

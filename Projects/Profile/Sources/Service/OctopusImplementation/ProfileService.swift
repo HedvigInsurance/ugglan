@@ -5,7 +5,7 @@ import hCore
 class ProfileService {
     @Inject var client: ProfileClient
 
-    public func getProfileState() async throws -> (
+    func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
         hasTravelInsurances: Bool
     ) {
@@ -13,22 +13,22 @@ class ProfileService {
         return try await client.getProfileState()
     }
 
-    public func getMemberDetails() async throws -> MemberDetails {
+    func getMemberDetails() async throws -> MemberDetails {
         log.info("ProfileService: getMemberDetails", error: nil, attributes: nil)
         return try await client.getMemberDetails()
     }
 
-    public func postDeleteRequest() async throws {
+    func postDeleteRequest() async throws {
         log.info("ProfileService: postDeleteRequest", error: nil, attributes: nil)
         return try await client.postDeleteRequest()
     }
 
-    public func updateLanguage() async throws {
+    func updateLanguage() async throws {
         log.info("ProfileService: updateLanguage", error: nil, attributes: nil)
         return try await client.updateLanguage()
     }
 
-    public func update(email: String?, phone: String?) async throws -> (email: String, phone: String) {
+    func update(email: String?, phone: String?) async throws -> (email: String, phone: String) {
         log.info("ProfileService: update", error: nil, attributes: nil)
         return try await client.update(email: email ?? "", phone: phone ?? "")
     }

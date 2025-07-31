@@ -8,14 +8,14 @@ public struct AccordionView: View {
     @State private var extended = false
     public init(peril: Perils) {
         self.peril = peril
-        self.title = peril.title
-        self.description = peril.description
+        title = peril.title
+        description = peril.description
     }
 
     public init(title: String, description: String) {
         self.title = title
         self.description = description
-        self.peril = nil
+        peril = nil
     }
 
     public var body: some View {
@@ -134,7 +134,7 @@ struct AccordionBody: View {
 extension Perils {
     @hColorBuilder
     var textColor: some hColor {
-        if self.isDisabled {
+        if isDisabled {
             hTextColor.Opaque.disabled
         } else {
             hTextColor.Opaque.primary

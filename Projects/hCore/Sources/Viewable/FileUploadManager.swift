@@ -1,15 +1,16 @@
 import Foundation
 
 public class FileUploadManager {
-
     public init() {}
     private static let uploadFolderPath = FileManager.default.temporaryDirectory.appendingPathComponent("uploadedFiles")
     public func getPathForData(for id: String) -> URL {
-        return FileUploadManager.uploadFolderPath.appendingPathComponent("\(id)")
+        FileUploadManager.uploadFolderPath.appendingPathComponent("\(id)")
     }
+
     public func getPathForThumnailData(for id: String) -> URL {
-        return FileUploadManager.uploadFolderPath.appendingPathComponent("\(id)-thumb")
+        FileUploadManager.uploadFolderPath.appendingPathComponent("\(id)-thumb")
     }
+
     public func resetuploadFilesPath() {
         var isDir: ObjCBool = true
         do {
@@ -19,19 +20,17 @@ public class FileUploadManager {
             ) {
                 let content = try FileManager.default
                     .contentsOfDirectory(atPath: FileUploadManager.uploadFolderPath.relativePath)
-                try content.forEach({
+                try content.forEach {
                     try FileManager.default.removeItem(
                         atPath: FileUploadManager.uploadFolderPath.appendingPathComponent($0).relativePath
                     )
-                })
+                }
             } else {
                 try FileManager.default.createDirectory(
                     at: FileUploadManager.uploadFolderPath,
                     withIntermediateDirectories: true
                 )
             }
-        } catch _ {
-
-        }
+        } catch _ {}
     }
 }

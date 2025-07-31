@@ -31,7 +31,7 @@ public struct InfoViewHolder: View {
             item: $infoViewNavigationModel.isInfoViewPresented,
 
             options: .constant(.withoutGrabber)
-        ) { freeTextPickerVm in
+        ) { _ in
             InfoView(
                 title: title,
                 description: description
@@ -189,7 +189,7 @@ public struct InfoViewNavigationModel: Equatable, Identifiable {
     public var id: String?
 
     public static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     let title: String
@@ -211,7 +211,7 @@ extension View {
         title: String,
         description: String
     ) -> some View {
-        self.modifier(NavigationInfoButton(placement: placement, title: title, description: description))
+        modifier(NavigationInfoButton(placement: placement, title: title, description: description))
     }
 }
 
@@ -249,13 +249,12 @@ struct NavigationInfoButton: ViewModifier {
                 item: $vm.isInfoViewPresented,
 
                 options: .constant(.withoutGrabber)
-            ) { freeTextPickerVm in
+            ) { _ in
                 InfoView(
                     title: title,
                     description: description
                 )
             }
-
     }
 }
 

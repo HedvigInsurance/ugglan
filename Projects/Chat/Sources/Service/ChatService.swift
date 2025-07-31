@@ -52,7 +52,7 @@ public class ConversationService: ChatServiceProtocol {
             olderToken: olderToken,
             newerToken: nil
         )
-        self.olderToken = data.olderToken
+        olderToken = data.olderToken
         return .init(
             conversationId: conversationId,
             hasPreviousMessage: olderToken != nil,
@@ -63,11 +63,10 @@ public class ConversationService: ChatServiceProtocol {
             subtitle: data.subtitle,
             claimId: data.claimId
         )
-
     }
 
     public func send(message: Message) async throws -> Message {
-        return try await client.send(message: message, for: conversationId)
+        try await client.send(message: message, for: conversationId)
     }
 }
 
@@ -117,7 +116,7 @@ public class NewConversationService: ChatServiceProtocol {
     public func send(message: Message) async throws -> Message {
         log.info("\(NewConversationService.self) send message", error: nil, attributes: [:])
 
-        if conversationService == nil && generatingConversation == false {
+        if conversationService == nil, generatingConversation == false {
             generatingConversation = true
             do {
                 let conversation = try await conversationsClient.createConversation(with: id)
@@ -127,7 +126,7 @@ public class NewConversationService: ChatServiceProtocol {
                 conversationService = nil
                 throw ex
             }
-        } else if generatingConversation == true && conversationService == nil {
+        } else if generatingConversation == true, conversationService == nil {
             throw ConversationsError.errorMesage(message: L10n.chatFailedToSend)
         }
         return try await conversationService!.send(message: message)

@@ -64,7 +64,6 @@ struct SubmitClaimFilesUploadScreen: View {
                                             .frame(width: vm.progress * geo.size.width)
                                     }
                                 }
-
                             }
                             .fixedSize(horizontal: false, vertical: true)
                             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
@@ -150,7 +149,6 @@ struct SubmitClaimFilesUploadScreen: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     vm.addFiles(with: [file])
                 }
-
             }
             .ignoresSafeArea()
         }
@@ -215,7 +213,7 @@ public class FilesUploadViewModel: ObservableObject {
 
     public init(model: FlowClaimFileUploadStepModel) {
         self.model = model
-        let files = model.uploads.compactMap({
+        let files = model.uploads.compactMap {
             File(
                 id: $0.fileId,
                 size: 0,
@@ -223,7 +221,7 @@ public class FilesUploadViewModel: ObservableObject {
                 name: $0.name,
                 source: .url(url: URL(string: $0.signedUrl)!, mimeType: MimeType.findBy(mimeType: $0.mimeType))
             )
-        })
+        }
         fileGridViewModel = .init(
             files: files,
             options: [.delete, .add]
@@ -261,23 +259,23 @@ public class FilesUploadViewModel: ObservableObject {
         }
         do {
             let alreadyUploadedFiles = fileGridViewModel.files
-                .filter({
+                .filter {
                     switch $0.source {
                     case .url:
                         return true
                     case .data, .localFile:
                         return false
                     }
-                })
-                .compactMap({ $0.id })
-            let filteredFiles = fileGridViewModel.files.filter({
+                }
+                .compactMap(\.id)
+            let filteredFiles = fileGridViewModel.files.filter {
                 switch $0.source {
                 case .data, .localFile:
                     return true
                 case .url:
                     return false
                 }
-            })
+            }
             hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {
                 setNavigationBarHidden(true)
@@ -297,9 +295,9 @@ public class FilesUploadViewModel: ObservableObject {
                 }
                 delayTimer = Timer.publish(every: 0.2, on: .main, in: .common)
                     .autoconnect()
-                    .map({ (output) in
-                        return output.timeIntervalSince(startDate)
-                    })
+                    .map { output in
+                        output.timeIntervalSince(startDate)
+                    }
                     .eraseToAnyPublisher().subscribe(on: RunLoop.main, options: nil)
                     .sink { _ in
                     } receiveValue: { [weak self] timeInterval in
@@ -316,10 +314,10 @@ public class FilesUploadViewModel: ObservableObject {
                     self.progress = 1
                 }
                 let files = data[1] as! [ClaimFileUploadResponse]
-                let uploadedFiles = files.compactMap({ $0.file?.fileId })
+                let uploadedFiles = files.compactMap { $0.file?.fileId }
                 let filesToReplaceLocalFiles =
                     files
-                    .compactMap({ $0.file })
+                    .compactMap(\.file)
                     .compactMap(
                         {
                             File(
@@ -334,13 +332,13 @@ public class FilesUploadViewModel: ObservableObject {
                             )
                         }
                     )
-                //added delay so we don't have a flickering
+                // added delay so we don't have a flickering
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
                     guard let self = self else { return }
                     for file in filesToReplaceLocalFiles {
                         if let index = self.fileGridViewModel.files.firstIndex(where: {
-                            if case .localFile(_) = $0.source { return true } else { return false }
+                            if case .localFile = $0.source { return true } else { return false }
                         }) {
                             self.fileGridViewModel.files[index] = file
                         }
@@ -366,9 +364,9 @@ public class FilesUploadViewModel: ObservableObject {
     func submitFileUpload(ids: [String], newClaimContext: String) async -> SubmitClaimStepResponse? {
         do {
             let data = try await submitClaimService.submitFileUpload(ids: ids, context: newClaimContext, model: model)
-            self.setNavigationBarHidden(false)
-            self.skipPressed = false
-            self.isLoading = false
+            setNavigationBarHidden(false)
+            skipPressed = false
+            isLoading = false
             return data
         } catch let exception {
             withAnimation {

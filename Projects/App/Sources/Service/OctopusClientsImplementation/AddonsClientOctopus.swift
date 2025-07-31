@@ -29,9 +29,9 @@ public class AddonsClientOctopus: AddonsClient {
                     quoteId: "quoteId",
                     addonId: "addonId",
                     addonSubtype: "addonSubtype",
-                    displayItems: currentAddon.displayItems.map({
+                    displayItems: currentAddon.displayItems.map {
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
-                    }),
+                    },
                     price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
                     addonVariant: nil
                 )
@@ -42,9 +42,9 @@ public class AddonsClientOctopus: AddonsClient {
                 description: addonOffer.descriptionDisplayName,
                 activationDate: addonOffer.activationDate.localDateToDate,
                 currentAddon: currentAddon,
-                quotes: addonOffer.quotes.map({ quote in
+                quotes: addonOffer.quotes.map { quote in
                     .init(fragment: quote.fragments.upsellTravelAddonQuoteFragment)
-                })
+                }
             )
 
             return addonData
@@ -82,9 +82,9 @@ extension AddonQuote {
     init(
         fragment: OctopusGraphQL.UpsellTravelAddonQuoteFragment
     ) {
-        let displayItems: [AddonDisplayItem] = fragment.displayItems.map({
+        let displayItems: [AddonDisplayItem] = fragment.displayItems.map {
             .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
-        })
+        }
         self.init(
             displayName: fragment.displayName,
             quoteId: fragment.quoteId,
