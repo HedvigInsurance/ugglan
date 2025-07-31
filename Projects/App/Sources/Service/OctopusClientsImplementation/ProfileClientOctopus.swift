@@ -121,12 +121,6 @@ extension PartnerData {
     }
 }
 
-extension PartnerDataSas {
-    fileprivate init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
-        self.init(eligible: data.eligible, eurobonusNumber: data.eurobonusNumber)
-    }
-}
-
 extension MemberDetails {
     init?(
         memberData: OctopusGraphQL.MemberDetailsQuery.Data.CurrentMember
