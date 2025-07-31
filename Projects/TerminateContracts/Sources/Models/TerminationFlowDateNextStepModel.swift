@@ -7,7 +7,7 @@ public struct TerminationFlowDateNextStepModel: FlowStepModel {
     let maxDate: String
     let minDate: String
     let extraCoverageItem: [ExtraCoverageItem]
-    let notification: TerminationNotification?
+    var notification: TerminationNotification?
     var date: Date?
 
     public init(

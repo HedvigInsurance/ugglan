@@ -46,4 +46,11 @@ class TerminateContractsService {
         log.info("TerminateContractsService: sendConfirmDelete success context: \(response.context)")
         return response
     }
+
+    func getNotificaiton(
+        contractId: String,
+        date: Date
+    ) async throws -> TerminationNotification? {
+        try await client.getNotificaiton(contractId: contractId, date: date)
+    }
 }

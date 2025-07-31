@@ -311,6 +311,15 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             }
         }
     }
+
+    func fetchNotification() {
+        Task {
+            if let contractId = config?.contractId, let date = terminationDateStepModel?.date {
+                let data = try await terminateContractsService.getNotificaiton(contractId: contractId, date: date)
+                terminationDateStepModel?.notification = data
+            }
+        }
+    }
 }
 
 struct TerminationFlowNavigation: View {

@@ -22,7 +22,7 @@ struct SetTerminationDate: View {
                     continueAction: {
                         terminationNavigationVm.terminationDateStepModel?.date = terminationDate
                         terminationNavigationVm.isDatePickerPresented = false
-
+                        terminationNavigationVm.fetchNotification()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             self.isHidden = true
                         }

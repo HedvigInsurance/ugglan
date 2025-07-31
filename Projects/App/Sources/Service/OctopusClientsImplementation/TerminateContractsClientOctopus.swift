@@ -1,17 +1,11 @@
 import Foundation
 import TerminateContracts
-//
-//  Untitled.swift
-//  Ugglan
-//
-//  Created by Sladan Nimcevic on 2025-03-24.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
 import hCore
 import hGraphQL
 
 public class TerminateContractsClientOctopus: TerminateContractsClient {
     public init() {}
+    @Inject private var octopus: hOctopus
 
     public func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
@@ -63,6 +57,23 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
         let data = OctopusGraphQL.FlowTerminationSurveyInput(data: input)
         let mutation = OctopusGraphQL.FlowTerminationSurveyNextMutation(input: data, context: terminationContext)
         return try await mutation.execute(\.flowTerminationSurveyNext.fragments.flowTerminationFragment.currentStep)
+    }
+
+    public func getNotificaiton(contractId: String, date: Date) async throws -> TerminationNotification? {
+        let input = OctopusGraphQL.TerminationFlowNotificationInput(
+            contractId: contractId,
+            terminationDate: date.localDateString
+        )
+
+        let query = OctopusGraphQL.TerminationFlowNotificationQuery(input: input)
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+
+        guard let terminationFlowNotification = data.currentMember.terminationFlowNotification else { return nil }
+        return .init(
+            message: terminationFlowNotification.message,
+            type: terminationFlowNotification.type.asNotificationType
+        )
+
     }
 }
 
@@ -309,12 +320,7 @@ extension TerminationFlowDateNextStepModel {
             minDate: data.minDate,
             date: nil,
             extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) }),
-            notification: {
-                if let notification = data.notification {
-                    return .init(message: notification.message, type: notification.type.asNotificationType)
-                }
-                return nil
-            }()
+            notification: nil
         )
     }
 }
