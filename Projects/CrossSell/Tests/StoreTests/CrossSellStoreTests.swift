@@ -88,13 +88,15 @@ extension CrossSell {
             id: "1",
             title: "car",
             description: "description",
-            type: .car
+            imageUrl: nil,
+            buttonDescription: "button description"
         ),
         .init(
             id: "2",
             title: "home",
             description: "description",
-            type: .home
+            imageUrl: nil,
+            buttonDescription: "button description"
         ),
     ]
 }
