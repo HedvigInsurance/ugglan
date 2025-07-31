@@ -19,19 +19,24 @@ final class StoreDiscountsTests: XCTestCase {
 
     func testFetchDiscountsSuccess() async throws {
 
-        let discounts: [Discount] = [
+        let discounts: [DiscountsDataForInsurance] = [
             .init(
-                code: "code",
-                amount: .init(amount: "30", currency: "SEK"),
-                title: "title",
-                listOfAffectedInsurances: [],
-                validUntil: nil,
-                canBeDeleted: true,
-                discountId: "id"
+                insurance: .init(id: "insuranceId", displayName: "Home"),
+                discount: [
+                    .init(
+                        code: "code",
+                        amount: .init(amount: "30", currency: "SEK"),
+                        title: "title",
+                        validUntil: nil,
+                        canBeDeleted: true,
+                        discountId: "id"
+                    )
+                ]
             )
         ]
+
         let discountsData: PaymentDiscountsData = .init(
-            discounts: discounts,
+            discountsData: discounts,
             referralsData: .init(
                 code: "code1",
                 discountPerMember: .init(amount: "10", currency: "SEK"),
