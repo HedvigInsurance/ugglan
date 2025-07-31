@@ -323,7 +323,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                         .getNotification(contractId: contractId, date: date)
                     try Task.checkCancellation()
                     self?.terminationDateStepModel?.notification = data
-                } catch let error {
+                } catch _ {
                     // if it fails check again after 1 second
                     // if the task is cancelled, it will throw cancellation error
                     do {
