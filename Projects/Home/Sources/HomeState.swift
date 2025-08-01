@@ -3,7 +3,7 @@ import Chat
 import Combine
 import Contracts
 import CrossSell
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 @preconcurrency import PresentableStore
 import SwiftUI

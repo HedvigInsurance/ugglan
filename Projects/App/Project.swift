@@ -108,7 +108,6 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Profile", path: .relativeToRoot("Projects/Profile")),
         .project(target: "Authentication", path: .relativeToRoot("Projects/Authentication")),
         .project(target: "EditCoInsured", path: .relativeToRoot("Projects/EditCoInsured")),
-        .project(target: "EditCoInsuredShared", path: .relativeToRoot("Projects/EditCoInsuredShared")),
         .project(target: "ChangeTier", path: .relativeToRoot("Projects/ChangeTier")),
         .project(target: "Addons", path: .relativeToRoot("Projects/Addons")),
         .project(target: "CrossSell", path: .relativeToRoot("Projects/CrossSell")),

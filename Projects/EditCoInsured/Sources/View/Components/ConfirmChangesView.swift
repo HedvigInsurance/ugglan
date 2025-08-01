@@ -14,33 +14,30 @@ struct ConfirmChangesView: View {
     }
 
     var body: some View {
-        hSection {
-            VStack(spacing: .padding16) {
-                PriceField(
-                    newPremium: intentViewModel.intent.newPremium,
-                    currentPremium: intentViewModel.intent.currentPremium,
-                    subTitle: L10n.contractAddCoinsuredStartsFrom(
-                        intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                    )
+        VStack(spacing: .padding16) {
+            PriceField(
+                newPremium: intentViewModel.intent.newPremium,
+                currentPremium: intentViewModel.intent.currentPremium,
+                subTitle: L10n.contractAddCoinsuredStartsFrom(
+                    intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 )
-                .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+            )
+            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
 
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.contractAddCoinsuredConfirmChanges),
-                    {
-                        editCoInsuredNavigation.showProgressScreenWithSuccess = true
-                        Task {
-                            await intentViewModel.performCoInsuredChanges(
-                                commitId: intentViewModel.intent.id
-                            )
-                        }
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: L10n.contractAddCoinsuredConfirmChanges),
+                {
+                    editCoInsuredNavigation.showProgressScreenWithSuccess = true
+                    Task {
+                        await intentViewModel.performCoInsuredChanges(
+                            commitId: intentViewModel.intent.id
+                        )
                     }
-                )
-                .hButtonIsLoading(intentViewModel.isLoading)
-            }
+                }
+            )
+            .hButtonIsLoading(intentViewModel.isLoading)
         }
-        .sectionContainerStyle(.transparent)
     }
 }

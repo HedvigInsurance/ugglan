@@ -7,7 +7,7 @@ import hGraphQL
 class ConversationsClientOctopus: ConversationsClient {
     @Inject private var octopus: hOctopus
 
-    public func getConversations() async throws -> [Conversation] {
+    func getConversations() async throws -> [Conversation] {
         let query = hGraphQL.OctopusGraphQL.ConversationsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let conversationsFragment = data.currentMember.conversations.compactMap(\.fragments.conversationFragment)
@@ -33,7 +33,7 @@ class ConversationsClientOctopus: ConversationsClient {
         return conversationsSortedByDate
     }
 
-    public func createConversation(with id: UUID) async throws -> Conversation {
+    func createConversation(with id: UUID) async throws -> Conversation {
         let input = OctopusGraphQL.ConversationStartInput(id: id.uuidString)
         let mutation = hGraphQL.OctopusGraphQL.ConversationStartMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
@@ -47,7 +47,7 @@ class ConversationClientOctopus: ConversationClient {
     @Inject var octopus: hOctopus
     var chatFileUploaderService = ChatFileUploaderService()
 
-    public func send(message: Message, for conversationId: String) async throws -> Message {
+    func send(message: Message, for conversationId: String) async throws -> Message {
         var textToSend: String?
         var fileToken: String?
         switch message.type {
@@ -79,7 +79,7 @@ class ConversationClientOctopus: ConversationClient {
         throw ConversationsError.missingData
     }
 
-    public func getConversationMessages(
+    func getConversationMessages(
         for conversationId: String,
         olderToken: String?,
         newerToken: String?

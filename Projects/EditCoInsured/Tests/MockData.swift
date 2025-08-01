@@ -2,7 +2,6 @@ import Foundation
 import hCore
 
 @testable import EditCoInsured
-@testable import EditCoInsuredShared
 
 @MainActor
 struct MockData {

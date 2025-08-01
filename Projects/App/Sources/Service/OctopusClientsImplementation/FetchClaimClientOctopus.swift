@@ -6,7 +6,7 @@ import hGraphQL
 class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 
-    public func get() async throws -> [ClaimModel] {
+    func get() async throws -> [ClaimModel] {
         let data = try await octopus.client.fetch(
             query: OctopusGraphQL.ClaimsQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely

@@ -7,7 +7,7 @@ import hGraphQL
 class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
 
-    public func getCrossSell() async throws -> [CrossSell] {
+    func getCrossSell() async throws -> [CrossSell] {
         let query = OctopusGraphQL.CrossSellsQuery()
         let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return crossSells.currentMember.crossSells.compactMap {
@@ -15,7 +15,7 @@ class CrossSellClientOctopus: CrossSellClient {
         }
     }
 
-    public func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
         let query = OctopusGraphQL.CrossSellQuery(
             source: GraphQLEnum<OctopusGraphQL.CrossSellSource>(source.asGraphQLSource)
         )
@@ -33,7 +33,7 @@ class CrossSellClientOctopus: CrossSellClient {
         return .init(recommended: recommendedCrossSell, others: otherCrossSells)
     }
 
-    public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         let query = OctopusGraphQL.UpsellTravelAddonBannerCrossSellQuery(flow: .case(source.getSource))
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let bannerData = data.currentMember.upsellTravelAddonBanner
