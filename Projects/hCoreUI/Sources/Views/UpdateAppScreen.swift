@@ -24,7 +24,6 @@ public struct UpdateAppScreen: View {
     }
 
     private var buttonsInit: StateViewButtonConfig {
-
         var dismissButton: StateViewButtonConfig.StateViewButton? {
             if withoutDismissButton {
                 return nil

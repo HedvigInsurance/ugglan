@@ -75,7 +75,7 @@ final class ChangeTierServiceTests: XCTestCase {
             changeTierIntentModel
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let respondedTiersData = try! await mockService.getTier(
             input: .init(source: .changeTier, contractId: "contractId")
@@ -115,7 +115,7 @@ final class ChangeTierServiceTests: XCTestCase {
             comparisonData
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let responedComparisonData = try! await mockService.compareProductVariants(termsVersion: [])
 

@@ -24,7 +24,6 @@ public class TerminateInsuranceViewModel: ObservableObject {
                     config: config,
                     terminateInsuranceViewModel: self
                 )
-
             }
         }
     }

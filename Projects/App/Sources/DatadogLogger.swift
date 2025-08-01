@@ -13,7 +13,7 @@ class DatadogLogger: Logging {
         self.datadogLogger = datadogLogger
     }
 
-    public func debug(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func debug(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         if Environment.current != .production {
             datadogLogger.debug(message, error: error, attributes: attributes)
         }
@@ -25,7 +25,7 @@ class DatadogLogger: Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func info(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func info(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.info(message, error: error, attributes: attributes)
     }
 
@@ -35,7 +35,7 @@ class DatadogLogger: Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func notice(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func notice(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.notice(message, error: error, attributes: attributes)
     }
 
@@ -45,7 +45,7 @@ class DatadogLogger: Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func warn(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func warn(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.warn(message, error: error, attributes: attributes)
     }
 
@@ -55,7 +55,7 @@ class DatadogLogger: Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func error(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func error(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.error(message, error: error, attributes: attributes)
     }
 
@@ -65,14 +65,14 @@ class DatadogLogger: Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func critical(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func critical(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.critical(message, error: error, attributes: attributes)
     }
 
-    public func addUserAction(
+    func addUserAction(
         type: LoggingAction,
         name: String,
-        error: Error? = nil,
+        error _: Error? = nil,
         attributes: [AttributeKey: AttributeValue]? = nil
     ) {
         if let attributes {
@@ -82,7 +82,7 @@ class DatadogLogger: Logging {
         }
     }
 
-    public func addError(
+    func addError(
         error: Error,
         type: ErrorSource,
         attributes: [AttributeKey: AttributeValue]?
@@ -143,7 +143,6 @@ class InterceptingURLSessionClient: URLSessionClient {
         task: URLSessionTask,
         didFinishCollecting metrics: URLSessionTaskMetrics
     ) {
-
         URLSessionInterceptor.shared()?.task(task, didFinishCollecting: metrics)
         super.urlSession(session, task: task, didFinishCollecting: metrics)
     }

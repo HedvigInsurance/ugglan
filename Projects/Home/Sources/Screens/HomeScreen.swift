@@ -35,7 +35,7 @@ extension HomeScreen {
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
-                    navigationVm.router.push(String.init(describing: InboxView.self))
+                    navigationVm.router.push(String(describing: InboxView.self))
                 case .travelCertificate, .insuranceEvidence:
                     break
                 }
@@ -114,9 +114,9 @@ extension HomeScreen {
     private var openHelpCenter: some View {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         let showHelpCenter =
-            !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+            !contractStore.state.activeContracts.allSatisfy(\.isNonPayingMember)
             || contractStore.state.activeContracts.count == 0
-        if showHelpCenter && featureFlags.isHelpCenterEnabled {
+        if showHelpCenter, featureFlags.isHelpCenterEnabled {
             hButton(
                 .large,
                 .secondary,
@@ -142,7 +142,7 @@ class HomeVM: ObservableObject {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
         store.stateSignal
-            .map({ $0.memberContractState })
+            .map(\.memberContractState)
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.memberContractState = value
@@ -177,6 +177,7 @@ class HomeVM: ObservableObject {
                 }
             }
     }
+
     private func addObserverForApplicationDidBecomeActive() {
         Task {
             let isLoggedIn = await ApplicationContext.shared.isLoggedIn
@@ -191,7 +192,7 @@ class HomeVM: ObservableObject {
         }
     }
 
-    @objc func notification(notification: Notification) {
+    @objc func notification(notification _: Notification) {
         Task { [weak self] in
             self?.fetchHomeState()
         }
@@ -200,7 +201,7 @@ class HomeVM: ObservableObject {
     private func observeToolbarOptionTypes() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .map({ $0.toolbarOptionTypes })
+            .map(\.toolbarOptionTypes)
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.toolbarOptionTypes = value

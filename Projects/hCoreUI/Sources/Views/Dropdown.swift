@@ -37,7 +37,7 @@ public struct DropdownView: View {
 
     @hColorBuilder
     var imageColor: some hColor {
-        if isEnabled && !backgroundOption.contains(.locked) {
+        if isEnabled, !backgroundOption.contains(.locked) {
             hFillColor.Opaque.primary
         } else {
             hFillColor.Opaque.disabled
@@ -50,6 +50,5 @@ public struct DropdownView: View {
         DropdownView(value: "", placeHolder: "placeholder", onTap: {}).hFieldSize(.small)
         DropdownView(value: "", placeHolder: "placeholder", onTap: {}).hFieldSize(.medium)
         DropdownView(value: "", placeHolder: "placeholder", onTap: {}).hFieldSize(.large)
-
     }
 }

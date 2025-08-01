@@ -40,10 +40,10 @@ final class TerminateContractsTests: XCTestCase {
             progress: nil
         )
 
-        let mockService = MockData.createMockTerminateContractsService(sendDate: { inputDateToString, context in
+        let mockService = MockData.createMockTerminateContractsService(sendDate: { _, _ in
             terminationDateResponse
         })
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.sendTerminationDate(inputDateToString: date, terminationContext: context)
 
@@ -66,10 +66,10 @@ final class TerminateContractsTests: XCTestCase {
             progress: nil
         )
 
-        let mockService = MockData.createMockTerminateContractsService(confirmDelete: { context, model in
+        let mockService = MockData.createMockTerminateContractsService(confirmDelete: { _, _ in
             terminationConfirmDeleteResponse
         })
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.sendConfirmDelete(terminationContext: context, model: model)
 
@@ -108,10 +108,10 @@ final class TerminateContractsTests: XCTestCase {
             progress: nil
         )
 
-        let mockService = MockData.createMockTerminateContractsService(surveySend: { context, option, inputData in
+        let mockService = MockData.createMockTerminateContractsService(surveySend: { _, _, _ in
             terminationSurveyResponse
         })
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.sendSurvey(
             terminationContext: context,

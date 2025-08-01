@@ -50,6 +50,6 @@ struct hButtonModifier: ViewModifier {
 extension View {
     @ViewBuilder
     func buttonSizeModifier(_ size: hButtonSize) -> some View {
-        self.modifier(hButtonModifier(size: size)).environment(\.defaultHTextStyle, size == .small ? .label : .body1)
+        modifier(hButtonModifier(size: size)).environment(\.defaultHTextStyle, size == .small ? .label : .body1)
     }
 }

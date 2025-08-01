@@ -6,7 +6,7 @@ public final class NetworkClient {
     public let sessionClient: URLSession
     public init() {
         let config = URLSessionConfiguration.default
-        self.sessionClient = URLSession(configuration: config)
+        sessionClient = URLSession(configuration: config)
     }
 
     public func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) async throws -> T?
@@ -35,7 +35,7 @@ public final class NetworkClient {
         do {
             let response = try JSONDecoder().decode(T.self, from: responseData)
             return response
-        } catch let error {
+        } catch {
             throw NetworkError.parsingError(message: error.localizedDescription)
         }
     }
@@ -50,15 +50,16 @@ public enum NetworkError: Error {
 extension NetworkError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .networkError(let message):
+        case let .networkError(message):
             return message
-        case .badRequest(let message):
+        case let .badRequest(message):
             return message ?? L10n.General.errorBody
-        case .parsingError(let message):
+        case let .parsingError(message):
             return message
         }
     }
 }
+
 struct ResponseError: Decodable {
     let timestamp: Int
     let status: Int
@@ -128,7 +129,7 @@ public struct MultipartFormDataRequest {
 extension NSMutableData {
     func appendString(_ string: String) {
         if let data = string.data(using: .utf8) {
-            self.append(data)
+            append(data)
         }
     }
 }

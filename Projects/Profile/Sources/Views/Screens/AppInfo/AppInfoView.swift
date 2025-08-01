@@ -74,7 +74,7 @@ public struct AppInfoView: View {
     }
 
     private var deviceId: some View {
-        return hRow {
+        hRow {
             hText(L10n.AppInfo.deviceIdLabel)
                 .foregroundColor(hTextColor.Opaque.primary)
         }

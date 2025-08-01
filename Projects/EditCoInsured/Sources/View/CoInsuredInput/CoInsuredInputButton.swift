@@ -15,7 +15,7 @@ public struct CoInsuredInputButton: View {
     ) {
         self.vm = vm
         self.editCoInsuredNavigation = editCoInsuredNavigation
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     public var body: some View {
@@ -69,7 +69,7 @@ public struct CoInsuredInputButton: View {
     }
 
     var buttonDisplayText: String {
-        if !vm.noSSN && !vm.nameFetchedFromSSN {
+        if !vm.noSSN, !vm.nameFetchedFromSSN {
             return L10n.contractSsnFetchInfo
         } else {
             return L10n.contractAddCoinsured
@@ -81,7 +81,7 @@ public struct CoInsuredInputButton: View {
             let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: vm.birthday)
             let firstNameValid = Masking(type: .firstName).isValid(text: vm.personalData.firstName)
             let lastNameValid = Masking(type: .lastName).isValid(text: vm.personalData.lastName)
-            if birthdayIsValid && firstNameValid && lastNameValid {
+            if birthdayIsValid, firstNameValid, lastNameValid {
                 return false
             }
         } else {
@@ -93,7 +93,7 @@ public struct CoInsuredInputButton: View {
     }
 
     var coInsuredToDelete: CoInsuredModel {
-        return (vm.personalData.firstName == "" && vm.SSN == "")
+        (vm.personalData.firstName == "" && vm.SSN == "")
             ? .init()
             : .init(
                 firstName: vm.personalData.firstName,
@@ -105,7 +105,7 @@ public struct CoInsuredInputButton: View {
     }
 
     var coInsuredPerformModel: CoInsuredModel {
-        return .init(
+        .init(
             firstName: vm.personalData.firstName,
             lastName: vm.personalData.lastName,
             SSN: vm.noSSN ? nil : vm.SSN,

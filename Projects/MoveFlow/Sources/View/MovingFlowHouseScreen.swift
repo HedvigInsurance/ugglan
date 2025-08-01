@@ -111,7 +111,6 @@ struct MovingFlowHouseScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
-
     }
 
     private var extraBuildingTypes: some View {
@@ -168,7 +167,6 @@ struct MovingFlowHouseScreen: View {
                     .hButtonDontShowLoadingWhenDisabled(true)
                     .hUseLightMode
                     .padding(.top, .padding8)
-
                 }
             }
             .verticalPadding(0)
@@ -232,7 +230,7 @@ struct MovingFlowHouseView_Previews: PreviewProvider {
 
 enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
     static var last: MovingFlowHouseFieldType {
-        return MovingFlowHouseFieldType.ancillaryArea
+        MovingFlowHouseFieldType.ancillaryArea
     }
 
     var next: MovingFlowHouseFieldType? {
@@ -251,8 +249,8 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 public typealias ExtraBuildingType = String
 @MainActor
 public class HouseInformationInputModel: ObservableObject, @preconcurrency Equatable, Identifiable {
-    public static func == (lhs: HouseInformationInputModel, rhs: HouseInformationInputModel) -> Bool {
-        return true
+    public static func == (_: HouseInformationInputModel, _: HouseInformationInputModel) -> Bool {
+        true
     }
 
     @Inject private var service: MoveFlowClient
@@ -294,7 +292,7 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
 
             return movingFlowData
         } catch {
-            self.viewState = .error(errorMessage: error.localizedDescription)
+            viewState = .error(errorMessage: error.localizedDescription)
         }
         return nil
     }
@@ -332,7 +330,7 @@ public struct ExtraBuilding: Identifiable {
 
     var descriptionText: String {
         var elements: [String] = []
-        elements.append("\(self.livingArea) \(L10n.changeAddressSizeSuffix)")
+        elements.append("\(livingArea) \(L10n.changeAddressSizeSuffix)")
         if connectedToWater {
             elements.append(L10n.changeAddressExtraBuildingsWaterLabel)
         }
@@ -342,8 +340,8 @@ public struct ExtraBuilding: Identifiable {
 
 extension ExtraBuildingType {
     var translatedValue: String {
-        let key = "FIELD_EXTRA_BUIDLINGS_\(self.uppercased())_LABEL"
-        let translatedValue = L10nDerivation.init(table: "", key: key, args: []).render()
+        let key = "FIELD_EXTRA_BUIDLINGS_\(uppercased())_LABEL"
+        let translatedValue = L10nDerivation(table: "", key: key, args: []).render()
         return key == translatedValue ? self : translatedValue
     }
 }

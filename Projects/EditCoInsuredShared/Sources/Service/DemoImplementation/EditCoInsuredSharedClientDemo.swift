@@ -3,7 +3,7 @@ import hCore
 
 public class EditCoInsuredSharedClientDemo: EditCoInsuredSharedClient {
     public func fetchContracts() async throws -> [Contract] {
-        return [
+        [
             Contract(
                 id: "",
                 exposureDisplayName: "",

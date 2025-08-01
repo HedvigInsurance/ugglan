@@ -26,8 +26,8 @@ public struct ContractOwnerField: View {
     ) {
         self.enabled = enabled
         self.hasContentBelow = hasContentBelow
-        self.fullName = config.holderFullName
-        self.SSN = config.holderSSN?.displayFormatSSN ?? ""
+        fullName = config.holderFullName
+        SSN = config.holderSSN?.displayFormatSSN ?? ""
     }
 
     public var body: some View {

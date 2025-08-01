@@ -32,31 +32,31 @@ public class EditCoInsuredViewModel: ObservableObject {
 
                 if let contract = fromContract {
                     editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                        return [contract]
+                        [contract]
                     })
                 } else {
                     let contractsSupportingCoInsured =
                         activeContracts
-                        .filter({
+                        .filter {
                             $0.showEditCoInsuredInfo
                                 && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
-                        })
-                        .compactMap({
+                        }
+                        .compactMap {
                             InsuredPeopleConfig(
                                 contract: $0,
                                 preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
                                 fromInfoCard: true
                             )
-                        })
+                        }
                     if contractsSupportingCoInsured.count > 1 {
                         editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                            return contractsSupportingCoInsured
+                            contractsSupportingCoInsured
                         })
                     } else if !contractsSupportingCoInsured.isEmpty {
                         editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                            return contractsSupportingCoInsured
+                            contractsSupportingCoInsured
                         })
-                    } else {  //if empty
+                    } else {  // if empty
                         throw EditCoInsuedError.missingContracts
                     }
                 }
@@ -105,7 +105,7 @@ enum EditCoInsuedError: Error {
 }
 
 extension EditCoInsuedError: LocalizedError {
-    public var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .missingContracts:
             return L10n.General.defaultError
@@ -122,7 +122,6 @@ public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
     ) {
         self.openSpecificScreen = openSpecificScreen
         self.contractsSupportingCoInsured = contractsSupportingCoInsured()
-
     }
 
     public var id: String = UUID().uuidString

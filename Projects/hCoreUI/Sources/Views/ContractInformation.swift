@@ -62,6 +62,5 @@ public struct ContractInformation: View {
             pillowImage: nil
         )
         .background(Color.blue)
-
     }
 })

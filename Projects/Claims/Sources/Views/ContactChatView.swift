@@ -33,7 +33,7 @@ struct ContactChatView: View {
 }
 
 struct ChatButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration _: Configuration) -> some View {
         hCoreUIAssets.chatQuickNav.view
             .resizable()
             .aspectRatio(contentMode: .fit)

@@ -7,14 +7,14 @@ import hCore
 struct MockData {
     @discardableResult
     static func createMockTerminateContractsService(
-        start: @escaping StartTermination = { contractId in
+        start: @escaping StartTermination = { _ in
             .init(
                 context: "context",
                 step: .setSuccessStep(model: .init(terminationDate: nil)),
                 progress: 0
             )
         },
-        sendDate: @escaping SendTerminationDate = { inputDateToString, context in
+        sendDate: @escaping SendTerminationDate = { _, context in
             .init(
                 context: context,
                 step: .setTerminationDateStep(
@@ -45,7 +45,7 @@ struct MockData {
                 progress: 0
             )
         },
-        surveySend: @escaping SendSurvey = { context, option, inputData in
+        surveySend: @escaping SendSurvey = { context, _, _ in
             .init(
                 context: context,
                 step: .setTerminationSurveyStep(model: .init(id: "id", options: [], subTitleType: .generic)),

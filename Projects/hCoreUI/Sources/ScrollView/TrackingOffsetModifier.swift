@@ -116,7 +116,6 @@ public class SetOffsetViewModel: ObservableObject {
     .modifier(SetOffsetModifier(vm: vm))
     .onAppear {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-
             vm.animate(with: .init(duration: 1, damping: 0.6, offset: .init(x: 600, y: 0)))
         }
 

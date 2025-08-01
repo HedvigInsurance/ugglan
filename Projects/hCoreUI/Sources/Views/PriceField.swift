@@ -94,7 +94,6 @@ public struct PriceField: View {
 
 #Preview {
     hSection {
-
         PriceField(
             newPremium: .init(amount: "99", currency: "SEK"),
             currentPremium: MonetaryAmount(amount: "49", currency: "SEK")
@@ -141,7 +140,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
-        self.environment(\.hWithStrikeThroughPrice, setTo)
+        environment(\.hWithStrikeThroughPrice, setTo)
     }
 }
 
@@ -163,7 +162,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hPriceFormatting(setTo: PriceFormatting) -> some View {
-        self.environment(\.hPriceFormatting, setTo)
+        environment(\.hPriceFormatting, setTo)
     }
 }
 
@@ -171,9 +170,9 @@ extension MonetaryAmount {
     func priceFormat(_ format: PriceFormatting) -> String {
         switch format {
         case .perMonth:
-            return self.formattedAmountPerMonth
+            return formattedAmountPerMonth
         case .month:
-            return self.formattedAmount
+            return formattedAmount
         }
     }
 }

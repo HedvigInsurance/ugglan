@@ -75,8 +75,7 @@ struct SetTerminationDateLandingScreen: View {
                         hFloatingField(
                             value: L10n.terminationFlowToday,
                             placeholder: L10n.terminationFlowDateFieldText,
-                            onTap: {
-                            }
+                            onTap: {}
                         )
                         .hFieldTrailingView {
                             hCoreUIAssets.lock.view
@@ -160,7 +159,6 @@ struct SetTerminationDateLandingScreen: View {
                                         )
                                         .colorScheme(.light)
                                         .hUseLightMode
-
                                 }
                             }
                             .background(
@@ -253,7 +251,6 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
 }
 
 #Preview {
-
     SetTerminationDateLandingScreen(
         terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil)
     )

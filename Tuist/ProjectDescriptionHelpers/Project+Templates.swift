@@ -17,10 +17,7 @@ extension Project {
         dependencies: [String] = ["CoreDependencies"],
         sdks: [String] = []
     ) -> Project {
-
-        let settings: [String: SettingValue] = {
-            ["SWIFT_VERSION": "6.0.2"]
-        }()
+        let settings: [String: SettingValue] = ["SWIFT_VERSION": "6.0.2"]
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
@@ -75,8 +72,8 @@ extension Project {
             .target(name: "\(name)")
             //            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
         ]
-        projects.forEach {
-            testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)")))
+        for item in projects {
+            testsDependencies.append(.project(target: item, path: .relativeToRoot("Projects/\(item)")))
         }
 
         if targets.contains(.testing) { testsDependencies.append(.target(name: "\(name)Testing")) }

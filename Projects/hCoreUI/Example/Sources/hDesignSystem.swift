@@ -39,12 +39,10 @@ struct FormShowcase: View {
                 hRow {
                     ButtonShowcase(title: "Large Button - Filled") {
                         hButton.LargeButton(type: .primary) {
-
                         } content: {
                             hText("Enabled")
                         }
                         hButton.LargeButton(type: .primary) {
-
                         } content: {
                             hText("Disabled")
                         }
@@ -54,12 +52,10 @@ struct FormShowcase: View {
                 hRow {
                     ButtonShowcase(title: "Large Button - Outlined") {
                         hButton.LargeButtonOutlined {
-
                         } content: {
                             hText("Enabled")
                         }
                         hButton.LargeButtonOutlined {
-
                         } content: {
                             hText("Disabled")
                         }
@@ -69,12 +65,10 @@ struct FormShowcase: View {
                 hRow {
                     ButtonShowcase(title: "Large Button - Text") {
                         hButton.LargeButton(type: .ghost) {
-
                         } content: {
                             hText("Enabled")
                         }
                         hButton.LargeButton(type: .ghost) {
-
                         } content: {
                             hText("Disabled")
                         }

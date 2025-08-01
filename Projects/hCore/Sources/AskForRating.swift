@@ -30,7 +30,6 @@ public struct AskForRating {
             }
         }
     }
-
 }
 
 extension UIApplication {

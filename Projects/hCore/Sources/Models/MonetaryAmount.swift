@@ -162,6 +162,6 @@ extension MonetaryAmount {
 
 extension String {
     public var addPerMonth: String {
-        return self + "/" + L10n.monthAbbreviationLabel
+        self + "/" + L10n.monthAbbreviationLabel
     }
 }

@@ -43,7 +43,6 @@ public struct InsurableLimitsSectionView: View {
                     }
                     .fixedSize(horizontal: false, vertical: true)
                 }
-
             }
             .onTap {
                 didTap(limit)
@@ -67,7 +66,6 @@ struct InsurableLimitsSectionView_Previews: PreviewProvider {
 
         return VStack {
             InsurableLimitsSectionView(limits: limits) { _ in
-
             }
             Spacer()
         }

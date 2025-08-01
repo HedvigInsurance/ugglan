@@ -3,9 +3,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class ForeverClientOctopus: ForeverClient {
+class ForeverClientOctopus: ForeverClient {
     @Inject var octopus: hOctopus
-    public init() {}
 
     public func getMemberReferralInformation() async throws -> ForeverData {
         let query = OctopusGraphQL.MemberReferralInformationQuery()

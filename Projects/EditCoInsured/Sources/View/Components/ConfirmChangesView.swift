@@ -6,11 +6,11 @@ struct ConfirmChangesView: View {
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject var intentViewModel: IntentViewModel
 
-    public init(
+    init(
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
         self.editCoInsuredNavigation = editCoInsuredNavigation
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     var body: some View {

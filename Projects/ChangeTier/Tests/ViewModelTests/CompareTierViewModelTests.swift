@@ -120,10 +120,10 @@ final class CompareTierVireModelTests: XCTestCase {
             comparisonData
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let model = CompareTierViewModel(tiers: tiers)
-        self.vm = model
+        vm = model
         model.productVariantComparision()
 
         try await Task.sleep(nanoseconds: 30_000_000)
@@ -139,10 +139,10 @@ final class CompareTierVireModelTests: XCTestCase {
             throw ChangeTierError.somethingWentWrong
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let model = CompareTierViewModel(tiers: tiers)
-        self.vm = model
+        vm = model
         model.productVariantComparision()
 
         try await Task.sleep(nanoseconds: 30_000_000)

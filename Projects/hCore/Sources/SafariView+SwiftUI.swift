@@ -10,18 +10,18 @@ public struct SafariView: UIViewControllerRepresentable {
     public init(
         url: Binding<URL?>
     ) {
-        self._url = url
+        _url = url
     }
 
     public func makeUIViewController(
-        context: UIViewControllerRepresentableContext<SafariView>
+        context _: UIViewControllerRepresentableContext<SafariView>
     ) -> ReloadingSafariViewController {
-        return ReloadingSafariViewController()
+        ReloadingSafariViewController()
     }
 
     public func updateUIViewController(
         _ safariViewController: ReloadingSafariViewController,
-        context: UIViewControllerRepresentableContext<SafariView>
+        context _: UIViewControllerRepresentableContext<SafariView>
     ) {
         safariViewController.url = url
     }
@@ -36,7 +36,7 @@ public class ReloadingSafariViewController: UIViewController {
 
     private var safariViewController: SFSafariViewController?
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         configureChildViewController()
     }
@@ -56,6 +56,6 @@ public class ReloadingSafariViewController: UIViewController {
         newSafariViewController.view.frame = view.frame
         view.addSubview(newSafariViewController.view)
         newSafariViewController.didMove(toParent: self)
-        self.safariViewController = newSafariViewController
+        safariViewController = newSafariViewController
     }
 }

@@ -14,7 +14,6 @@ struct QuickActionView: View {
 
                     hText(quickAction.displaySubtitle, style: .label)
                         .foregroundColor(hTextColor.Opaque.secondary)
-
                 }
                 Spacer()
             }

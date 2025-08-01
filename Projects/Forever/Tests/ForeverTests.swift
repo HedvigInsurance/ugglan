@@ -35,7 +35,7 @@ final class ForeverTests: XCTestCase {
         let mockService = MockData.createMockForeverService(
             fetchMemberReferralInformation: { memberReferralInformation }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedInformation = try! await mockService.getMemberReferralInformation()
         assert(respondedInformation == memberReferralInformation)

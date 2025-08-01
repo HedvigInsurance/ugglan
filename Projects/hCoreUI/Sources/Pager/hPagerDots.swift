@@ -50,7 +50,7 @@ public struct hPagerDotsBinded: View {
         currentIndex: Binding<Int>,
         totalCount: Int
     ) {
-        self._currentIndex = currentIndex
+        _currentIndex = currentIndex
         self.totalCount = totalCount
     }
 
@@ -62,8 +62,7 @@ public struct hPagerDotsBinded: View {
                     .frame(width: 6, height: 6)
             }
         }
-        .onChange(of: self.currentIndex) { _ in
-
+        .onChange(of: currentIndex) { _ in
         }
     }
 }

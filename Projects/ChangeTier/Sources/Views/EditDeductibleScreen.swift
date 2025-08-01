@@ -14,12 +14,12 @@ struct EditDeductibleScreen: View {
         self.vm = vm
 
         if !(vm.selectedTier?.quotes.isEmpty ?? true) {
-            self.quotes = vm.selectedTier?.quotes ?? []
+            quotes = vm.selectedTier?.quotes ?? []
         } else {
-            self.quotes = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
+            quotes = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
         }
 
-        self._selectedQuote = State(
+        _selectedQuote = State(
             initialValue: vm.selectedQuote?.id ?? vm.selectedTier?.quotes.first?.id
         )
     }
@@ -70,13 +70,13 @@ struct EditDeductibleScreen: View {
                         .primary,
                         content: .init(title: L10n.generalConfirm),
                         {
-                            vm.setDeductible(for: self.selectedQuote ?? "")
+                            vm.setDeductible(for: selectedQuote ?? "")
                             changeTierNavigationVm.isEditDeductiblePresented = false
                         }
                     )
                     .accessibilityHint(
                         L10n.voiceoverOptionSelected
-                            + (self.quotes.first(where: { $0.id == selectedQuote })?.displayTitle ?? "")
+                            + (quotes.first(where: { $0.id == selectedQuote })?.displayTitle ?? "")
                     )
 
                     hCancelButton {

@@ -8,16 +8,16 @@ import hCore
 struct MockData {
     static func createMockTravelInsuranceService(
         fetchSpecifications: @escaping FetchSpecifications = {
-            return []
+            []
         },
-        submit: @escaping Submit = { dto in
+        submit: @escaping Submit = { _ in
             if let url = URL(string: "dto") {
                 return url
             }
             throw TravelInsuranceError.missingURL
         },
         fetchList: @escaping FetchList = {
-            return ([], true, nil)
+            ([], true, nil)
         }
     ) -> MockTravelInsuranceService {
         let service = MockTravelInsuranceService(
@@ -70,7 +70,7 @@ class MockTravelInsuranceService: TravelInsuranceClient {
     }
 
     func getList(
-        source: AddonSource
+        source _: AddonSource
     ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
     ) {

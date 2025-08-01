@@ -4,11 +4,10 @@ import Foundation
 import UnleashProxyClientSwift
 
 public class FeatureFlagsUnleash: FeatureFlagsClient {
-
     private var featureDataPublisher = PassthroughSubject<FeatureData, Never>()
 
     public var featureData: AnyPublisher<FeatureData, Never> {
-        return featureDataPublisher.eraseToAnyPublisher()
+        featureDataPublisher.eraseToAnyPublisher()
     }
 
     private var unleashClient: UnleashClient?
@@ -44,17 +43,18 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         log.info("Started loading unleash experiments")
 
         do {
-            try await self.unleashClient?.start(printToConsole: true)
+            try await unleashClient?.start(printToConsole: true)
             handleUpdate()
             log.info("Successfully loaded unleash experiments")
         } catch let exception {
             log.info("Failed loading unleash experiments \(exception)")
         }
-        self.unleashClient?
+        unleashClient?
             .subscribe(.update) { [weak self] in
                 self?.handleUpdate()
             }
     }
+
     public func updateContext(context: [String: String]) {
         if let existingContext = unleashClient?.context.toMap() {
             for contextKey in context.keys {

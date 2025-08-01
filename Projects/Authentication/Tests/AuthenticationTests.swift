@@ -22,11 +22,11 @@ final class AuthenticationTests: XCTestCase {
         let submit = "submit"
 
         let mockService = MockData.createAuthenticationService(
-            submitAuth: { state in
+            submitAuth: { _ in
                 submit
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedState = try! await mockService.submitAuth(
             .init(
@@ -53,11 +53,11 @@ final class AuthenticationTests: XCTestCase {
         )
 
         let mockService = MockData.createAuthenticationService(
-            startAuth: { state in
+            startAuth: { _ in
                 startData
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedState = try! await mockService.startAuth(
             .init(

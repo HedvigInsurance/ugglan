@@ -31,7 +31,7 @@ extension AppDelegate {
         Localization.Locale.currentLocale
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { locale in
+            .sink { _ in
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
             .store(in: &cancellables)
@@ -39,10 +39,10 @@ extension AppDelegate {
         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
 
         profileStore.stateSignal
-            .map({ $0.memberDetails?.id })
+            .map { $0.memberDetails?.id }
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { memberId in
+            .sink { _ in
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
             .store(in: &cancellables)

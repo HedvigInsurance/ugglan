@@ -35,7 +35,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
 
     func testDeleteAccountViewModelSuccess() async {
         let mockService = MockData.createMockProfileService(deleteRequest: {})
-        self.sut = mockService
+        sut = mockService
 
         let claimsStore = ClaimsStore()
         self.claimsStore = claimsStore
@@ -119,7 +119,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
         let mockService = MockData.createMockProfileService(deleteRequest: {
             throw ProfileError.error(message: "error")
         })
-        self.sut = mockService
+        sut = mockService
 
         let claimsStore = ClaimsStore()
         self.claimsStore = claimsStore

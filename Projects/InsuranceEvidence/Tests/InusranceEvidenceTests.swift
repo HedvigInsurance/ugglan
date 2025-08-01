@@ -5,6 +5,4 @@ import hCoreUI
 @testable import InsuranceEvidence
 
 @MainActor
-final class InusranceEvidenceTests: XCTestCase {
-
-}
+final class InusranceEvidenceTests: XCTestCase {}

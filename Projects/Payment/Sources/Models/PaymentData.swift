@@ -11,7 +11,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     let contracts: [ContractPaymentDetails]
     let referralDiscount: Discount?
     let paymentDetails: PaymentDetails?
-    //had to add as an array since we can't nest same struct type here
+    // had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
 
     public init(
@@ -63,9 +63,10 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         case unknown
 
         enum PaymentStatusAction: Codable, Equatable, Hashable {
-            static func == (lhs: PaymentStatusAction, rhs: PaymentStatusAction) -> Bool {
-                return false
+            static func == (_: PaymentStatusAction, _: PaymentStatusAction) -> Bool {
+                false
             }
+
             case viewAddedToPayment
         }
 
@@ -133,7 +134,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
 
         @MainActor
         var fromToDate: String {
-            return "\(from.displayDateShort) - \(to.displayDateShort)"
+            "\(from.displayDateShort) - \(to.displayDateShort)"
         }
     }
 
@@ -162,6 +163,6 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
 
 extension PaymentData: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: PaymentDetailsView.self)
+        .init(describing: PaymentDetailsView.self)
     }
 }

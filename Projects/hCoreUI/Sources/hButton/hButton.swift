@@ -97,7 +97,7 @@ struct _hButton<Content: View>: View {
     var content: () -> Content
     var action: () -> Void
 
-    public init(
+    init(
         action: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -127,8 +127,7 @@ extension View {
             case .large: .cornerRadiusL
             }
         }
-        self
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 }
@@ -159,17 +158,18 @@ extension EnvironmentValues {
 
 extension View {
     public var hUseLightMode: some View {
-        self.environment(\.hUseLightMode, true)
+        environment(\.hUseLightMode, true)
     }
 }
 
 extension View {
     public func hButtonConfigurationType(_ type: hButtonConfigurationType) -> some View {
-        self.environment(\.hButtonConfigurationType, type)
+        environment(\.hButtonConfigurationType, type)
     }
 }
 
-//MARK: hButtonIsLoading
+// MARK: hButtonIsLoading
+
 private struct EnvironmentHButtonIsLoading: EnvironmentKey {
     static let defaultValue = false
 }
@@ -183,11 +183,12 @@ extension EnvironmentValues {
 
 extension View {
     public func hButtonIsLoading(_ isLoading: Bool) -> some View {
-        self.environment(\.hButtonIsLoading, isLoading)
+        environment(\.hButtonIsLoading, isLoading)
     }
 }
 
-//MARK: EnvironmentHButtonDontShowLoadingWhenDisabled
+// MARK: EnvironmentHButtonDontShowLoadingWhenDisabled
+
 private struct EnvironmentHButtonDontShowLoadingWhenDisabled: EnvironmentKey {
     static let defaultValue = false
 }
@@ -201,7 +202,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hButtonDontShowLoadingWhenDisabled(_ show: Bool) -> some View {
-        self.environment(\.hButtonDontShowLoadingWhenDisabled, show)
+        environment(\.hButtonDontShowLoadingWhenDisabled, show)
     }
 }
 
@@ -218,7 +219,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hButtonTakeFullWidth(_ takeFullWidth: Bool) -> some View {
-        self.environment(\.hButtonTakeFullWidth, takeFullWidth)
+        environment(\.hButtonTakeFullWidth, takeFullWidth)
     }
 }
 
@@ -246,13 +247,13 @@ extension EnvironmentValues {
 
 extension View {
     public func hWithTransition(_ transition: AnyTransition?) -> some View {
-        self.environment(\.hWithTransition, transition)
+        environment(\.hWithTransition, transition)
     }
 }
 
 extension View {
     public func hUseButtonTextColor(_ color: hButtonTextColor) -> some View {
-        self.environment(\.hUseButtonTextColor, color)
+        environment(\.hUseButtonTextColor, color)
     }
 }
 
@@ -270,7 +271,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hCustomButtonView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hCustomButtonView, AnyView(content()))
+        environment(\.hCustomButtonView, AnyView(content()))
     }
 }
 

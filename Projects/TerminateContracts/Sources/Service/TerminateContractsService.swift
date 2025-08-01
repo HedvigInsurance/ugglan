@@ -7,6 +7,7 @@ class TerminateContractsService {
     func startTermination(contractId: String) async throws -> TerminateStepResponse {
         try await client.startTermination(contractId: contractId)
     }
+
     func sendTerminationDate(
         inputDateToString: String,
         terminationContext: String
@@ -21,6 +22,7 @@ class TerminateContractsService {
         log.info("TerminateContractsService: success with context: \(response.context)")
         return response
     }
+
     func sendConfirmDelete(
         terminationContext: String,
         model: TerminationFlowDeletionNextModel?
@@ -30,6 +32,7 @@ class TerminateContractsService {
         log.info("TerminateContractsService: sendConfirmDelete success with context: \(response.context)")
         return response
     }
+
     func sendSurvey(
         terminationContext: String,
         option: String,

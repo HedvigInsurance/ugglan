@@ -3,10 +3,9 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class FetchClaimsClientOctopus: hFetchClaimsClient {
+class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 
-    public init() {}
     public func get() async throws -> [ClaimModel] {
         let data = try await octopus.client.fetch(
             query: OctopusGraphQL.ClaimsQuery(),
@@ -38,14 +37,13 @@ extension ClaimModel {
             isUploadingFilesEnabled: claim.isUploadingFilesEnabled,
             showClaimClosedFlow: claim.showClaimClosedFlow,
             infoText: claim.infoText,
-            displayItems: claim.displayItems.compactMap({ item in
-                let displayValue: String = {
-                    return item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? item.displayValue
-                        .localDateToIso8601Date?
-                        .displayDateDDMMMYYYYFormat ?? item.displayValue
-                }()
+            displayItems: claim.displayItems.compactMap { item in
+                let displayValue: String =
+                    item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? item.displayValue
+                    .localDateToIso8601Date?
+                    .displayDateDDMMMYYYYFormat ?? item.displayValue
                 return .init(displayTitle: item.displayTitle, displayValue: displayValue)
-            })
+            }
         )
     }
 }
@@ -53,7 +51,7 @@ extension ClaimModel {
 extension GraphQLEnum<OctopusGraphQL.ClaimStatus> {
     fileprivate var asClaimStatus: ClaimModel.ClaimStatus {
         switch self {
-        case .case(let status):
+        case let .case(status):
             switch status {
             case .created:
                 return .submitted
@@ -73,7 +71,7 @@ extension GraphQLEnum<OctopusGraphQL.ClaimStatus> {
 extension GraphQLEnum<OctopusGraphQL.ClaimOutcome> {
     fileprivate var asClaimOutcome: ClaimModel.ClaimOutcome? {
         switch self {
-        case .case(let status):
+        case let .case(status):
             switch status {
             case .paid:
                 return .paid

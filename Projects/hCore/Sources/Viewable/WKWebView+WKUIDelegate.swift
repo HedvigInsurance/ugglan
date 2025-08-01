@@ -8,17 +8,19 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
     private let errorSubject = PassthroughSubject<Error, Never>()
 
     public var actionPublished: AnyPublisher<WKNavigationAction, Never> {
-        return actionPublishedSubject.eraseToAnyPublisher()
+        actionPublishedSubject.eraseToAnyPublisher()
     }
+
     public var challengeReceive: AnyPublisher<URLAuthenticationChallenge, Never> {
-        return challengeReceiveSubject.eraseToAnyPublisher()
+        challengeReceiveSubject.eraseToAnyPublisher()
     }
+
     public var isLoading: AnyPublisher<Bool, Never> {
-        return isLoadingSubject.eraseToAnyPublisher()
+        isLoadingSubject.eraseToAnyPublisher()
     }
 
     public var error: AnyPublisher<Error, Never> {
-        return errorSubject.eraseToAnyPublisher()
+        errorSubject.eraseToAnyPublisher()
     }
 
     var observer: NSKeyValueObservation?
@@ -42,12 +44,13 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
             }
         )
     }
+
     public func webView(
-        _ webView: WKWebView,
+        _: WKWebView,
         didReceive challenge: URLAuthenticationChallenge,
         completionHandler: @escaping @MainActor (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
-        self.challengeReceiveSubject.send(challenge)
+        challengeReceiveSubject.send(challenge)
 
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
             let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
@@ -57,25 +60,24 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
         }
     }
 
-    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        self.errorSubject.send(error)
+    public func webView(_: WKWebView, didFail _: WKNavigation!, withError error: Error) {
+        errorSubject.send(error)
     }
 
     public func webView(
-        _ webView: WKWebView,
+        _: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction
     ) async -> WKNavigationActionPolicy {
-        self.actionPublishedSubject.send(navigationAction)
+        actionPublishedSubject.send(navigationAction)
 
         guard let url = navigationAction.request.url else { return .allow }
         let urlString = String(describing: url)
 
         if urlString.contains("fail") || urlString.contains("success") {
-            self.decidePolicyForNavigationAction.send(urlString.contains("success") ? true : false)
+            decidePolicyForNavigationAction.send(urlString.contains("success") ? true : false)
             return .cancel
         }
 
         return .allow
     }
-
 }

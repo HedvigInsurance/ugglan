@@ -16,7 +16,7 @@ public class hNavigationController: hNavigationBaseController {
     public init(additionalHeight: CGFloat? = nil) {
         self.additionalHeight = additionalHeight
         super.init(navigationBarClass: NavBar.self, toolbarClass: UIToolbar.self)
-        if let navBar = self.navigationBar as? NavBar {
+        if let navBar = navigationBar as? NavBar {
             navBar.additionalHeight = additionalHeight
         }
         if let additionalHeight {
@@ -24,13 +24,14 @@ public class hNavigationController: hNavigationBaseController {
         }
     }
 
-    public override init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
-        self.additionalHeight = nil
+    override public init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
+        additionalHeight = nil
         super.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
     }
 
+    @available(*, unavailable)
     required init?(
-        coder aDecoder: NSCoder
+        coder _: NSCoder
     ) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -50,7 +51,7 @@ class NavBar: UINavigationBar {
     override func layoutSubviews() {
         super.layoutSubviews()
         if let additionalHeight {
-            subviews.forEach { (subview) in
+            for subview in subviews {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("UIProgressView") {
                     subview.frame = CGRect(
@@ -64,20 +65,20 @@ class NavBar: UINavigationBar {
                     subview.frame = CGRect(
                         x: 0,
                         y: additionalHeight,
-                        width: self.frame.width,
+                        width: frame.width,
                         height: subview.frame.size.height
                     )
                 }
             }
         }
-        subviews.forEach { (subview) in
+        for subview in subviews {
             let stringFromClass = NSStringFromClass(subview.classForCoder)
             if stringFromClass.contains("BarContent") {
                 subview.clipsToBounds = false
                 subview.frame = CGRect(
                     x: 0,
                     y: 0,
-                    width: self.frame.width + 4,
+                    width: frame.width + 4,
                     height: subview.frame.size.height
                 )
             }
@@ -86,7 +87,6 @@ class NavBar: UINavigationBar {
 }
 
 public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
-
     public static var navigationBarHeight: CGFloat = 80
 
     public init() {
@@ -94,17 +94,17 @@ public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
         additionalSafeAreaInsets.top = hNavigationControllerWithLargerNavBar.navigationBarHeight - 56
     }
 
+    @available(*, unavailable)
     required init?(
-        coder aDecoder: NSCoder
+        coder _: NSCoder
     ) {
         fatalError("init(coder:) has not been implemented")
     }
 }
 
 class LargeNavBar: UINavigationBar {
-
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        return CGSize(
+    override func sizeThatFits(_: CGSize) -> CGSize {
+        CGSize(
             width: UIScreen.main.bounds.size.width,
             height: hNavigationControllerWithLargerNavBar.navigationBarHeight
         )
@@ -112,14 +112,14 @@ class LargeNavBar: UINavigationBar {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        subviews.forEach { (subview) in
+        for subview in subviews {
             if subview.frame.size.height != hNavigationControllerWithLargerNavBar.navigationBarHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("BarContent") {
                     subview.frame = CGRect(
                         x: 0,
                         y: -6,
-                        width: self.frame.width,
+                        width: frame.width,
                         height: hNavigationControllerWithLargerNavBar.navigationBarHeight
                     )
                 }
@@ -161,7 +161,6 @@ public struct DefaultStyling {
         appearance.backButtonAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.clear
         ]
-
     }
 
     public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
@@ -199,7 +198,6 @@ public struct DefaultStyling {
     }
 
     public static func setNavigationBarAppearance() {
-
         UINavigationBar.appearance(for: .init(userInterfaceStyle: .dark)).standardAppearance =
             standardNavigationBarAppearance(style: .dark)
         UINavigationBar.appearance(for: .init(userInterfaceStyle: .light)).standardAppearance =
@@ -303,18 +301,17 @@ public struct DefaultStyling {
         )
         barButtonItemAppearance.tintColor = .brand(.primaryText())
 
-        //selection color
-        //selected date is this color, system adds bold to it automaticly
-        //this color is used as background and system adds some alpha to it
+        // selection color
+        // selected date is this color, system adds bold to it automaticly
+        // this color is used as background and system adds some alpha to it
         UIDatePicker.appearance().tintColor = .brand(.datePickerSelectionColor)
 
         UIImageView.appearance().tintColor = .brand(.primaryText())
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(
             .primaryText()
         )
-        //date picker buttons < and > for switching months
+        // date picker buttons < and > for switching months
         UIButton.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(.primaryText())
-
     }
 
     private static func setTabBarAppearance() {
@@ -426,7 +423,6 @@ extension CGFloat {
     public static var cornerRadiusL: CGFloat = 12
     public static var cornerRadiusXL: CGFloat = 16
     public static var cornerRadiusXXL: CGFloat = 24
-
 }
 
 extension CGFloat {
