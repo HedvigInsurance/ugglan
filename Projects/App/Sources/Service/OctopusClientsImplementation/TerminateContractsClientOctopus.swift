@@ -1,16 +1,11 @@
 import Foundation
 import TerminateContracts
-//
-//  Untitled.swift
-//  Ugglan
-//
-//  Created by Sladan Nimcevic on 2025-03-24.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
 import hCore
 import hGraphQL
 
 class TerminateContractsClientOctopus: TerminateContractsClient {
+    @Inject private var octopus: hOctopus
+
     func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
@@ -61,6 +56,31 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         let data = OctopusGraphQL.FlowTerminationSurveyInput(data: input)
         let mutation = OctopusGraphQL.FlowTerminationSurveyNextMutation(input: data, context: terminationContext)
         return try await mutation.execute(\.flowTerminationSurveyNext.fragments.flowTerminationFragment.currentStep)
+    }
+
+    public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
+        let input = OctopusGraphQL.TerminationFlowNotificationInput(
+            contractId: contractId,
+            terminationDate: date.localDateString
+        )
+
+        let query = OctopusGraphQL.TerminationFlowNotificationQuery(input: input)
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+
+        guard let terminationFlowNotification = data.currentMember.terminationFlowNotification else { return nil }
+
+        return .init(with: terminationFlowNotification.fragments.flowTerminationNotificationFragment)
+    }
+}
+
+extension TerminationNotification {
+    init(
+        with data: OctopusGraphQL.FlowTerminationNotificationFragment
+    ) {
+        self.init(
+            message: data.message,
+            type: data.type.asNotificationType
+        )
     }
 }
 
@@ -306,13 +326,7 @@ extension TerminationFlowDateNextStepModel {
             maxDate: data.maxDate,
             minDate: data.minDate,
             date: nil,
-            extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) },
-            notification: {
-                if let notification = data.notification {
-                    return .init(message: notification.message, type: notification.type.asNotificationType)
-                }
-                return nil
-            }()
+            extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) }
         )
     }
 }

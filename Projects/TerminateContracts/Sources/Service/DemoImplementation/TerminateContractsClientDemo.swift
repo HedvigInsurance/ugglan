@@ -1,3 +1,4 @@
+import Foundation
 import hCore
 
 public class TerminateContractsClientDemo: TerminateContractsClient {
@@ -26,4 +27,9 @@ public class TerminateContractsClientDemo: TerminateContractsClient {
     ) async throws -> TerminateStepResponse {
         .init(context: "", step: .setSuccessStep(model: .init(terminationDate: nil)), progress: 0)
     }
+
+    public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
+        return nil
+    }
+
 }

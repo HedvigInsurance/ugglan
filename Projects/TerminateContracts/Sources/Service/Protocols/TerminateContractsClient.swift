@@ -17,6 +17,11 @@ public protocol TerminateContractsClient {
         option: String,
         inputData: String?
     ) async throws -> TerminateStepResponse
+
+    func getNotification(
+        contractId: String,
+        date: Date
+    ) async throws -> TerminationNotification?
 }
 
 public struct TerminateStepResponse: Equatable, Sendable {

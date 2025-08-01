@@ -4,12 +4,13 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDateLandingScreen: View {
-    @StateObject var vm = SetTerminationDateLandingScreenViewModel()
+    @ObservedObject var vm: SetTerminationDateLandingScreenViewModel
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
         terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
+        self.vm = .init(terminationNavigationVm: terminationNavigationVm)
         self.terminationNavigationVm = terminationNavigationVm
     }
 
@@ -63,10 +64,6 @@ struct SetTerminationDateLandingScreen: View {
                     }
             }
         }
-        .onAppear {
-            vm.terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
-            vm.terminationDateStep = terminationNavigationVm.terminationDateStepModel
-        }
     }
 
     @ViewBuilder
@@ -100,8 +97,8 @@ struct SetTerminationDateLandingScreen: View {
                     value: terminationNavigationVm.terminationDateStepModel?.date?.displayDateDDMMMYYYYFormat
                         ?? L10n.terminationFlowDateFieldPlaceholder,
                     placeHolder: L10n.terminationFlowDateFieldText,
-                    onTap: {
-                        terminationNavigationVm.isDatePickerPresented = true
+                    onTap: { [weak terminationNavigationVm] in
+                        terminationNavigationVm?.isDatePickerPresented = true
                     }
                 )
                 .hFieldSize(.medium)
@@ -214,30 +211,26 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var isDeletion: Bool?
     @Published var hasAgreedToTerms: Bool = false
     @Published var titleText: String = ""
+    private var terminationNavigationVm: TerminationFlowNavigationViewModel?
 
-    @Published var terminationDeleteStep: TerminationFlowDeletionNextModel? {
-        didSet {
-            checkDeletion()
+    init(terminationNavigationVm: TerminationFlowNavigationViewModel) {
+        self.terminationNavigationVm = terminationNavigationVm
+        checkDeletion(for: terminationNavigationVm)
+        if isDeletion == true {
+            terminationNavigationVm.fetchNotification(isDeletion: true)
         }
     }
-
-    @Published var terminationDateStep: TerminationFlowDateNextStepModel? {
-        didSet {
-            checkDeletion()
-        }
-    }
-
     func isCancelButtonDisabled(terminationDate: Date?) -> Bool {
         let hasSetTerminationDate = terminationDate != nil
         return !(isDeletion ?? false) && (!hasSetTerminationDate || !hasAgreedToTerms)
     }
 
-    private func checkDeletion() {
+    private func checkDeletion(for terminationNavigationVm: TerminationFlowNavigationViewModel) {
         isDeletion = {
-            if terminationDeleteStep != nil {
+            if terminationNavigationVm.terminationDeleteStepModel != nil {
                 return true
             }
-            if terminationDateStep != nil {
+            if terminationNavigationVm.terminationDateStepModel != nil {
                 return false
             }
             return nil
@@ -247,6 +240,12 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
             self.isDeletion = isDeletion
             self.titleText =
                 isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
+        }
+    }
+
+    deinit {
+        Task { [weak self] in
+            await self?.terminationNavigationVm?.fetchNotificationTask?.cancel()
         }
     }
 }
