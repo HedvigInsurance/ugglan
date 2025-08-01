@@ -38,7 +38,6 @@ public struct RenewalCardView: View {
                 url: contract.upcomingRenewal?.draftCertificateUrl ?? "",
                 type: .unknown
             )
-
         } else {
             showFailedToOpenUrlAlert = true
         }

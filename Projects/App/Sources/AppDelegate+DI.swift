@@ -74,7 +74,6 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
             Dependencies.shared.add(module: Module { () -> hCampaignClient in campaignClient })
             Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
-
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()

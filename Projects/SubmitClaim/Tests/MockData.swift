@@ -81,7 +81,6 @@ struct MockData {
                 ),
                 nextStepId: ""
             )
-
         },
         summary: @escaping Summary = { context, _ in
             .init(
