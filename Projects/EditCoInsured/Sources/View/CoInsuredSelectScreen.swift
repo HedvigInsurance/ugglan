@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -69,7 +68,6 @@ struct CoInsuredSelectScreen: View {
                                 )
                             }
                         }
-                        editCoInsuredNavigation.selectCoInsured = nil
                     }
                 }
             },
@@ -91,7 +89,8 @@ struct CoInsuredSelectScreen: View {
                     actionType: .add,
                     contractId: contractId
                 ),
-                editCoInsuredNavigation: editCoInsuredNavigation
+                editCoInsuredNavigation: editCoInsuredNavigation,
+                showEnterManuallyButton: false
             )
         } else {
             picker
@@ -124,7 +123,7 @@ struct CoInsuredSelectScreen: View {
             .padding(.bottom, -4)
         }
         .hItemPickerAttributes([.singleSelect, .attachToBottom])
-        .hFormContentPosition(.bottom)
+        .hFormContentPosition(.compact)
         .hButtonIsLoading(vm.isLoading)
     }
 }

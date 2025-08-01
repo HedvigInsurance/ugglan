@@ -7,7 +7,7 @@ import hGraphQL
 class hCampaignsClientOctopus: hCampaignClient {
     @Inject private var octopus: hOctopus
 
-    public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
+    func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         let query = OctopusGraphQL.DiscountsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentDiscountsData(with: data, amountFromPaymentData: nil)
@@ -31,7 +31,7 @@ extension PaymentDiscountsData {
 
 @MainActor
 extension Discount {
-    internal init(
+    init(
         with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign,
         amountFromPaymentData: MonetaryAmount?
 

@@ -7,7 +7,7 @@ import hGraphQL
 class ChangeTierClientOctopus: ChangeTierClient {
     @Inject @preconcurrency var octopus: hOctopus
 
-    public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {
             switch input.source {
             case .changeTier: return .selfService
@@ -77,7 +77,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
         }
     }
 
-    public func commitTier(quoteId: String) async throws {
+    func commitTier(quoteId: String) async throws {
         let input = OctopusGraphQL.ChangeTierDeductibleCommitIntentInput(quoteId: quoteId)
         let mutation = OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation(input: input)
 
@@ -208,7 +208,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
         return currentDeductible
     }
 
-    public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
+    func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
         do {
             let productVariantQuery = OctopusGraphQL.ProductVariantComparisonQuery(termsVersions: termsVersion)
             let productVariantData = try await octopus.client.fetch(
