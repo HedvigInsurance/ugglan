@@ -8,7 +8,7 @@ import hGraphQL
 class TravelInsuranceClientOctopus: TravelInsuranceClient {
     @Inject var octopus: hOctopus
 
-    public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
+    func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         let query = OctopusGraphQL.TravelCertificateQuery()
         do {
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
@@ -35,7 +35,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
     }
 
     @MainActor
-    public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
+    func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         let input = dto.asOctopusInput
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
@@ -54,7 +54,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func getList(
+    func getList(
         source: AddonSource
     ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?

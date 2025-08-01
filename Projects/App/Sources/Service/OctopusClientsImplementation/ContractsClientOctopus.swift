@@ -9,7 +9,7 @@ import hGraphQL
 class FetchContractsClientOctopus: FetchContractsClient {
     @Inject private var octopus: hOctopus
 
-    public func getContracts() async throws -> ContractsStack {
+    func getContracts() async throws -> ContractsStack {
         let query = OctopusGraphQL.ContractBundleQuery()
         let contracts = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
@@ -49,7 +49,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
         )
     }
 
-    public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(flow: .case(source.getSource))
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let bannerData = data.currentMember.upsellTravelAddonBanner
