@@ -86,7 +86,7 @@ public struct ConfirmChangesButtonConfig {
 
 extension ConfirmChangesScreen: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return String(describing: self)
+        String(describing: self)
     }
 }
 
