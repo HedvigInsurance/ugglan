@@ -8,7 +8,7 @@ import hCore
 import hGraphQL
 
 @MainActor
-public class ChatFileUploaderService {
+class ChatFileUploaderService {
     @Inject var client: ChatFileUploaderClient
 
     func upload(
@@ -28,8 +28,8 @@ extension NetworkClient: @retroactive ChatFileUploaderClient {
         let request = try await FileUploadRequest.uploadFile(files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<[ChatUploadFileResponseModel], Error>) -> Void in
-            let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
+            (inCont: CheckedContinuation<[ChatUploadFileResponseModel], Error>) in
+            let task = self.sessionClient.dataTask(with: request) { [weak self] data, response, error in
                 Task {
                     do {
                         if let uploadedFiles: [ChatUploadFileResponseModel] = try await self?
@@ -37,7 +37,7 @@ extension NetworkClient: @retroactive ChatFileUploaderClient {
                         {
                             inCont.resume(returning: uploadedFiles)
                         }
-                    } catch let error {
+                    } catch {
                         inCont.resume(throwing: error)
                     }
                 }
@@ -57,7 +57,7 @@ enum FileUploadRequest {
     case uploadFile(files: [File])
 
     var baseUrl: URL {
-        return Environment.current.botServiceApiURL
+        Environment.current.botServiceApiURL
     }
 
     var methodType: String {
@@ -66,6 +66,7 @@ enum FileUploadRequest {
             return "POST"
         }
     }
+
     func asRequest() async throws -> URLRequest {
         var request: URLRequest!
         switch self {
@@ -77,9 +78,9 @@ enum FileUploadRequest {
             for file in files {
                 let data: Data? = try await {
                     switch file.source {
-                    case .data(let data):
+                    case let .data(data):
                         return data
-                    case .localFile(let results):
+                    case let .localFile(results):
                         return try await results?.itemProvider.getData().data
                     case .url:
                         return nil
@@ -95,10 +96,10 @@ enum FileUploadRequest {
             }
             request = multipartFormDataRequest.asURLRequest()
         }
-        request.httpMethod = self.methodType
+        request.httpMethod = methodType
         try await TokenRefresher.shared.refreshIfNeeded()
         let headers = await ApolloClient.headers()
-        headers.forEach { element in
+        for element in headers {
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }
         return request

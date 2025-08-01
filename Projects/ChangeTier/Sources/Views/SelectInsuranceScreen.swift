@@ -12,9 +12,9 @@ struct SelectInsuranceScreen: View {
     ) {
         self.changeTierContractsInput = changeTierContractsInput
         self.changeTierNavigationVm = changeTierNavigationVm
-        self.itemPickerConfig = .init(
+        itemPickerConfig = .init(
             items: {
-                let items = changeTierContractsInput.contracts.map({
+                let items = changeTierContractsInput.contracts.map {
                     (
                         object: $0,
                         displayName: ItemModel(
@@ -22,7 +22,7 @@ struct SelectInsuranceScreen: View {
                             subTitle: $0.contractExposureName
                         )
                     )
-                })
+                }
                 return items
             }(),
             preSelectedItems: { [] },
@@ -63,7 +63,6 @@ struct SelectInsuranceScreen: View {
                     contractDisplayName: "displayName",
                     contractExposureName: "exposureName"
                 )
-
             ]
         ),
         changeTierNavigationVm: .init(
@@ -75,12 +74,9 @@ struct SelectInsuranceScreen: View {
                         contractDisplayName: "displayName",
                         contractExposureName: "exposureName"
                     )
-
                 ]
             ),
-            onChangedTier: {
-
-            }
+            onChangedTier: {}
         )
     )
 }

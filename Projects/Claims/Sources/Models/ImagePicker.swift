@@ -24,9 +24,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
         return picker
     }
 
-    public func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
-
-    }
+    public func updateUIViewController(_: PHPickerViewController, context _: Context) {}
 
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -99,7 +97,7 @@ public struct FileImporterView: UIViewControllerRepresentable {
         return picker
     }
 
-    public func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {
+    public func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {
         // No update needed
     }
 
@@ -111,7 +109,7 @@ public struct FileImporterView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        public func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             var files: [File] = []
             guard !didFinishAdding else { return }
             didFinishAdding = true
@@ -125,10 +123,9 @@ public struct FileImporterView: UIViewControllerRepresentable {
             }
             parent.imagesSelected(files)
             parent.presentationMode.wrappedValue.dismiss()
-
         }
 
-        public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        public func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
     }

@@ -72,7 +72,6 @@ public protocol Logging {
         type: ErrorSource,
         attributes: [AttributeKey: AttributeValue]?
     )
-
 }
 
 extension Logging {
@@ -142,12 +141,14 @@ extension Logging {
         error: Error? = nil,
         attributes: [AttributeKey: AttributeValue]? = nil
     ) {
-        self.addUserAction(type: type, name: name, error: error, attributes: attributes)
+        addUserAction(type: type, name: name, error: error, attributes: attributes)
     }
 }
+
 public enum ErrorSource {
     case network
 }
+
 public enum LoggingAction {
     case click
     case custom
@@ -155,29 +156,28 @@ public enum LoggingAction {
 
 public class DemoLogger: Logging {
     public init() {}
-    public func debug(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {
-    }
+    public func debug(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
-    public func info(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+    public func info(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
-    public func notice(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+    public func notice(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
-    public func warn(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+    public func warn(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
-    public func error(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+    public func error(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
-    public func critical(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+    public func critical(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
     public func addUserAction(
-        type: LoggingAction,
-        name: String,
-        error: Error?,
-        attributes: [AttributeKey: AttributeValue]?
+        type _: LoggingAction,
+        name _: String,
+        error _: Error?,
+        attributes _: [AttributeKey: AttributeValue]?
     ) {}
 
     public func addError(
-        error: Error,
-        type: ErrorSource,
-        attributes: [AttributeKey: AttributeValue]?
+        error _: Error,
+        type _: ErrorSource,
+        attributes _: [AttributeKey: AttributeValue]?
     ) {}
 }

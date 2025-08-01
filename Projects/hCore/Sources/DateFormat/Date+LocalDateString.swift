@@ -23,7 +23,7 @@ extension Date {
     }
 
     public func daysBetween(start: Date) -> Int {
-        return Calendar.current.dateComponents([.day], from: start, to: self).day!
+        Calendar.current.dateComponents([.day], from: start, to: self).day!
     }
 
     public var displayDateDDMMMYYYYFormat: String {
@@ -38,7 +38,7 @@ extension Date {
         let dateFormatter = DateFormatter()
         if !Calendar.current.isDateInWeek(from: self) {
             dateFormatter.dateFormat = "dd MMMM YYYY"
-            return self.displayDateDDMMMYYYYFormat
+            return displayDateDDMMMYYYYFormat
         } else if Calendar.current.isDateInToday(self) {
             dateFormatter.dateFormat = "HH:mm"
             return "\(L10n.generalToday) " + dateFormatter.string(from: self)
@@ -57,7 +57,7 @@ extension Calendar {
     public func isDateInWeek(from date: Date) -> Bool {
         let currentWeek = component(Calendar.Component.weekOfYear, from: Date())
         let otherWeek = component(Calendar.Component.weekOfYear, from: date)
-        return (currentWeek == otherWeek)
+        return currentWeek == otherWeek
     }
 }
 

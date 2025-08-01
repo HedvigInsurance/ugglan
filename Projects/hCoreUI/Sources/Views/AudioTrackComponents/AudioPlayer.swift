@@ -10,7 +10,7 @@ public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
         url: URL?
     ) {
         self.url = url
-        self.sampleHeights = generateGaussianHeights()
+        sampleHeights = generateGaussianHeights()
     }
 
     public let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
@@ -31,7 +31,7 @@ public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
             switch playbackState {
             case .idle:
                 break
-            case .playing(let paused):
+            case let .playing(paused):
                 if paused, audioPlayer?.rate != 0 {
                     audioPlayer?.pause()
                 }
@@ -138,7 +138,7 @@ public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
             // in your method where you setup your player item
             observerStatus = playerItem.observe(
                 \.status,
-                changeHandler: { [weak self] (item, value) in
+                changeHandler: { [weak self] item, _ in
                     debugPrint("status: \(item.status.rawValue)")
                     if item.status == .failed {
                         Task { @MainActor in
@@ -155,9 +155,9 @@ public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
 
     override public func observeValue(
         forKeyPath keyPath: String?,
-        of object: Any?,
+        of _: Any?,
         change: [NSKeyValueChangeKey: Any]?,
-        context: UnsafeMutableRawPointer?
+        context _: UnsafeMutableRawPointer?
     ) {
         if keyPath == "timeControlStatus",
             let change = change,
@@ -169,10 +169,10 @@ public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
             Task { @MainActor in
                 if newStatus == .playing {
                     self.playbackState = .playing(paused: false)
-                } else if newStatus == .paused && playbackState != .finished {
+                } else if newStatus == .paused, playbackState != .finished {
                     self.playbackState = .playing(paused: true)
                 }
-                if newStatus != oldStatus, newStatus != .playing && newStatus != .paused {
+                if newStatus != oldStatus, newStatus != .playing, newStatus != .paused {
                     self.playbackState = .loading
                 }
             }
@@ -180,6 +180,6 @@ public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
     }
 
     @objc func playerDidFinishPlaying() {
-        self.playbackState = .finished
+        playbackState = .finished
     }
 }

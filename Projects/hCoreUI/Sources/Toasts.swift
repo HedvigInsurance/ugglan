@@ -124,9 +124,7 @@ public class Toasts {
         }
     }
 
-    init() {
-
-    }
+    init() {}
 
     private func showNext() {
         if let toast = list.first {
@@ -144,7 +142,6 @@ public class Toasts {
             }
         }
     }
-
 }
 
 private class ToastUIView: UIView {
@@ -158,10 +155,10 @@ private class ToastUIView: UIView {
         self.model = model
         self.onDeinit = onDeinit
         super.init(frame: .zero)
-        self.addSubview(vc.view)
+        addSubview(vc.view)
         setAutoDismiss()
-        self.transform = .init(translationX: 0, y: -200)
-        self.backgroundColor = .clear
+        transform = .init(translationX: 0, y: -200)
+        backgroundColor = .clear
         UIView.animate(withDuration: 1) { [weak self] in
             self?.transform = .identity
         }
@@ -171,10 +168,11 @@ private class ToastUIView: UIView {
         }
 
         let drag = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-        self.addGestureRecognizer(drag)
+        addGestureRecognizer(drag)
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -191,7 +189,7 @@ private class ToastUIView: UIView {
         case .ended:
             let velocity = sender.velocity(in: self).y
             // dismiss if swiped with negative velocity or ended in position thats should dismiss toast
-            if velocity < 0 || (self.frame.height / 2 < -(offsetForPanGesture) && offsetForPanGesture < 0) {
+            if velocity < 0 || (frame.height / 2 < -offsetForPanGesture && offsetForPanGesture < 0) {
                 dismiss()
                 return
             } else {
@@ -211,7 +209,7 @@ private class ToastUIView: UIView {
             break
         }
 
-        //do slower animation if ended
+        // do slower animation if ended
         let duration: TimeInterval = {
             if ended {
                 return 0.5
@@ -228,7 +226,6 @@ private class ToastUIView: UIView {
             } else {
                 self?.transform = .init(translationX: 0, y: self?.offsetForPanGesture ?? 0)
             }
-
         }
     }
 

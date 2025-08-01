@@ -12,7 +12,7 @@ public struct SuccessScreen: View {
         formPosition: ContentPosition? = nil
     ) {
         self.title = title
-        self.subTitle = subtitle
+        subTitle = subtitle
         self.formPosition = formPosition
     }
 
@@ -20,9 +20,9 @@ public struct SuccessScreen: View {
         successViewTitle: String,
         successViewBody: String
     ) {
-        self.title = successViewTitle
-        self.subTitle = successViewBody
-        self.formPosition = nil
+        title = successViewTitle
+        subTitle = successViewBody
+        formPosition = nil
     }
 
     public var body: some View {
@@ -107,7 +107,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hSuccessBottomAttachedView, AnyView(content()))
+        environment(\.hSuccessBottomAttachedView, AnyView(content()))
     }
 }
 
@@ -125,6 +125,6 @@ extension EnvironmentValues {
 
 extension View {
     public func hCustomSuccessView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hCustomSuccessView, AnyView(content()))
+        environment(\.hCustomSuccessView, AnyView(content()))
     }
 }

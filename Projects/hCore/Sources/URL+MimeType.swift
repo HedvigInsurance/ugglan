@@ -7,7 +7,7 @@ extension URL {
     public var mimeType: String {
         let pathExtension = self.pathExtension
         let fallback = "application/octet-stream"
-        guard let mimeType = UTType.init(filenameExtension: pathExtension)?.preferredMIMEType else { return fallback }
+        guard let mimeType = UTType(filenameExtension: pathExtension)?.preferredMIMEType else { return fallback }
         return mimeType
     }
 }

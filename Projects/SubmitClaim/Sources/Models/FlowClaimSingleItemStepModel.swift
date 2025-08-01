@@ -63,17 +63,17 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     }
 
     func getChoosenDamagesAsText() -> String? {
-        let chosenDamages = self.selectedItemProblems ?? []
+        let chosenDamages = selectedItemProblems ?? []
         let availableItemProblems =
             availableItemProblems.filter { model in
-                return chosenDamages.contains(model.itemProblemId)
+                chosenDamages.contains(model.itemProblemId)
             }
-            .map({ $0.displayName })
+            .map(\.displayName)
         if !availableItemProblems.isEmpty {
             var finalString = availableItemProblems[0]
 
-            availableItemProblems.forEach {
-                finalString.append(", \($0)")
+            for availableItemProblem in availableItemProblems {
+                finalString.append(", \(availableItemProblem)")
             }
 
             return finalString
@@ -82,12 +82,12 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     }
 
     func getAllChoosenDamagesAsText() -> String? {
-        let chosenDamages = self.selectedItemProblems ?? []
+        let chosenDamages = selectedItemProblems ?? []
         let availableItemProblems =
             availableItemProblems.filter { model in
-                return chosenDamages.contains(model.itemProblemId)
+                chosenDamages.contains(model.itemProblemId)
             }
-            .map({ $0.displayName })
+            .map(\.displayName)
         if !availableItemProblems.isEmpty {
             return availableItemProblems.joined(separator: ", ")
         }
@@ -102,7 +102,7 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     }
 
     func getListOfModels(for brandId: String) -> [ClaimFlowItemModelOptionModel]? {
-        return availableItemModelOptions.filter({ $0.itemBrandId == brandId })
+        availableItemModelOptions.filter { $0.itemBrandId == brandId }
     }
 
     var returnDisplayStringForSummaryPrice: String? {
@@ -163,6 +163,6 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable, Sen
 
 extension ClaimFlowItemBrandOptionModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ModelPickerView.self)
+        .init(describing: ModelPickerView.self)
     }
 }

@@ -12,8 +12,8 @@ public enum hTextFieldOptions: Hashable {
 
 extension Set where Element == hTextFieldOptions {
     var minimumHeight: CGFloat {
-        self.compactMap { option in
-            if case .minimumHeight(let height) = option {
+        compactMap { option in
+            if case let .minimumHeight(height) = option {
                 return height
             } else {
                 return nil
@@ -23,11 +23,11 @@ extension Set where Element == hTextFieldOptions {
     }
 
     var showDivider: Bool {
-        self.contains(.showDivider)
+        contains(.showDivider)
     }
 
     var useLineBreak: Bool {
-        self.contains(.useLineBreak)
+        contains(.useLineBreak)
     }
 }
 
@@ -45,7 +45,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hTextFieldOptions(_ options: Set<hTextFieldOptions>) -> some View {
-        self.environment(\.hTextFieldOptions, options)
+        environment(\.hTextFieldOptions, options)
     }
 }
 
@@ -62,7 +62,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hTextFieldError(_ message: String?) -> some View {
-        self.environment(\.hTextFieldError, message)
+        environment(\.hTextFieldError, message)
     }
 }
 
@@ -83,9 +83,9 @@ public struct hTextField: View {
     ) {
         self.masking = masking
         self.placeholder = placeholder ?? masking.placeholderText
-        self._value = value
-        self.previousInnerValue = value.wrappedValue
-        self.innerValue = value.wrappedValue
+        _value = value
+        previousInnerValue = value.wrappedValue
+        innerValue = value.wrappedValue
     }
 
     public var body: some View {
@@ -157,7 +157,7 @@ struct hTextFieldPreview: PreviewProvider {
 
     public var wrappedValue: Value? {
         get {
-            return field
+            field
         }
         nonmutating set {
             field = newValue
@@ -167,7 +167,7 @@ struct hTextFieldPreview: PreviewProvider {
     public init(
         wrappedValue: Value?
     ) {
-        self._field = State(initialValue: wrappedValue)
+        _field = State(initialValue: wrappedValue)
     }
 }
 
@@ -175,23 +175,23 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     var onReturnTap: () -> Void = {}
     var onDidEndEditing: () -> Void = {}
     var onBeginEditing: () -> Void = {}
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_: UITextField) -> Bool {
         onReturnTap()
         return true
     }
 
-    func textFieldDidEndEditing(_ textField: UITextField) {
+    func textFieldDidEndEditing(_: UITextField) {
         onDidEndEditing()
     }
 
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    func textFieldDidBeginEditing(_: UITextField) {
         onBeginEditing()
     }
 }
 
 extension UITextField {
     @objc func dismissKeyboad() {
-        self.resignFirstResponder()
+        resignFirstResponder()
     }
 }
 
@@ -264,7 +264,7 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
             }
 
             if let navigationController = textField.viewController?.navigationController {
-                if isFirstAppear && navigationController.viewControllers.count == 1 {
+                if isFirstAppear, navigationController.viewControllers.count == 1 {
                     // skip waiting for transition if viewController is single viewController in UINavigationController
                     navigationControllerHasFinishedTransition = true
                 } else {
@@ -294,7 +294,7 @@ extension Bool: hTextFieldFocusStateCompliant {
     }
 
     public var next: Bool? {
-        return nil
+        nil
     }
 }
 
@@ -305,6 +305,6 @@ extension hTextField {
         equals: Value,
         onReturn: @escaping () -> Void = {}
     ) -> some View {
-        self.modifier(hTextFieldFocusStateModifier(focusedField: focusedField, equals: equals, onReturn: onReturn))
+        modifier(hTextFieldFocusStateModifier(focusedField: focusedField, equals: equals, onReturn: onReturn))
     }
 }

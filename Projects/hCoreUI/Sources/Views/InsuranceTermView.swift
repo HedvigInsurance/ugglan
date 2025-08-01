@@ -12,7 +12,7 @@ public struct InsuranceTermView: View {
         onDocumentTap: @escaping (_: hPDFDocument) -> Void
     ) {
         self.documents = documents
-        self.header = withHeader
+        header = withHeader
         self.onDocumentTap = onDocumentTap
     }
 

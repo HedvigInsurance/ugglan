@@ -24,20 +24,20 @@ extension ChangeAddonViewModel {
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
-                    id: self.contractId,
-                    displayName: self.selectedQuote?.addonVariant?.displayName ?? "",
+                    id: contractId,
+                    displayName: selectedQuote?.addonVariant?.displayName ?? "",
                     exposureName: L10n.addonFlowSummaryActiveFrom(
-                        self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                        addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
-                    newPremium: self.selectedQuote?.price,
-                    currentPremium: self.addonOffer?.currentAddon?.price,
-                    documents: self.selectedQuote?.addonVariant?.documents ?? [],
+                    newPremium: selectedQuote?.price,
+                    currentPremium: addonOffer?.currentAddon?.price,
+                    documents: selectedQuote?.addonVariant?.documents ?? [],
                     onDocumentTap: { document in
                         changeAddonNavigationVm.document = document
                     },
-                    displayItems: self.compareAddonDisplayItems(
-                        currentDisplayItems: self.addonOffer?.currentAddon?.displayItems ?? [],
-                        newDisplayItems: self.selectedQuote?.displayItems ?? []
+                    displayItems: compareAddonDisplayItems(
+                        currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
+                        newDisplayItems: selectedQuote?.displayItems ?? []
                     ),
                     insuranceLimits: [],
                     typeOfContract: nil,
@@ -45,8 +45,8 @@ extension ChangeAddonViewModel {
                 )
             ],
             total: getTotalPrice(
-                currentPrice: self.addonOffer?.currentAddon?.price,
-                newPrice: self.selectedQuote?.price
+                currentPrice: addonOffer?.currentAddon?.price,
+                newPrice: selectedQuote?.price
             ),
             isAddon: true
         ) {

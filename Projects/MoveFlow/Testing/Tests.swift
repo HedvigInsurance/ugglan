@@ -12,7 +12,5 @@ final class CrossSellingItemScreenshotTests: XCTestCase {
         super.setUp()
     }
 
-    func testScreenshot() {
-
-    }
+    func testScreenshot() {}
 }

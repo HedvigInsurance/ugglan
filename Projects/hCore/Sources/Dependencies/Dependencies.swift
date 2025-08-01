@@ -23,7 +23,7 @@ public class Dependencies {
         return component
     }
 
-    public func remove<T>(for: T.Type) {
+    public func remove<T>(for _: T.Type) {
         modules.removeValue(forKey: String(describing: T.self))
     }
 }
@@ -62,7 +62,6 @@ public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
     @StateObject private var stateObject: T
 
     public init() {
-
         _stateObject = StateObject(wrappedValue: Dependencies.shared.resolve())
     }
 
@@ -71,6 +70,6 @@ public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
     }
 
     public var projectedValue: ObservedObject<T>.Wrapper {
-        return $stateObject
+        $stateObject
     }
 }

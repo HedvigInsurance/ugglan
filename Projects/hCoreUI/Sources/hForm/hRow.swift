@@ -52,7 +52,7 @@ public struct hRow<Content: View, Accessory: View>: View {
         _ accessory: Accessory,
         @ViewBuilder _ builder: () -> Content
     ) {
-        self.content = builder()
+        content = builder()
         self.accessory = accessory
     }
 
@@ -95,7 +95,7 @@ public struct hRow<Content: View, Accessory: View>: View {
             .padding(.vertical, verticalPadding)
             .padding(.top, topPadding)
             .padding(.bottom, bottomPadding)
-            if (position == .middle || position == .top) && !hWithoutDivider {
+            if position == .middle || position == .top, !hWithoutDivider {
                 hRowDivider()
             }
         }
@@ -107,13 +107,12 @@ extension hRow where Accessory == EmptyView {
     public init(
         @ViewBuilder _ builder: () -> Content
     ) {
-        self.content = builder()
-        self.accessory = EmptyView()
+        content = builder()
+        accessory = EmptyView()
     }
 }
 
 public struct StandaloneChevronAccessory: View {
-
     public init() {}
 
     public var body: some View {
@@ -192,12 +191,12 @@ extension EnvironmentValues {
 
 extension View {
     public func hRowContentAlignment(_ alignment: VerticalAlignment) -> some View {
-        self.environment(\.hRowContentAlignment, alignment)
+        environment(\.hRowContentAlignment, alignment)
     }
 }
 
 extension hRow {
-    func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
+    internal func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
         SwiftUI.Button(
             action: {
                 onTap()
@@ -212,17 +211,17 @@ extension hRow {
     }
 
     public func onTap(_ onTap: @escaping () -> Void) -> some View where Accessory == EmptyView {
-        self.withChevronAccessory.wrapInButton(onTap)
+        withChevronAccessory.wrapInButton(onTap)
     }
 
     public func onTap(_ onTap: @escaping () -> Void) -> some View {
-        self.wrapInButton(onTap)
+        wrapInButton(onTap)
     }
 
     /// Attaches onTap handler only if passed boolean is true
     @ViewBuilder public func onTap(if: Bool, _ onTap: @escaping () -> Void) -> some View {
         if `if` {
-            self.wrapInButton(onTap)
+            wrapInButton(onTap)
         } else {
             self
         }

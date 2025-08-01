@@ -32,7 +32,7 @@ extension EditType {
             editTypes.append(.coInsured)
         }
 
-        if Dependencies.featureFlags().isTerminationFlowEnabled && contract.canTerminate {
+        if Dependencies.featureFlags().isTerminationFlowEnabled, contract.canTerminate {
             editTypes.append(.cancellation)
         }
 

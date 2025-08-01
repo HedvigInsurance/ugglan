@@ -25,11 +25,11 @@ struct CrossSellingItem: View {
             HStack {
                 HStack(spacing: .padding16) {
                     KFImage(crossSell.imageUrl)
-                        .placeholder({
+                        .placeholder {
                             hCoreUIAssets.bigPillowHome.view
                                 .resizable()
                                 .frame(width: 48, height: 48)
-                        })
+                        }
                         .fade(duration: 0.25)
                         .resizable()
                         .frame(width: 48, height: 48)

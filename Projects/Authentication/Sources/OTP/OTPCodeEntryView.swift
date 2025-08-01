@@ -42,9 +42,9 @@ public struct OTPCodeEntryView: View {
                         )
                         .simultaneousGesture(
                             TapGesture()
-                                .onEnded({ _ in
+                                .onEnded { _ in
                                     vm.focusCodeField = true
-                                })
+                                }
                         )
 
                         if let errorMessage = otpVM.codeErrorMessage {
@@ -78,7 +78,7 @@ public struct OTPCodeEntryView: View {
             OTPCodeLoadingOverlay(otpVM: otpVM)
         )
         .sectionContainerStyle(.transparent)
-        .onChange(of: otpVM.code) { newValue in
+        .onChange(of: otpVM.code) { _ in
             vm.check(otpState: otpVM)
         }
         .onAppear {
@@ -86,6 +86,7 @@ public struct OTPCodeEntryView: View {
         }
     }
 }
+
 @MainActor
 class OTPCodeEntryViewModel: ObservableObject {
     private var authenticationService = AuthenticationService()
@@ -111,7 +112,7 @@ class OTPCodeEntryViewModel: ObservableObject {
                         ApplicationState.state = .loggedIn
                         self?.router?.dismiss()
                     }
-                } catch let error {
+                } catch {
                     otpState?.codeErrorMessage = error.localizedDescription
                 }
                 otpState?.isLoading = false

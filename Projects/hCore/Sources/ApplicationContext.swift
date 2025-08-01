@@ -8,11 +8,11 @@ public actor ApplicationContext {
     private let isLoggedInSubject = CurrentValueSubject<Bool, Never>(false)
 
     public var isLoggedInPublisher: AnyPublisher<Bool, Never> {
-        return isLoggedInSubject.eraseToAnyPublisher()
+        isLoggedInSubject.eraseToAnyPublisher()
     }
 
     public var isLoggedIn: Bool {
-        return isLoggedInSubject.value
+        isLoggedInSubject.value
     }
 
     public func setValue(to isLoggedIn: Bool) {

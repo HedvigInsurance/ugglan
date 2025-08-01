@@ -47,7 +47,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     @ViewBuilder
     private var displayFieldsAndNotice: some View {
-
         if let locationStep = claimsNavigationVm.occurrencePlusLocationModel?.locationModel {
             hFloatingField(
                 value: locationStep.getSelectedOption()?.displayName ?? "",

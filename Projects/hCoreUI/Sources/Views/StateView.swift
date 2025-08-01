@@ -40,7 +40,7 @@ public struct StateView: View {
                     .padding(.vertical, .padding16)
             }
         } else {
-            if buttonConfig != nil && bottomAttachedView == nil {
+            if buttonConfig != nil, bottomAttachedView == nil {
                 VStack(spacing: .padding8) {
                     Spacer()
                     centralContent
@@ -241,7 +241,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hStateViewButtonConfig(_ stateViewButtonConfigKey: StateViewButtonConfig?) -> some View {
-        self.environment(\.hStateViewButtonConfig, stateViewButtonConfigKey)
+        environment(\.hStateViewButtonConfig, stateViewButtonConfigKey)
     }
 }
 

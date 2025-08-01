@@ -130,7 +130,7 @@ struct DatePickerView_Previews: PreviewProvider {
 @MainActor
 public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @preconcurrency Identifiable {
     public static func == (lhs: DatePickerViewModel, rhs: DatePickerViewModel) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     public var id: String?
@@ -145,6 +145,7 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
             updateColors()
         }
     }
+
     let config: hDatePickerField.HDatePickerFieldConfig
 
     init(
@@ -159,8 +160,8 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
             cancelAction()
         })
 
-        self.dateSelected = date.wrappedValue
-        self._date = date
+        dateSelected = date.wrappedValue
+        _date = date
         self.config = config
     }
 
@@ -176,8 +177,8 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
         self.cancelAction = .init(execute: {
             cancelAction()
         })
-        self._date = date
-        self.dateSelected = date.wrappedValue
+        _date = date
+        dateSelected = date.wrappedValue
         self.config = config
     }
 
@@ -200,6 +201,7 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
             }
         }
     }
+
     /// labels representing days (mon, tue...)
     @MainActor
     private func configure(sectionHeader: UIView) {
@@ -213,6 +215,7 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
             }
         }
     }
+
     /// buttons for previous, next month
     @MainActor
     private func configure(header: UIView) {
@@ -224,32 +227,31 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
             light: hTextColor.Opaque.primary.colorFor(.light, .base).color.uiColor(),
             dark: hTextColor.Opaque.primary.colorFor(.dark, .base).color.uiColor()
         )
-        let buttons = header.subviews.filter({ $0.isKind(of: UIButton.self) })
+        let buttons = header.subviews.filter { $0.isKind(of: UIButton.self) }
         for button in buttons {
             if let button = button as? UIButton {
                 button.tintColor = buttonsColor
             }
         }
 
-        //current year + month label
+        // current year + month label
         for button in buttons.filter({ $0.subviews.count > 1 }) {
             if let label = button.subviews[1].subviews.first as? UILabel {
                 label.textColor = textColor
                 label.font = Fonts.fontFor(style: .heading1)
             }
         }
-
     }
 
     @MainActor
     private func update(collection: UICollectionView) {
-        //iterate through collection sections and find the proper cells for date picker
+        // iterate through collection sections and find the proper cells for date picker
         for sectionId in 0...collection.numberOfSections - 1 {
             if collection.numberOfItems(inSection: sectionId) > 0 {
                 for i in 0...collection.numberOfItems(inSection: sectionId) - 1 {
                     if let cell = collection.cellForItem(at: .init(item: i, section: sectionId)) {
-                        //when we find the cell which represent selected date
-                        //set background color and text color to proper one
+                        // when we find the cell which represent selected date
+                        // set background color and text color to proper one
                         if let contentView = cell.subviews.first?.subviews.first?.subviews,
                             let backgroundView = contentView.first, contentView.count > 1
                         {
@@ -263,12 +265,12 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
                                             )
                                             .color.uiColor()
                                         let textColor = hTextColor.Opaque.white.colorFor(.light, .base).color.uiColor()
-                                        //when the background color of the selected date changes (by the system) - we want to set it to the proper one
+                                        // when the background color of the selected date changes (by the system) - we want to set it to the proper one
                                         observation = backgroundView.observe(\.backgroundColor) {
-                                            [weak label] view, value in
+                                            [weak label] view, _ in
                                             Task { @MainActor in
-                                                if view.backgroundColor != bgColor
-                                                    && view.backgroundColor != UIColor.clear
+                                                if view.backgroundColor != bgColor,
+                                                    view.backgroundColor != UIColor.clear
                                                 {
                                                     view.backgroundColor = bgColor
                                                     label?.textColor = textColor
@@ -303,7 +305,6 @@ struct hDatePickerField_Previews: PreviewProvider {
             showAsList: true
         )
     static var previews: some View {
-
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 
         return VStack {
@@ -318,7 +319,7 @@ struct hDatePickerField_Previews: PreviewProvider {
 }
 
 class ReferenceAction {
-    var execute: () -> (Void)
+    var execute: () -> Void
 
     init(
         execute: @escaping () -> Void
@@ -334,6 +335,6 @@ public enum DateFormatter {
 
 extension DatePickerView: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: DatePickerView.self)
+        .init(describing: DatePickerView.self)
     }
 }

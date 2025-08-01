@@ -11,6 +11,7 @@ final class ContractStoreTests: XCTestCase {
         try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
+
     @MainActor
     override func tearDown() async throws {
         try await super.tearDown()
@@ -74,7 +75,6 @@ final class ContractStoreTests: XCTestCase {
         assert(mockService.events.count == 1)
         assert(mockService.events.contains(.getContracts))
     }
-
 }
 
 @MainActor

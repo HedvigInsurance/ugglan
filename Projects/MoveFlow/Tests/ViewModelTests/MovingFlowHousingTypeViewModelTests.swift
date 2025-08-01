@@ -28,10 +28,10 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         let extraBuildings = [ExtraBuilding(id: "", type: "building tyoe", livingArea: 20, connectedToWater: false)]
 
         let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
-            input in
+            _ in
             self.movingFlowModel
         })
-        self.sut = mockService
+        sut = mockService
 
         let houseModel = HouseInformationInputModel()
         houseModel.extraBuildings = extraBuildings

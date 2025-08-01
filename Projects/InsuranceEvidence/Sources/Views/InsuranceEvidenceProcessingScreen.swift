@@ -84,7 +84,7 @@ class ProcessingViewModel: ObservableObject {
             }
             let results = try await navigation.service.createInsuranceEvidence(input: input)
             try await minimumTime.value
-            self.insuranceEvidence = results
+            insuranceEvidence = results
             viewState = .success
         } catch {
             viewState = .error(errorMessage: error.localizedDescription)

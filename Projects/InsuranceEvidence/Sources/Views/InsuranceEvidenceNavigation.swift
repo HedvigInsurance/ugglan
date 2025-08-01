@@ -6,7 +6,7 @@ import hCoreUI
 class InsuranceEvidenceNavigationViewModel: ObservableObject {
     let service = InsuranceEvidenceService()
     @Published var isInfoViewPresented = false
-    lazy fileprivate var insuranceEvidenceInputScreenViewModel = InsuranceEvidenceInputScreenViewModel(
+    fileprivate lazy var insuranceEvidenceInputScreenViewModel = InsuranceEvidenceInputScreenViewModel(
         InsuranceEvidenceNavigationViewModel: self
     )
     let router = Router()
@@ -24,7 +24,7 @@ public struct InsuranceEvidenceNavigation: View {
             )
             .routerDestination(for: InsuranceEvidenceNavigationRouterType.self, options: [.hidesBackButton]) { type in
                 switch type {
-                case .processing(let input):
+                case let .processing(input):
                     let processingViewModel = ProcessingViewModel(input: input, navigation: vm)
                     InsuranceEvidenceProcessingScreen(vm: processingViewModel)
                 }
@@ -46,7 +46,7 @@ public struct InsuranceEvidenceNavigation: View {
 
 extension InsuranceEvidenceNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: InsuranceEvidenceInputScreen.self)
+        .init(describing: InsuranceEvidenceInputScreen.self)
     }
 }
 

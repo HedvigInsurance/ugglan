@@ -1,8 +1,8 @@
 import Foundation
 
 public class ProfileClientDemo: ProfileClient {
-    public func update(eurobonus: String) async throws -> PartnerData {
-        return PartnerData(sas: .init(eligible: false, eurobonusNumber: nil))
+    public func update(eurobonus _: String) async throws -> PartnerData {
+        PartnerData(sas: .init(eligible: false, eurobonusNumber: nil))
     }
 
     public init() {}
@@ -10,7 +10,7 @@ public class ProfileClientDemo: ProfileClient {
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
         hasTravelInsurances: Bool
     ) {
-        return (
+        (
             MemberDetails(
                 id: "",
                 firstName: "",
@@ -26,7 +26,7 @@ public class ProfileClientDemo: ProfileClient {
     }
 
     public func getMemberDetails() async throws -> MemberDetails {
-        return MemberDetails(
+        MemberDetails(
             id: "",
             firstName: "",
             lastName: "",
@@ -42,10 +42,8 @@ public class ProfileClientDemo: ProfileClient {
     public func postDeleteRequest() async throws {}
 
     public func update(email: String, phone: String) async throws -> (email: String, phone: String) {
-        return (email, phone)
+        (email, phone)
     }
 
-    public func updateSubscriptionPreference(to subscribed: Bool) async throws {
-
-    }
+    public func updateSubscriptionPreference(to _: Bool) async throws {}
 }

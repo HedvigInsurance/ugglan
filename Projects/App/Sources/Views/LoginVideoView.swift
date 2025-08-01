@@ -2,19 +2,18 @@ import AVKit
 import SwiftUI
 
 struct LoginVideoView: UIViewRepresentable {
+    func updateUIView(_: UIView, context _: UIViewRepresentableContext<LoginVideoView>) {}
 
-    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<LoginVideoView>) {
-    }
-
-    func makeUIView(context: Context) -> UIView {
-        return PlayerUIView(frame: .zero)
+    func makeUIView(context _: Context) -> UIView {
+        PlayerUIView(frame: .zero)
     }
 }
 
 private class PlayerUIView: UIView {
     private let playerLayer = AVPlayerLayer()
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -39,7 +38,7 @@ private class PlayerUIView: UIView {
         player.actionAtItemEnd = .none
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerItemDidReachEnd(notification:)),
+            selector: #selector(playerItemDidReachEnd),
             name: .AVPlayerItemDidPlayToEndTime,
             object: player.currentItem
         )
@@ -56,27 +55,27 @@ private class PlayerUIView: UIView {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didEnterForeground(notification:)),
+            selector: #selector(didEnterForeground),
             name: UIApplication.willEnterForegroundNotification,
             object: nil
         )
-
     }
 
     @objc
-    func didEnterForeground(notification: Notification) {
+    func didEnterForeground() {
         playerLayer.player?.play()
     }
+
     @objc
-    func playerItemDidReachEnd(notification: Notification) {
-        if let view = self.snapshotView(afterScreenUpdates: false) {
-            self.addSubview(view)
+    func playerItemDidReachEnd() {
+        if let view = snapshotView(afterScreenUpdates: false) {
+            addSubview(view)
             view.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
             UIView.animate(withDuration: 0.1, delay: 0.1) {
                 view.alpha = 0
-            } completion: { finished in
+            } completion: { _ in
                 view.removeFromSuperview()
             }
 

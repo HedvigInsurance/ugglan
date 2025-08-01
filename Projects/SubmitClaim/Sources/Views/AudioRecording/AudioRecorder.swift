@@ -79,7 +79,7 @@ public class AudioRecorder: @preconcurrency ObservableObject {
     func refresh() {
         recorder?.updateMeters()
         let gain = recorder?.averagePower(forChannel: 0) ?? 0
-        decibelScale.append(CGFloat(pow(10, (gain / 20))))
+        decibelScale.append(CGFloat(pow(10, gain / 20)))
     }
 
     private func stopRecording() {
@@ -94,7 +94,7 @@ public class AudioRecorder: @preconcurrency ObservableObject {
         }
 
         if FileManager.default.fileExists(atPath: filePath.relativePath) {
-            self.recording = Recording(url: filePath, created: Date(), sample: decibelScale)
+            recording = Recording(url: filePath, created: Date(), sample: decibelScale)
         }
     }
 }
@@ -106,16 +106,16 @@ struct AudioPulseBackground: View {
 
     var body: some View {
         Circle().fill(backgroundColorScheme)
-            .onReceive(audioRecorder.recordingTimer) { input in
+            .onReceive(audioRecorder.recordingTimer) { _ in
                 audioRecorder.refresh()
             }
             .scaleEffect(
                 scaleEffect
             )
-            .onChange(of: audioRecorder.decibelScale) { value in
+            .onChange(of: audioRecorder.decibelScale) { _ in
                 withAnimation(.spring) {
                     scaleEffect =
-                        audioRecorder.isRecording ? pow(((audioRecorder.decibelScale.last ?? 0.0) + 0.95), 4) : 0.95
+                        audioRecorder.isRecording ? pow((audioRecorder.decibelScale.last ?? 0.0) + 0.95, 4) : 0.95
                 }
             }
     }
@@ -126,8 +126,9 @@ public struct Recording {
     var created: Date
     var sample: [CGFloat]
     var max: CGFloat {
-        return sample.max() ?? 1.0
+        sample.max() ?? 1.0
     }
+
     var range: Range<CGFloat> {
         guard sample.count > 0 else { return 0..<0 }
         return sample.min()!..<sample.max()!

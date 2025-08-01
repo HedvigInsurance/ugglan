@@ -56,7 +56,7 @@ where MainContent: View, BottomContent: View {
             }
             .padding([.horizontal], .padding16)
 
-            if withDivider && bottomComponent != nil {
+            if withDivider, bottomComponent != nil {
                 hRowDivider()
                     .foregroundColor(hSurfaceColor.Translucent.primary)
                 Spacer().frame(height: .padding16)
@@ -87,9 +87,7 @@ struct CardComponent_Previews: PreviewProvider {
         VStack {
             Spacer()
             StatusCard(
-                onSelected: {
-
-                },
+                onSelected: {},
                 mainContent: Text("T"),
                 title: "TITLE",
                 subTitle: "SUBTITLE",
@@ -108,9 +106,7 @@ struct FCardComponent_Previews: PreviewProvider {
         VStack {
             Spacer()
             StatusCard(
-                onSelected: {
-
-                },
+                onSelected: {},
                 mainContent: Text("T"),
                 title: "TITLE",
                 subTitle: "SUBTITLE",
@@ -137,7 +133,7 @@ extension EnvironmentValues {
 
 extension View {
     public var hCardWithoutSpacing: some View {
-        self.environment(\.hCardWithoutSpacing, true)
+        environment(\.hCardWithoutSpacing, true)
     }
 }
 
@@ -154,6 +150,6 @@ extension EnvironmentValues {
 
 extension View {
     public var hCardWithDivider: some View {
-        self.environment(\.hCardWithDivider, true)
+        environment(\.hCardWithDivider, true)
     }
 }

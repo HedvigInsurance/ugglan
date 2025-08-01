@@ -57,15 +57,15 @@ final class AddonsViewModelTests: XCTestCase {
             ]
         )
 
-        let mockService = MockData.createMockAddonsService(fetchAddon: { contractId in
+        let mockService = MockData.createMockAddonsService(fetchAddon: { _ in
             addonModel
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
-        self.vm = model
+        vm = model
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.addonOffer == addonModel)
@@ -77,16 +77,16 @@ final class AddonsViewModelTests: XCTestCase {
 
     func testFetchAddonFailure() async throws {
         let mockService = MockData.createMockAddonsService(
-            fetchAddon: { contractId in
+            fetchAddon: { _ in
                 throw AddonsError.somethingWentWrong
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
-        self.vm = model
+        vm = model
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.addonOffer?.quotes == nil)
@@ -94,7 +94,7 @@ final class AddonsViewModelTests: XCTestCase {
         assert(model.addonOffer?.quotes.count == nil)
         assert(model.selectedQuote == nil)
 
-        if case .error(let errorMessage) = model.fetchAddonsViewState {
+        if case let .error(errorMessage) = model.fetchAddonsViewState {
             assert(errorMessage == AddonsError.somethingWentWrong.localizedDescription)
         } else {
             assertionFailure("not proper state")
@@ -102,15 +102,14 @@ final class AddonsViewModelTests: XCTestCase {
     }
 
     func testSubmitAddonSuccess() async throws {
-        let mockService = MockData.createMockAddonsService(addonSubmit: { quoteId, addonId in
-
+        let mockService = MockData.createMockAddonsService(addonSubmit: { _, _ in
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
-        self.vm = model
+        vm = model
         await model.submitAddons()
 
         try await Task.sleep(nanoseconds: 30_000_000)
@@ -119,23 +118,23 @@ final class AddonsViewModelTests: XCTestCase {
 
     func testSubmitAddonFailure() async throws {
         let mockService = MockData.createMockAddonsService(
-            fetchAddon: { contractId in
+            fetchAddon: { _ in
                 throw AddonsError.submitError
             },
-            addonSubmit: { quoteId, addonId in
+            addonSubmit: { _, _ in
                 throw AddonsError.submitError
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
-        self.vm = model
+        vm = model
         await model.submitAddons()
 
         try await Task.sleep(nanoseconds: 30_000_000)
-        if case .error(let errorMessage) = model.submittingAddonsViewState {
+        if case let .error(errorMessage) = model.submittingAddonsViewState {
             assert(errorMessage == AddonsError.submitError.localizedDescription)
         } else {
             assertionFailure("not proper state")

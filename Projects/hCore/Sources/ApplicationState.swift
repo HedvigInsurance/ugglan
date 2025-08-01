@@ -46,7 +46,7 @@ public struct ApplicationState {
                 return preferredLocale
             }
         }
-        let availableLanguages = Localization.Locale.allCases.map { $0.lprojCode }
+        let availableLanguages = Localization.Locale.allCases.map(\.lprojCode)
 
         let bestMatchedLanguage = Bundle.preferredLocalizations(from: availableLanguages).first
 

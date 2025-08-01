@@ -74,7 +74,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
             let toast = ToastBar(
                 type: .campaign,
                 icon: hCoreUIAssets.checkmarkOutlined.view,
-                text: (isUnsubscribed) ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
+                text: isUnsubscribed ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
             )
             Toasts.shared.displayToastBar(toast: toast)
 
@@ -111,16 +111,13 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
             }
 
         } catch _ {
-            //TODO: Add error handling
+            // TODO: Add error handling
         }
 
         withAnimation {
             isLoading = false
         }
-
     }
 }
 
-private struct UnsubscribedMembers {
-
-}
+private struct UnsubscribedMembers {}

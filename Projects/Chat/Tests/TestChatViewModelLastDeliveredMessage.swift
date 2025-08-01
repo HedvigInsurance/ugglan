@@ -25,19 +25,19 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         await model.messageVm.send(message: message)
         try await Task.sleep(nanoseconds: 200_000_000)
         assert(model.messageVm.lastDeliveredMessage == message)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testSendNewMessageFailure() async {
         let messageType = MessageType.text(text: "test")
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
-            sendMessage: { message in throw ChatError.sendMessageFailed }
+            sendMessage: { _ in throw ChatError.sendMessageFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.messageVm.send(message: message)
         assert(model.messageVm.lastDeliveredMessage == nil)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testSendMultipleMessagesSuccess() async throws {
@@ -54,7 +54,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         await model.messageVm.send(message: newMessage)
         try await Task.sleep(nanoseconds: 200_000_000)
         assert(model.messageVm.lastDeliveredMessage == newMessage)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testSendMultipleMessagesFailure() async throws {
@@ -68,11 +68,10 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         try await Task.sleep(nanoseconds: 200_000_000)
         assert(model.messageVm.lastDeliveredMessage == firstMessage)
 
-        mockService.sendMessage = { message in throw ChatError.sendMessageFailed }
+        mockService.sendMessage = { _ in throw ChatError.sendMessageFailed }
         let newMessage = Message(type: messageType)
         await model.messageVm.send(message: newMessage)
         assert(model.messageVm.lastDeliveredMessage == firstMessage)
-        self.sut = mockService
+        sut = mockService
     }
-
 }

@@ -27,6 +27,7 @@ enum ProfileRowType {
             return L10n.Profile.ClaimHistory.title
         }
     }
+
     @MainActor
     var icon: Image {
         switch self {
@@ -59,6 +60,6 @@ enum ProfileRowType {
     }
 
     var paddings: CGFloat {
-        return (40 - imageSize) / 2
+        (40 - imageSize) / 2
     }
 }

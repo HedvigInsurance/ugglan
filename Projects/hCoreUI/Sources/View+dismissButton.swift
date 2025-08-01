@@ -71,7 +71,7 @@ extension View {
     }
 
     public func withAlertDismiss() -> some View {
-        self.withDismissButton(
+        withDismissButton(
             title: L10n.General.areYouSure,
             message: L10n.General.progressWillBeLostAlert,
             confirmButton: L10n.General.yes,
@@ -111,7 +111,7 @@ extension View {
         if #available(iOS 26, *) {
             self
         } else {
-            self.offset(y: y)
+            offset(y: y)
         }
     }
 }

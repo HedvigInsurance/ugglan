@@ -16,9 +16,9 @@ public struct ChatScreen: View {
     public init(
         vm: ChatScreenViewModel
     ) {
-        self._vm = StateObject(wrappedValue: vm)
-        self.messageVm = vm.messageVm
-        self.conversationVm = vm.messageVm.conversationVm
+        _vm = StateObject(wrappedValue: vm)
+        messageVm = vm.messageVm
+        conversationVm = vm.messageVm.conversationVm
     }
 
     public var body: some View {
@@ -96,7 +96,6 @@ public struct ChatScreen: View {
             if message.sender == .hedvig {
                 Spacer()
             }
-
         }
         .id(message.id)
     }
@@ -160,9 +159,9 @@ struct ChatScreenModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .dismissKeyboard()
-            .findScrollView({ sv in
+            .findScrollView { sv in
                 sv.delegate = chatScrollViewDelegate
-            })
+            }
             .task {
                 messageVm.chatNavigationVm = chatNavigationVm
             }
@@ -201,8 +200,8 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
 
     func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
-        withVelocity velocity: CGPoint,
-        targetContentOffset: UnsafeMutablePointer<CGPoint>
+        withVelocity _: CGPoint,
+        targetContentOffset _: UnsafeMutablePointer<CGPoint>
     ) {
         isScrolling.send(false)
         let vc = findProverVC(from: scrollView.viewController)

@@ -9,8 +9,8 @@ import hGraphQL
 extension NetworkClient: @retroactive FileUploaderClient {
     public func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel {
         let request = try await OdysseyRequest.uploadAudioFile(flowId: flowId, file: file).asRequest()
-        let (data, response) = try await self.sessionClient.data(for: request)
-        let responseModel: UploadFileResponseModel? = try await self.handleResponse(
+        let (data, response) = try await sessionClient.data(for: request)
+        let responseModel: UploadFileResponseModel? = try await handleResponse(
             data: data,
             response: response,
             error: nil
@@ -26,7 +26,7 @@ private enum OdysseyRequest: Sendable {
     case uploadAudioFile(flowId: String, file: UploadFile)
 
     private var baseUrl: URL {
-        return Environment.current.odysseyApiURL
+        Environment.current.odysseyApiURL
     }
 
     private var methodType: String {
@@ -52,11 +52,11 @@ private enum OdysseyRequest: Sendable {
             )
             request = multipartFormDataRequest.asURLRequest()
         }
-        request.httpMethod = self.methodType
+        request.httpMethod = methodType
         try await TokenRefresher.shared.refreshIfNeeded()
         var headers = await ApolloClient.headers()
         headers["Odyssey-Platform"] = "ios"
-        headers.forEach { element in
+        for element in headers {
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }
         return request

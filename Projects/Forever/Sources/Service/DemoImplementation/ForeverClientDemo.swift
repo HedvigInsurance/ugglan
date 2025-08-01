@@ -3,7 +3,7 @@ public class ForeverClientDemo: ForeverClient {
     public init() {}
 
     public func getMemberReferralInformation() async throws -> ForeverData {
-        return ForeverData(
+        ForeverData(
             grossAmount: .init(amount: "200", currency: "SEK"),
             netAmount: .init(amount: "200", currency: "SEK"),
             otherDiscounts: .init(amount: "0", currency: "SEK"),

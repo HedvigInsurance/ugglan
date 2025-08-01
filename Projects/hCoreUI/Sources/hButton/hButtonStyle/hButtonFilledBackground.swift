@@ -50,7 +50,7 @@ extension View {
     @ViewBuilder
     fileprivate func applyLightModeIfNeeded(_ useLightMode: Bool) -> some View {
         if useLightMode {
-            self.colorScheme(.light)
+            colorScheme(.light)
         } else {
             self
         }

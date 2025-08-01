@@ -3,7 +3,7 @@ import SwiftUI
 
 extension View {
     public var setViewController: some View {
-        self.modifier(ViewControllerModifer())
+        modifier(ViewControllerModifer())
     }
 }
 

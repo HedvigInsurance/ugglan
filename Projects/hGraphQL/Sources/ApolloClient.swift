@@ -56,7 +56,7 @@ extension ApolloClient {
         }
     }
 
-    static func createOctopusClient() async -> hOctopus {
+    internal static func createOctopusClient() async -> hOctopus {
         let environment = Environment.current
 
         _ = await headers()
@@ -86,7 +86,7 @@ extension ApolloClient {
     }
 
     public static func createClient() async -> hApollo {
-        return hApollo(
+        hApollo(
             octopus: await createOctopusClient()
         )
     }

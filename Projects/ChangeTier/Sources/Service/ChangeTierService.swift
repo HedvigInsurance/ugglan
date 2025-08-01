@@ -8,10 +8,12 @@ class ChangeTierService {
         log.info("ChangeTierService.getTier: for \(input.asString)", error: nil, attributes: nil)
         return try await client.getTier(input: input)
     }
+
     func commitTier(quoteId: String) async throws {
         log.info("ChangeTierService.commitTier: with quoteId \(quoteId)", error: nil, attributes: [:])
         try await client.commitTier(quoteId: quoteId)
     }
+
     func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
         let data = try await client.compareProductVariants(termsVersion: termsVersion)
         log.info(
@@ -25,6 +27,6 @@ class ChangeTierService {
 
 extension ChangeTierInputData {
     fileprivate func logDescription() -> String {
-        return ""
+        ""
     }
 }

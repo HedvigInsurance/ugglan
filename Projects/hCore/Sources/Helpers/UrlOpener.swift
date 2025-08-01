@@ -7,7 +7,6 @@ public protocol URLOpener {
 }
 
 public class DefaultURLOpener: URLOpener {
-
     public init() {}
     public func open(_ url: URL) {
         log.info("Opening URL: \(url.absoluteString)", error: nil, attributes: nil)

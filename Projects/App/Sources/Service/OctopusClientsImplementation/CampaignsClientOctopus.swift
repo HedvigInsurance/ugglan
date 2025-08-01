@@ -4,14 +4,13 @@ import PresentableStore
 import hCore
 import hGraphQL
 
-public class hCampaignsClientOctopus: hCampaignClient {
+class hCampaignsClientOctopus: hCampaignClient {
     @Inject private var octopus: hOctopus
-    public init() {}
 
     public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         let query = OctopusGraphQL.DiscountsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        return PaymentDiscountsData.init(with: data, amountFromPaymentData: nil)
+        return PaymentDiscountsData(with: data, amountFromPaymentData: nil)
     }
 }
 
@@ -21,8 +20,8 @@ extension PaymentDiscountsData {
         with data: OctopusGraphQL.DiscountsQuery.Data,
         amountFromPaymentData: MonetaryAmount?
     ) {
-        let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter({ $0.type == .voucher })
-            .compactMap({ .init(with: $0, amountFromPaymentData: amountFromPaymentData) })
+        let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter { $0.type == .voucher }
+            .compactMap { .init(with: $0, amountFromPaymentData: amountFromPaymentData) }
         self.init(
             discounts: discounts,
             referralsData: .init(with: data.currentMember.referralInformation)
@@ -32,7 +31,7 @@ extension PaymentDiscountsData {
 
 @MainActor
 extension Discount {
-    init(
+    internal init(
         with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign,
         amountFromPaymentData: MonetaryAmount?
 
@@ -42,33 +41,15 @@ extension Discount {
             amount: amountFromPaymentData,
             title: data.description,
             listOfAffectedInsurances: data.onlyApplicableToContracts?
-                .compactMap({
+                .compactMap {
                     .init(
                         id: $0.id,
                         displayName: $0.getDisplayName
                     )
-                }) ?? [],
+                } ?? [],
             validUntil: data.expiresAt,
             canBeDeleted: true,
             discountId: data.id
-        )
-    }
-
-    public init(
-        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
-    ) {
-        self.init(
-            code: data.code,
-            amount: .init(fragment: data.discount.fragments.moneyFragment),
-            title: discount?.description ?? "",
-            listOfAffectedInsurances: discount?.onlyApplicableToContracts?
-                .compactMap({
-                    .init(id: $0.id, displayName: $0.exposureDisplayName)
-                }) ?? [],
-            validUntil: nil,
-            canBeDeleted: false,
-            discountId: UUID().uuidString
         )
     }
 
@@ -90,11 +71,9 @@ extension Discount {
 
 extension OctopusGraphQL.MemberReferralInformationCodeFragment {
     public func asReedeemedCampaing() -> ReedeemedCampaingDTO {
-        return .init(
+        .init(
             code: code,
-            description: L10n.paymentsReferralDiscount,
-            type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>(.referral),
-            id: code
+            description: L10n.paymentsReferralDiscount
         )
     }
 }
@@ -102,8 +81,6 @@ extension OctopusGraphQL.MemberReferralInformationCodeFragment {
 public struct ReedeemedCampaingDTO {
     let code: String
     let description: String
-    let type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>
-    let id: String
 }
 
 extension ReferralsData {
@@ -118,7 +95,7 @@ extension ReferralsData {
             }
             return partialResult
         }
-        let numberOfReferrals = data.referrals.filter({ $0.status == .active }).count
+        let numberOfReferrals = data.referrals.filter { $0.status == .active }.count
         referrals.append(
             .init(
                 id: UUID().uuidString,
@@ -158,7 +135,7 @@ extension Referral {
 extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
     var asReferralState: Referral.State {
         switch self {
-        case .case(let t):
+        case let .case(t):
             switch t {
             case .pending:
                 return .pending
@@ -175,9 +152,9 @@ extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
 
 extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
     fileprivate var getDisplayName: String {
-        return [
-            self.currentAgreement.productVariant.displayNameShort ?? self.currentAgreement.productVariant.displayName,
-            self.exposureDisplayNameShort,
+        [
+            currentAgreement.productVariant.displayNameShort ?? currentAgreement.productVariant.displayName,
+            exposureDisplayNameShort,
         ]
         .displayName
     }

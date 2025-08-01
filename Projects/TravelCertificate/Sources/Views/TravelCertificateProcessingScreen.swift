@@ -138,9 +138,8 @@ class ProcessingViewModel: ObservableObject {
         } catch {}
     }
 
-    func present(activity: UIActivityViewController) {
+    func present(activity _: UIActivityViewController) {}
 
-    }
     @MainActor
     var fileName: String {
         "\("Travel Insurance Certificate") \(Date().localDateString)\(".pdf")"

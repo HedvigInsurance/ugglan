@@ -9,13 +9,14 @@ public struct ClaimFilesView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     public init(endPoint: String, files: [File], onSuccess: @escaping (_ data: [ClaimFileUploadResponse]) -> Void) {
-        self.vm = .init(
+        vm = .init(
             endPoint: endPoint,
             files: files,
             options: [.add, .delete],
             onSuccess: onSuccess
         )
     }
+
     public var body: some View {
         Group {
             if vm.isLoading || vm.success {
@@ -48,7 +49,6 @@ public struct ClaimFilesView: View {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .padding(.vertical, .padding16)
-
                 }
                 .hFormAttachToBottom {
                     hSection {
@@ -182,8 +182,8 @@ public class ClaimFilesViewModel: ObservableObject {
     ) {
         self.endPoint = endPoint
         self.onSuccess = onSuccess
-        self.fileGridViewModel = .init(files: files, options: options)
-        self.fileGridViewModel.onDelete = { [weak self] file in
+        fileGridViewModel = .init(files: files, options: options)
+        fileGridViewModel.onDelete = { [weak self] file in
             Task {
                 self?.removeFile(id: file.id)
             }
@@ -211,14 +211,14 @@ public class ClaimFilesViewModel: ObservableObject {
             setNavigationBarHidden(true)
         }
         do {
-            let filteredFiles = fileGridViewModel.files.filter({
+            let filteredFiles = fileGridViewModel.files.filter {
                 switch $0.source {
                 case .data, .localFile:
                     return true
                 case .url:
                     return false
                 }
-            })
+            }
             if !filteredFiles.isEmpty {
                 let files = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
                     [weak self] progress in
@@ -229,7 +229,7 @@ public class ClaimFilesViewModel: ObservableObject {
                     }
                 }
                 success = true
-                self.onSuccess(files)
+                onSuccess(files)
             }
         } catch let ex {
             withAnimation {
@@ -253,10 +253,9 @@ public class ClaimFilesViewModel: ObservableObject {
             self.rawValue = rawValue
         }
 
-        static public let add = ClaimFilesViewOptions(rawValue: 1 << 0)
-        static public let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
-        static public let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
-
+        public static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
+        public static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+        public static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {
@@ -264,6 +263,7 @@ public class ClaimFilesViewModel: ObservableObject {
         nav?.setNavigationBarHidden(hidden, animated: true)
     }
 }
+
 public struct FileUrlModel: Identifiable, Equatable {
     public var id: String?
     public var type: FileUrlModelType
@@ -341,9 +341,9 @@ public struct FileUrlModel: Identifiable, Equatable {
         ),
     ]
     return ClaimFilesView(endPoint: "", files: files) { _ in
-
     }
 }
+
 @MainActor
 public struct FilePicker {
     public static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {

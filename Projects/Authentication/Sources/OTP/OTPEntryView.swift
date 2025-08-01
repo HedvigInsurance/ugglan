@@ -44,24 +44,25 @@ public struct OTPEntryView: View {
         }
     }
 }
+
 @MainActor
 class OTPEntryViewModel: ObservableObject {
     var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusInputField = false
     weak var router: Router?
     var masking: Masking {
-        return Masking(type: .email)
+        Masking(type: .email)
     }
 
     var title: String {
-        return L10n.Login.enterYourEmailAddress
+        L10n.Login.enterYourEmailAddress
     }
 
     func onSubmit(otpState: OTPState) {
         guard masking.isValid(text: otpState.input) else {
             return
         }
-        self.focusInputField = false
+        focusInputField = false
         otpState.isLoading = true
         Task { @MainActor [weak self, weak otpState] in
             do {
@@ -77,7 +78,7 @@ class OTPEntryViewModel: ObservableObject {
                     otpState.maskedEmail = data.maskedEmail
                     self?.router?.push(AuthenticationRouterType.otpCodeEntry)
                 }
-            } catch let error {
+            } catch {
                 otpState?.isLoading = false
                 otpState?.otpInputErrorMessage = error.localizedDescription
             }

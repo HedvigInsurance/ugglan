@@ -12,7 +12,6 @@ struct ClaimContactCard: View {
             sectionContent
         }
         .sectionContainerStyle(.black)
-
     }
 
     private var sectionContent: some View {
@@ -75,7 +74,6 @@ struct ClaimContactCard: View {
                         .foregroundColor(hTextColor.Opaque.tertiary)
                         .padding(.top, .padding16)
                 }
-
             }
             .sectionContainerStyle(.transparent)
         }
@@ -145,6 +143,5 @@ struct ClaimContactCard_Previews: PreviewProvider {
                 )
             )
         }
-
     }
 }

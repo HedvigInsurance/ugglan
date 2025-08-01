@@ -62,7 +62,7 @@ public struct ContractRow: View {
         .background(
             GeometryReader { geo in
                 Color.clear.onReceive(Just(geo.size.width)) { width in
-                    self.frameWidth = width
+                    frameWidth = width
                 }
             }
         )
@@ -155,11 +155,11 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             .colorScheme(.dark)
     }
 
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration _: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
                 TagList(
-                    tags: tagsToShow.map({ $0.text }),
+                    tags: tagsToShow.map(\.text),
                     horizontalSpacing: .padding6 / 2,
                     verticalSpacing: .padding6 / 2
                 ) { tag in

@@ -10,11 +10,9 @@ struct LocationView: View {
     init(claimsNavigationVm: SubmitClaimNavigationViewModel, router: Router) {
         self.claimsNavigationVm = claimsNavigationVm
         self.router = router
-        self.itemPickerConfig = .init(
-            items: {
-                return claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.options
-                    .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
-            }(),
+        itemPickerConfig = .init(
+            items: claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.options
+                .compactMap { (object: $0, displayName: .init(title: $0.displayName)) } ?? [],
             preSelectedItems: {
                 if let value = claimsNavigationVm.occurrencePlusLocationModel?.locationModel?
                     .getSelectedOption()
@@ -35,6 +33,7 @@ struct LocationView: View {
             }
         )
     }
+
     var body: some View {
         ItemPickerScreen<ClaimFlowLocationOptionModel>(
             config: itemPickerConfig

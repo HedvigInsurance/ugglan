@@ -10,8 +10,7 @@ private class ClaimsMainNavigationViewModel: ObservableObject {
     @Published var isClaimsFlowPresented = false
 }
 
-public struct ClaimsMainNavigation: View {
-    var from: ClaimsOrigin
+struct ClaimsMainNavigation: View {
     @StateObject var claimsRouter = Router()
     @StateObject private var claimsNavigationVm = ClaimsMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false
@@ -19,7 +18,7 @@ public struct ClaimsMainNavigation: View {
 
     public var body: some View {
         RouterHost(router: claimsRouter, tracking: self) {
-            honestyPledge(from: from)
+            honestyPledge()
                 .captureHeight(in: $measuredHeight)
                 .onDisappear {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -51,7 +50,7 @@ public struct ClaimsMainNavigation: View {
         .modally(
             presented: $claimsNavigationVm.isClaimsFlowPresented
         ) {
-            SubmitClaimNavigation(origin: from)
+            SubmitClaimNavigation()
                 .onAppear {
                     shouldHideHonestyPledge = true
                 }
@@ -63,7 +62,7 @@ public struct ClaimsMainNavigation: View {
         }
     }
 
-    func honestyPledge(from origin: ClaimsOrigin) -> some View {
+    func honestyPledge() -> some View {
         HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] in
             let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
@@ -77,8 +76,7 @@ public struct ClaimsMainNavigation: View {
 
 extension ClaimsMainNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: HonestyPledge.self)
-
+        .init(describing: HonestyPledge.self)
     }
 }
 

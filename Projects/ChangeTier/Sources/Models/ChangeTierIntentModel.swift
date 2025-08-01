@@ -76,6 +76,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         self.typeOfContract = typeOfContract
     }
 }
+
 public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     public let name: String
@@ -134,8 +135,8 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         addons: [Addon]
     ) {
         self.id = id
-        self.deductableAmount = quoteAmount
-        self.deductablePercentage = quotePercentage
+        deductableAmount = quoteAmount
+        deductablePercentage = quotePercentage
         self.subTitle = subTitle
         self.basePremium = basePremium
         self.displayItems = displayItems
@@ -197,7 +198,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
 }
 
 extension Quote: Equatable {
-    static public func == (lhs: Quote, rhs: Quote) -> Bool {
-        return lhs.deductableAmount == rhs.deductableAmount && lhs.deductablePercentage == rhs.deductablePercentage
+    public static func == (lhs: Quote, rhs: Quote) -> Bool {
+        lhs.deductableAmount == rhs.deductableAmount && lhs.deductablePercentage == rhs.deductablePercentage
     }
 }

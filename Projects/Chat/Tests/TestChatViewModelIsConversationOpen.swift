@@ -4,7 +4,6 @@
 
 @MainActor
 final class TestChatViewModelIsConversationOpen: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -22,7 +21,7 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.conversationStatus == .open)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testIsConverationOpenFailure() async {
@@ -33,7 +32,7 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         let initialValue = model.messageVm.conversationVm.conversationStatus
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.conversationStatus == initialValue)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testIsConverationClosedSuccess() async {
@@ -43,7 +42,7 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.conversationStatus == .closed)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testIsConverationClosedFailure() async {
@@ -54,7 +53,6 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         let initialValue = model.messageVm.conversationVm.conversationStatus
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.conversationStatus == initialValue)
-        self.sut = mockService
+        sut = mockService
     }
-
 }

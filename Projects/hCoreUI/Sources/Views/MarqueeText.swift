@@ -21,23 +21,23 @@ public struct MarqueeText: View {
             GeometryReader { geo in
                 if stringWidth > geo.size.width {  // don't use self.animate as conditional here
                     Group {
-                        Text(self.text)
+                        Text(text)
                             .lineLimit(1)
                             .font(.init(font))
                             .offset(x: 0)
-                            .offset(x: self.animate ? -(stringWidth - geo.size.width) - 6 : 0)  //
+                            .offset(x: animate ? -(stringWidth - geo.size.width) - 6 : 0)  //
                             .animation(
-                                self.animate
+                                animate
                                     ? Animation
                                         .easeInOut(duration: 1 + Double(stringWidth - geo.size.width) / 50)
                                         .delay(startDelay)
                                         .repeatForever(autoreverses: true)
                                     : nullAnimation,
-                                value: self.animate
+                                value: animate
                             )
                             .onAppear {
                                 DispatchQueue.main.async {
-                                    self.animate = geo.size.width < stringWidth
+                                    animate = geo.size.width < stringWidth
                                 }
                             }
                             .fixedSize(horizontal: true, vertical: false)
@@ -49,8 +49,8 @@ public struct MarqueeText: View {
                                 alignment: .topLeading
                             )
                     }
-                    .onChange(of: text) { text in
-                        self.animate = geo.size.width < stringWidth
+                    .onChange(of: text) { _ in
+                        animate = geo.size.width < stringWidth
                     }
 
                     .offset(x: leftFade)
@@ -84,10 +84,10 @@ public struct MarqueeText: View {
                     .frame(width: geo.size.width + leftFade)
                     .offset(x: leftFade * -1)
                 } else {
-                    Text(self.text)
+                    Text(text)
                         .font(.init(font))
-                        .onChange(of: text) { text in
-                            self.animate = geo.size.width < stringWidth
+                        .onChange(of: text) { _ in
+                            animate = geo.size.width < stringWidth
                         }
                         .frame(
                             minWidth: 0,
@@ -101,8 +101,7 @@ public struct MarqueeText: View {
         }
         .frame(height: stringHeight)
         .frame(maxWidth: isCompact ? stringWidth : nil)
-        .onDisappear { self.animate = false }
-
+        .onDisappear { animate = false }
     }
 
     public init(
@@ -131,7 +130,6 @@ extension MarqueeText {
 }
 
 extension String {
-
     func widthOfString(usingFont font: UIFont) -> CGFloat {
         let fontAttributes = [NSAttributedString.Key.font: font]
         let size = self.size(withAttributes: fontAttributes)
@@ -155,7 +153,6 @@ struct MarqueeText_Previews: PreviewProvider {
                 rightFade: 3,
                 startDelay: 0
             )
-
         }
         .frame(width: 100)
     }

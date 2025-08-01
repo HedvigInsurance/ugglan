@@ -6,9 +6,9 @@ public struct MockForeverService: ForeverService {
     public func changeDiscountCode(_ value: String) -> Signal<Either<Void, ForeverChangeCodeError>> {
         Signal(after: 0)
             .atValue {
-                var data = self._dataSignal.value
+                var data = _dataSignal.value
                 data?.updateDiscountCode(value)
-                self._dataSignal.value = data
+                _dataSignal.value = data
             }
             .map { .left(()) }
     }

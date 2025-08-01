@@ -7,7 +7,6 @@ struct ClaimStatusBar: View {
     let outcome: ClaimModel.ClaimOutcome?
 
     func accessibilityText(segment: ClaimModel.ClaimStatus) -> String? {
-
         let claimStatusText = L10n.ClaimStatus.title
 
         switch status {

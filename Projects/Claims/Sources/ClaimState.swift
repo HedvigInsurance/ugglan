@@ -5,7 +5,7 @@ import hCore
 
 public struct ClaimsState: StateProtocol {
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
-    var claims: [ClaimModel]? = nil
+    var claims: [ClaimModel]?
     var files: [String: [File]] = [:]
 
     public init() {}
@@ -27,11 +27,11 @@ public struct ClaimsState: StateProtocol {
     }
 
     public func claim(for id: String) -> ClaimModel? {
-        self.claims?.first(where: { $0.id == id })
+        claims?.first(where: { $0.id == id })
     }
 
     @MainActor
     public func claimFromConversation(for id: String) -> ClaimModel? {
-        self.claims?.first(where: { $0.conversation?.id == id })
+        claims?.first(where: { $0.conversation?.id == id })
     }
 }

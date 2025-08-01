@@ -39,7 +39,7 @@ struct LoggedInNavigation: View {
             contractsTab
 
             let store: ContractStore = globalPresentableStoreContainer.get()
-            if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+            if !store.state.activeContracts.allSatisfy(\.isNonPayingMember)
                 || store.state.activeContracts.isEmpty
             {
                 foreverTab
@@ -179,7 +179,7 @@ struct LoggedInNavigation: View {
                 PDFPreview(document: document)
             case let .changeTier(input):
                 ChangeTierNavigation(input: input) {
-                    //added delay since we don't have a terms version at the place right after the insurance has been created
+                    // added delay since we don't have a terms version at the place right after the insurance has been created
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         let store: ContractStore = globalPresentableStoreContainer.get()
                         store.send(.fetchContracts)
@@ -279,12 +279,12 @@ struct LoggedInNavigation: View {
             case .pickLanguage:
                 LanguagePickerView {
                     [weak profileNavigationVm = vm.profileNavigationVm, weak mainNavigationVm, weak vm] in
-                    //show loading screen since we everything needs to be updated
+                    // show loading screen since we everything needs to be updated
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
                     let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.updateLanguage)
-                    //show home screen with updated langauge
+                    // show home screen with updated langauge
                     mainNavigationVm?.loggedInVm = .init()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         mainNavigationVm?.hasLaunchFinished = true
@@ -333,12 +333,12 @@ struct HomeTab: View {
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
 
     var body: some View {
-        return RouterHost(router: homeNavigationVm.router, tracking: self) {
+        RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                     openClaimDetails(claim: claim, type: .claim(id: claim.id))
                 }
-                .routerDestination(for: String.self) { conversation in
+                .routerDestination(for: String.self) { _ in
                     InboxView()
                         .configureTitle(L10n.chatConversationInbox)
                         .environmentObject(homeNavigationVm)
@@ -352,7 +352,7 @@ struct HomeTab: View {
 
             options: .constant(.withoutGrabber)
         ) {
-            ClaimsMainNavigation(from: .generic)
+            ClaimsMainNavigation()
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
@@ -380,7 +380,7 @@ struct HomeTab: View {
                             if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
                                 .sickAboardPartners
                             {
-                                let partners: [Partner] = sickAbroadPartners.compactMap({
+                                let partners: [Partner] = sickAbroadPartners.compactMap {
                                     Partner(
                                         id: $0.id,
                                         imageUrl: $0.imageUrl,
@@ -392,7 +392,7 @@ struct HomeTab: View {
                                         buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
                                         preferredImageHeight: $0.preferredImageHeight
                                     )
-                                })
+                                }
 
                                 return partners
                             }
@@ -523,9 +523,10 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
 class LoggedInNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0 {
         willSet {
-            self.previousTab = selectedTab
+            previousTab = selectedTab
         }
     }
+
     let hasLaunchFinished = CurrentValueSubject<Bool, Never>(false)
     var hasLaunchFinishedCancellable: AnyCancellable?
     var previousTab: Int = 0
@@ -546,7 +547,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isAddonErrorPresented: String?
     let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
-    @Published var isUrlPresented: URL?
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
 
@@ -558,9 +558,10 @@ class LoggedInNavigationViewModel: ObservableObject {
             tabBar?.traitOverrides.horizontalSizeClass = .compact
         }
     }
+
     init() {
         setupObservers()
-        self.homeNavigationVm.pushToProfile = {
+        homeNavigationVm.pushToProfile = {
             self.selectedTab = 4
             self.profileNavigationVm.pushToProfile()
         }
@@ -568,7 +569,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
             .delay(for: 1.5, scheduler: RunLoop.main)
-            .sink { contractId in
+            .sink { _ in
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
 
@@ -579,7 +580,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         $selectedTab
             .receive(on: RunLoop.main)
-            .sink { [weak self] value in
+            .sink { [weak self] _ in
                 if self?.selectedTab == self?.previousTab {
                     if let nav = self?.tabBar?.selectedViewController?.children
                         .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
@@ -620,43 +621,43 @@ class LoggedInNavigationViewModel: ObservableObject {
         )
     }
 
-    @objc func addonAdded(notification: Notification) {
+    @objc func addonAdded() {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanner)
         }
-        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo.init(type: .addon))
+        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
         if let deepLinkUrl = notification.object as? URL {
             if ApplicationState.currentState == .loggedIn {
-                self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+                handleDeepLinks(deepLinkUrl: deepLinkUrl)
             } else if !deepLinkUrl.absoluteString.contains("//bankid") {
-                self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+                deeplinkToBeOpenedAfterLogin = deepLinkUrl
             }
         }
     }
 
-    @objc func registerForPushNotification(notification: Notification) {
+    @objc func registerForPushNotification() {
         Task {
             await UIApplication.shared.appDelegate.registerForPushNotifications()
         }
     }
 
     @objc func handlePushNotification(notification: Notification) {
-        if self.hasLaunchFinished.value == true {
-            self.handle(notification: notification)
+        if hasLaunchFinished.value == true {
+            handle(notification: notification)
         } else {
-            self.hasLaunchFinishedCancellable = self.hasLaunchFinished.filter({ $0 })
-                .sink { [weak self] value in
+            hasLaunchFinishedCancellable = hasLaunchFinished.filter { $0 }
+                .sink { [weak self] _ in
                     self?.handle(notification: notification)
                     self?.hasLaunchFinishedCancellable = nil
                 }
         }
     }
 
-    @objc func chatClosed(notification: Notification) {
+    @objc func chatClosed() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.send(.fetchChatNotifications)
     }
@@ -673,25 +674,25 @@ class LoggedInNavigationViewModel: ObservableObject {
                 )
             case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 2
+                selectedTab = 2
             case .CONNECT_DIRECT_DEBIT:
-                self.homeNavigationVm.connectPaymentVm.set(for: nil)
+                homeNavigationVm.connectPaymentVm.set(for: nil)
             case .PAYMENT_FAILED:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 3
+                selectedTab = 3
             case .OPEN_FOREVER_TAB:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 2
+                selectedTab = 2
             case .OPEN_INSURANCE_TAB:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 1
+                selectedTab = 1
             case .CROSS_SELL:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 1
+                selectedTab = 1
             case .OPEN_CONTACT_INFO:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 4
-                self.profileNavigationVm.pushToProfile()
+                selectedTab = 4
+                profileNavigationVm.pushToProfile()
             case .CHANGE_TIER:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 let userInfo = notification.userInfo
@@ -708,9 +709,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                     await handleClaimDetails(claimId: claimId)
                 }
             case .INSURANCE_EVIDENCE:
-                self.handleInsuranceEvidence()
+                handleInsuranceEvidence()
             case .TRAVEL_CERTIFICATE:
-                self.isTravelInsurancePresented = true
+                isTravelInsurancePresented = true
             }
         }
     }
@@ -728,23 +729,23 @@ class LoggedInNavigationViewModel: ObservableObject {
             switch deepLink {
             case .forever:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 2
+                selectedTab = 2
             case .directDebit:
-                self.homeNavigationVm.connectPaymentVm.set(for: nil)
+                homeNavigationVm.connectPaymentVm.set(for: nil)
             case .profile:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 4
+                selectedTab = 4
             case .insurances:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 1
+                selectedTab = 1
             case .home:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 0
+                selectedTab = 0
             case .sasEuroBonus:
-                self.isEuroBonusPresented = true
+                isEuroBonusPresented = true
             case .contract:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 1
+                selectedTab = 1
                 let contractId = url.getParameter(property: .contractId)
 
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -756,14 +757,14 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             case .payments:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 3
+                selectedTab = 3
             case .travelCertificate:
-                self.isTravelInsurancePresented = true
+                isTravelInsurancePresented = true
             case .insuranceEvidence:
-                self.handleInsuranceEvidence()
+                handleInsuranceEvidence()
             case .helpCenter:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 0
+                selectedTab = 0
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                     self?.homeNavigationVm.isHelpCenterPresented = true
                 }
@@ -793,9 +794,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                         }
                     }
                 }
-                break
             case .moveContract:
-                self.isMoveContractPresented = true
+                isMoveContractPresented = true
             case .terminateContract:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 let contractId = url.getParameter(property: .contractId)
@@ -816,10 +816,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                         do {
                             try await Task.sleep(nanoseconds: 200_000_000)
                             let contractsConfig = contractStore.state.activeContracts
-                                .filter({ $0.canTerminate })
-                                .map({
-                                    $0.asTerminationConfirmConfig
-                                })
+                                .filter(\.canTerminate)
+                                .map(\.asTerminationConfirmConfig)
                             try await self?.terminateInsuranceVm.start(with: contractsConfig)
                         } catch let exception {
                             Toasts.shared.displayToastBar(
@@ -827,7 +825,6 @@ class LoggedInNavigationViewModel: ObservableObject {
                             )
                         }
                     }
-
                 }
             case .conversation:
                 let conversationId = url.getParameter(property: .conversationId)
@@ -849,8 +846,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
             case .contactInfo:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                self.selectedTab = 4
-                self.profileNavigationVm.pushToProfile()
+                selectedTab = 4
+                profileNavigationVm.pushToProfile()
             case .changeTier:
                 let contractId = url.getParameter(property: .contractId)
                 handleChangeTier(contractId: contractId)
@@ -866,8 +863,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                     await self.handleClaimDetails(claimId: claimId)
                 }
             case .submitClaim:
-                self.selectedTab = 0
-                self.homeNavigationVm.isSubmitClaimPresented = true
+                selectedTab = 0
+                homeNavigationVm.isSubmitClaimPresented = true
             case nil:
                 let isDeeplink = Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -877,7 +874,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    public func openUrl(url: URL) {
+    func openUrl(url: URL) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
@@ -919,15 +916,15 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
         } else {
             let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
-                .filter({ $0.supportsChangeTier })
-                .map({
+                .filter(\.supportsChangeTier)
+                .map {
                     .init(
                         contractId: $0.id,
                         contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
                         contractExposureName: $0.exposureDisplayName
                     )
-                })
-            self.isChangeTierPresented = ChangeTierContractsInput(
+                }
+            isChangeTierPresented = ChangeTierContractsInput(
                 source: .changeTier,
                 contracts: contractsSupportingChangingTier
             )
@@ -939,20 +936,20 @@ class LoggedInNavigationViewModel: ObservableObject {
             let client: FetchContractsClient = Dependencies.shared.resolve()
             if let bannerData = try await client.getAddonBannerModel(source: .deeplink) {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                let addonContracts = bannerData.contractIds.compactMap({
+                let addonContracts = bannerData.contractIds.compactMap {
                     contractStore.state.contractForId($0)
-                })
+                }
                 guard !addonContracts.isEmpty else {
                     throw AddonsError.missingContracts
                 }
-                let addonConfigs: [AddonConfig] = addonContracts.map({
+                let addonConfigs: [AddonConfig] = addonContracts.map {
                     .init(
                         contractId: $0.id,
                         exposureName: $0.exposureDisplayName,
                         displayName: $0.currentAgreement?.productVariant.displayName ?? ""
                     )
-                })
-                self.isAddonPresented = .init(
+                }
+                isAddonPresented = .init(
                     addonSource: .deeplink,
                     contractConfigs: addonConfigs
                 )
@@ -991,7 +988,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         await claimStore.sendAsync(.fetchClaims)
         if let claimId, let claim = claimStore.state.claim(for: claimId) {
             UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-            self.selectedTab = 0
+            selectedTab = 0
             Task { [weak self] in
                 try await Task.sleep(nanoseconds: 200_000_000)
                 self?.homeNavigationVm.router.push(claim)
@@ -1009,9 +1006,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 if canCreate {
                     self.isInsuranceEvidencePresented = true
                 }
-            } catch {
-
-            }
+            } catch {}
         }
     }
 
@@ -1022,6 +1017,6 @@ class LoggedInNavigationViewModel: ObservableObject {
 
 extension HomeTab: TrackingViewNameProtocol {
     var nameForTracking: String {
-        return "HomeView"
+        "HomeView"
     }
 }
