@@ -16,7 +16,7 @@ struct NotLoggedInView: View {
         self.vm = vm
     }
 
-    public var body: some View {
+    var body: some View {
         ZStack {
             LoginVideoView().ignoresSafeArea()
             hSection {

@@ -1,5 +1,5 @@
 import Apollo
-import EditCoInsuredShared
+import EditCoInsured
 import PresentableStore
 import SwiftUI
 import TerminateContracts
