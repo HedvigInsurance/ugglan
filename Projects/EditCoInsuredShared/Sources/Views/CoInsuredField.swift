@@ -30,7 +30,7 @@ public struct CoInsuredField<Content: View>: View {
                 return nil
             }()
         self.date = date ?? coInsured?.activatesOn ?? coInsured?.terminatesOn ?? ""
-        self.subTitle = coInsured?.hasMissingData ?? true ? L10n.contractNoInformation : nil
+        subTitle = coInsured?.hasMissingData ?? true ? L10n.contractNoInformation : nil
     }
 
     public var body: some View {

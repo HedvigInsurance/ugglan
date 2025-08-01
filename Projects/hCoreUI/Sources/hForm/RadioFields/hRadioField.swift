@@ -23,8 +23,8 @@ public struct hRadioField<T>: View where T: Equatable {
         self.id = id
         self.itemModel = itemModel
         self.leftView = leftView?()
-        self._selected = selected
-        self._error = error ?? Binding.constant(nil)
+        _selected = selected
+        _error = error ?? Binding.constant(nil)
         self.useAnimation = useAnimation
     }
 
@@ -38,12 +38,12 @@ public struct hRadioField<T>: View where T: Equatable {
             .onTapGesture {
                 ImpactGenerator.soft()
                 withAnimation(.none) {
-                    self.selected = id
+                    selected = id
                 }
                 if useAnimation {
-                    self.animate = true
+                    animate = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        self.animate = false
+                        animate = false
                     }
                 }
             }
@@ -259,6 +259,6 @@ extension hFieldSize {
 
 extension View {
     public var asAnyView: AnyView {
-        return AnyView(self)
+        AnyView(self)
     }
 }

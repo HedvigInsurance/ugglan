@@ -29,6 +29,5 @@ struct CrossSellButtonComponent: View {
             }
         }
         .sectionContainerStyle(.transparent)
-
     }
 }

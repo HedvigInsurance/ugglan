@@ -18,7 +18,7 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
 
     public init(type: CrossSellSource) {
         self.type = type
-        self.additionalInfo = nil
+        additionalInfo = nil
     }
 
     fileprivate func asLogData() -> [AttributeKey: AttributeValue] {
@@ -34,12 +34,11 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
             type: .custom,
             name: "crossSell",
             error: nil,
-            attributes: self.asLogData()
+            attributes: asLogData()
         )
     }
 
     public func getCrossSell() async throws -> CrossSells {
-        return try await CrossSellService().getCrossSell(source: type)
-
+        try await CrossSellService().getCrossSell(source: type)
     }
 }

@@ -35,9 +35,9 @@ final class TravelCertificateTests: XCTestCase {
         ]
 
         let mockService = MockData.createMockTravelInsuranceService(
-            fetchSpecifications: { return specifications }
+            fetchSpecifications: { specifications }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedList = try! await mockService.getSpecifications()
         assert(respondedList == specifications)
@@ -62,7 +62,7 @@ final class TravelCertificateTests: XCTestCase {
                 throw TravelInsuranceError.missingURL
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedUrl = try! await mockService.submitForm(dto: dto)
         assert(respondedUrl == urlPath)
@@ -77,12 +77,12 @@ final class TravelCertificateTests: XCTestCase {
                 url: URL(string: "https://www.hedvig.com")
             )!
         ]
-        .compactMap({ $0 })
+        .compactMap { $0 }
 
         let mockService = MockData.createMockTravelInsuranceService(
-            fetchList: { return (list, true, nil) }
+            fetchList: { (list, true, nil) }
         )
-        self.sut = mockService
+        sut = mockService
 
         let model = ListScreenViewModel()
         await model.fetchTravelCertificateList()

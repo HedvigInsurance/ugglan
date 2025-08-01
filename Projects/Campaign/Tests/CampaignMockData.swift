@@ -28,6 +28,7 @@ struct MockCampaignData {
 enum MockCampaignError: Error {
     case failure
 }
+
 typealias FetchPaymentDiscountsData = () async throws -> PaymentDiscountsData
 
 class MockCampaignService: hCampaignClient {

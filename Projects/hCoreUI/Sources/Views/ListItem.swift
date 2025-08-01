@@ -157,7 +157,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hListStyle(_ style: ListStyle) -> some View {
-        self.environment(\.hListStyle, style)
+        environment(\.hListStyle, style)
     }
 }
 
@@ -174,7 +174,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hListRowStyle(_ style: ListRowStyle) -> some View {
-        self.environment(\.hListRowStyle, style)
+        environment(\.hListRowStyle, style)
     }
 }
 
@@ -187,7 +187,7 @@ struct ListWithItems_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 0) {
             ListItems<ModelForPreview>(
-                onClick: { item in },
+                onClick: { _ in },
                 items: [
                     (object: .init(id: "id1", name: "Label"), displayName: "Label"),
                     (object: .init(id: "id2", name: "Label"), displayName: "Label"),
@@ -198,7 +198,7 @@ struct ListWithItems_Previews: PreviewProvider {
             )
 
             ListItems<ModelForPreview>(
-                onClick: { item in },
+                onClick: { _ in },
                 items: [
                     (object: .init(id: "id1", name: "Label"), displayName: "Label"),
                     (object: .init(id: "id2", name: "Label"), displayName: "Label"),

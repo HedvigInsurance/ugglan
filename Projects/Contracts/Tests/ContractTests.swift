@@ -58,7 +58,7 @@ final class ContractsTests: XCTestCase {
         let mockService = MockData.createMockContractsService(
             fetchContracts: { contractsStack }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedContracts = try! await mockService.fetchContracts()
         assert(respondedContracts.activeContracts == contractsStack.activeContracts)

@@ -20,8 +20,9 @@ class HeadersInterceptor: @preconcurrency ApolloInterceptor {
         self.acceptLanguageHeader = acceptLanguageHeader
         self.userAgent = userAgent
         self.deviceIdentifier = deviceIdentifier
-        self.id = UUID().uuidString
+        id = UUID().uuidString
     }
+
     @MainActor
     func interceptAsync<Operation: GraphQLOperation>(
         chain: RequestChain,
@@ -29,7 +30,6 @@ class HeadersInterceptor: @preconcurrency ApolloInterceptor {
         response: HTTPResponse<Operation>?,
         completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
     ) {
-
         Task {
             do {
                 try await TokenRefresher.shared.refreshIfNeeded()
@@ -52,7 +52,7 @@ class HeadersInterceptor: @preconcurrency ApolloInterceptor {
                     interceptor: self,
                     completion: completion
                 )
-            } catch let error {
+            } catch {
                 chain.handleErrorAsync(
                     error,
                     request: request,

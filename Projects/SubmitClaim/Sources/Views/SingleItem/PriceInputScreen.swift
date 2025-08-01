@@ -15,7 +15,7 @@ struct PriceInputScreen: View {
         claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
-        self.currency = claimsNavigationVm.singleItemModel?.prefferedCurrency ?? ""
+        currency = claimsNavigationVm.singleItemModel?.prefferedCurrency ?? ""
 
         if let purchasePrice = claimsNavigationVm.singleItemModel?.purchasePrice {
             self.purchasePrice = String(purchasePrice)

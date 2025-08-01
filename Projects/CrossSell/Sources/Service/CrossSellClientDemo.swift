@@ -4,7 +4,7 @@ public class CrossSellClientDemo: CrossSellClient {
     public init() {}
 
     public func getCrossSell() async throws -> [CrossSell] {
-        return [
+        [
             .init(
                 id: "1",
                 title: "title",
@@ -15,7 +15,7 @@ public class CrossSellClientDemo: CrossSellClient {
         ]
     }
 
-    public func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+    public func getCrossSell(source _: CrossSellSource) async throws -> CrossSells {
         let crossSells: [CrossSell] = [
             .init(
                 id: "1",
@@ -28,7 +28,7 @@ public class CrossSellClientDemo: CrossSellClient {
         return .init(recommended: nil, others: crossSells)
     }
 
-    public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
-        return nil
+    public func getAddonBannerModel(source _: AddonSource) async throws -> AddonBannerModel? {
+        nil
     }
 }

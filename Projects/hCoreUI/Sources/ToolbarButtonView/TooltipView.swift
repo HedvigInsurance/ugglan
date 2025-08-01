@@ -7,7 +7,7 @@ extension View {
         type: ToolbarOptionType,
         placement: ListToolBarPlacement
     ) -> some View {
-        return self.modifier(TooltipViewModifier(type: type, placement: placement))
+        modifier(TooltipViewModifier(type: type, placement: placement))
     }
 }
 
@@ -29,14 +29,14 @@ struct TooltipViewModifier: ViewModifier {
             }
             .onChange(of: toolTipManager.displayedTooltip) { newValue in
                 withAnimation {
-                    self.showTooltip = newValue == type
+                    showTooltip = newValue == type
                 }
             }
             .onAppear {
                 Task {
                     try await Task.sleep(nanoseconds: 200_000_000)
                     toolTipManager.checkIfDisplayIsNeeded(type)
-                    self.showTooltip = toolTipManager.displayedTooltip == type
+                    showTooltip = toolTipManager.displayedTooltip == type
                 }
             }
             .onDisappear {
@@ -48,6 +48,7 @@ struct TooltipViewModifier: ViewModifier {
 /// A SwiftUI view that displays a tooltip with a triangle pointer and custom content.
 struct TooltipView: View {
     // MARK: - Properties
+
     let type: ToolbarOptionType
     let timeInterval: TimeInterval
     let placement: ListToolBarPlacement
@@ -60,13 +61,15 @@ struct TooltipView: View {
     @StateObject private var toolTipManager = ToolTipManager.shared
 
     // MARK: - Init
+
     init(type: ToolbarOptionType, placement: ListToolBarPlacement) {
         self.type = type
-        self.timeInterval = type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
+        timeInterval = type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
         self.placement = placement
     }
 
     // MARK: - Body
+
     var body: some View {
         VStack {
             if isTooltipVisible {
@@ -99,6 +102,7 @@ struct TooltipView: View {
     }
 
     // MARK: - Tooltip Triangle
+
     private var tooltipTriangle: some View {
         HStack {
             if placement == .trailing { Spacer() }
@@ -111,6 +115,7 @@ struct TooltipView: View {
     }
 
     // MARK: - Tooltip Content
+
     private var tooltipContent: some View {
         hText(type.textToShow ?? "", style: .label)
             .padding(.horizontal, .padding12)
@@ -122,6 +127,7 @@ struct TooltipView: View {
     }
 
     // MARK: - Offset Calculation
+
     private func updateOffsets(proxy: GeometryProxy) {
         let imageSize = type.imageSize
         if placement == .trailing {
@@ -133,6 +139,7 @@ struct TooltipView: View {
     }
 
     // MARK: - Tooltip Animation & Timer
+
     private func showTooltipWithDelay() {
         Task {
             withAnimation(.defaultSpring.delay(type.delay)) {
@@ -196,11 +203,10 @@ struct Triangle: Shape {
 
 @MainActor
 class ToolTipManager: ObservableObject {
-
     static let shared = ToolTipManager()
 
-    private init() {
-    }
+    private init() {}
+
     @Published fileprivate var displayedTooltip: ToolbarOptionType?
     @Published private var toolTipsToShow: Set<ToolbarOptionType> = Set()
 
@@ -218,8 +224,8 @@ class ToolTipManager: ObservableObject {
 
     private func presentTooltip(_ tooltip: ToolbarOptionType) {
         if toolTipsToShow.contains(tooltip) {
-            if self.displayedTooltip == nil {
-                self.displayedTooltip = tooltip
+            if displayedTooltip == nil {
+                displayedTooltip = tooltip
             }
         }
     }

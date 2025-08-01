@@ -135,7 +135,7 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
-        if coInsured.coInsured.hasMissingData && type != .delete {
+        if coInsured.coInsured.hasMissingData, type != .delete {
             getAccesoryView(for: .empty, coInsured: coInsured.coInsured)
         } else if coInsured.locallyAdded {
             getAccesoryView(for: .localEdit, coInsured: coInsured.coInsured)
@@ -156,7 +156,7 @@ struct InsuredPeopleScreen: View {
         }
         .onTapGesture {
             let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
-            if type == .empty && !hasExistingCoInsured.isEmpty {
+            if type == .empty, !hasExistingCoInsured.isEmpty {
                 editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
             } else {
                 editCoInsuredNavigation.coInsuredInputModel = .init(

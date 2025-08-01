@@ -35,6 +35,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             ),
         ]
     }
+
     public func getConversations() async throws -> [Conversation] {
         let conversationsSortedByDate = conversations.sorted(by: {
             $0.newestMessage?.sentAt ?? Date() > $1.newestMessage?.sentAt ?? Date()
@@ -54,14 +55,14 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             claimType: nil,
             unreadMessageCount: 0
         )
-        self.conversations.append(conversation)
+        conversations.append(conversation)
         return conversation
     }
 
     public func getConversationMessages(
         for conversationId: String,
-        olderToken: String?,
-        newerToken: String?
+        olderToken _: String?,
+        newerToken _: String?
     ) async throws -> ConversationMessagesData {
         let messages = messages[conversationId] ?? []
         return .init(

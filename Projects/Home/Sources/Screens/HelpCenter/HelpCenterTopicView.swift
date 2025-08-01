@@ -32,7 +32,7 @@ struct HelpCenterTopicView: View {
     private var topic: FaqTopic
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
-    public init(
+    init(
         topic: FaqTopic,
         router: Router
     ) {

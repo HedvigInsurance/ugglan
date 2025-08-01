@@ -2,16 +2,15 @@ import Kingfisher
 import SVGKit
 
 public struct SVGImageProcessor: ImageProcessor {
-
     public init() {}
 
     public var identifier: String = "com.appidentifier.webpprocessor"
-    public func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
+    public func process(item: ImageProcessItem, options _: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
         switch item {
-        case .image(let image):
+        case let .image(image):
             print("already an image")
             return image
-        case .data(let data):
+        case let .data(data):
             let imsvg = SVGKImage(data: data)
             return imsvg?.uiImage
         }

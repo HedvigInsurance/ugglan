@@ -64,7 +64,7 @@ public struct OpenEmailClientButton: View {
     ) {
         self.options = options
         self.buttonText = buttonText
-        self._hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
+        _hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
         self.hasPressedButton = hasPressedButton
         self.buttonSize = buttonSize ?? .primary
         emailClients = {
@@ -110,7 +110,7 @@ public struct OpenEmailClientButton: View {
         .animation(.spring(), value: showButton(state: otpVM))
         .onUpdate(
             of: hasAcceptedAlert,
-            perform: { newValue in
+            perform: { _ in
                 sheetPresented = true
             }
         )

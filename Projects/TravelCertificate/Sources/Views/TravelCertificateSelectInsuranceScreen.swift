@@ -15,14 +15,12 @@ struct TravelCertificateSelectInsuranceScreen: View {
         self.specifications = specifications
         self.router = router
         itemPickerConfig = .init(
-            items: {
-                return specifications.map {
-                    (
-                        object: $0,
-                        displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName)
-                    )
-                }
-            }(),
+            items: specifications.map {
+                (
+                    object: $0,
+                    displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName)
+                )
+            },
             preSelectedItems: {
                 guard let preSelected = specifications.first else {
                     return []
@@ -38,7 +36,7 @@ struct TravelCertificateSelectInsuranceScreen: View {
         )
     }
 
-    public var body: some View {
+    var body: some View {
         ContractSelectView(
             itemPickerConfig: itemPickerConfig,
             title: L10n.TravelCertificate.selectContractTitle,

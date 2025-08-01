@@ -4,9 +4,9 @@ import Presentation
 import SwiftUI
 import hCoreUI
 
-@UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
-    internal func application(
-        _ application: UIApplication,
+@main class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(
+        _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         DefaultStyling.installCustom()

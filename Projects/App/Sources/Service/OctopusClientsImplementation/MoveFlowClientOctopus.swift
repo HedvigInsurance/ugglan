@@ -5,10 +5,8 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class MoveFlowClientOctopus: MoveFlowClient {
+class MoveFlowClientOctopus: MoveFlowClient {
     @Inject var octopus: hOctopus
-
-    public init() {}
 
     public func sendMoveIntent() async throws -> MoveConfigurationModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
@@ -58,8 +56,8 @@ public class MoveFlowClientOctopus: MoveFlowClient {
     public func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
-            homeQuoteId: GraphQLNullable.init(optionalValue: currentHomeQuoteId),
-            removedAddons: GraphQLNullable.init(optionalValue: removedAddons)
+            homeQuoteId: GraphQLNullable(optionalValue: currentHomeQuoteId),
+            removedAddons: GraphQLNullable(optionalValue: removedAddons)
         )
         let delayTask = Task {
             try await Task.sleep(nanoseconds: 3_000_000_000)
@@ -99,14 +97,13 @@ public class MoveFlowClientOctopus: MoveFlowClient {
                 yearOfConstruction: Int(houseInformationInputModel.yearOfConstruction) ?? 0,
                 numberOfBathrooms: houseInformationInputModel.bathrooms,
                 isSubleted: houseInformationInputModel.isSubleted,
-                extraBuildings: houseInformationInputModel.extraBuildings.map({
+                extraBuildings: houseInformationInputModel.extraBuildings.map {
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: $0.livingArea,
                         type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
                         hasWaterConnected: $0.connectedToWater
                     )
-                })
-
+                }
             )
         }
     }
@@ -117,10 +114,10 @@ extension MoveConfigurationModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         self.init(
             id: data.id,
-            currentHomeAddresses: data.currentHomeAddresses.compactMap({
+            currentHomeAddresses: data.currentHomeAddresses.compactMap {
                 MoveAddress(from: $0.fragments.moveAddressFragment)
-            }),
-            extraBuildingTypes: data.extraBuildingTypes.compactMap({ $0.rawValue }),
+            },
+            extraBuildingTypes: data.extraBuildingTypes.compactMap(\.rawValue),
             isApartmentAvailableforStudent: data.isApartmentAvailableforStudent ?? false,
             maxApartmentNumberCoInsured: data.maxApartmentNumberCoInsured,
             maxApartmentSquareMeters: data.maxApartmentSquareMeters,
@@ -134,8 +131,8 @@ extension MoveConfigurationModel {
 extension MoveQuotesModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         self.init(
-            homeQuotes: data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? [],
-            mtaQuotes: data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? [],
+            homeQuotes: data.homeQuotes?.compactMap { MovingFlowQuote(from: $0) } ?? [],
+            mtaQuotes: data.fragments.quoteFragment.mtaQuotes?.compactMap { MovingFlowQuote(from: $0) } ?? [],
             changeTierModel: {
                 if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
                     return ChangeTierIntentModel.initWith(data: data)
@@ -159,7 +156,6 @@ extension MoveAddress {
                     return (minMovingDate, maxMovingDate)
                 } else {
                     return (maxMovingDate, minMovingDate)
-
                 }
             } else {
                 return (data.minMovingDate, data.maxMovingDate)
@@ -186,16 +182,16 @@ extension MovingFlowQuote {
             netPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
             startDate: data.startDate.localDateToDate ?? Date(),
             displayName: productVariantFragment.displayName,
-            insurableLimits: productVariantFragment.insurableLimits.compactMap({
+            insurableLimits: productVariantFragment.insurableLimits.compactMap {
                 .init(label: $0.label, limit: $0.limit, description: $0.description)
-            }),
-            perils: productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) }),
-            documents: productVariantFragment.documents.compactMap({ .init($0) }),
+            },
+            perils: productVariantFragment.perils.compactMap { .init(fragment: $0.fragments.perilFragment) },
+            documents: productVariantFragment.documents.compactMap { .init($0) },
             contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
             id: UUID().uuidString,
-            displayItems: data.displayItems.map({ .init($0.fragments.moveQuoteDisplayItemFragment) }),
+            displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
-            addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) }),
+            addons: data.addons.map { AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) },
             discountDisplayItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             })
@@ -209,14 +205,14 @@ extension MovingFlowQuote {
             netPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
             startDate: data.startDate.localDateToDate ?? Date(),
             displayName: productVariantFragment.displayName,
-            insurableLimits: productVariantFragment.insurableLimits.compactMap({
+            insurableLimits: productVariantFragment.insurableLimits.compactMap {
                 .init(label: $0.label, limit: $0.limit, description: $0.description)
-            }),
-            perils: productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) }),
-            documents: productVariantFragment.documents.compactMap({ .init($0) }),
+            },
+            perils: productVariantFragment.perils.compactMap { .init(fragment: $0.fragments.perilFragment) },
+            documents: productVariantFragment.documents.compactMap { .init($0) },
             contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
             id: data.id,
-            displayItems: data.displayItems.map({ .init($0.fragments.moveQuoteDisplayItemFragment) }),
+            displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
             addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) }),
             discountDisplayItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
@@ -273,10 +269,10 @@ extension ChangeTierIntentModel {
             return result
         }
 
-        let tiers = groupedQuotes.compactMap { (_, quotes) in
+        let tiers = groupedQuotes.compactMap { _, quotes in
             if let firstQuote = quotes.first {
                 let quotes = quotes.compactMap { quote in
-                    return Quote(
+                    Quote(
                         id: quote.id,
                         quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
                         quotePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
@@ -329,7 +325,6 @@ extension ChangeTierIntentModel {
         )
         return intentModel
     }
-
 }
 
 @MainActor
@@ -338,9 +333,9 @@ extension AddonDataModel {
         self.init(
             id: fragment.addonId,
             quoteInfo: .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription),
-            displayItems: fragment.displayItems.map({
+            displayItems: fragment.displayItems.map {
                 .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
-            }),
+            },
             coverageDisplayName: fragment.coverageDisplayName,
             grossPremium: .init(
                 fragment: fragment.cost.fragments.itemCostFragment.monthlyGross.fragments.moneyFragment

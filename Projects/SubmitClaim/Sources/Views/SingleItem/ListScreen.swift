@@ -40,11 +40,11 @@ public struct ListScreen<T>: View {
 }
 
 struct ItemPickerScreen_Previews: PreviewProvider {
-
     struct ModelForPreview {
         let id: String
         let name: String
     }
+
     static var previews: some View {
         ListScreen<ModelForPreview>(
             items: {
@@ -53,14 +53,11 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                     ModelForPreview(id: "id2", name: "name2"),
                 ]
 
-                return items.compactMap({ (object: $0, displayName: $0.name) })
+                return items.compactMap { (object: $0, displayName: $0.name) }
             }(),
-            onSelected: { item in
-
+            onSelected: { _ in
             },
-            onCancel: {
-            }
+            onCancel: {}
         )
-
     }
 }

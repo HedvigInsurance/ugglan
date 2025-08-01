@@ -18,7 +18,7 @@ extension View {
         tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
-        return modifier(ModallySizeItemModifier(item: item, options: options, tracking: tracking, content: content))
+        modifier(ModallySizeItemModifier(item: item, options: options, tracking: tracking, content: content))
     }
 }
 
@@ -44,7 +44,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
             }
             present = newValue != nil
         }
-        .onChange(of: present) { newValue in
+        .onChange(of: present) { _ in
             if !present {
                 item = nil
             }
@@ -53,7 +53,6 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
 }
 
 private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUIContent: View {
-
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
     @Binding var options: DetentPresentationOption
@@ -68,7 +67,7 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
         _presented = presented
         self.content = content
         self.tracking = tracking
-        self._options = options
+        _options = options
     }
 
     @ViewBuilder

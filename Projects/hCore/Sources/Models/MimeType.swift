@@ -119,7 +119,6 @@ public enum MimeType: Codable, Equatable, Hashable, Sendable {
         case MimeType.MOV.mime: return MimeType.MOV
         default:
             return MimeType.other(type: mimeType)
-
         }
     }
 
@@ -149,7 +148,7 @@ public enum MimeType: Codable, Equatable, Hashable, Sendable {
         case .JSON: return "application/json"
         case .M4A: return "audio/x-m4a"
         case .MOV: return "video/quicktime"
-        case .other(let type): return type
+        case let .other(type): return type
         }
     }
 }

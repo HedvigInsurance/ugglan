@@ -27,6 +27,6 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     }
 
     public var buttonTitle: String {
-        return L10n.generalContinueButton
+        L10n.generalContinueButton
     }
 }

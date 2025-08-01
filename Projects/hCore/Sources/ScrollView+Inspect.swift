@@ -6,14 +6,14 @@ struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
     var foundView: (_ view: ViewType) -> Void
 
     class Coordinator {
-        var view: ViewType? = nil
+        var view: ViewType?
     }
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
     }
 
-    func makeUIView(context: Context) -> some UIView {
+    func makeUIView(context _: Context) -> some UIView {
         UIView()
     }
 
@@ -66,7 +66,7 @@ struct ViewIntrospector<ViewType: UIView>: UIViewRepresentable {
 
 extension View {
     public func findScrollView(_ foundScrollView: @escaping (_ scrollView: UIScrollView) -> Void) -> some View {
-        self.background(ViewIntrospector<UIScrollView>(foundView: foundScrollView))
+        background(ViewIntrospector<UIScrollView>(foundView: foundScrollView))
     }
 }
 
@@ -104,7 +104,7 @@ public struct ForceScrollViewIndicatorInset: ViewModifier {
             self.scrollView = scrollView
             scrollView.viewController?.setContentScrollView(scrollView, for: .top)
         }
-        .onReceive(contentOffsetPublisher) { value in
+        .onReceive(contentOffsetPublisher) { _ in
             scrollView?.verticalScrollIndicatorInsets.bottom =
                 insetBottom + (scrollView?.adjustedContentInset.bottom ?? 0)
         }
@@ -126,7 +126,7 @@ public struct ForceScrollViewTopInset: ViewModifier {
     let shouldFollow: Bool
 
     public init(addedContentOffset: Binding<CGFloat>, shouldFollow: Bool) {
-        self._addedContentOffset = addedContentOffset
+        _addedContentOffset = addedContentOffset
         self.shouldFollow = shouldFollow
     }
 

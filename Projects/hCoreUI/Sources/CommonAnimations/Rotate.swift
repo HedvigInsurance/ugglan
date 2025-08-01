@@ -2,7 +2,7 @@ import SwiftUI
 
 extension View {
     public func rotate() -> some View {
-        self.modifier(RotateViewModifier())
+        modifier(RotateViewModifier())
     }
 }
 

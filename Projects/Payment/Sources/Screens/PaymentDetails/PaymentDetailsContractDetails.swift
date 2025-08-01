@@ -45,7 +45,6 @@ struct ContractDetails: View {
                 }
             }
             .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
-
         }
         .withEmptyAccessory
         .onTap {
@@ -76,14 +75,12 @@ struct ContractDetails: View {
                                 .foregroundColor(
                                     getColor(hTextColor.Opaque.primary, isOutstanding: period.isOutstanding)
                                 )
-
                         }
                         if let desciption = period.desciption {
                             hText(desciption, style: .label)
                                 .foregroundColor(
                                     getColor(hTextColor.Translucent.secondary, isOutstanding: period.isOutstanding)
                                 )
-
                         }
                     }
                 }
@@ -91,7 +88,6 @@ struct ContractDetails: View {
                 .accessibilityElement(children: .combine)
 
                 if contract.periods.count - 1 == offset {
-
                     if !contract.discounts.isEmpty {
                         ForEach(contract.discounts) { discount in
                             DiscountDetailView(vm: .init(options: [.forPayment], discount: discount))
@@ -126,7 +122,7 @@ struct ContractDetails: View {
 
 @available(iOS 17.0, *)
 #Preview {
-    @Previewable @State var isExpanded: [String] = ["id1"]
+    @Previewable @State var isExpanded = ["id1"]
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 
     return VStack {

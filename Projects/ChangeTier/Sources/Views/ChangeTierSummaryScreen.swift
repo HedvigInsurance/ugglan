@@ -25,27 +25,27 @@ struct ChangeTierSummaryScreen: View {
 extension ChangeTierViewModel {
     func asQuoteSummaryViewModel(changeTierNavigationVm: ChangeTierNavigationViewModel) -> QuoteSummaryViewModel {
         let displayItems: [QuoteDisplayItem] =
-            self.selectedQuote?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
+            selectedQuote?.displayItems.map { .init(title: $0.title, value: $0.value) } ?? []
         let activationDate = L10n.changeAddressActivationDate(activationDate?.displayDateDDMMMYYYYFormat ?? "")
         var contracts: [QuoteSummaryViewModel.ContractInfo] = []
         contracts.append(
             .init(
-                id: self.currentTier?.id ?? "",
-                displayName: self.displayName ?? "",
+                id: currentTier?.id ?? "",
+                displayName: displayName ?? "",
                 exposureName: activationDate,
-                netPremium: self.newPremium,
-                grossPremium: self.currentPremium,
+                netPremium: newPremium,
+                grossPremium: currentPremium,
                 documents: self.selectedQuote?.productVariant?.documents ?? [],
                 onDocumentTap: { [weak changeTierNavigationVm] document in
                     changeTierNavigationVm?.document = document
                 },
                 displayItems: displayItems,
-                insuranceLimits: self.selectedQuote?.productVariant?.insurableLimits ?? [],
-                typeOfContract: self.typeOfContract,
+                insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
+                typeOfContract: typeOfContract,
                 discountDisplayItems: []
             )
         )
-        for addon in self.selectedQuote?.addons ?? [] {
+        for addon in selectedQuote?.addons ?? [] {
             contracts.append(
                 .init(
                     id: addon.addonId,
@@ -57,7 +57,7 @@ extension ChangeTierViewModel {
                     onDocumentTap: { [weak changeTierNavigationVm] document in
                         changeTierNavigationVm?.document = document
                     },
-                    displayItems: addon.displayItems.compactMap({ .init(title: $0.title, value: $0.value) }),
+                    displayItems: addon.displayItems.compactMap { .init(title: $0.title, value: $0.value) },
                     insuranceLimits: [],
                     typeOfContract: nil,
                     isAddon: true,

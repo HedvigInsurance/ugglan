@@ -18,7 +18,6 @@ final class StoreDiscountsTests: XCTestCase {
     }
 
     func testFetchDiscountsSuccess() async throws {
-
         let discounts: [DiscountsDataForInsurance] = [
             .init(
                 insurance: .init(id: "insuranceId", displayName: "Home"),

@@ -17,7 +17,7 @@ struct ConnectPayment: ViewModifier {
                 item: $vm.setupTypeNavigationModel,
                 transitionType: .detent(style: [.large]),
                 options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
-            ) { setupTypeModel in
+            ) { _ in
                 DirectDebitSetup()
             }
     }
@@ -36,13 +36,12 @@ public class ConnectPaymentViewModel: ObservableObject {
 }
 
 struct SetupTypeNavigationModel: Equatable, Identifiable {
-
-    public init(
+    init(
         setUpType: SetupType?
     ) {
         self.setUpType = setUpType
     }
 
-    public let id: String = UUID().uuidString
+    let id: String = UUID().uuidString
     let setUpType: SetupType?
 }

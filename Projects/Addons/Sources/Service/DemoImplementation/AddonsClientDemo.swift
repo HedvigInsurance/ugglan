@@ -3,7 +3,7 @@ import Foundation
 public class AddonsClientDemo: AddonsClient {
     public init() {}
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
+    public func getAddon(contractId _: String) async throws -> AddonOffer {
         let currentAddon: AddonQuote = .init(
             displayName: "45 days",
             quoteId: "quoteId45",
@@ -48,5 +48,5 @@ public class AddonsClientDemo: AddonsClient {
         return addons
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws {}
+    public func submitAddon(quoteId _: String, addonId _: String) async throws {}
 }

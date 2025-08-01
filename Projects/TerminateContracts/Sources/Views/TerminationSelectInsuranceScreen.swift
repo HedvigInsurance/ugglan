@@ -10,9 +10,9 @@ struct TerminationSelectInsuranceScreen: View {
         vm: TerminationFlowNavigationViewModel
     ) {
         self.vm = vm
-        self.itemPickerConfig = .init(
+        itemPickerConfig = .init(
             items: {
-                let items = vm.configs.map({
+                let items = vm.configs.map {
                     (
                         object: $0,
                         displayName: ItemModel(
@@ -20,7 +20,7 @@ struct TerminationSelectInsuranceScreen: View {
                             subTitle: $0.contractExposureName
                         )
                     )
-                })
+                }
                 return items
             }(),
             preSelectedItems: { [] },
@@ -57,5 +57,4 @@ struct TerminationSelectInsuranceScreen: View {
             subtitle: L10n.terminationFlowBody
         )
     }
-
 }

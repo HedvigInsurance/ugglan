@@ -26,11 +26,11 @@ final class MyInfoViewModelTests: XCTestCase {
 
         let mockService = MockData.createMockProfileService(
             phoneUpdate: { phoneNumber in
-                return phoneNumber
+                phoneNumber
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store
@@ -60,12 +60,12 @@ final class MyInfoViewModelTests: XCTestCase {
         let mockPhoneNumber = "111111"
 
         let mockService = MockData.createMockProfileService(
-            phoneUpdate: { phoneNumber in
+            phoneUpdate: { _ in
                 throw MyInfoSaveError.phoneNumberMalformed
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store
@@ -95,11 +95,11 @@ final class MyInfoViewModelTests: XCTestCase {
 
         let mockService = MockData.createMockProfileService(
             emailUpdate: { email in
-                return email
+                email
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store
@@ -127,12 +127,12 @@ final class MyInfoViewModelTests: XCTestCase {
     func testEmailUpdateFailure() async throws {
         let mockEmail = "email@email.com"
         let mockService = MockData.createMockProfileService(
-            emailUpdate: { email in
+            emailUpdate: { _ in
                 throw MyInfoSaveError.emailEmpty
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store

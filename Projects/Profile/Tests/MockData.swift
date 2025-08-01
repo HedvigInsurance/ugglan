@@ -32,10 +32,10 @@ struct MockData {
         languageUpdate: @escaping LanguageUpdate = {},
         deleteRequest: @escaping DeleteRequest = {},
         emailUpdate: @escaping EmailUpdate = { email in
-            return email
+            email
         },
         phoneUpdate: @escaping PhoneUpdate = { phoneNumber in
-            return phoneNumber
+            phoneNumber
         },
         eurobonusUpdate: @escaping EurobonusUpdate = { eurobonus in
             let partnerData: PartnerData = .init(sas: .init(eligible: true, eurobonusNumber: eurobonus))

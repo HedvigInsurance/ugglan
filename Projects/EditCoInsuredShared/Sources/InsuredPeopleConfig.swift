@@ -15,26 +15,26 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable,
     public let holderLastName: String
     public let holderSSN: String?
     public var holderFullName: String {
-        return holderFirstName + " " + holderLastName
+        holderFirstName + " " + holderLastName
     }
 
     public var fromInfoCard: Bool
 
     public init() {
-        self.contractCoInsured = []
-        self.contractId = ""
-        self.activeFrom = nil
-        self.numberOfMissingCoInsured = 0
-        self.numberOfMissingCoInsuredWithoutTermination = 0
-        self.displayName = ""
-        self.exposureDisplayName = nil
-        self.holderFirstName = ""
-        self.holderLastName = ""
-        self.holderSSN = nil
-        self.preSelectedCoInsuredList = []
-        self.contractDisplayName = ""
-        self.fromInfoCard = false
-        self.id = UUID().uuidString
+        contractCoInsured = []
+        contractId = ""
+        activeFrom = nil
+        numberOfMissingCoInsured = 0
+        numberOfMissingCoInsuredWithoutTermination = 0
+        displayName = ""
+        exposureDisplayName = nil
+        holderFirstName = ""
+        holderLastName = ""
+        holderSSN = nil
+        preSelectedCoInsuredList = []
+        contractDisplayName = ""
+        fromInfoCard = false
+        id = UUID().uuidString
     }
 
     public init(

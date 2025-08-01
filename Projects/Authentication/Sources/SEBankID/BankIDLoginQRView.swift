@@ -12,6 +12,7 @@ public struct BankIDLoginQRView: View {
     public init(onStartDemoMode: @escaping () async -> Void) {
         self.onStartDemoMode = onStartDemoMode
     }
+
     public var body: some View {
         Group {
             if vm.isLoading {
@@ -142,9 +143,9 @@ class BankIDViewModel: ObservableObject {
                         .startSeBankId { [weak self] newStatus in
                             DispatchQueue.main.async {
                                 switch newStatus {
-                                case .started(let code):
+                                case let .started(code):
                                     self?.set(token: code)
-                                case .pending(let qrCode):
+                                case let .pending(qrCode):
                                     self?.set(qrData: qrCode)
                                 case .completed:
                                     ApplicationState.preserveState(.loggedIn)
@@ -153,7 +154,7 @@ class BankIDViewModel: ObservableObject {
                                 }
                             }
                         }
-                } catch let error {
+                } catch {
                     self?.seBankIdState = .init()
                     self?.router?.push(AuthenticationRouterType.error(message: error.localizedDescription))
                 }
@@ -196,10 +197,10 @@ class BankIDViewModel: ObservableObject {
             isLoading = token == nil
         }
         guard let token else {
-            self.image = nil
+            image = nil
             return
         }
-        if hasBankIdApp && !hasAlreadyOpenedBankId {
+        if hasBankIdApp, !hasAlreadyOpenedBankId {
             hasAlreadyOpenedBankId = true
             openBankId()
         }
@@ -218,7 +219,7 @@ class BankIDViewModel: ObservableObject {
     @MainActor
     private func set(qrData: String?) {
         guard let qrData else {
-            self.image = nil
+            image = nil
             return
         }
         withAnimation(.snappy) {
@@ -245,7 +246,6 @@ class BankIDViewModel: ObservableObject {
         }
         let processedImage = UIImage(cgImage: cgImage).withRenderingMode(.alwaysTemplate)
         return processedImage
-
     }
 }
 

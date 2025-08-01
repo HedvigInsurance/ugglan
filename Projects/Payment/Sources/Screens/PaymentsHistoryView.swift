@@ -72,7 +72,6 @@ public struct PaymentHistoryView: View {
                                         if month.paymentData.status.hasFailed {
                                             Spacing(height: 4)
                                                 .fixedSize()
-
                                         }
                                         hCoreUIAssets.chevronRightSmall.view
                                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -95,7 +94,7 @@ public struct PaymentHistoryView: View {
                             }
                             .withHeader(title: item.year, withoutBottomPadding: true)
                         }
-                        if history.flatMap({ $0.valuesPerMonth }).count >= 12 {
+                        if history.flatMap(\.valuesPerMonth).count >= 12 {
                             hSection {
                                 InfoCard(text: L10n.paymentsHistoryInfo, type: .info)
                             }

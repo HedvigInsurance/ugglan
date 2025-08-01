@@ -16,7 +16,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     let router: Router
     var onChangedTier: () -> Void = {}
 
-    //NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
+    // NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
     var vm: ChangeTierViewModel!
 
     let changeTierContractsInput: ChangeTierContractsInput?
@@ -27,9 +27,9 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         onChangedTier: @escaping () -> Void
     ) {
         self.router = router ?? Router()
-        self.useOwnNavigation = router == nil
+        useOwnNavigation = router == nil
         self.vm = vm
-        self.changeTierContractsInput = nil
+        changeTierContractsInput = nil
         self.onChangedTier = onChangedTier
     }
 
@@ -38,7 +38,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         onChangedTier: @escaping () -> Void
     ) {
         if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
-            self.vm = .init(
+            vm = .init(
                 changeTierInput: .contractWithSource(
                     data: .init(source: changeTierContractsInput.source, contractId: first.contractId)
                 )
@@ -49,7 +49,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         }
         self.onChangedTier = onChangedTier
         router = Router()
-        self.useOwnNavigation = true
+        useOwnNavigation = true
     }
 
     public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
@@ -59,7 +59,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     }
 
     func missingQuotesGoBackPressed() {
-        if useOwnNavigation && changeTierContractsInput == nil {
+        if useOwnNavigation, changeTierContractsInput == nil {
             router.dismiss()
         } else {
             router.pop()
@@ -96,18 +96,21 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 public enum ChangeTierInput: Identifiable, Equatable {
     public var id: String {
         switch self {
-        case .contractWithSource(let data):
+        case let .contractWithSource(data):
             return data.contractId + data.source.asString
-        case .existingIntent(let intent, _):
-            return intent.displayName + intent.tiers.flatMap({ $0.quotes }).compactMap({ $0.id }).joined(separator: ",")
+        case let .existingIntent(intent, _):
+            return intent.displayName + intent.tiers.flatMap(\.quotes).compactMap(\.id).joined(separator: ",")
         }
     }
+
     public static func == (lhs: ChangeTierInput, rhs: ChangeTierInput) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
+
     case contractWithSource(data: ChangeTierInputData)
     case existingIntent(intent: ChangeTierIntentModel, onSelect: (((Tier, Quote)) -> Void)?)
 }
+
 public struct ChangeTierInputData: Equatable, Identifiable, Codable {
     public var id: String {
         contractId
@@ -132,7 +135,7 @@ public struct ChangeTierContractsInput: Equatable, Identifiable {
         source: ChangeTierSource,
         contracts: [ChangeTierContract]
     ) {
-        self.id = "\(Date().timeIntervalSince1970)"
+        id = "\(Date().timeIntervalSince1970)"
         self.source = source
         self.contracts = contracts
     }
@@ -159,7 +162,7 @@ public struct ChangeTierContract: Hashable {
 
 extension ChangeTierContract: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ChangeTierContract.self)
+        .init(describing: ChangeTierContract.self)
     }
 }
 
@@ -176,7 +179,7 @@ public struct ChangeTierNavigation: View {
         router: Router? = nil,
         onChangedTier: @escaping () -> Void = {}
     ) {
-        self.changeTierNavigationVm = .init(
+        changeTierNavigationVm = .init(
             router: router,
             vm: .init(changeTierInput: input),
             onChangedTier: onChangedTier
@@ -187,7 +190,7 @@ public struct ChangeTierNavigation: View {
         input: ChangeTierContractsInput,
         onChangedTier: @escaping () -> Void = {}
     ) {
-        self.changeTierNavigationVm = .init(
+        changeTierNavigationVm = .init(
             changeTierContractsInput: input,
             onChangedTier: onChangedTier
         )
@@ -294,7 +297,7 @@ public struct ChangeTierNavigation: View {
                         changeTierContractsInput: changeTierContracts,
                         changeTierNavigationVm: changeTierNavigationVm
                     )
-                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                    .routerDestination(for: ChangeTierContract.self) { _ in
                         getScreen
                     }
                 }
@@ -303,8 +306,8 @@ public struct ChangeTierNavigation: View {
             }
         }
     }
-    var getScreen: some View {
 
+    var getScreen: some View {
         ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
             .withAlertDismiss()
             .routerDestination(for: ChangeTierRouterActions.self) { action in

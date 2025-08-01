@@ -27,13 +27,13 @@ final class TestChatViewModelSendMessage: XCTestCase {
         assert(model.messageVm.messages.first?.status == .sent)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .sendMessage)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testSendNewMessageFailure() async {
         let messageType = MessageType.text(text: "test")
         let mockService = MockData.createMockChatService(
-            sendMessage: { message in throw ChatError.sendMessageFailed }
+            sendMessage: { _ in throw ChatError.sendMessageFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.messageVm.send(message: .init(type: messageType))
@@ -44,7 +44,6 @@ final class TestChatViewModelSendMessage: XCTestCase {
         )
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .sendMessage)
-        self.sut = mockService
+        sut = mockService
     }
-
 }

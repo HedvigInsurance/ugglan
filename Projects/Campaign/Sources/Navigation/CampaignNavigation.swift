@@ -5,8 +5,7 @@ import hCore
 import hCoreUI
 
 @MainActor
-class CampaignNavigationViewModel: ObservableObject {
-}
+class CampaignNavigationViewModel: ObservableObject {}
 
 public struct CampaignNavigation: View {
     @StateObject var campaignNavigationVm = CampaignNavigationViewModel()
@@ -26,7 +25,7 @@ public struct CampaignNavigation: View {
             }
             .configureTitle(L10n.paymentsDiscountsSectionTitle)
             .environmentObject(campaignNavigationVm)
-            .routerDestination(for: CampaignRouterAction.self) { type in
+            .routerDestination(for: CampaignRouterAction.self) { _ in
                 ForeverNavigation(useOwnNavigation: false)
                     .hideToolbar()
             }

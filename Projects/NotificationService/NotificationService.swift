@@ -1,11 +1,10 @@
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
-
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
 
-    lazy private var defaults = UserDefaults(suiteName: suiteName)
+    private lazy var defaults = UserDefaults(suiteName: suiteName)
 
     let suiteName: String = {
         var bundle = Bundle.main.bundleIdentifier!.components(separatedBy: ".")
@@ -32,7 +31,6 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     override func serviceExtensionTimeWillExpire() {
-
         if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
         }
