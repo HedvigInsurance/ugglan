@@ -213,16 +213,11 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var isDeletion: Bool?
     @Published var hasAgreedToTerms: Bool = false
     @Published var titleText: String = ""
-
-    @Published var terminationDeleteStep: TerminationFlowDeletionNextModel?
-    @Published var terminationDateStep: TerminationFlowDateNextStepModel?
     private var terminationNavigationVm: TerminationFlowNavigationViewModel?
 
     init(terminationNavigationVm: TerminationFlowNavigationViewModel) {
         self.terminationNavigationVm = terminationNavigationVm
-        terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
-        terminationDateStep = terminationNavigationVm.terminationDateStepModel
-        checkDeletion()
+        checkDeletion(for: terminationNavigationVm)
         if isDeletion == true {
             terminationNavigationVm.fetchNotification(isDeletion: true)
         }
@@ -232,12 +227,12 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
         return !(isDeletion ?? false) && (!hasSetTerminationDate || !hasAgreedToTerms)
     }
 
-    private func checkDeletion() {
+    private func checkDeletion(for terminationNavigationVm: TerminationFlowNavigationViewModel) {
         isDeletion = {
-            if terminationDeleteStep != nil {
+            if terminationNavigationVm.terminationDeleteStepModel != nil {
                 return true
             }
-            if terminationDateStep != nil {
+            if terminationNavigationVm.terminationDateStepModel != nil {
                 return false
             }
             return nil
