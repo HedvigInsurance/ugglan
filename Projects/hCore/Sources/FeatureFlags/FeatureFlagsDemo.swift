@@ -22,7 +22,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             emailPreferencesEnabled: false,
             isDemoMode: true,
             isMovingFlowEnabled: false,
-            isAddonsRemovalFromMovingFlowEnabled: false
+            isAddonsRemovalFromMovingFlowEnabled: false,
+            isClaimHistoryEnabled: false
         )
         featureDataPublisher.send(data)
     }
@@ -40,7 +41,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             emailPreferencesEnabled: false,
             isDemoMode: true,
             isMovingFlowEnabled: false,
-            isAddonsRemovalFromMovingFlowEnabled: false
+            isAddonsRemovalFromMovingFlowEnabled: false,
+            isClaimHistoryEnabled: false
         )
         featureDataPublisher.send(data)
     }

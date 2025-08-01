@@ -92,7 +92,10 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             isMovingFlowEnabled: unleashClient.isEnabled(name: "moving_flow"),
             isAddonsRemovalFromMovingFlowEnabled: unleashClient.isEnabled(
                 name: "enable_addons_removal_from_moving_flow"
-            )
+            ),
+            isClaimHistoryEnabled: unleashClient.isEnabled(
+                name: "enable_claim_history"
+            ),
         )
         featureDataPublisher.send(data)
     }

@@ -40,6 +40,9 @@ public struct ProfileView: View {
                             row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
+                    if Dependencies.featureFlags().isClaimHistoryEnabled {
+                        ProfileRow(row: .claimHistory)
+                    }
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider

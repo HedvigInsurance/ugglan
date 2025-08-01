@@ -21,6 +21,7 @@ public struct FeatureData: Codable, Equatable {
     public let isDemoMode: Bool
     public let isMovingFlowEnabled: Bool
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
+    public let isClaimHistoryEnabled: Bool
 
     public init(
         isTerminationFlowEnabled: Bool,
@@ -34,7 +35,8 @@ public struct FeatureData: Codable, Equatable {
         emailPreferencesEnabled: Bool,
         isDemoMode: Bool,
         isMovingFlowEnabled: Bool,
-        isAddonsRemovalFromMovingFlowEnabled: Bool
+        isAddonsRemovalFromMovingFlowEnabled: Bool,
+        isClaimHistoryEnabled: Bool
     ) {
         self.isTerminationFlowEnabled = isTerminationFlowEnabled
         self.isUpdateNecessary = isUpdateNecessary
@@ -48,6 +50,7 @@ public struct FeatureData: Codable, Equatable {
         self.isDemoMode = isDemoMode
         self.isMovingFlowEnabled = isMovingFlowEnabled
         self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
+        self.isClaimHistoryEnabled = isClaimHistoryEnabled
     }
 }
 
@@ -80,6 +83,7 @@ public class FeatureFlags: ObservableObject {
     @Published public private(set) var isDemoMode = false
     @Published public private(set) var isMovingFlowEnabled = false
     @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false
+    @Published public private(set) var isClaimHistoryEnabled = false
 
     private init() {}
 
@@ -107,6 +111,7 @@ public class FeatureFlags: ObservableObject {
                 self.isDemoMode = data.isDemoMode
                 self.isMovingFlowEnabled = data.isMovingFlowEnabled
                 self.isAddonsRemovalFromMovingFlowEnabled = data.isAddonsRemovalFromMovingFlowEnabled
+                self.isClaimHistoryEnabled = data.isClaimHistoryEnabled
             }
         self.client = client
         try await client.setup(with: context)
