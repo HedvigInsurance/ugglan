@@ -114,7 +114,6 @@ struct TerminationSummaryScreen: View {
                 case .warning:
                     return .attention
                 }
-
             }()
             hSection {
                 InfoCard(text: notification.message, type: type)

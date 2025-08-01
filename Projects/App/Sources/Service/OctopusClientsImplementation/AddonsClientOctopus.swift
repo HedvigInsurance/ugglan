@@ -33,7 +33,6 @@ class AddonsClientOctopus: AddonsClient {
                     price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
                     addonVariant: nil
                 )
-
             }()
             let addonData = AddonOffer(
                 titleDisplayName: addonOffer.titleDisplayName,
@@ -46,7 +45,6 @@ class AddonsClientOctopus: AddonsClient {
             )
 
             return addonData
-
         } catch let exception {
             if let exception = exception as? AddonsError {
                 throw exception
@@ -66,7 +64,6 @@ class AddonsClientOctopus: AddonsClient {
             if let error = response.upsellTravelAddonActivate.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
             }
-
         } catch let exception {
             if let exception = exception as? AddonsError {
                 throw exception

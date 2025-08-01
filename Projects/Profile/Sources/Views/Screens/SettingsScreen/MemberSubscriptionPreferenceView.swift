@@ -109,7 +109,6 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
                     updateUnsubscibed()
                 }
             }
-
         } catch _ {
             // TODO: Add error handling
         }

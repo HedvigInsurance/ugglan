@@ -126,7 +126,6 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                 .onChange(of: types) { _ in
                     setNavigation()
                 }
-
         } else {
             if let leading, showLeading {
                 content

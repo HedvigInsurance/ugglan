@@ -49,7 +49,6 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
                 return url
             }
             throw TravelInsuranceError.missingURL
-
         } catch let ex {
             throw ex
         }

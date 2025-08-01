@@ -56,7 +56,6 @@ class SubmitClaimClientOctopus: SubmitClaimClient {
                 context: context
             )
             return try await mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
-
         } else if let locationStep = model.locationModel {
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(
                 location: GraphQLNullable(optionalValue: locationStep.location)
@@ -1191,7 +1190,6 @@ extension FlowClaimSingleItemStepModel {
         let itemModelInput: OctopusGraphQL.FlowClaimItemModelInput? = {
             guard let selectedItemModel else { return nil }
             return OctopusGraphQL.FlowClaimItemModelInput(itemModelId: selectedItemModel)
-
         }()
 
         let problemsIds = selectedItemProblems ?? defaultItemProblems ?? []

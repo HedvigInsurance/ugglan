@@ -163,7 +163,6 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
             do {
                 let results = try await pickerResult.itemProvider.getData()
                 handler(.success(results.data))
-
             } catch {
                 handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
             }
