@@ -31,5 +31,4 @@ public class TerminateContractsClientDemo: TerminateContractsClient {
     public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         nil
     }
-
 }

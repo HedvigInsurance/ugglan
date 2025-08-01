@@ -421,7 +421,6 @@ private struct PriceSummarySection: View {
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
-
                 let newPremium = vm.netTotal
                 let currentPremium = vm.grossTotal
 
