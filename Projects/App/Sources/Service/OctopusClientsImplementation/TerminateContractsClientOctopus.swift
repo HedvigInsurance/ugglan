@@ -68,11 +68,19 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
         guard let terminationFlowNotification = data.currentMember.terminationFlowNotification else { return nil }
-        return .init(
-            message: terminationFlowNotification.message,
-            type: terminationFlowNotification.type.asNotificationType
-        )
 
+        return .init(with: terminationFlowNotification.fragments.flowTerminationNotificationFragment)
+    }
+}
+
+extension TerminationNotification {
+    init(
+        with data: OctopusGraphQL.FlowTerminationNotificationFragment
+    ) {
+        self.init(
+            message: data.message,
+            type: data.type.asNotificationType
+        )
     }
 }
 
