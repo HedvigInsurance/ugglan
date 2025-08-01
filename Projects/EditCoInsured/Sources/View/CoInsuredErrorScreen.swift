@@ -48,6 +48,7 @@ struct CoInsuredInputErrorView: View {
                             vm.SSNError = nil
                             intentViewModel.errorMessageForInput = nil
                             intentViewModel.errorMessageForCoinsuredList = nil
+                            intentViewModel.viewState = .success
                         }
                     }
                 ),
@@ -57,6 +58,7 @@ struct CoInsuredInputErrorView: View {
                         vm.SSNError = nil
                         intentViewModel.errorMessageForInput = nil
                         intentViewModel.errorMessageForCoinsuredList = nil
+                        intentViewModel.viewState = .success
                     }
                 )
             )

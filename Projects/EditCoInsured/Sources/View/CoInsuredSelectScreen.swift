@@ -125,7 +125,7 @@ struct CoInsuredSelectScreen: View {
             .padding(.bottom, -4)
         }
         .hItemPickerAttributes([.singleSelect, .attachToBottom])
-        .hFormContentPosition(.bottom)
+        .hFormContentPosition(.compact)
         .hButtonIsLoading(vm.isLoading)
     }
 }

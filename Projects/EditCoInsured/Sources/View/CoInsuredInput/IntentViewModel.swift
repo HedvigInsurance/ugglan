@@ -19,7 +19,11 @@ public class IntentViewModel: ObservableObject {
     @Published var enterManually: Bool = false
     @Published var errorMessageForInput: String?
     @Published var errorMessageForCoinsuredList: String?
-    @Published var viewState: ProcessingState = .loading
+    @Published var viewState: ProcessingState = .loading {
+        didSet {
+            invalidateDetents()
+        }
+    }
 
     var fullName: String {
         return firstName + " " + lastName
@@ -94,4 +98,20 @@ public class IntentViewModel: ObservableObject {
             self.isLoading = false
         }
     }
+
+    private func invalidateDetents() {
+        if #available(iOS 16.0, *) {
+            for i in 1...4 {
+                Task {
+                    try await Task.sleep(nanoseconds: UInt64(i * 100_000_000))
+                    UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                        .animateChanges {
+                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                                .invalidateDetents()
+                        }
+                }
+            }
+        }
+    }
+
 }
