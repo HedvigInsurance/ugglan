@@ -19,8 +19,8 @@ public enum GraphQLError: Error {
 }
 
 @MainActor
-public extension ApolloClient {
-    func fetch<Query: GraphQLQuery>(
+extension ApolloClient {
+    public func fetch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         queue: DispatchQueue = DispatchQueue.main
@@ -51,7 +51,7 @@ public extension ApolloClient {
         }
     }
 
-    func perform<Mutation: GraphQLMutation>(
+    public func perform<Mutation: GraphQLMutation>(
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
     ) async throws -> Mutation.Data {
