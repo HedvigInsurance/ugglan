@@ -81,6 +81,7 @@ struct TerminationSummaryScreen: View {
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
+        .padding(.bottom, .padding16)
     }
 
     private var addonContent: some View {
@@ -137,6 +138,7 @@ struct TerminationSummaryScreen: View {
         ],
         terminateInsuranceViewModel: .init()
     )
+    navigationModel.config = navigationModel.configs.first!
     navigationModel.terminationDateStepModel = .init(
         id: "id",
         maxDate: "",
@@ -144,6 +146,10 @@ struct TerminationSummaryScreen: View {
         extraCoverageItem: [],
         notification: .init(message: "This is a message for the user to see in the notification.", type: .info)
     )
+    navigationModel.extraCoverage = [
+        .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
+        .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
+    ]
     return TerminationSummaryScreen()
         .environmentObject(
             navigationModel
