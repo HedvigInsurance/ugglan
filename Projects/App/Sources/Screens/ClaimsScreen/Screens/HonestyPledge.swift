@@ -1,9 +1,9 @@
 import Claims
 import Combine
-import hCore
-import hCoreUI
 import Profile
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct SlideToConfirm: View {
     let onConfirmAction: (() -> Void)?

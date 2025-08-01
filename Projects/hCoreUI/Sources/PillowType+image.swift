@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 import SwiftUI
+import hCore
 
 public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
     case seHouseBas = "SE_HOUSE_BAS"

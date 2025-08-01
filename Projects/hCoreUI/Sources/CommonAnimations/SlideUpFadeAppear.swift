@@ -42,8 +42,8 @@ struct SlideUpFadeAppearAnimationModifier: ViewModifier {
     }
 }
 
-public extension View {
-    func slideUpFadeAppearAnimation(delay: Double = 0.2) -> some View {
+extension View {
+    public func slideUpFadeAppearAnimation(delay: Double = 0.2) -> some View {
         modifier(SlideUpFadeAppearAnimationModifier(delay: delay))
     }
 }

@@ -1,9 +1,9 @@
 import CoreServices
-import hCore
-import hCoreUI
 import MobileCoreServices
 import Photos
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct ImagesView: View {
     @ObservedObject private var vm: ImagesViewModel
@@ -69,7 +69,7 @@ class ImagesViewModel: ObservableObject {
             var list = [PHAsset]()
             let fetchOptions = PHFetchOptions()
             fetchOptions.sortDescriptors = [
-                NSSortDescriptor(key: "creationDate", ascending: false),
+                NSSortDescriptor(key: "creationDate", ascending: false)
             ]
             fetchOptions.fetchLimit = 50
 
@@ -196,11 +196,11 @@ struct PHPAssetPreview: View {
 extension PHAsset {
     enum GenerateFileUploadError: Error {
         case failedToGenerateFileName,
-             failedToGenerateMimeType,
-             failedToGetVideoURL,
-             failedToGetVideoData,
-             failedToConvertHEIC,
-             failedToConvertToFile
+            failedToGenerateMimeType,
+            failedToGetVideoURL,
+            failedToGetVideoData,
+            failedToConvertHEIC,
+            failedToConvertToFile
     }
 
     // generates a fileUpload for current PHAsset
@@ -265,9 +265,9 @@ extension PHAsset {
 
                             if mimeType.lowercased().contains("heic") {
                                 guard let image = UIImage(data: data),
-                                      let jpegData = image.jpegData(
-                                          compressionQuality: 0.9
-                                      )
+                                    let jpegData = image.jpegData(
+                                        compressionQuality: 0.9
+                                    )
                                 else {
                                     inCont.resume(throwing: GenerateFileUploadError.failedToConvertHEIC)
                                     return

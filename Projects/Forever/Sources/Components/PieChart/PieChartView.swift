@@ -1,7 +1,7 @@
 import Foundation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 public struct PieChartView: View {
     @State var state: PieChartState

@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct SelectContractView: View {
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel

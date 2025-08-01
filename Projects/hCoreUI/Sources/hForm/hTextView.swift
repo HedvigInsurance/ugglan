@@ -1,7 +1,7 @@
 import Foundation
-import hCore
 import Hero
 import SwiftUI
+import hCore
 
 public struct hTextView: View {
     private let placeholder: String
@@ -263,7 +263,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                         hSection {
                             HStack {
                                 Spacer()
-                                HeroAnimationWrapper(id: "counter", cornerRadius: 0, enableTransition: enableTransition) {
+                                HeroAnimationWrapper(id: "counter", cornerRadius: 0, enableTransition: enableTransition)
+                                {
                                     HStack(spacing: .padding4) {
                                         Spacer()
                                         if value.count > maxCharacters {
@@ -589,14 +590,14 @@ extension EnvironmentValues {
     }
 }
 
-private extension UIEdgeInsets {
-    var insets: EdgeInsets {
+extension UIEdgeInsets {
+    fileprivate var insets: EdgeInsets {
         EdgeInsets(top: top, leading: left, bottom: bottom, trailing: right)
     }
 }
 
-private extension TextView {
-    static func getHeight(forText text: String, placeholder: String, and width: CGFloat) -> CGFloat {
+extension TextView {
+    fileprivate static func getHeight(forText text: String, placeholder: String, and width: CGFloat) -> CGFloat {
         let textView = TextView(
             placeholder: placeholder,
             inputText: .constant(text),

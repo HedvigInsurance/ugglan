@@ -71,8 +71,8 @@ public class hHostingController<Content: View>: UIHostingController<Content>, Se
     }
 }
 
-private extension String {
-    func getViewName() -> String? {
+extension String {
+    fileprivate func getViewName() -> String? {
         if lowercased().contains("AnyView".lowercased()) || isEmpty || contains("Navigation") {
             return nil
         }

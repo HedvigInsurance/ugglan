@@ -1,8 +1,8 @@
-import hCore
 import SwiftUI
+import hCore
 
-public extension Localization.Locale {
-    var icon: Image {
+extension Localization.Locale {
+    public var icon: Image {
         switch self {
         case .sv_SE:
             return hCoreUIAssets.flagSE.view

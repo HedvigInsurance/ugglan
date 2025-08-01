@@ -9,7 +9,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             id: "id1",
             type: .text(
                 text:
-                "I think someone took my computer"
+                    "I think someone took my computer"
             ),
             date: date.addingTimeInterval(-60 * 60 * 3)
         )

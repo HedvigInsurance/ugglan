@@ -1,8 +1,8 @@
 import Foundation
 import SwiftUI
 
-public extension UIApplication {
-    func getTopViewController() -> UIViewController? {
+extension UIApplication {
+    public func getTopViewController() -> UIViewController? {
         UIApplication.shared.connectedScenes
             .map { $0 as? UIWindowScene }
             .compactMap { $0 }
@@ -14,7 +14,7 @@ public extension UIApplication {
             .getTopPresendedViewController()
     }
 
-    func getTopViewControllerNavigation() -> UINavigationController? {
+    public func getTopViewControllerNavigation() -> UINavigationController? {
         let topVC = UIApplication.shared.connectedScenes
             .map { $0 as? UIWindowScene }
             .compactMap { $0 }
@@ -32,15 +32,15 @@ public extension UIApplication {
         } else if let topVC = topVC as? UINavigationController {
             return topVC
         } else if let topVC = topVC,
-                  let navigationChildren = topVC.children.first(where: { $0 as? UINavigationController != nil })
-                  as? UINavigationController
+            let navigationChildren = topVC.children.first(where: { $0 as? UINavigationController != nil })
+                as? UINavigationController
         {
             return navigationChildren
         }
         return nil
     }
 
-    func getWindow() -> UIWindow? {
+    public func getWindow() -> UIWindow? {
         UIApplication.shared.connectedScenes
             .map { $0 as? UIWindowScene }
             .compactMap { $0 }
@@ -50,7 +50,7 @@ public extension UIApplication {
             .first
     }
 
-    func getRootViewController() -> UIViewController? {
+    public func getRootViewController() -> UIViewController? {
         UIApplication.shared.connectedScenes
             .map { $0 as? UIWindowScene }
             .compactMap { $0 }
@@ -66,13 +66,13 @@ public extension UIApplication {
     /// - Returns: If the top presented ViewController is NavigationViewController
     /// returns last ViewController
     @MainActor
-    func getTopVisibleVc(from vc: UIViewController? = nil) -> UIViewController? {
+    public func getTopVisibleVc(from vc: UIViewController? = nil) -> UIViewController? {
         if let vc = vc ?? getRootViewController() {
             if let presentedVc = vc.presentedViewController {
                 return getTopVisibleVc(from: presentedVc)
             }
             if let tabBar = (vc as? UITabBarController) ?? (vc.children.first as? UITabBarController),
-               let selectedVc = tabBar.selectedViewController
+                let selectedVc = tabBar.selectedViewController
             {
                 return getTopVisibleVc(from: selectedVc)
             } else if let navigation = (vc as? UINavigationController)

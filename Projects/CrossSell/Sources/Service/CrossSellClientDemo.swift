@@ -11,7 +11,7 @@ public class CrossSellClientDemo: CrossSellClient {
                 description: "description",
                 imageUrl: nil,
                 buttonDescription: "buttonDescription"
-            ),
+            )
         ]
     }
 
@@ -23,7 +23,7 @@ public class CrossSellClientDemo: CrossSellClient {
                 description: "description",
                 imageUrl: nil,
                 buttonDescription: "buttonDescription"
-            ),
+            )
         ]
         return .init(recommended: nil, others: crossSells)
     }

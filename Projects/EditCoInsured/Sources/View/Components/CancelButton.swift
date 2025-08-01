@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct CancelButton: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel

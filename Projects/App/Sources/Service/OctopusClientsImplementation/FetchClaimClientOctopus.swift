@@ -40,16 +40,16 @@ extension ClaimModel {
             displayItems: claim.displayItems.compactMap { item in
                 let displayValue: String =
                     item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? item.displayValue
-                        .localDateToIso8601Date?
-                        .displayDateDDMMMYYYYFormat ?? item.displayValue
+                    .localDateToIso8601Date?
+                    .displayDateDDMMMYYYYFormat ?? item.displayValue
                 return .init(displayTitle: item.displayTitle, displayValue: displayValue)
             }
         )
     }
 }
 
-private extension GraphQLEnum<OctopusGraphQL.ClaimStatus> {
-    var asClaimStatus: ClaimModel.ClaimStatus {
+extension GraphQLEnum<OctopusGraphQL.ClaimStatus> {
+    fileprivate var asClaimStatus: ClaimModel.ClaimStatus {
         switch self {
         case let .case(status):
             switch status {
@@ -68,8 +68,8 @@ private extension GraphQLEnum<OctopusGraphQL.ClaimStatus> {
     }
 }
 
-private extension GraphQLEnum<OctopusGraphQL.ClaimOutcome> {
-    var asClaimOutcome: ClaimModel.ClaimOutcome? {
+extension GraphQLEnum<OctopusGraphQL.ClaimOutcome> {
+    fileprivate var asClaimOutcome: ClaimModel.ClaimOutcome? {
         switch self {
         case let .case(status):
             switch status {

@@ -1,7 +1,7 @@
 import Campaign
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct ContractDetails: View {
     @Binding var expandedContracts: [String]
@@ -155,7 +155,7 @@ struct ContractDetails: View {
                         validUntil: nil,
                         canBeDeleted: true,
                         discountId: "id"
-                    ),
+                    )
                 ],
                 periods: [
                     .init(

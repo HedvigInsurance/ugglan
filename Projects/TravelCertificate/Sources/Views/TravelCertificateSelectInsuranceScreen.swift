@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct TravelCertificateSelectInsuranceScreen: View {
     @State var isLoading: Bool = false

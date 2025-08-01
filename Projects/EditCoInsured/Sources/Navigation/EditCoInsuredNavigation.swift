@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 @MainActor
 class EditCoInsuredNavigationViewModel: ObservableObject {

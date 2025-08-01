@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct InsuredPeopleScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -180,7 +180,7 @@ struct InsuredPeopleScreen: View {
                 needsMissingInfo: false,
                 activatesOn: "2025-04-22",
                 terminatesOn: nil
-            ),
+            )
         ],
         contractId: "",
         activeFrom: nil,

@@ -1,7 +1,7 @@
-import hCore
-import hCoreUI
 import PresentableStore
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct UpcomingChangesScreen: View {
     let updateDate: String
@@ -73,17 +73,17 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                     .init(title: "display item 2", value: "display item value 2"),
                 ],
                 productVariant:
-                ProductVariant(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: "",
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "",
-                    displayNameTier: "Standard",
-                    tierDescription: "Vårt mellanpaket med hög ersättning."
-                ),
+                    ProductVariant(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: "",
+                        perils: [],
+                        insurableLimits: [],
+                        documents: [],
+                        displayName: "",
+                        displayNameTier: "Standard",
+                        tierDescription: "Vårt mellanpaket med hög ersättning."
+                    ),
                 addonVariant: []
             )
         )

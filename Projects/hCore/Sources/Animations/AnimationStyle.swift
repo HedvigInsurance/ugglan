@@ -17,16 +17,16 @@ public struct AnimationStyle {
     }
 }
 
-public extension AnimationStyle {
-    static func easeOut(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
+extension AnimationStyle {
+    public static func easeOut(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
         AnimationStyle(options: .curveEaseOut, duration: duration, delay: delay)
     }
 
-    static func easeIn(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
+    public static func easeIn(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
         AnimationStyle(options: .curveEaseIn, duration: duration, delay: delay)
     }
 
-    static func linear(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
+    public static func linear(duration: TimeInterval, delay: TimeInterval = 0) -> AnimationStyle {
         AnimationStyle(options: .curveLinear, duration: duration, delay: delay)
     }
 }

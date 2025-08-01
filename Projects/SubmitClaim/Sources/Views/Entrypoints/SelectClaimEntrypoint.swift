@@ -1,9 +1,9 @@
 import AVFoundation
 import Claims
-import hCore
-import hCoreUI
 import SwiftUI
 import TagKit
+import hCore
+import hCoreUI
 
 public struct SelectClaimEntrypointGroup: View {
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
@@ -55,7 +55,8 @@ public struct SelectClaimEntrypointGroup: View {
                                         buttonIsLoading = false
                                     }
                                 } else {
-                                    if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == [] {
+                                    if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == []
+                                    {
                                         claimsNavigationVm.progress = 0.2
                                     } else {
                                         claimsNavigationVm.progress = 0.1
@@ -296,7 +297,7 @@ struct ShowTagList: View {
                             notValid = false
                             ImpactGenerator.soft()
                         }
-                        .padding(.horizontal, .padding12) // 16 - tag list horizontal spacing
+                        .padding(.horizontal, .padding12)  // 16 - tag list horizontal spacing
                         .padding(.vertical, .padding8)
                         .background(
                             getColorAndShadow(claimId: tag)
@@ -305,7 +306,7 @@ struct ShowTagList: View {
                         .transition(
                             .scale.animation(
                                 .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
-                                    .delay(Double.random(in: 0.3 ... 0.6))
+                                    .delay(Double.random(in: 0.3...0.6))
                             )
                         )
                         .accessibilityAddTraits(.isButton)

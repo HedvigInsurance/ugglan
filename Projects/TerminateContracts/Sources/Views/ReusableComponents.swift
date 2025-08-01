@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct DisplayQuestionView: View {
     @EnvironmentObject var navigationVm: TerminationFlowNavigationViewModel
@@ -54,7 +54,7 @@ struct DisplayQuestionView: View {
                         questionClicked: {
                             let stringToLog =
                                 navigationVm.isDeletion
-                                    ? "deletion question clicked" : "termination question clicked"
+                                ? "deletion question clicked" : "termination question clicked"
                             log.info(stringToLog, attributes: ["question": question.questionTranslated])
                         }
                     ) { _ in

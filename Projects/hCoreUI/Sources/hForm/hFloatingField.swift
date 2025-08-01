@@ -1,7 +1,7 @@
 import Combine
 import Foundation
-import hCore
 import SwiftUI
+import hCore
 
 public struct hFloatingField: View {
     private var placeholder: String
@@ -136,15 +136,15 @@ private struct EnvironmentHCFieldTrailingView: @preconcurrency EnvironmentKey {
     @MainActor static let defaultValue: AnyView? = nil
 }
 
-public extension EnvironmentValues {
-    var hFieldTrailingView: AnyView? {
+extension EnvironmentValues {
+    public var hFieldTrailingView: AnyView? {
         get { self[EnvironmentHCFieldTrailingView.self] }
         set { self[EnvironmentHCFieldTrailingView.self] = newValue }
     }
 }
 
-public extension View {
-    func hFieldTrailingView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+extension View {
+    public func hFieldTrailingView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hFieldTrailingView, AnyView(content()))
     }
 }
@@ -153,15 +153,15 @@ private struct EnvironmentWithoutFixedHeight: EnvironmentKey {
     static let defaultValue: Bool? = false
 }
 
-public extension EnvironmentValues {
-    var hWithoutFixedHeight: Bool? {
+extension EnvironmentValues {
+    public var hWithoutFixedHeight: Bool? {
         get { self[EnvironmentWithoutFixedHeight.self] }
         set { self[EnvironmentWithoutFixedHeight.self] = newValue }
     }
 }
 
-public extension View {
-    var hWithoutFixedHeight: some View {
+extension View {
+    public var hWithoutFixedHeight: some View {
         environment(\.hWithoutFixedHeight, true)
     }
 }

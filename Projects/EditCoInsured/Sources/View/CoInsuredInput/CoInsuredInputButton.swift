@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 public struct CoInsuredInputButton: View {
     @ObservedObject var vm: CoInusuredInputViewModel
@@ -26,7 +26,7 @@ public struct CoInsuredInputButton: View {
                         title: L10n.removeConfirmationButton,
                         vm: vm,
                         intentViewModel:
-                        intentViewModel,
+                            intentViewModel,
                         onTap: {
                             await performIntent(for: .delete)
                         }

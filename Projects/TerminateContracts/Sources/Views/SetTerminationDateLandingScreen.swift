@@ -1,7 +1,7 @@
 import Combine
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct SetTerminationDateLandingScreen: View {
     @StateObject var vm = SetTerminationDateLandingScreenViewModel()
@@ -89,7 +89,7 @@ struct SetTerminationDateLandingScreen: View {
 
                         InfoCard(
                             text:
-                            L10n.terminationFlowDeletionInfoCard,
+                                L10n.terminationFlowDeletionInfoCard,
                             type: .info
                         )
                     }
@@ -189,7 +189,7 @@ struct SetTerminationDateLandingScreen: View {
     private var accessibilityLabel: String {
         var label =
             L10n.terminationFlowImportantInformationTitle + "\n" + L10n.terminationFlowImportantInformationText + "\n"
-                + L10n.terminationFlowIUnderstandText + "\n"
+            + L10n.terminationFlowIUnderstandText + "\n"
 
         if vm.hasAgreedToTerms {
             label += L10n.voiceoverAccepted

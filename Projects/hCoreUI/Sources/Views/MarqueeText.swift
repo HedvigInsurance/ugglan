@@ -19,19 +19,19 @@ public struct MarqueeText: View {
 
         return ZStack {
             GeometryReader { geo in
-                if stringWidth > geo.size.width { // don't use self.animate as conditional here
+                if stringWidth > geo.size.width {  // don't use self.animate as conditional here
                     Group {
                         Text(text)
                             .lineLimit(1)
                             .font(.init(font))
                             .offset(x: 0)
-                            .offset(x: animate ? -(stringWidth - geo.size.width) - 6 : 0) //
+                            .offset(x: animate ? -(stringWidth - geo.size.width) - 6 : 0)  //
                             .animation(
                                 animate
                                     ? Animation
-                                    .easeInOut(duration: 1 + Double(stringWidth - geo.size.width) / 50)
-                                    .delay(startDelay)
-                                    .repeatForever(autoreverses: true)
+                                        .easeInOut(duration: 1 + Double(stringWidth - geo.size.width) / 50)
+                                        .delay(startDelay)
+                                        .repeatForever(autoreverses: true)
                                     : nullAnimation,
                                 value: animate
                             )
@@ -121,8 +121,8 @@ public struct MarqueeText: View {
     }
 }
 
-public extension MarqueeText {
-    func makeCompact(_ compact: Bool = true) -> Self {
+extension MarqueeText {
+    public func makeCompact(_ compact: Bool = true) -> Self {
         var view = self
         view.isCompact = compact
         return view

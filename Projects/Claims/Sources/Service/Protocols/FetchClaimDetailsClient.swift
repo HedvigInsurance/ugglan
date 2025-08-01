@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 import PresentableStore
+import hCore
 
 @MainActor
 class FetchClaimDetailsService {

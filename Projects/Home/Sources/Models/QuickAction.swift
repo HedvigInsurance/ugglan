@@ -155,7 +155,7 @@ extension Sequence where Iterator.Element == QuickAction {
     }
 }
 
-public extension QuickAction {
+extension QuickAction {
     internal var isFirstVet: Bool {
         switch self {
         case .firstVet:
@@ -165,7 +165,7 @@ public extension QuickAction {
         }
     }
 
-    var firstVetPartners: [FirstVetPartner]? {
+    public var firstVetPartners: [FirstVetPartner]? {
         switch self {
         case let .firstVet(partners):
             return partners
@@ -174,7 +174,7 @@ public extension QuickAction {
         }
     }
 
-    var sickAboardPartners: [SickAbroadPartner]? {
+    public var sickAboardPartners: [SickAbroadPartner]? {
         switch self {
         case let .sickAbroad(partners):
             return partners

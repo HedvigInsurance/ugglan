@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel

@@ -1,7 +1,7 @@
 import Combine
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct TerminationSurveyScreen: View {
     @ObservedObject var vm: SurveyScreenViewModel
@@ -65,7 +65,7 @@ struct TerminationSurveyScreen: View {
                 }
 
                 if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
-                   optionId == vm.selectedOption?.id
+                    optionId == vm.selectedOption?.id
                 {
                     TerminationFlowSurveyStepFeedBackView(
                         vm: feedBack
@@ -87,7 +87,7 @@ struct TerminationSurveyScreen: View {
                         buttonAction: { [weak terminationFlowNavigationViewModel] in
                             terminationFlowNavigationViewModel?.redirectAction = action.action
                         }
-                    ),
+                    )
                 ])
                 .hButtonIsLoading(terminationFlowNavigationViewModel.redirectActionLoadingState == .loading)
         case let .redirect(redirect):
@@ -100,7 +100,7 @@ struct TerminationSurveyScreen: View {
                                 terminationFlowNavigationViewModel?.redirectUrl = url
                             }
                         }
-                    ),
+                    )
                 ])
                 .hButtonIsLoading(false)
         case let .suggestionInfo(info):
@@ -116,7 +116,7 @@ struct TerminationSurveyScreen: View {
             let progress = (currentProgress + 0.2)
             terminationFlowNavigationViewModel.progress =
                 (progress / 1) * (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.75 : 1)
-                    + (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.25 : 0)
+                + (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.25 : 0)
 
             terminationFlowNavigationViewModel.terminationSurveyStepModel?.options = subOptions
             terminationFlowNavigationViewModel.terminationSurveyStepModel?.subTitleType = .generic

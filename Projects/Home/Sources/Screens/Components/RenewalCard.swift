@@ -1,10 +1,10 @@
 import Apollo
 import Contracts
 import Foundation
-import hCore
-import hCoreUI
 import PresentableStore
 import SwiftUI
+import hCore
+import hCoreUI
 
 public struct RenewalCardView: View {
     @PresentableStore var store: HomeStore
@@ -31,7 +31,7 @@ public struct RenewalCardView: View {
 
     private func openDocument(_ contract: HomeContract) {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
-           URL(string: draftCertificateUrl) != nil
+            URL(string: draftCertificateUrl) != nil
         {
             document = hPDFDocument(
                 displayName: contract.displayName,
@@ -87,10 +87,10 @@ public struct RenewalCardView: View {
                                     )
                                 )
                             }
-                        ),
+                        )
                     ])
                 } else if let upcomingRenewalContract = upcomingRenewalContracts.first,
-                          let renewalDate = upcomingRenewalContract.upcomingRenewal?.renewalDate?.localDateToDate
+                    let renewalDate = upcomingRenewalContract.upcomingRenewal?.renewalDate?.localDateToDate
                 {
                     if upcomingRenewalContracts.count == 1 {
                         InfoCard(
@@ -105,11 +105,11 @@ public struct RenewalCardView: View {
                                 buttonAction: {
                                     openDocument(upcomingRenewalContract)
                                 }
-                            ),
+                            )
                         ])
                     } else if upcomingRenewalContracts.count > 1,
-                              let days = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate?.localDateToDate?
-                              .daysBetween(start: Date())
+                        let days = upcomingRenewalContracts.first?.upcomingRenewal?.renewalDate?.localDateToDate?
+                            .daysBetween(start: Date())
                     {
                         InfoCard(
                             text: days == 1
@@ -123,7 +123,7 @@ public struct RenewalCardView: View {
                                 buttonAction: {
                                     showMultipleAlert = true
                                 }
-                            ),
+                            )
                         ])
                         .actionSheet(isPresented: $showMultipleAlert) {
                             ActionSheet(

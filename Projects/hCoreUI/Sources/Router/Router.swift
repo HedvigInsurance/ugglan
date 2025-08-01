@@ -247,8 +247,8 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             /// dismiss presented view controllers without animations
             if withDismissingAll {
                 if navigation?.presentedViewController != nil,
-                   let vc = router?.getTopPresentedVcFor(vc: navigation),
-                   let viewToAdd = vc.view.snapshotView(afterScreenUpdates: false)
+                    let vc = router?.getTopPresentedVcFor(vc: navigation),
+                    let viewToAdd = vc.view.snapshotView(afterScreenUpdates: false)
                 {
                     navigation?.view.addSubview(viewToAdd)
                     router?.dismissPresentedVcFor(vc: navigation)
@@ -278,8 +278,8 @@ public struct ViewRouterOptions: OptionSet {
     }
 }
 
-public extension View {
-    func embededInNavigation(
+extension View {
+    public func embededInNavigation(
         router: Router? = nil,
         options: RouterOptions = [],
         tracking: TrackingViewNameProtocol
@@ -310,8 +310,8 @@ private struct EmbededInNavigation: ViewModifier {
     }
 }
 
-public extension View {
-    @MainActor func configureTitle(_ title: String) -> some View {
+extension View {
+    @MainActor public func configureTitle(_ title: String) -> some View {
         introspect(.viewController, on: .iOS(.v13...)) { vc in
             UIView.performWithoutAnimation { [weak vc] in
                 vc?.title = title
@@ -319,7 +319,7 @@ public extension View {
         }
     }
 
-    @MainActor func configureTitleView(
+    @MainActor public func configureTitleView(
         title: String,
         subTitle: String? = nil,
         titleColor: TitleColor? = nil
@@ -333,13 +333,13 @@ public extension View {
         }
     }
 
-    @MainActor var enableModalInPresentation: some View {
+    @MainActor public var enableModalInPresentation: some View {
         introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.isModalInPresentation = true
         }
     }
 
-    func getTitleUIView(title: String, subTitle: String?, titleColor: TitleColor) -> UIView {
+    public func getTitleUIView(title: String, subTitle: String?, titleColor: TitleColor) -> UIView {
         let view: UIView = UIHostingController(
             rootView: titleView(title: title, subTitle: subTitle, titleColor: titleColor)
         )

@@ -1,6 +1,6 @@
-public extension Sequence where Element == String {
+extension Sequence where Element == String {
     /// Joins the elements of the given sequence into a single string, using the specified separator.
-    var displayName: String {
+    public var displayName: String {
         joined(separator: " • ")
     }
 }

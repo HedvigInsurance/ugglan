@@ -84,7 +84,7 @@ struct InfoExpandableView_Previews: PreviewProvider {
             InfoExpandableView(
                 title: "long longlong long long long title",
                 text:
-                "long long long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long long"
+                    "long long long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long long"
             )
             Spacer()
         }

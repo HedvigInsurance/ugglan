@@ -78,8 +78,8 @@ final class ContractStoreTests: XCTestCase {
 }
 
 @MainActor
-private extension ContractsStack {
-    static let getDefault: ContractsStack = .init(
+extension ContractsStack {
+    fileprivate static let getDefault: ContractsStack = .init(
         activeContracts: [
             .init(
                 id: "id",
@@ -113,7 +113,7 @@ private extension ContractsStack {
                 ssn: nil,
                 typeOfContract: .seHouse,
                 coInsured: []
-            ),
+            )
         ],
         pendingContracts: [],
         terminatedContracts: []
@@ -121,8 +121,8 @@ private extension ContractsStack {
 }
 
 @MainActor
-public extension XCTestCase {
-    func waitUntil(description: String, closure: @escaping () -> Bool) async {
+extension XCTestCase {
+    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
         let exc = expectation(description: description)
         if closure() {
             exc.fulfill()

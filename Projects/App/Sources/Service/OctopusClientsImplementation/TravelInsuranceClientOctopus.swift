@@ -1,8 +1,8 @@
 import Addons
 import Foundation
+import TravelCertificate
 import hCore
 import hGraphQL
-import TravelCertificate
 
 @MainActor
 class TravelInsuranceClientOctopus: TravelInsuranceClient {
@@ -98,8 +98,8 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
     }
 }
 
-private extension TravelInsuranceFormDTO {
-    var asOctopusInput: OctopusGraphQL.TravelCertificateCreateInput {
+extension TravelInsuranceFormDTO {
+    fileprivate var asOctopusInput: OctopusGraphQL.TravelCertificateCreateInput {
         .init(
             contractId: contractId,
             startDate: startDate,

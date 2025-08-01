@@ -2,11 +2,11 @@ import Apollo
 import Combine
 import Contracts
 import EditCoInsured
-import hCore
-import hCoreUI
 import Payment
 import PresentableStore
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeBottomScrollViewModel

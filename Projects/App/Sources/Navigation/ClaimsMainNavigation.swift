@@ -1,10 +1,10 @@
 import Claims
-import hCore
-import hCoreUI
 import PresentableStore
 import Profile
 import SubmitClaim
 import SwiftUI
+import hCore
+import hCoreUI
 
 private class ClaimsMainNavigationViewModel: ObservableObject {
     @Published var isClaimsFlowPresented = false

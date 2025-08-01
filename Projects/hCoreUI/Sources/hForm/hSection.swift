@@ -154,9 +154,9 @@ private struct hShadowModifier: ViewModifier {
     }
 }
 
-public extension View {
+extension View {
     /// adds a Hedvig shadow to the view
-    func hShadow(type: ShadowType = .default, show: Bool = true) -> some View {
+    public func hShadow(type: ShadowType = .default, show: Bool = true) -> some View {
         modifier(hShadowModifier(type: type, show: show))
     }
 }
@@ -229,9 +229,9 @@ extension EnvironmentValues {
     }
 }
 
-public extension View {
+extension View {
     /// set section container style
-    func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
+    public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
         environment(\.hSectionContainerStyle, style)
     }
 }
@@ -248,9 +248,9 @@ extension EnvironmentValues {
     }
 }
 
-public extension View {
+extension View {
     /// set section container style
-    func sectionContainerCornerMaskerCorners(_ corners: UIRectCorner) -> some View {
+    public func sectionContainerCornerMaskerCorners(_ corners: UIRectCorner) -> some View {
         environment(\.hSectionContainerCornerMaskedCorners, corners)
     }
 }
@@ -283,19 +283,19 @@ private struct EnvironmentHWithoutDivider: EnvironmentKey {
     static let defaultValue = false
 }
 
-public extension EnvironmentValues {
-    var hWithoutDivider: Bool {
+extension EnvironmentValues {
+    public var hWithoutDivider: Bool {
         get { self[EnvironmentHWithoutDivider.self] }
         set { self[EnvironmentHWithoutDivider.self] = newValue }
     }
 }
 
-public extension View {
-    var hWithoutDivider: some View {
+extension View {
+    public var hWithoutDivider: some View {
         environment(\.hWithoutDivider, true)
     }
 
-    func shouldShowDivider(_ show: Bool) -> some View {
+    public func shouldShowDivider(_ show: Bool) -> some View {
         environment(\.hWithoutDivider, show)
     }
 }
@@ -310,15 +310,15 @@ private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
     static let defaultValue: [HorizontalPadding] = []
 }
 
-public extension EnvironmentValues {
-    var hWithoutHorizontalPadding: [HorizontalPadding] {
+extension EnvironmentValues {
+    public var hWithoutHorizontalPadding: [HorizontalPadding] {
         get { self[EnvironmentHWithoutHorizontalPadding.self] }
         set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
     }
 }
 
-public extension View {
-    func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
+extension View {
+    public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
         environment(\.hWithoutHorizontalPadding, attributes)
     }
 }
@@ -327,15 +327,15 @@ private struct EnvironmentHSectionHeaderWithDivider: EnvironmentKey {
     static let defaultValue: Bool = false
 }
 
-public extension EnvironmentValues {
-    var hSectionHeaderWithDivider: Bool {
+extension EnvironmentValues {
+    public var hSectionHeaderWithDivider: Bool {
         get { self[EnvironmentHSectionHeaderWithDivider.self] }
         set { self[EnvironmentHSectionHeaderWithDivider.self] = newValue }
     }
 }
 
-public extension View {
-    var hSectionHeaderWithDivider: some View {
+extension View {
+    public var hSectionHeaderWithDivider: some View {
         environment(\.hSectionHeaderWithDivider, true)
     }
 }
@@ -477,22 +477,22 @@ public struct hSection<Header: View, Content: View>: View {
     }
 }
 
-public extension hSection where Header == EmptyView {
-    init(
+extension hSection where Header == EmptyView {
+    public init(
         @RowViewBuilder _ builder: @escaping () -> Content
     ) {
         self.init(header: nil, builder)
     }
 }
 
-public extension hSection where Content == AnyView, Header == EmptyView {
+extension hSection where Content == AnyView, Header == EmptyView {
     internal struct IdentifiableContent: Identifiable {
         var id: Int
         var position: hRowPosition
         var content: Content
     }
 
-    init<Element, BuilderContent: View>(
+    public init<Element, BuilderContent: View>(
         _ list: [Element],
         @ViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent
     ) where Element: Identifiable {
@@ -534,7 +534,7 @@ public extension hSection where Content == AnyView, Header == EmptyView {
         )
     }
 
-    init<Element, Hash: Hashable, BuilderContent: View>(
+    public init<Element, Hash: Hashable, BuilderContent: View>(
         _ list: [Element],
         id: KeyPath<Element, Hash>,
         @RowViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent

@@ -1,8 +1,8 @@
 import Campaign
-import hCore
-import hCoreUI
 import PresentableStore
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct PaymentDetailsView: View {
     private let data: PaymentData
@@ -210,7 +210,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                             validUntil: nil,
                             canBeDeleted: true,
                             discountId: "id"
-                        ),
+                        )
                     ],
                     periods: [
                         .init(
@@ -246,7 +246,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                             validUntil: nil,
                             canBeDeleted: true,
                             discountId: "id"
-                        ),
+                        )
                     ],
                     periods: [
                         .init(
@@ -269,15 +269,15 @@ struct PaymentDetails_Previews: PreviewProvider {
                 ),
             ],
             referralDiscount:
-            .init(
-                code: "MY CODE",
-                amount: .sek(30),
-                title: "3 friends invited",
-                listOfAffectedInsurances: [],
-                validUntil: nil,
-                canBeDeleted: false,
-                discountId: "FRIENDS"
-            ),
+                .init(
+                    code: "MY CODE",
+                    amount: .sek(30),
+                    title: "3 friends invited",
+                    listOfAffectedInsurances: [],
+                    validUntil: nil,
+                    canBeDeleted: false,
+                    discountId: "FRIENDS"
+                ),
             paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
             addedToThePayment: nil
         )

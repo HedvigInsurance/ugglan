@@ -3,10 +3,10 @@ import Apollo
 import Combine
 import CrossSell
 import Foundation
-import hCore
-import hCoreUI
 import PresentableStore
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct ContractTable: View {
     @PresentableStore var store: ContractStore
@@ -165,7 +165,7 @@ struct ContractTable: View {
             }
         ) { activeContracts in
             if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty,
-               featureFlags.isMovingFlowEnabled
+                featureFlags.isMovingFlowEnabled
             {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
@@ -175,7 +175,7 @@ struct ContractTable: View {
                                 buttonAction: {
                                     contractsNavigationVm.isChangeAddressPresented = true
                                 }
-                            ),
+                            )
                         ])
                 }
             }

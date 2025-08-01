@@ -1,7 +1,7 @@
 import Combine
 import Foundation
-import hCoreUI
 import SwiftUI
+import hCoreUI
 
 @MainActor
 public class CoInusuredInputViewModel: ObservableObject {

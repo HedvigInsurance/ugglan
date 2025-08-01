@@ -113,15 +113,15 @@ private struct EnvironmentHFieldBottomAttachedView: @preconcurrency EnvironmentK
     static let defaultValue: AnyView? = nil
 }
 
-public extension EnvironmentValues {
-    var hFieldBottomAttachedView: AnyView? {
+extension EnvironmentValues {
+    public var hFieldBottomAttachedView: AnyView? {
         get { self[EnvironmentHFieldBottomAttachedView.self] }
         set { self[EnvironmentHFieldBottomAttachedView.self] = newValue }
     }
 }
 
-public extension View {
-    func hFieldAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+extension View {
+    public func hFieldAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hFieldBottomAttachedView, AnyView(content()))
     }
 }

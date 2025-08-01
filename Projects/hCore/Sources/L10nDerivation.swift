@@ -26,11 +26,11 @@ public struct L10nDerivation {
     public func render() -> String { L10n.tr(table, key, args) }
 }
 
-public extension String {
-    nonisolated(unsafe) static var derivedFromL10n: UInt8 = 0
+extension String {
+    public nonisolated(unsafe) static var derivedFromL10n: UInt8 = 0
 
     /// set when String is derived from a L10n key
-    var derivedFromL10n: L10nDerivation? {
+    public var derivedFromL10n: L10nDerivation? {
         get {
             guard let value = objc_getAssociatedObject(self, &String.derivedFromL10n) as? L10nDerivation?
             else { return nil }

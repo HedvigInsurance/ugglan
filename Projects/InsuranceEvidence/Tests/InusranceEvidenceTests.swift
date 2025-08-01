@@ -1,6 +1,6 @@
+@preconcurrency import XCTest
 import hCore
 import hCoreUI
-@preconcurrency import XCTest
 
 @testable import InsuranceEvidence
 

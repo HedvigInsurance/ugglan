@@ -1,7 +1,7 @@
 import AVFAudio
 import Combine
-import hCoreUI
 import SwiftUI
+import hCoreUI
 
 @MainActor
 public class AudioRecorder: @preconcurrency ObservableObject {
@@ -130,7 +130,7 @@ public struct Recording {
     }
 
     var range: Range<CGFloat> {
-        guard sample.count > 0 else { return 0 ..< 0 }
-        return sample.min()! ..< sample.max()!
+        guard sample.count > 0 else { return 0..<0 }
+        return sample.min()!..<sample.max()!
     }
 }

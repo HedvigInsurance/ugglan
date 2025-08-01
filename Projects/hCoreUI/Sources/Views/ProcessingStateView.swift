@@ -1,5 +1,5 @@
-import hCore
 import SwiftUI
+import hCore
 
 public struct ProcessingStateView: View {
     @StateObject var vm = ProcessingViewModel()
@@ -39,14 +39,14 @@ public struct ProcessingStateView: View {
             .init(
                 delay: 0.5 + baseDurationFactor * 8,
                 duration: baseDurationFactor * 4,
-                progress: Float.random(in: 0.3 ... 0.5)
+                progress: Float.random(in: 0.3...0.5)
             ),
             .init(delay: 0.5 + baseDurationFactor * 12, duration: baseDurationFactor * 3, progress: 0.6),
             .init(delay: 0.5 + baseDurationFactor * 15, duration: baseDurationFactor, progress: 0.7),
             .init(
                 delay: 0.5 + baseDurationFactor * 16,
                 duration: baseDurationFactor * 6,
-                progress: Float.random(in: 0.7 ... 0.95)
+                progress: Float.random(in: 0.7...0.95)
             ),
             .init(delay: 0.5 + baseDurationFactor * 22, duration: baseDurationFactor * 2, progress: 1),
         ]
@@ -201,8 +201,8 @@ public struct hProgressViewStyle: ProgressViewStyle {
     )
 })
 
-public extension View {
-    func trackErrorState(for state: Binding<ProcessingState>) -> some View {
+extension View {
+    public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
         modifier(TrackErrorState(processingState: state))
     }
 }

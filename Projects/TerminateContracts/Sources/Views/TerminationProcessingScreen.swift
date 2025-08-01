@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct TerminationProcessingScreen: View {
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
@@ -14,11 +14,11 @@ struct TerminationProcessingScreen: View {
         .hStateViewButtonConfig(
             .init(
                 actionButton:
-                .init(
-                    buttonAction: {
-                        terminationNavigationVm.router.dismiss()
-                    }
-                ),
+                    .init(
+                        buttonAction: {
+                            terminationNavigationVm.router.dismiss()
+                        }
+                    ),
                 dismissButton: .init(
                     buttonTitle: L10n.generalCancelButton,
                     buttonAction: {

@@ -1,6 +1,6 @@
 import Foundation
-import hCoreUI
 import SwiftUI
+import hCoreUI
 
 @main class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?

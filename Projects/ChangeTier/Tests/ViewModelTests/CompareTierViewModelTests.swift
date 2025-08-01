@@ -1,5 +1,5 @@
-import hCore
 @preconcurrency import XCTest
+import hCore
 
 @testable import ChangeTier
 @testable import hCoreUI
@@ -48,7 +48,7 @@ final class CompareTierVireModelTests: XCTestCase {
                         tierDescription: nil
                     ),
                     addons: []
-                ),
+                )
             ],
             exposureName: "exposureName"
         ),
@@ -86,7 +86,7 @@ final class CompareTierVireModelTests: XCTestCase {
                     .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first),
                     .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first),
                 ]
-            ),
+            )
         ]
 
         let columns: [ProductVariant] = [

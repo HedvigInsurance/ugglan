@@ -1,5 +1,5 @@
-import hCore
 @preconcurrency import XCTest
+import hCore
 
 @testable import TravelCertificate
 
@@ -31,7 +31,7 @@ final class TravelCertificateTests: XCTestCase {
                 maxDuration: 3,
                 email: nil,
                 fullName: "First Last"
-            ),
+            )
         ]
 
         let mockService = MockData.createMockTravelInsuranceService(
@@ -75,7 +75,7 @@ final class TravelCertificateTests: XCTestCase {
                 date: Date(),
                 valid: true,
                 url: URL(string: "https://www.hedvig.com")
-            )!,
+            )!
         ]
         .compactMap { $0 }
 

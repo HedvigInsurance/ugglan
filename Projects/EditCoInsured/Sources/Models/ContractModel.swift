@@ -74,8 +74,8 @@ public struct ProductVariant: Codable, Hashable {
 }
 
 @MainActor
-public extension InsuredPeopleConfig {
-    init(
+extension InsuredPeopleConfig {
+    public init(
         contract: Contract,
         preSelectedCoInsuredList: [CoInsuredModel],
         fromInfoCard: Bool

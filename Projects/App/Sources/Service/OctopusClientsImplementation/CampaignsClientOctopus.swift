@@ -1,8 +1,8 @@
 import Campaign
 import Foundation
+import PresentableStore
 import hCore
 import hGraphQL
-import PresentableStore
 
 class hCampaignsClientOctopus: hCampaignClient {
     @Inject private var octopus: hOctopus
@@ -69,8 +69,8 @@ extension Discount {
     }
 }
 
-public extension OctopusGraphQL.MemberReferralInformationCodeFragment {
-    func asReedeemedCampaing() -> ReedeemedCampaingDTO {
+extension OctopusGraphQL.MemberReferralInformationCodeFragment {
+    public func asReedeemedCampaing() -> ReedeemedCampaingDTO {
         .init(
             code: code,
             description: L10n.paymentsReferralDiscount
@@ -150,8 +150,8 @@ extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
     }
 }
 
-private extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
-    var getDisplayName: String {
+extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
+    fileprivate var getDisplayName: String {
         [
             currentAgreement.productVariant.displayNameShort ?? currentAgreement.productVariant.displayName,
             exposureDisplayNameShort,

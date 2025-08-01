@@ -1,10 +1,10 @@
 import Contracts
 import EditCoInsured
 import Foundation
-import hCore
-import hCoreUI
 import PresentableStore
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
@@ -47,7 +47,7 @@ struct WhoIsTravelingScreen: View {
                                     travelCertificateNavigationVm.editCoInsuredVm.start()
                                 }
                             }
-                        ),
+                        )
                     ],
                     placement: .bottom
                 ) : nil

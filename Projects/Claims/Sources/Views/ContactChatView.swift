@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 struct ContactChatView: View {
     let store: ClaimsStore
@@ -25,8 +25,9 @@ struct ContactChatView: View {
 
             Button {
                 NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-            } label: {}
-                .buttonStyle(ChatButtonStyle())
+            } label: {
+            }
+            .buttonStyle(ChatButtonStyle())
         }
     }
 }

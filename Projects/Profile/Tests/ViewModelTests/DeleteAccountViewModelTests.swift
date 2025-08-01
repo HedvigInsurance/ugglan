@@ -1,6 +1,6 @@
-import hCore
 import PresentableStore
 @preconcurrency import XCTest
+import hCore
 
 @testable import Claims
 @testable import Contracts
@@ -58,7 +58,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     showClaimClosedFlow: true,
                     infoText: nil,
                     displayItems: []
-                ),
+                )
             ])
         )
 
@@ -101,7 +101,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     ssn: nil,
                     typeOfContract: .seApartmentBrf,
                     coInsured: []
-                ),
+                )
             ])
         )
 

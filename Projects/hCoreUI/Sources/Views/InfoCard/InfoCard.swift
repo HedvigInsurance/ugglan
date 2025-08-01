@@ -1,5 +1,5 @@
-import hCore
 import SwiftUI
+import hCore
 
 public struct InfoCard: View {
     let text: String
@@ -127,7 +127,7 @@ struct InfoCard_Previews: PreviewProvider {
                         .init(
                             buttonTitle: "Title",
                             buttonAction: {}
-                        ),
+                        )
                     ])
 
                 InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .attention)
@@ -144,7 +144,7 @@ struct InfoCard_Previews: PreviewProvider {
                         .init(
                             buttonTitle: "Title",
                             buttonAction: {}
-                        ),
+                        )
                     ])
             }
         }
@@ -179,15 +179,15 @@ private struct EnvironmentCardButtonsConfig: EnvironmentKey {
     static let defaultValue: [InfoCardButtonConfig]? = nil
 }
 
-public extension EnvironmentValues {
-    var hInfoCardButtonConfig: [InfoCardButtonConfig]? {
+extension EnvironmentValues {
+    public var hInfoCardButtonConfig: [InfoCardButtonConfig]? {
         get { self[EnvironmentCardButtonsConfig.self] }
         set { self[EnvironmentCardButtonsConfig.self] = newValue }
     }
 }
 
-public extension InfoCard {
-    func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
+extension InfoCard {
+    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
         environment(\.hInfoCardButtonConfig, configs)
     }
 }
@@ -207,15 +207,15 @@ private struct EnvironmentInfoCardCustomView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
-public extension EnvironmentValues {
-    var hInfoCardCustomView: AnyView? {
+extension EnvironmentValues {
+    public var hInfoCardCustomView: AnyView? {
         get { self[EnvironmentInfoCardCustomView.self] }
         set { self[EnvironmentInfoCardCustomView.self] = newValue }
     }
 }
 
-public extension View {
-    func hInfoCardCustomView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+extension View {
+    public func hInfoCardCustomView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hInfoCardCustomView, AnyView(content()))
     }
 }
@@ -224,15 +224,15 @@ private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
     static let defaultValue: InfoCardLayoutStyle = .defaultStyle
 }
 
-public extension EnvironmentValues {
-    var hInfoCardLayoutStyle: InfoCardLayoutStyle {
+extension EnvironmentValues {
+    public var hInfoCardLayoutStyle: InfoCardLayoutStyle {
         get { self[EnvironmentInfoCardLayoutStyle.self] }
         set { self[EnvironmentInfoCardLayoutStyle.self] = newValue }
     }
 }
 
-public extension View {
-    func hInfoCardLayoutStyle(_ style: InfoCardLayoutStyle) -> some View {
+extension View {
+    public func hInfoCardLayoutStyle(_ style: InfoCardLayoutStyle) -> some View {
         environment(\.hInfoCardLayoutStyle, style)
     }
 }

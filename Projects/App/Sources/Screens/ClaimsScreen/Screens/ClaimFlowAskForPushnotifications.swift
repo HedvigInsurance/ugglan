@@ -1,9 +1,9 @@
 import Claims
-import hCore
-import hCoreUI
 import PresentableStore
 import Profile
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct AskForPushNotifications: View {
     let onActionExecuted: () -> Void

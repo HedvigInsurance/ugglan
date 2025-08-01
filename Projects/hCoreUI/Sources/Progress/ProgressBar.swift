@@ -1,7 +1,7 @@
 import Foundation
-import hCore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
+import hCore
 
 public struct ProgressBarView: ViewModifier {
     @Binding var progress: Float?
@@ -17,7 +17,7 @@ public struct ProgressBarView: ViewModifier {
         content.introspect(.viewController, on: .iOS(.v13...)) { vc in
             let progressViewTag = "navigationProgressBar".hashValue
             if let navigationBar = (vc as? UINavigationController)?.navigationBar,
-               navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
+                navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {
                 progressView.backgroundColor = UIColor.brand(.primaryBackground(false))
                 progressView.layer.cornerRadius = 2
@@ -44,8 +44,8 @@ public struct ProgressBarView: ViewModifier {
     }
 }
 
-public extension View {
-    func resetProgressOnDismiss(to value: Float?, for progress: Binding<Float?>) -> some View {
+extension View {
+    public func resetProgressOnDismiss(to value: Float?, for progress: Binding<Float?>) -> some View {
         modifier(ResetProgressViewModifier(toValue: value, progress: progress))
     }
 }

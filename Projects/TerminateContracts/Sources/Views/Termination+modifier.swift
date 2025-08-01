@@ -1,10 +1,10 @@
 import ChangeTier
 import Foundation
-import hCoreUI
 import SwiftUI
+import hCoreUI
 
-public extension View {
-    func handleTerminateInsurance(
+extension View {
+    public func handleTerminateInsurance(
         vm: TerminateInsuranceViewModel,
         onDismiss: @escaping (DismissTerminationAction) -> Void
     ) -> some View {

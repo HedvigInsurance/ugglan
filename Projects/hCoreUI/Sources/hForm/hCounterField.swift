@@ -1,5 +1,5 @@
-import hCore
 import SwiftUI
+import hCore
 
 public struct hCounterField: View {
     private var placeholder: String

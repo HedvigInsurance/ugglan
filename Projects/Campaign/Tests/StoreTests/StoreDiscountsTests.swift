@@ -27,7 +27,7 @@ final class StoreDiscountsTests: XCTestCase {
                 validUntil: nil,
                 canBeDeleted: true,
                 discountId: "id"
-            ),
+            )
         ]
         let discountsData: PaymentDiscountsData = .init(
             discounts: discounts,
@@ -36,7 +36,7 @@ final class StoreDiscountsTests: XCTestCase {
                 discountPerMember: .init(amount: "10", currency: "SEK"),
                 discount: .init(amount: "10", currency: "SEK"),
                 referrals: [
-                    .init(id: "referralId", name: "name", code: nil, description: "desciption", status: .active),
+                    .init(id: "referralId", name: "name", code: nil, description: "desciption", status: .active)
                 ]
             )
         )

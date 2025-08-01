@@ -1,5 +1,5 @@
-import hCore
 @preconcurrency import XCTest
+import hCore
 
 @testable import ChangeTier
 @testable import hCoreUI
@@ -48,7 +48,7 @@ final class ChangeTierViewModelTests: XCTestCase {
                         tierDescription: nil
                     ),
                     addons: []
-                ),
+                )
             ],
             exposureName: "exposureName"
         ),

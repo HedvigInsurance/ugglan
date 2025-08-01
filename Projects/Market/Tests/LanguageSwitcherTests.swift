@@ -1,9 +1,9 @@
 import Flow
 import Foundation
-import hCore
 import SnapshotTesting
 import Testing
 import XCTest
+import hCore
 
 @testable import Market
 

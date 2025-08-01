@@ -1,8 +1,8 @@
 import Foundation
-import hCore
-import hCoreUI
 import PresentableStore
 import SwiftUI
+import hCore
+import hCoreUI
 
 struct ImportantMessageView: View {
     let importantMessage: ImportantMessage
@@ -42,7 +42,7 @@ struct ImportantMessageView: View {
                                 buttonAction: {
                                     store.send(.hideImportantMessage(id: importantMessage.id))
                                 }
-                            ),
+                            )
                         ]
                     )
             }

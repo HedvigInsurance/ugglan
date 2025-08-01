@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 @preconcurrency import XCTest
+import hCore
 
 @testable import TerminateContracts
 
@@ -30,7 +30,7 @@ final class TerminateContractsTests: XCTestCase {
             minDate: Date().localDateString,
             date: nil,
             extraCoverageItem: [
-                .init(displayName: "Travel plus", displayValue: "45 days"),
+                .init(displayName: "Travel plus", displayValue: "45 days")
             ],
             notification: nil
         )
@@ -57,7 +57,7 @@ final class TerminateContractsTests: XCTestCase {
         let model: TerminationFlowDeletionNextModel = .init(
             id: "id",
             extraCoverageItem: [
-                .init(displayName: "Travel plus", displayValue: "45 days"),
+                .init(displayName: "Travel plus", displayValue: "45 days")
             ]
         )
 
@@ -95,7 +95,7 @@ final class TerminateContractsTests: XCTestCase {
                             suggestion: nil,
                             feedBack: .init(id: "id", isRequired: false),
                             subOptions: nil
-                        ),
+                        )
                     ]
                 ),
                 .init(id: "idOption2", title: "option 2", suggestion: nil, feedBack: nil, subOptions: nil),

@@ -1,10 +1,10 @@
 import Apollo
 import EditCoInsured
-import hCore
-import hCoreUI
 import PresentableStore
 import SwiftUI
 import TerminateContracts
+import hCore
+import hCoreUI
 
 public enum ContractAction: ActionProtocol, Hashable {
     // Fetch contracts for terminated
@@ -20,8 +20,8 @@ public enum ContractLoadingAction: LoadingProtocol {
 }
 
 @MainActor
-public extension EditType {
-    static func getTypes(for contract: Contract) -> [EditType] {
+extension EditType {
+    public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
         if contract.supportsChangeTier {

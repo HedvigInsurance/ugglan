@@ -1,9 +1,9 @@
 import Campaign
 import Foundation
-import hCore
-import hGraphQL
 import Payment
 import PresentableStore
+import hCore
+import hGraphQL
 
 extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
     var asPayinMethodStatus: PayinMethodStatus {
@@ -156,7 +156,7 @@ extension PaymentData {
 extension PaymentData.PaymentDetails {
     init?(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
         guard let account = model.currentMember.paymentInformation.connection?.descriptor,
-              let bank = model.currentMember.paymentInformation.connection?.displayName
+            let bank = model.currentMember.paymentInformation.connection?.displayName
         else { return nil }
         self.init(
             paymentMethod: L10n.paymentsAutogiroLabel,
@@ -184,7 +184,7 @@ extension PaymentData.PaymentStatus {
             case .upcoming:
                 let previousChargesPeriods =
                     data.futureCharge?.chargeBreakdown.flatMap(\.periods)
-                        .filter(\.isPreviouslyFailedCharge) ?? []
+                    .filter(\.isPreviouslyFailedCharge) ?? []
                 let from = previousChargesPeriods.compactMap(\.fromDate.localDateToDate).min()
                 let to = previousChargesPeriods.compactMap(\.toDate.localDateToDate).max()
                 if let from, let to {
@@ -252,10 +252,10 @@ extension PaymentData.PeriodInfo {
 }
 
 @MainActor
-private extension OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period {
-    var getDescription: String? {
+extension OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period {
+    fileprivate var getDescription: String? {
         guard let fromDate = fromDate.localDateToDate,
-              let toDate = toDate.localDateToDate
+            let toDate = toDate.localDateToDate
         else {
             return nil
         }
@@ -365,8 +365,8 @@ extension PaymentData.PaymentStatus {
 }
 
 @MainActor
-public extension Discount {
-    init(
+extension Discount {
+    public init(
         with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment
     ) {
         self.init(

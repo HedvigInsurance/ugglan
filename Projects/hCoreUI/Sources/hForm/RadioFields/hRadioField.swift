@@ -1,6 +1,6 @@
 import Combine
-import hCore
 import SwiftUI
+import hCore
 
 public struct hRadioField<T>: View where T: Equatable {
     private let leftView: AnyView?
@@ -257,8 +257,8 @@ extension hFieldSize {
     }
 }
 
-public extension View {
-    var asAnyView: AnyView {
+extension View {
+    public var asAnyView: AnyView {
         AnyView(self)
     }
 }

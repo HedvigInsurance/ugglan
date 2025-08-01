@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 import SwiftUI
+import hCore
 
 public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     case newOffer
@@ -112,7 +112,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         case .travelCertificate, .insuranceEvidence:
             return 60
         case .newOfferNotification:
-            return 60 * 10 // 10 minutes
+            return 60 * 10  // 10 minutes
         default:
             return nil
         }

@@ -1,5 +1,5 @@
-import hCore
 import SwiftUI
+import hCore
 
 public struct TrackPlayerView: View {
     @ObservedObject var audioPlayer: AudioPlayer
@@ -20,7 +20,7 @@ public struct TrackPlayerView: View {
                         buttonAction: {
                             audioPlayer.togglePlaying()
                         }
-                    ),
+                    )
                 ])
         default:
             TrackPlayer(

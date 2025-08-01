@@ -1,8 +1,8 @@
 import Contracts
 import Foundation
+import PresentableStore
 import hCore
 import hCoreUI
-import PresentableStore
 
 public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable, Sendable {
     let contractId: String

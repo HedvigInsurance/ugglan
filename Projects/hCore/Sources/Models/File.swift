@@ -104,13 +104,13 @@ public enum FileSource: Codable, Equatable, Hashable, Sendable {
     }
 }
 
-public extension File {
-    init?(from url: URL) {
+extension File {
+    public init?(from url: URL) {
         guard let data = FileManager.default.contents(atPath: url.relativePath) else { return nil }
         let mimeType = MimeType.findBy(mimeType: url.mimeType)
         if mimeType == .HEIC {
             if let image = UIImage(data: data),
-               let data = image.jpegData(compressionQuality: 0.9)
+                let data = image.jpegData(compressionQuality: 0.9)
             {
                 id = UUID().uuidString
                 size = Double(data.count)
@@ -131,16 +131,16 @@ public extension File {
 }
 
 @MainActor
-public extension NSItemProvider {
-    func getData() async throws -> (data: Data, mimeType: MimeType) {
+extension NSItemProvider {
+    public func getData() async throws -> (data: Data, mimeType: MimeType) {
         try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<(Data, mimeType: MimeType), Error>) in
             Task { @MainActor in
                 if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                     self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
                         if let url, let data = FileManager.default.contents(atPath: url.relativePath),
-                           let image = UIImage(data: data),
-                           let data = image.jpegData(compressionQuality: 0.9)
+                            let image = UIImage(data: data),
+                            let data = image.jpegData(compressionQuality: 0.9)
                         {
                             inCont.resume(returning: (data, MimeType.JPEG))
                         } else if let error {
@@ -152,7 +152,7 @@ public extension NSItemProvider {
                 } else if self.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
                     self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
                         if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath),
-                           let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
+                            let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
                         {
                             inCont.resume(returning: (data, MimeType.findBy(mimeType: mimeType)))
                         } else if let error {
@@ -164,7 +164,7 @@ public extension NSItemProvider {
                 } else if self.hasItemConformingToTypeIdentifier(UTType.item.identifier) {
                     self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, error in
                         if let itemUrl, let data = FileManager.default.contents(atPath: itemUrl.relativePath),
-                           let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
+                            let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
                         {
                             inCont.resume(returning: (data, MimeType.findBy(mimeType: mimeType)))
                         } else if let error {
@@ -180,21 +180,21 @@ public extension NSItemProvider {
         }
     }
 
-    enum DataProviderError: Error {
+    public enum DataProviderError: Error {
         case invalidData
     }
 }
 
 @MainActor
-public extension NSItemProvider {
-    func getFile() async -> File? {
+extension NSItemProvider {
+    public func getFile() async -> File? {
         let name = suggestedName ?? ""
         return await withCheckedContinuation { inCont in
             if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                 self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, _ in
                     if let url, let data = FileManager.default.contents(atPath: url.relativePath),
-                       let image = UIImage(data: data),
-                       let data = image.jpegData(compressionQuality: 0.9)
+                        let image = UIImage(data: data),
+                        let data = image.jpegData(compressionQuality: 0.9)
                     {
                         let file = File(
                             id: UUID().uuidString,
@@ -213,7 +213,7 @@ public extension NSItemProvider {
             } else if self.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
                 self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, _ in
                     if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath),
-                       let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
+                        let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
                     {
                         Task {
                             let mimeType = MimeType.findBy(mimeType: mimeType)
@@ -235,7 +235,7 @@ public extension NSItemProvider {
             } else if self.hasItemConformingToTypeIdentifier(UTType.item.identifier) {
                 self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, _ in
                     if let itemUrl, let data = FileManager.default.contents(atPath: itemUrl.relativePath),
-                       let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
+                        let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
                     {
                         Task {
                             let mimeType = MimeType.findBy(mimeType: mimeType)

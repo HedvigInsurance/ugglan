@@ -1,9 +1,9 @@
 import AVFAudio
 import Combine
 import Foundation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 public struct SubmitClaimAudioRecordingScreen: View {
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
@@ -354,7 +354,7 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
         navigation.audioRecordingModel = .init(
             id: "id",
             questions: [
-                "QUESTION 1 very long how much time it should take to complete this task",
+                "QUESTION 1 very long how much time it should take to complete this task"
             ],
             textQuestions: [],
             inputTextContent: nil,

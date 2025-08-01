@@ -1,5 +1,5 @@
-import hCore
 @preconcurrency import XCTest
+import hCore
 
 @testable import MoveFlow
 

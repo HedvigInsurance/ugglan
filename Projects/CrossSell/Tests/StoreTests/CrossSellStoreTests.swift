@@ -83,8 +83,8 @@ final class CrossSellStoreTests: XCTestCase {
 }
 
 @MainActor
-private extension CrossSell {
-    static let getDefault: [CrossSell] = [
+extension CrossSell {
+    fileprivate static let getDefault: [CrossSell] = [
         .init(
             id: "1",
             title: "car",
@@ -103,8 +103,8 @@ private extension CrossSell {
 }
 
 @MainActor
-private extension AddonBannerModel {
-    static let getDefault = AddonBannerModel(
+extension AddonBannerModel {
+    fileprivate static let getDefault = AddonBannerModel(
         contractIds: ["contractId"],
         titleDisplayName: "display name",
         descriptionDisplayName: "description",
@@ -113,8 +113,8 @@ private extension AddonBannerModel {
 }
 
 @MainActor
-public extension XCTestCase {
-    func waitUntil(description: String, closure: @escaping () -> Bool) async {
+extension XCTestCase {
+    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
         let exc = expectation(description: description)
         if closure() {
             exc.fulfill()

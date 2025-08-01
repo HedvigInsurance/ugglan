@@ -1,7 +1,7 @@
 import Combine
 import Foundation
-import hCore
 import SwiftUI
+import hCore
 
 @MainActor
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
@@ -53,8 +53,8 @@ func setWantsBottomAttachedInCompactHeight(on presentationController: UIPresenta
     }
 }
 
-private extension Notification {
-    var endFrame: CGRect? {
+extension Notification {
+    fileprivate var endFrame: CGRect? {
         (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
     }
 }
@@ -126,7 +126,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
                 presentationController.detents = [
                     .custom(resolver: { _ in
                         0
-                    }),
+                    })
                 ]
             }
         }
@@ -138,7 +138,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
                     { _, _ in
                         0
                     }
-                ),
+                )
             ],
             on: presentationController,
             viewController: viewController,
@@ -146,7 +146,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
         )
 
         Task { @MainActor [weak presentationController] in
-            for _ in 0 ... 2 {
+            for _ in 0...2 {
                 try? await Task.sleep(nanoseconds: 50_000_000)
                 if let presentationController {
                     Detent.set(
@@ -302,7 +302,7 @@ final class CenteredModalPresentationController: UIPresentationController {
 extension CenteredModalPresentationController {
     @objc private func panGestureHandler(gesture: UIPanGestureRecognizer) {
         guard let view = gesture.view, let superView = view.superview,
-              let presented = presentedView, let container = containerView
+            let presented = presentedView, let container = containerView
         else { return }
 
         let location = gesture.translation(in: superView)
@@ -408,7 +408,7 @@ extension UIViewController {
         }
         set {
             guard let presentationController = navigationController?.presentationController,
-                  let newValue = newValue, let index = appliedDetents.firstIndex(of: newValue)
+                let newValue = newValue, let index = appliedDetents.firstIndex(of: newValue)
             else { return }
             weak var presentationControllerWeak = presentationController
             func apply() {
@@ -494,17 +494,17 @@ public enum Detent: Equatable {
                 viewController.navigationController ?? findNavigationController(from: viewController)
             let transitioningDelegate =
                 navigationController?.transitioningDelegate
-                    as? DetentTransitioningDelegate
+                as? DetentTransitioningDelegate
             let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
             let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
 
             let hasLargeTitle =
                 (navigationController?.navigationBar.prefersLargeTitles ?? false)
-                    && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
+                && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
             let hasNavigationBar =
                 navigationController?.navigationBar != nil
-                    && (navigationController?.isNavigationBarHidden ?? true) == false
+                && (navigationController?.isNavigationBarHidden ?? true) == false
 
             let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
 
@@ -519,9 +519,9 @@ public enum Detent: Equatable {
                 viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
             var totalHeight: CGFloat =
                 scrollView.contentSize.height
-                    + (hasNavigationBar ? navigationBarHeight : 0)
-                    + additionalNavigationHeight
-                    + additionalViewHeight
+                + (hasNavigationBar ? navigationBarHeight : 0)
+                + additionalNavigationHeight
+                + additionalViewHeight
             if keyboardHeight > 0 {
                 let keyWindow = UIApplication.shared.connectedScenes
                     .filter { $0.activationState == .foregroundActive }
@@ -573,23 +573,23 @@ public enum Detent: Equatable {
                 weakViewController?.appliedDetents = detents
                 weakViewController?.sheetPresentationController?.detents =
                     weakViewController?.appliedDetents
-                        .map {
-                            switch $0 {
-                            case .large:
-                                return .large()
-                            case .medium:
-                                return .medium()
-                            case let .custom(name, block):
-                                return UISheetPresentationController.Detent.custom(
-                                    identifier: UISheetPresentationController.Detent.Identifier(name)
-                                ) { _ in
-                                    if let weakViewController {
-                                        return block(weakViewController, weakViewController.view)
-                                    }
-                                    return 0
+                    .map {
+                        switch $0 {
+                        case .large:
+                            return .large()
+                        case .medium:
+                            return .medium()
+                        case let .custom(name, block):
+                            return UISheetPresentationController.Detent.custom(
+                                identifier: UISheetPresentationController.Detent.Identifier(name)
+                            ) { _ in
+                                if let weakViewController {
+                                    return block(weakViewController, weakViewController.view)
                                 }
+                                return 0
                             }
-                        } ?? [.medium()]
+                        }
+                    } ?? [.medium()]
                 if let lastDetentIndex = lastDetentIndex {
                     setDetentIndex(on: presentationController, index: lastDetentIndex)
                 }
@@ -669,17 +669,17 @@ extension UIViewController {
             viewController.navigationController ?? findNavigationController(from: viewController)
         let transitioningDelegate =
             navigationController?.transitioningDelegate
-                as? DetentTransitioningDelegate
+            as? DetentTransitioningDelegate
         let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
         let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
 
         let hasLargeTitle =
             (navigationController?.navigationBar.prefersLargeTitles ?? false)
-                && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
+            && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
         let hasNavigationBar =
             navigationController?.navigationBar != nil
-                && (navigationController?.isNavigationBarHidden ?? true) == false
+            && (navigationController?.isNavigationBarHidden ?? true) == false
 
         let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
 
@@ -694,9 +694,9 @@ extension UIViewController {
             viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
         var totalHeight: CGFloat =
             scrollView.contentSize.height
-                + (hasNavigationBar ? navigationBarHeight : 0)
-                + additionalNavigationHeight
-                + additionalViewHeight
+            + (hasNavigationBar ? navigationBarHeight : 0)
+            + additionalNavigationHeight
+            + additionalViewHeight
         if keyboardHeight > 0 {
             let keyWindow = UIApplication.shared.connectedScenes
                 .filter { $0.activationState == .foregroundActive }
@@ -852,9 +852,9 @@ extension CALayer: ParentChildRelational {
     public var children: [CALayer] { sublayers ?? [] }
 }
 
-public extension ParentChildRelational {
+extension ParentChildRelational {
     /// Returns all descendant members.
-    var allDescendants: AnySequence<Member> {
+    public var allDescendants: AnySequence<Member> {
         AnySequence { () -> AnyIterator<Member> in
             var children = self.children.makeIterator()
             var childDesendants: AnyIterator<Member>?
@@ -872,14 +872,14 @@ public extension ParentChildRelational {
     }
 
     /// Returns all descendant members of type `type`.
-    func allDescendants<T>(ofType _: T.Type) -> AnySequence<T> {
+    public func allDescendants<T>(ofType _: T.Type) -> AnySequence<T> {
         AnySequence(allDescendants.lazy.compactMap { $0 as? T })
     }
 
     /// Returns all descendant members of class `class`.
-    func allDescendants(ofClass class: AnyClass) -> AnySequence<Member> {
+    public func allDescendants(ofClass class: AnyClass) -> AnySequence<Member> {
         let className = "\(`class`)"
-        let classRange = className.startIndex ..< className.endIndex
+        let classRange = className.startIndex..<className.endIndex
         return AnySequence(
             allDescendants.lazy.filter {
                 let name = "\(type(of: $0))"
@@ -900,12 +900,12 @@ public extension ParentChildRelational {
     }
 
     /// Returns all descendant members of class named `name`.
-    func allDescendants(ofClassNamed name: String) -> AnySequence<Member> {
+    public func allDescendants(ofClassNamed name: String) -> AnySequence<Member> {
         allDescendants(ofClass: NSClassFromString(name)!)
     }
 
     /// Returns all ancestors sorted from the closest to the farthest.
-    var allAncestors: AnySequence<Member> {
+    public var allAncestors: AnySequence<Member> {
         AnySequence { () -> AnyIterator<Member> in
             var parent = self.parent
             return AnyIterator {
@@ -916,7 +916,7 @@ public extension ParentChildRelational {
     }
 
     /// Returns the first ancestor of type `type` if any.
-    func firstAncestor<T>(ofType type: T.Type) -> T? {
+    public func firstAncestor<T>(ofType type: T.Type) -> T? {
         guard let parent = parent else { return nil }
         if let matching = parent as? T {
             return matching
@@ -925,17 +925,17 @@ public extension ParentChildRelational {
     }
 }
 
-public extension ParentChildRelational where Member == Self {
+extension ParentChildRelational where Member == Self {
     /// Returns the root member of `self`.
-    var rootParent: Member {
+    public var rootParent: Member {
         parent?.rootParent ?? self
     }
 }
 
-public extension ParentChildRelational where Member: Equatable {
+extension ParentChildRelational where Member: Equatable {
     /// Returns all ancestors that are decendant to `member`, sorted from the closest to the farthest.
     /// - Note: If `member` is not found, nil is returned.
-    func allAncestors(descendantsOf member: Member) -> AnySequence<Member>? {
+    public func allAncestors(descendantsOf member: Member) -> AnySequence<Member>? {
         var found = false
         let result = allAncestors.prefix {
             found = $0 == member
@@ -945,20 +945,20 @@ public extension ParentChildRelational where Member: Equatable {
     }
 
     /// Returns the closest common ancestor of `self` and `other` if any.
-    func closestCommonAncestor(with other: Member) -> Member? {
+    public func closestCommonAncestor(with other: Member) -> Member? {
         let common = allAncestors.filter(other.allAncestors.contains)
         return common.first
     }
 }
 
-public extension UIView {
+extension UIView {
     /// Returns the frame of `self` in the `rootView`s coordinate system.
-    var absoluteFrame: CGRect {
+    public var absoluteFrame: CGRect {
         convert(bounds, to: rootView)
     }
 
     /// Returns the root view of `self`.
-    var rootView: UIView {
+    public var rootView: UIView {
         window ?? superview?.rootView ?? self
     }
 }

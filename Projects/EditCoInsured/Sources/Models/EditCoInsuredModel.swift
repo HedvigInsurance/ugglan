@@ -1,6 +1,6 @@
 import Foundation
-import hCore
 import SwiftUI
+import hCore
 
 public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
     public let SSN: String?

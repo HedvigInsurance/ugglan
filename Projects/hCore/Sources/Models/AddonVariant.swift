@@ -22,8 +22,8 @@ public struct AddonVariant: Codable, Equatable, Hashable, Sendable {
     }
 }
 
-public extension AddonVariant {
-    init(
+extension AddonVariant {
+    public init(
         fragment: OctopusGraphQL.AddonVariantFragment?
     ) {
         self.init(

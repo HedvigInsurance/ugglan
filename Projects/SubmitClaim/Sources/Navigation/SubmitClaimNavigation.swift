@@ -1,8 +1,8 @@
 import Claims
 import Combine
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 @MainActor
 public class SubmitClaimNavigationViewModel: ObservableObject {
@@ -74,8 +74,8 @@ public class SubmitClaimNavigationViewModel: ObservableObject {
         }()
         let audioPath =
             claimsAudioRecordingRootPath
-                .appendingPathComponent(nameOfFile)
-                .appendingPathExtension(AudioRecorder.audioFileExtension)
+            .appendingPathComponent(nameOfFile)
+            .appendingPathExtension(AudioRecorder.audioFileExtension)
         return audioPath
     }
 
@@ -83,7 +83,7 @@ public class SubmitClaimNavigationViewModel: ObservableObject {
         let tempDirectory = FileManager.default.temporaryDirectory
         let claimsAudioRecoringPath =
             tempDirectory
-                .appendingPathComponent("claims")
+            .appendingPathComponent("claims")
         return claimsAudioRecoringPath
     }
 

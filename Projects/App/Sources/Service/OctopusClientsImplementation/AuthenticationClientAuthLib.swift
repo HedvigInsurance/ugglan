@@ -2,8 +2,8 @@ import Apollo
 import Authentication
 import Environment
 import Foundation
-import hCore
 @preconcurrency import HedvigShared
+import hCore
 import hGraphQL
 
 final class AuthenticationClientAuthLib: AuthenticationClient {
@@ -35,10 +35,10 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                 try await Task.sleep(nanoseconds: 5 * 100_000_000)
                 let data =
                     try await networkAuthRepository
-                        .submitOtp(
-                            verifyUrl: verifyUrl.absoluteString,
-                            otp: otpState.code
-                        )
+                    .submitOtp(
+                        verifyUrl: verifyUrl.absoluteString,
+                        otp: otpState.code
+                    )
                 if let data = data as? SubmitOtpResultSuccess {
                     return data.loginAuthorizationCode.code
                 } else {
@@ -58,16 +58,16 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         do {
             let data =
                 try await networkAuthRepository
-                    .startLoginAttempt(
-                        loginMethod: .otp,
-                        market: .se,
-                        personalNumber: personalNumber,
-                        email: email
-                    )
+                .startLoginAttempt(
+                    loginMethod: .otp,
+                    market: .se,
+                    personalNumber: personalNumber,
+                    email: email
+                )
             try await Task.sleep(nanoseconds: 5 * 100_000_000)
             if let otpProperties = data as? AuthAttemptResultOtpProperties,
-               let verifyUrl = URL(string: otpProperties.verifyUrl),
-               let resendUrl = URL(string: otpProperties.resendUrl)
+                let verifyUrl = URL(string: otpProperties.verifyUrl),
+                let resendUrl = URL(string: otpProperties.resendUrl)
             {
                 return (verifyUrl, resendUrl, otpProperties.maskedEmail)
             } else {
@@ -250,8 +250,8 @@ enum AuthenticationError: Error {
     case logoutFailure
 }
 
-private extension Environment {
-    var authEnvironment: AuthEnvironment {
+extension Environment {
+    fileprivate var authEnvironment: AuthEnvironment {
         switch self {
         case .staging: return .staging
         case .production: return .production

@@ -1,12 +1,12 @@
 import Apollo
 import Combine
 import Foundation
-import hCore
-import hCoreUI
 import PresentableStore
 import SafariServices
 import SwiftUI
 import WebKit
+import hCore
+import hCoreUI
 
 private class DirectDebitWebview: UIView {
     var paymentService = hPaymentService()

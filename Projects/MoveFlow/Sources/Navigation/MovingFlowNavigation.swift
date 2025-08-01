@@ -1,8 +1,8 @@
 import ChangeTier
 import Combine
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 @MainActor
 public class MovingFlowNavigationViewModel: ObservableObject {
@@ -100,8 +100,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
             Task {
                 guard let self = self,
-                      let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel,
-                      let vm
+                    let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel,
+                    let vm
                 else { return }
                 await movingFlowConfirmViewModel.confirmMoveIntent(
                     intentId: self.moveConfigurationModel?.id ?? "",

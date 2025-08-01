@@ -105,8 +105,8 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
 }
 
 @MainActor
-public extension Contract {
-    init(
+extension Contract {
+    public init(
         contract: OctopusGraphQL.ContractFragment,
         firstName: String,
         lastName: String,
@@ -141,8 +141,8 @@ extension Agreement {
     }
 }
 
-public extension EditCoInsured.ProductVariant {
-    init(
+extension EditCoInsured.ProductVariant {
+    public init(
         data: OctopusGraphQL.ProductVariantFragment
     ) {
         self.init(displayName: data.displayName)
@@ -150,8 +150,8 @@ public extension EditCoInsured.ProductVariant {
 }
 
 @MainActor
-public extension CoInsuredModel {
-    init(
+extension CoInsuredModel {
+    public init(
         data: OctopusGraphQL.CoInsuredFragment
     ) {
         self.init(

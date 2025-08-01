@@ -1,7 +1,7 @@
 import Combine
 
-public extension Task {
-    func eraseToAnyCancellable() -> AnyCancellable {
+extension Task {
+    public func eraseToAnyCancellable() -> AnyCancellable {
         AnyCancellable(cancel)
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
@@ -62,7 +62,7 @@ public class ChangeTierViewModel: ObservableObject {
         }
         displayName =
             selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
-                .displayName ?? displayName
+            .displayName ?? displayName
         selectedTier = newSelectedTier
         newPremium = selectedQuote?.basePremium
     }

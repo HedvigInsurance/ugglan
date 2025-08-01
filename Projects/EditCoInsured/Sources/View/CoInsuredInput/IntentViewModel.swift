@@ -1,7 +1,7 @@
 import Foundation
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 @MainActor
 public class IntentViewModel: ObservableObject {
@@ -102,7 +102,7 @@ public class IntentViewModel: ObservableObject {
 
     private func invalidateDetents() {
         if #available(iOS 16.0, *) {
-            for i in 1 ... 4 {
+            for i in 1...4 {
                 Task {
                     try await Task.sleep(nanoseconds: UInt64(i * 100_000_000))
                     UIApplication.shared.getTopViewController()?.sheetPresentationController?

@@ -1,6 +1,6 @@
+import SwiftUI
 import hCore
 import hCoreUI
-import SwiftUI
 
 public struct SubmitClaimDeflectScreen: View {
     private let model: FlowClaimDeflectStepModel
@@ -33,7 +33,7 @@ public struct SubmitClaimDeflectScreen: View {
                     if let infoViewTitle = model.infoViewTitle, let infoViewText = model.infoViewText {
                         let title =
                             model.partners.count == 1
-                                ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
+                            ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
                         hSection {
                             HStack {
                                 hText(title)
@@ -113,7 +113,7 @@ public struct SubmitClaimDeflectScreen: View {
                 info: nil,
                 buttonText: nil,
                 preferredImageHeight: nil
-            ),
+            )
         ]
     )
     return SubmitClaimDeflectScreen(model: model, openChat: {})

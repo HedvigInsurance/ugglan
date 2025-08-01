@@ -1,6 +1,6 @@
+import Profile
 import hCore
 import hGraphQL
-import Profile
 
 class ProfileClientOctopus: ProfileClient {
     @Inject var octopus: hOctopus
@@ -77,7 +77,7 @@ class ProfileClientOctopus: ProfileClient {
         }
 
         if let email = data.memberUpdateContactInfo.member?.email,
-           let phone = data.memberUpdateContactInfo.member?.phoneNumber
+            let phone = data.memberUpdateContactInfo.member?.phoneNumber
         {
             return (email, phone)
         }
@@ -93,7 +93,7 @@ class ProfileClientOctopus: ProfileClient {
             throw ChangeEuroBonusError.error(message: graphQLError)
         }
         guard let dataFragment = data.memberUpdateEurobonusNumber.member?.fragments.partnerDataFragment,
-              let partnerData = PartnerData(with: dataFragment)
+            let partnerData = PartnerData(with: dataFragment)
         else {
             throw ChangeEuroBonusError.error(message: L10n.General.errorBody)
         }
@@ -111,8 +111,8 @@ class ProfileClientOctopus: ProfileClient {
     }
 }
 
-private extension PartnerData {
-    init?(with data: OctopusGraphQL.PartnerDataFragment) {
+extension PartnerData {
+    fileprivate init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.init(sas: .init(eligible: sasData.eligible, eurobonusNumber: sasData.eurobonusNumber))
     }
