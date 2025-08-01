@@ -13,14 +13,12 @@ struct SelectContractView: View {
     ) {
         self.claimsNavigationVm = claimsNavigationVm
         self.vm = vm
-        self.itemPickerConfig = .init(
-            items: {
-                return claimsNavigationVm.contractSelectModel?.availableContractOptions
-                    .compactMap({
-                        (object: $0, displayName: .init(title: $0.displayTitle, subTitle: $0.displaySubTitle))
-                    })
-                    ?? []
-            }(),
+        itemPickerConfig = .init(
+            items: claimsNavigationVm.contractSelectModel?.availableContractOptions
+                .compactMap {
+                    (object: $0, displayName: .init(title: $0.displayTitle, subTitle: $0.displaySubTitle))
+                }
+                ?? [],
             preSelectedItems: {
                 if let preselected = claimsNavigationVm.contractSelectModel?.availableContractOptions
                     .first(where: { $0.id == claimsNavigationVm.contractSelectModel?.selectedContractId })
@@ -49,6 +47,7 @@ struct SelectContractView: View {
             buttonText: L10n.generalContinueButton
         )
     }
+
     var body: some View {
         ContractSelectView(
             itemPickerConfig: itemPickerConfig,
@@ -85,7 +84,6 @@ public class SelectContractViewModel: ObservableObject {
             withAnimation {
                 state = .error(errorMessage: exception.localizedDescription)
             }
-
         }
         return nil
     }

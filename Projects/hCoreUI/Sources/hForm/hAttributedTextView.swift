@@ -11,6 +11,7 @@ public struct hAttributedTextView: View {
         self.text = text
         self.useSecondaryColor = useSecondaryColor ?? false
     }
+
     public var body: some View {
         GeometryReader { geo in
             Color.clear.background(
@@ -36,9 +37,10 @@ private struct AttributedTextViewRepresentable: UIViewRepresentable {
         self.fixedWidth = fixedWidth
         self.attributedString = attributedString
         self.useSecondaryColor = useSecondaryColor
-        self._height = height
+        _height = height
     }
-    func makeUIView(context: Context) -> some UIView {
+
+    func makeUIView(context _: Context) -> some UIView {
         AttributedUITextView(
             fixedWidth: fixedWidth,
             attributedString: attributedString,
@@ -47,11 +49,10 @@ private struct AttributedTextViewRepresentable: UIViewRepresentable {
         )
     }
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {
+    func updateUIView(_ uiView: UIViewType, context _: Context) {
         if let uiView = uiView as? AttributedUITextView {
             uiView.updateHeight()
         }
-
     }
 }
 
@@ -60,16 +61,17 @@ private class AttributedUITextView: UITextView, UITextViewDelegate {
     @Binding private var height: CGFloat
 
     init(fixedWidth: CGFloat, attributedString: NSAttributedString, height: Binding<CGFloat>, useSecondaryColor: Bool) {
-        self._height = height
+        _height = height
         self.fixedWidth = fixedWidth
         super.init(frame: .zero, textContainer: nil)
-        self.attributedText = attributedString
-        self.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
-        self.backgroundColor = .clear
-        self.textColor = getTextColor(useSecondaryColor: useSecondaryColor)
-        self.isUserInteractionEnabled = false
+        attributedText = attributedString
+        textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
+        backgroundColor = .clear
+        textColor = getTextColor(useSecondaryColor: useSecondaryColor)
+        isUserInteractionEnabled = false
         updateHeight()
     }
+
     func updateHeight() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -79,7 +81,8 @@ private class AttributedUITextView: UITextView, UITextViewDelegate {
         }
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

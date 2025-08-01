@@ -17,7 +17,7 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     }
 
     public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 }
 
@@ -47,7 +47,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
 
     let router = Router()
 
-    public init(
+    init(
         input: ChangeAddonInput
     ) {
         self.input = input
@@ -71,7 +71,7 @@ public struct ChangeAddonNavigation: View {
     public init(
         input: ChangeAddonInput
     ) {
-        self.changeAddonNavigationVm = .init(input: input)
+        changeAddonNavigationVm = .init(input: input)
     }
 
     public var body: some View {

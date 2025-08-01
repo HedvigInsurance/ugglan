@@ -146,7 +146,7 @@ public class SubmitClaimSingleItemViewModel: ObservableObject {
 
 enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
     static var last: ClaimsFlowSingleItemFieldType {
-        return ClaimsFlowSingleItemFieldType.purchasePrice
+        ClaimsFlowSingleItemFieldType.purchasePrice
     }
 
     var next: ClaimsFlowSingleItemFieldType? {

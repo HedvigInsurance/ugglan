@@ -11,7 +11,7 @@ struct HeaderView: View {
         foreverNavigationVm: ForeverNavigationViewModel,
         didPressInfo: @escaping () -> Void
     ) {
-        self._vm = StateObject(wrappedValue: .init(foreverData: foreverNavigationVm.foreverData))
+        _vm = StateObject(wrappedValue: .init(foreverData: foreverNavigationVm.foreverData))
         self.didPressInfo = didPressInfo
     }
 
@@ -69,7 +69,7 @@ class HeaderViewModel: ObservableObject {
     let foreverData: ForeverData?
     @Published var showMonthlyDiscount: Bool = false
 
-    public init(
+    init(
         foreverData: ForeverData?
     ) {
         self.foreverData = foreverData
@@ -83,13 +83,13 @@ class HeaderViewModel: ObservableObject {
             foreverData?.monthlyDiscountPerReferral != nil,
             foreverData?.monthlyDiscount != nil
         {
-            self.showPieChart = true
+            showPieChart = true
         }
     }
 
     private func setShowMonthlyDiscount() {
         if let monthlyDiscount = foreverData?.monthlyDiscount, monthlyDiscount.value == 0 {
-            self.showMonthlyDiscount = true
+            showMonthlyDiscount = true
         }
     }
 }

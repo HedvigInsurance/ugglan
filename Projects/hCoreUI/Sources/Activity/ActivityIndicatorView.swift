@@ -10,7 +10,7 @@ struct LoadingViewWithContent: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
             BackgroundView().edgesIgnoringSafeArea(.all)
-            if isLoading && showLoading {
+            if isLoading, showLoading {
                 loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             } else if let error = error {
                 GenericErrorView(
@@ -42,7 +42,7 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
     let router: Router?
     let errorTitle: String?
 
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         ZStack {
             BackgroundView().edgesIgnoringSafeArea(.all)
             switch state {
@@ -50,7 +50,7 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
                 loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             case .success:
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
-            case .error(let errorMessage):
+            case let .error(errorMessage):
                 if let errorTrackingName {
                     GenericErrorView(
                         title: errorTitle,
@@ -67,7 +67,6 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
                     )
                     .transition(.opacity.animation(.easeInOut(duration: 0.2)))
                 }
-
             }
         }
     }
@@ -85,17 +84,17 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
 
 struct GenericErrorTrackName: TrackingViewNameProtocol {
     var nameForTracking: String {
-        return ""
+        ""
     }
 }
 
 struct LoadingViewWithButtonLoadingForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         switch state {
         case .success, .loading:
             content.transition(.opacity.animation(.easeInOut(duration: 0.2))).hButtonIsLoading(state == .loading)
-        case .error(let errorMessage):
+        case let .error(errorMessage):
             GenericErrorView(
                 description: errorMessage,
                 formPosition: nil

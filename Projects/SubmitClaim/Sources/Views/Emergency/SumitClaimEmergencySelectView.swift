@@ -13,6 +13,7 @@ struct SumitClaimEmergencySelectView: View {
     ) {
         self.title = title
     }
+
     var body: some View {
         hForm {}
             .hFormTitle(
@@ -113,7 +114,6 @@ public class SumitClaimEmergencySelectViewModel: ObservableObject {
 
 struct SumitClaimEmergencySelectScreen_Previews: PreviewProvider {
     static var previews: some View {
-
         Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
 
         return SumitClaimEmergencySelectView(title: L10n.submitClaimEmergencyTitle)

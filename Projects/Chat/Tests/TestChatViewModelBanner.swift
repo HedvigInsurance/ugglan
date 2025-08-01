@@ -4,7 +4,6 @@
 
 @MainActor
 final class TestChatViewModelBanner: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -23,7 +22,7 @@ final class TestChatViewModelBanner: XCTestCase {
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.banner == banner)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testBannerFailure() async {
@@ -34,7 +33,7 @@ final class TestChatViewModelBanner: XCTestCase {
         let chatInitialBanner = model.messageVm.conversationVm.banner
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.banner == chatInitialBanner)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testFetchBannerAfterFetchingPreviousMessagesSuccess() async {
@@ -49,7 +48,6 @@ final class TestChatViewModelBanner: XCTestCase {
         assert(model.messageVm.conversationVm.banner == banner)
         await model.messageVm.fetchPreviousMessages(retry: false)
         assert(model.messageVm.conversationVm.banner == updatedBanner)
-        self.sut = mockService
+        sut = mockService
     }
-
 }

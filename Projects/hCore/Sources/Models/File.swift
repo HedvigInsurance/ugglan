@@ -40,12 +40,12 @@ public struct File: Codable, Equatable, Identifiable, Hashable, Sendable {
     }
 
     public func getAsData() async throws -> File? {
-        switch self.source {
+        switch source {
         case .data:
             return self
         case .url:
             return nil
-        case .localFile(let results):
+        case let .localFile(results):
             if let results, let data = try? await results.itemProvider.getData().data {
                 return .init(id: id, size: size, mimeType: mimeType, name: name, source: .data(data: data))
             }
@@ -73,9 +73,10 @@ public enum FileSource: Codable, Equatable, Hashable, Sendable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: Key.self)
         switch self {
-        case .data(let data):
+        case let .data(data):
             try container.encode(0, forKey: .rawValue)
             try container.encode(data, forKey: .data)
+
         case let .url(url, mimeType):
             try container.encode(1, forKey: .rawValue)
             try container.encode(url, forKey: .url)
@@ -100,10 +101,9 @@ public enum FileSource: Codable, Equatable, Hashable, Sendable {
         default:
             throw CodingError.unknownValue
         }
-
     }
-
 }
+
 extension File {
     public init?(from url: URL) {
         guard let data = FileManager.default.contents(atPath: url.relativePath) else { return nil }
@@ -112,20 +112,20 @@ extension File {
             if let image = UIImage(data: data),
                 let data = image.jpegData(compressionQuality: 0.9)
             {
-                self.id = UUID().uuidString
-                self.size = Double(data.count)
+                id = UUID().uuidString
+                size = Double(data.count)
                 self.mimeType = .JPEG
-                self.name = url.deletingPathExtension().appendingPathExtension(for: UTType.jpeg).lastPathComponent
-                self.source = .data(data: data)
+                name = url.deletingPathExtension().appendingPathExtension(for: UTType.jpeg).lastPathComponent
+                source = .data(data: data)
             } else {
                 return nil
             }
         } else {
-            self.id = UUID().uuidString
-            self.size = Double(data.count)
+            id = UUID().uuidString
+            size = Double(data.count)
             self.mimeType = mimeType
-            self.name = url.lastPathComponent
-            self.source = .data(data: data)
+            name = url.lastPathComponent
+            source = .data(data: data)
         }
     }
 }
@@ -133,8 +133,8 @@ extension File {
 @MainActor
 extension NSItemProvider {
     public func getData() async throws -> (data: Data, mimeType: MimeType) {
-        return try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<(Data, mimeType: MimeType), Error>) -> Void in
+        try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<(Data, mimeType: MimeType), Error>) in
             Task { @MainActor in
                 if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                     self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
@@ -188,10 +188,10 @@ extension NSItemProvider {
 @MainActor
 extension NSItemProvider {
     public func getFile() async -> File? {
-        let name = self.suggestedName ?? ""
+        let name = suggestedName ?? ""
         return await withCheckedContinuation { inCont in
             if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-                self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
+                self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, _ in
                     if let url, let data = FileManager.default.contents(atPath: url.relativePath),
                         let image = UIImage(data: data),
                         let data = image.jpegData(compressionQuality: 0.9)
@@ -211,7 +211,7 @@ extension NSItemProvider {
                     }
                 }
             } else if self.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-                self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
+                self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, _ in
                     if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath),
                         let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
                     {
@@ -233,7 +233,7 @@ extension NSItemProvider {
                     }
                 }
             } else if self.hasItemConformingToTypeIdentifier(UTType.item.identifier) {
-                self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, error in
+                self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, _ in
                     if let itemUrl, let data = FileManager.default.contents(atPath: itemUrl.relativePath),
                         let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
                     {
@@ -261,6 +261,4 @@ extension NSItemProvider {
     }
 }
 
-extension PHPickerResult: @unchecked @retroactive Sendable {
-
-}
+extension PHPickerResult: @unchecked @retroactive Sendable {}

@@ -10,14 +10,13 @@ public struct CrossSellState: StateProtocol {
 
     public var hasNewOffer = false
 
-    internal var lastSeenRecommendedProductId: String? {
-        return UserDefaults.standard.string(forKey: CrossSellState.lastSeenRecommendedkey)
+    var lastSeenRecommendedProductId: String? {
+        UserDefaults.standard.string(forKey: CrossSellState.lastSeenRecommendedkey)
     }
 
-    internal func setLastSeenRecommendedProductId(_ id: String?) {
+    func setLastSeenRecommendedProductId(_ id: String?) {
         UserDefaults.standard.set(id, forKey: CrossSellState.lastSeenRecommendedkey)
     }
 
     private static let lastSeenRecommendedkey = "lastSeenRecommendedProductId"
-
 }

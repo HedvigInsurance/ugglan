@@ -5,7 +5,7 @@ import hCoreUI
 struct CrosssSellStackComponent: View {
     let crossSells: [CrossSell]
     let withHeader: Bool
-    public var body: some View {
+    var body: some View {
         if withHeader {
             hSection {
                 VStack(spacing: .padding16) {

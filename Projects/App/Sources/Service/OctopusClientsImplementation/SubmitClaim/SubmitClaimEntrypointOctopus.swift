@@ -16,6 +16,7 @@ class FetchEntrypointsClientOctopus: hFetchEntrypointsClient {
         return entrypointModel
     }
 }
+
 extension ClaimEntryPointGroupResponseModel {
     fileprivate init(
         with data: OctopusGraphQL.EntrypointGroupFragment
@@ -23,7 +24,7 @@ extension ClaimEntryPointGroupResponseModel {
         self.init(
             id: data.id,
             displayName: data.displayName,
-            entrypoints: data.entrypoints.map({ ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) })
+            entrypoints: data.entrypoints.map { ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) }
         )
     }
 }
@@ -37,7 +38,7 @@ extension ClaimEntryPointResponseModel {
             id: data.id,
             displayName: data.displayName,
             options: data.options?
-                .map({ ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) }) ?? []
+                .map { ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) } ?? []
         )
     }
 }

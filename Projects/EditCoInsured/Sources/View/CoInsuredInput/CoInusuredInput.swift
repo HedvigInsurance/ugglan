@@ -12,7 +12,7 @@ struct CoInusuredInputScreen: View {
     @EnvironmentObject private var router: Router
     @ObservedObject var intentViewModel: IntentViewModel
 
-    public init(
+    init(
         vm: CoInusuredInputViewModel,
         title: String,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -123,7 +123,7 @@ struct CoInusuredInputScreen: View {
 
     @ViewBuilder
     var deleteCoInsuredFields: some View {
-        if vm.personalData.firstName != "" && vm.personalData.lastName != "" && (vm.SSN != "" || vm.birthday != "") {
+        if vm.personalData.firstName != "", vm.personalData.lastName != "", vm.SSN != "" || vm.birthday != "" {
             Group {
                 hSection {
                     hFloatingField(
@@ -190,7 +190,7 @@ struct CoInusuredInputScreen: View {
         }
         .disabled(vm.isLoading)
         .sectionContainerStyle(.transparent)
-        .onChange(of: vm.SSN) { newValue in
+        .onChange(of: vm.SSN) { _ in
             vm.nameFetchedFromSSN = false
         }
     }
@@ -250,7 +250,7 @@ struct CoInusuredInput_Previews: PreviewProvider {
 
 enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     static var last: CoInsuredInputType {
-        return CoInsuredInputType.lastName
+        CoInsuredInputType.lastName
     }
 
     var next: CoInsuredInputType? {
@@ -301,12 +301,12 @@ public class CoInusuredInputViewModel: ObservableObject {
         contractId: String
     ) {
         self.coInsuredModel = coInsuredModel
-        self.personalData = PersonalData(
+        personalData = PersonalData(
             firstName: coInsuredModel.firstName ?? "",
             lastName: coInsuredModel.lastName ?? ""
         )
-        self.SSN = coInsuredModel.SSN ?? ""
-        self.birthday = coInsuredModel.birthDate ?? ""
+        SSN = coInsuredModel.SSN ?? ""
+        birthday = coInsuredModel.birthDate ?? ""
         self.actionType = actionType
         self.contractId = contractId
         if !(coInsuredModel.birthDate ?? "").isEmpty {
@@ -379,13 +379,15 @@ public class IntentViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
 
     var fullName: String {
-        return firstName + " " + lastName
+        firstName + " " + lastName
     }
+
     var service = EditCoInsuredService()
 
     var showErrorViewForCoInsuredList: Bool {
         errorMessageForCoinsuredList != nil
     }
+
     var showErrorViewForCoInsuredInput: Bool {
         errorMessageForInput != nil
     }

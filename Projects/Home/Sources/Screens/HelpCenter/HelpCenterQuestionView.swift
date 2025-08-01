@@ -30,7 +30,7 @@ struct HelpCenterQuestionView: View {
     @State var height: CGFloat = 0
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
-    public init(
+    init(
         question: FAQModel,
         router: Router
     ) {

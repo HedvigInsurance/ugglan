@@ -9,9 +9,9 @@ public enum DeepLink: String, Codable, CaseIterable {
     case insurances
     case home
     case sasEuroBonus = "eurobonus"
-    case contract = "contract"
+    case contract
     case payments
-    case travelCertificate = "travelCertificate"
+    case travelCertificate
     case helpCenter = "help-center"
     case helpCenterTopic = "help-center/topic"
     case helpCenterQuestion = "help-center/question"
@@ -19,9 +19,9 @@ public enum DeepLink: String, Codable, CaseIterable {
     case changeTier = "change-tier"
     case travelAddon = "travel-addon"
     case terminateContract = "terminate-contract"
-    case conversation = "conversation"
-    case chat = "chat"
-    case inbox = "inbox"
+    case conversation
+    case chat
+    case inbox
     case contactInfo = "contact-info"
     case editCoInsured = "edit-coinsured"
     case claimDetails = "claim-details"
@@ -96,7 +96,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
         guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }
-        let components = url.pathComponents.filter { $0 != "/" }.filter({ $0 != "deeplink" }).joined(separator: "/")
+        let components = url.pathComponents.filter { $0 != "/" }.filter { $0 != "deeplink" }.joined(separator: "/")
 
         guard let type = DeepLink(rawValue: components) else {
             return nil
@@ -105,8 +105,8 @@ public enum DeepLink: String, Codable, CaseIterable {
     }
 
     public static func getUrl(from deeplink: DeepLink) -> URL? {
-        let paths = Environment.current.deepLinkUrls.compactMap({ $0.absoluteString + "/" + deeplink.rawValue })
-        let url = paths.compactMap({ URL.init(string: $0) }).last
+        let paths = Environment.current.deepLinkUrls.compactMap { $0.absoluteString + "/" + deeplink.rawValue }
+        let url = paths.compactMap { URL(string: $0) }.last
         guard let url else {
             return nil
         }

@@ -6,9 +6,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class FetchContractsClientOctopus: FetchContractsClient {
+class FetchContractsClientOctopus: FetchContractsClient {
     @Inject private var octopus: hOctopus
-    public init() {}
+
     public func getContracts() async throws -> ContractsStack {
         let query = OctopusGraphQL.ContractBundleQuery()
         let contracts = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
@@ -77,7 +77,7 @@ extension Contract {
     ) {
         let currentAgreement = Agreement(
             premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
-            displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
+            displayItems: pendingContract.displayItems.map { .init(data: $0.fragments.agreementDisplayItemFragment) },
             productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
             addonVariant: []
         )
@@ -123,7 +123,7 @@ extension Contract {
             lastName: lastName,
             ssn: ssn,
             typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract),
-            coInsured: contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
+            coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? []
         )
     }
 }
@@ -140,9 +140,9 @@ extension Agreement {
             activeFrom: agreement.activeFrom,
             activeTo: agreement.activeTo,
             premium: .init(fragment: agreement.premium.fragments.moneyFragment),
-            displayItems: agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
+            displayItems: agreement.displayItems.map { .init(data: $0.fragments.agreementDisplayItemFragment) },
             productVariant: .init(data: agreement.productVariant.fragments.productVariantFragment),
-            addonVariant: agreement.addons.map({ .init(fragment: $0.addonVariant.fragments.addonVariantFragment) })
+            addonVariant: agreement.addons.map { .init(fragment: $0.addonVariant.fragments.addonVariantFragment) }
         )
     }
 }

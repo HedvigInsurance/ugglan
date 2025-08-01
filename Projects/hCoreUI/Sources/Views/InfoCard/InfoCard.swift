@@ -114,15 +114,11 @@ struct InfoCard_Previews: PreviewProvider {
                     .buttons([
                         .init(
                             buttonTitle: "Title",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         ),
                         .init(
                             buttonTitle: "Title 2",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         ),
                     ])
 
@@ -130,9 +126,7 @@ struct InfoCard_Previews: PreviewProvider {
                     .buttons([
                         .init(
                             buttonTitle: "Title",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         )
                     ])
 
@@ -143,16 +137,13 @@ struct InfoCard_Previews: PreviewProvider {
                 InfoCard(text: "", type: .error)
                     .hInfoCardCustomView {
                         Text("Testing custom texzt view")
-
                     }
 
                 InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
                     .buttons([
                         .init(
                             buttonTitle: "Title",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         )
                     ])
             }
@@ -197,7 +188,7 @@ extension EnvironmentValues {
 
 extension InfoCard {
     public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
-        self.environment(\.hInfoCardButtonConfig, configs)
+        environment(\.hInfoCardButtonConfig, configs)
     }
 }
 
@@ -225,7 +216,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hInfoCardCustomView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hInfoCardCustomView, AnyView(content()))
+        environment(\.hInfoCardCustomView, AnyView(content()))
     }
 }
 
@@ -242,7 +233,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hInfoCardLayoutStyle(_ style: InfoCardLayoutStyle) -> some View {
-        self.environment(\.hInfoCardLayoutStyle, style)
+        environment(\.hInfoCardLayoutStyle, style)
     }
 }
 

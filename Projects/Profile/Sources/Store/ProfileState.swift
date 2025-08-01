@@ -18,7 +18,7 @@ public struct ProfileState: StateProtocol {
 
     @MainActor
     var showTravelCertificate: Bool {
-        return hasTravelCertificates || canCreateTravelInsurance
+        hasTravelCertificates || canCreateTravelInsurance
     }
 
     public init() {
@@ -39,8 +39,8 @@ public struct ProfileState: StateProtocol {
 
     public var shouldShowNotificationCard: Bool {
         let requiredTimeForSnooze: Double = TimeInterval.days(numberOfDays: 30)
-        return self.pushNotificationCurrentStatus() != .authorized
-            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
+        return pushNotificationCurrentStatus() != .authorized
+            && (pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
                 .distance(to: Date()) > requiredTimeForSnooze
     }
 }
@@ -49,11 +49,11 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
     public let sas: PartnerDataSas?
 
     public var shouldShowEuroBonus: Bool {
-        return sas?.eligible ?? false
+        sas?.eligible ?? false
     }
 
     var isConnected: Bool {
-        return !(sas?.eurobonusNumber ?? "").isEmpty
+        !(sas?.eurobonusNumber ?? "").isEmpty
     }
 
     public init(sas: PartnerDataSas?) {

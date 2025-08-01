@@ -69,7 +69,7 @@ private class PDFPreviewViewModel: ObservableObject {
 
     @MainActor
     private func getData() async {
-        self.isLoading = true
+        isLoading = true
         do {
             let data = try await download()
             withAnimation {
@@ -83,7 +83,7 @@ private class PDFPreviewViewModel: ObservableObject {
 
     private func download() async throws -> Data? {
         do {
-            if let url = URL(string: self.document.url) {
+            if let url = URL(string: document.url) {
                 let (data, _) = try await URLSession.shared.data(from: url)
                 return data
             }
@@ -101,7 +101,7 @@ private class PDFPreviewViewModel: ObservableObject {
             try? FileManager.default.removeItem(at: temporaryFileURL)
             try data.write(to: temporaryFileURL)
             thingToShare = temporaryFileURL
-        } catch let error {
+        } catch {
             print("\(#function): *** Error while writing to temporary file. \(error.localizedDescription)")
         }
         Task { @MainActor in
@@ -131,11 +131,11 @@ private struct DocumentRepresentable: UIViewRepresentable {
     let data: Data
     let name: String
 
-    func makeUIView(context: Context) -> some UIView {
-        return DocumentView(data: data, name: name)
+    func makeUIView(context _: Context) -> some UIView {
+        DocumentView(data: data, name: name)
     }
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {}
+    func updateUIView(_: UIViewType, context _: Context) {}
 }
 
 private class DocumentView: UIView {
@@ -154,7 +154,7 @@ private class DocumentView: UIView {
         pdfView.backgroundColor = .brand(.primaryBackground())
         pdfView.maxScaleFactor = 3
         pdfView.autoScales = true
-        self.addSubview(pdfView)
+        addSubview(pdfView)
         pdfView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -162,14 +162,14 @@ private class DocumentView: UIView {
         pdfView.document = PDFDocument(data: data)
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
 
 extension PDFPreview: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: PDFPreview.self)
+        .init(describing: PDFPreview.self)
     }
-
 }

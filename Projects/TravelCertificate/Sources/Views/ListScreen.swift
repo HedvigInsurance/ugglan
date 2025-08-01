@@ -21,7 +21,7 @@ public struct ListScreen: View {
 
     public var body: some View {
         hForm {
-            if vm.list.isEmpty && !vm.isLoading {
+            if vm.list.isEmpty, !vm.isLoading {
                 VStack(spacing: .padding16) {
                     hCoreUIAssets.infoFilled.view
                         .resizable()
@@ -128,9 +128,7 @@ public struct ListScreen: View {
             do {
                 let specifications = try await vm.service.getSpecifications()
                 travelCertificateNavigationVm.isStartDateScreenPresented = .init(specification: specifications)
-            } catch _ {
-
-            }
+            } catch _ {}
             withAnimation {
                 vm.isCreateNewLoading = false
             }
@@ -146,14 +144,14 @@ extension View {
     ) -> some View {
         switch withPlacement {
         case .leading:
-            self.setToolbarLeading {
+            setToolbarLeading {
                 ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
                     action()
                 }
                 .accessibilityValue(L10n.Toast.readMore)
             }
         case .trailing:
-            self.setToolbarTrailing {
+            setToolbarTrailing {
                 ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
                     action()
                 }
@@ -176,7 +174,7 @@ class ListScreenViewModel: ObservableObject {
 
     init() {
         addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
-            [weak self] notification in
+            [weak self] _ in
             Task {
                 await self?.fetchTravelCertificateList()
             }
@@ -197,7 +195,7 @@ class ListScreenViewModel: ObservableObject {
             isLoading = true
         }
         do {
-            let (list, canCreateTravelInsurance, banner) = try await self.service.getList(source: .travelCertificates)
+            let (list, canCreateTravelInsurance, banner) = try await service.getList(source: .travelCertificates)
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance

@@ -50,14 +50,13 @@ public struct DeleteAccountView: View {
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: .padding8) {
-                        if !vm.hasActiveClaims && !vm.hasActiveContracts {
+                        if !vm.hasActiveClaims, !vm.hasActiveContracts {
                             hButton(
                                 .large,
                                 .alert,
                                 content: .init(title: L10n.profileDeleteAccountConfirmDeletion),
                                 {
                                     profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-
                                 }
                             )
                         }
@@ -102,18 +101,19 @@ struct ParagraphTextModifier<Color: hColor>: ViewModifier {
 
 extension DeleteAccountViewModel {
     var title: String {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return L10n.DeleteAccount.youHaveActiveInsuranceTitle
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return L10n.DeleteAccount.youHaveActiveClaimTitle
         } else {
             return L10n.DeleteAccount.deleteAccountTitle
         }
     }
+
     var text: String {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return L10n.DeleteAccount.youHaveActiveInsuranceDescription
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return L10n.DeleteAccount.youHaveActiveClaimDescription
         } else {
             return L10n.DeleteAccount.deleteAccountDescription
@@ -121,9 +121,9 @@ extension DeleteAccountViewModel {
     }
 
     var alignment: HorizontalAlignment {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return .center
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return .center
         } else {
             return .leading
@@ -131,9 +131,9 @@ extension DeleteAccountViewModel {
     }
 
     var titleAndDescriptionSpacing: CGFloat {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return 0
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return 0
         } else {
             return 8
@@ -141,9 +141,9 @@ extension DeleteAccountViewModel {
     }
 
     var topIcon: Image? {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return hCoreUIAssets.warningTriangleFilled.view
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return hCoreUIAssets.warningTriangleFilled.view
         } else {
             return nil
@@ -151,9 +151,9 @@ extension DeleteAccountViewModel {
     }
 
     var textAlignment: NSTextAlignment {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return .center
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return .center
         } else {
             return .left
@@ -161,9 +161,9 @@ extension DeleteAccountViewModel {
     }
 
     var dismissButtonTitle: String {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return L10n.generalCloseButton
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return L10n.generalCloseButton
         } else {
             return L10n.generalCancelButton

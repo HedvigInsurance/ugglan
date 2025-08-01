@@ -15,6 +15,7 @@ public struct MarkdownView: View {
     ) {
         self.config = config
     }
+
     public var body: some View {
         if let maxWidth = config.maxWidth {
             CustomTextViewRepresentable(
@@ -61,7 +62,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         _width = width
     }
 
-    func makeUIView(context: Context) -> CustomTextView {
+    func makeUIView(context _: Context) -> CustomTextView {
         let textView = CustomTextView(
             config: config,
             fixedWidth: fixedWidth,
@@ -78,7 +79,8 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         }
         return textView
     }
-    func updateUIView(_ uiView: CustomTextView, context: Context) {
+
+    func updateUIView(_ uiView: CustomTextView, context _: Context) {
         uiView.setContent(from: config.text)
         uiView.calculateHeight()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak uiView] in
@@ -105,7 +107,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hEnvironmentAccessibilityLabel(_ label: String?) -> some View {
-        self.environment(\.hEnvironmentAccessibilityLabel, label)
+        environment(\.hEnvironmentAccessibilityLabel, label)
     }
 }
 
@@ -129,18 +131,18 @@ class CustomTextView: UITextView, UITextViewDelegate {
         self.colorScheme = colorScheme
         super.init(frame: .zero, textContainer: nil)
         configureTextView()
-        self.snp.makeConstraints { make in
+        snp.makeConstraints { make in
             make.width.lessThanOrEqualTo(fixedWidth)
         }
     }
 
     private func configureTextView() {
-        self.backgroundColor = .clear
-        self.isEditable = false
-        self.isUserInteractionEnabled = true
-        self.isScrollEnabled = false
-        self.isSelectable = true
-        self.dataDetectorTypes = [.address, .link, .phoneNumber]
+        backgroundColor = .clear
+        isEditable = false
+        isUserInteractionEnabled = true
+        isScrollEnabled = false
+        isSelectable = true
+        dataDetectorTypes = [.address, .link, .phoneNumber]
         accessibilityTraits = .staticText
         var linkTextAttributes = [NSAttributedString.Key: Any]()
         linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
@@ -149,8 +151,8 @@ class CustomTextView: UITextView, UITextViewDelegate {
             linkTextAttributes[.underlineStyle] = linkUnderlineStyle.rawValue
         }
         self.linkTextAttributes = linkTextAttributes
-        self.textContainerInset = .zero
-        self.delegate = self
+        textContainerInset = .zero
+        delegate = self
     }
 
     func setContent(from text: String) {
@@ -164,14 +166,14 @@ class CustomTextView: UITextView, UITextViewDelegate {
             let mutableAttributedString = NSMutableAttributedString(
                 attributedString: attributedString
             )
-            self.attributedText = mutableAttributedString
-            self.textAlignment = config.textAlignment
+            attributedText = mutableAttributedString
+            textAlignment = config.textAlignment
         }
     }
 
     func calculateHeight() {
         let newSize = getSize()
-        self.frame.size = newSize
+        frame.size = newSize
         DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
             self?.width = newSize.width - 12
@@ -179,18 +181,18 @@ class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     private func getSize() -> CGSize {
-        let newSize = self.sizeThatFits(
+        let newSize = sizeThatFits(
             CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude)
         )
         return newSize
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-
+    func textView(_: UITextView, shouldInteractWith URL: URL, in _: NSRange) -> Bool {
         let emailMasking = Masking(type: .email)
         if emailMasking.isValid(text: URL.absoluteString) {
             let emailURL = "mailto:" + URL.absoluteString

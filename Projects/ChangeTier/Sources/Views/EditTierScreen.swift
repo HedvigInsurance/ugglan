@@ -11,7 +11,7 @@ struct EditTierScreen: View {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
-        self._selectedTier = State(initialValue: vm.selectedTier?.name ?? vm.tiers.first?.name)
+        _selectedTier = State(initialValue: vm.selectedTier?.name ?? vm.tiers.first?.name)
     }
 
     var body: some View {
@@ -38,7 +38,6 @@ struct EditTierScreen: View {
                                     if let subTitle = tier.quotes.first?.productVariant?.tierDescription {
                                         hText(subTitle, style: .label)
                                             .foregroundColor(hTextColor.Translucent.secondary)
-
                                     }
                                 }
                                 .asAnyView
@@ -60,10 +59,10 @@ struct EditTierScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hContinueButton {
-                        vm.setTier(for: self.selectedTier ?? "")
+                        vm.setTier(for: selectedTier ?? "")
                         changeTierNavigationVm.isEditTierPresented = false
                     }
-                    .accessibilityHint(L10n.voiceoverOptionSelected + (self.selectedTier ?? ""))
+                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedTier ?? ""))
 
                     hCancelButton {
                         changeTierNavigationVm.isEditTierPresented = false

@@ -31,7 +31,6 @@ struct NotificationsCardView: View {
             }
         }
         .presentableStoreLensAnimation(.default)
-
     }
 }
 

@@ -59,16 +59,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 clearData()
             }
         }
-
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
+    func applicationWillTerminate(_: UIApplication) {
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         Thread.sleep(forTimeInterval: 3)
     }
 
-    func applicationDidEnterBackground(_ application: UIApplication) {
-    }
+    func applicationDidEnterBackground(_: UIApplication) {}
 
     func application(
         _: UIApplication,
@@ -93,9 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             do {
                 let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
                 _ = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
-            } catch _ {
-
-            }
+            } catch _ {}
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             let store: ProfileStore = globalPresentableStoreContainer.get()
             store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
@@ -110,7 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Task {
                 await setupSession()
                 await impersonate.impersonate(with: url)
-
             }
         }
     }
@@ -145,7 +140,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         await DI.initNetworkClients()
         DI.initAndRegisterClient()
         urlSessionClientProvider = {
-            return InterceptingURLSessionClient()
+            InterceptingURLSessionClient()
         }
         setupAnalyticsAndTracking()
 

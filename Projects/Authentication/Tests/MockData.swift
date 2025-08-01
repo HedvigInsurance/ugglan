@@ -15,11 +15,11 @@ struct MockData {
             }
             throw AuthenticationError.otpInputError
         },
-        resendAuth: @escaping Resend = { otpState in },
-        startSeBankIdAuth: @escaping StartSeBankId = { updateStatusTo in },
+        resendAuth: @escaping Resend = { _ in },
+        startSeBankIdAuth: @escaping StartSeBankId = { _ in },
         logoutAuth: @escaping Logout = {},
-        exchangeCode: @escaping ExchangeCode = { code in },
-        exchangeToken: @escaping ExchangeToken = { token in }
+        exchangeCode: @escaping ExchangeCode = { _ in },
+        exchangeToken: @escaping ExchangeToken = { _ in }
     ) -> MockAuthenticationService {
         let service = MockAuthenticationService(
             submitAuth: submitAuth,

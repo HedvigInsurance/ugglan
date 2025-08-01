@@ -24,7 +24,6 @@ public struct MyInfoView: View {
                                     .foregroundColor(hSignalColor.Amber.text)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
-
                         }
                         buttonView
                     }
@@ -139,7 +138,7 @@ public class MyInfoViewModel: ObservableObject {
     }
 
     private var hasValidEmail: Bool {
-        return currentEmailInput != "" && emailError == nil
+        currentEmailInput != "" && emailError == nil
     }
 
     @MainActor
@@ -148,7 +147,7 @@ public class MyInfoViewModel: ObservableObject {
         withAnimation {
             viewState = .loading
         }
-        async let updateAsync: () = self.getFuture()
+        async let updateAsync: () = getFuture()
         do {
             _ = try await [updateAsync]
             withAnimation {
@@ -161,7 +160,7 @@ public class MyInfoViewModel: ObservableObject {
                     text: L10n.profileMyInfoSaveSuccessToastBody
                 )
             )
-        } catch let error {
+        } catch {
             if let error = error as? MyInfoSaveError {
                 switch error {
                 case .emailEmpty, .emailMalformed:
@@ -172,7 +171,7 @@ public class MyInfoViewModel: ObservableObject {
                     withAnimation {
                         self.phoneError = error.localizedDescription
                     }
-                case .error(let message):
+                case let .error(message):
                     withAnimation {
                         self.error = message
                     }
@@ -197,7 +196,6 @@ public class MyInfoViewModel: ObservableObject {
         }
 
         do {
-
             let updatedContactData = try await profileService.update(
                 email: currentEmailInput,
                 phone: currentPhoneInput
@@ -206,11 +204,11 @@ public class MyInfoViewModel: ObservableObject {
             let newPhone = updatedContactData.phone
             let newEmail = updatedContactData.email
 
-            self.originalPhone = newPhone
-            self.originalEmail = newEmail
+            originalPhone = newPhone
+            originalEmail = newEmail
 
-            self.store.send(.setMemberPhone(phone: newPhone))
-            self.store.send(.setMemberEmail(email: newEmail))
+            store.send(.setMemberPhone(phone: newPhone))
+            store.send(.setMemberEmail(email: newEmail))
         } catch let exception {
             throw MyInfoSaveError.error(message: exception.localizedDescription)
         }
@@ -218,7 +216,7 @@ public class MyInfoViewModel: ObservableObject {
 
     enum MyInfoViewEditType: hTextFieldFocusStateCompliant {
         static var last: MyInfoViewEditType {
-            return MyInfoViewEditType.email
+            MyInfoViewEditType.email
         }
 
         var next: MyInfoViewEditType? {

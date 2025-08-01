@@ -51,7 +51,7 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
         currentAddon: AddonQuote?,
         quotes: [AddonQuote]
     ) {
-        self.title = titleDisplayName
+        title = titleDisplayName
         self.description = description
         self.activationDate = activationDate
         self.currentAddon = currentAddon
@@ -73,6 +73,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     public var id: String {
         addonId
     }
+
     let displayName: String?
     let quoteId: String
     let addonId: String

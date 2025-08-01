@@ -59,7 +59,6 @@ struct TerminationSurveyScreen: View {
                             .zIndex(1)
                         }
                     }
-
                 }
                 if let suggestion = vm.selectedOption?.suggestion {
                     suggestionView(for: suggestion)
@@ -80,7 +79,7 @@ struct TerminationSurveyScreen: View {
     @ViewBuilder
     func suggestionView(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
         switch suggestion {
-        case .action(let action):
+        case let .action(action):
             InfoCard(text: action.description, type: action.type.notificationType)
                 .buttons([
                     .init(
@@ -91,7 +90,7 @@ struct TerminationSurveyScreen: View {
                     )
                 ])
                 .hButtonIsLoading(terminationFlowNavigationViewModel.redirectActionLoadingState == .loading)
-        case .redirect(let redirect):
+        case let .redirect(redirect):
             InfoCard(text: redirect.description, type: redirect.type.notificationType)
                 .buttons([
                     .init(
@@ -104,7 +103,7 @@ struct TerminationSurveyScreen: View {
                     )
                 ])
                 .hButtonIsLoading(false)
-        case .suggestionInfo(let info):
+        case let .suggestionInfo(info):
             InfoCard(text: info.description, type: info.type.notificationType)
         }
     }
@@ -195,7 +194,7 @@ class SurveyScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    public func submitSurvey(context: String, option: String, inputData: String?) async -> TerminateStepResponse {
+    func submitSurvey(context: String, option: String, inputData: String?) async -> TerminateStepResponse {
         withAnimation {
             viewState = .loading
         }
@@ -209,7 +208,7 @@ class SurveyScreenViewModel: ObservableObject {
                 viewState = .success
             }
             return data
-        } catch let error {
+        } catch {
             withAnimation {
                 self.viewState = .error(
                     errorMessage: error.localizedDescription
@@ -223,7 +222,7 @@ class SurveyScreenViewModel: ObservableObject {
         let status: Bool = {
             guard selectedOption != nil else { return false }
             guard let feedBack = selectedFeedBackViewModel else { return true }
-            if feedBack.required && feedBack.text.count < 10 {
+            if feedBack.required, feedBack.text.count < 10 {
                 return false
             }
             return true
@@ -331,7 +330,7 @@ class TerminationFlowSurveyStepFeedBackViewModel: ObservableObject {
     @Published var error: String?
 
     init(feedback: TerminationFlowSurveyStepFeedback) {
-        self.text = ""
-        self.required = feedback.isRequired
+        text = ""
+        required = feedback.isRequired
     }
 }

@@ -1,8 +1,7 @@
 import SwiftUI
 
 extension UIResponder {
-
-    private static weak var _currentFirstResponder: UIResponder?
+    private weak static var _currentFirstResponder: UIResponder?
 
     static var currentFirstResponder: UIResponder? {
         _currentFirstResponder = nil
@@ -11,7 +10,7 @@ extension UIResponder {
         return _currentFirstResponder
     }
 
-    @objc func findFirstResponder(_ sender: Any) {
+    @objc func findFirstResponder(_: Any) {
         UIResponder._currentFirstResponder = self
     }
 }

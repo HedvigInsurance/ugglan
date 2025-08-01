@@ -13,7 +13,7 @@ struct CoInsuredInputErrorView: View {
     ) {
         self.editCoInsuredNavigation = editCoInsuredNavigation
         self.vm = vm
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     @ViewBuilder

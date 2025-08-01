@@ -4,7 +4,6 @@
 
 @MainActor
 final class TestChatViewModelTitle: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -25,7 +24,7 @@ final class TestChatViewModelTitle: XCTestCase {
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.title == title)
         assert(model.messageVm.conversationVm.subTitle == subtitle)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testFetchTitleFailure() async {
@@ -38,7 +37,7 @@ final class TestChatViewModelTitle: XCTestCase {
         await model.startFetchingNewMessages()
         assert(model.messageVm.conversationVm.title == chatInitialTitle)
         assert(model.messageVm.conversationVm.subTitle == chatInitialSubtitle)
-        self.sut = mockService
+        sut = mockService
     }
 
     /// Previous messages shouldn't affect title and subtitle
@@ -60,7 +59,6 @@ final class TestChatViewModelTitle: XCTestCase {
         await model.messageVm.fetchPreviousMessages(retry: false)
         assert(model.messageVm.conversationVm.title == title)
         assert(model.messageVm.conversationVm.subTitle == subtitle)
-        self.sut = mockService
+        sut = mockService
     }
-
 }

@@ -2,15 +2,14 @@ import Combine
 import Foundation
 
 public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
-
     public init() {}
     private let featureDataPublisher = PassthroughSubject<FeatureData, Never>()
 
     public var featureData: AnyPublisher<FeatureData, Never> {
-        return featureDataPublisher.eraseToAnyPublisher()
+        featureDataPublisher.eraseToAnyPublisher()
     }
 
-    public func setup(with context: [String: String]) async throws {
+    public func setup(with _: [String: String]) async throws {
         let data = FeatureData(
             isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
@@ -27,7 +26,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
         )
         featureDataPublisher.send(data)
     }
-    public func updateContext(context: [String: String]) {
+
+    public func updateContext(context _: [String: String]) {
         let data = FeatureData(
             isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
@@ -43,6 +43,5 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isAddonsRemovalFromMovingFlowEnabled: false
         )
         featureDataPublisher.send(data)
-
     }
 }

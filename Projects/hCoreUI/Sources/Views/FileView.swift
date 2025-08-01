@@ -123,12 +123,10 @@ public struct FileView: View {
                     )
                 )
         }
-
     }
 }
 
 public struct hPHPickerResultImageDataProvider: ImageDataProvider {
-
     /// The possible error might be caused by the `PHPickerResultImageDataProvider`.
     /// - invalidImage: The retrieved image is invalid.
     public enum PHPickerResultImageDataProviderError: Error {
@@ -174,7 +172,6 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
 }
 
 public struct InMemoryImageDataProvider: ImageDataProvider {
-
     public var cacheKey: String
     let data: Data
     /// Provides the data which represents image. Kingfisher uses the data you pass in the
@@ -202,5 +199,4 @@ public struct InMemoryImageDataProvider: ImageDataProvider {
 
     /// The content URL represents this provider, if exists.
     public var contentURL: URL?
-
 }

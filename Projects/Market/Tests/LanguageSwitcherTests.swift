@@ -16,6 +16,5 @@ final class LanguageSwitcherTests: XCTestCase {
         DefaultStyling.installCustom()
     }
 
-    func testRendersCorrectOptions() {
-    }
+    func testRendersCorrectOptions() {}
 }

@@ -25,11 +25,11 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
         @ViewBuilder content: @escaping (hCarouselItem) -> Content
     ) {
         self.spacing = spacing
-        self.cardWidth = screenWidth * zoomFactor
-        self.numberOfItems = CGFloat(items.count)
-        self.cardWithSpacing = cardWidth + spacing
-        self.xOffsetToShift = cardWithSpacing * numberOfItems / 2 - cardWithSpacing / 2
-        self._calcOffset = .init(wrappedValue: self.xOffsetToShift)
+        cardWidth = screenWidth * zoomFactor
+        numberOfItems = CGFloat(items.count)
+        cardWithSpacing = cardWidth + spacing
+        xOffsetToShift = cardWithSpacing * numberOfItems / 2 - cardWithSpacing / 2
+        _calcOffset = .init(wrappedValue: xOffsetToShift)
         self.items = items
         self.content = content
         self.tapAction = tapAction
@@ -38,18 +38,18 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
     var dragOverTap: some Gesture {
         TapGesture()
             .onEnded { _ in
-                if self.activeCard >= 0 && self.activeCard < self.items.count {
-                    self.tapAction(self.items[activeCard])
+                if activeCard >= 0, activeCard < items.count {
+                    tapAction(items[activeCard])
                 }
             }
             .exclusively(
                 before:
                     DragGesture(minimumDistance: 0)
                     .onChanged { currentState in
-                        self.calculateOffset(Float(currentState.translation.width))
+                        calculateOffset(Float(currentState.translation.width))
                     }
                     .onEnded { value in
-                        self.handleDragEnd(value.translation.width)
+                        handleDragEnd(value.translation.width)
                     }
             )
     }
@@ -87,13 +87,13 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
     }
 
     func handleDragEnd(_ translationWidth: CGFloat) {
-        if translationWidth < -50 && CGFloat(activeCard) < numberOfItems - 1 {
+        if translationWidth < -50, CGFloat(activeCard) < numberOfItems - 1 {
             activeCard += 1
         }
-        if translationWidth > 50 && activeCard != 0 {
+        if translationWidth > 50, activeCard != 0 {
             activeCard -= 1
         }
-        self.calculateOffset(0)
+        calculateOffset(0)
     }
 }
 
@@ -111,7 +111,7 @@ struct hCarouselCard<Content: View, hCarouselItem: Identifiable>: View {
     }
 
     var body: some View {
-        self.content
+        content
             .frame(width: width)
     }
 }

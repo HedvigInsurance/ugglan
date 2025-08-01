@@ -38,29 +38,27 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where
         actionCallbacker.eraseToAnyPublisher()
     }
 
-    open func effects(_ getState: @escaping () -> State, _ action: Action) async {
+    open func effects(_: @escaping () -> State, _: Action) async {
         fatalError("Must be overrided by subclass")
     }
 
-    open func reduce(_ state: State, _ action: Action) async -> State {
+    open func reduce(_: State, _: Action) async -> State {
         fatalError("Must be overrided by subclass")
     }
 
     public func setState(_ state: State) {
-        self.stateWriteSignal.value = state
+        stateWriteSignal.value = state
     }
 
-    nonisolated
-        private func getQueue() -> DispatchQueue
-    {
-        return DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
+    private nonisolated func getQueue() -> DispatchQueue {
+        DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
     }
 
     /// Sends an action to the store, which is then reduced to produce a new state
     public func send(_ action: Action) {
         Task { [weak self] in
             await withCheckedContinuation {
-                (inCont: CheckedContinuation<Void, Never>) -> Void in
+                (inCont: CheckedContinuation<Void, Never>) in
                 self?.getQueue()
                     .async { [weak self] in
                         guard let self = self else { return }
@@ -102,16 +100,15 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where
                 },
                 action
             )
-
         }
         await task.value
     }
 
     public required init() {
         if let stored = Self.restore() {
-            self.stateWriteSignal = .init(stored)
+            stateWriteSignal = .init(stored)
         } else {
-            self.stateWriteSignal = .init(State())
+            stateWriteSignal = .init(State())
         }
     }
 }
@@ -137,8 +134,7 @@ public protocol Store {
     func reduce(_ state: State, _ action: Action) async -> State
     @MainActor
     func effects(_ getState: @escaping () -> State, _ action: Action) async
-    nonisolated
-        func send(_ action: Action)
+    nonisolated func send(_ action: Action)
     @StoreActor
     func sendAsync(_ action: Action) async
 
@@ -166,17 +162,13 @@ extension Store {
         return pointers[key]!
     }
 
-    nonisolated
-        static var persistenceURL: URL
-    {
+    internal nonisolated static var persistenceURL: URL {
         let docURL = storePersistenceDirectory
         try? FileManager.default.createDirectory(at: docURL, withIntermediateDirectories: true, attributes: nil)
         return docURL.appendingPathComponent(String(describing: Self.self))
     }
 
-    nonisolated
-        public static func persist(_ value: State)
-    {
+    public nonisolated static func persist(_ value: State) {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(value) {
             do {
@@ -233,14 +225,14 @@ public class PresentableStoreContainer: NSObject {
             return store
         }
 
-        var store = S.init()
+        var store = S()
         store.logger = logger
         initialize(store)
 
         return store
     }
 
-    public func get<S: Store>(of type: S.Type) -> S {
+    public func get<S: Store>(of _: S.Type) -> S {
         let store: S = get()
         return store
     }
@@ -250,7 +242,7 @@ public class PresentableStoreContainer: NSObject {
         debugger?.registerStore(store)
     }
 
-    public override init() {
+    override public init() {
         super.init()
     }
 
@@ -258,7 +250,7 @@ public class PresentableStoreContainer: NSObject {
         try? FileManager.default.removeItem(at: storePersistenceDirectory)
     }
 
-    public var debugger: Debugger? = nil
+    public var debugger: Debugger?
     public var logger: @Sendable (_ message: String) -> Void = { message in
         print(message)
     }
@@ -298,7 +290,7 @@ open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loadi
 >, StoreLoading
 where State: Sendable, Action: Sendable {
     public var loadingState: [Loading: LoadingState<String>] {
-        return loadingStates
+        loadingStates
     }
 
     private var loadingStates: [Loading: LoadingState<String>] = [:] {
@@ -306,6 +298,7 @@ where State: Sendable, Action: Sendable {
             loadingWriteSignal.value = loadingStates
         }
     }
+
     private let loadingWriteSignal = CurrentValueSubject<[Loading: LoadingState<String>], Never>([:])
 
     public var loadingSignal: AnyPublisher<[Loading: LoadingState<String>], Never> {
@@ -313,15 +306,15 @@ where State: Sendable, Action: Sendable {
     }
 
     public func removeLoading(for action: Loading) {
-        self.loadingStates.removeValue(forKey: action)
+        loadingStates.removeValue(forKey: action)
     }
 
     public func setLoading(for action: Loading) {
-        self.loadingStates[action] = .loading
+        loadingStates[action] = .loading
     }
 
     public func setError(_ error: String, for action: Loading) {
-        self.loadingStates[action] = .error(error: error)
+        loadingStates[action] = .error(error: error)
     }
 
     public func reset() {
@@ -339,7 +332,7 @@ enum PresentableStoreError: Error {
 
 extension NSObject {
     func associatedValue<T>(forKey key: UnsafeRawPointer) -> T? {
-        return objc_getAssociatedObject(self, key) as? T
+        objc_getAssociatedObject(self, key) as? T
     }
 
     func associatedValue<T>(forKey key: UnsafeRawPointer, initial: @autoclosure () throws -> T) rethrows -> T {

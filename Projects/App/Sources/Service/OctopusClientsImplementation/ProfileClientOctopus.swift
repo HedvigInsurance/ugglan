@@ -2,16 +2,14 @@ import Profile
 import hCore
 import hGraphQL
 
-public class ProfileClientOctopus: ProfileClient {
+class ProfileClientOctopus: ProfileClient {
     @Inject var octopus: hOctopus
-
-    public init() {}
 
     public func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
         hasTravelInsurances: Bool
     ) {
-        let data = try await self.octopus.client
+        let data = try await octopus.client
             .fetch(
                 query: OctopusGraphQL.ProfileQuery(),
                 cachePolicy: .fetchIgnoringCacheCompletely
@@ -40,7 +38,7 @@ public class ProfileClientOctopus: ProfileClient {
 
     public func getMemberDetails() async throws -> MemberDetails {
         let query = OctopusGraphQL.MemberDetailsQuery()
-        let data = try await self.octopus.client
+        let data = try await octopus.client
             .fetch(
                 query: query,
                 cachePolicy: .fetchIgnoringCacheCompletely
@@ -56,10 +54,10 @@ public class ProfileClientOctopus: ProfileClient {
         let locale = Localization.Locale.currentLocale.value
         let mutation = OctopusGraphQL.MemberUpdateLanguageMutation(input: .init(ietfLanguageTag: locale.lprojCode))
         do {
-            _ = try await self.octopus.client.perform(
+            _ = try await octopus.client.perform(
                 mutation: mutation
             )
-        } catch let error {
+        } catch {
             log.warn("Failed updating language", error: error)
             throw error
         }
@@ -111,19 +109,12 @@ public class ProfileClientOctopus: ProfileClient {
             throw ProfileError.error(message: L10n.General.errorBody)
         }
     }
-
 }
 
 extension PartnerData {
     fileprivate init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
         self.init(sas: .init(eligible: sasData.eligible, eurobonusNumber: sasData.eurobonusNumber))
-    }
-}
-
-extension PartnerDataSas {
-    fileprivate init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
-        self.init(eligible: data.eligible, eurobonusNumber: data.eurobonusNumber)
     }
 }
 

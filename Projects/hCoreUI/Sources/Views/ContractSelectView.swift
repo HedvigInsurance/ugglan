@@ -18,6 +18,7 @@ public struct ContractSelectView<T: Hashable>: View {
         self.subtitle = subtitle
         self.modally = modally ?? false
     }
+
     public var body: some View {
         Group {
             if modally {

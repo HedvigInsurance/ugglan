@@ -9,7 +9,7 @@ extension Message {
         if case .failed = status {
             hSignalColor.Red.highlight
         } else {
-            switch self.sender {
+            switch sender {
             case .hedvig:
                 hSurfaceColor.Opaque.primary
             case .member:
@@ -24,7 +24,7 @@ extension Message {
 
     @hColorBuilder
     var textColor: some hColor {
-        switch self.sender {
+        switch sender {
         case .hedvig:
             hTextColor.Opaque.primary
         case .member:
@@ -40,6 +40,7 @@ extension Message {
             return 0
         }
     }
+
     var verticalPadding: CGFloat {
         switch type {
         case .text, .deepLink, .action:
