@@ -6,7 +6,7 @@ import hGraphQL
 class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
     @Inject var octopus: hOctopus
 
-    public func get(for type: FetchClaimDetailsType) async throws -> ClaimModel {
+    func get(for type: FetchClaimDetailsType) async throws -> ClaimModel {
         switch type {
         case let .claim(id):
             let query = OctopusGraphQL.ClaimsQuery()
@@ -25,7 +25,7 @@ class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
         }
     }
 
-    public func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [hCore.File]) {
+    func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [hCore.File]) {
         switch type {
         case let .claim(id):
             let query = OctopusGraphQL.ClaimsFilesQuery()
@@ -49,7 +49,7 @@ class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
         }
     }
 
-    public func acknowledgeClosedStatus(claimId: String) async throws {
+    func acknowledgeClosedStatus(claimId: String) async throws {
         let mutation = OctopusGraphQL.ClaimAcknowledgeClosedStatusMutation(claimAcknowledgeClosedStatusId: claimId)
         let data = try await octopus.client.perform(mutation: mutation)
         if let userError = data.claimAcknowledgeClosedStatus?.userError {

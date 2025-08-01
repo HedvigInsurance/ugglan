@@ -14,7 +14,7 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
     @Published public var editCoInsuredModelError: EditCoInsuredErrorWrapper?
-    public let editCoInsuredSharedService = EditCoInsuredSharedService()
+    private let service = EditCoInsuredService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
     let existingCoInsured: ExistingCoInsured
 
@@ -28,7 +28,7 @@ public class EditCoInsuredViewModel: ObservableObject {
     public func start(fromContract: InsuredPeopleConfig? = nil, forMissingCoInsured: Bool = false) {
         Task { @MainActor in
             do {
-                let activeContracts = try await editCoInsuredSharedService.fetchContracts()
+                let activeContracts = try await service.fetchContracts()
 
                 if let contract = fromContract {
                     editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
@@ -72,7 +72,7 @@ public class EditCoInsuredViewModel: ObservableObject {
         editCoInsuredModelMissingAlert = nil
 
         Task { @MainActor in
-            let activeContracts = try await editCoInsuredSharedService.fetchContracts()
+            let activeContracts = try await service.fetchContracts()
             let missingContract = activeContracts.first { contract in
                 if contract.id == excludingContractId {
                     return false

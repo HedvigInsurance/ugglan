@@ -1,5 +1,3 @@
-import EditCoInsuredShared
-
 public struct CoInsuredInputModel: Identifiable, Equatable {
     public var id: String?
     let actionType: CoInsuredAction

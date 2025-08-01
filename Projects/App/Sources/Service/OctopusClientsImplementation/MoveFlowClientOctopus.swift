@@ -8,7 +8,7 @@ import hGraphQL
 class MoveFlowClientOctopus: MoveFlowClient {
     @Inject var octopus: hOctopus
 
-    public func sendMoveIntent() async throws -> MoveConfigurationModel {
+    func sendMoveIntent() async throws -> MoveConfigurationModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
         let data = try await octopus.client.perform(mutation: mutation)
 
@@ -20,7 +20,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
+    func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             moveToAddress: .init(
                 street: input.addressInputModel.address,
@@ -53,7 +53,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
+    func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
             homeQuoteId: GraphQLNullable(optionalValue: currentHomeQuoteId),

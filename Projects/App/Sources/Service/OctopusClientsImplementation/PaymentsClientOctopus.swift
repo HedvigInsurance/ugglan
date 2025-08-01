@@ -54,7 +54,7 @@ extension PaymentStatusData {
 class hPaymentClientOctopus: hPaymentClient {
     @Inject private var octopus: hOctopus
 
-    public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
+    func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
         let query = OctopusGraphQL.PaymentDataQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
@@ -72,19 +72,19 @@ class hPaymentClientOctopus: hPaymentClient {
         return (upcomingPayment, ongoingPayments)
     }
 
-    public func getPaymentStatusData() async throws -> PaymentStatusData {
+    func getPaymentStatusData() async throws -> PaymentStatusData {
         let query = OctopusGraphQL.PaymentInformationQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentStatusData(data: data)
     }
 
-    public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
+    func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         let query = OctopusGraphQL.PaymentHistoryDataQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentHistoryListData.getHistory(with: data.currentMember)
     }
 
-    public func getConnectPaymentUrl() async throws -> URL {
+    func getConnectPaymentUrl() async throws -> URL {
         let mutation = OctopusGraphQL.RegisterDirectDebitMutation(clientContext: GraphQLNullable.none)
         let data = try await octopus.client.perform(mutation: mutation)
         if let url = URL(string: data.registerDirectDebit2.url) {
