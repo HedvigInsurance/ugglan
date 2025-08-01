@@ -65,7 +65,7 @@ struct SetTerminationDateLandingScreen: View {
             }
         }
     }
-    //
+
     @ViewBuilder
     private var displayTerminationDateField: some View {
         if let isDeletion = vm.isDeletion {
