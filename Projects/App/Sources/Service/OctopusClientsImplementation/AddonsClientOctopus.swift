@@ -5,7 +5,7 @@ import hGraphQL
 class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
+    func getAddon(contractId: String) async throws -> AddonOffer {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
 
@@ -55,7 +55,7 @@ class AddonsClientOctopus: AddonsClient {
         }
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws {
+    func submitAddon(quoteId: String, addonId: String) async throws {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonActivateMutation(quoteId: quoteId, addonId: addonId)
             let delayTask = Task {

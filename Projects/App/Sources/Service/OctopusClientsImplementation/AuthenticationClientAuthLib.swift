@@ -7,7 +7,6 @@ import hCore
 import hGraphQL
 
 final class AuthenticationClientAuthLib: AuthenticationClient {
-
     private lazy var networkAuthRepository: NetworkAuthRepository = { [weak self] in
         return NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
@@ -30,7 +29,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         return headers
     }
 
-    public func submit(otpState: OTPState) async throws -> String {
+    func submit(otpState: OTPState) async throws -> String {
         if let verifyUrl = otpState.verifyUrl {
             do {
                 try await Task.sleep(nanoseconds: 5 * 100_000_000)
@@ -52,7 +51,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         throw AuthenticationError.codeError
     }
 
-    public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
+    func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
         let personalNumber: String? = nil
 
         let email: String? = otpState.input
@@ -79,7 +78,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
-    public func resend(otp otpState: OTPState) async throws {
+    func resend(otp otpState: OTPState) async throws {
         if let resendUrl = otpState.resendUrl {
             _ = try await networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
         } else {
@@ -87,7 +86,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
-    public func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
+    func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
         do {
             let authUrl = Environment.current.authUrl
             AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
@@ -185,7 +184,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
-    public func logout() async throws {
+    func logout() async throws {
         do {
             if let token = try await ApolloClient.retreiveToken() {
                 let data = try await networkAuthRepository.revoke(token: token.refreshToken)
@@ -203,7 +202,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
-    public func exchange(code: String) async throws {
+    func exchange(code: String) async throws {
         let data = try await networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
         if let successResult = data as? AuthTokenResultSuccess {
             let tokenData = AuthorizationTokenDto(
@@ -219,7 +218,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         throw error
     }
 
-    public func exchange(refreshToken: String) async throws {
+    func exchange(refreshToken: String) async throws {
         let data = try await networkAuthRepository.exchange(grant: RefreshTokenGrant(code: refreshToken))
         switch onEnum(of: data) {
         case let .success(success):

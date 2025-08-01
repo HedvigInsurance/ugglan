@@ -8,7 +8,6 @@ import Claims
 import Contracts
 import CrossSell
 import EditCoInsured
-import EditCoInsuredShared
 import Environment
 import Forever
 import Foundation
@@ -84,7 +83,6 @@ enum DI {
             let foreverService = ForeverClientOctopus()
             let profileService = ProfileClientOctopus()
             let editCoInsuredService = EditCoInsuredClientOctopus()
-            let editCoInsuredSharedService = EditCoInsuredSharedClientOctopus()
             let homeService = HomeClientOctopus()
             let terminateContractsService = TerminateContractsClientOctopus()
             let fetchContractsService = FetchContractsClientOctopus()
@@ -118,9 +116,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in foreverService })
                 Dependencies.shared.add(module: Module { () -> ProfileClient in profileService })
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in editCoInsuredService })
-                Dependencies.shared.add(
-                    module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
-                )
                 Dependencies.shared.add(module: Module { () -> HomeClient in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
@@ -148,9 +143,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in foreverService })
                 Dependencies.shared.add(module: Module { () -> ProfileClient in profileService })
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in editCoInsuredService })
-                Dependencies.shared.add(
-                    module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
-                )
                 Dependencies.shared.add(module: Module { () -> HomeClient in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
