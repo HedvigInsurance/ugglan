@@ -10,7 +10,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     public init(
         model: FlowClaimPhoneNumberStepModel
     ) {
-        self._vm = StateObject(wrappedValue: SubmitClaimContractViewModel(phoneNumber: model.phoneNumber))
+        _vm = StateObject(wrappedValue: SubmitClaimContractViewModel(phoneNumber: model.phoneNumber))
     }
 
     public var body: some View {
@@ -64,7 +64,6 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                         )
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
                         .hButtonIsLoading(vm.viewState == .loading)
-
                     }
                     .padding(.bottom, .padding16)
                 }
@@ -74,7 +73,6 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                 vm.keyboardEnabled = keyboardHeight != nil
             }
             .claimErrorTrackerForState($vm.viewState)
-
     }
 }
 
@@ -83,11 +81,12 @@ class SubmitClaimContractViewModel: ObservableObject {
     @Published var phoneNumber: String {
         didSet {
             let isValidPhone = phoneNumber.isValidPhone
-            self.enableContinueButton = isValidPhone || phoneNumber.isEmpty
-            self.phoneNumberError =
-                (self.enableContinueButton || keyboardEnabled) ? nil : L10n.myInfoPhoneNumberMalformedError
+            enableContinueButton = isValidPhone || phoneNumber.isEmpty
+            phoneNumberError =
+                (enableContinueButton || keyboardEnabled) ? nil : L10n.myInfoPhoneNumberMalformedError
         }
     }
+
     @Published var enableContinueButton: Bool = false
     @Published var keyboardEnabled: Bool = false
     @Published var type: ClaimsFlowContactType?
@@ -97,11 +96,11 @@ class SubmitClaimContractViewModel: ObservableObject {
     private var phoneNumberCancellable: AnyCancellable?
     init(phoneNumber: String) {
         self.phoneNumber = phoneNumber
-        self.enableContinueButton = phoneNumber.isValidPhone || phoneNumber.isEmpty
+        enableContinueButton = phoneNumber.isValidPhone || phoneNumber.isEmpty
         phoneNumberCancellable = Publishers.CombineLatest($phoneNumber, $keyboardEnabled)
             .receive(on: RunLoop.main)
             .sink { _ in
-            } receiveValue: { [weak self] (phone, keyboardVisible) in
+            } receiveValue: { [weak self] phone, keyboardVisible in
                 let isValidPhone = phone.isValidPhone
                 self?.enableContinueButton = isValidPhone || phone.isEmpty
                 self?.phoneNumberError =
@@ -135,7 +134,7 @@ class SubmitClaimContractViewModel: ObservableObject {
 
 enum ClaimsFlowContactType: hTextFieldFocusStateCompliant {
     static var last: ClaimsFlowContactType {
-        return ClaimsFlowContactType.phoneNumber
+        ClaimsFlowContactType.phoneNumber
     }
 
     var next: ClaimsFlowContactType? {

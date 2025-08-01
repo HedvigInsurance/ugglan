@@ -32,7 +32,7 @@ struct HelpCenterTopicView: View {
     private var topic: FaqTopic
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
-    public init(
+    init(
         topic: FaqTopic,
         router: Router
     ) {
@@ -58,10 +58,12 @@ struct HelpCenterTopicView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                Spacer()
-                SupportView(router: router)
             }
         }
+        .hFormAttachToBottom {
+            SupportView(router: router)
+        }
+        .hFormIgnoreBottomPadding
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
     }
 }

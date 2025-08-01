@@ -12,7 +12,7 @@ import hCoreUI
 
 extension String: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return self
+        self
     }
 }
 
@@ -29,7 +29,6 @@ public class HomeNavigationViewModel: ObservableObject {
     public init() {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
-
             var openChat: ChatConversation?
 
             if let chatType = notification.object as? ChatType {

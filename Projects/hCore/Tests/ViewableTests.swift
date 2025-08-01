@@ -8,7 +8,7 @@ final class ViewableTests: XCTestCase {
     func testViewable() {
         struct TestViewable: Viewable {
             func materialize(events _: ViewableEvents) -> (String, Future<String>) {
-                return ("mock", Future { _ in NilDisposer() })
+                ("mock", Future { _ in NilDisposer() })
             }
         }
 

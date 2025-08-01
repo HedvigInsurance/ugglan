@@ -27,7 +27,7 @@ public class Router: ObservableObject {
         let key = "\(T.self)"
         if let builder = builders[key], let view = builder.builder(route) {
             _ = onPush?(builder.options, view, route.nameForTracking)
-            self.routes.append(key)
+            routes.append(key)
         } else {
             routesToBePushedAfterViewAppears.append(route)
         }
@@ -40,13 +40,14 @@ public class Router: ObservableObject {
 
     public func pop<T>(_ hash: T.Type) {
         if let index = routes.lastIndex(of: "\(hash.self)") {
-            self.routes.remove(at: index)
+            routes.remove(at: index)
             onPopAtIndex?(index)
         }
     }
+
     public func pop<T>(_ view: T) where T: View {
         if let index = routes.firstIndex(of: "\(type(of: view))") {
-            self.routes.remove(at: index)
+            routes.remove(at: index)
             onPopAtIndex?(index)
         }
     }
@@ -90,6 +91,7 @@ struct Builderrr<Content: View> {
         self.options = options
     }
 }
+
 public struct RouterHost<Screen: View>: View {
     let router: Router
     let options: RouterOptions
@@ -102,7 +104,7 @@ public struct RouterHost<Screen: View>: View {
         tracking: TrackingViewNameProtocol,
         @ViewBuilder initial: @escaping () -> Screen
     ) {
-        self.initialView = initial
+        initialView = initial
         self.router = router
         self.options = options
         self.tracking = tracking
@@ -116,7 +118,6 @@ public struct RouterHost<Screen: View>: View {
 }
 
 private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
-
     let router: Router
     let options: RouterOptions
     let tracking: TrackingViewNameProtocol?
@@ -128,13 +129,13 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         tracking: TrackingViewNameProtocol?,
         @ViewBuilder initial: @escaping () -> Screen
     ) {
-        self.initialView = initial
+        initialView = initial
         self.router = router
         self.tracking = tracking
         self.options = options
     }
 
-    public func makeUIViewController(context: Context) -> UINavigationController {
+    public func makeUIViewController(context _: Context) -> UINavigationController {
         let navigation: hNavigationBaseController = {
             if options.contains(.largeNavigationBar) {
                 return hNavigationControllerWithLargerNavBar()
@@ -201,9 +202,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
                         }
                 } else {
                     vc.sheetPresentationController?
-                        .animateChanges {
-
-                        }
+                        .animateChanges {}
                 }
             }
 
@@ -268,7 +267,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         return navigation
     }
 
-    public func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {}
+    public func updateUIViewController(_: UINavigationController, context _: Context) {}
     public typealias UIViewControllerType = UINavigationController
 }
 
@@ -285,7 +284,7 @@ extension View {
         options: RouterOptions = [],
         tracking: TrackingViewNameProtocol
     ) -> some View {
-        return modifier(EmbededInNavigation(options: options, tracking: tracking, router: router))
+        modifier(EmbededInNavigation(options: options, tracking: tracking, router: router))
     }
 }
 
@@ -296,13 +295,14 @@ private struct EmbededInNavigation: ViewModifier {
 
     init(options: RouterOptions, tracking: TrackingViewNameProtocol, router: Router? = nil) {
         if let router {
-            self._router = StateObject(wrappedValue: router)
+            _router = StateObject(wrappedValue: router)
         }
         self.options = options
         self.tracking = tracking
     }
+
     func body(content: Content) -> some View {
-        return RouterHost(router: router, options: options, tracking: tracking) {
+        RouterHost(router: router, options: options, tracking: tracking) {
             content
                 .environmentObject(router)
         }
@@ -312,7 +312,7 @@ private struct EmbededInNavigation: ViewModifier {
 
 extension View {
     @MainActor public func configureTitle(_ title: String) -> some View {
-        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
+        introspect(.viewController, on: .iOS(.v13...)) { vc in
             UIView.performWithoutAnimation { [weak vc] in
                 vc?.title = title
             }
@@ -324,7 +324,7 @@ extension View {
         subTitle: String? = nil,
         titleColor: TitleColor? = nil
     ) -> some View {
-        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
+        introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.navigationItem.titleView = getTitleUIView(
                 title: title,
                 subTitle: subTitle,
@@ -334,7 +334,7 @@ extension View {
     }
 
     @MainActor public var enableModalInPresentation: some View {
-        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
+        introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.isModalInPresentation = true
         }
     }

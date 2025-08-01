@@ -52,10 +52,8 @@ public struct PaymentsView: View {
                             paymentHistory
                         }
                     }
-
                 }
                 .sectionContainerStyle(.transparent)
-
             }
             .padding(.vertical, .padding8)
         }
@@ -86,7 +84,7 @@ public struct PaymentsView: View {
                     paymentView(for: upcomingPayment)
                 }
 
-                if state.ongoingPaymentData.isEmpty && state.paymentData == nil {
+                if state.ongoingPaymentData.isEmpty, state.paymentData == nil {
                     VStack(spacing: 16) {
                         hCoreUIAssets.infoFilledSmall.view
                             .resizable()
@@ -147,7 +145,6 @@ public struct PaymentsView: View {
         }
         .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
-
     }
 
     private var paymentHistory: some View {

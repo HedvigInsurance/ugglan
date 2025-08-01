@@ -5,7 +5,7 @@ import hCore
 import hGraphQL
 
 @MainActor
-public class AnalyticsService {
+class AnalyticsService {
     @Inject var client: AnalyticsClient
 
     func fetchAndSetUserId() async throws {

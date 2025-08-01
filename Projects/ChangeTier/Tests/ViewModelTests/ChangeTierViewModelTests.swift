@@ -86,12 +86,12 @@ final class ChangeTierViewModelTests: XCTestCase {
             changeTierIntentModel
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeTierViewModel(
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
-        self.vm = model
+        vm = model
 
         try await Task.sleep(nanoseconds: 30_000_000)
         var expectedTiers = tiers
@@ -114,12 +114,12 @@ final class ChangeTierViewModelTests: XCTestCase {
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeTierViewModel(
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
-        self.vm = model
+        vm = model
         model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.canEditTier == false)
@@ -129,8 +129,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.activationDate == nil)
         assert(model.selectedTier == nil)
 
-        if case .error(let errorMessage) = model.viewState {
-
+        if case let .error(errorMessage) = model.viewState {
         } else {
             assertionFailure("not proper state")
         }
@@ -155,12 +154,12 @@ final class ChangeTierViewModelTests: XCTestCase {
             changeTierIntentModel
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeTierViewModel(
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
-        self.vm = model
+        vm = model
         model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
         model.setTier(for: "max")
@@ -180,12 +179,12 @@ final class ChangeTierViewModelTests: XCTestCase {
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeTierViewModel(
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
-        self.vm = model
+        vm = model
         model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
         model.setTier(for: "max")
@@ -196,7 +195,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.displayName == nil)
         assert(model.activationDate == nil)
         assert(model.selectedTier == nil)
-        if case .error(let errorMessage) = model.viewState {
+        if case let .error(errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
         } else {
             assertionFailure("not proper state")
@@ -222,12 +221,12 @@ final class ChangeTierViewModelTests: XCTestCase {
             changeTierIntentModel
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeTierViewModel(
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
-        self.vm = model
+        vm = model
         try await Task.sleep(nanoseconds: 30_000_000)
         model.setTier(for: "max")
         model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
@@ -252,12 +251,12 @@ final class ChangeTierViewModelTests: XCTestCase {
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let model = ChangeTierViewModel(
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
-        self.vm = model
+        vm = model
         model.fetchTiers()
         model.setTier(for: "max")
         model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
@@ -270,7 +269,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.activationDate == nil)
         assert(model.selectedTier == nil)
         try await Task.sleep(nanoseconds: 100_000)
-        if case .error(let errorMessage) = model.viewState {
+        if case let .error(errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
         } else {
             assertionFailure("not proper state")

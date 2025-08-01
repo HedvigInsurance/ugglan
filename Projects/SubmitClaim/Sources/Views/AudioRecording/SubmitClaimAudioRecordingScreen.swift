@@ -30,16 +30,16 @@ public struct SubmitClaimAudioRecordingScreen: View {
         self.claimsNavigationVm = claimsNavigationVm
         let path = claimsNavigationVm.claimAudioRecordingPath
         audioRecorder = AudioRecorder(filePath: path)
-        self._isAudioInput = State(initialValue: claimsNavigationVm.audioRecordingModel?.isAudioInput() ?? false)
+        _isAudioInput = State(initialValue: claimsNavigationVm.audioRecordingModel?.isAudioInput() ?? false)
         let inputText: String? = {
             if claimsNavigationVm.audioRecordingModel?.optionalAudio == false {
                 return nil
             }
             return claimsNavigationVm.audioRecordingModel?.inputTextContent
         }()
-        self._inputText = State(initialValue: inputText ?? "")
+        _inputText = State(initialValue: inputText ?? "")
         func myFunc(_: URL) {}
-        self.onSubmit = myFunc
+        onSubmit = myFunc
     }
 
     public var body: some View {
@@ -166,7 +166,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
         }
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .onAppear {
-            self.audioPlayer.url = url
+            audioPlayer.url = url
         }
     }
 
@@ -192,7 +192,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         content: .init(title: L10n.claimsUseTextInstead),
                         {
                             withAnimation {
-                                self.isAudioInput = false
+                                isAudioInput = false
                             }
                         }
                     )
@@ -206,7 +206,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 hText("\(minutesToString):\(secondsToString)", style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
                     .onReceive(timer) { _ in
-                        if ((seconds % 59) == 0) && seconds != 0 {
+                        if (seconds % 59) == 0, seconds != 0 {
                             minutes += 1
                             seconds = 0
                         } else {
@@ -267,7 +267,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     content: .init(title: L10n.claimsUseAudioRecording),
                     {
                         withAnimation {
-                            self.isAudioInput = true
+                            isAudioInput = true
                         }
                     }
                 )
@@ -298,7 +298,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     private func validate() -> Bool {
         withAnimation {
             let minCharacters = 50
-            if self.inputText.count < minCharacters {
+            if inputText.count < minCharacters {
                 inputTextError = L10n.claimsTextInputMinCharactersError(minCharacters)
             } else {
                 inputTextError = nil
@@ -347,7 +347,6 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
 }
 
 struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
-
     static var previews: some View {
         let client = FetchEntrypointsClientDemo()
         Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in client })

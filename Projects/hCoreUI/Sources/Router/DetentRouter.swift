@@ -33,7 +33,7 @@ extension View {
         options: Binding<DetentPresentationOption>? = .constant([]),
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
-        return modifier(
+        modifier(
             DetentSizeModifierModal(
                 item: item,
                 transitionType: transitionType ?? .detent(style: [.height]),
@@ -73,7 +73,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
             }
             present = newValue != nil
         }
-        .onChange(of: present) { newValue in
+        .onChange(of: present) { _ in
             if !present {
                 item = nil
             }
@@ -82,7 +82,6 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
 }
 
 private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUIContent: View {
-
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
     let transitionType: TransitionType
@@ -97,7 +96,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         _presented = presented
         self.content = content
         self.transitionType = transitionType
-        self._options = options
+        _options = options
     }
 
     @ViewBuilder
@@ -131,17 +130,17 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
-                if case .detent(let style) = transitionType {
+                if case let .detent(style) = transitionType {
                     presentationViewModel.style = style
                 }
 
-                let vcToPresent = self.getPresentationTarget()
+                let vcToPresent = getPresentationTarget()
                 let content = getContent()
 
                 let vc = hHostingController(rootView: content)
 
                 var shouldUseBlur: Bool {
-                    if case .detent(let style) = transitionType {
+                    if case let .detent(style) = transitionType {
                         return style.contains(.height)
                     }
                     return false
@@ -184,12 +183,12 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     @ViewBuilder
     private func getContent() -> some View {
         if transitionType == .center {
-            self.content()
+            content()
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
                 .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4))
                 .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2))
         } else {
-            self.content()
+            content()
         }
     }
 
@@ -261,7 +260,7 @@ class PresentationViewModel: ObservableObject {
                             }
                             .removeDuplicates()
                             .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
-                            .sink(receiveValue: { value in
+                            .sink(receiveValue: { _ in
                                 guard let self else { return }
                                 if #available(iOS 16.0, *) {
                                     self.presentingVC?.sheetPresentationController?
@@ -271,9 +270,7 @@ class PresentationViewModel: ObservableObject {
                                         }
                                 } else {
                                     self.presentingVC?.sheetPresentationController?
-                                        .animateChanges {
-
-                                        }
+                                        .animateChanges {}
                                 }
                             })
                     }
@@ -281,6 +278,7 @@ class PresentationViewModel: ObservableObject {
             }
         }
     }
+
     private var formContentSizeChanged: AnyCancellable?
 }
 
@@ -297,7 +295,7 @@ public struct DetentPresentationOption: OptionSet, Sendable {
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
     public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
 
-    nonisolated public init(rawValue: UInt) {
+    public nonisolated init(rawValue: UInt) {
         self.rawValue = rawValue
     }
 }

@@ -18,9 +18,9 @@ public struct Referral: Hashable, Codable, Sendable {
     }
 
     var discountLabelText: String {
-        switch self.status {
+        switch status {
         case .active:
-            return self.activeDiscount?.negative.formattedAmount ?? ""
+            return activeDiscount?.negative.formattedAmount ?? ""
         case .pending:
             return L10n.referralPendingStatusLabel
         case .terminated:

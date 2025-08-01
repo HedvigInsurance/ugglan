@@ -5,7 +5,6 @@ import hCore
 
 @MainActor
 extension UIColor {
-
     @MainActor
     private enum BrandColorBase {
         static let grayScale25 = UIColor(hexString: "FAFAFA")
@@ -27,11 +26,11 @@ extension UIColor {
         static let white = UIColor.white
         static let black = UIColor.black
 
-        static var primaryBorder = UIColor(dynamic: { trait -> UIColor in
+        static var primaryBorder = UIColor(dynamic: { _ -> UIColor in
             BrandColorBase.grayScale1000.withAlphaComponent(0.07)
         })
-
     }
+
     public enum BrandColorNew {
         case primaryBackground(_ negative: Bool = false)
         case secondaryBackground(_ negative: Bool = false)
@@ -60,12 +59,12 @@ extension UIColor {
                 })
             case let .secondaryBackground(negative):
                 if negative {
-                    return UIColor(dynamic: { trait -> UIColor in
+                    return UIColor(dynamic: { _ -> UIColor in
                         BrandColorBase.grayScale1000.withAlphaComponent(0.045)
                     })
                 }
 
-                return UIColor(dynamic: { trait -> UIColor in
+                return UIColor(dynamic: { _ -> UIColor in
                     BrandColorBase.grayScale1000.withAlphaComponent(0.045)
                 })
             case .primaryBorderColor:
@@ -83,7 +82,7 @@ extension UIColor {
                         ? BrandColorBase.grayScale25 : BrandColorBase.grayScale1000
                 })
             case .secondaryText:
-                return UIColor(dynamic: { trait -> UIColor in
+                return UIColor(dynamic: { _ -> UIColor in
                     BrandColorBase.grayScale700
                 })
             case .caution:
@@ -106,7 +105,7 @@ extension UIColor {
 
         @MainActor
         var color: UIColor {
-            return self.color(with: nil)
+            self.color(with: nil)
         }
 
         @MainActor

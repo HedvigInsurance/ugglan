@@ -16,8 +16,8 @@ enum UgglanAction: ActionProtocol {
 
 final class UgglanStore: StateStore<UgglanState, UgglanAction> {
     override func effects(
-        _ getState: @escaping () -> UgglanState,
-        _ action: UgglanAction
+        _: @escaping () -> UgglanState,
+        _: UgglanAction
     ) async {}
 
     override func reduce(_ state: UgglanState, _ action: UgglanAction) async -> UgglanState {

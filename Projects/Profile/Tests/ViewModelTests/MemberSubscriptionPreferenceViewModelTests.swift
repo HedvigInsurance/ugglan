@@ -26,7 +26,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
             subscriptionPreferenceUpdate: { _ in }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let model = MemberSubscriptionPreferenceViewModel()
         try await Task.sleep(nanoseconds: 300_000_000)
@@ -43,7 +43,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let model = MemberSubscriptionPreferenceViewModel()
         await model.toggleSubscription()

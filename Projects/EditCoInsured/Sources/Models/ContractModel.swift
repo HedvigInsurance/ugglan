@@ -1,5 +1,4 @@
 public struct Contract: Codable, Hashable, Equatable, Identifiable {
-
     public init(
         id: String,
         exposureDisplayName: String,
@@ -23,6 +22,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         self.lastName = lastName
         self.ssn = ssn
     }
+
     public let id: String
     public let exposureDisplayName: String
     public let currentAgreement: Agreement?
@@ -34,19 +34,19 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
     public let ssn: String?
     public var coInsured: [CoInsuredModel]
     public var fullName: String {
-        return firstName + " " + lastName
+        firstName + " " + lastName
     }
 
     public var nbOfMissingCoInsured: Int {
-        return self.coInsured.filter({ $0.hasMissingInfo }).count
+        coInsured.filter(\.hasMissingInfo).count
     }
 
     public var nbOfMissingCoInsuredWithoutTermination: Int {
-        return self.coInsured.filter({ $0.hasMissingInfo && $0.terminatesOn == nil }).count
+        coInsured.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
     public var showEditCoInsuredInfo: Bool {
-        return supportsCoInsured && self.terminationDate == nil
+        supportsCoInsured && terminationDate == nil
     }
 }
 
@@ -72,6 +72,7 @@ public struct ProductVariant: Codable, Hashable {
         self.displayName = displayName
     }
 }
+
 @MainActor
 extension InsuredPeopleConfig {
     public init(

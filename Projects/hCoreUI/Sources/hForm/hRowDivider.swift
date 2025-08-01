@@ -40,11 +40,11 @@ struct hRowDividerModifier: ViewModifier {
 
 extension View {
     public func dividerInsets(_ insets: EdgeInsets) -> some View {
-        self.modifier(hRowDividerModifier(insets: insets))
+        modifier(hRowDividerModifier(insets: insets))
     }
 
     public func dividerInsets(_ edges: Edge.Set = .all, _ length: CGFloat) -> some View {
-        self.modifier(
+        modifier(
             hRowDividerModifier(
                 insets: EdgeInsets(
                     top: edges.contains(.top) ? length : 0,

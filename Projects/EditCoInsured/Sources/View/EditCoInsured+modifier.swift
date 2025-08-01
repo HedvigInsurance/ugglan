@@ -7,7 +7,7 @@ extension View {
     public func handleEditCoInsured(
         with vm: EditCoInsuredViewModel
     ) -> some View {
-        return modifier(EditCoInsured(vm: vm))
+        modifier(EditCoInsured(vm: vm))
     }
 }
 
@@ -91,7 +91,7 @@ enum InsuredPeopleConfigType {
 }
 
 extension InsuredPeopleConfigType: TrackingViewNameProtocol {
-    public var nameForTracking: String {
+    var nameForTracking: String {
         switch self {
         case .oneItem:
             return .init(describing: InsuredPeopleScreen.self)

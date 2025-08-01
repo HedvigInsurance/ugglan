@@ -13,7 +13,7 @@ struct CoInsuredProcessingScreen: View {
         showSuccessScreen: Bool,
         intentVM: IntentViewModel
     ) {
-        self.intentViewModel = intentVM
+        intentViewModel = intentVM
         self.showSuccessScreen = showSuccessScreen
     }
 
@@ -82,10 +82,10 @@ struct CoInsuredProcessingScreen: View {
 
 extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
     var nameForTracking: String {
-        return .init(describing: CoInsuredProcessingScreen.self)
+        .init(describing: CoInsuredProcessingScreen.self)
     }
-
 }
+
 @MainActor
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
@@ -99,7 +99,7 @@ struct SuccessScreen_Previews: PreviewProvider {
             showSuccessScreen: true,
             intentVM: .init()
         )
-        .environmentObject(EditCoInsuredNavigationViewModel.init(config: .init()))
+        .environmentObject(EditCoInsuredNavigationViewModel(config: .init()))
         .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
     }
 }

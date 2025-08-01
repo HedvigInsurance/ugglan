@@ -5,12 +5,14 @@ import hCore
 public struct Spacing {
     public init(height: Float) {
         self.height = height
-        self.width = nil
+        width = nil
     }
+
     public init(width: Float) {
         self.width = width
-        self.height = nil
+        height = nil
     }
+
     let width: Float?
     let height: Float?
 }

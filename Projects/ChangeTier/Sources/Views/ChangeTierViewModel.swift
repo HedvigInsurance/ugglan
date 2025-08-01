@@ -37,7 +37,7 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     var showDeductibleField: Bool {
-        return selectedTier?.quotes.filter({ $0.deductableAmount != nil || $0.deductablePercentage != nil }).count ?? 0
+        selectedTier?.quotes.filter { $0.deductableAmount != nil || $0.deductablePercentage != nil }.count ?? 0
             > 0
     }
 
@@ -53,25 +53,25 @@ public class ChangeTierViewModel: ObservableObject {
         let newSelectedTier = tiers.first(where: { $0.name == tierName })
         if newSelectedTier != selectedTier {
             if newSelectedTier?.quotes.count ?? 0 == 1 {
-                self.selectedQuote = newSelectedTier?.quotes.first
-                self.canEditDeductible = false
+                selectedQuote = newSelectedTier?.quotes.first
+                canEditDeductible = false
             } else {
-                self.selectedQuote = nil
-                self.canEditDeductible = true
+                selectedQuote = nil
+                canEditDeductible = true
             }
         }
-        self.displayName =
+        displayName =
             selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
             .displayName ?? displayName
-        self.selectedTier = newSelectedTier
-        self.newPremium = selectedQuote?.basePremium
+        selectedTier = newSelectedTier
+        newPremium = selectedQuote?.basePremium
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
         if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
-            self.selectedQuote = deductible
-            self.newPremium = deductible.basePremium
+            selectedQuote = deductible
+            newPremium = deductible.basePremium
         }
     }
 
@@ -89,10 +89,9 @@ public class ChangeTierViewModel: ObservableObject {
                 if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
                     self.tiers = [currentTier] + data.tiers
                 } else {
-
                     if let currentQuote {
                         var currentTierInList: Tier? = data.tiers.first(where: { $0 == currentTier })
-                        let tiersWithoutCurrentTier: [Tier] = data.tiers.filter({ $0 != currentTier })
+                        let tiersWithoutCurrentTier: [Tier] = data.tiers.filter { $0 != currentTier }
 
                         let currentTierQuotes: [Quote] = [currentQuote] + (currentTierInList?.quotes ?? [])
                         currentTierInList?.quotes = currentTierQuotes
@@ -170,7 +169,7 @@ public class ChangeTierViewModel: ObservableObject {
                 withAnimation {
                     viewState = .success
                 }
-            } catch let error {
+            } catch {
                 withAnimation {
                     self.viewState = .error(
                         errorMessage: error.localizedDescription

@@ -134,6 +134,7 @@ public struct ContractsNavigation<Content: View>: View {
         }
     }
 }
+
 @MainActor
 public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
@@ -179,7 +180,6 @@ extension ContractsRouterType: TrackingViewNameProtocol {
             return "Terminated Contracts"
         }
     }
-
 }
 
 extension TerminationConfirmConfig {
@@ -212,6 +212,6 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
 
 extension ContractsNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: Contracts.self)
+        .init(describing: Contracts.self)
     }
 }

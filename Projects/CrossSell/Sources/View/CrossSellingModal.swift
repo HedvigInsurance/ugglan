@@ -37,7 +37,7 @@ public struct CrossSellingModal: View {
 
 extension CrossSellingModal: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return "CrossSellingModal"
+        "CrossSellingModal"
     }
 }
 

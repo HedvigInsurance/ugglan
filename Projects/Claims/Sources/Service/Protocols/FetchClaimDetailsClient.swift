@@ -16,6 +16,7 @@ class FetchClaimDetailsService {
         log.info("\(FetchClaimDetailsService.self): get for \(type)", error: nil, attributes: nil)
         return try await client.get(for: type)
     }
+
     func getFiles() async throws -> (claimId: String, files: [File]) {
         log.info("\(FetchClaimDetailsService.self): getFiles for \(type)", error: nil, attributes: nil)
         return try await client.getFiles(for: type)
@@ -46,7 +47,6 @@ public enum FetchClaimDetailsError: Error {
 
 extension FetchClaimDetailsError: LocalizedError {
     public var errorDescription: String? {
-        return L10n.General.errorBody
+        L10n.General.errorBody
     }
-
 }

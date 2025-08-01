@@ -16,6 +16,7 @@ public enum MaskType {
     case firstName
     case lastName
 }
+
 @MainActor
 public struct Masking {
     public let type: MaskType
@@ -28,7 +29,6 @@ public struct Masking {
         textField.keyboardType = keyboardType
         textField.textContentType = textContentType
         textField.autocapitalizationType = autocapitalizationType
-
     }
 
     public func isValid(text: String) -> Bool {
@@ -104,7 +104,7 @@ public struct Masking {
             guard let age = components.year else { return nil }
             guard let day = components.day else { return nil }
             guard let minutes = components.minute else { return nil }
-            if age == 0 && (day < 0 || minutes < 0) {
+            if age == 0, day < 0 || minutes < 0 {
                 return age - 1
             }
             return age
@@ -218,6 +218,7 @@ public struct Masking {
         default: return false
         }
     }
+
     public var spellCheckingType: UITextSpellCheckingType {
         switch type {
         case .none, .disabledSuggestion:
@@ -283,7 +284,7 @@ public struct Masking {
             }
 
             if text.count <= maxCount {
-                let sanitizedText = String(text.filter { $0.isDigit })
+                let sanitizedText = String(text.filter(\.isDigit))
                 return sanitizedText
             }
 
@@ -294,10 +295,9 @@ public struct Masking {
         case .personalNumber:
             return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
         case .postalCode: return delimitedDigits(delimiterPositions: [4], maxCount: 6, delimiter: " ")
-
         case .birthDate, .birthDateCoInsured:
             return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
-        case .digits: return text.filter { $0.isDigit }
+        case .digits: return text.filter(\.isDigit)
         case .email: return text
         case .none: return text
         case .address: return text
@@ -325,6 +325,6 @@ extension Masking: ViewModifier {
 
 extension Character {
     public var isDigit: Bool {
-        return "0123456789".contains(String(self))
+        "0123456789".contains(String(self))
     }
 }

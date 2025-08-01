@@ -63,7 +63,6 @@ public struct ProfileNavigation<Content: View>: View {
                         CertificatesScreen()
                             .configureTitle(L10n.Profile.Certificates.title)
                             .environmentObject(profileNavigationViewModel)
-
                     }
                 }
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in

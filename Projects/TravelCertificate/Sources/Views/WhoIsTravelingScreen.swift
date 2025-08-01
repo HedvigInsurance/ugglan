@@ -14,11 +14,9 @@ struct WhoIsTravelingScreen: View {
         self.vm = vm
         self.travelCertificateNavigationVm = travelCertificateNavigationVm
         itemPickerConfig = .init(
-            items: {
-                return vm.coInsuredModelData.compactMap({
-                    (object: $0, displayName: ItemModel(title: $0.fullName ?? ""))
-                })
-            }(),
+            items: vm.coInsuredModelData.compactMap {
+                (object: $0, displayName: ItemModel(title: $0.fullName ?? ""))
+            },
             preSelectedItems: {
                 if let first = vm.coInsuredModelData.first {
                     return [first]
@@ -90,16 +88,16 @@ class WhoIsTravelingViewModel: ObservableObject {
         )
         var coInsured: [CoInsuredModel] = []
         coInsured.append(insuranceHolder)
-        coInsured.append(contentsOf: contract?.coInsured.filter({ !$0.hasMissingInfo }) ?? [])
+        coInsured.append(contentsOf: contract?.coInsured.filter { !$0.hasMissingInfo } ?? [])
         coInsuredModelData = coInsured
-        hasMissingCoInsuredData = contract?.coInsured.filter({ $0.hasMissingInfo }).count != 0
+        hasMissingCoInsuredData = contract?.coInsured.filter(\.hasMissingInfo).count != 0
     }
 
     func setCoInsured(data: [PolicyCoinsuredPersonModel]) {
         isPolicyHolderIncluded = false
         policyCoinsuredPersons = []
-        data.forEach { coInsured in
-            if coInsured.fullName == specification.fullName && coInsured.personalNumber == contract?.ssn {
+        for coInsured in data {
+            if coInsured.fullName == specification.fullName, coInsured.personalNumber == contract?.ssn {
                 isPolicyHolderIncluded = true
             } else {
                 policyCoinsuredPersons.append(contentsOf: data)

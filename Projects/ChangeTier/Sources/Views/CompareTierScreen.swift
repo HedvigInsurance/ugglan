@@ -37,7 +37,6 @@ struct CompareTierScreen: View {
     private func comparisionView(for tierName: String) -> some View {
         hSection(vm.getPerils(for: tierName), id: \.title) { peril in
             perilRow(for: peril)
-
         }
         .sectionContainerStyle(.transparent)
         .padding(.bottom, .padding24)
@@ -131,7 +130,7 @@ class CompareTierViewModel: ObservableObject {
         tiers: [Tier]
     ) {
         self.tiers = tiers
-        self.productVariantComparision()
+        productVariantComparision()
     }
 
     private func getPerils(
@@ -142,9 +141,9 @@ class CompareTierViewModel: ObservableObject {
         var index = 0
 
         tierNames?
-            .forEach({ tierName in
+            .forEach { tierName in
                 let cells = rows?
-                    .map({ row in
+                    .map { row in
                         let cellForIndex = row.cells[index]
                         return Perils(
                             id: row.title,
@@ -154,11 +153,11 @@ class CompareTierViewModel: ObservableObject {
                             covered: [cellForIndex.coverageText ?? ""],
                             isDisabled: !cellForIndex.isCovered
                         )
-                    })
+                    }
 
                 tempPerils.append((tierName, cells ?? []))
                 index = index + 1
-            })
+            }
         return tempPerils
     }
 
@@ -169,30 +168,30 @@ class CompareTierViewModel: ObservableObject {
         Task { @MainActor in
             do {
                 var termsVersionsToCompare: [String] = []
-                tiers.forEach({ tier in
-                    tier.quotes.forEach({ quote in
+                for tier in tiers {
+                    for quote in tier.quotes {
                         if let termsVersion = quote.productVariant?.termsVersion,
                             !termsVersionsToCompare.contains(termsVersion)
                         {
                             termsVersionsToCompare.append(termsVersion)
                         }
-                    })
-                })
+                    }
+                }
 
                 let productVariantComparisionData = try await service.compareProductVariants(
                     termsVersion: termsVersionsToCompare
                 )
 
                 let rows = productVariantComparisionData.rows
-                let namesOfTiers = productVariantComparisionData.variantColumns.compactMap({ $0.displayNameTier })
+                let namesOfTiers = productVariantComparisionData.variantColumns.compactMap(\.displayNameTier)
                 self.perils = getPerils(tierNames: namesOfTiers, rows: rows)
                 scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-                    pageModels: namesOfTiers.map({ .init(id: $0, title: $0) })
+                    pageModels: namesOfTiers.map { .init(id: $0, title: $0) }
                 )
                 withAnimation {
                     viewState = .success
                 }
-            } catch let error {
+            } catch {
                 withAnimation {
                     self.viewState = .error(
                         errorMessage: error.localizedDescription
@@ -203,7 +202,7 @@ class CompareTierViewModel: ObservableObject {
     }
 
     func getPerils(for tierName: String) -> [Perils] {
-        perils.first(where: { $0.0 == tierName })?.1.filter({ !$0.isDisabled }) ?? []
+        perils.first(where: { $0.0 == tierName })?.1.filter { !$0.isDisabled } ?? []
     }
 }
 
@@ -303,6 +302,7 @@ extension Perils {
             )
         )
 }
+
 extension UIImage {
     fileprivate func getImageFor(style: HFontTextStyle) -> Image {
         let height = 24 * style.multiplier
@@ -310,7 +310,7 @@ extension UIImage {
         renderFormat.opaque = false
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: height, height: height), format: renderFormat)
         let newImage = renderer.image {
-            (context) in
+            _ in
             self.draw(in: CGRect(x: 0, y: height * 0.2, width: height, height: height))
         }
 

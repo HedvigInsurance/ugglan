@@ -24,7 +24,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
 }
 
 struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
-    public var id: String?
+    var id: String?
     let specification: [TravelInsuranceContractSpecification]
 }
 
@@ -45,7 +45,6 @@ extension TravelCertificateRouterActions: TrackingViewNameProtocol {
             return .init(describing: ListScreen.self)
         }
     }
-
 }
 
 enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
@@ -62,7 +61,6 @@ extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProto
             return ""
         }
     }
-
 }
 
 public struct TravelCertificateNavigation: View {
@@ -227,7 +225,7 @@ public struct TravelCertificateNavigation: View {
 
 extension View {
     func addDismissFlow() -> some View {
-        self.withDismissButton(
+        withDismissButton(
             title: L10n.General.areYouSure,
             message: L10n.Claims.Alert.body,
             confirmButton: L10n.General.yes,

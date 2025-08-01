@@ -177,7 +177,6 @@ extension Project {
         externalDependencies: [ExternalDependencies],
         sdks: [String] = []
     ) -> Project {
-
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",

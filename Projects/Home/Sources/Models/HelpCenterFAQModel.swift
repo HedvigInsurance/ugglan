@@ -64,12 +64,12 @@ public struct FAQModel: Codable, Equatable, Hashable, Sendable, Identifiable {
 
 extension FAQModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: HelpCenterQuestionView.self)
+        .init(describing: HelpCenterQuestionView.self)
     }
 }
 
 extension FaqTopic: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: HelpCenterTopicView.self)
+        .init(describing: HelpCenterTopicView.self)
     }
 }

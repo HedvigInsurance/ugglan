@@ -10,6 +10,7 @@ struct ImagesView: View {
     init(vm: ImagesViewModel) {
         self.vm = vm
     }
+
     var body: some View {
         Group {
             if vm.permissionNotGranted {
@@ -33,7 +34,7 @@ struct ImagesView: View {
                     LazyHStack {
                         ForEach(vm.files, id: \.creationDate) { file in
                             PHPAssetPreview(asset: file) { message in
-                                self.vm.sendMessage(message)
+                                vm.sendMessage(message)
                             }
                         }
                     }
@@ -90,16 +91,17 @@ class ImagesViewModel: ObservableObject {
                 list.append(asset)
             }
 
-            self.files = list
+            files = list
         @unknown default:
             break
         }
     }
+
     func openSettings() {
         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
             return
         }
-        UIApplication.shared.open(settingsUrl)
+        Dependencies.urlOpener.open(settingsUrl)
     }
 }
 
@@ -109,9 +111,9 @@ class ImagesViewModel: ObservableObject {
 
 #Preview {
     PHPAssetPreview(asset: .init()) { _ in
-
     }
 }
+
 struct PHPAssetPreview: View {
     let asset: PHAsset
     @State private var image: UIImage?
@@ -128,7 +130,7 @@ struct PHPAssetPreview: View {
                         .aspectRatio(contentMode: .fill)
                         .onTapGesture {
                             withAnimation {
-                                self.selected.toggle()
+                                selected.toggle()
                             }
                         }
                         .blur(radius: selected ? 20 : 0, opaque: true)
@@ -149,7 +151,7 @@ struct PHPAssetPreview: View {
                                 }
                                 withAnimation {
                                     loading = false
-                                    self.selected = false
+                                    selected = false
                                 }
                             }
                         }
@@ -207,7 +209,7 @@ extension PHAsset {
         options.isNetworkAccessAllowed = true
         let id = UUID().uuidString
         let file = try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<File, Error>) -> Void in
+            (inCont: CheckedContinuation<File, Error>) in
             requestContentEditingInput(with: options) { contentInput, _ in
                 switch self.mediaType {
                 case .video:

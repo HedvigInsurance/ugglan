@@ -99,7 +99,6 @@ public class FileGridViewModel: ObservableObject {
                 title: L10n.claimsFileUploadRemoveCancel,
                 style: .default,
                 handler: { _ in
-
                 }
             )
         )

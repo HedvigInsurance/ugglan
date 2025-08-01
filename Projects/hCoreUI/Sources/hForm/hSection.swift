@@ -4,7 +4,7 @@ import SwiftUI
 @resultBuilder
 public struct RowViewBuilder {
     public static func buildBlock<V: View>(_ view: V) -> some View {
-        return view
+        view
     }
 
     public static func buildOptional<V: View>(_ view: V?) -> some View {
@@ -15,7 +15,7 @@ public struct RowViewBuilder {
         _ viewA: A,
         _ viewB: B
     ) -> some View {
-        return TupleView((viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .bottom)))
+        TupleView((viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .bottom)))
     }
 
     public static func buildBlock<A: View, B: View, C: View>(
@@ -23,7 +23,7 @@ public struct RowViewBuilder {
         _ viewB: B,
         _ viewC: C
     ) -> some View {
-        return TupleView(
+        TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .bottom)
@@ -37,13 +37,14 @@ public struct RowViewBuilder {
         _ viewC: C,
         _ viewD: D
     ) -> some View {
-        return TupleView(
+        TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .bottom)
             )
         )
     }
+
     public static func buildBlock<A: View, B: View, C: View, D: View, E: View>(
         _ viewA: A,
         _ viewB: B,
@@ -51,7 +52,7 @@ public struct RowViewBuilder {
         _ viewD: D,
         _ viewE: E
     ) -> some View {
-        return TupleView(
+        TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
@@ -68,7 +69,7 @@ public struct RowViewBuilder {
         _ viewE: E,
         _ viewF: F
     ) -> some View {
-        return TupleView(
+        TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
@@ -86,7 +87,7 @@ public struct RowViewBuilder {
         _ viewF: F,
         _ viewG: G
     ) -> some View {
-        return TupleView(
+        TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
@@ -106,7 +107,7 @@ public struct RowViewBuilder {
         _ viewG: G,
         _ viewH: H
     ) -> some View {
-        return TupleView(
+        TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
@@ -127,7 +128,7 @@ public struct RowViewBuilder {
         _ viewH: H,
         _ viewI: I
     ) -> some View {
-        return TupleView(
+        TupleView(
             (
                 viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
                 viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
@@ -156,7 +157,7 @@ private struct hShadowModifier: ViewModifier {
 extension View {
     /// adds a Hedvig shadow to the view
     public func hShadow(type: ShadowType = .default, show: Bool = true) -> some View {
-        self.modifier(hShadowModifier(type: type, show: show))
+        modifier(hShadowModifier(type: type, show: show))
     }
 }
 
@@ -175,6 +176,7 @@ public enum ShadowType {
             return opacity
         }
     }
+
     var radius: CGFloat {
         switch self {
         case .default:
@@ -185,6 +187,7 @@ public enum ShadowType {
             return radius
         }
     }
+
     var xOffset: CGFloat {
         switch self {
         case .default:
@@ -195,6 +198,7 @@ public enum ShadowType {
             return xOffset
         }
     }
+
     var yOffset: CGFloat {
         switch self {
         case .default:
@@ -228,7 +232,7 @@ extension EnvironmentValues {
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
-        self.environment(\.hSectionContainerStyle, style)
+        environment(\.hSectionContainerStyle, style)
     }
 }
 
@@ -247,14 +251,14 @@ extension EnvironmentValues {
 extension View {
     /// set section container style
     public func sectionContainerCornerMaskerCorners(_ corners: UIRectCorner) -> some View {
-        self.environment(\.hSectionContainerCornerMaskedCorners, corners)
+        environment(\.hSectionContainerCornerMaskedCorners, corners)
     }
 }
 
 struct hSectionContainerStyleModifier: ViewModifier {
     @Environment(\.hSectionContainerStyle) var containerStyle
     @Environment(\.hSectionContainerCornerMaskedCorners) var maskedCorners
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         switch containerStyle {
         case .transparent:
             content
@@ -288,11 +292,11 @@ extension EnvironmentValues {
 
 extension View {
     public var hWithoutDivider: some View {
-        self.environment(\.hWithoutDivider, true)
+        environment(\.hWithoutDivider, true)
     }
 
     public func shouldShowDivider(_ show: Bool) -> some View {
-        self.environment(\.hWithoutDivider, show)
+        environment(\.hWithoutDivider, show)
     }
 }
 
@@ -315,7 +319,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
-        self.environment(\.hWithoutHorizontalPadding, attributes)
+        environment(\.hWithoutHorizontalPadding, attributes)
     }
 }
 
@@ -332,7 +336,7 @@ extension EnvironmentValues {
 
 extension View {
     public var hSectionHeaderWithDivider: some View {
-        self.environment(\.hSectionHeaderWithDivider, true)
+        environment(\.hSectionHeaderWithDivider, true)
     }
 }
 
@@ -343,7 +347,7 @@ struct hSectionContainer<Content: View>: View {
     init(
         @ViewBuilder _ builder: @escaping () -> Content
     ) {
-        self.content = builder()
+        content = builder()
     }
 
     var body: some View {
@@ -371,7 +375,7 @@ public struct hSection<Header: View, Content: View>: View {
         @RowViewBuilder _ builder: @escaping () -> Content
     ) {
         self.header = header
-        self.content = builder()
+        content = builder()
     }
 
     init(
@@ -442,7 +446,7 @@ public struct hSection<Header: View, Content: View>: View {
             self.infoButtonDescription = infoButtonDescription
             self.withoutBottomPadding = withoutBottomPadding
             self.extraView = extraView
-            self.withInfoButton = infoButtonDescription != nil
+            withInfoButton = infoButtonDescription != nil
         }
 
         public var body: some View {
@@ -482,7 +486,7 @@ extension hSection where Header == EmptyView {
 }
 
 extension hSection where Content == AnyView, Header == EmptyView {
-    struct IdentifiableContent: Identifiable {
+    internal struct IdentifiableContent: Identifiable {
         var id: Int
         var position: hRowPosition
         var content: Content
@@ -492,7 +496,6 @@ extension hSection where Content == AnyView, Header == EmptyView {
         _ list: [Element],
         @ViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent
     ) where Element: Identifiable {
-
         let count = list.count
         let unique = count == 1
         let lastOffset = count - 1
@@ -521,7 +524,7 @@ extension hSection where Content == AnyView, Header == EmptyView {
                 )
             }
 
-        self.content = AnyView(
+        content = AnyView(
             ForEach(list) { element in
                 VStack(spacing: 0) {
                     element.content
@@ -529,7 +532,6 @@ extension hSection where Content == AnyView, Header == EmptyView {
                 .environment(\.hRowPosition, element.position)
             }
         )
-
     }
 
     public init<Element, Hash: Hashable, BuilderContent: View>(
@@ -565,7 +567,7 @@ extension hSection where Content == AnyView, Header == EmptyView {
                 )
             }
 
-        self.content = AnyView(
+        content = AnyView(
             ForEach(list) { element in
                 VStack(spacing: 0) {
                     element.content

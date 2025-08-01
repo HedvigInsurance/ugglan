@@ -8,7 +8,7 @@ struct AddonLogInfo: Codable {
     }
 
     var asAddonAttributes: [String: AddonLogInfo] {
-        return ["addon": self]
+        ["addon": self]
     }
 }
 

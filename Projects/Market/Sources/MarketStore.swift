@@ -11,8 +11,8 @@ public enum MarketAction: ActionProtocol {
 }
 
 public final class MarketStore: StateStore<MarketState, MarketAction> {
-    public override func effects(
-        _ getState: @escaping () -> MarketState,
+    override public func effects(
+        _: @escaping () -> MarketState,
         _ action: MarketAction
     ) async {
         switch action {
@@ -23,7 +23,7 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
         }
     }
 
-    public override func reduce(_ state: MarketState, _ action: MarketAction) async -> MarketState {
+    override public func reduce(_ state: MarketState, _ action: MarketAction) async -> MarketState {
         switch action {
         default:
             break

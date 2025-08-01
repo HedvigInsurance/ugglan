@@ -32,8 +32,6 @@ struct Impersonate {
         do {
             try await authenticationService.exchange(code: authorizationCode)
             ApplicationState.preserveState(.impersonation)
-        } catch _ {
-
-        }
+        } catch _ {}
     }
 }

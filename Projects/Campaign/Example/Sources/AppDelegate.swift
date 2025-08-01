@@ -5,7 +5,7 @@ import hCoreUI
 @main class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    internal func application(
+    func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {

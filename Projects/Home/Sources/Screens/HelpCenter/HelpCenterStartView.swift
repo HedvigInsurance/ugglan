@@ -147,7 +147,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     @Published var quickActions: [QuickAction] = []
     @Inject var homeClient: HomeClient
 
-    //search part
+    // search part
     @Published var focusState: Bool? = false
     @Published var searchResultsQuestions: [FAQModel] = []
     @Published var searchResultsQuickActions: [QuickAction] = []
@@ -167,7 +167,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         super.init()
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .map({ $0.quickActions })
+            .map(\.quickActions)
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] quickActions in
@@ -176,7 +176,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             .store(in: &cancellables)
         quickActions = store.state.quickActions
         store.stateSignal
-            .map({ $0.helpCenterFAQModel })
+            .map(\.helpCenterFAQModel)
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self, weak store] helpCenterFaqModel in
@@ -215,7 +215,6 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             $0.displayTitle.lowercased().contains(query) || $0.displaySubtitle.lowercased().contains(query)
         }
     }
-
 }
 
 extension HelpCenterStartViewModel: UISearchResultsUpdating {
@@ -229,11 +228,11 @@ extension HelpCenterStartViewModel: UISearchResultsUpdating {
 }
 
 extension HelpCenterStartViewModel: UISearchControllerDelegate {
-    func didPresentSearchController(_ searchController: UISearchController) {
+    func didPresentSearchController(_: UISearchController) {
         updateColors()
     }
 
-    func willPresentSearchController(_ searchController: UISearchController) {
+    func willPresentSearchController(_: UISearchController) {
         updateColors()
     }
 
@@ -246,13 +245,11 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
         )
         button?.setTitleColor(color, for: .normal)
     }
-
 }
 
 #Preview {
-    return HelpCenterStartView(
+    HelpCenterStartView(
         onQuickAction: { _ in
-
         }
     )
 }

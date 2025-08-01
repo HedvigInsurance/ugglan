@@ -28,8 +28,8 @@ extension AddonVariant {
     ) {
         self.init(
             displayName: fragment?.displayName ?? "",
-            documents: fragment?.documents.map({ .init($0) }) ?? [],
-            perils: fragment?.addonPerils.map({ .init(fragment: $0) }) ?? [],
+            documents: fragment?.documents.map { .init($0) } ?? [],
+            perils: fragment?.addonPerils.map { .init(fragment: $0) } ?? [],
             product: fragment?.product ?? "",
             termsVersion: fragment?.termsVersion ?? ""
         )

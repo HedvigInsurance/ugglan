@@ -4,10 +4,10 @@ import SwiftUI
 extension hGraphQL.GraphQLError {
     var logDescription: String {
         switch self {
-        case .graphQLError(let errors):
-            let messages = errors.map { $0.localizedDescription }
+        case let .graphQLError(errors):
+            let messages = errors.map(\.localizedDescription)
             return messages.joined(separator: " ")
-        case .otherError(let error):
+        case let .otherError(error):
             return "Other error \(error)"
         }
     }
@@ -26,7 +26,7 @@ extension ApolloClient {
         queue: DispatchQueue = DispatchQueue.main
     ) async throws -> Query.Data {
         try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<Query.Data, Error>) -> Void in
+            (inCont: CheckedContinuation<Query.Data, Error>) in
             self.fetch(
                 query: query,
                 cachePolicy: cachePolicy,
@@ -55,8 +55,8 @@ extension ApolloClient {
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
     ) async throws -> Mutation.Data {
-        return try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<Mutation.Data, Error>) -> Void in
+        try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<Mutation.Data, Error>) in
             self.perform(
                 mutation: mutation,
                 queue: queue
@@ -71,7 +71,7 @@ extension ApolloClient {
                             inCont.resume(returning: data)
                         }
                     }
-                case .failure(let error):
+                case let .failure(error):
                     self?.logGraphQLException(error: error, for: mutation)
                     inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }

@@ -17,6 +17,6 @@ public struct FlowClaimDateOfOccurenceStepModel: FlowClaimStepModel {
 
     @MainActor
     func getMaxDate() -> Date {
-        return maxDate?.localDateToDate ?? Date()
+        maxDate?.localDateToDate ?? Date()
     }
 }

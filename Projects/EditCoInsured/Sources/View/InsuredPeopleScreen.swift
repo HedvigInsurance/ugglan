@@ -127,11 +127,11 @@ struct InsuredPeopleScreen: View {
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
         var accessoryType: CoInsuredFieldType {
             if coInsured.coInsured.hasMissingData && type != .delete {
-                return .empty
+                .empty
             } else if coInsured.locallyAdded {
-                return .localEdit
+                .localEdit
             } else {
-                return .delete
+                .delete
             }
         }
         getAccesoryView(for: accessoryType, coInsured: coInsured.coInsured)

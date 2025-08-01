@@ -14,7 +14,7 @@ public struct CoInsuredInputButton: View {
     ) {
         self.vm = vm
         self.editCoInsuredNavigation = editCoInsuredNavigation
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     public var body: some View {
@@ -51,7 +51,7 @@ public struct CoInsuredInputButton: View {
     }
 
     var coInsuredToDelete: CoInsuredModel {
-        return (vm.personalData.firstName == "" && vm.SSN == "")
+        (vm.personalData.firstName == "" && vm.SSN == "")
             ? .init()
             : .init(
                 firstName: vm.personalData.firstName,
@@ -63,7 +63,7 @@ public struct CoInsuredInputButton: View {
     }
 
     var coInsuredPerformModel: CoInsuredModel {
-        return .init(
+        .init(
             firstName: vm.personalData.firstName,
             lastName: vm.personalData.lastName,
             SSN: vm.noSSN ? nil : vm.SSN,

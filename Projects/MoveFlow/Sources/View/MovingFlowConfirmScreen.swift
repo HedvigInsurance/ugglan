@@ -12,7 +12,6 @@ struct MovingFlowConfirmScreen: View {
 
 @MainActor
 public class MovingFlowConfirmViewModel: ObservableObject {
-
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
 
@@ -45,9 +44,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         let model = QuoteSummaryViewModel(
             contract: [],
             isAddon: false
-        ) {
-
-        }
+        ) {}
         Localization.Locale.currentLocale.send(.en_SE)
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
     }

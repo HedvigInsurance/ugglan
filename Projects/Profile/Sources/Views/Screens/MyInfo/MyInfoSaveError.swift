@@ -16,7 +16,7 @@ extension MyInfoSaveError: LocalizedError {
         case .phoneNumberMalformed: return L10n.myInfoPhoneNumberMalformedError
         case .emailEmpty: return L10n.myInfoEmailEmptyError
         case .emailMalformed: return L10n.myInfoEmailMalformedError
-        case .error(let message): return message
+        case let .error(message): return message
         }
     }
 }

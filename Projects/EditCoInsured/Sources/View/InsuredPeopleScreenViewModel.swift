@@ -6,7 +6,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
-    var config: InsuredPeopleConfig = InsuredPeopleConfig()
+    var config: InsuredPeopleConfig = .init()
     @Published var isLoading = false
     @Published var showSavebutton: Bool = false
     @Published var showInfoCard: Bool = false
@@ -34,7 +34,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     }
 
     func showInfoCard(type: CoInsuredFieldType?) -> Bool {
-        return coInsuredAdded.count < nbOfMissingCoInsuredExcludingDeleted && type != .delete
+        coInsuredAdded.count < nbOfMissingCoInsuredExcludingDeleted && type != .delete
     }
 
     func completeList(
@@ -93,7 +93,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         coInsuredDeleted = []
         self.config = config
         let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-        self.showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
+        showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {
@@ -112,13 +112,12 @@ class InsuredPeopleScreenViewModel: ObservableObject {
 
     func undoDeleted(_ coInsuredModel: CoInsuredModel) {
         var removedCoInsured: CoInsuredModel {
-            return
-                .init(
-                    firstName: coInsuredModel.firstName,
-                    lastName: coInsuredModel.lastName,
-                    SSN: coInsuredModel.SSN,
-                    needsMissingInfo: false
-                )
+            .init(
+                firstName: coInsuredModel.firstName,
+                lastName: coInsuredModel.lastName,
+                SSN: coInsuredModel.SSN,
+                needsMissingInfo: false
+            )
         }
 
         if let index = coInsuredDeleted.firstIndex(where: {
@@ -138,7 +137,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     }
 
     func listToDisplay(type: CoInsuredFieldType?, activationDate: String?) -> [CoInsuredListType] {
-        if type == .delete && nbOfMissingCoInsuredExcludingDeleted > 0 {
+        if type == .delete, nbOfMissingCoInsuredExcludingDeleted > 0 {
             return coInsuredToDelete
         } else if type != .delete {
             return existingCoInsured + locallyAddedCoInsured(activationDate: activationDate) + missingCoInsured
@@ -147,7 +146,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     }
 
     private var existingCoInsured: [CoInsuredListType] {
-        return config.contractCoInsured
+        config.contractCoInsured
             .filter {
                 !coInsuredDeleted.contains($0) && $0.terminatesOn == nil && !$0.hasMissingInfo
             }
@@ -175,7 +174,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     }
 
     private func locallyAddedCoInsured(activationDate: String?) -> [CoInsuredListType] {
-        return coInsuredAdded.map {
+        coInsuredAdded.map {
             CoInsuredListType(
                 coInsured: $0,
                 type: .added,

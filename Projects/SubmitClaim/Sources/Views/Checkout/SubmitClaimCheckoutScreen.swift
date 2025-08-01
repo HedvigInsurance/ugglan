@@ -188,7 +188,6 @@ public struct SubmitClaimCheckoutScreen: View {
     @ViewBuilder
 
     func displayPaymentMethodField(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
-
         if let checkoutStep = checkoutStep {
             let payoutMethods = checkoutStep.payoutMethods
             let shouldShowCheckmark = payoutMethods.count > 1

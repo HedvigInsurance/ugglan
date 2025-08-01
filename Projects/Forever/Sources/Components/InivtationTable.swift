@@ -9,7 +9,7 @@ struct InvitationTable: View {
     init(
         foreverData: ForeverData?
     ) {
-        self._vm = StateObject(wrappedValue: .init(foreverData: foreverData))
+        _vm = StateObject(wrappedValue: .init(foreverData: foreverData))
     }
 
     var body: some View {
@@ -45,7 +45,7 @@ class InvitationTableViewModel: ObservableObject {
     let foreverData: ForeverData?
     @Published var showInvitations = false
 
-    public init(
+    init(
         foreverData: ForeverData?
     ) {
         self.foreverData = foreverData
@@ -84,7 +84,6 @@ struct InvitationRow: View {
                 .frame(alignment: .top)
                 Spacer()
             }
-
         }
         .withCustomAccessory {
             hText(row.discountLabelText)

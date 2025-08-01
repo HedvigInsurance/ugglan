@@ -57,13 +57,13 @@ struct StartDateScreen: View {
     func submit() async {
         if Masking(type: .email).isValid(text: vm.email) {
             DispatchQueue.main.async {
-                self.vm.emailError = nil
+                vm.emailError = nil
                 router.push(TravelCertificateRouterActions.whoIsTravelling(specifiction: vm.specification))
             }
         } else {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.vm.emailError = L10n.myInfoEmailMalformedError
+                    vm.emailError = L10n.myInfoEmailMalformedError
                 }
             }
         }
@@ -84,7 +84,7 @@ class StartDateViewModel: ObservableObject {
 
     enum StartDateViewEditType: hTextFieldFocusStateCompliant {
         static var last: StartDateViewEditType {
-            return StartDateViewEditType.email
+            StartDateViewEditType.email
         }
 
         var next: StartDateViewEditType? {

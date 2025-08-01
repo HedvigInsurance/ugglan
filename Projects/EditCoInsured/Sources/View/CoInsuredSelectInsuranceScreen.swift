@@ -16,12 +16,10 @@ struct CoInsuredSelectInsuranceScreen: View {
         self.editCoInsuredNavigationVm = editCoInsuredNavigationVm
         self.editCoInsuredViewModel = editCoInsuredViewModel
         self.router = router
-        self.itemPickerConfig = ItemConfig<InsuredPeopleConfig>(
-            items: {
-                return configs.compactMap({
-                    (object: $0, displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName))
-                })
-            }(),
+        itemPickerConfig = ItemConfig<InsuredPeopleConfig>(
+            items: configs.compactMap {
+                (object: $0, displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName))
+            },
             preSelectedItems: {
                 if let first = configs.first {
                     return [first]
@@ -33,7 +31,7 @@ struct CoInsuredSelectInsuranceScreen: View {
                     if let object = selectedConfig.0 {
                         editCoInsuredViewModel?.editCoInsuredModelDetent = nil
                         editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                            return [object]
+                            [object]
                         })
                         editCoInsuredNavigationVm?.coInsuredViewModel.initializeCoInsured(with: object)
                     }

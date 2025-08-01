@@ -28,12 +28,12 @@ final class TestChatViewModelFetchNewMessages: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        let successMessages = model.messageVm.messages.filter({ $0.status == .sent || $0.status == .received })
+        let successMessages = model.messageVm.messages.filter { $0.status == .sent || $0.status == .received }
         assert(successMessages.count == 1)
         assert(successMessages.first?.type == messageType)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getNewMessages)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testFetchNewMessagesFailure() async {
@@ -43,6 +43,6 @@ final class TestChatViewModelFetchNewMessages: XCTestCase {
         assert(model.messageVm.messages.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getNewMessages)
-        self.sut = mockService
+        sut = mockService
     }
 }

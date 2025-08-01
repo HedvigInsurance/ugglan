@@ -25,7 +25,8 @@ final class TooltipTests: XCTestCase {
         viewController.view.addSubview(view)
         bag += view.present(tooltip)
 
-        view.snp.makeConstraints { make in make.width.equalTo(2)
+        view.snp.makeConstraints { make in
+            make.width.equalTo(2)
             make.height.equalTo(2)
             make.top.right.equalToSuperview()
         }

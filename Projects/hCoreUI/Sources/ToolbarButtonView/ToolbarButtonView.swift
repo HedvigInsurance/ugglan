@@ -21,14 +21,14 @@ public struct ToolbarButtonView: View {
         placement: ListToolBarPlacement,
         action: @escaping (_: ToolbarOptionType) -> Void,
     ) {
-        self._types = types
+        _types = types
         self.placement = placement
         self.action = action
     }
 
     public var body: some View {
         HStack(spacing: spacing) {
-            ForEach(Array(types.enumerated()), id: \.element.identifiableId) { index, type in
+            ForEach(Array(types.enumerated()), id: \.element.identifiableId) { _, type in
                 VStack(alignment: .trailing) {
                     SwiftUI.Button(action: {
                         withAnimation(.spring()) {
@@ -90,10 +90,10 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         self.trailing = trailing
         self.showLeading = showLeading
         self.showTrailing = showTrailing
-        self.placement = leading == nil ? .trailing : .leading
-        self.action = { _ in }
-        self.vcName = nil
-        self._types = .constant([])
+        placement = leading == nil ? .trailing : .leading
+        action = { _ in }
+        vcName = nil
+        _types = .constant([])
     }
 
     public init(
@@ -103,13 +103,13 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         placement: ListToolBarPlacement
     ) {
         self.action = action
-        self._types = types
+        _types = types
         self.vcName = vcName
         self.placement = placement
-        self.leading = nil
-        self.trailing = nil
-        self.showLeading = false
-        self.showTrailing = false
+        leading = nil
+        trailing = nil
+        showLeading = false
+        showTrailing = false
     }
 
     public func body(content: Content) -> some View {
@@ -123,7 +123,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                         }
                     }
                 }
-                .onChange(of: types) { value in
+                .onChange(of: types) { _ in
                     setNavigation()
                 }
 
@@ -152,7 +152,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         if let trailing, let vc = vc, showTrailing {
             setView(for: trailing, vc: vc, placement: .trailing)
         } else {
-            if let vc = self.navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
+            if let vc = navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
                 let viewToInject = ToolbarButtonView(types: $types, placement: placement, action: action)
                 setView(for: viewToInject, vc: vc, placement: placement)
             }
@@ -179,7 +179,6 @@ extension TimeInterval {
     public static func days(numberOfDays: Int) -> TimeInterval {
         Double(numberOfDays) * 24 * 60 * 60
     }
-
 }
 
 extension View {
@@ -203,7 +202,7 @@ extension View {
         @ViewBuilder _ leading: () -> Leading,
         @ViewBuilder _ trailing: () -> Trailing
     ) -> some View {
-        self.modifier(
+        modifier(
             ToolbarViewModifier(
                 leading: leading(),
                 trailing: trailing(),
@@ -216,7 +215,7 @@ extension View {
     public func setToolbarLeading<Leading: View>(
         @ViewBuilder content leading: () -> Leading
     ) -> some View {
-        self.modifier(
+        modifier(
             ToolbarViewModifier(
                 leading: leading(),
                 trailing: EmptyView(),
@@ -229,7 +228,7 @@ extension View {
     public func setToolbarTrailing<Trailing: View>(
         @ViewBuilder _ trailing: () -> Trailing
     ) -> some View {
-        self.modifier(
+        modifier(
             ToolbarViewModifier(
                 leading: EmptyView(),
                 trailing: trailing(),

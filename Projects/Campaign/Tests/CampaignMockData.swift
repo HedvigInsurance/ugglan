@@ -5,8 +5,6 @@ import hCore
 @MainActor
 struct MockCampaignData {
     static func createMockCampaignService(
-        removeCampaign: @escaping RemoveCampaign = {},
-        addCampaign: @escaping AddCampaign = {},
         fetchPaymentDiscountsData: @escaping FetchPaymentDiscountsData = {
             .init(
                 discounts: [],
@@ -20,8 +18,6 @@ struct MockCampaignData {
         }
     ) -> MockCampaignService {
         let service = MockCampaignService(
-            removeCampaign: removeCampaign,
-            addCampaign: addCampaign,
             fetchPaymentDiscountsData: fetchPaymentDiscountsData
         )
         Dependencies.shared.add(module: Module { () -> hCampaignClient in service })
@@ -33,41 +29,20 @@ enum MockCampaignError: Error {
     case failure
 }
 
-typealias RemoveCampaign = () async throws -> Void
-typealias AddCampaign = () async throws -> Void
 typealias FetchPaymentDiscountsData = () async throws -> PaymentDiscountsData
 
 class MockCampaignService: hCampaignClient {
     var events = [Event]()
-
-    var removeCampaign: RemoveCampaign
-    var addCampaign: AddCampaign
     var fetchPaymentDiscountsData: FetchPaymentDiscountsData
 
     enum Event {
-        case remove
-        case add
         case getPaymentDiscountsData
     }
 
     init(
-        removeCampaign: @escaping RemoveCampaign,
-        addCampaign: @escaping AddCampaign,
         fetchPaymentDiscountsData: @escaping FetchPaymentDiscountsData
     ) {
-        self.removeCampaign = removeCampaign
-        self.addCampaign = addCampaign
         self.fetchPaymentDiscountsData = fetchPaymentDiscountsData
-    }
-
-    func remove(codeId: String) async throws {
-        events.append(.remove)
-        try await removeCampaign()
-    }
-
-    func add(code: String) async throws {
-        events.append(.add)
-        try await addCampaign()
     }
 
     func getPaymentDiscountsData() async throws -> PaymentDiscountsData {

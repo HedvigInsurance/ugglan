@@ -11,7 +11,7 @@ struct CoInusuredInputScreen: View {
     @EnvironmentObject private var router: Router
     @ObservedObject var intentViewModel: IntentViewModel
 
-    public init(
+    init(
         vm: CoInusuredInputViewModel,
         title: String,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -167,7 +167,7 @@ struct AddCoInsuredFieldsView: View {
         }
         .disabled(vm.isLoading)
         .sectionContainerStyle(.transparent)
-        .onChange(of: vm.SSN) { newValue in
+        .onChange(of: vm.SSN) { _ in
             vm.nameFetchedFromSSN = false
         }
     }
@@ -265,7 +265,7 @@ struct CoInusuredInput_Previews: PreviewProvider {
 
 enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     static var last: CoInsuredInputType {
-        return CoInsuredInputType.lastName
+        CoInsuredInputType.lastName
     }
 
     var next: CoInsuredInputType? {

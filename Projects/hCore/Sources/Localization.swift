@@ -6,8 +6,7 @@ import hGraphQL
 public enum Localization {
     @MainActor
     public enum Locale: String, CaseIterable, Hashable {
-        nonisolated(unsafe)
-            public static var currentLocale = CurrentValueSubject<Locale, Never>(.sv_SE)
+        public nonisolated(unsafe) static var currentLocale = CurrentValueSubject<Locale, Never>(.sv_SE)
         case sv_SE
         case en_SE
 
@@ -53,31 +52,23 @@ public enum Localization {
             }
         }
 
-        nonisolated
-            public var foundation: Foundation.Locale
-        { Foundation.Locale(identifier: lprojCode) }
+        public nonisolated var foundation: Foundation.Locale { Foundation.Locale(identifier: lprojCode) }
 
-        nonisolated
-            public var lprojCode: String
-        {
+        public nonisolated var lprojCode: String {
             switch self {
             case .sv_SE: return "sv-SE"
             case .en_SE: return "en-SE"
             }
         }
 
-        nonisolated
-            public var translationLocale: Foundation.Locale
-        {
+        public nonisolated var translationLocale: Foundation.Locale {
             switch self {
             case .sv_SE: return Foundation.Locale(identifier: "sv-SE")
             case .en_SE: return Foundation.Locale(identifier: "en")
             }
         }
 
-        nonisolated
-            public var translationlprojCode: String
-        {
+        public nonisolated var translationlprojCode: String {
             switch self {
             case .sv_SE: return "sv-SE"
             case .en_SE: return "en"

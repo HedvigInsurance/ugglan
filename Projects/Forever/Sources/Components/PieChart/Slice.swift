@@ -10,7 +10,7 @@ struct Slice: Shape {
     var slices: CGFloat
 
     func path(in rect: CGRect) -> Path {
-        return Path { path in
+        Path { path in
             let width: CGFloat = min(rect.size.width, rect.size.height)
             let height = width
 
@@ -33,7 +33,7 @@ struct Slice: Shape {
     }
 
     var animatableData: Double {
-        get { return percentage }
+        get { percentage }
         set { percentage = newValue }
     }
 }

@@ -12,7 +12,7 @@ struct MockData {
         },
         fetchMemberState: @escaping FetchMemberState = {
             .init(
-                id: "id",
+                memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
                 contracts: [],
                 contractState: .active,
                 futureState: .none
@@ -50,7 +50,6 @@ typealias FetchLatestMessageState = @Sendable () async throws -> Home.MessageSta
 typealias FetchFAQ = () async throws -> Home.HelpCenterFAQModel
 
 class MockHomeService: HomeClient {
-
     var events = [Event]()
     var fetchImportantMessages: FetchImportantMessages
     var fetchMemberState: FetchMemberState

@@ -14,7 +14,7 @@ extension EnvironmentValues {
 
 extension View {
     public var useDarkColor: some View {
-        self.environment(\.useDarkColor, true)
+        environment(\.useDarkColor, true)
     }
 }
 
@@ -32,13 +32,13 @@ public struct ActivityIndicator: UIViewRepresentable {
         self.color = color
     }
 
-    public func makeUIView(context: Context) -> UIActivityIndicatorView {
+    public func makeUIView(context _: Context) -> UIActivityIndicatorView {
         UIActivityIndicatorView()
     }
 
-    public func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
+    public func updateUIView(_ uiView: UIActivityIndicatorView, context _: Context) {
         uiView.startAnimating()
-        uiView.color = UIColor(self.color.colorFor(colorScheme, userInterfaceLevel).color)
+        uiView.color = UIColor(color.colorFor(colorScheme, userInterfaceLevel).color)
     }
 }
 
@@ -84,12 +84,12 @@ public struct WordmarkActivityIndicator: View {
         .scaleEffect(hasEntered ? 1 : 0.8)
         .animation(.interpolatingSpring(stiffness: 200, damping: 15).delay(0.2), value: hasEntered)
         .onAppear {
-            self.hasEntered = true
-            self.rotating = true
+            hasEntered = true
+            rotating = true
         }
         .onDisappear {
-            self.hasEntered = false
-            self.rotating = false
+            hasEntered = false
+            rotating = false
         }
     }
 }
@@ -126,10 +126,10 @@ public struct DotsActivityIndicator: View {
             PulsingCircle(index: 2).frame(width: dotSize, height: dotSize)
         }
         .onAppear {
-            self.animate = true
+            animate = true
         }
         .onDisappear {
-            self.animate = false
+            animate = false
         }
     }
 }

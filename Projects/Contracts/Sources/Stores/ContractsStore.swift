@@ -5,26 +5,26 @@ import hCore
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
     @Inject var fetchContractsService: FetchContractsClient
-    public override func effects(
-        _ getState: @escaping () -> ContractState,
+    override public func effects(
+        _: @escaping () -> ContractState,
         _ action: ContractAction
     ) async {
         switch action {
         case .fetchContracts:
             do {
-                let data = try await self.fetchContractsService.getContracts()
+                let data = try await fetchContractsService.getContracts()
                 send(.setActiveContracts(contracts: data.activeContracts))
                 send(.setTerminatedContracts(contracts: data.terminatedContracts))
                 send(.setPendingContracts(contracts: data.pendingContracts))
-            } catch let error {
-                self.setError(error.localizedDescription, for: .fetchContracts)
+            } catch {
+                setError(error.localizedDescription, for: .fetchContracts)
             }
         default:
             break
         }
     }
 
-    public override func reduce(_ state: ContractState, _ action: ContractAction) async -> ContractState {
+    override public func reduce(_ state: ContractState, _ action: ContractAction) async -> ContractState {
         var newState = state
         switch action {
         case .fetchContracts:

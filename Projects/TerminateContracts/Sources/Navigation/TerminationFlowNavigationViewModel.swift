@@ -8,7 +8,7 @@ import hCoreUI
 @MainActor
 public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
     public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     public let id = UUID().uuidString
@@ -19,11 +19,11 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         terminateInsuranceViewModel: TerminateInsuranceViewModel?
     ) {
         self.config = config
-        self.hasSelectInsuranceStep = false
-        self.progress = stepResponse.progress
-        self.currentContext = stepResponse.context
-        self.initialStep = TerminationFlowNavigationViewModel.getInitialStep(data: stepResponse)
-        self.terminationDateStepModel = terminationDateStepModel
+        hasSelectInsuranceStep = false
+        progress = stepResponse.progress
+        currentContext = stepResponse.context
+        initialStep = TerminationFlowNavigationViewModel.getInitialStep(data: stepResponse)
+        terminationDateStepModel = terminationDateStepModel
         self.terminateInsuranceViewModel = terminateInsuranceViewModel
         setInitialModel(initialStep: initialStep)
     }
@@ -57,7 +57,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     private func setInitialModel(initialStep: TerminationFlowActions) {
         reset()
         switch initialStep {
-        case .router(let action):
+        case let .router(action):
             switch action {
             case .selectInsurance:
                 break
@@ -68,7 +68,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             case .summary:
                 break
             }
-        case .final(let action):
+        case let .final(action):
             switch action {
             case let .success(model):
                 successStepModel = model
@@ -92,7 +92,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         didSet {
             switch redirectAction {
             case .updateAddress:
-                self.router.dismiss()
+                router.dismiss()
                 var url = Environment.current.deepLinkUrls.last!
                 url.appendPathComponent(DeepLink.moveContract.rawValue)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -157,13 +157,14 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     var redirectUrl: URL? {
         didSet {
             if let redirectUrl {
-                self.router.dismiss()
+                router.dismiss()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: redirectUrl)
                 }
             }
         }
     }
+
     let router = Router()
 
     private let terminateContractsService = TerminateContractsService()
@@ -182,6 +183,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             extraCoverage = terminationDateStepModel?.extraCoverageItem ?? []
         }
     }
+
     @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel? {
         didSet {
             extraCoverage = terminationDeleteStepModel?.extraCoverageItem ?? []
@@ -200,9 +202,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             let data = try await terminateContractsService.startTermination(contractId: config.contractId)
             self.config = config
             navigate(data: data, fromSelectInsurance: fromSelectInsurance)
-        } catch {
-
-        }
+        } catch {}
     }
 
     func navigate(data: TerminateStepResponse, fromSelectInsurance: Bool) {
@@ -272,7 +272,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 }
                 isProcessingPresented = false
                 navigate(data: data, fromSelectInsurance: false)
-            } catch let error {
+            } catch {
                 withAnimation {
                     confirmTerminationState = .error(
                         errorMessage: error.localizedDescription
@@ -302,7 +302,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 }
                 navigate(data: data, fromSelectInsurance: false)
                 isProcessingPresented = false
-            } catch let error {
+            } catch {
                 withAnimation {
                     confirmTerminationState = .error(
                         errorMessage: error.localizedDescription
@@ -317,7 +317,7 @@ struct TerminationFlowNavigation: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
     let isFlowPresented: (DismissTerminationAction) -> Void
 
-    public init(
+    init(
         vm: TerminationFlowNavigationViewModel,
         isFlowPresented: @escaping (DismissTerminationAction) -> Void = { _ in }
     ) {
@@ -325,7 +325,7 @@ struct TerminationFlowNavigation: View {
         self.vm = vm
     }
 
-    public var body: some View {
+    var body: some View {
         RouterHost(
             router: vm.router,
             options: [.navigationType(type: .withProgress)],
@@ -443,7 +443,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openSetTerminationDateLandingScreen(
-        fromSelectInsurance: Bool
+        fromSelectInsurance _: Bool
     ) -> some View {
         SetTerminationDateLandingScreen(
             terminationNavigationVm: vm
@@ -509,7 +509,7 @@ struct TerminationFlowNavigation: View {
             successViewTitle: L10n.terminationFlowSuccessTitle,
             successViewBody: isDeletion
                 ? L10n.terminateContractTerminationComplete
-                : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate))
+                : L10n.terminationFlowSuccessSubtitleWithDate(terminationDate)
         )
         .hStateViewButtonConfig(
             .init(
@@ -517,7 +517,7 @@ struct TerminationFlowNavigation: View {
                 actionButtonAttachedToBottom: nil,
                 dismissButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
-                    self.isFlowPresented(.done)
+                    isFlowPresented(.done)
                 })
             )
         )
@@ -534,7 +534,7 @@ struct TerminationFlowNavigation: View {
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
                     buttonAction: {
-                        self.isFlowPresented(.chat)
+                        isFlowPresented(.chat)
                     }
                 ),
                 dismissButton: .init(
@@ -580,9 +580,9 @@ enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
 extension TerminationFlowActions: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
-        case .router(let action):
+        case let .router(action):
             return action.nameForTracking
-        case .final(let action):
+        case let .final(action):
             return action.nameForTracking
         }
     }

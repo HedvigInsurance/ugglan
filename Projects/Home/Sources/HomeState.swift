@@ -34,21 +34,22 @@ public struct HomeState: StateProtocol {
     public var toolbarOptionTypes: [ToolbarOptionType] = []
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [HomeContract] {
-        return contracts.filter { $0.upcomingRenewal != nil }
+        contracts.filter { $0.upcomingRenewal != nil }
     }
+
     public var showChatNotification = false
     public var hasSentOrRecievedAtLeastOneMessage = false
     public var latestConversationTimeStamp = Date()
     public var latestChatTimeStamp = Date()
 
     func getImportantMessageToShow() -> [ImportantMessage] {
-        return importantMessages.filter { importantMessage in
+        importantMessages.filter { importantMessage in
             !hidenImportantMessages.contains(importantMessage.id)
         }
     }
 
     func getImportantMessage(with id: String) -> ImportantMessage? {
-        return importantMessages.first(where: { $0.id == id })
+        importantMessages.first(where: { $0.id == id })
     }
 
     public func getAllFAQ() -> [FAQModel]? {
@@ -105,28 +106,25 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     required init() {
         super.init()
         let store: CrossSellStore = globalPresentableStoreContainer.get()
-        newOfferSubscription = store.stateSignal.map({ $0.hasNewOffer }).removeDuplicates()
-            .sink { [weak self] value in
+        newOfferSubscription = store.stateSignal.map(\.hasNewOffer).removeDuplicates()
+            .sink { [weak self] _ in
                 self?.send(.recommendedProductUpdated)
             }
-
     }
 
-    public override func effects(
-        _ getState: @escaping () -> HomeState,
+    override public func effects(
+        _: @escaping () -> HomeState,
         _ action: HomeAction
     ) async {
         switch action {
         case .fetchImportantMessages:
             do {
-                let messages = try await self.homeService.getImportantMessages()
+                let messages = try await homeService.getImportantMessages()
                 send(.setImportantMessages(messages: messages))
-            } catch {
-
-            }
+            } catch {}
         case .fetchMemberState:
             do {
-                let memberData = try await self.homeService.getMemberState()
+                let memberData = try await homeService.getMemberState()
                 send(
                     .setMemberContractState(
                         state: memberData.contractState,
@@ -137,25 +135,25 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 send(.setFutureStatus(status: memberData.futureState))
                 send(.setMemberInfo(memberInfo: memberData.memberInfo))
             } catch _ {
-                self.setError(L10n.General.errorBody, for: .fetchQuickActions)
+                setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchQuickActions:
             do {
-                let quickActions = try await self.homeService.getQuickActions()
+                let quickActions = try await homeService.getQuickActions()
                 send(.setQuickActions(quickActions: quickActions))
             } catch {
-                self.setError(L10n.General.errorBody, for: .fetchQuickActions)
+                setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchFAQ:
             do {
-                let faq = try await self.homeService.getFAQ()
+                let faq = try await homeService.getFAQ()
                 send(.setFAQ(faq: faq))
             } catch {
-                self.setError(L10n.General.errorBody, for: .fetchFAQ)
+                setError(L10n.General.errorBody, for: .fetchFAQ)
             }
         case .fetchChatNotifications:
             do {
-                let chatMessagesState = try await self.homeService.getMessagesState()
+                let chatMessagesState = try await homeService.getMessagesState()
                 send(.setChatNotification(hasNew: chatMessagesState.hasNewMessages))
                 send(
                     .setHasSentOrRecievedAtLeastOneMessage(
@@ -172,17 +170,17 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
     }
 
-    public override func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
+    override public func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
         var newState = state
         switch action {
-        case .setMemberInfo(let memberInfo):
+        case let .setMemberInfo(memberInfo):
             newState.memberInfo = memberInfo
-        case .setMemberContractState(let memberState, let contracts):
+        case let .setMemberContractState(memberState, contracts):
             newState.memberContractState = memberState
             newState.contracts = contracts
-        case .setFutureStatus(let status):
+        case let .setFutureStatus(status):
             newState.futureStatus = status
-        case .setImportantMessages(let messages):
+        case let .setImportantMessages(messages):
             newState.importantMessages = messages
         case .fetchQuickActions:
             setLoading(for: .fetchQuickActions)

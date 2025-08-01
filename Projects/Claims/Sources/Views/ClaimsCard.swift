@@ -67,7 +67,7 @@ class ClaimsViewModel: ObservableObject {
 
     func fetch() {
         store.send(.fetchClaims)
-        //added this to reset timer after we fetch becausae we could fetch from other places so we dont fetch too often
+        // added this to reset timer after we fetch becausae we could fetch from other places so we dont fetch too often
         configureTimer()
     }
 }

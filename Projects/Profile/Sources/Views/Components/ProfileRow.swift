@@ -16,7 +16,7 @@ struct ProfileRow: View {
         self.row = row
     }
 
-    public var body: some View {
+    var body: some View {
         hRow {
             HStack(spacing: .padding16) {
                 row.icon

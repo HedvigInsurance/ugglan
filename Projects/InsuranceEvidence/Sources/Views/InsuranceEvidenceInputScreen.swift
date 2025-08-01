@@ -52,7 +52,7 @@ class InsuranceEvidenceInputScreenViewModel: ObservableObject {
     @Published var insuranceEvidenceInput = InsuranceEvidenceInput(email: "")
     @Published var focused: Bool?
     init(InsuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel) {
-        self.insuranceEvidenceNavigationViewModel = InsuranceEvidenceNavigationViewModel
+        insuranceEvidenceNavigationViewModel = InsuranceEvidenceNavigationViewModel
         getData()
     }
 
