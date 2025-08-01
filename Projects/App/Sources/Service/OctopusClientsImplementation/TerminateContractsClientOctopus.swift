@@ -319,8 +319,7 @@ extension TerminationFlowDateNextStepModel {
             maxDate: data.maxDate,
             minDate: data.minDate,
             date: nil,
-            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) }),
-            notification: nil
+            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
         )
     }
 }

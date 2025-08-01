@@ -85,6 +85,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     @Published var isProcessingPresented = false
     @Published var infoText: String?
     @Published var redirectActionLoadingState: ProcessingState = .success
+    @Published var notification: TerminationNotification?
+
     let initialStep: TerminationFlowActions
     var configs: [TerminationConfirmConfig] = []
     weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
@@ -196,6 +198,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     @MainActor
     func startTermination(config: TerminationConfirmConfig, fromSelectInsurance: Bool) async {
+        reset()
         do {
             let data = try await terminateContractsService.startTermination(contractId: config.contractId)
             self.config = config
@@ -240,6 +243,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         successStepModel = nil
         failedStepModel = nil
         terminationSurveyStepModel = nil
+        notification = nil
     }
 
     @Published var confirmTerminationState: ProcessingState = .loading
@@ -312,24 +316,30 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         }
     }
     var fetchNotificationTask: Task<Void, Never>?
-    func fetchNotification() {
+    func fetchNotification(isDeletion deletion: Bool) {
         fetchNotificationTask?.cancel()
         fetchNotificationTask = Task { [weak self] in
-            if let contractId = self?.config?.contractId, let date = self?.terminationDateStepModel?.date {
+            let date: Date? = {
+                if deletion {
+                    return Date()
+                }
+                return self?.terminationDateStepModel?.date
+            }()
+            if let contractId = self?.config?.contractId, let date = date {
                 do {
                     //check for cancellation before fetching and after fetching
                     try Task.checkCancellation()
                     let data = try await self?.terminateContractsService
                         .getNotification(contractId: contractId, date: date)
                     try Task.checkCancellation()
-                    self?.terminationDateStepModel?.notification = data
+                    self?.notification = data
                 } catch _ {
                     // if it fails check again after 1 second
                     // if the task is cancelled, it will throw cancellation error
                     do {
                         try await Task.sleep(nanoseconds: 1_000_000_000)
                         try Task.checkCancellation()
-                        self?.fetchNotification()
+                        self?.fetchNotification(isDeletion: deletion)
                     } catch {
                         //ignore since it only be cancellation error
                     }

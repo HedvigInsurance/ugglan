@@ -223,6 +223,9 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
         terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
         terminationDateStep = terminationNavigationVm.terminationDateStepModel
         checkDeletion()
+        if isDeletion == true {
+            terminationNavigationVm.fetchNotification(isDeletion: true)
+        }
     }
     func isCancelButtonDisabled(terminationDate: Date?) -> Bool {
         let hasSetTerminationDate = terminationDate != nil
