@@ -9,5 +9,14 @@
     "lineBreakBeforeControlFlowKeywords": false,
     "lineBreakBeforeEachArgument": true,
     "lineBreakAroundMultilineExpressionChainComponents": true,
-    "prioritizeKeepingFunctionOutputTogether": true
+    "prioritizeKeepingFunctionOutputTogether": true,
+    "rules" : {
+        "OmitExplicitReturns" : true,
+        "GroupNumericLiterals" : true,
+        "NoAccessLevelOnExtensionDeclaration" : true,
+        "OrderedImports" : true,
+        "NoEmptyLinesOpeningClosingBraces" : true,
+        "OneVariableDeclarationPerLine" : true,
+        "TypeNamesShouldBeCapitalized" : true
+    }
 }

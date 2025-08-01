@@ -148,7 +148,6 @@ struct SelectClaimEntrypointType: View {
                                     )
                                     buttonIsLoading = false
                                 }
-
                             } else {
                                 router.push(SubmitClaimRouterActions.triagingOption)
                             }
@@ -359,7 +358,6 @@ struct ShowTagList: View {
                 .foregroundColor(PrimaryAlt().resting)
                 .asAnyView
                 .hShadow()
-
         } else {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundColor(hGrayscaleOpaqueColor.greyScale100)

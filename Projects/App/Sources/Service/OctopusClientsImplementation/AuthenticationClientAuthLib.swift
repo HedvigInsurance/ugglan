@@ -7,7 +7,6 @@ import hCore
 import hGraphQL
 
 final class AuthenticationClientAuthLib: AuthenticationClient {
-
     private lazy var networkAuthRepository: NetworkAuthRepository = { [weak self] in
         return NetworkAuthRepository(
             environment: Environment.current.authEnvironment,

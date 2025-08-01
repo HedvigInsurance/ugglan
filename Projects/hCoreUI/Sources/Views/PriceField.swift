@@ -49,7 +49,6 @@ public struct PriceField: View {
                                 .accessibilityValue(
                                     L10n.voiceoverCurrentPrice
                                 )
-
                         } else {
                             hText(newPremium?.priceFormat(formatting) ?? "")
                                 .foregroundColor(hTextColor.Opaque.secondary)

@@ -11,7 +11,6 @@ import hCore
 import hGraphQL
 
 class TerminateContractsClientOctopus: TerminateContractsClient {
-
     public func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),

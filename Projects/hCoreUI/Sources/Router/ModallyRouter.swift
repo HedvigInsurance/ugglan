@@ -104,7 +104,6 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
                         return vc
                     }
                     return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
-
                 }()
                 let content = self.content()
                 let vc = hHostingController(

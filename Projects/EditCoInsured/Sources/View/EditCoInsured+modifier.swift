@@ -27,7 +27,6 @@ struct EditCoInsured: ViewModifier {
                         configs: contractsSupportingCoInsured
                     )
                     .environmentObject(vm)
-
                 } else {
                     getEditCoInsuredNavigation(coInsuredModel: coInsuredModel)
                 }

@@ -290,7 +290,6 @@ public struct QuoteSummaryScreen: View {
                         }
                     )
                     .transition(.scale)
-
                 } else if contract.shouldShowDetails, !vm.isAddon {
                     hButton(
                         .medium,

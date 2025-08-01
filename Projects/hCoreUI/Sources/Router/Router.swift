@@ -361,7 +361,6 @@ extension View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-
             } else {
                 hText(title, style: .heading1)
                     .foregroundColor(titleViewColor(titleColor))
