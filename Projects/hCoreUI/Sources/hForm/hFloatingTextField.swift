@@ -386,7 +386,6 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
                             .foregroundColor(hTextColor.Opaque.primary)
                     }
                 )
-
             } else if error != nil {
                 hCoreUIAssets.warningTriangleFilled.view
                     .foregroundColor(hSignalColor.Amber.element)

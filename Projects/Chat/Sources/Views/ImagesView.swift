@@ -281,7 +281,6 @@ extension PHAsset {
                                     source: .data(data: jpegData)
                                 )
                                 inCont.resume(returning: file)
-
                             } else {
                                 let file = File(
                                     id: id,

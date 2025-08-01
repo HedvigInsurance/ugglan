@@ -37,7 +37,6 @@ struct CoInsuredProcessingScreen: View {
                 EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
                     intentViewModel.contractId
                 )
-
             },
             state: $intentViewModel.viewState
         )

@@ -17,7 +17,6 @@ struct CrossSellButtonComponent: View {
                         vm.vc?.dismiss(animated: true)
                         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
                             Dependencies.urlOpener.open(url)
-
                         } else {
                             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                         }

@@ -25,10 +25,6 @@ fragment FlowTerminationDateStepFragment on FlowTerminationDateStep{
     id
     minDate
     maxDate
-    notification {
-        message
-        type
-    }
     extraCoverage {
         ...ExtraCoverageItemFragment
     }

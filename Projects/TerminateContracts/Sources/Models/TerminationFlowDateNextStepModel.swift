@@ -7,7 +7,6 @@ public struct TerminationFlowDateNextStepModel: FlowStepModel {
     let maxDate: String
     let minDate: String
     let extraCoverageItem: [ExtraCoverageItem]
-    let notification: TerminationNotification?
     var date: Date?
 
     public init(
@@ -16,14 +15,12 @@ public struct TerminationFlowDateNextStepModel: FlowStepModel {
         minDate: String,
         date: Date? = nil,
         extraCoverageItem: [ExtraCoverageItem],
-        notification: TerminationNotification?
     ) {
         self.id = id
         self.maxDate = maxDate
         self.minDate = minDate
         self.date = date
         self.extraCoverageItem = extraCoverageItem
-        self.notification = notification
     }
 }
 

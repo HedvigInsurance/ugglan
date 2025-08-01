@@ -142,7 +142,7 @@ extension PaymentData {
                 let referralDescription = paymentDataQueryCurrentMember.referralInformation.fragments
                     .memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount(with: referalDiscount, discountDto: referralDescription)
+                return Discount(with: referalDiscount, discountDto: referralDescription, discountPerReferral: nil)
             }
             return nil
         }()
@@ -324,7 +324,7 @@ extension PaymentData {
             if let referalDiscount = chargeFragment.referralDiscount?.fragments.moneyFragment {
                 let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount(with: referalDiscount, discountDto: referralDescription)
+                return Discount(with: referalDiscount, discountDto: referralDescription, discountPerReferral: nil)
             }
             return nil
         }()
