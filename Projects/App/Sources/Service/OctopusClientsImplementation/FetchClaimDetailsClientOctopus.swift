@@ -3,10 +3,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
+class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
     @Inject var octopus: hOctopus
-
-    public init() {}
 
     public func get(for type: FetchClaimDetailsType) async throws -> ClaimModel {
         switch type {

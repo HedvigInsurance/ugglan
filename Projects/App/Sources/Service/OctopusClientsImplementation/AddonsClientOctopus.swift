@@ -2,10 +2,8 @@ import Addons
 import hCore
 import hGraphQL
 
-public class AddonsClientOctopus: AddonsClient {
+class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
-
-    public init() {}
 
     public func getAddon(contractId: String) async throws -> AddonOffer {
         do {

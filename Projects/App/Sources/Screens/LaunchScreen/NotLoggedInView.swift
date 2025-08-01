@@ -8,9 +8,9 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct NotLoggedInView: View {
+struct NotLoggedInView: View {
     @ObservedObject var vm: NotLoggedViewModel
-    public init(
+    init(
         vm: NotLoggedViewModel
     ) {
         self.vm = vm
@@ -81,7 +81,7 @@ struct NotLoggedInView_Previews: PreviewProvider {
 }
 
 @MainActor
-public class NotLoggedViewModel: ObservableObject {
+class NotLoggedViewModel: ObservableObject {
     @Published var bootStrapped: Bool = false
     @Published var viewState: ViewState = .loading
     @Published var showLanguagePicker = false

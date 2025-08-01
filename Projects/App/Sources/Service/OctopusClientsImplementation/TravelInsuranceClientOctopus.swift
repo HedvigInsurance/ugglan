@@ -5,10 +5,9 @@ import hCore
 import hGraphQL
 
 @MainActor
-public class TravelInsuranceClientOctopus: TravelInsuranceClient {
+class TravelInsuranceClientOctopus: TravelInsuranceClient {
     @Inject var octopus: hOctopus
 
-    public init() {}
     public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         let query = OctopusGraphQL.TravelCertificateQuery()
         do {

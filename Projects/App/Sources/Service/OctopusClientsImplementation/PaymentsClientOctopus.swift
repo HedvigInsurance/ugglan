@@ -51,10 +51,8 @@ extension PaymentStatusData {
     }
 }
 
-public class hPaymentClientOctopus: hPaymentClient {
+class hPaymentClientOctopus: hPaymentClient {
     @Inject private var octopus: hOctopus
-
-    public init() {}
 
     public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
         let query = OctopusGraphQL.PaymentDataQuery()

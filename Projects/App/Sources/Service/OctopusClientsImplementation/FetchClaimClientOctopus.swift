@@ -3,10 +3,9 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class FetchClaimsClientOctopus: hFetchClaimsClient {
+class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 
-    public init() {}
     public func get() async throws -> [ClaimModel] {
         let data = try await octopus.client.fetch(
             query: OctopusGraphQL.ClaimsQuery(),

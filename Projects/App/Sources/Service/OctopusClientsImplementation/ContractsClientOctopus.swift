@@ -6,9 +6,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class FetchContractsClientOctopus: FetchContractsClient {
+class FetchContractsClientOctopus: FetchContractsClient {
     @Inject private var octopus: hOctopus
-    public init() {}
+
     public func getContracts() async throws -> ContractsStack {
         let query = OctopusGraphQL.ContractBundleQuery()
         let contracts = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)

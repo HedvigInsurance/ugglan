@@ -5,10 +5,8 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class MoveFlowClientOctopus: MoveFlowClient {
+class MoveFlowClientOctopus: MoveFlowClient {
     @Inject var octopus: hOctopus
-
-    public init() {}
 
     public func sendMoveIntent() async throws -> MoveConfigurationModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()

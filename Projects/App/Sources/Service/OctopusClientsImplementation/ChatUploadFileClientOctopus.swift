@@ -8,7 +8,7 @@ import hCore
 import hGraphQL
 
 @MainActor
-public class ChatFileUploaderService {
+class ChatFileUploaderService {
     @Inject var client: ChatFileUploaderClient
 
     func upload(

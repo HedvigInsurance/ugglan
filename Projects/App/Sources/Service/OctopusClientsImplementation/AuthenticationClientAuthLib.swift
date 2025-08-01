@@ -6,8 +6,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public final class AuthenticationClientAuthLib: AuthenticationClient {
-    public init() {}
+final class AuthenticationClientAuthLib: AuthenticationClient {
 
     private lazy var networkAuthRepository: NetworkAuthRepository = { [weak self] in
         return NetworkAuthRepository(

@@ -4,9 +4,8 @@ import PresentableStore
 import hCore
 import hGraphQL
 
-public class hCampaignsClientOctopus: hCampaignClient {
+class hCampaignsClientOctopus: hCampaignClient {
     @Inject private var octopus: hOctopus
-    public init() {}
 
     public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         let query = OctopusGraphQL.DiscountsQuery()
@@ -51,24 +50,6 @@ extension Discount {
             validUntil: data.expiresAt,
             canBeDeleted: true,
             discountId: data.id
-        )
-    }
-
-    public init(
-        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
-    ) {
-        self.init(
-            code: data.code,
-            amount: .init(fragment: data.discount.fragments.moneyFragment),
-            title: discount?.description ?? "",
-            listOfAffectedInsurances: discount?.onlyApplicableToContracts?
-                .compactMap {
-                    .init(id: $0.id, displayName: $0.exposureDisplayName)
-                } ?? [],
-            validUntil: nil,
-            canBeDeleted: false,
-            discountId: UUID().uuidString
         )
     }
 

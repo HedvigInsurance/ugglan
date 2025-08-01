@@ -2,10 +2,8 @@ import Profile
 import hCore
 import hGraphQL
 
-public class ProfileClientOctopus: ProfileClient {
+class ProfileClientOctopus: ProfileClient {
     @Inject var octopus: hOctopus
-
-    public init() {}
 
     public func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
