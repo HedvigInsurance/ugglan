@@ -11,11 +11,11 @@ struct MovingFlowSelectContractScreen: View {
         router: Router
     ) {
         self.navigationVm = navigationVm
-        self.itemPickerConfig = .init(
+        itemPickerConfig = .init(
             items: {
                 let currentHomeAddresses =
                     navigationVm.moveConfigurationModel?.currentHomeAddresses
-                    .map({
+                    .map {
                         (
                             object: $0,
                             displayName: ItemModel(
@@ -23,7 +23,7 @@ struct MovingFlowSelectContractScreen: View {
                                 subTitle: $0.displaySubtitle
                             )
                         )
-                    }) ?? []
+                    } ?? []
 
                 return currentHomeAddresses
             }(),

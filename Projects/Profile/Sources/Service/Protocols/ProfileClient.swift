@@ -35,6 +35,7 @@ public enum ChangeEuroBonusError: LocalizedError {
             return message
         }
     }
+
     var localizedDescription: String {
         switch self {
         case let .error(message):

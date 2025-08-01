@@ -1,3 +1,3 @@
 class NotificationClientDemo: NotificationClient {
-    func register(for token: String) {}
+    func register(for _: String) {}
 }

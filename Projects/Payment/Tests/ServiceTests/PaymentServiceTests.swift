@@ -57,7 +57,7 @@ final class PaymentServiceTests: XCTestCase {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentData: { paymentData }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedPaymentData = try! await mockService.getPaymentData()
         assert(respondedPaymentData.ongoing == paymentData.ongoing)
@@ -74,7 +74,7 @@ final class PaymentServiceTests: XCTestCase {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: { paymentStatusData }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedPaymentStatusData = try! await mockService.getPaymentStatusData()
         assert(respondedPaymentStatusData == paymentStatusData)
@@ -92,7 +92,7 @@ final class PaymentServiceTests: XCTestCase {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentHistoryData: { paymentHistoryData }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedPaymentHistoryData = try await mockService.getPaymentHistoryData()
         assert(respondedPaymentHistoryData == paymentHistoryData)
@@ -109,7 +109,7 @@ final class PaymentServiceTests: XCTestCase {
                 throw PaymentError.missingDataError(message: L10n.General.errorBody)
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedConnectPaymentUrl = try! await mockService.getConnectPaymentUrl()
         assert(respondedConnectPaymentUrl == connectPaymentUrl)

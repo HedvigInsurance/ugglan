@@ -8,10 +8,8 @@ struct BrandPickerView: View {
 
     var body: some View {
         ListScreen<ClaimFlowItemBrandOptionModel>(
-            items: {
-                return claimsNavigationVm.singleItemModel?.availableItemBrandOptions
-                    .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
-            }(),
+            items: claimsNavigationVm.singleItemModel?.availableItemBrandOptions
+                .compactMap { (object: $0, displayName: $0.displayName) } ?? [],
             onSelected: { [weak router] item in
                 router?.push(item)
             },

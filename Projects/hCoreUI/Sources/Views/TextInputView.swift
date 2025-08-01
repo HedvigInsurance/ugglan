@@ -67,13 +67,14 @@ public struct TextInputView: View {
         .hFormContentPosition(.compact)
         .sectionContainerStyle(.transparent)
     }
+
     enum InputViewFocus: hTextFieldFocusStateCompliant {
         static var last: InputViewFocus {
-            return InputViewFocus.textField
+            InputViewFocus.textField
         }
 
         var next: InputViewFocus? {
-            return nil
+            nil
         }
 
         case textField
@@ -110,7 +111,7 @@ public class TextInputViewModel: ObservableObject {
         }
         do {
             try await onSave?(input)
-        } catch let error {
+        } catch {
             withAnimation {
                 self.error = error.localizedDescription
             }

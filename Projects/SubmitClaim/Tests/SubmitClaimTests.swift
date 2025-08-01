@@ -33,11 +33,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            update: { phoneNumber, context, model in
+            update: { _, _, _ in
                 updateClaimResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.update(phoneNumer, context, model)
         assert(respons.claimId == updateClaimResponse.claimId)
@@ -60,11 +60,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            dateOfOccurrenceAndLocation: { context, model in
+            dateOfOccurrenceAndLocation: { _, _ in
                 dateOfOccurrenceAndLocationResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.dateOfOccurrenceAndLocation(context, model)
         assert(respons.claimId == dateOfOccurrenceAndLocationResponse.claimId)
@@ -85,8 +85,8 @@ final class SubmitClaimTests: XCTestCase {
 
         let audioRecordingType: SubmitAudioRecordingType = .audio(url: URL(string: "/file")!)
         let fileUploaderClient: MockFileUploaderService = .init(
-            uploadFile: { flowId, file in
-                return .init(audioUrl: "/file")
+            uploadFile: { _, _ in
+                .init(audioUrl: "/file")
             }
         )
 
@@ -99,11 +99,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            audioRecording: { type, context, claimId, model in
+            audioRecording: { _, _, _, _ in
                 audioRecordingResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.audioRecording(
             audioRecordingType,
@@ -138,11 +138,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            singleItem: { purchasePrice, context in
+            singleItem: { _, _ in
                 singleItemResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.singleItem(context, model)
         assert(respons.claimId == singleItemResponse.claimId)
@@ -170,11 +170,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            summary: { context, model in
+            summary: { _, _ in
                 summaryResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.summary(context, model)
         assert(respons.claimId == summaryResponse.claimId)
@@ -206,11 +206,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            singleItemCheckout: { context, model in
+            singleItemCheckout: { _, _ in
                 singleItemCheckoutResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.singleItemCheckout(context, model)
         assert(respons.claimId == singleItemCheckoutResponse.claimId)
@@ -232,11 +232,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            contractSelect: { contractId, context, model in
+            contractSelect: { _, _, _ in
                 contractSelectResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.contractSelect(contractId, context, model)
         assert(respons.claimId == contractSelectResponse.claimId)
@@ -258,11 +258,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            emergencyConfirm: { isEmeregency, context in
+            emergencyConfirm: { _, _ in
                 emergencyConfirmResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.emergencyConfirmRequest(isEmergency: isEmergency, context: context)
         assert(respons.claimId == emergencyConfirmResponse.claimId)
@@ -284,11 +284,11 @@ final class SubmitClaimTests: XCTestCase {
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            submitFile: { ids, context, model in
+            submitFile: { _, _, _ in
                 submitFileResponse
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respons = try! await mockService.submitFile(ids, context, model)
         assert(respons.claimId == submitFileResponse.claimId)

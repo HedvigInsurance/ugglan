@@ -171,7 +171,6 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
                 return false
             }
             return true
-
         case .newOfferNotification, .newOffer:
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
@@ -265,5 +264,4 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     public func resetTooltipDisplayState() {
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
     }
-
 }

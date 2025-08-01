@@ -8,7 +8,7 @@ import hGraphQL
 extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
     var asPayinMethodStatus: PayinMethodStatus {
         switch self {
-        case .case(let t):
+        case let .case(t):
             switch t {
             case .active:
                 return .active
@@ -27,13 +27,11 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
 extension PaymentStatusData {
     init(data: OctopusGraphQL.PaymentInformationQuery.Data) {
         let status: PayinMethodStatus = {
-            if data.currentMember.activeContracts.isEmpty && data.currentMember.pendingContracts.isEmpty {
+            if data.currentMember.activeContracts.isEmpty, data.currentMember.pendingContracts.isEmpty {
                 return .noNeedToConnect
             }
 
-            let missedPaymentsContracts = data.currentMember.activeContracts.filter({
-                $0.terminationDueToMissedPayments
-            })
+            let missedPaymentsContracts = data.currentMember.activeContracts.filter(\.terminationDueToMissedPayments)
             if !missedPaymentsContracts.isEmpty {
                 if let date = missedPaymentsContracts.compactMap({ $0.terminationDate?.localDateToDate }).sorted()
                     .first?
@@ -68,11 +66,10 @@ class hPaymentClientOctopus: hPaymentClient {
 
         let paymentDetails = PaymentData.PaymentDetails(with: paymentDetailsData)
         let upcomingPayment = PaymentData(with: data, paymentDetails: paymentDetails)
-        let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap({
+        let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap {
             .init(with: $0.fragments.memberChargeFragment, paymentDataQueryCurrentMember: data.currentMember)
-        })
+        }
         return (upcomingPayment, ongoingPayments)
-
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
@@ -99,12 +96,11 @@ class hPaymentClientOctopus: hPaymentClient {
 
 @MainActor
 extension PaymentData {
-    //used for upcoming payment
+    // used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
         paymentDetails: PaymentDetails?
     ) {
-
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         let referralDiscount: Discount? = {
@@ -112,7 +108,7 @@ extension PaymentData {
                 let referralDescription = data.currentMember.referralInformation.fragments
                     .memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount.init(with: referalDiscount, discountDto: referralDescription)
+                return Discount(with: referalDiscount, discountDto: referralDescription)
             }
             return nil
         }()
@@ -120,9 +116,9 @@ extension PaymentData {
             id: data.currentMember.futureCharge?.id ?? "",
             payment: .init(with: chargeFragment),
             status: PaymentData.PaymentStatus.getStatus(for: chargeFragment, with: data.currentMember),
-            contracts: chargeFragment.chargeBreakdown.compactMap({
+            contracts: chargeFragment.chargeBreakdown.compactMap {
                 .init(with: $0)
-            }),
+            },
             referralDiscount: referralDiscount,
             paymentDetails: paymentDetails,
             addedToThePayment: []
@@ -134,13 +130,12 @@ extension PaymentData {
         with data: OctopusGraphQL.MemberChargeFragment,
         paymentDataQueryCurrentMember: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
     ) {
-
         let referralDiscount: Discount? = {
             if let referalDiscount = data.referralDiscount?.fragments.moneyFragment {
                 let referralDescription = paymentDataQueryCurrentMember.referralInformation.fragments
                     .memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount.init(with: referalDiscount, discountDto: referralDescription)
+                return Discount(with: referalDiscount, discountDto: referralDescription)
             }
             return nil
         }()
@@ -148,9 +143,9 @@ extension PaymentData {
             id: data.id ?? "",
             payment: .init(with: data),
             status: PaymentData.PaymentStatus.getStatus(for: data, with: paymentDataQueryCurrentMember),
-            contracts: data.chargeBreakdown.compactMap({
+            contracts: data.chargeBreakdown.compactMap {
                 .init(with: $0)
-            }),
+            },
             referralDiscount: referralDiscount,
             paymentDetails: nil,
             addedToThePayment: []
@@ -178,7 +173,7 @@ extension PaymentData.PaymentStatus {
         with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
     ) -> PaymentData.PaymentStatus {
         switch charge.status {
-        case .case(let t):
+        case let .case(t):
             switch t {
             case .failed:
                 return .upcoming
@@ -188,10 +183,10 @@ extension PaymentData.PaymentStatus {
                 return .success
             case .upcoming:
                 let previousChargesPeriods =
-                    data.futureCharge?.chargeBreakdown.flatMap({ $0.periods })
-                    .filter({ $0.isPreviouslyFailedCharge }) ?? []
-                let from = previousChargesPeriods.compactMap({ $0.fromDate.localDateToDate }).min()
-                let to = previousChargesPeriods.compactMap({ $0.toDate.localDateToDate }).max()
+                    data.futureCharge?.chargeBreakdown.flatMap(\.periods)
+                    .filter(\.isPreviouslyFailedCharge) ?? []
+                let from = previousChargesPeriods.compactMap(\.fromDate.localDateToDate).min()
+                let to = previousChargesPeriods.compactMap(\.toDate.localDateToDate).max()
                 if let from, let to {
                     return .failedForPrevious(from: from.localDateString, to: to.localDateString)
                 }
@@ -228,9 +223,9 @@ extension PaymentData.ContractPaymentDetails {
             netAmount: .init(fragment: data.net.fragments.moneyFragment),
             grossAmount: .init(fragment: data.gross.fragments.moneyFragment),
             discounts: data.discounts?
-                .compactMap({ .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment) })
+                .compactMap { .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment) }
                 ?? [],
-            periods: data.periods.compactMap({ .init(with: $0) })
+            periods: data.periods.compactMap { .init(with: $0) }
         )
     }
 }
@@ -264,7 +259,7 @@ extension OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period {
         else {
             return nil
         }
-        if fromDate.isFirstDayOfMonth && toDate.isLastDayOfMonth {
+        if fromDate.isFirstDayOfMonth, toDate.isLastDayOfMonth {
             return L10n.paymentsPeriodFull
         } else {
             let days = toDate.daysBetween(start: fromDate) + 1
@@ -294,7 +289,7 @@ extension PaymentHistoryListData {
             nextPayment = paymentData
             payments.append(paymentData)
         }
-        let charges = payments.compactMap({ PaymentHistory(id: $0.payment.date, paymentData: $0) })
+        let charges = payments.compactMap { PaymentHistory(id: $0.payment.date, paymentData: $0) }
         let groupedPaymenthsByYear = Dictionary(grouping: charges, by: { $0.paymentData.payment.date.year ?? 0 })
 
         for year in groupedPaymenthsByYear.keys.sorted(by: { $0 > $1 }) {
@@ -322,7 +317,7 @@ extension PaymentData {
             if let referalDiscount = chargeFragment.referralDiscount?.fragments.moneyFragment {
                 let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount.init(with: referalDiscount, discountDto: referralDescription)
+                return Discount(with: referalDiscount, discountDto: referralDescription)
             }
             return nil
         }()
@@ -330,7 +325,7 @@ extension PaymentData {
             id: data.id ?? "",
             payment: .init(with: chargeFragment),
             status: PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment),
-            contracts: chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) }),
+            contracts: chargeFragment.chargeBreakdown.compactMap { .init(with: $0) },
             referralDiscount: referralDiscount,
             paymentDetails: nil,
             addedToThePayment: {
@@ -363,7 +358,7 @@ extension PaymentData.PaymentStatus {
             case .upcoming:
                 return .upcoming
             }
-        case .unknown(_):
+        case .unknown:
             return .unknown
         }
     }

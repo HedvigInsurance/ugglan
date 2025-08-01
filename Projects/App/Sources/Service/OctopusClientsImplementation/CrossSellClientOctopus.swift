@@ -10,9 +10,9 @@ class CrossSellClientOctopus: CrossSellClient {
     public func getCrossSell() async throws -> [CrossSell] {
         let query = OctopusGraphQL.CrossSellsQuery()
         let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        return crossSells.currentMember.crossSells.compactMap({
+        return crossSells.currentMember.crossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
-        })
+        }
     }
 
     public func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
@@ -20,9 +20,9 @@ class CrossSellClientOctopus: CrossSellClient {
             source: GraphQLEnum<OctopusGraphQL.CrossSellSource>(source.asGraphQLSource)
         )
         let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSell.otherCrossSells.compactMap({
+        let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSell.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
-        })
+        }
         let recommendedCrossSell: CrossSell? = {
             if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell {
                 return CrossSell(crossSellFragment)

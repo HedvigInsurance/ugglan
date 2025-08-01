@@ -2,7 +2,6 @@ import SwiftUI
 import hCore
 
 public struct UpdateOSScreen: View {
-
     public init() {}
 
     public var body: some View {

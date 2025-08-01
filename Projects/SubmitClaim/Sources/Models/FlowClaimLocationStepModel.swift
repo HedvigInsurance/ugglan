@@ -16,7 +16,7 @@ public struct FlowClaimLocationStepModel: FlowClaimStepModel {
     }
 
     public func getSelectedOption() -> ClaimFlowLocationOptionModel? {
-        return options.first(where: { $0.value == location })
+        options.first(where: { $0.value == location })
     }
 }
 

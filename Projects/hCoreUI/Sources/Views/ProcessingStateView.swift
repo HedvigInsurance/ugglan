@@ -31,7 +31,7 @@ public struct ProcessingStateView: View {
         self.successViewBody = successViewBody
         self.successViewButtonAction = successViewButtonAction
         self.onAppearLoadingView = onAppearLoadingView
-        self._state = state
+        _state = state
 
         let baseDurationFactor: Float = duration * (Float(1) / Float(24))
         animationTimings = [
@@ -128,7 +128,7 @@ public struct ProcessingStateView: View {
                         .accessibilityHidden(true)
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                animationTimings.forEach { item in
+                                for item in animationTimings {
                                     withAnimation(
                                         .easeInOut(duration: TimeInterval(item.duration))
                                             .delay(TimeInterval(item.delay))
@@ -166,7 +166,7 @@ class ProcessingViewModel: ObservableObject {
 public struct hProgressViewStyle: ProgressViewStyle {
     public init() {}
     public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
-        return RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
+        RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
             .overlay {
                 GeometryReader(content: { geometry in
                     RoundedRectangle(cornerRadius: 2, style: .continuous)
@@ -203,9 +203,10 @@ public struct hProgressViewStyle: ProgressViewStyle {
 
 extension View {
     public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
-        self.modifier(TrackErrorState(processingState: state))
+        modifier(TrackErrorState(processingState: state))
     }
 }
+
 private struct TrackErrorState: ViewModifier {
     @State private var error: String?
     @Binding var processingState: ProcessingState
@@ -223,7 +224,7 @@ private struct TrackErrorState: ViewModifier {
         .onAppear {
             checkForError()
         }
-        .onChange(of: processingState) { value in
+        .onChange(of: processingState) { _ in
             checkForError()
         }
     }
@@ -232,9 +233,9 @@ private struct TrackErrorState: ViewModifier {
         withAnimation {
             switch processingState {
             case let .error(errorMessage):
-                self.error = errorMessage
+                error = errorMessage
             default:
-                self.error = nil
+                error = nil
             }
         }
     }

@@ -16,7 +16,7 @@ struct MockData {
                 )
             ]
         },
-        fetchAddonBannerModel: @escaping FetchAddonBanner = { source in
+        fetchAddonBannerModel: @escaping FetchAddonBanner = { _ in
             .init(
                 contractIds: ["contractId"],
                 titleDisplayName: "title",
@@ -24,7 +24,7 @@ struct MockData {
                 badges: []
             )
         },
-        fetchCrossSells: @escaping FetchCrossSells = { source in
+        fetchCrossSells: @escaping FetchCrossSells = { _ in
             .init(recommended: nil, others: [])
         }
     ) -> MockCrossSellService {
@@ -48,7 +48,6 @@ typealias FetchAddonBanner = (AddonSource) async throws -> AddonBannerModel?
 typealias FetchCrossSells = (CrossSellSource) async throws -> CrossSells
 
 class MockCrossSellService: CrossSellClient {
-
     var events = [Event]()
     var fetchCrossSell: FetchCrossSell
     var fetchAddonBannerModel: FetchAddonBanner

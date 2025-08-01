@@ -8,14 +8,14 @@ class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
 
     public func get(for type: FetchClaimDetailsType) async throws -> ClaimModel {
         switch type {
-        case .claim(let id):
+        case let .claim(id):
             let query = OctopusGraphQL.ClaimsQuery()
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             if let claimFragment = data.currentMember.claims.first(where: { $0.id == id })?.fragments.claimFragment {
                 return ClaimModel(claim: claimFragment)
             }
             throw FetchClaimDetailsError.noClaimFound
-        case .conversation(let id):
+        case let .conversation(id):
             let query = OctopusGraphQL.ClaimFromConversationQuery(conversationId: id)
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             if let claimFragment = data.conversation?.claim?.fragments.claimFragment {
@@ -27,7 +27,7 @@ class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
 
     public func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [hCore.File]) {
         switch type {
-        case .claim(let id):
+        case let .claim(id):
             let query = OctopusGraphQL.ClaimsFilesQuery()
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
@@ -37,7 +37,7 @@ class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
                 return (id, files)
             }
             throw FetchClaimDetailsError.noClaimFound
-        case .conversation(let id):
+        case let .conversation(id):
             let query = OctopusGraphQL.ClaimFilesFromConversationQuery(conversationId: id)
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             if let claimId = data.conversation?.claim?.id,

@@ -172,5 +172,4 @@ enum DI {
         let hApollo = await ApolloClient.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
     }
-
 }

@@ -90,7 +90,6 @@ public class PaymentDetailsDiscountViewModel: ObservableObject {
     }
 
     public struct PaymentDetailsDiscountOptions: OptionSet, Sendable {
-
         public init(rawValue: UInt) {
             self.rawValue = rawValue
         }

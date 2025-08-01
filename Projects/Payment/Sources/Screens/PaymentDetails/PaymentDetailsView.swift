@@ -54,7 +54,6 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder
     private var paymentDetailsSection: some View {
-
         hSection(paymentViewItems, id: \.id) { view in
             view.view
         }

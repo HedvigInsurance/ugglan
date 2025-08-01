@@ -76,8 +76,7 @@ struct ClaimsMainNavigation: View {
 
 extension ClaimsMainNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: HonestyPledge.self)
-
+        .init(describing: HonestyPledge.self)
     }
 }
 

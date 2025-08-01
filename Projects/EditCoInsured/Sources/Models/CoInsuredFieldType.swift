@@ -26,7 +26,6 @@ enum CoInsuredFieldType {
         default:
             hTextColor.Opaque.primary
         }
-
     }
 
     var text: String? {

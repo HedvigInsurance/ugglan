@@ -6,7 +6,6 @@ import hCore
 import hCoreUI
 
 struct FutureSectionInfoView: View {
-
     var body: some View {
         PresentableStoreLens(
             HomeStore.self,
@@ -15,7 +14,7 @@ struct FutureSectionInfoView: View {
             }
         ) { futureStatus in
             switch futureStatus {
-            case .activeInFuture(let inceptionDate):
+            case let .activeInFuture(inceptionDate):
                 InfoCard(
                     text:
                         L10n.HomeTab.activeInFutureInfo(inceptionDate),
@@ -76,7 +75,6 @@ struct PendingSwitchableView_Previews: PreviewProvider {
                     store.send(.setFutureStatus(status: .pendingSwitchable))
                 }
         }
-
     }
 }
 
@@ -96,6 +94,5 @@ struct PendingNonSwitchableView_Previews: PreviewProvider {
                     store.send(.setFutureStatus(status: .pendingNonswitchable))
                 }
         }
-
     }
 }

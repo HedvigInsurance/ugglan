@@ -48,12 +48,12 @@ public class SubmitClaimNavigationViewModel: ObservableObject {
                     ) {
                         let content = try FileManager.default
                             .contentsOfDirectory(atPath: claimsAudioRecordingRootPath.relativePath)
-                            .filter({ URL(string: $0)?.pathExtension == AudioRecorder.audioFileExtension })
-                        try content.forEach({
+                            .filter { URL(string: $0)?.pathExtension == AudioRecorder.audioFileExtension }
+                        try content.forEach {
                             try FileManager.default.removeItem(
                                 atPath: claimsAudioRecordingRootPath.appendingPathComponent($0).relativePath
                             )
-                        })
+                        }
                     } else {
                         try FileManager.default.createDirectory(
                             at: claimsAudioRecordingRootPath,
@@ -225,7 +225,6 @@ extension SubmitClaimRouterActions: TrackingViewNameProtocol {
             return .init(describing: SubmitClaimCheckoutScreen.self)
         }
     }
-
 }
 
 public enum SubmitClaimRouterActionsWithoutBackButton {
@@ -436,7 +435,7 @@ public struct SubmitClaimNavigation: View {
     }
 
     private func openFileScreen(model: ClaimsFileModel) -> some View {
-        ClaimFilesView(endPoint: model.endpoint, files: model.files) { uploadedFiles in
+        ClaimFilesView(endPoint: model.endpoint, files: model.files) { _ in
             claimsNavigationVm.router.dismiss()
         }
         .configureTitle(L10n.ClaimStatusDetail.addedFiles)
@@ -457,7 +456,6 @@ private enum ClaimsDetentType: TrackingViewNameProtocol {
         case .locationPicker:
             return .init(describing: LocationView.self)
         }
-
     }
 
     case entryPoints
@@ -475,7 +473,7 @@ public struct ClaimsFileModel: Equatable, Identifiable {
 
 extension View {
     func addDismissClaimsFlow() -> some View {
-        self.withDismissButton(
+        withDismissButton(
             title: L10n.General.areYouSure,
             message: L10n.Claims.Alert.body,
             confirmButton: L10n.General.yes,
@@ -495,9 +493,9 @@ public struct SubmitClaimOption: OptionSet, Hashable, Sendable {
     static let date = SubmitClaimOption(rawValue: 1 << 1)
 
     var title: String {
-        let hasLocation = self.contains(.location)
-        let hasDate = self.contains(.date)
-        if hasLocation && hasDate {
+        let hasLocation = contains(.location)
+        let hasDate = contains(.date)
+        if hasLocation, hasDate {
             return L10n.claimsLocatonOccuranceTitle
         } else if hasDate {
             return L10n.Claims.Incident.Screen.Date.Of.incident

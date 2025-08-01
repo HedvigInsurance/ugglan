@@ -53,11 +53,11 @@ final class AddonsServiceTests: XCTestCase {
             ]
         )
 
-        let mockService = MockData.createMockAddonsService(fetchAddon: { contractId in
+        let mockService = MockData.createMockAddonsService(fetchAddon: { _ in
             addonModel
         })
 
-        self.sut = mockService
+        sut = mockService
 
         let respondedAddonData = try await mockService.getAddon(contractId: "contractId")
 

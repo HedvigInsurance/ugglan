@@ -8,8 +8,9 @@ class HomeClientOctopus: HomeClient {
     @Inject private var octopus: hOctopus
     @Inject private var featureFlags: FeatureFlags
 
-    public func getImportantMessages() async throws -> [ImportantMessage] {
-        let data = try await self.octopus
+    func getImportantMessages() async throws -> [ImportantMessage] {
+        let data =
+            try await octopus
             .client
             .fetch(query: OctopusGraphQL.ImportantMessagesQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
         let messages = data.currentMember.importantMessages.map { data in
@@ -24,8 +25,9 @@ class HomeClientOctopus: HomeClient {
         return messages
     }
 
-    public func getMemberState() async throws -> MemberState {
-        let data = try await self.octopus
+    func getMemberState() async throws -> MemberState {
+        let data =
+            try await octopus
             .client
             .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
 
@@ -43,8 +45,8 @@ class HomeClientOctopus: HomeClient {
         )
     }
 
-    public func getQuickActions() async throws -> [QuickAction] {
-        let data = try await self.octopus.client
+    func getQuickActions() async throws -> [QuickAction] {
+        let data = try await octopus.client
             .fetch(
                 query: OctopusGraphQL.MemberActionsQuery(),
                 cachePolicy: .fetchIgnoringCacheCompletely
@@ -62,7 +64,7 @@ class HomeClientOctopus: HomeClient {
             contractAction.append(.upgradeCoverage)
         }
 
-        if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
+        if actions?.isCancelInsuranceEnabled == true, featureFlags.isTerminationFlowEnabled {
             contractAction.append(.cancellation)
         }
 
@@ -70,7 +72,7 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
 
-        if actions?.isMovingEnabled == true && featureFlags.isMovingFlowEnabled {
+        if actions?.isMovingEnabled == true, featureFlags.isMovingFlowEnabled {
             quickActions.append(.changeAddress)
         }
 
@@ -81,7 +83,7 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.travelInsurance)
         }
         if let firstVetSections = actions?.firstVetAction?.sections {
-            let firstVetPartners = firstVetSections.compactMap({
+            let firstVetPartners = firstVetSections.compactMap {
                 FirstVetPartner(
                     id: $0.title ?? "",
                     buttonTitle: $0.buttonTitle,
@@ -89,12 +91,12 @@ class HomeClientOctopus: HomeClient {
                     url: $0.url,
                     title: $0.title
                 )
-            })
+            }
             quickActions.append(.firstVet(partners: firstVetPartners))
         }
 
         if let sickAbroadPartners = actions?.sickAbroadAction?.deflectPartners {
-            let firstVetPartners = sickAbroadPartners.compactMap({
+            let firstVetPartners = sickAbroadPartners.compactMap {
                 SickAbroadPartner(
                     id: $0.id,
                     imageUrl: $0.imageUrl,
@@ -102,14 +104,14 @@ class HomeClientOctopus: HomeClient {
                     url: $0.url,
                     preferredImageHeight: $0.preferredImageHeight
                 )
-            })
+            }
             quickActions.append(.sickAbroad(partners: firstVetPartners))
         }
         return quickActions
     }
 
-    public func getMessagesState() async throws -> MessageState {
-        let data = try await self.octopus.client.fetch(
+    func getMessagesState() async throws -> MessageState {
+        let data = try await octopus.client.fetch(
             query: OctopusGraphQL.ConversationsTimeStampQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely
         )
@@ -121,16 +123,15 @@ class HomeClientOctopus: HomeClient {
             (data.currentMember.conversations.first(where: { $0.unreadMessageCount > 0 })?.unreadMessageCount ?? data
                 .currentMember.legacyConversation?
                 .unreadMessageCount ?? 0) > 0
-        let hasSentOrRecievedAtLeastOneMessage: Bool = {
+        let hasSentOrRecievedAtLeastOneMessage: Bool =
             !data.currentMember.conversations.isEmpty || data.currentMember.legacyConversation?.newestMessage != nil
-        }()
 
         if let legacyConversation = data.currentMember.legacyConversation {
             if let date = legacyConversation.newestMessage?.sentAt.localDateToIso8601Date {
                 conversationsTimestamps.append(date)
             }
         }
-        let maxDate = conversationsTimestamps.compactMap({ $0 }).max()
+        let maxDate = conversationsTimestamps.compactMap { $0 }.max()
 
         return .init(
             hasNewMessages: hasNewMessages,
@@ -139,21 +140,23 @@ class HomeClientOctopus: HomeClient {
         )
     }
 
-    public func getFAQ() async throws -> HelpCenterFAQModel {
+    func getFAQ() async throws -> HelpCenterFAQModel {
         let query = OctopusGraphQL.MemberFAQQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return data.asHelpCenterModel
     }
 }
+
 extension OctopusGraphQL.MemberFAQQuery.Data {
     fileprivate var asHelpCenterModel: HelpCenterFAQModel {
-        let commonQuestions = currentMember.memberFAQ.commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
+        let commonQuestions = currentMember.memberFAQ.commonFAQ.compactMap(\.fragments.fAQFragment.asQuestion)
         return .init(
-            topics: currentMember.memberFAQ.topics.compactMap({ $0.asTopic }),
+            topics: currentMember.memberFAQ.topics.compactMap(\.asTopic),
             commonQuestions: commonQuestions
         )
     }
 }
+
 extension OctopusGraphQL.FAQFragment {
     fileprivate var asQuestion: FAQModel {
         .init(id: id, question: question, answer: answer)
@@ -165,8 +168,8 @@ extension OctopusGraphQL.MemberFAQQuery.Data.CurrentMember.MemberFAQ.Topic {
         .init(
             id: id,
             title: title,
-            commonQuestions: commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion }),
-            allQuestions: otherFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
+            commonQuestions: commonFAQ.compactMap(\.fragments.fAQFragment.asQuestion),
+            allQuestions: otherFAQ.compactMap(\.fragments.fAQFragment.asQuestion)
         )
     }
 }
@@ -175,15 +178,15 @@ extension OctopusGraphQL.MemberFAQQuery.Data.CurrentMember.MemberFAQ.Topic {
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     fileprivate var futureStatus: FutureStatus {
         let localDate = Date().localDateString.localDateToDate ?? Date()
-        let allActiveInFuture = activeContracts.allSatisfy({ contract in
-            return contract.masterInceptionDate.localDateToDate?.daysBetween(start: localDate) ?? 0 > 0
-        })
+        let allActiveInFuture = activeContracts.allSatisfy { contract in
+            contract.masterInceptionDate.localDateToDate?.daysBetween(start: localDate) ?? 0 > 0
+        }
 
-        let externalInsraunceCancellation = pendingContracts.compactMap({ contract in
+        let externalInsraunceCancellation = pendingContracts.compactMap { contract in
             contract.externalInsuranceCancellationHandledByHedvig
-        })
+        }
 
-        if allActiveInFuture && externalInsraunceCancellation.count == 0 {
+        if allActiveInFuture, externalInsraunceCancellation.count == 0 {
             return .activeInFuture(inceptionDate: activeContracts.first?.masterInceptionDate ?? "")
         } else if let firstExternal = externalInsraunceCancellation.first {
             return firstExternal ? .pendingSwitchable : .pendingNonswitchable
@@ -205,13 +208,13 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     }
 
     private var isTerminated: Bool {
-        return activeContracts.count == 0 && pendingContracts.count == 0
+        activeContracts.count == 0 && pendingContracts.count == 0
     }
 
     @MainActor
     private var isFuture: Bool {
         let hasActiveContractsInFuture = activeContracts.allSatisfy { contract in
-            return contract.currentAgreement.activeFrom.localDateToDate ?? Date() > Date()
+            contract.currentAgreement.activeFrom.localDateToDate ?? Date() > Date()
         }
         return (!activeContracts.isEmpty && hasActiveContractsInFuture)
             || (!pendingContracts.isEmpty && activeContracts.isEmpty)

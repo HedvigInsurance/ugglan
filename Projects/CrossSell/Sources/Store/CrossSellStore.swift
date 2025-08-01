@@ -4,34 +4,34 @@ import hCore
 
 public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAction, CrossSellLoadingAction> {
     let crossSellService = CrossSellService()
-    public override func effects(
-        _ getState: @escaping () -> CrossSellState,
+    override public func effects(
+        _: @escaping () -> CrossSellState,
         _ action: CrossSellAction
     ) async {
         switch action {
         case .fetchCrossSell:
             do {
-                let crossSells = try await self.crossSellService.getCrossSell()
+                let crossSells = try await crossSellService.getCrossSell()
                 send(.setCrossSells(crossSells: crossSells))
-            } catch let error {
-                self.setError(error.localizedDescription, for: .fetchCrossSell)
+            } catch {
+                setError(error.localizedDescription, for: .fetchCrossSell)
             }
         case .fetchAddonBanner:
             do {
-                let addonBanner = try await self.crossSellService.getAddonBannerModel(source: .crossSell)
+                let addonBanner = try await crossSellService.getAddonBannerModel(source: .crossSell)
                 if let addonBanner {
                     send(.setAddonBannerData(addonBanner: addonBanner))
                 }
             } catch {
                 send(.setAddonBannerData(addonBanner: nil))
-                self.setError(error.localizedDescription, for: .fetchAddonBanner)
+                setError(error.localizedDescription, for: .fetchAddonBanner)
             }
         case .fetchRecommendedCrossSellId:
             do {
-                let crossSellsV2 = try await self.crossSellService.getCrossSell(source: .home)
+                let crossSellsV2 = try await crossSellService.getCrossSell(source: .home)
                 let recommendedProductId = crossSellsV2.recommended?.id
                 let lastSeenRecommendedProductId = state.lastSeenRecommendedProductId
-                if recommendedProductId != nil && recommendedProductId != lastSeenRecommendedProductId {
+                if recommendedProductId != nil, recommendedProductId != lastSeenRecommendedProductId {
                     send(.setHasNewRecommendedCrossSell(hasNew: true))
                 } else {
                     send(.setHasNewRecommendedCrossSell(hasNew: false))
@@ -44,7 +44,7 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
         }
     }
 
-    public override func reduce(_ state: CrossSellState, _ action: CrossSellAction) async -> CrossSellState {
+    override public func reduce(_ state: CrossSellState, _ action: CrossSellAction) async -> CrossSellState {
         var newState = state
         switch action {
         case let .setCrossSells(crossSells):

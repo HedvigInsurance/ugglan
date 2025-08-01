@@ -3,6 +3,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.dependenciesFramework(
     name: "DevDependencies",
-    externalDependencies: ExternalDependencies.allCases.filter { $0.isDevDependency },
+    externalDependencies: ExternalDependencies.allCases.filter(\.isDevDependency),
     sdks: []
 )

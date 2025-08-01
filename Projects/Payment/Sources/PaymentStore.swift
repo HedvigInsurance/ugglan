@@ -8,9 +8,9 @@ import hCore
 public struct PaymentState: StateProtocol {
     public var paymentData: PaymentData?
     public var ongoingPaymentData: [PaymentData] = []
-    public var paymentStatusData: PaymentStatusData? = nil
+    public var paymentStatusData: PaymentStatusData?
     var paymentHistory: [PaymentHistoryListData] = []
-    var paymentConnectionID: String? = nil
+    var paymentConnectionID: String?
     var schema: String?
     public init() {}
 }
@@ -34,36 +34,36 @@ public enum LoadingAction: LoadingProtocol {
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var paymentService: hPaymentClient
 
-    public override func effects(_ getState: @escaping () -> PaymentState, _ action: PaymentAction) async {
+    override public func effects(_: @escaping () -> PaymentState, _ action: PaymentAction) async {
         switch action {
         case .load:
             do {
-                let paymentData = try await self.paymentService.getPaymentData()
-                self.send(.setPaymentData(data: paymentData.upcoming))
-                self.send(.setOngoingPaymentData(data: paymentData.ongoing))
+                let paymentData = try await paymentService.getPaymentData()
+                send(.setPaymentData(data: paymentData.upcoming))
+                send(.setOngoingPaymentData(data: paymentData.ongoing))
             } catch {
-                self.setError(L10n.General.errorBody, for: .getPaymentData)
+                setError(L10n.General.errorBody, for: .getPaymentData)
             }
         case .fetchPaymentStatus:
             do {
-                let statusData = try await self.paymentService.getPaymentStatusData()
-                self.send(.setPaymentStatus(data: statusData))
+                let statusData = try await paymentService.getPaymentStatusData()
+                send(.setPaymentStatus(data: statusData))
             } catch {
-                self.setError(L10n.General.errorBody, for: .getPaymentStatus)
+                setError(L10n.General.errorBody, for: .getPaymentStatus)
             }
         case .getHistory:
             do {
-                let data = try await self.paymentService.getPaymentHistoryData()
-                self.send(.setHistory(to: data))
+                let data = try await paymentService.getPaymentHistoryData()
+                send(.setHistory(to: data))
             } catch {
-                self.setError(L10n.General.errorBody, for: .getHistory)
+                setError(L10n.General.errorBody, for: .getHistory)
             }
         default:
             break
         }
     }
 
-    public override func reduce(_ state: PaymentState, _ action: PaymentAction) async -> PaymentState {
+    override public func reduce(_ state: PaymentState, _ action: PaymentAction) async -> PaymentState {
         var newState = state
 
         switch action {

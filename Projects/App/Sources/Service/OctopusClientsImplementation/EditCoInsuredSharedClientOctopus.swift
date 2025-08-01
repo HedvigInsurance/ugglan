@@ -38,7 +38,7 @@ extension Contract {
             upcomingChangedAgreement: .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment),
             currentAgreement: .init(agreement: contract.currentAgreement.fragments.agreementFragment),
             terminationDate: contract.terminationDate,
-            coInsured: contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? [],
+            coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
             firstName: firstName,
             lastName: lastName,
             ssn: ssn

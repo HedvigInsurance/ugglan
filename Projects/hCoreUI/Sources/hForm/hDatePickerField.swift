@@ -13,7 +13,7 @@ public struct hDatePickerField: View {
 
     @State private var animate = false
 
-    @State private var date: Date = Date()
+    @State private var date: Date = .init()
     private var selectedDate: Date?
 
     @Binding var error: String?
@@ -40,18 +40,17 @@ public struct hDatePickerField: View {
         onShowDatePicker: (() -> Void)? = nil
     ) {
         self.config = config
-        self.onUpdate = { _ in }
+        onUpdate = { _ in }
         self.onContinue = onContinue
         self.onShowDatePicker = onShowDatePicker
         self.selectedDate = selectedDate
-        self._error = error ?? Binding.constant(nil)
-        self.date = selectedDate ?? config.minDate ?? Date()
-        self.placeholderText = placehodlerText
+        _error = error ?? Binding.constant(nil)
+        date = selectedDate ?? config.minDate ?? Date()
+        placeholderText = placehodlerText
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-
             hFieldContainer(
                 placeholder: config.placeholder,
                 customLabelOffset: !(selectedDate?.localDateString.isEmpty ?? true),
@@ -73,7 +72,7 @@ public struct hDatePickerField: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
-            self.date = selectedDate ?? config.minDate ?? Date()
+            date = selectedDate ?? config.minDate ?? Date()
             if let onShowDatePicker {
                 onShowDatePicker()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -84,7 +83,7 @@ public struct hDatePickerField: View {
             }
             animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                self.animate = false
+                animate = false
             }
         }
         .accessibilityAddTraits(.isButton)
@@ -143,7 +142,7 @@ public struct hDatePickerField: View {
         )
 
         continueAction.execute = {
-            self.onContinue(date)
+            onContinue(date)
             router.dismiss()
         }
     }
@@ -182,6 +181,6 @@ public struct hDatePickerField: View {
 
 extension hDatePickerField: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: DatePickerView.self)
+        .init(describing: DatePickerView.self)
     }
 }

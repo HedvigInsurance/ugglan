@@ -44,17 +44,20 @@ let actualAndReference =
         let reference = filePaths.first { $0.contains(failure.lastPathComponent) }
         return (failure: failure, reference: URL(string: reference!)!)
     }
-    .map { failure, reference -> (failure: String, reference: String) in var failureImageLink: String = ""
+    .map { failure, reference -> (failure: String, reference: String) in
+        var failureImageLink: String = ""
         var referenceImageLink: String = ""
 
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
-        uploadFile(failure) { failureLink in failureImageLink = failureLink
+        uploadFile(failure) { failureLink in
+            failureImageLink = failureLink
             dispatchGroup.leave()
         }
 
         dispatchGroup.enter()
-        uploadFile(reference) { referenceLink in referenceImageLink = referenceLink
+        uploadFile(reference) { referenceLink in
+            referenceImageLink = referenceLink
             dispatchGroup.leave()
         }
 

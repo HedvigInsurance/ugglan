@@ -48,7 +48,6 @@ struct NotLoggedInView: View {
                             .padding(.padding8)
                             .accessibilityLabel(L10n.voiceoverSelectLanguage)
                     }
-
                 }
                 Spacer()
                 VStack {
@@ -102,7 +101,7 @@ class NotLoggedViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        self.bootStrapped = true
+        bootStrapped = true
 
         NotificationCenter.default.addObserver(
             self,
@@ -135,7 +134,6 @@ class NotLoggedViewModel: ObservableObject {
             .appending("utm_medium", value: "hedvig-app")
             .appending("utm_campaign", value: "se")
         Dependencies.urlOpener.open(webUrl)
-
     }
 
     enum ViewState {

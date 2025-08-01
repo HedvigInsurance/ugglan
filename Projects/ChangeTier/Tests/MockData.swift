@@ -21,8 +21,8 @@ struct MockData {
                 typeOfContract: .seHouse
             )
         },
-        commitTier: @escaping CommitTier = { quoteId in },
-        compareProductVariants: @escaping CompareProductVariants = { termsVersion in
+        commitTier: @escaping CommitTier = { _ in },
+        compareProductVariants: @escaping CompareProductVariants = { _ in
             .init(rows: [], variantColumns: [])
         }
     ) -> MockChangeTierService {
@@ -61,7 +61,7 @@ class MockChangeTierService: ChangeTierClient {
     ) {
         self.fetchTier = fetchTier
         self.sendTier = sendTier
-        self.compareProductVariantsClosure = compareProductVariants
+        compareProductVariantsClosure = compareProductVariants
     }
 
     func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {

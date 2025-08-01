@@ -17,6 +17,6 @@ struct ExpandAppearAnimationModifier: ViewModifier {
 
 extension View {
     public func expandAppearAnimation() -> some View {
-        self.modifier(ExpandAppearAnimationModifier())
+        modifier(ExpandAppearAnimationModifier())
     }
 }

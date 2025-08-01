@@ -16,7 +16,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
     var content: (_ value: Value, _ setter: @escaping (_ newValue: Value) -> Void) -> Content
 
     public init(
-        _ storeType: S.Type,
+        _: S.Type,
         getter: @escaping (_ state: S.State) -> Value,
         setter: @escaping (_ value: Value) -> S.Action?,
         @ViewBuilder _ content: @escaping (_ value: Value, _ setter: @escaping (_ newValue: Value) -> Void) -> Content
@@ -28,22 +28,22 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
 
-        self._value = State(initialValue: getter(store.state))
+        _value = State(initialValue: getter(store.state))
     }
 
     public init(
-        _ storeType: S.Type,
+        _: S.Type,
         getter: @escaping (_ state: S.State) -> Value,
         @ViewBuilder _ content: @escaping (_ value: Value) -> Content
     ) {
         self.getter = getter
-        self.setter = { _ in nil }
+        setter = { _ in nil }
         self.content = { value, _ in content(value) }
 
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
 
-        self._value = State(initialValue: getter(store.state))
+        _value = State(initialValue: getter(store.state))
     }
 
     public var body: some View {
@@ -58,15 +58,15 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         .onReceive(
             store.stateSignal
                 .removeDuplicates(by: { lhs, rhs in
-                    self.getter(lhs) == self.getter(rhs)
+                    getter(lhs) == getter(rhs)
                 })
         ) { _ in
             if let animation = animation {
                 withAnimation(animation) {
-                    self.value = getter(store.state)
+                    value = getter(store.state)
                 }
             } else {
-                self.value = getter(store.state)
+                value = getter(store.state)
             }
         }
     }
@@ -88,7 +88,7 @@ public struct PresentableLoadingStoreLens<
     var finishedContent: () -> FinishedContent
 
     public init(
-        _ storeType: S.Type,
+        _: S.Type,
         loadingState: S.Loading,
         @ViewBuilder loading loadingContent: @escaping () -> LoadingContent,
         @ViewBuilder error errorContent: @escaping (_ error: String) -> ErrorContent,
@@ -101,7 +101,7 @@ public struct PresentableLoadingStoreLens<
         self.store = store
         self.loadingState = loadingState
         let value = store.loadingState.first(where: { $0.key == loadingState })?.value
-        self._state = State(initialValue: value)
+        _state = State(initialValue: value)
     }
 
     public var body: some View {
@@ -121,10 +121,10 @@ public struct PresentableLoadingStoreLens<
             let currentValue = value.first(where: { $0.key == loadingState })?.value
             if let animation {
                 withAnimation(animation) {
-                    self.state = currentValue
+                    state = currentValue
                 }
             } else {
-                self.state = currentValue
+                state = currentValue
             }
         }
     }
@@ -143,6 +143,6 @@ extension EnvironmentValues {
 
 extension View {
     public func presentableStoreLensAnimation(_ animation: Animation?) -> some View {
-        self.environment(\.presentableStoreLensAnimation, animation)
+        environment(\.presentableStoreLensAnimation, animation)
     }
 }

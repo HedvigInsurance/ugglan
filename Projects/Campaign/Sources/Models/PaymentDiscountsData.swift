@@ -31,7 +31,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         canBeDeleted: Bool,
         discountId: String
     ) {
-        self.id = UUID().uuidString
+        id = UUID().uuidString
         self.code = code
         self.amount = amount
         self.title = title
@@ -44,16 +44,16 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     @MainActor
     public init(
         referral: Referral,
-        nbOfReferrals: Int
+        nbOfReferrals _: Int
     ) {
-        self.id = UUID().uuidString
-        self.code = referral.code ?? referral.name
-        self.amount = referral.activeDiscount
-        self.title = referral.description
-        self.listOfAffectedInsurances = []
-        self.validUntil = nil
-        self.canBeDeleted = true
-        self.discountId = referral.id
+        id = UUID().uuidString
+        code = referral.code ?? referral.name
+        amount = referral.activeDiscount
+        title = referral.description
+        listOfAffectedInsurances = []
+        validUntil = nil
+        canBeDeleted = true
+        discountId = referral.id
     }
 
     @MainActor
@@ -85,11 +85,11 @@ public struct ReferralsData: Equatable, Codable, Sendable {
     }
 
     var allReferralDiscount: MonetaryAmount {
-        let value = referrals.compactMap({ $0.activeDiscount }).compactMap({ $0.value }).reduce(0.0, +)
+        let value = referrals.compactMap(\.activeDiscount).compactMap(\.value).reduce(0.0, +)
         return MonetaryAmount(amount: value, currency: discountPerMember.currency)
     }
-
 }
+
 public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public let id: String
     let name: String
@@ -128,7 +128,7 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
 @MainActor
 extension Referral {
     @hColorBuilder var statusColor: some hColor {
-        switch self.status {
+        switch status {
         case .active:
             hSignalColor.Green.element
         case .pending:
@@ -141,7 +141,7 @@ extension Referral {
     }
 
     @hColorBuilder var discountLabelColor: some hColor {
-        switch self.status {
+        switch status {
         case .active:
             hTextColor.Opaque.secondary
         case .pending, .terminated:
@@ -152,7 +152,7 @@ extension Referral {
     }
 
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
-        switch self.status {
+        switch status {
         case .active, .pending:
             hTextColor.Opaque.tertiary
         case .terminated:
@@ -164,9 +164,9 @@ extension Referral {
 
     @MainActor
     var discountLabelText: String {
-        switch self.status {
+        switch status {
         case .active:
-            return self.activeDiscount?.negative.formattedAmount ?? ""
+            return activeDiscount?.negative.formattedAmount ?? ""
         case .pending:
             return L10n.referralPendingStatusLabel
         case .terminated:

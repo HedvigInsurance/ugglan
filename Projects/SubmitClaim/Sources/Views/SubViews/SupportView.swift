@@ -37,6 +37,7 @@ struct SupportView: View {
         .background(hSurfaceColor.Opaque.primary)
     }
 }
+
 struct SupportView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)

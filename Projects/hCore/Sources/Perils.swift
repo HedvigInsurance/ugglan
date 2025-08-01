@@ -28,20 +28,19 @@ public struct Perils: Codable, Equatable, Hashable, Sendable {
         fragment: OctopusGraphQL.AddonVariantFragment.AddonPeril
     ) {
         var description = fragment.description ?? ""
-        let coverageTexts = [fragment.coverageText].compactMap({ $0 })
+        let coverageTexts = [fragment.coverageText].compactMap { $0 }
         if !coverageTexts.isEmpty {
             description += "\r\n"
         }
-        [fragment.coverageText].compactMap({ $0 })
-            .forEach { coverageText in
-                description += "\r\n \(coverageText)"
-            }
-        self.id = fragment.title
-        self.title = fragment.title
+        for coverageText in [fragment.coverageText].compactMap({ $0 }) {
+            description += "\r\n \(coverageText)"
+        }
+        id = fragment.title
+        title = fragment.title
         self.description = description
-        self.covered = []
-        self.color = fragment.colorCode
-        self.isDisabled = false
+        covered = []
+        color = fragment.colorCode
+        isDisabled = false
     }
 
     public init(
@@ -56,7 +55,7 @@ public struct Perils: Codable, Equatable, Hashable, Sendable {
     }
 
     public func asDisabled() -> Perils {
-        return .init(
+        .init(
             id: id,
             title: title,
             description: description,

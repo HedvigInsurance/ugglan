@@ -13,6 +13,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
     public var isTerminated: Bool {
         terminatesOn != nil
     }
+
     public var fullName: String? {
         guard let firstName, let lastName else { return nil }
         return firstName + " " + lastName
@@ -23,7 +24,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
     }
 
     public var id: String {
-        return (fullName ?? "") + (formattedSSN ?? "") + (birthDate ?? "")
+        (fullName ?? "") + (formattedSSN ?? "") + (birthDate ?? "")
     }
 
     @MainActor
@@ -40,21 +41,21 @@ public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
         self.lastName = lastName
         self.birthDate = birthDate
         self.SSN = SSN?.calculate12DigitSSN
-        self.hasMissingInfo = needsMissingInfo
+        hasMissingInfo = needsMissingInfo
         self.activatesOn = activatesOn
         self.terminatesOn = terminatesOn
     }
 
     public var formattedSSN: String? {
-        return SSN?.replacingOccurrences(of: "-", with: "")
+        SSN?.replacingOccurrences(of: "-", with: "")
     }
 
     public var hasMissingData: Bool {
-        return fullName == nil
+        fullName == nil
     }
 
     public static func == (lhs: CoInsuredModel, rhs: CoInsuredModel) -> Bool {
-        return lhs.fullName == rhs.fullName
+        lhs.fullName == rhs.fullName
             && (lhs.formattedSSN == rhs.formattedSSN
                 || lhs.birthDate == rhs.birthDate)
     }

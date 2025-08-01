@@ -6,7 +6,7 @@ struct HelpCenterPill: View {
     private let title: String
     private let color: PillColor
 
-    public init(
+    init(
         title: String,
         color: PillColor
     ) {

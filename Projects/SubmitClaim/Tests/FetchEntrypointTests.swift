@@ -41,7 +41,7 @@ final class FetchEntrypointsTests: XCTestCase {
 
         let mockService = MockData.createMockFetchEntrypointsService(
             fetchEntrypoints: { entrypoints })
-        self.sut = mockService
+        sut = mockService
 
         let respondedEntrypoints = try! await mockService.fetchEntrypoints()
         assert(respondedEntrypoints == entrypoints)

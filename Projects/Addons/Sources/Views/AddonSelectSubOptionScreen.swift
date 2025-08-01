@@ -16,9 +16,9 @@ struct AddonSelectSubOptionScreen: View {
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
         if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
-            self._selectedQuote = State(initialValue: preSelectedQuote)
+            _selectedQuote = State(initialValue: preSelectedQuote)
         } else if let firstQuote = addonOffer.quotes.first {
-            self._selectedQuote = State(initialValue: firstQuote)
+            _selectedQuote = State(initialValue: firstQuote)
         }
     }
 

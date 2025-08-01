@@ -7,7 +7,7 @@ struct MovingFlowAddressScreen: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
-    public init(
+    init(
         vm: AddressInputModel
     ) {
         self.vm = vm
@@ -61,7 +61,6 @@ struct MovingFlowAddressScreen: View {
             }
             .padding(.bottom, .padding8)
             .padding(.top, .padding16)
-
         }
         .hFormTitle(
             title: .init(
@@ -124,6 +123,7 @@ struct MovingFlowAddressScreen: View {
             error: $vm.squareAreaError
         )
     }
+
     func numberOfCoinsuredField() -> some View {
         hCounterField(
             value: $vm.nbOfCoInsured,
@@ -162,6 +162,7 @@ struct MovingFlowAddressScreen: View {
             }
         )
     }
+
     func isStudentField() -> some View {
         CheckboxToggleView(
             title: L10n.changeAddressStudentLabel,
@@ -193,7 +194,6 @@ struct MovingFlowAddressScreen: View {
                 }
             case .house:
                 router.push(MovingFlowRouterActions.houseFill)
-                break
             }
         }
     }
@@ -252,7 +252,7 @@ struct SelectAddress_Previews: PreviewProvider {
 
 enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
     static var last: MovingFlowNewAddressViewFieldType {
-        return MovingFlowNewAddressViewFieldType.squareArea
+        MovingFlowNewAddressViewFieldType.squareArea
     }
 
     var next: MovingFlowNewAddressViewFieldType? {
@@ -269,7 +269,6 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
     case address
     case postalCode
     case squareArea
-
 }
 
 @MainActor
@@ -312,7 +311,7 @@ public class AddressInputModel: ObservableObject {
 
             return movingFlowData
         } catch {
-            self.viewState = .error(errorMessage: error.localizedDescription)
+            viewState = .error(errorMessage: error.localizedDescription)
         }
         return nil
     }

@@ -58,10 +58,9 @@ class MockContractService: FetchContractsClient {
         return data
     }
 
-    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+    func getAddonBannerModel(source _: AddonSource) async throws -> AddonBannerModel? {
         events.append(.getAddonBanner)
         let data = try await fetchAddonBanner()
         return data
     }
-
 }

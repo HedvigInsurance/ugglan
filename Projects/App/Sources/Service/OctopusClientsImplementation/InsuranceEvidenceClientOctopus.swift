@@ -16,6 +16,7 @@ class InsuranceEvidenceClientOctopus: InsuranceEvidenceClient {
         let response = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return response.currentMember.memberActions?.isCreatingOfInsuranceEvidenceEnabled ?? false
     }
+
     public func createInsuranceEvidence(input: InsuranceEvidenceInput) async throws -> InsuranceEvidence {
         let mutation = OctopusGraphQL.InsuranceEvidenceCreateMutation(input: .init(email: input.email))
         let response = try await octopus.client.perform(mutation: mutation)
@@ -26,7 +27,6 @@ class InsuranceEvidenceClientOctopus: InsuranceEvidenceClient {
             throw InsuranceEvidenceError.errorMessage(message: L10n.General.defaultError)
         }
         return .init(url: response.signedUrl)
-
     }
 }
 

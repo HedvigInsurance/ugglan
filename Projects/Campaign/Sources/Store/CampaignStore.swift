@@ -8,21 +8,21 @@ public enum LoadingAction: LoadingProtocol {
 public final class CampaignStore: LoadingStateStore<CampaignState, CampaignAction, LoadingAction> {
     @Inject var campaignService: hCampaignClient
 
-    public override func effects(_ getState: @escaping () -> CampaignState, _ action: CampaignAction) async {
+    override public func effects(_: @escaping () -> CampaignState, _ action: CampaignAction) async {
         switch action {
         case .fetchDiscountsData:
             do {
-                let data = try await self.campaignService.getPaymentDiscountsData()
-                self.send(.setDiscountsData(data: data))
+                let data = try await campaignService.getPaymentDiscountsData()
+                send(.setDiscountsData(data: data))
             } catch {
-                self.setError(L10n.General.errorBody, for: .getDiscountsData)
+                setError(L10n.General.errorBody, for: .getDiscountsData)
             }
         default:
             break
         }
     }
 
-    public override func reduce(_ state: CampaignState, _ action: CampaignAction) async -> CampaignState {
+    override public func reduce(_ state: CampaignState, _ action: CampaignAction) async -> CampaignState {
         var newState = state
 
         switch action {

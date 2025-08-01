@@ -47,7 +47,6 @@ struct TrackPlayer: View {
                         .overlay(
                             OverlayView(audioPlayer: audioPlayer, cornerRadius: 0)
                                 .mask(waveform)
-
                         )
                         .transition(
                             .opacity.animation(.easeOut)
@@ -83,7 +82,6 @@ struct TrackPlayer: View {
                                 audioPlayer.playbackState = .playing(paused: true)
                             }
                         }
-
                 }
             }
             .padding(.horizontal, .padding16)
@@ -101,7 +99,6 @@ struct TrackPlayer: View {
 }
 
 struct TrackPlayer_Previews: PreviewProvider {
-
     static var previews: some View {
         let audioPlayer = AudioPlayer(
             url: URL(
@@ -110,6 +107,5 @@ struct TrackPlayer_Previews: PreviewProvider {
             )
         )
         TrackPlayer(audioPlayer: audioPlayer)
-
     }
 }

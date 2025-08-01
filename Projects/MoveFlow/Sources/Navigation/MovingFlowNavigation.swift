@@ -46,7 +46,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 selectedHomeAddress = intentVm.currentHomeAddresses.first
             }
             addressInputModel.nbOfCoInsured = selectedHomeAddress?.suggestedNumberCoInsured ?? 0
-            self.moveConfigurationModel = intentVm
+            moveConfigurationModel = intentVm
             initialTrackingType = intentVm.currentHomeAddresses.count == 1 ? .selectHousingType : .selectContract
             withAnimation {
                 self.viewState = .success
@@ -54,9 +54,9 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         } catch {
             if let error = error as? MovingFlowError {
                 errorTitle = error.title
-                self.viewState = .error(errorMessage: error.localizedDescription)
+                viewState = .error(errorMessage: error.localizedDescription)
             } else {
-                self.viewState = .error(errorMessage: L10n.General.errorBody)
+                viewState = .error(errorMessage: L10n.General.errorBody)
             }
         }
     }
@@ -65,16 +65,16 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         let movingFlowQuotes = getQuotes()
         var contractInfos: [QuoteSummaryViewModel.ContractInfo] = []
         movingFlowConfirmViewModel = .init()
-        movingFlowQuotes.forEach { quote in
+        for quote in movingFlowQuotes {
             let contractQuote = QuoteSummaryViewModel.ContractInfo(
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
                 newPremium: quote.premium,
                 currentPremium: quote.premium,
-                documents: quote.documents.map({
+                documents: quote.documents.map {
                     .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-                }),
+                },
                 onDocumentTap: { [weak self] document in
                     self?.document = document
                 },
@@ -85,13 +85,13 @@ public class MovingFlowNavigationViewModel: ObservableObject {
             )
             contractInfos.append(contractQuote)
 
-            quote.addons.forEach({ addonQuote in
+            for addonQuote in quote.addons {
                 let addonQuoteContractInfo = addonQuote.asContractInfo {
                     [weak self] document in
                     self?.document = document
                 }
                 contractInfos.append(addonQuoteContractInfo)
-            })
+            }
         }
 
         let vm = QuoteSummaryViewModel(
@@ -111,7 +111,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
             }
             router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
         }
-        self.quoteSummaryViewModel = vm
+        quoteSummaryViewModel = vm
     }
 
     private func getQuotes() -> [MovingFlowQuote] {
@@ -123,7 +123,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     }
 
     var movingDate: String {
-        return selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate ?? ""
+        selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate ?? ""
     }
 }
 
@@ -138,7 +138,6 @@ extension MovingFlowRouterWithHiddenBackButtonActions: TrackingViewNameProtocol 
             return .init(describing: MovingFlowProcessingScreen.self)
         }
     }
-
 }
 
 enum MovingFlowRouterActions: Hashable {
@@ -161,15 +160,14 @@ extension MovingFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: MovingFlowHousingTypeScreen.self)
         }
     }
-
 }
 
 struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
     static func == (lhs: ExtraBuildingTypeNavigationModel, rhs: ExtraBuildingTypeNavigationModel) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
-    public var id = UUID().uuidString
+    var id = UUID().uuidString
     var extraBuildingType: ExtraBuildingType?
 
     var addExtraBuildingVm: MovingFlowAddExtraBuildingViewModel
@@ -193,7 +191,7 @@ public struct MovingFlowNavigation: View {
             tracking: movingFlowNavigationVm.initialTrackingType ?? MovingFlowDetentType.selectHousingType
         ) {
             getInitalScreen()
-                .routerDestination(for: HousingType.self) { housingType in
+                .routerDestination(for: HousingType.self) { _ in
                     openApartmentFillScreen()
                 }
                 .routerDestination(for: MovingFlowRouterWithHiddenBackButtonActions.self, options: .hidesBackButton) {
@@ -289,12 +287,12 @@ public struct MovingFlowNavigation: View {
     }
 
     func openApartmentFillScreen() -> some View {
-        return MovingFlowAddressScreen(vm: movingFlowNavigationVm.addressInputModel)
+        MovingFlowAddressScreen(vm: movingFlowNavigationVm.addressInputModel)
             .withAlertDismiss()
     }
 
     func openHouseFillScreen() -> some View {
-        return MovingFlowHouseScreen(houseInformationInputvm: movingFlowNavigationVm.houseInformationInputvm)
+        MovingFlowHouseScreen(houseInformationInputvm: movingFlowNavigationVm.houseInformationInputvm)
             .withAlertDismiss()
     }
 
@@ -321,11 +319,11 @@ public struct MovingFlowNavigation: View {
     }
 
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
-        let model = ChangeTierInput.existingIntent(intent: model) { (_, quote) in
+        let model = ChangeTierInput.existingIntent(intent: model) { _, quote in
             let requestVm = movingFlowNavigationVm.moveQuotesModel
             let id = quote.id
             if let currentHomeQuote = requestVm?.homeQuotes.first(where: { $0.id == id }) {
-                self.movingFlowNavigationVm.selectedHomeQuote = currentHomeQuote
+                movingFlowNavigationVm.selectedHomeQuote = currentHomeQuote
             }
             if let requestVm {
                 movingFlowNavigationVm.moveQuotesModel = requestVm
@@ -373,7 +371,6 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
     case typeOfBuildingPicker
     case selectContract
     case error
-
 }
 
 @MainActor
@@ -394,18 +391,18 @@ extension AddonDataModel {
             return nil
         }()
         let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
-            id: self.id,
-            displayName: self.quoteInfo.title ?? "",
-            exposureName: self.coverageDisplayName,
-            newPremium: self.price,
+            id: id,
+            displayName: quoteInfo.title ?? "",
+            exposureName: coverageDisplayName,
+            newPremium: price,
             currentPremium: nil,
-            documents: self.addonVariant.documents,
+            documents: addonVariant.documents,
             onDocumentTap: { document in
                 ondocumentClicked(document)
             },
-            displayItems: self.displayItems.map({
+            displayItems: displayItems.map {
                 .init(title: $0.displayTitle, value: $0.displayValue)
-            }),
+            },
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,

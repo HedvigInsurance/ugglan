@@ -55,12 +55,11 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
             return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationSubtitle
-
         }
     }
 
     var id: String {
-        return displayTitle
+        displayTitle
     }
 }
 
@@ -109,7 +108,7 @@ public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identif
     let quickActions: [QuickAction]
 
     public init(quickActions: [QuickAction]) {
-        self.id = quickActions.compactMap({ $0.id }).joined(separator: ",")
+        id = quickActions.compactMap(\.id).joined(separator: ",")
         self.quickActions = quickActions
     }
 }
@@ -148,17 +147,16 @@ public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Senda
 
 extension Sequence where Iterator.Element == QuickAction {
     var hasFirstVet: Bool {
-        self.first(where: { $0.isFirstVet }) != nil
+        first(where: { $0.isFirstVet }) != nil
     }
 
     public var getFirstVetPartners: [FirstVetPartner]? {
-        return self.first(where: { $0.isFirstVet })?.firstVetPartners
+        first(where: { $0.isFirstVet })?.firstVetPartners
     }
-
 }
 
 extension QuickAction {
-    var isFirstVet: Bool {
+    internal var isFirstVet: Bool {
         switch self {
         case .firstVet:
             return true
@@ -169,7 +167,7 @@ extension QuickAction {
 
     public var firstVetPartners: [FirstVetPartner]? {
         switch self {
-        case .firstVet(let partners):
+        case let .firstVet(partners):
             return partners
         default:
             return nil
@@ -178,11 +176,10 @@ extension QuickAction {
 
     public var sickAboardPartners: [SickAbroadPartner]? {
         switch self {
-        case .sickAbroad(let partners):
+        case let .sickAbroad(partners):
             return partners
         default:
             return nil
         }
     }
-
 }

@@ -12,13 +12,14 @@ class _PasteView: UIView {
         super.init(frame: .zero)
     }
 
+    @available(*, unavailable)
     required init?(
-        coder: NSCoder
+        coder _: NSCoder
     ) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    override func canPerformAction(_ action: Selector, withSender _: Any?) -> Bool {
         switch action {
         case #selector(paste(_:)):
             return true
@@ -27,12 +28,12 @@ class _PasteView: UIView {
         }
     }
 
-    override func paste(_ sender: Any?) {
+    override func paste(_: Any?) {
         onPaste()
     }
 
     override var canBecomeFirstResponder: Bool {
-        return true
+        true
     }
 }
 
@@ -56,14 +57,15 @@ public struct PasteView: UIViewRepresentable {
         }
 
         public var longGestureDidBeginPublisher: AnyPublisher<Bool, Never> {
-            return longGestureDidBegin.eraseToAnyPublisher()
+            longGestureDidBegin.eraseToAnyPublisher()
         }
+
         private let longGestureDidBegin = PassthroughSubject<Bool, Never>()
         public func gestureRecognizer(
-            _ gestureRecognizer: UIGestureRecognizer,
-            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+            _: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith _: UIGestureRecognizer
         ) -> Bool {
-            return true
+            true
         }
 
         @objc func longGesture(_ sender: UILongPressGestureRecognizer) {
@@ -92,5 +94,5 @@ public struct PasteView: UIViewRepresentable {
         return view
     }
 
-    public func updateUIView(_ uiView: UIViewType, context: Context) {}
+    public func updateUIView(_: UIViewType, context _: Context) {}
 }

@@ -6,9 +6,8 @@ import hCoreUI
 public struct EuroBonusView: View {
     @EnvironmentObject var euroBonusNavigationVm: EuroBonusNavigationViewModel
 
-    public init() {
+    public init() {}
 
-    }
     public var body: some View {
         PresentableStoreLens(
             ProfileStore.self,
@@ -66,7 +65,6 @@ public struct EuroBonusView: View {
                 }
             }
         }
-
     }
 }
 

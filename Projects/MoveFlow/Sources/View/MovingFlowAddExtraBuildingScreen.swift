@@ -45,6 +45,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
         }
         .hFormContentPosition(.compact)
     }
+
     @ViewBuilder
     private var typeOfBuilding: some View {
         hFloatingField(
@@ -101,15 +102,14 @@ struct MovingFlowAddExtraBuildingScreen: View {
 
 enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
     static var last: AddExtraBuildingType {
-        return AddExtraBuildingType.livingArea
+        AddExtraBuildingType.livingArea
     }
 
     var next: AddExtraBuildingType? {
-        return nil
+        nil
     }
 
     case livingArea
-
 }
 
 public class MovingFlowAddExtraBuildingViewModel: ObservableObject {

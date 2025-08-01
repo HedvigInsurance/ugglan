@@ -138,5 +138,4 @@ extension HousingType: TrackingViewNameProtocol {
             return .init(describing: MovingFlowAddressScreen.self)
         }
     }
-
 }

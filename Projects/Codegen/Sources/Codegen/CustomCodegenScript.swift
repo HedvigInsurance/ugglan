@@ -44,13 +44,12 @@ struct CustomCodegenScript: AsyncParsableCommand {
         do {
             try await ApolloSchemaDownloader.fetch(configuration: downloadConfiguration)
             print("suceeded to download schema")
-        } catch let error {
+        } catch {
             print("Failed to download schema ", error)
         }
     }
 
     func cleanDerivedData() async {
-
         for sourceUrl in findAllGraphQLFolders() {
             let url = sourceUrl.path
             try? ApolloFileManager.default.deleteDirectory(atPath: url)
@@ -82,9 +81,10 @@ struct CustomCodegenScript: AsyncParsableCommand {
                 operationSearchPaths.append(item.appendingPathComponent("*.graphql").path)
             }
         }
-        let moduleType: ApolloCodegenConfiguration.SchemaTypesFileOutput.ModuleType = {
-            return .embeddedInTarget(name: "\(endpoint.name.capitalized)GraphQL", accessModifier: .public)
-        }()
+        let moduleType: ApolloCodegenConfiguration.SchemaTypesFileOutput.ModuleType = .embeddedInTarget(
+            name: "\(endpoint.name.capitalized)GraphQL",
+            accessModifier: .public
+        )
         let codegenOptions = ApolloCodegenConfiguration(
             schemaNamespace: "\(endpoint.name.capitalized)GraphQL",
             input: ApolloCodegenConfiguration.FileInput(
@@ -98,7 +98,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
         do {
             try await ApolloCodegen.build(with: codegenOptions)
             print("succeeded to build schema ")
-        } catch let error {
+        } catch {
             print("Failed to build schema ", error)
         }
     }
