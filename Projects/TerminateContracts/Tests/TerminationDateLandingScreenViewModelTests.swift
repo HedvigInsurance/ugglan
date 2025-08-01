@@ -25,7 +25,7 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
         _ = MockData.createMockTerminateContractsService(getNotification: { contractId, date in
             return .init(message: contractId + date.localDateString, type: .info)
         })
-        
+
         let model: TerminationFlowDateNextStepModel = .init(
             id: "id",
             maxDate: Date().addingTimeInterval(60 * 60 * 24 * 90).description,
@@ -58,8 +58,6 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
         assert((navigationModel.notification == .init(message: contractId + date.localDateString, type: .info)))
         assert(vm.isDeletion == false)
         navigationModel.reset()
-        assert((navigationModel.notification == nil)
-
-        
+        assert((navigationModel.notification == nil))
     }
 }
