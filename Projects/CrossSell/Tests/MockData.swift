@@ -12,7 +12,8 @@ struct MockData {
                     id: "crossSellId",
                     title: "title",
                     description: "description",
-                    type: .home
+                    imageUrl: nil,
+                    buttonDescription: "button description",
                 )
             ]
         },
