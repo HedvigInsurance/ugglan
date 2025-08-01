@@ -1,0 +1,188 @@
+import SwiftUI
+import hCore
+
+public class QuoteSummaryViewModel: ObservableObject, Identifiable {
+    @Published public var contracts: [ContractInfo]
+    @Published public var activationDate: Date?
+    @Published var netTotal: MonetaryAmount = .init(amount: "", currency: "")
+    @Published var grossTotal: MonetaryAmount = .init(amount: "", currency: "")
+    @Published var expandedContracts: [String] = []
+    @Published var removedContracts: [String] = []
+    public var onConfirmClick: () -> Void
+    let isAddon: Bool
+    let showNoticeCard: Bool
+    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
+    @Published var isConfirmChangesPresented: Bool = false
+
+    func toggleContract(_ contract: ContractInfo) {
+        if expandedContracts.contains(contract.id) {
+            collapseContract(contract)
+        } else {
+            expandContract(contract)
+        }
+    }
+
+    public func getRemovedContractsIds() -> [String] {
+        removedContracts
+    }
+
+    private func expandContract(_ contract: ContractInfo) {
+        expandedContracts.append(contract.id)
+    }
+
+    private func collapseContract(_ contract: ContractInfo) {
+        expandedContracts.removeAll(where: { $0 == contract.id })
+    }
+
+    func removeContract(_ contractId: String) {
+        expandedContracts.removeAll(where: { $0 == contractId })
+        removedContracts.append(contractId)
+        calculateGrossTotal()
+        calculateNetTotal()
+    }
+
+    func addContract(_ contract: ContractInfo) {
+        removedContracts.removeAll(where: { $0 == contract.id })
+        calculateGrossTotal()
+        calculateNetTotal()
+    }
+
+    public struct ContractInfo: Identifiable {
+        public var id: String
+        let displayName: String
+        let exposureName: String
+        let netPremium: MonetaryAmount?
+        let grossPremium: MonetaryAmount?
+        let displayItems: [QuoteDisplayItem]
+        let documents: [hPDFDocument]
+        let onDocumentTap: (_ document: hPDFDocument) -> Void
+        let insuranceLimits: [InsurableLimits]
+        let typeOfContract: TypeOfContract?
+        let shouldShowDetails: Bool
+        let removeModel: RemoveModel?
+        let isAddon: Bool
+        let discountDisplayItems: [QuoteDisplayItem]
+
+        public init(
+            id: String,
+            displayName: String,
+            exposureName: String,
+            netPremium: MonetaryAmount?,
+            grossPremium: MonetaryAmount?,
+            documents: [hPDFDocument],
+            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
+            displayItems: [QuoteDisplayItem],
+            insuranceLimits: [InsurableLimits],
+            typeOfContract: TypeOfContract?,
+            isAddon: Bool? = false,
+            removeModel: RemoveModel? = nil,
+            discountDisplayItems: [QuoteDisplayItem]
+        ) {
+            self.id = id
+            self.displayName = displayName
+            self.exposureName = exposureName
+            self.netPremium = netPremium
+            self.grossPremium = grossPremium
+            self.documents = documents
+            self.onDocumentTap = onDocumentTap
+            self.displayItems = displayItems
+            self.insuranceLimits = insuranceLimits
+            self.typeOfContract = typeOfContract
+            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.isAddon = isAddon ?? false
+            self.removeModel = removeModel
+            self.discountDisplayItems = discountDisplayItems
+        }
+
+        public struct RemoveModel: Identifiable, Equatable {
+            public var id: String
+            let title: String
+            let description: String
+            let confirmButtonTitle: String
+            let cancelRemovalButtonTitle: String
+
+            public init(
+                id: String,
+                title: String,
+                description: String,
+                confirmButtonTitle: String,
+                cancelRemovalButtonTitle: String
+            ) {
+                self.id = id
+                self.title = title
+                self.description = description
+                self.confirmButtonTitle = confirmButtonTitle
+                self.cancelRemovalButtonTitle = cancelRemovalButtonTitle
+            }
+        }
+    }
+
+    public init(
+        contract: [ContractInfo],
+        netTotal: MonetaryAmount? = nil,
+        grossTotal: MonetaryAmount?,
+        activationDate: Date?,
+        isAddon: Bool? = false,
+        onConfirmClick: (() -> Void)? = nil,
+    ) {
+        self.contracts = contract
+        self.isAddon = isAddon ?? false
+        self.activationDate = activationDate
+        self.onConfirmClick = onConfirmClick ?? {}
+        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
+        if let netTotal = netTotal {
+            self.netTotal = netTotal
+        } else {
+            calculateNetTotal()
+        }
+        if let grossTotal {
+            self.grossTotal = grossTotal
+        } else {
+            calculateGrossTotal()
+        }
+    }
+
+    func calculateNetTotal() {
+        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
+            .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
+        netTotal = .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
+    }
+
+    func calculateGrossTotal() {
+        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
+            .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
+        grossTotal = .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
+    }
+}
+
+public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
+    public let id: String?
+    let displayTitle: String
+    let displayValue: String
+    let displayValueOld: String?
+
+    public init(
+        title displayTitle: String,
+        value displayValue: String,
+        displayValueOld: String? = nil,
+        id: String? = nil
+    ) {
+        self.displayTitle = displayTitle
+        self.displayValue = displayValue
+        self.displayValueOld = displayValueOld
+        self.id = id
+    }
+}
+
+public struct FAQ: Codable, Equatable, Hashable, Sendable {
+    public var title: String
+    public var description: String?
+
+    public init(
+        title: String,
+        description: String?
+    ) {
+        self.title = title
+        self.description = description
+    }
+}

@@ -29,8 +29,8 @@ extension ChangeAddonViewModel {
                     exposureName: L10n.addonFlowSummaryActiveFrom(
                         addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
-                    newPremium: selectedQuote?.price,
-                    currentPremium: addonOffer?.currentAddon?.price,
+                    netPremium: selectedQuote?.price,
+                    grossPremium: addonOffer?.currentAddon?.price,
                     documents: selectedQuote?.addonVariant?.documents ?? [],
                     onDocumentTap: { document in
                         changeAddonNavigationVm.document = document
@@ -41,13 +41,16 @@ extension ChangeAddonViewModel {
                     ),
                     insuranceLimits: [],
                     typeOfContract: nil,
-                    isAddon: true
+                    isAddon: true,
+                    discountDisplayItems: []
                 )
             ],
-            total: getTotalPrice(
+            netTotal: getTotalPrice(
                 currentPrice: addonOffer?.currentAddon?.price,
                 newPrice: selectedQuote?.price
             ),
+            grossTotal: self.addonOffer?.currentAddon?.price,
+            activationDate: self.addonOffer?.activationDate,
             isAddon: true
         ) {
             changeAddonNavigationVm.isConfirmAddonPresented = true

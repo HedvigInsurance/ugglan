@@ -33,15 +33,16 @@ extension ChangeTierViewModel {
                 id: currentTier?.id ?? "",
                 displayName: displayName ?? "",
                 exposureName: activationDate,
-                newPremium: newPremium,
-                currentPremium: currentPremium,
-                documents: selectedQuote?.productVariant?.documents ?? [],
+                netPremium: newPremium,
+                grossPremium: currentPremium,
+                documents: self.selectedQuote?.productVariant?.documents ?? [],
                 onDocumentTap: { [weak changeTierNavigationVm] document in
                     changeTierNavigationVm?.document = document
                 },
                 displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
-                typeOfContract: typeOfContract
+                typeOfContract: typeOfContract,
+                discountDisplayItems: []
             )
         )
         for addon in selectedQuote?.addons ?? [] {
@@ -50,8 +51,8 @@ extension ChangeTierViewModel {
                     id: addon.addonId,
                     displayName: addon.displayName,
                     exposureName: activationDate,
-                    newPremium: addon.premium,
-                    currentPremium: addon.previousPremium,
+                    netPremium: addon.premium,
+                    grossPremium: addon.previousPremium,
                     documents: addon.addonVariant.documents,
                     onDocumentTap: { [weak changeTierNavigationVm] document in
                         changeTierNavigationVm?.document = document
@@ -59,12 +60,16 @@ extension ChangeTierViewModel {
                     displayItems: addon.displayItems.compactMap { .init(title: $0.title, value: $0.value) },
                     insuranceLimits: [],
                     typeOfContract: nil,
-                    isAddon: true
+                    isAddon: true,
+                    discountDisplayItems: []
                 )
             )
         }
+
         let vm = QuoteSummaryViewModel(
             contract: contracts,
+            grossTotal: self.currentPremium,
+            activationDate: self.activationDate,
             onConfirmClick: {
                 changeTierNavigationVm.isConfirmTierPresented = true
             }
