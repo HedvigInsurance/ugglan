@@ -58,10 +58,12 @@ struct HelpCenterTopicView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                Spacer()
-                SupportView(router: router)
             }
         }
+        .hFormAttachToBottom {
+            SupportView(router: router)
+        }
+        .hFormIgnoreBottomPadding
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
     }
 }
