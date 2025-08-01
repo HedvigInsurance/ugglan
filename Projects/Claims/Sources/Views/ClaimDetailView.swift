@@ -1,12 +1,12 @@
 import Chat
 import Combine
+import hCore
+import hCoreUI
 import Kingfisher
 import Payment
 import Photos
 import PresentableStore
 import SwiftUI
-import hCore
-import hCoreUI
 
 public struct ClaimDetailView: View {
     @State var showImagePicker = false

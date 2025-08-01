@@ -1,6 +1,6 @@
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct TerminationSummaryScreen: View {
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
@@ -132,7 +132,7 @@ struct TerminationSummaryScreen: View {
                 contractExposureName: "Bellmansgsatan 19A",
                 activeFrom: "2024-12-15",
                 typeOfContract: .seApartmentBrf
-            )
+            ),
         ],
         terminateInsuranceViewModel: .init()
     )

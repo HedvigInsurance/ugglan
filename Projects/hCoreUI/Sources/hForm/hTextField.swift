@@ -1,8 +1,8 @@
 import Combine
 import Foundation
+import hCore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
-import hCore
 
 public enum hTextFieldOptions: Hashable {
     case showDivider
@@ -36,15 +36,15 @@ private struct EnvironmentHTextFieldOptions: @preconcurrency EnvironmentKey {
     static let defaultValue: Set<hTextFieldOptions> = [.showDivider, .minimumHeight(height: 40.0)]
 }
 
-extension EnvironmentValues {
-    public var hTextFieldOptions: Set<hTextFieldOptions> {
+public extension EnvironmentValues {
+    var hTextFieldOptions: Set<hTextFieldOptions> {
         get { self[EnvironmentHTextFieldOptions.self] }
         set { self[EnvironmentHTextFieldOptions.self] = newValue }
     }
 }
 
-extension View {
-    public func hTextFieldOptions(_ options: Set<hTextFieldOptions>) -> some View {
+public extension View {
+    func hTextFieldOptions(_ options: Set<hTextFieldOptions>) -> some View {
         environment(\.hTextFieldOptions, options)
     }
 }
@@ -53,15 +53,15 @@ private struct EnvironmentHTextFieldError: EnvironmentKey {
     static let defaultValue: String? = nil
 }
 
-extension EnvironmentValues {
-    public var hTextFieldError: String? {
+public extension EnvironmentValues {
+    var hTextFieldError: String? {
         get { self[EnvironmentHTextFieldError.self] }
         set { self[EnvironmentHTextFieldError.self] = newValue }
     }
 }
 
-extension View {
-    public func hTextFieldError(_ message: String?) -> some View {
+public extension View {
+    func hTextFieldError(_ message: String?) -> some View {
         environment(\.hTextFieldError, message)
     }
 }
@@ -93,7 +93,7 @@ public struct hTextField: View {
             HStack {
                 if options.useLineBreak, #available(iOS 16.0, *) {
                     SwiftUI.TextField(placeholder ?? "", text: $innerValue, axis: .vertical)
-                        .lineLimit(5...10)
+                        .lineLimit(5 ... 10)
                         .modifier(hFontModifier(style: .body1))
                         .modifier(masking)
                         .tint(hTextColor.Opaque.primary)
@@ -298,9 +298,9 @@ extension Bool: hTextFieldFocusStateCompliant {
     }
 }
 
-extension hTextField {
+public extension hTextField {
     @ViewBuilder
-    public func focused<Value: hTextFieldFocusStateCompliant>(
+    func focused<Value: hTextFieldFocusStateCompliant>(
         _ focusedField: Binding<Value?>,
         equals: Value,
         onReturn: @escaping () -> Void = {}

@@ -1,7 +1,7 @@
 import Foundation
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct PriceSectionView: View {
     @State var monthlyDiscount: MonetaryAmount

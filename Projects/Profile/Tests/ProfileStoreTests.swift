@@ -1,8 +1,8 @@
 import PresentableStore
 @preconcurrency import XCTest
 
-@testable import Profile
 @testable import hCore
+@testable import Profile
 
 @MainActor
 final class ProfileStoreTests: XCTestCase {
@@ -140,8 +140,8 @@ final class ProfileStoreTests: XCTestCase {
 }
 
 @MainActor
-extension XCTestCase {
-    public func waitUntil(description: String, closure: @escaping () -> Bool) async throws {
+public extension XCTestCase {
+    func waitUntil(description: String, closure: @escaping () -> Bool) async throws {
         let exc = expectation(description: description)
         if closure() {
             exc.fulfill()

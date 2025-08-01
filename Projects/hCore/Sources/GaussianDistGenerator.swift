@@ -19,7 +19,7 @@ public func generateGaussianHeights(
         deviation: deviation
     )
     var numbers: [Int] = []
-    for _ in 1...count {
+    for _ in 1 ... count {
         let diceRoll: Int = {
             let nextValue = distribution.nextInt()
             if nextValue < 0 {

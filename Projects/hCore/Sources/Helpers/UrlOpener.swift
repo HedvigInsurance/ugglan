@@ -14,8 +14,8 @@ public class DefaultURLOpener: URLOpener {
     }
 }
 
-extension Dependencies {
-    public static var urlOpener: URLOpener {
+public extension Dependencies {
+    static var urlOpener: URLOpener {
         Dependencies.shared.resolve()
     }
 }

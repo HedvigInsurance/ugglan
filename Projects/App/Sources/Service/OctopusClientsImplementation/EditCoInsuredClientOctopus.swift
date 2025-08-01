@@ -6,7 +6,7 @@ import hGraphQL
 class EditCoInsuredClientOctopus: EditCoInsuredClient {
     @Inject var octopus: hOctopus
 
-    public func sendMidtermChangeIntentCommit(commitId: String) async throws {
+    func sendMidtermChangeIntentCommit(commitId: String) async throws {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
         let delayTask = Task {
             try await Task.sleep(nanoseconds: 3_000_000_000)
@@ -24,7 +24,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
     }
 
-    public func getPersonalInformation(SSN: String) async throws -> PersonalData? {
+    func getPersonalInformation(SSN: String) async throws -> PersonalData? {
         let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
         let query = OctopusGraphQL.PersonalInformationQuery(input: SSNInput)
         do {
@@ -54,7 +54,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
     }
 
-    public func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
+    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
         let coInsuredList = coInsured.map { coIn in
             OctopusGraphQL.CoInsuredInput(
                 firstName: GraphQLNullable(optionalValue: coIn.firstName),
@@ -87,7 +87,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         )
     }
 
-    public func fetchContracts() async throws -> [Contract] {
+    func fetchContracts() async throws -> [Contract] {
         let query = OctopusGraphQL.ContractsQuery()
         let data = try await octopus.client.fetch(
             query: query,
@@ -105,8 +105,8 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
 }
 
 @MainActor
-extension Contract {
-    public init(
+public extension Contract {
+    init(
         contract: OctopusGraphQL.ContractFragment,
         firstName: String,
         lastName: String,
@@ -119,7 +119,7 @@ extension Contract {
             upcomingChangedAgreement: .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment),
             currentAgreement: .init(agreement: contract.currentAgreement.fragments.agreementFragment),
             terminationDate: contract.terminationDate,
-            coInsured: contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? [],
+            coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
             firstName: firstName,
             lastName: lastName,
             ssn: ssn
@@ -141,8 +141,8 @@ extension Agreement {
     }
 }
 
-extension EditCoInsured.ProductVariant {
-    public init(
+public extension EditCoInsured.ProductVariant {
+    init(
         data: OctopusGraphQL.ProductVariantFragment
     ) {
         self.init(displayName: data.displayName)
@@ -150,8 +150,8 @@ extension EditCoInsured.ProductVariant {
 }
 
 @MainActor
-extension CoInsuredModel {
-    public init(
+public extension CoInsuredModel {
+    init(
         data: OctopusGraphQL.CoInsuredFragment
     ) {
         self.init(

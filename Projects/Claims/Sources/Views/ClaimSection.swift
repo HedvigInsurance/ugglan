@@ -1,7 +1,7 @@
 import Combine
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct ClaimSection: View {
     @Binding var claims: [ClaimModel]

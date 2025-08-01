@@ -15,7 +15,7 @@ struct CoInsuredInputErrorView: View {
     ) {
         self.editCoInsuredNavigation = editCoInsuredNavigation
         self.vm = vm
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editCoInsuredNavigation.intentViewModel
         self.showEnterManuallyButton = showEnterManuallyButton
     }
 
@@ -42,7 +42,7 @@ struct CoInsuredInputErrorView: View {
                             vm.SSNError = nil
                             vm.noSSN = true
                         } else {
-                            if self.showEnterManuallyButton {
+                            if showEnterManuallyButton {
                                 vm.noSSN = true
                             }
                             vm.SSNError = nil

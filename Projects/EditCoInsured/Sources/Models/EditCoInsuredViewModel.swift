@@ -37,17 +37,17 @@ public class EditCoInsuredViewModel: ObservableObject {
                 } else {
                     let contractsSupportingCoInsured =
                         activeContracts
-                        .filter {
-                            $0.showEditCoInsuredInfo
-                                && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
-                        }
-                        .compactMap {
-                            InsuredPeopleConfig(
-                                contract: $0,
-                                preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
-                                fromInfoCard: true
-                            )
-                        }
+                            .filter {
+                                $0.showEditCoInsuredInfo
+                                    && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
+                            }
+                            .compactMap {
+                                InsuredPeopleConfig(
+                                    contract: $0,
+                                    preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
+                                    fromInfoCard: true
+                                )
+                            }
                     if contractsSupportingCoInsured.count > 1 {
                         editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
                             contractsSupportingCoInsured
@@ -56,7 +56,7 @@ public class EditCoInsuredViewModel: ObservableObject {
                         editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                             contractsSupportingCoInsured
                         })
-                    } else {  // if empty
+                    } else { // if empty
                         throw EditCoInsuedError.missingContracts
                     }
                 }

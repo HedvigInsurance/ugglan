@@ -1,7 +1,7 @@
-import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
+import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 
 struct PriceInputScreen: View {
     @State var purchasePrice: String = ""

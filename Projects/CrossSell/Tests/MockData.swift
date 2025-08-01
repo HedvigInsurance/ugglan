@@ -14,7 +14,7 @@ struct MockData {
                     description: "description",
                     imageUrl: nil,
                     buttonDescription: "button description",
-                )
+                ),
             ]
         },
         fetchAddonBannerModel: @escaping FetchAddonBanner = { _ in

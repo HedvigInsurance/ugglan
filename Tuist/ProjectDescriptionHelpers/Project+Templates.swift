@@ -9,8 +9,8 @@ public enum FeatureTarget {
     case testing
 }
 
-extension Project {
-    public static func framework(
+public extension Project {
+    static func framework(
         name: String,
         targets: Set<FeatureTarget> = Set([.framework, .tests, .example, .testing]),
         projects: [String] = [],
@@ -69,7 +69,7 @@ extension Project {
         ]
 
         var testsDependencies: [TargetDependency] = [
-            .target(name: "\(name)")
+            .target(name: "\(name)"),
             //            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
         ]
         for item in projects {
@@ -182,8 +182,8 @@ extension Project {
                                         "Default Configuration",
                                     "UISceneDelegateClassName":
                                         "\(name)Example.SceneDelegate",
-                                ]
-                            ]
+                                ],
+                            ],
                         ],
                     ],
                 ]),
@@ -194,7 +194,7 @@ extension Project {
                         path: "../../scripts/post-build-action.sh",
                         arguments: [],
                         name: "Clean frameworks"
-                    )
+                    ),
                 ],
                 dependencies: [
                     [
@@ -210,7 +210,7 @@ extension Project {
                 settings: .settings(
                     base: [
                         "PROVISIONING_PROFILE_SPECIFIER":
-                            "match Development com.hedvig.example.*"
+                            "match Development com.hedvig.example.*",
                     ],
                     configurations: appConfigurations
                 )
@@ -225,14 +225,14 @@ extension Project {
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "\(name)Tests"),
                         parallelization: .enabled
-                    )
+                    ),
                 ],
                 arguments: Arguments.arguments(
                     environmentVariables: [
                         "SNAPSHOT_ARTIFACTS": .environmentVariable(
                             value: "/tmp/\(UUID().uuidString)/__SnapshotFailures__",
                             isEnabled: true
-                        )
+                        ),
                     ]
                 ),
                 options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
@@ -261,7 +261,7 @@ extension Project {
                         name: "\(name)Example",
                         shared: true,
                         buildAction: BuildAction.buildAction(targets: [
-                            TargetReference(stringLiteral: "\(name)Example")
+                            TargetReference(stringLiteral: "\(name)Example"),
                         ]),
                         testAction: getTestAction(),
                         runAction: .runAction(executable: TargetReference(stringLiteral: "\(name)Example"))

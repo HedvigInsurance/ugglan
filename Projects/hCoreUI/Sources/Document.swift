@@ -1,9 +1,9 @@
 import Foundation
+import hCore
 import PDFKit
 import SafariServices
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
-import hCore
 
 public struct PDFPreview: View {
     @StateObject fileprivate var vm: PDFPreviewViewModel

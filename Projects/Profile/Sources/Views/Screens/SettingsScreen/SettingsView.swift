@@ -1,9 +1,9 @@
 import Apollo
 import Contracts
-import PresentableStore
-import SwiftUI
 import hCore
 import hCoreUI
+import PresentableStore
+import SwiftUI
 
 struct SettingsView: View {
     @PresentableStore var store: ProfileStore

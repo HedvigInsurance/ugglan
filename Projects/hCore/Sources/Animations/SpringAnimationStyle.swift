@@ -23,8 +23,8 @@ public struct SpringAnimationStyle {
     }
 }
 
-extension SpringAnimationStyle {
-    public static func lightBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.5) -> SpringAnimationStyle {
+public extension SpringAnimationStyle {
+    static func lightBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.5) -> SpringAnimationStyle {
         SpringAnimationStyle(
             duration: duration,
             damping: 30,
@@ -34,7 +34,7 @@ extension SpringAnimationStyle {
         )
     }
 
-    public static func mediumBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
+    static func mediumBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
         SpringAnimationStyle(
             duration: duration,
             damping: 10,
@@ -44,7 +44,7 @@ extension SpringAnimationStyle {
         )
     }
 
-    public static func heavyBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
+    static func heavyBounce(delay: TimeInterval = 0, duration: TimeInterval = 0.6) -> SpringAnimationStyle {
         SpringAnimationStyle(
             duration: duration,
             damping: 0.6,
@@ -54,7 +54,7 @@ extension SpringAnimationStyle {
         )
     }
 
-    public static func ludicrousBounce(
+    static func ludicrousBounce(
         delay: TimeInterval = 0,
         duration: TimeInterval = 0.6
     ) -> SpringAnimationStyle {

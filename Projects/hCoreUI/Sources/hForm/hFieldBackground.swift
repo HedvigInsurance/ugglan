@@ -44,8 +44,8 @@ struct hFieldBackgroundModifier: ViewModifier {
     }
 }
 
-extension View {
-    public func addFieldBackground(animate: Binding<Bool>, error: Binding<String?>) -> some View {
+public extension View {
+    func addFieldBackground(animate: Binding<Bool>, error: Binding<String?>) -> some View {
         modifier(hFieldBackgroundModifier(animate: animate, error: error))
     }
 }
@@ -71,8 +71,8 @@ struct hFieldErrorModifier: ViewModifier {
     }
 }
 
-extension View {
-    public func addFieldError(animate: Binding<Bool>, error: Binding<String?>) -> some View {
+public extension View {
+    func addFieldError(animate: Binding<Bool>, error: Binding<String?>) -> some View {
         modifier(hFieldErrorModifier(animate: animate, error: error))
     }
 }

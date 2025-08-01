@@ -1,5 +1,5 @@
-import SwiftUI
 import hCore
+import SwiftUI
 
 public struct hCloseButton: View {
     let action: () -> Void

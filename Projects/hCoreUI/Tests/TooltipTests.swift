@@ -1,11 +1,11 @@
 import Flow
 import Foundation
+import hCore
 import SnapshotTesting
 import SwiftUI
 import TestDependencies
 import Testing
 import XCTest
-import hCore
 
 @testable import hCoreUI
 

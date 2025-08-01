@@ -1,5 +1,5 @@
-@preconcurrency import XCTest
 import hCore
+@preconcurrency import XCTest
 
 @testable import Contracts
 
@@ -49,7 +49,7 @@ final class ContractsTests: XCTestCase {
                     ssn: nil,
                     typeOfContract: .seHouse,
                     coInsured: []
-                )
+                ),
             ],
             pendingContracts: [],
             terminatedContracts: []

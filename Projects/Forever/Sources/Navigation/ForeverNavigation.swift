@@ -1,7 +1,7 @@
 import Environment
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 @MainActor
 public class ForeverNavigationViewModel: ObservableObject {
@@ -124,9 +124,9 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
         .environmentObject(Router())
 }
 
-extension View {
+public extension View {
     @ViewBuilder
-    public func hideToolbar() -> some View {
+    func hideToolbar() -> some View {
         if #available(iOS 16.0, *) {
             self.toolbar(.hidden, for: .tabBar)
         } else {

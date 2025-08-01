@@ -1,9 +1,9 @@
 import Campaign
 import Foundation
-import Payment
-import PresentableStore
 import hCore
 import hGraphQL
+import Payment
+import PresentableStore
 
 extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
     var asPayinMethodStatus: PayinMethodStatus {
@@ -54,7 +54,7 @@ extension PaymentStatusData {
 class hPaymentClientOctopus: hPaymentClient {
     @Inject private var octopus: hOctopus
 
-    public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
+    func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
         let query = OctopusGraphQL.PaymentDataQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
@@ -72,19 +72,19 @@ class hPaymentClientOctopus: hPaymentClient {
         return (upcomingPayment, ongoingPayments)
     }
 
-    public func getPaymentStatusData() async throws -> PaymentStatusData {
+    func getPaymentStatusData() async throws -> PaymentStatusData {
         let query = OctopusGraphQL.PaymentInformationQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentStatusData(data: data)
     }
 
-    public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
+    func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         let query = OctopusGraphQL.PaymentHistoryDataQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentHistoryListData.getHistory(with: data.currentMember)
     }
 
-    public func getConnectPaymentUrl() async throws -> URL {
+    func getConnectPaymentUrl() async throws -> URL {
         let mutation = OctopusGraphQL.RegisterDirectDebitMutation(clientContext: GraphQLNullable.none)
         let data = try await octopus.client.perform(mutation: mutation)
         if let url = URL(string: data.registerDirectDebit2.url) {
@@ -156,7 +156,7 @@ extension PaymentData {
 extension PaymentData.PaymentDetails {
     init?(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
         guard let account = model.currentMember.paymentInformation.connection?.descriptor,
-            let bank = model.currentMember.paymentInformation.connection?.displayName
+              let bank = model.currentMember.paymentInformation.connection?.displayName
         else { return nil }
         self.init(
             paymentMethod: L10n.paymentsAutogiroLabel,
@@ -184,7 +184,7 @@ extension PaymentData.PaymentStatus {
             case .upcoming:
                 let previousChargesPeriods =
                     data.futureCharge?.chargeBreakdown.flatMap(\.periods)
-                    .filter(\.isPreviouslyFailedCharge) ?? []
+                        .filter(\.isPreviouslyFailedCharge) ?? []
                 let from = previousChargesPeriods.compactMap(\.fromDate.localDateToDate).min()
                 let to = previousChargesPeriods.compactMap(\.toDate.localDateToDate).max()
                 if let from, let to {
@@ -252,10 +252,10 @@ extension PaymentData.PeriodInfo {
 }
 
 @MainActor
-extension OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period {
-    fileprivate var getDescription: String? {
+private extension OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period {
+    var getDescription: String? {
         guard let fromDate = fromDate.localDateToDate,
-            let toDate = toDate.localDateToDate
+              let toDate = toDate.localDateToDate
         else {
             return nil
         }
@@ -365,8 +365,8 @@ extension PaymentData.PaymentStatus {
 }
 
 @MainActor
-extension Discount {
-    public init(
+public extension Discount {
+    init(
         with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment
     ) {
         self.init(

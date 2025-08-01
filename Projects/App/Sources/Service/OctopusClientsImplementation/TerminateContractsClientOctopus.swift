@@ -11,8 +11,7 @@ import hCore
 import hGraphQL
 
 class TerminateContractsClientOctopus: TerminateContractsClient {
-
-    public func startTermination(contractId: String) async throws -> TerminateStepResponse {
+    func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
             context: nil
@@ -20,7 +19,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
     }
 
-    public func sendTerminationDate(
+    func sendTerminationDate(
         inputDateToString: String,
         terminationContext: String
     ) async throws -> TerminateStepResponse {
@@ -35,7 +34,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         return data
     }
 
-    public func sendConfirmDelete(
+    func sendConfirmDelete(
         terminationContext: String,
         model: TerminationFlowDeletionNextModel?
     ) async throws -> TerminateStepResponse {
@@ -50,7 +49,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         return try await dataTask
     }
 
-    public func sendSurvey(
+    func sendSurvey(
         terminationContext: String,
         option: String,
         inputData: String?

@@ -2,9 +2,9 @@ import Apollo
 import Claims
 import Environment
 import Foundation
-import SubmitClaim
 import hCore
 import hGraphQL
+import SubmitClaim
 
 extension NetworkClient: @retroactive FileUploaderClient {
     public func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel {

@@ -1,8 +1,8 @@
 import Combine
 import Foundation
+import hCore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
-import hCore
 
 public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hFieldSize) var size
@@ -301,15 +301,15 @@ private struct EnvironmentHBackgroundOption: EnvironmentKey {
     static let defaultValue: [BackgroundOption] = []
 }
 
-extension EnvironmentValues {
-    public var hBackgroundOption: [BackgroundOption] {
+public extension EnvironmentValues {
+    var hBackgroundOption: [BackgroundOption] {
         get { self[EnvironmentHBackgroundOption.self] }
         set { self[EnvironmentHBackgroundOption.self] = newValue }
     }
 }
 
-extension View {
-    public func hBackgroundOption(option: [BackgroundOption]) -> some View {
+public extension View {
+    func hBackgroundOption(option: [BackgroundOption]) -> some View {
         environment(\.hBackgroundOption, option)
     }
 }
@@ -335,15 +335,15 @@ public enum hFieldSize: Hashable, Sendable {
     }
 }
 
-extension EnvironmentValues {
-    public var hFieldSize: hFieldSize {
+public extension EnvironmentValues {
+    var hFieldSize: hFieldSize {
         get { self[EnvironmentHFieldSize.self] }
         set { self[EnvironmentHFieldSize.self] = newValue }
     }
 }
 
-extension View {
-    public func hFieldSize(_ size: hFieldSize) -> some View {
+public extension View {
+    func hFieldSize(_ size: hFieldSize) -> some View {
         environment(\.hFieldSize, size)
     }
 }
@@ -352,15 +352,15 @@ private struct EnvironmentHFieldAttachedView: @preconcurrency EnvironmentKey {
     @MainActor static let defaultValue: AnyView? = nil
 }
 
-extension EnvironmentValues {
-    public var hFieldRightAttachedView: AnyView? {
+public extension EnvironmentValues {
+    var hFieldRightAttachedView: AnyView? {
         get { self[EnvironmentHFieldAttachedView.self] }
         set { self[EnvironmentHFieldAttachedView.self] = newValue }
     }
 }
 
-extension View {
-    public func hFieldAttachToRight<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+public extension View {
+    func hFieldAttachToRight<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hFieldRightAttachedView, AnyView(content()))
     }
 }
@@ -441,15 +441,15 @@ private struct EnvironmentHAnimateField: EnvironmentKey {
     static let defaultValue = true
 }
 
-extension EnvironmentValues {
-    public var hAnimateField: Bool {
+public extension EnvironmentValues {
+    var hAnimateField: Bool {
         get { self[EnvironmentHAnimateField.self] }
         set { self[EnvironmentHAnimateField.self] = newValue }
     }
 }
 
-extension View {
-    public func hAnimateField(_ animate: Bool) -> some View {
+public extension View {
+    func hAnimateField(_ animate: Bool) -> some View {
         environment(\.hAnimateField, animate)
     }
 }

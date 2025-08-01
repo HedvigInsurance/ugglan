@@ -1,9 +1,9 @@
 import Foundation
 import SwiftUI
 
-extension ImageAsset {
+public extension ImageAsset {
     /// a SwiftUI view with the image asset
-    public var view: SwiftUI.Image {
+    var view: SwiftUI.Image {
         .init(uiImage: image)
     }
 }

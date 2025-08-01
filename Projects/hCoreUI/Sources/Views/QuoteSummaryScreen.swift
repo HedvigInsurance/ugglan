@@ -1,5 +1,5 @@
-import SwiftUI
 import hCore
+import SwiftUI
 
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]
@@ -324,7 +324,7 @@ public struct QuoteSummaryScreen: View {
         hSection {
             InfoCard(
                 text:
-                    vm.isAddon
+                vm.isAddon
                     ? L10n.addonFlowSummaryInfoText
                     : L10n.changeAddressOtherInsurancesInfoText,
                 type: .info
@@ -393,7 +393,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
             if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id),
-                isExpanded
+               isExpanded
             {
                 hButton(
                     .medium,
@@ -602,7 +602,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                     id: "id2",
                     title: "Remove Travel Insurance Plus",
                     description:
-                        "By removing this extended coverage, your insurance will no longer include extra protection while traveling.",
+                    "By removing this extended coverage, your insurance will no longer include extra protection while traveling.",
                     confirmButtonTitle: "Remove Travel Insurance Plus",
                     cancelRemovalButtonTitle: "Keep current coverage"
                 )
@@ -658,15 +658,15 @@ private struct EnvironmentHAccessibilityWithoutCombinedElements: EnvironmentKey 
     static let defaultValue = false
 }
 
-extension EnvironmentValues {
-    public var hAccessibilityWithoutCombinedElements: Bool {
+public extension EnvironmentValues {
+    var hAccessibilityWithoutCombinedElements: Bool {
         get { self[EnvironmentHAccessibilityWithoutCombinedElements.self] }
         set { self[EnvironmentHAccessibilityWithoutCombinedElements.self] = newValue }
     }
 }
 
-extension View {
-    public var hAccessibilityWithoutCombinedElements: some View {
+public extension View {
+    var hAccessibilityWithoutCombinedElements: some View {
         environment(\.hAccessibilityWithoutCombinedElements, true)
     }
 }

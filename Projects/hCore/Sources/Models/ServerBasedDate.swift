@@ -3,16 +3,16 @@ import Foundation
 public typealias ServerBasedDate = String
 
 @MainActor
-extension ServerBasedDate {
-    public var displayDate: String {
+public extension ServerBasedDate {
+    var displayDate: String {
         localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
     }
 
-    public var displayDateShort: String {
+    var displayDateShort: String {
         localDateToDate?.displayDateDDMMMFormat ?? ""
     }
 
-    public var year: Int? {
+    var year: Int? {
         Int(localDateToDate?.dateYYYYFormat ?? "")
     }
 }

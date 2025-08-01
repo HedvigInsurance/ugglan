@@ -101,8 +101,8 @@ extension AppDelegate {
 }
 
 struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
-    public func rumView(for viewController: UIViewController) -> RUMView? {
-        return nil
+    func rumView(for _: UIViewController) -> RUMView? {
+        nil
     }
 }
 

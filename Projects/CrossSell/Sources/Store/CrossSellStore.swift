@@ -1,6 +1,6 @@
 import Addons
-import PresentableStore
 import hCore
+import PresentableStore
 
 public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAction, CrossSellLoadingAction> {
     let crossSellService = CrossSellService()

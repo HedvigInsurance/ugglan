@@ -14,8 +14,8 @@ public struct TransitionStyle {
     }
 }
 
-extension TransitionStyle {
-    public static func crossDissolve(duration: TimeInterval) -> TransitionStyle {
+public extension TransitionStyle {
+    static func crossDissolve(duration: TimeInterval) -> TransitionStyle {
         TransitionStyle(duration: duration, options: [.transitionCrossDissolve, .allowUserInteraction])
     }
 }

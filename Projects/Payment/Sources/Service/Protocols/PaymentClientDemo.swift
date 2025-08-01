@@ -33,7 +33,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                 validUntil: nil,
                                 canBeDeleted: true,
                                 discountId: "id"
-                            )
+                            ),
                         ],
                         periods: [
                             .init(
@@ -43,7 +43,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                 amount: .sek(200),
                                 isOutstanding: false,
                                 desciption: nil
-                            )
+                            ),
                         ]
                     ),
                     .init(
@@ -61,7 +61,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                 validUntil: nil,
                                 canBeDeleted: true,
                                 discountId: "id"
-                            )
+                            ),
                         ],
                         periods: [
                             .init(
@@ -71,7 +71,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                 amount: .sek(200),
                                 isOutstanding: false,
                                 desciption: nil
-                            )
+                            ),
                         ]
                     ),
                 ],
@@ -106,7 +106,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                     validUntil: nil,
                                     canBeDeleted: true,
                                     discountId: "id"
-                                )
+                                ),
                             ],
                             periods: [
                                 .init(
@@ -116,7 +116,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                     amount: .sek(200),
                                     isOutstanding: false,
                                     desciption: nil
-                                )
+                                ),
                             ]
                         ),
                         .init(
@@ -134,7 +134,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                     validUntil: nil,
                                     canBeDeleted: true,
                                     discountId: "id"
-                                )
+                                ),
                             ],
                             periods: [
                                 .init(
@@ -144,14 +144,14 @@ public class hPaymentClientDemo: hPaymentClient {
                                     amount: .sek(200),
                                     isOutstanding: false,
                                     desciption: nil
-                                )
+                                ),
                             ]
                         ),
                     ],
                     referralDiscount: nil,
                     paymentDetails: nil,
                     addedToThePayment: nil
-                )
+                ),
             ]
         )
     }
@@ -187,7 +187,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
-                )
+                ),
             ]
         )
         let failed = PaymentHistoryListData(
@@ -211,7 +211,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
-                )
+                ),
             ]
         )
         return [success, failed]

@@ -1,6 +1,6 @@
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct PaymentStatusView: View {
     let status: PaymentData.PaymentStatus
@@ -34,7 +34,7 @@ struct PaymentStatusView: View {
         case let .failedForPrevious(from, to):
             InfoCard(
                 text:
-                    L10n.paymentsMissedPayment(from.displayDateShort, to.displayDateShort),
+                L10n.paymentsMissedPayment(from.displayDateShort, to.displayDateShort),
                 type: .error
             )
         case let .addedtoFuture(date):
@@ -49,7 +49,7 @@ struct PaymentStatusView: View {
                         buttonAction: {
                             onAction(.viewAddedToPayment)
                         }
-                    )
+                    ),
                 ]
             )
         case .unknown:

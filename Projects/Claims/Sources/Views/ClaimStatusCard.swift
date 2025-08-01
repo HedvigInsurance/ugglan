@@ -1,7 +1,7 @@
-import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
+import SwiftUI
 
 struct ClaimStatusCard: View {
     var claim: ClaimModel

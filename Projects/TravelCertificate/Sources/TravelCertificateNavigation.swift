@@ -2,10 +2,10 @@ import Addons
 import Contracts
 import EditCoInsured
 import Foundation
-import PresentableStore
-import SwiftUI
 import hCore
 import hCoreUI
+import PresentableStore
+import SwiftUI
 
 @MainActor
 public class TravelCertificateNavigationViewModel: ObservableObject {

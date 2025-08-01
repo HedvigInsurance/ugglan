@@ -19,7 +19,7 @@ public class EditCoInsuredClientDemo: EditCoInsuredClient {
     }
 
     public func fetchContracts() async throws -> [Contract] {
-        return [
+        [
             Contract(
                 id: "",
                 exposureDisplayName: "",

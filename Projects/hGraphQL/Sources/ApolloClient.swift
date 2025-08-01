@@ -15,21 +15,21 @@ public struct hOctopus {
 }
 
 @MainActor
-extension ApolloClient {
-    public static var acceptLanguageHeader: String = ""
-    public static var bundle: Bundle?
+public extension ApolloClient {
+    static var acceptLanguageHeader: String = ""
+    static var bundle: Bundle?
 
     internal static var appVersion: String {
         bundle?.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
     }
 
-    public static var userAgent: String {
+    static var userAgent: String {
         "\(bundle?.bundleIdentifier ?? "") \(appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
 
-    public static var cache = InMemoryNormalizedCache()
+    static var cache = InMemoryNormalizedCache()
 
-    public static func headers() async -> [String: String] {
+    static func headers() async -> [String: String] {
         if let token = try? await ApolloClient.retreiveToken() {
             return [
                 "Authorization": "Bearer " + token.accessToken,
@@ -40,7 +40,7 @@ extension ApolloClient {
         return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
-    public static func getDeviceIdentifier() async -> String {
+    static func getDeviceIdentifier() async -> String {
         let userDefaults = UserDefaults.standard
 
         let deviceKey = "hedvig-device-identifier"
@@ -85,21 +85,21 @@ extension ApolloClient {
         return hOctopus(client: client, store: store)
     }
 
-    public static func createClient() async -> hApollo {
+    static func createClient() async -> hApollo {
         hApollo(
             octopus: await createOctopusClient()
         )
     }
 
-    public static func deleteToken() async {
+    static func deleteToken() async {
         await KeychainHelper.standard.delete(key: "oAuthorizationToken")
     }
 
-    public static func retreiveToken() async throws -> OAuthorizationToken? {
+    static func retreiveToken() async throws -> OAuthorizationToken? {
         try await KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
     }
 
-    public static func handleAuthTokenSuccessResult(result: AuthorizationTokenDto) {
+    static func handleAuthTokenSuccessResult(result: AuthorizationTokenDto) {
         let accessTokenExpirationDate = Date()
             .addingTimeInterval(
                 Double(result.accessTokenExpiryIn)
@@ -120,28 +120,28 @@ extension ApolloClient {
         )
     }
 
-    public static func saveToken(token: OAuthorizationToken) {
+    static func saveToken(token: OAuthorizationToken) {
         KeychainHelper.standard.save(token, key: "oAuthorizationToken")
     }
 
-    public static func retreiveMembersWithDeleteRequests() -> Set<String> {
+    static func retreiveMembersWithDeleteRequests() -> Set<String> {
         let memberIds = try? Disk.retrieve("deleteRequestedMembers", from: .applicationSupport, as: Set<String>.self)
         return memberIds ?? []
     }
 
-    public static func saveDeleteAccountStatus(for memberId: String) {
+    static func saveDeleteAccountStatus(for memberId: String) {
         var members = retreiveMembersWithDeleteRequests()
         members.insert(memberId)
         try? Disk.save(members, to: .applicationSupport, as: "deleteRequestedMembers")
     }
 
-    public static func removeDeleteAccountStatus(for memberId: String) {
+    static func removeDeleteAccountStatus(for memberId: String) {
         var members = retreiveMembersWithDeleteRequests()
         members.remove(memberId)
         try? Disk.save(members, to: .applicationSupport, as: "deleteRequestedMembers")
     }
 
-    public static func deleteAccountStatus(for memberId: String) -> Bool {
+    static func deleteAccountStatus(for memberId: String) -> Bool {
         let members = retreiveMembersWithDeleteRequests()
         return members.contains(memberId)
     }

@@ -1,5 +1,5 @@
-import SwiftUI
 import hCore
+import SwiftUI
 
 public struct UpdateOSScreen: View {
     public init() {}

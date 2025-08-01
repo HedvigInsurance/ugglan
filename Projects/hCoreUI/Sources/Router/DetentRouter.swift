@@ -1,8 +1,8 @@
 import Combine
 import Foundation
+import hCore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
-import hCore
 
 @preconcurrency
 public enum TransitionType: Equatable {
@@ -10,8 +10,8 @@ public enum TransitionType: Equatable {
     case center
 }
 
-extension View {
-    public func detent<SwiftUIContent: View>(
+public extension View {
+    func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
         transitionType: TransitionType? = .detent(style: [.height]),
         options: Binding<DetentPresentationOption>? = .constant([]),
@@ -27,7 +27,7 @@ extension View {
         )
     }
 
-    public func detent<Item, Content>(
+    func detent<Item, Content>(
         item: Binding<Item?>,
         transitionType: TransitionType? = .detent(style: [.height]),
         options: Binding<DetentPresentationOption>? = .constant([]),
@@ -45,7 +45,8 @@ extension View {
 }
 
 private struct DetentSizeModifierModal<Item, SwiftUIContent>: ViewModifier
-where SwiftUIContent: View, Item: Identifiable & Equatable {
+    where SwiftUIContent: View, Item: Identifiable & Equatable
+{
     @Binding var item: Item?
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
@@ -254,25 +255,25 @@ class PresentationViewModel: ObservableObject {
                     {
                         self?.formContentSizeChanged =
                             scrollView
-                            .publisher(for: \.contentSize)
-                            .map {
-                                $0.height.rounded()
-                            }
-                            .removeDuplicates()
-                            .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
-                            .sink(receiveValue: { _ in
-                                guard let self else { return }
-                                if #available(iOS 16.0, *) {
-                                    self.presentingVC?.sheetPresentationController?
-                                        .animateChanges {
-                                            self.presentingVC?.sheetPresentationController?
-                                                .invalidateDetents()
-                                        }
-                                } else {
-                                    self.presentingVC?.sheetPresentationController?
-                                        .animateChanges {}
+                                .publisher(for: \.contentSize)
+                                .map {
+                                    $0.height.rounded()
                                 }
-                            })
+                                .removeDuplicates()
+                                .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
+                                .sink(receiveValue: { _ in
+                                    guard let self else { return }
+                                    if #available(iOS 16.0, *) {
+                                        self.presentingVC?.sheetPresentationController?
+                                            .animateChanges {
+                                                self.presentingVC?.sheetPresentationController?
+                                                    .invalidateDetents()
+                                            }
+                                    } else {
+                                        self.presentingVC?.sheetPresentationController?
+                                            .animateChanges {}
+                                    }
+                                })
                     }
                 }
             }

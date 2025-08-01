@@ -1,6 +1,6 @@
 import Foundation
-import WebKit
 import hCore
+import WebKit
 
 public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
     public static let NAME = "trustlyOpenURLScheme"
@@ -10,9 +10,9 @@ public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
 
     public func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
         if let parsed = getParsedJSON(object: message.body as AnyObject),
-            let callback: String = parsed.object(forKey: "callback") as? String,
-            let urlscheme: String = parsed.object(forKey: "urlscheme") as? String,
-            let appUrl: URL = NSURL(string: urlscheme) as URL?
+           let callback: String = parsed.object(forKey: "callback") as? String,
+           let urlscheme: String = parsed.object(forKey: "urlscheme") as? String,
+           let appUrl: URL = NSURL(string: urlscheme) as URL?
         {
             let canOpenApplicationUrl = UIApplication.shared.canOpenURL(appUrl)
             if canOpenApplicationUrl {

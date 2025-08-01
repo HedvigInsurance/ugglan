@@ -5,10 +5,10 @@ import Contracts
 import CrossSell
 import EditCoInsured
 import Foundation
-@preconcurrency import PresentableStore
-import SwiftUI
 import hCore
 import hCoreUI
+@preconcurrency import PresentableStore
+import SwiftUI
 
 public struct MemberInfo: Codable, Equatable, Sendable {
     let id: String
@@ -160,8 +160,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                         hasSent: chatMessagesState.hasSentOrRecievedAtLeastOneMessage
                     )
                 )
-                if chatMessagesState.hasNewMessages, let latestMessageTimestamp = chatMessagesState.lastMessageTimeStamp
-                {
+                if chatMessagesState.hasNewMessages, let latestMessageTimestamp = chatMessagesState.lastMessageTimeStamp {
                     send(.setChatNotificationConversationTimeStamp(date: latestMessageTimestamp))
                 }
             } catch {}

@@ -1,12 +1,12 @@
 import Combine
 import EditCoInsured
 import Foundation
+import hCore
+import hCoreUI
 import PresentableStore
 import SwiftUI
 import TerminateContracts
 import UnleashProxyClientSwift
-import hCore
-import hCoreUI
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
@@ -186,8 +186,8 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func upatedContractView(_ contract: Contract) -> some View {
         if let upcomingRenewal = contract.upcomingRenewal,
-            let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
-            URL(string: upcomingRenewal.certificateUrl) != nil
+           let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
+           URL(string: upcomingRenewal.certificateUrl) != nil
         {
             hSection {
                 InfoCard(
@@ -205,11 +205,11 @@ struct ContractInformationView: View {
                                 type: .unknown
                             )
                         }
-                    )
+                    ),
                 ])
             }
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
-            URL(string: upcomingChangedAgreement.certificateUrl) != nil
+                  URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
             hSection {
                 HStack {
@@ -234,7 +234,7 @@ struct ContractInformationView: View {
                                         type: .unknown
                                     )
                                 }
-                            )
+                            ),
                         ])
                     } else {
                         InfoCard(
@@ -249,13 +249,13 @@ struct ContractInformationView: View {
                                 buttonAction: {
                                     contractsNavigationVm.insuranceUpdate = contract
                                 }
-                            )
+                            ),
                         ])
                     }
                 }
             }
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
-            upcomingChangedAgreement.certificateUrl == nil
+                  upcomingChangedAgreement.certificateUrl == nil
         {
             Rectangle()
                 .onAppear {
@@ -272,7 +272,7 @@ struct ContractInformationView: View {
     private func moveAddressButton(contract: Contract) -> some View {
         let contractsThatSupportsMoving = store.state.activeContracts.filter(\.supportsAddressChange)
         if contract.supportsAddressChange, featureFlags.isMovingFlowEnabled,
-            contractsThatSupportsMoving.count < 2, !contract.isTerminated
+           contractsThatSupportsMoving.count < 2, !contract.isTerminated
         {
             hSection {
                 hButton(
@@ -336,7 +336,7 @@ public struct CoInsuredInfoView: View {
                     buttonAction: {
                         contractsNavigationVm.editCoInsuredVm.start(fromContract: config)
                     }
-                )
+                ),
             ])
     }
 }

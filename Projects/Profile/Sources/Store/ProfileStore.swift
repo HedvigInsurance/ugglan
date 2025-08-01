@@ -1,7 +1,7 @@
 import Apollo
 import Foundation
-import PresentableStore
 import hCore
+import PresentableStore
 
 public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {
     @Inject var profileService: ProfileClient
@@ -16,7 +16,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             do {
                 let (member, partner, canCreateInsuranceEvidence, hasTravelInsurances) =
                     try await profileService
-                    .getProfileState()
+                        .getProfileState()
                 removeLoading(for: .fetchProfileState)
 
                 send(.setEurobonusNumber(partnerData: partner))

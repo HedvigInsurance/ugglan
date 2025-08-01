@@ -1,9 +1,9 @@
 import Combine
 import Foundation
-import Kingfisher
-import SwiftUI
 import hCore
 import hCoreUI
+import Kingfisher
+import SwiftUI
 
 struct ClaimContactCard: View {
     var model: Partner

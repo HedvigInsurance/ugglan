@@ -1,7 +1,7 @@
 import Combine
 import Foundation
-import SwiftUI
 import hCoreUI
+import SwiftUI
 
 @MainActor
 public class CoInusuredInputViewModel: ObservableObject {
@@ -22,7 +22,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     var editCoInsuredService = EditCoInsuredService()
 
     func showErrorView(inputError: String?) -> Bool {
-        return SSNError ?? inputError != nil
+        SSNError ?? inputError != nil
     }
 
     var cancellables = Set<AnyCancellable>()
@@ -32,12 +32,12 @@ public class CoInusuredInputViewModel: ObservableObject {
         contractId: String
     ) {
         self.coInsuredModel = coInsuredModel
-        self.personalData = PersonalData(
+        personalData = PersonalData(
             firstName: coInsuredModel.firstName ?? "",
             lastName: coInsuredModel.lastName ?? ""
         )
-        self.SSN = coInsuredModel.SSN ?? ""
-        self.birthday = coInsuredModel.birthDate ?? ""
+        SSN = coInsuredModel.SSN ?? ""
+        birthday = coInsuredModel.birthDate ?? ""
         self.actionType = actionType
         self.contractId = contractId
         if !(coInsuredModel.birthDate ?? "").isEmpty {

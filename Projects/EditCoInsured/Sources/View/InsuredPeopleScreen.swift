@@ -1,6 +1,6 @@
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct InsuredPeopleScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -126,7 +126,7 @@ struct InsuredPeopleScreen: View {
     @ViewBuilder
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
         var accessoryType: CoInsuredFieldType {
-            if coInsured.coInsured.hasMissingData && type != .delete {
+            if coInsured.coInsured.hasMissingData, type != .delete {
                 .empty
             } else if coInsured.locallyAdded {
                 .localEdit
@@ -153,7 +153,7 @@ struct InsuredPeopleScreen: View {
     }
 
     private func onAccessoryViewTap(type: CoInsuredFieldType, coInsured: CoInsuredModel) {
-        if type == .empty && vm.hasExistingCoInsured {
+        if type == .empty, vm.hasExistingCoInsured {
             editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
         } else {
             editCoInsuredNavigation.coInsuredInputModel = .init(
@@ -180,7 +180,7 @@ struct InsuredPeopleScreen: View {
                 needsMissingInfo: false,
                 activatesOn: "2025-04-22",
                 terminatesOn: nil
-            )
+            ),
         ],
         contractId: "",
         activeFrom: nil,

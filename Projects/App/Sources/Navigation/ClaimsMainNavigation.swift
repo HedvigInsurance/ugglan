@@ -1,10 +1,10 @@
 import Claims
+import hCore
+import hCoreUI
 import PresentableStore
 import Profile
 import SubmitClaim
 import SwiftUI
-import hCore
-import hCoreUI
 
 private class ClaimsMainNavigationViewModel: ObservableObject {
     @Published var isClaimsFlowPresented = false
@@ -16,7 +16,7 @@ struct ClaimsMainNavigation: View {
     @State var shouldHideHonestyPledge = false
     @State private var measuredHeight: CGFloat = 0
 
-    public var body: some View {
+    var body: some View {
         RouterHost(router: claimsRouter, tracking: self) {
             honestyPledge()
                 .captureHeight(in: $measuredHeight)
@@ -75,7 +75,7 @@ struct ClaimsMainNavigation: View {
 }
 
 extension ClaimsMainNavigation: TrackingViewNameProtocol {
-    public var nameForTracking: String {
+    var nameForTracking: String {
         .init(describing: HonestyPledge.self)
     }
 }

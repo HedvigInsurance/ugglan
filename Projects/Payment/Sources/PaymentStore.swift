@@ -2,8 +2,8 @@ import Apollo
 import Campaign
 import Contracts
 import Foundation
-import PresentableStore
 import hCore
+import PresentableStore
 
 public struct PaymentState: StateProtocol {
     public var paymentData: PaymentData?

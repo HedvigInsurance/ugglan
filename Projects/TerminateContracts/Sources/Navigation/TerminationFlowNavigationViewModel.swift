@@ -1,9 +1,9 @@
 import ChangeTier
 import Combine
 import Environment
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 @MainActor
 public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
@@ -100,15 +100,15 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
                 if let contractId = config?.contractId,
-                    let redirectAction,
-                    let source: ChangeTierSource = {
-                        if case .changeTierFoundBetterPrice = redirectAction {
-                            return .betterPrice
-                        } else if case .changeTierMissingCoverageAndTerms = redirectAction {
-                            return .betterCoverage
-                        }
-                        return nil
-                    }()
+                   let redirectAction,
+                   let source: ChangeTierSource = {
+                       if case .changeTierFoundBetterPrice = redirectAction {
+                           return .betterPrice
+                       } else if case .changeTierMissingCoverageAndTerms = redirectAction {
+                           return .betterCoverage
+                       }
+                       return nil
+                   }()
                 {
                     let input = ChangeTierInputData(source: source, contractId: contractId)
                     Task { @MainActor [weak self] in

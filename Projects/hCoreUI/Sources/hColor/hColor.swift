@@ -48,20 +48,20 @@ public struct ShapeEnvironmentRedraw<Content: View>: View {
 }
 
 @MainActor
-extension Shape {
-    public func fill<S>(_ content: S, style _: FillStyle = FillStyle()) -> some View where S: hColor {
+public extension Shape {
+    func fill<S>(_ content: S, style _: FillStyle = FillStyle()) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
         }
     }
 
-    public func fill2<S>(_ content: S, _: S, style _: FillStyle = FillStyle()) -> some View where S: hColor {
+    func fill2<S>(_ content: S, _: S, style _: FillStyle = FillStyle()) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
         }
     }
 
-    public func stroke<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
+    func stroke<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.stroke(content.colorFor(colorScheme, userInterfaceLevel).color, lineWidth: lineWidth)
         }
@@ -69,8 +69,8 @@ extension Shape {
 }
 
 @MainActor
-extension InsettableShape {
-    public func strokeBorder<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
+public extension InsettableShape {
+    func strokeBorder<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.strokeBorder(content.colorFor(colorScheme, userInterfaceLevel).color, lineWidth: lineWidth)
         }
@@ -171,18 +171,18 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
     }
 }
 
-extension View {
-    public func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
+public extension View {
+    func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
         modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
     }
 
-    public func border<Color: hColor>(_ color: Color?, width: CGFloat = 0) -> some View {
+    func border<Color: hColor>(_ color: Color?, width: CGFloat = 0) -> some View {
         modifier(hColorViewModifier(color: color, colorType: .border(width: width)))
     }
 }
 
-extension View {
-    public func tint<Color: hColor>(_ color: Color?) -> some View {
+public extension View {
+    func tint<Color: hColor>(_ color: Color?) -> some View {
         modifier(hColorViewModifier(color: color, colorType: .tintColor))
     }
 }

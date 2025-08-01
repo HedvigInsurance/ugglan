@@ -1,5 +1,5 @@
-import SwiftUI
 import hCoreUI
+import SwiftUI
 
 public struct RecordButton: View {
     var isRecording: Bool
@@ -26,9 +26,8 @@ public struct RecordButton: View {
             pulseBackground
             SwiftUI.Button {
                 onTap()
-            } label: {
-            }
-            .buttonStyle(RecordButtonStyle(isRecording: isRecording))
+            } label: {}
+                .buttonStyle(RecordButtonStyle(isRecording: isRecording))
         }
     }
 }

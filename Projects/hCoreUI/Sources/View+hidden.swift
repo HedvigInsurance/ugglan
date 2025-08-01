@@ -1,8 +1,8 @@
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
-extension View {
-    public func hidden(_ hide: Binding<Bool>) -> some View {
+public extension View {
+    func hidden(_ hide: Binding<Bool>) -> some View {
         modifier(HideViewController(hide: hide))
     }
 }

@@ -149,21 +149,21 @@ private struct EnvironmentHUseLightMode: EnvironmentKey {
     static let defaultValue: Bool = false
 }
 
-extension EnvironmentValues {
-    public var hUseLightMode: Bool {
+public extension EnvironmentValues {
+    var hUseLightMode: Bool {
         get { self[EnvironmentHUseLightMode.self] }
         set { self[EnvironmentHUseLightMode.self] = newValue }
     }
 }
 
-extension View {
-    public var hUseLightMode: some View {
+public extension View {
+    var hUseLightMode: some View {
         environment(\.hUseLightMode, true)
     }
 }
 
-extension View {
-    public func hButtonConfigurationType(_ type: hButtonConfigurationType) -> some View {
+public extension View {
+    func hButtonConfigurationType(_ type: hButtonConfigurationType) -> some View {
         environment(\.hButtonConfigurationType, type)
     }
 }
@@ -181,8 +181,8 @@ extension EnvironmentValues {
     }
 }
 
-extension View {
-    public func hButtonIsLoading(_ isLoading: Bool) -> some View {
+public extension View {
+    func hButtonIsLoading(_ isLoading: Bool) -> some View {
         environment(\.hButtonIsLoading, isLoading)
     }
 }
@@ -200,8 +200,8 @@ extension EnvironmentValues {
     }
 }
 
-extension View {
-    public func hButtonDontShowLoadingWhenDisabled(_ show: Bool) -> some View {
+public extension View {
+    func hButtonDontShowLoadingWhenDisabled(_ show: Bool) -> some View {
         environment(\.hButtonDontShowLoadingWhenDisabled, show)
     }
 }
@@ -217,8 +217,8 @@ extension EnvironmentValues {
     }
 }
 
-extension View {
-    public func hButtonTakeFullWidth(_ takeFullWidth: Bool) -> some View {
+public extension View {
+    func hButtonTakeFullWidth(_ takeFullWidth: Bool) -> some View {
         environment(\.hButtonTakeFullWidth, takeFullWidth)
     }
 }
@@ -227,8 +227,8 @@ private struct EnvironmentHUseButtonTextColor: @preconcurrency EnvironmentKey {
     @MainActor static let defaultValue: hButtonTextColor = .default
 }
 
-extension EnvironmentValues {
-    public var hUseButtonTextColor: hButtonTextColor {
+public extension EnvironmentValues {
+    var hUseButtonTextColor: hButtonTextColor {
         get { self[EnvironmentHUseButtonTextColor.self] }
         set { self[EnvironmentHUseButtonTextColor.self] = newValue }
     }
@@ -245,14 +245,14 @@ extension EnvironmentValues {
     }
 }
 
-extension View {
-    public func hWithTransition(_ transition: AnyTransition?) -> some View {
+public extension View {
+    func hWithTransition(_ transition: AnyTransition?) -> some View {
         environment(\.hWithTransition, transition)
     }
 }
 
-extension View {
-    public func hUseButtonTextColor(_ color: hButtonTextColor) -> some View {
+public extension View {
+    func hUseButtonTextColor(_ color: hButtonTextColor) -> some View {
         environment(\.hUseButtonTextColor, color)
     }
 }
@@ -262,15 +262,15 @@ private struct EnvironmentHCustomButtonView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
-extension EnvironmentValues {
-    public var hCustomButtonView: AnyView? {
+public extension EnvironmentValues {
+    var hCustomButtonView: AnyView? {
         get { self[EnvironmentHCustomButtonView.self] }
         set { self[EnvironmentHCustomButtonView.self] = newValue }
     }
 }
 
-extension View {
-    public func hCustomButtonView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+public extension View {
+    func hCustomButtonView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hCustomButtonView, AnyView(content()))
     }
 }

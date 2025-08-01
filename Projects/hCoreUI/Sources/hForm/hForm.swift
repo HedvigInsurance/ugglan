@@ -169,7 +169,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 verticalSizeClass == .compact
                     ? .padding16
                     : hFormTitle.subTitle?.type.bottomMargin
-                        ?? hFormTitle.title.type.bottomMargin
+                    ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
             .accessibilityElement(children: .combine)
@@ -287,19 +287,19 @@ private struct EnvironmentHScrollBounce: EnvironmentKey {
     static let defaultValue: Bool? = nil
 }
 
-extension EnvironmentValues {
-    public var hEnableScrollBounce: Bool? {
+public extension EnvironmentValues {
+    var hEnableScrollBounce: Bool? {
         get { self[EnvironmentHScrollBounce.self] }
         set { self[EnvironmentHScrollBounce.self] = newValue }
     }
 }
 
-extension View {
+public extension View {
     /// Used to determine if we should bounce effect on the scroll view
     /// nil: default behaviour depending on the content position and content size
     /// true: always on
     /// false : always off
-    public func hSetScrollBounce(to value: Bool?) -> some View {
+    func hSetScrollBounce(to value: Bool?) -> some View {
         environment(\.hEnableScrollBounce, value)
     }
 }
@@ -312,16 +312,16 @@ private struct EnvironmentHFormAlwaysVisibleBottomAttachedView: @preconcurrency 
     static let defaultValue: AnyView? = nil
 }
 
-extension EnvironmentValues {
-    public var hFormAlwaysVisibleBottomAttachedView: AnyView? {
+public extension EnvironmentValues {
+    var hFormAlwaysVisibleBottomAttachedView: AnyView? {
         get { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] }
         set { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] = newValue }
     }
 }
 
-extension View {
+public extension View {
     /// View that is not part of the scroll view, but just bellow it ignoring keyboard. Default spacing to top and bottom are added to this view
-    public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
     }
 }
@@ -333,15 +333,15 @@ private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
     static let defaultValue: ContentPosition = .top
 }
 
-extension EnvironmentValues {
-    public var hFormContentPosition: ContentPosition {
+public extension EnvironmentValues {
+    var hFormContentPosition: ContentPosition {
         get { self[EnvironmentHFormContentPosition.self] }
         set { self[EnvironmentHFormContentPosition.self] = newValue }
     }
 }
 
-extension View {
-    public func hFormContentPosition(_ position: ContentPosition) -> some View {
+public extension View {
+    func hFormContentPosition(_ position: ContentPosition) -> some View {
         environment(\.hFormContentPosition, position)
     }
 }
@@ -360,15 +360,15 @@ private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKe
     static let defaultValue: AnyView? = nil
 }
 
-extension EnvironmentValues {
-    public var hFormBottomAttachedView: AnyView? {
+public extension EnvironmentValues {
+    var hFormBottomAttachedView: AnyView? {
         get { self[EnvironmentHFormBottomAttachedView.self] }
         set { self[EnvironmentHFormBottomAttachedView.self] = newValue }
     }
 }
 
-extension View {
-    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+public extension View {
+    func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hFormBottomAttachedView, AnyView(content()))
     }
 }
@@ -385,15 +385,15 @@ private struct EnvironmentHFormBottomBackgorundColor: @preconcurrency Environmen
     static let defaultValue: hFormBottomBackgroundStyle = .default
 }
 
-extension EnvironmentValues {
-    public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle {
+public extension EnvironmentValues {
+    var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle {
         get { self[EnvironmentHFormBottomBackgorundColor.self] }
         set { self[EnvironmentHFormBottomBackgorundColor.self] = newValue }
     }
 }
 
-extension View {
-    public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
+public extension View {
+    func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
         environment(\.hFormBottomBackgroundStyle, style)
     }
 }
@@ -450,15 +450,15 @@ public struct hTitle {
     }
 }
 
-extension EnvironmentValues {
-    public var hFormTitle: (title: hTitle, subTitle: hTitle?)? {
+public extension EnvironmentValues {
+    var hFormTitle: (title: hTitle, subTitle: hTitle?)? {
         get { self[EnvironmentHFormTitle.self] }
         set { self[EnvironmentHFormTitle.self] = newValue }
     }
 }
 
-extension View {
-    public func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
+public extension View {
+    func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
         environment(\.hFormTitle, (title, subTitle))
     }
 }
@@ -470,15 +470,15 @@ private struct EnvironmentHFormIgnoreBottomPadding: @preconcurrency EnvironmentK
     static let defaultValue: Bool = false
 }
 
-extension EnvironmentValues {
-    public var hFormIgnoreBottomPadding: Bool {
+public extension EnvironmentValues {
+    var hFormIgnoreBottomPadding: Bool {
         get { self[EnvironmentHFormIgnoreBottomPadding.self] }
         set { self[EnvironmentHFormIgnoreBottomPadding.self] = newValue }
     }
 }
 
-extension View {
-    public var hFormIgnoreBottomPadding: some View {
+public extension View {
+    var hFormIgnoreBottomPadding: some View {
         environment(\.hFormIgnoreBottomPadding, true)
     }
 }

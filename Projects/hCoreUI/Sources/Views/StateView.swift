@@ -1,5 +1,5 @@
-import SwiftUI
 import hCore
+import SwiftUI
 
 struct StateView: View {
     let type: StateType
@@ -232,15 +232,15 @@ private struct StateViewButtonConfigKey: @preconcurrency EnvironmentKey {
     static let defaultValue: StateViewButtonConfig? = nil
 }
 
-extension EnvironmentValues {
-    public var hStateViewButtonConfig: StateViewButtonConfig? {
+public extension EnvironmentValues {
+    var hStateViewButtonConfig: StateViewButtonConfig? {
         get { self[StateViewButtonConfigKey.self] }
         set { self[StateViewButtonConfigKey.self] = newValue }
     }
 }
 
-extension View {
-    public func hStateViewButtonConfig(_ stateViewButtonConfigKey: StateViewButtonConfig?) -> some View {
+public extension View {
+    func hStateViewButtonConfig(_ stateViewButtonConfigKey: StateViewButtonConfig?) -> some View {
         environment(\.hStateViewButtonConfig, stateViewButtonConfigKey)
     }
 }

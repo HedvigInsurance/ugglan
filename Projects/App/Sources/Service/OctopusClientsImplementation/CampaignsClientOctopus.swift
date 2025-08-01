@@ -1,13 +1,13 @@
 import Campaign
 import Foundation
-import PresentableStore
 import hCore
 import hGraphQL
+import PresentableStore
 
 class hCampaignsClientOctopus: hCampaignClient {
     @Inject private var octopus: hOctopus
 
-    public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
+    func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         let query = OctopusGraphQL.DiscountsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return PaymentDiscountsData(with: data, amountFromPaymentData: nil)
@@ -31,7 +31,7 @@ extension PaymentDiscountsData {
 
 @MainActor
 extension Discount {
-    internal init(
+    init(
         with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign,
         amountFromPaymentData: MonetaryAmount?
 
@@ -69,8 +69,8 @@ extension Discount {
     }
 }
 
-extension OctopusGraphQL.MemberReferralInformationCodeFragment {
-    public func asReedeemedCampaing() -> ReedeemedCampaingDTO {
+public extension OctopusGraphQL.MemberReferralInformationCodeFragment {
+    func asReedeemedCampaing() -> ReedeemedCampaingDTO {
         .init(
             code: code,
             description: L10n.paymentsReferralDiscount
@@ -150,8 +150,8 @@ extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
     }
 }
 
-extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
-    fileprivate var getDisplayName: String {
+private extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
+    var getDisplayName: String {
         [
             currentAgreement.productVariant.displayNameShort ?? currentAgreement.productVariant.displayName,
             exposureDisplayNameShort,

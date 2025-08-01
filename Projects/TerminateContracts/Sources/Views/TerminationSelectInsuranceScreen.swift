@@ -1,6 +1,6 @@
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct TerminationSelectInsuranceScreen: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel

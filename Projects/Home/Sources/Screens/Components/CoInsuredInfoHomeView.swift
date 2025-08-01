@@ -1,6 +1,6 @@
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 public struct CoInsuredInfoHomeView: View {
     var onTapAction: () -> Void
@@ -19,7 +19,7 @@ public struct CoInsuredInfoHomeView: View {
                     buttonAction: {
                         onTapAction()
                     }
-                )
+                ),
             ])
     }
 }

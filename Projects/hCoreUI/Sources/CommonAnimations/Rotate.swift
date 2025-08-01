@@ -1,7 +1,7 @@
 import SwiftUI
 
-extension View {
-    public func rotate() -> some View {
+public extension View {
+    func rotate() -> some View {
         modifier(RotateViewModifier())
     }
 }

@@ -17,10 +17,10 @@ struct CoInusuredInputScreen: View {
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
         self.editCoInsuredNavigation = editCoInsuredNavigation
-        self.insuredPeopleVm = editCoInsuredNavigation.coInsuredViewModel
+        insuredPeopleVm = editCoInsuredNavigation.coInsuredViewModel
         self.vm = vm
         self.title = title
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editCoInsuredNavigation.intentViewModel
         insuredPeopleVm.previousValue = vm.coInsuredModel
     }
 
@@ -105,7 +105,7 @@ struct CoInusuredInputScreen: View {
 
 extension View {
     func lockTrailingView() -> some View {
-        self.hFieldTrailingView {
+        hFieldTrailingView {
             hCoreUIAssets.lock.view
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
@@ -219,7 +219,7 @@ struct DeleteCoInsuredFields: View {
     @ObservedObject var vm: CoInusuredInputViewModel
 
     var body: some View {
-        if vm.personalData.firstName != "" && vm.personalData.lastName != "" && (vm.SSN != "" || vm.birthday != "") {
+        if vm.personalData.firstName != "", vm.personalData.lastName != "", vm.SSN != "" || vm.birthday != "" {
             Group {
                 nameField
                 ssnField

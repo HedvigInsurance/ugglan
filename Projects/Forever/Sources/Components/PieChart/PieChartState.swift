@@ -1,6 +1,6 @@
 import Foundation
-import SwiftUI
 import hCore
+import SwiftUI
 
 public struct PieChartState {
     public let percentagePerSlice: CGFloat

@@ -56,8 +56,8 @@ public enum PaymentType {
 }
 
 @MainActor
-extension Dependencies {
-    public static func featureFlags() -> FeatureFlags {
+public extension Dependencies {
+    static func featureFlags() -> FeatureFlags {
         let featureFlags: FeatureFlags = shared.resolve()
         return featureFlags
     }
@@ -68,9 +68,9 @@ public class FeatureFlags: ObservableObject {
     public static let shared = FeatureFlags()
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
-    @Published public private(set) var isTerminationFlowEnabled = false  // need rework
+    @Published public private(set) var isTerminationFlowEnabled = false // need rework
     @Published public private(set) var isUpdateNecessary = false
-    @Published public private(set) var isChatDisabled = false  // need to reintroduce
+    @Published public private(set) var isChatDisabled = false // need to reintroduce
     @Published public private(set) var isPaymentScreenEnabled = false
     @Published public private(set) var isConnectPaymentEnabled = false
     @Published public private(set) var isHelpCenterEnabled = false

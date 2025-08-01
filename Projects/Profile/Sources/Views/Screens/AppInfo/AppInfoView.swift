@@ -1,9 +1,9 @@
 import Apollo
 import Authentication
-import PresentableStore
-import SwiftUI
 import hCore
 import hCoreUI
+import PresentableStore
+import SwiftUI
 
 public struct AppInfoView: View {
     @State var showSubmitBugAlert = false

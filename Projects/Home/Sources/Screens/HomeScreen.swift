@@ -5,12 +5,12 @@ import Combine
 import Contracts
 import CrossSell
 import Foundation
+import hCore
+import hCoreUI
 import Payment
 import PresentableStore
 import SafariServices
 import SwiftUI
-import hCore
-import hCoreUI
 
 public struct HomeScreen: View {
     @StateObject var vm = HomeVM()
@@ -115,7 +115,7 @@ extension HomeScreen {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         let showHelpCenter =
             !contractStore.state.activeContracts.allSatisfy(\.isNonPayingMember)
-            || contractStore.state.activeContracts.count == 0
+                || contractStore.state.activeContracts.count == 0
         if showHelpCenter, featureFlags.isHelpCenterEnabled {
             hButton(
                 .large,

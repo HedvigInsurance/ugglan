@@ -1,6 +1,6 @@
 import Foundation
-import SwiftUI
 import hCore
+import SwiftUI
 
 public struct TextInputView: View {
     @ObservedObject private var vm: TextInputViewModel

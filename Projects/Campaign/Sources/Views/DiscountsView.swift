@@ -1,9 +1,9 @@
 import Combine
 import Forever
-import PresentableStore
-import SwiftUI
 import hCore
 import hCoreUI
+import PresentableStore
+import SwiftUI
 
 struct DiscountsView: View {
     let data: PaymentDiscountsData
@@ -61,7 +61,7 @@ struct DiscountsView: View {
                         buttonAction: {
                             router.push(CampaignRouterAction.forever)
                         }
-                    )
+                    ),
                 ]
             )
             .padding(.bottom, .padding8)
@@ -92,7 +92,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         amount: .sek(100),
                         title: nil,
                         listOfAffectedInsurances: [
-                            .init(id: "id1", displayName: "name")
+                            .init(id: "id1", displayName: "name"),
                         ],
                         validUntil: "2023-11-10",
                         canBeDeleted: true,
@@ -103,7 +103,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         amount: .sek(100),
                         title: "title 2",
                         listOfAffectedInsurances: [
-                            .init(id: "id21", displayName: "name 2")
+                            .init(id: "id21", displayName: "name 2"),
                         ],
                         validUntil: "2023-11-03",
                         canBeDeleted: false,
@@ -114,7 +114,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         amount: .sek(100),
                         title: "",
                         listOfAffectedInsurances: [
-                            .init(id: "id31", displayName: "name 3")
+                            .init(id: "id31", displayName: "name 3"),
                         ],
                         validUntil: "2025-11-03",
                         canBeDeleted: false,

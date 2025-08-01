@@ -1,6 +1,6 @@
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 public struct CoInsuredInputButton: View {
     @ObservedObject var vm: CoInusuredInputViewModel
@@ -26,7 +26,7 @@ public struct CoInsuredInputButton: View {
                         title: L10n.removeConfirmationButton,
                         vm: vm,
                         intentViewModel:
-                            intentViewModel,
+                        intentViewModel,
                         onTap: {
                             await performIntent(for: .delete)
                         }
@@ -159,7 +159,7 @@ private struct CoInsuredActionButton: View {
 
 extension CoInusuredInputViewModel {
     var buttonDisplayText: String {
-        if !noSSN && !nameFetchedFromSSN {
+        if !noSSN, !nameFetchedFromSSN {
             return L10n.contractSsnFetchInfo
         } else {
             return L10n.contractAddCoinsured
@@ -171,7 +171,7 @@ extension CoInusuredInputViewModel {
             let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: birthday)
             let firstNameValid = Masking(type: .firstName).isValid(text: personalData.firstName)
             let lastNameValid = Masking(type: .lastName).isValid(text: personalData.lastName)
-            if birthdayIsValid && firstNameValid && lastNameValid {
+            if birthdayIsValid, firstNameValid, lastNameValid {
                 return false
             }
         } else {

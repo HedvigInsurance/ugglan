@@ -2,8 +2,8 @@ import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
-extension View {
-    public func modally<SwiftUIContent: View>(
+public extension View {
+    func modally<SwiftUIContent: View>(
         presented: Binding<Bool>,
         options: Binding<DetentPresentationOption> = .constant([]),
         tracking: TrackingViewNameProtocol? = nil,
@@ -12,7 +12,7 @@ extension View {
         modifier(ModallySizeModifier(presented: presented, options: options, tracking: tracking, content: content))
     }
 
-    public func modally<Item, Content>(
+    func modally<Item, Content>(
         item: Binding<Item?>,
         options: Binding<DetentPresentationOption> = .constant([]),
         tracking: TrackingViewNameProtocol? = nil,
@@ -23,7 +23,8 @@ extension View {
 }
 
 private struct ModallySizeItemModifier<Item, SwiftUIContent>: ViewModifier
-where SwiftUIContent: View, Item: Identifiable & Equatable {
+    where SwiftUIContent: View, Item: Identifiable & Equatable
+{
     @Binding var item: Item?
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false

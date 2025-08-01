@@ -1,5 +1,5 @@
-import SwiftUI
 import hCore
+import SwiftUI
 
 public struct SuccessScreen: View {
     let title: String?
@@ -54,15 +54,15 @@ struct SuccessScreenWithButtons_Previews: PreviewProvider {
             .init(
                 actionButton: .init(buttonTitle: nil, buttonAction: {}),
                 actionButtonAttachedToBottom:
-                    .init(
-                        buttonTitle: "Extra button",
-                        buttonAction: {}
-                    ),
+                .init(
+                    buttonTitle: "Extra button",
+                    buttonAction: {}
+                ),
                 dismissButton:
-                    .init(
-                        buttonTitle: "Close",
-                        buttonAction: {}
-                    )
+                .init(
+                    buttonTitle: "Close",
+                    buttonAction: {}
+                )
             )
         )
     }
@@ -98,15 +98,15 @@ private struct EnvironmentHSuccessBottomAttachedView: @preconcurrency Environmen
     static let defaultValue: AnyView? = nil
 }
 
-extension EnvironmentValues {
-    public var hSuccessBottomAttachedView: AnyView? {
+public extension EnvironmentValues {
+    var hSuccessBottomAttachedView: AnyView? {
         get { self[EnvironmentHSuccessBottomAttachedView.self] }
         set { self[EnvironmentHSuccessBottomAttachedView.self] = newValue }
     }
 }
 
-extension View {
-    public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+public extension View {
+    func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hSuccessBottomAttachedView, AnyView(content()))
     }
 }
@@ -116,15 +116,15 @@ private struct EnvironmentHCustomSuccessView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
-extension EnvironmentValues {
-    public var hCustomSuccessView: AnyView? {
+public extension EnvironmentValues {
+    var hCustomSuccessView: AnyView? {
         get { self[EnvironmentHCustomSuccessView.self] }
         set { self[EnvironmentHCustomSuccessView.self] = newValue }
     }
 }
 
-extension View {
-    public func hCustomSuccessView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+public extension View {
+    func hCustomSuccessView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hCustomSuccessView, AnyView(content()))
     }
 }

@@ -45,7 +45,7 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         let deleted = coInsuredDeleted ?? self.coInsuredDeleted
         let existingList = config.contractCoInsured
         let missingCount = config.numberOfMissingCoInsuredWithoutTermination
-        let allHasMissingInfo = existingList.allSatisfy({ $0.hasMissingInfo })
+        let allHasMissingInfo = existingList.allSatisfy(\.hasMissingInfo)
         let shouldShowMissingCoInsuredPlaceholder: Bool =
             missingCount > 0 && existingList.contains(CoInsuredModel()) && allHasMissingInfo
 
@@ -75,12 +75,12 @@ class InsuredPeopleScreenViewModel: ObservableObject {
 
     func listForGettingIntentFor(addCoInsured: CoInsuredModel) -> [CoInsuredModel] {
         self.addCoInsured(addCoInsured)
-        return completeList(coInsuredAdded: self.coInsuredAdded)
+        return completeList(coInsuredAdded: coInsuredAdded)
     }
 
     func listForGettingIntentFor(removedCoInsured: CoInsuredModel) -> [CoInsuredModel] {
         removeCoInsured(removedCoInsured)
-        return completeList(coInsuredAdded: self.coInsuredAdded, coInsuredDeleted: self.coInsuredDeleted)
+        return completeList(coInsuredAdded: coInsuredAdded, coInsuredDeleted: coInsuredDeleted)
     }
 
     func listForGettingIntentFor(editCoInsured: CoInsuredModel) -> [CoInsuredModel] {

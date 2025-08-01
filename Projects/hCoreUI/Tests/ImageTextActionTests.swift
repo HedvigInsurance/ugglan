@@ -30,7 +30,7 @@ final class ImageTextActionTests: XCTestCase {
                             textColor: .brand(.primaryButtonTextColor)
                         )
                     )
-                )
+                ),
             ],
             showLogo: false
         )
@@ -60,7 +60,7 @@ final class ImageTextActionTests: XCTestCase {
                             textColor: .brand(.primaryButtonTextColor)
                         )
                     )
-                )
+                ),
             ],
             showLogo: true
         )

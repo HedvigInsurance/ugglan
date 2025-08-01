@@ -43,8 +43,8 @@ public enum TypeOfDocument: Codable, Hashable, Sendable {
     case unknown
 }
 
-extension GraphQLEnum<OctopusGraphQL.InsuranceDocumentType> {
-    public var asTypeOfDocument: TypeOfDocument {
+public extension GraphQLEnum<OctopusGraphQL.InsuranceDocumentType> {
+    var asTypeOfDocument: TypeOfDocument {
         switch self {
         case let .case(type):
             switch type {

@@ -1,10 +1,10 @@
 import Addons
 import Contracts
 import Foundation
-import PresentableStore
-import SwiftUI
 import hCore
 import hCoreUI
+import PresentableStore
+import SwiftUI
 
 public struct ListScreen: View {
     @StateObject var vm = ListScreenViewModel()
@@ -136,9 +136,9 @@ public struct ListScreen: View {
     }
 }
 
-extension View {
+private extension View {
     @ViewBuilder
-    fileprivate func applyInfoButton(
+    func applyInfoButton(
         withPlacement: ListToolBarPlacement,
         action: @escaping () -> Void
     ) -> some View {

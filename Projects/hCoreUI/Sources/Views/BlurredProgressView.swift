@@ -1,5 +1,5 @@
-import SwiftUI
 import hCore
+import SwiftUI
 
 public struct BlurredProgressOverlay<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme

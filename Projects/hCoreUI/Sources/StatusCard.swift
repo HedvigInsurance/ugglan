@@ -1,9 +1,10 @@
 import Foundation
-import SwiftUI
 import hCore
+import SwiftUI
 
 public struct StatusCard<MainContent, BottomContent>: View
-where MainContent: View, BottomContent: View {
+    where MainContent: View, BottomContent: View
+{
     var onSelected: (() -> Void)?
     let mainContent: MainContent?
     let title: String?
@@ -124,15 +125,15 @@ private struct EnvironmentHCardWithoutSpacing: EnvironmentKey {
     static let defaultValue = false
 }
 
-extension EnvironmentValues {
-    public var hCardWithoutSpacing: Bool {
+public extension EnvironmentValues {
+    var hCardWithoutSpacing: Bool {
         get { self[EnvironmentHCardWithoutSpacing.self] }
         set { self[EnvironmentHCardWithoutSpacing.self] = newValue }
     }
 }
 
-extension View {
-    public var hCardWithoutSpacing: some View {
+public extension View {
+    var hCardWithoutSpacing: some View {
         environment(\.hCardWithoutSpacing, true)
     }
 }
@@ -141,15 +142,15 @@ private struct EnvironmentHCardWithDivider: EnvironmentKey {
     static let defaultValue = false
 }
 
-extension EnvironmentValues {
-    public var hCardWithDivider: Bool {
+public extension EnvironmentValues {
+    var hCardWithDivider: Bool {
         get { self[EnvironmentHCardWithDivider.self] }
         set { self[EnvironmentHCardWithDivider.self] = newValue }
     }
 }
 
-extension View {
-    public var hCardWithDivider: some View {
+public extension View {
+    var hCardWithDivider: some View {
         environment(\.hCardWithDivider, true)
     }
 }

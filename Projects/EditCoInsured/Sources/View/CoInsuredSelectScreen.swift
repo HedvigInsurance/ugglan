@@ -1,6 +1,6 @@
-import SwiftUI
 import hCore
 import hCoreUI
+import SwiftUI
 
 struct CoInsuredSelectScreen: View {
     let contractId: String
@@ -23,7 +23,7 @@ struct CoInsuredSelectScreen: View {
 
         itemPickerConfig = .init(
             items:
-                alreadyAddedCoinsuredMembers
+            alreadyAddedCoinsuredMembers
                 .compactMap {
                     (object: $0, displayName: .init(title: $0.fullName ?? ""))
                 },

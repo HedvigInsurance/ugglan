@@ -1,9 +1,9 @@
 import Foundation
+import hCoreUI
 import SnapshotTesting
 import SwiftUI
 import Testing
 import XCTest
-import hCoreUI
 
 @testable import Contracts
 

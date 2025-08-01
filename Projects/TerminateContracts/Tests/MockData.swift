@@ -23,7 +23,7 @@ struct MockData {
                         maxDate: "2025-11-11",
                         minDate: Date().localDateString,
                         extraCoverageItem: [
-                            .init(displayName: "Travel plus", displayValue: "45 days")
+                            .init(displayName: "Travel plus", displayValue: "45 days"),
                         ],
                         notification: nil
                     )
@@ -39,7 +39,7 @@ struct MockData {
                         ?? .init(
                             id: "id",
                             extraCoverageItem: [
-                                .init(displayName: "Travel plus", displayValue: "45 days")
+                                .init(displayName: "Travel plus", displayValue: "45 days"),
                             ]
                         )
                 ),

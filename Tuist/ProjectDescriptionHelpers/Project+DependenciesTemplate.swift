@@ -41,7 +41,7 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.23.0"))]
         case .dynamiccolor:
             return [
-                .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
+                .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1")),
             ]
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
@@ -54,50 +54,50 @@ public enum ExternalDependencies: CaseIterable {
                 .package(
                     url: "https://github.com/bmoliveira/MarkdownKit",
                     .upToNextMajor(from: "1.7.1")
-                )
+                ),
             ]
         case .reveal: return []
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.25.0"))]
         case .umbrella:
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019")),
             ]
         case .tagkit:
             return [
-                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.4.1"))
+                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.4.1")),
             ]
         case .introspect:
             return [
-                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("1.3.0"))
+                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("1.3.0")),
             ]
         case .svgkit:
             return [
-                .package(url: "https://github.com/SVGKit/SVGKit", .branch("3.x"))
+                .package(url: "https://github.com/SVGKit/SVGKit", .branch("3.x")),
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "2.2.0"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "2.2.0")),
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.23.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.23.0")),
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.6.1")))
+                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.6.1"))),
             ]
         case .presentableStore:
             return [
-                .package(path: .relativeToRoot("LocalModules/PresentableStore"))
+                .package(path: .relativeToRoot("LocalModules/PresentableStore")),
             ]
         case .environment:
             return [
-                .package(path: .relativeToRoot("LocalModules/Environment"))
+                .package(path: .relativeToRoot("LocalModules/Environment")),
             ]
         case .logger:
             return [
-                .package(path: .relativeToRoot("LocalModules/Logger"))
+                .package(path: .relativeToRoot("LocalModules/Logger")),
             ]
         }
     }
@@ -126,14 +126,14 @@ public enum ExternalDependencies: CaseIterable {
                 try! FileManager.default.copyItem(
                     atPath: path.pathString,
                     toPath:
-                        "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
+                    "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
                 )
             }
 
             return [
                 .xcframework(
                     path: "RevealServer.xcframework"
-                )
+                ),
             ]
         case .datadog:
             return [
@@ -145,11 +145,11 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .umbrella:
             return [
-                .package(product: "HedvigShared")
+                .package(product: "HedvigShared"),
             ]
         case .tagkit:
             return [
-                .package(product: "TagKit")
+                .package(product: "TagKit"),
             ]
         case .introspect:
             return [.package(product: "SwiftUIIntrospect")]
@@ -171,8 +171,8 @@ public enum ExternalDependencies: CaseIterable {
     }
 }
 
-extension Project {
-    public static func dependenciesFramework(
+public extension Project {
+    static func dependenciesFramework(
         name: String,
         externalDependencies: [ExternalDependencies],
         sdks: [String] = []
@@ -232,7 +232,7 @@ extension Project {
                     resources: [],
                     dependencies: dependencies,
                     settings: .settings(base: [:], configurations: frameworkConfigurations)
-                )
+                ),
             ],
             schemes: [
                 Scheme.scheme(
@@ -241,7 +241,7 @@ extension Project {
                     buildAction: BuildAction.buildAction(targets: [TargetReference(stringLiteral: name)]),
                     testAction: nil,
                     runAction: nil
-                )
+                ),
             ]
         )
     }
