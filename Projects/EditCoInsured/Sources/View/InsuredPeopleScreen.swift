@@ -32,13 +32,14 @@ struct InsuredPeopleScreen: View {
     private var bottomContent: some View {
         VStack(spacing: .padding8) {
             hSection {
-                if vm.showSavebutton {
-                    saveChangesButton
-                }
 
-                if vm.showConfirmChangesButton {
-                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
-                }
+                // when is this shown?
+                //                if vm.showSavebutton {
+                //                    saveChangesButton
+                //                }
+                //                if vm.showConfirmChangesButton {
+                //                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
+                //                }
                 CancelButton()
                     .disabled(intentViewModel.isLoading)
             }
