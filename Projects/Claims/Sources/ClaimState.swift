@@ -18,20 +18,16 @@ public struct ClaimsState: StateProtocol {
 
     @MainActor
     public var hasActiveClaims: Bool {
-        if Dependencies.featureFlags().isClaimHistoryEnabled {
-            return !(activeClaims?.isEmpty ?? true)
-        } else {
-            if let claims = activeClaims {
-                return
-                    !claims
-                    .filter {
-                        $0.status == .beingHandled || $0.status == .reopened
-                            || $0.status == .submitted
-                    }
-                    .isEmpty
-            }
-            return false
+        if let claims = activeClaims {
+            return
+                !claims
+                .filter {
+                    $0.status == .beingHandled || $0.status == .reopened
+                        || $0.status == .submitted
+                }
+                .isEmpty
         }
+        return false
     }
 
     @MainActor
