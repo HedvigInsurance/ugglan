@@ -3,6 +3,12 @@ query Claims {
         claims {
             ...ClaimFragment
         }
+        claimsActive {
+            ...ClaimFragment
+        }
+        claimsHistory {
+            ...ClaimFragment
+        }
     }
 }
 

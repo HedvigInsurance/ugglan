@@ -8,23 +8,25 @@ import hCoreUI
 @MainActor
 public struct ClaimsCard: View {
     @StateObject var vm = ClaimsViewModel()
+    @State var claims: [ClaimModel] = []
 
     public init() {}
 
     public var body: some View {
         VStack {
-            if vm.claims.isEmpty {
+            if vm.claims.getClaims().isEmpty {
                 Spacer().frame(height: 40)
-            } else if vm.claims.count == 1, let claim = vm.claims.first {
+            } else if vm.claims.getClaims().count == 1, let claim = vm.claims.getClaims().first {
                 ClaimStatusCard(claim: claim, enableTap: true)
                     .padding(.vertical)
             } else {
-                ClaimSection(claims: $vm.claims)
+                ClaimSection(claims: $claims)
                     .padding(.vertical)
             }
         }
         .onAppear {
             vm.fetch()
+            self.claims = vm.claims.getClaims()
         }
         .onDisappear {
             vm.stopTimer()
@@ -38,7 +40,7 @@ class ClaimsViewModel: ObservableObject {
     private var pollTimerCancellable: AnyCancellable?
     private var stateObserver: AnyCancellable?
     private let refreshOn = 60
-    @Published var claims = [ClaimModel]()
+    @Published var claims: Claims = .init(claims: [], claimsActive: [], claimsHistory: [])
 
     init() {
         stateObserver = store.stateSignal
@@ -46,9 +48,9 @@ class ClaimsViewModel: ObservableObject {
             .map(\.claims)
             .removeDuplicates()
             .sink { [weak self] state in
-                self?.claims = state ?? []
+                self?.claims = state ?? .init(claims: [], claimsActive: [], claimsHistory: [])
             }
-        claims = store.state.claims ?? []
+        claims = store.state.claims ?? .init(claims: [], claimsActive: [], claimsHistory: [])
     }
 
     func stopTimer() {

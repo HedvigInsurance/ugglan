@@ -1,3 +1,5 @@
+import Combine
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -13,7 +15,7 @@ public struct ClaimHistory: View {
     }
 
     public var body: some View {
-        if vm.claims.isEmpty {
+        if vm.claims.claimsHistory.isEmpty {
             StateView(
                 type: .empty,
                 title: L10n.ClaimHistory.EmptyState.title,
@@ -26,7 +28,7 @@ public struct ClaimHistory: View {
 
     var claimHistoryView: some View {
         hForm {
-            ForEach(vm.claims, id: \.id) { claim in
+            ForEach(vm.claims.claimsHistory, id: \.id) { claim in
                 hSection {
                     hRow {
                         VStack(alignment: .leading, spacing: 0) {

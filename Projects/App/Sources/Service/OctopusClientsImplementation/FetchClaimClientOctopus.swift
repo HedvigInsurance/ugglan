@@ -6,13 +6,16 @@ import hGraphQL
 class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 
-    func get() async throws -> [ClaimModel] {
+    func get() async throws -> Claims {
         let data = try await octopus.client.fetch(
             query: OctopusGraphQL.ClaimsQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely
         )
-        let claimData = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
-        return claimData
+
+        let claims = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
+        let claimsActive = data.currentMember.claimsActive.map { ClaimModel(claim: $0.fragments.claimFragment) }
+        let claimsHistory = data.currentMember.claimsHistory.map { ClaimModel(claim: $0.fragments.claimFragment) }
+        return Claims(claims: claims, claimsActive: claimsActive, claimsHistory: claimsHistory)
     }
 }
 

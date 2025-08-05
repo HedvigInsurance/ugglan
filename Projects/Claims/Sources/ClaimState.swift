@@ -5,7 +5,7 @@ import hCore
 
 public struct ClaimsState: StateProtocol {
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
-    var claims: [ClaimModel]?
+    var claims: Claims?
     var files: [String: [File]] = [:]
 
     public init() {}
@@ -14,24 +14,30 @@ public struct ClaimsState: StateProtocol {
         case claims
     }
 
+    @MainActor
     public var hasActiveClaims: Bool {
-        if let claims = claims {
-            return
-                !claims.filter {
-                    $0.status == .beingHandled || $0.status == .reopened
-                        || $0.status == .submitted
-                }
-                .isEmpty
+        if Dependencies.featureFlags().isClaimHistoryEnabled {
+            return !(claims?.claimsActive.isEmpty ?? true)
+        } else {
+            if let claims = claims {
+                return !claims.claims
+                    .filter {
+                        $0.status == .beingHandled || $0.status == .reopened
+                            || $0.status == .submitted
+                    }
+                    .isEmpty
+            }
+            return false
         }
-        return false
     }
 
+    @MainActor
     public func claim(for id: String) -> ClaimModel? {
-        claims?.first(where: { $0.id == id })
+        claims?.getClaims().first(where: { $0.id == id })
     }
 
     @MainActor
     public func claimFromConversation(for id: String) -> ClaimModel? {
-        claims?.first(where: { $0.conversation?.id == id })
+        claims?.getClaims().first(where: { $0.conversation?.id == id })
     }
 }

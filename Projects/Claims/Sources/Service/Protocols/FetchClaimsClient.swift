@@ -4,7 +4,7 @@ import hCore
 @MainActor
 class FetchClaimService {
     @Inject var client: hFetchClaimsClient
-    func get() async throws -> [ClaimModel] {
+    func get() async throws -> Claims {
         log.info("FetchClaimService: get", error: nil, attributes: nil)
         return try await client.get()
     }
@@ -12,5 +12,5 @@ class FetchClaimService {
 
 @MainActor
 public protocol hFetchClaimsClient {
-    func get() async throws -> [ClaimModel]
+    func get() async throws -> Claims
 }
