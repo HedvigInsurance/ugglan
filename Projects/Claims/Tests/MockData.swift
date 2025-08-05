@@ -8,25 +8,28 @@ struct MockData {
     static func createMockFetchClaimService(
         fetch: @escaping FetchClaims = {
             .init(
-                repeating: .init(
-                    id: "id",
-                    status: .beingHandled,
-                    outcome: .none,
-                    submittedAt: nil,
-                    signedAudioURL: nil,
-                    memberFreeText: nil,
-                    payoutAmount: nil,
-                    targetFileUploadUri: "",
-                    claimType: "",
-                    productVariant: nil,
-                    conversation: nil,
-                    appealInstructionsUrl: nil,
-                    isUploadingFilesEnabled: false,
-                    showClaimClosedFlow: false,
-                    infoText: nil,
-                    displayItems: []
-                ),
-                count: 0
+                claims: [],
+                claimsActive: [
+                    .init(
+                        id: "id",
+                        status: .beingHandled,
+                        outcome: .none,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: false,
+                        showClaimClosedFlow: false,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                ],
+                claimsHistory: []
             )
         },
         fetchFiles: @escaping FetchFiles = {
@@ -46,7 +49,7 @@ enum ClaimsError: Error {
     case error
 }
 
-typealias FetchClaims = @Sendable () async throws -> [ClaimModel]
+typealias FetchClaims = @Sendable () async throws -> Claims
 typealias FetchFiles = () async throws -> [String: [hCore.File]]
 
 class MockFetchClaimsService: hFetchClaimsClient {
@@ -67,7 +70,7 @@ class MockFetchClaimsService: hFetchClaimsClient {
         self.fetchFiles = fetchFiles
     }
 
-    func get() async throws -> [ClaimModel] {
+    func get() async throws -> Claims {
         events.append(.get)
         let data = try await fetch()
         return data

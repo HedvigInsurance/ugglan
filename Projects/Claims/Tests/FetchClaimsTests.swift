@@ -19,44 +19,67 @@ final class FetchClaimsTests: XCTestCase {
     }
 
     func testFetchClaimsSuccess() async {
-        let claims: [ClaimModel] = [
-            .init(
-                id: "id1",
-                status: .beingHandled,
-                outcome: .none,
-                submittedAt: "2024-07-27",
-                signedAudioURL: nil,
-                memberFreeText: nil,
-                payoutAmount: nil,
-                targetFileUploadUri: "",
-                claimType: "",
-                productVariant: nil,
-                conversation: nil,
-                appealInstructionsUrl: nil,
-                isUploadingFilesEnabled: false,
-                showClaimClosedFlow: false,
-                infoText: nil,
-                displayItems: []
-            ),
-            .init(
-                id: "id2",
-                status: .closed,
-                outcome: .paid,
-                submittedAt: "2024-07-01",
-                signedAudioURL: nil,
-                memberFreeText: nil,
-                payoutAmount: nil,
-                targetFileUploadUri: "",
-                claimType: "",
-                productVariant: nil,
-                conversation: nil,
-                appealInstructionsUrl: nil,
-                isUploadingFilesEnabled: false,
-                showClaimClosedFlow: false,
-                infoText: nil,
-                displayItems: []
-            ),
-        ]
+        let claims: Claims = .init(
+            claims: [],
+            claimsActive: [
+                .init(
+                    id: "id1",
+                    status: .beingHandled,
+                    outcome: .none,
+                    submittedAt: "2024-07-27",
+                    signedAudioURL: nil,
+                    memberFreeText: nil,
+                    payoutAmount: nil,
+                    targetFileUploadUri: "",
+                    claimType: "",
+                    productVariant: nil,
+                    conversation: nil,
+                    appealInstructionsUrl: nil,
+                    isUploadingFilesEnabled: false,
+                    showClaimClosedFlow: false,
+                    infoText: nil,
+                    displayItems: []
+                ),
+                .init(
+                    id: "id2",
+                    status: .beingHandled,
+                    outcome: .paid,
+                    submittedAt: "2024-07-01",
+                    signedAudioURL: nil,
+                    memberFreeText: nil,
+                    payoutAmount: nil,
+                    targetFileUploadUri: "",
+                    claimType: "",
+                    productVariant: nil,
+                    conversation: nil,
+                    appealInstructionsUrl: nil,
+                    isUploadingFilesEnabled: false,
+                    showClaimClosedFlow: false,
+                    infoText: nil,
+                    displayItems: []
+                ),
+            ],
+            claimsHistory: [
+                .init(
+                    id: "id3",
+                    status: .closed,
+                    outcome: .paid,
+                    submittedAt: "2024-07-01",
+                    signedAudioURL: nil,
+                    memberFreeText: nil,
+                    payoutAmount: nil,
+                    targetFileUploadUri: "",
+                    claimType: "",
+                    productVariant: nil,
+                    conversation: nil,
+                    appealInstructionsUrl: nil,
+                    isUploadingFilesEnabled: false,
+                    showClaimClosedFlow: false,
+                    infoText: nil,
+                    displayItems: []
+                )
+            ]
+        )
 
         let mockService = MockData.createMockFetchClaimService(
             fetch: { claims }
