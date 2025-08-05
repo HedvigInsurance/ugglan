@@ -7,15 +7,33 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 
     func get() async throws -> Claims {
-        let data = try await octopus.client.fetch(
-            query: OctopusGraphQL.ClaimsQuery(),
-            cachePolicy: .fetchIgnoringCacheCompletely
-        )
+        if Dependencies.featureFlags().isClaimHistoryEnabled {
+            let activeClaimsData = try await octopus.client.fetch(
+                query: OctopusGraphQL.ActiveClaimsQuery(),
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let historyClaimsData = try await octopus.client.fetch(
+                query: OctopusGraphQL.HistoryClaimsQuery(),
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
 
-        let claims = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
-        let claimsActive = data.currentMember.claimsActive.map { ClaimModel(claim: $0.fragments.claimFragment) }
-        let claimsHistory = data.currentMember.claimsHistory.map { ClaimModel(claim: $0.fragments.claimFragment) }
-        return Claims(claims: claims, claimsActive: claimsActive, claimsHistory: claimsHistory)
+            let (activeClaims, historyClaims) = (activeClaimsData, historyClaimsData)
+
+            let claimsActive = activeClaims.currentMember.claimsActive.map {
+                ClaimModel(claim: $0.fragments.claimFragment)
+            }
+            let claimsHistory = historyClaims.currentMember.claimsHistory.map {
+                ClaimModel(claim: $0.fragments.claimFragment)
+            }
+            return Claims(claimsActive: claimsActive, claimsHistory: claimsHistory)
+        } else {
+            let data = try await octopus.client.fetch(
+                query: OctopusGraphQL.ClaimsQuery(),
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let claims = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
+            return Claims(claims: claims)
+        }
     }
 }
 

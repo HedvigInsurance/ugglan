@@ -4,7 +4,7 @@ import hCore
 public class FetchClaimsClientDemo: hFetchClaimsClient {
     public init() {}
     public func get() async throws -> Claims {
-        Claims(claims: [], claimsActive: [], claimsHistory: [])
+        Claims(claimsActive: [], claimsHistory: [])
     }
 
     public func getFiles() async throws -> [String: [File]] {

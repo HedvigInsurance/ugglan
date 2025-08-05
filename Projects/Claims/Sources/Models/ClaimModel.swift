@@ -13,18 +13,25 @@ public struct Claims: Equatable, Identifiable, Codable, Hashable {
     let claimsHistory: [ClaimModel]
 
     public init(
-        claims: [ClaimModel],
+        claims: [ClaimModel]
+    ) {
+        self.claims = claims
+        claimsActive = []
+        claimsHistory = []
+    }
+
+    public init(
         claimsActive: [ClaimModel],
         claimsHistory: [ClaimModel]
     ) {
-        self.claims = claims
+        self.claims = []
         self.claimsActive = claimsActive
         self.claimsHistory = claimsHistory
     }
 
     func getClaims() -> [ClaimModel] {
         if Dependencies.featureFlags().isClaimHistoryEnabled {
-            return claimsHistory + claimsActive
+            return claimsActive
         } else {
             return claims
         }

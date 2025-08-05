@@ -8,7 +8,6 @@ struct MockData {
     static func createMockFetchClaimService(
         fetch: @escaping FetchClaims = {
             .init(
-                claims: [],
                 claimsActive: [
                     .init(
                         id: "id",

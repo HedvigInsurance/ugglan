@@ -40,7 +40,7 @@ class ClaimsViewModel: ObservableObject {
     private var pollTimerCancellable: AnyCancellable?
     private var stateObserver: AnyCancellable?
     private let refreshOn = 60
-    @Published var claims: Claims = .init(claims: [], claimsActive: [], claimsHistory: [])
+    @Published var claims: Claims = .init(claims: [])
 
     init() {
         stateObserver = store.stateSignal
@@ -48,9 +48,9 @@ class ClaimsViewModel: ObservableObject {
             .map(\.claims)
             .removeDuplicates()
             .sink { [weak self] state in
-                self?.claims = state ?? .init(claims: [], claimsActive: [], claimsHistory: [])
+                self?.claims = state ?? .init(claims: [])
             }
-        claims = store.state.claims ?? .init(claims: [], claimsActive: [], claimsHistory: [])
+        claims = store.state.claims ?? .init(claims: [])
     }
 
     func stopTimer() {

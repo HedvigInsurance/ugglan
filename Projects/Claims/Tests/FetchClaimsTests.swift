@@ -20,7 +20,6 @@ final class FetchClaimsTests: XCTestCase {
 
     func testFetchClaimsSuccess() async {
         let claims: Claims = .init(
-            claims: [],
             claimsActive: [
                 .init(
                     id: "id1",
