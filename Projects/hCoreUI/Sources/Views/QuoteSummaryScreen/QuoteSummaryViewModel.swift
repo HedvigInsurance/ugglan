@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 
+@MainActor
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]
     @Published public var activationDate: Date?
@@ -8,11 +9,14 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published var grossTotal: MonetaryAmount = .init(amount: "", currency: "")
     @Published var expandedContracts: [String] = []
     @Published var removedContracts: [String] = []
+    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
+    @Published var isConfirmChangesPresented: Bool = false
+
     public var onConfirmClick: () -> Void
     let isAddon: Bool
     let showNoticeCard: Bool
-    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
-    @Published var isConfirmChangesPresented: Bool = false
+
+    let summaryDataProvider: QuoteSummaryDataProvider
 
     func toggleContract(_ contract: ContractInfo) {
         if expandedContracts.contains(contract.id) {
@@ -37,22 +41,20 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     func removeContract(_ contractId: String) {
         expandedContracts.removeAll(where: { $0 == contractId })
         removedContracts.append(contractId)
-        calculateGrossTotal()
-        calculateNetTotal()
+        calculateTotal()
     }
 
     func addContract(_ contract: ContractInfo) {
         removedContracts.removeAll(where: { $0 == contract.id })
-        calculateGrossTotal()
-        calculateNetTotal()
+        calculateTotal()
     }
 
     public struct ContractInfo: Identifiable {
         public var id: String
         let displayName: String
         let exposureName: String
-        let netPremium: MonetaryAmount?
-        let grossPremium: MonetaryAmount?
+        public let netPremium: MonetaryAmount?
+        public let grossPremium: MonetaryAmount?
         let displayItems: [QuoteDisplayItem]
         let documents: [hPDFDocument]
         let onDocumentTap: (_ document: hPDFDocument) -> Void
@@ -119,10 +121,9 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 
     public init(
         contract: [ContractInfo],
-        netTotal: MonetaryAmount? = nil,
-        grossTotal: MonetaryAmount?,
         activationDate: Date?,
         isAddon: Bool? = false,
+        summaryDataProvider: QuoteSummaryDataProvider,
         onConfirmClick: (() -> Void)? = nil,
     ) {
         self.contracts = contract
@@ -130,28 +131,33 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         self.activationDate = activationDate
         self.onConfirmClick = onConfirmClick ?? {}
         self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
-        if let netTotal = netTotal {
-            self.netTotal = netTotal
-        } else {
-            calculateNetTotal()
-        }
-        if let grossTotal {
-            self.grossTotal = grossTotal
-        } else {
-            calculateGrossTotal()
+        self.summaryDataProvider = summaryDataProvider
+        calculateTotal()
+    }
+    private var calculateTotalTask: Task<(), any Error>?
+    private func calculateTotal() {
+        calculateTotalTask?.cancel()
+        calculateTotalTask = Task { [weak self] in
+            guard let self = self else { return }
+            let includedAddonIds = self.contracts
+                .filter(\.isAddon)
+                .filter { !removedContracts.contains($0.id) }
+                .map(\.id)
+            do {
+                let data = try await summaryDataProvider.getTotal(includedAddonIds: includedAddonIds)
+                withAnimation {
+                    grossTotal = data.totalGross
+                    netTotal = data.totalNet
+                }
+            } catch _ {
+                // we don't care about the error here, we just want to recalculate the totals
+                self.calculateTotal()
+            }
         }
     }
 
-    func calculateNetTotal() {
-        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
-            .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
-        netTotal = .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
-    }
-
-    func calculateGrossTotal() {
-        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
-            .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
-        grossTotal = .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
+    deinit {
+        calculateTotalTask?.cancel()
     }
 }
 
