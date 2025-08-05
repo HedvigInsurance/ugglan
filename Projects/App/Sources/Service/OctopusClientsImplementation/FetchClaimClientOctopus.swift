@@ -6,34 +6,35 @@ import hGraphQL
 class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 
-    func get() async throws -> Claims {
+    func getActiveClaims() async throws -> [ClaimModel] {
         if Dependencies.featureFlags().isClaimHistoryEnabled {
             let activeClaimsData = try await octopus.client.fetch(
                 query: OctopusGraphQL.ActiveClaimsQuery(),
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-            let historyClaimsData = try await octopus.client.fetch(
-                query: OctopusGraphQL.HistoryClaimsQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
-
-            let (activeClaims, historyClaims) = (activeClaimsData, historyClaimsData)
-
-            let claimsActive = activeClaims.currentMember.claimsActive.map {
+            let activeClaims = activeClaimsData.currentMember.claimsActive.map {
                 ClaimModel(claim: $0.fragments.claimFragment)
             }
-            let claimsHistory = historyClaims.currentMember.claimsHistory.map {
-                ClaimModel(claim: $0.fragments.claimFragment)
-            }
-            return Claims(claimsActive: claimsActive, claimsHistory: claimsHistory)
+            return activeClaims
         } else {
             let data = try await octopus.client.fetch(
                 query: OctopusGraphQL.ClaimsQuery(),
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
             let claims = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
-            return Claims(claims: claims)
+            return claims
         }
+    }
+
+    func getHistoryClaims() async throws -> [ClaimModel] {
+        let historyClaimsData = try await octopus.client.fetch(
+            query: OctopusGraphQL.HistoryClaimsQuery(),
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+        let claimsHistory = historyClaimsData.currentMember.claimsHistory.map {
+            ClaimModel(claim: $0.fragments.claimFragment)
+        }
+        return claimsHistory
     }
 }
 

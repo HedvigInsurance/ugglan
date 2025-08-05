@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct ClaimHistory: View {
-    @ObservedObject var vm = ClaimsViewModel()
+    @ObservedObject var vm = ClaimHistoryViewModel()
     var onTap: (ClaimModel) -> Void
 
     public init(
@@ -15,7 +15,7 @@ public struct ClaimHistory: View {
     }
 
     public var body: some View {
-        if vm.claims.claimsHistory.isEmpty {
+        if vm.historyClaims.isEmpty {
             StateView(
                 type: .empty,
                 title: L10n.ClaimHistory.EmptyState.title,
@@ -28,7 +28,7 @@ public struct ClaimHistory: View {
 
     var claimHistoryView: some View {
         hForm {
-            ForEach(vm.claims.claimsHistory, id: \.id) { claim in
+            ForEach(vm.historyClaims, id: \.id) { claim in
                 hSection {
                     hRow {
                         VStack(alignment: .leading, spacing: 0) {
@@ -54,12 +54,37 @@ public struct ClaimHistory: View {
                 .hWithoutHorizontalPadding([.row])
             }
         }
+        .onAppear {
+            vm.fetch()
+        }
     }
 
     func getSubTitle(for claim: ClaimModel) -> String? {
         guard let submittedAt = claim.submittedAt else { return nil }
         return L10n.ClaimStatus.ClaimDetails.submitted + " "
             + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
+    }
+}
+
+@MainActor
+class ClaimHistoryViewModel: ObservableObject {
+    @PresentableStore private var store: ClaimsStore
+    private var stateObserver: AnyCancellable?
+    @Published var historyClaims: [ClaimModel] = []
+
+    init() {
+        stateObserver = store.stateSignal
+            .receive(on: RunLoop.main)
+            .map(\.historyClaims)
+            .removeDuplicates()
+            .sink { [weak self] state in
+                self?.historyClaims = state ?? []
+            }
+        historyClaims = store.state.historyClaims ?? []
+    }
+
+    func fetch() {
+        store.send(.fetchHistoryClaims)
     }
 }
 

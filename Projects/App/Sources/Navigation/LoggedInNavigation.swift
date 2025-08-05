@@ -493,7 +493,7 @@ struct HomeTab: View {
                             NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                             let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                             try await service.acknowledgeClosedStatus(claimId: claim.id)
-                            claimsStore.send(.fetchClaims)
+                            claimsStore.send(.fetchActiveClaims)
                         }
                     }
                 }
@@ -984,7 +984,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     private func handleClaimDetails(claimId: String?) async {
         let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-        await claimStore.sendAsync(.fetchClaims)
+        await claimStore.sendAsync(.fetchActiveClaims)
         if let claimId, let claim = claimStore.state.claim(for: claimId) {
             UIApplication.shared.getRootViewController()?.dismiss(animated: true)
             selectedTab = 0

@@ -5,39 +5,6 @@ import Foundation
 import hCore
 import hCoreUI
 
-@MainActor
-public struct Claims: Equatable, Identifiable, Codable, Hashable {
-    public let id = UUID().uuidString
-    let claims: [ClaimModel]
-    let claimsActive: [ClaimModel]
-    let claimsHistory: [ClaimModel]
-
-    public init(
-        claims: [ClaimModel]
-    ) {
-        self.claims = claims
-        claimsActive = []
-        claimsHistory = []
-    }
-
-    public init(
-        claimsActive: [ClaimModel],
-        claimsHistory: [ClaimModel]
-    ) {
-        self.claims = []
-        self.claimsActive = claimsActive
-        self.claimsHistory = claimsHistory
-    }
-
-    func getClaims() -> [ClaimModel] {
-        if Dependencies.featureFlags().isClaimHistoryEnabled {
-            return claimsActive
-        } else {
-            return claims
-        }
-    }
-}
-
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public init(
         id: String,

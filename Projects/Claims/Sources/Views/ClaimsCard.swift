@@ -8,25 +8,23 @@ import hCoreUI
 @MainActor
 public struct ClaimsCard: View {
     @StateObject var vm = ClaimsViewModel()
-    @State var claims: [ClaimModel] = []
 
     public init() {}
 
     public var body: some View {
         VStack {
-            if vm.claims.getClaims().isEmpty {
+            if vm.activeClaims.isEmpty {
                 Spacer().frame(height: 40)
-            } else if vm.claims.getClaims().count == 1, let claim = vm.claims.getClaims().first {
+            } else if vm.activeClaims.count == 1, let claim = vm.activeClaims.first {
                 ClaimStatusCard(claim: claim, enableTap: true)
                     .padding(.vertical)
             } else {
-                ClaimSection(claims: $claims)
+                ClaimSection(claims: $vm.activeClaims)
                     .padding(.vertical)
             }
         }
         .onAppear {
             vm.fetch()
-            self.claims = vm.claims.getClaims()
         }
         .onDisappear {
             vm.stopTimer()
@@ -40,17 +38,17 @@ class ClaimsViewModel: ObservableObject {
     private var pollTimerCancellable: AnyCancellable?
     private var stateObserver: AnyCancellable?
     private let refreshOn = 60
-    @Published var claims: Claims = .init(claims: [])
+    @Published var activeClaims: [ClaimModel] = []
 
     init() {
         stateObserver = store.stateSignal
             .receive(on: RunLoop.main)
-            .map(\.claims)
+            .map(\.activeClaims)
             .removeDuplicates()
             .sink { [weak self] state in
-                self?.claims = state ?? .init(claims: [])
+                self?.activeClaims = state ?? []
             }
-        claims = store.state.claims ?? .init(claims: [])
+        activeClaims = store.state.activeClaims ?? []
     }
 
     func stopTimer() {
@@ -68,7 +66,7 @@ class ClaimsViewModel: ObservableObject {
     }
 
     func fetch() {
-        store.send(.fetchClaims)
+        store.send(.fetchActiveClaims)
         // added this to reset timer after we fetch becausae we could fetch from other places so we dont fetch too often
         configureTimer()
     }

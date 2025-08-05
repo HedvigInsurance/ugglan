@@ -72,7 +72,7 @@ public struct ClaimDetailView: View {
         .modally(item: $vm.showFilesView) { [weak vm] item in
             ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
                 let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimStore.send(.fetchClaims)
+                claimStore.send(.fetchActiveClaims)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     let nav = UIApplication.shared.getTopViewControllerNavigation()
                     nav?.setNavigationBarHidden(false, animated: true)
