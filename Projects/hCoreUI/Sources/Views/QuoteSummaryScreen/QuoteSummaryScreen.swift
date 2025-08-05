@@ -202,7 +202,11 @@ private struct ContractCardView: View {
     ) -> some View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails && !vm.isAddon {
-                showDetailsButton(contract)
+                if !vm.removedContracts.contains(contract.id) {
+                    showDetailsButton(contract)
+                } else {
+                    addButton(for: contract, isExpanded: isExpanded)
+                }
             }
 
             if isExpanded {
@@ -214,7 +218,7 @@ private struct ContractCardView: View {
                 }
             }
 
-            if !contract.discountDisplayItems.isEmpty {
+            if !contract.discountDisplayItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
                     ForEach(contract.discountDisplayItems, id: \.displayTitle) { disocuntItem in
                         rowItem(for: disocuntItem, fontSize: .label)
@@ -268,7 +272,7 @@ private struct ContractCardView: View {
             displayItemsView(for: contract)
             insuranceLimitsView(for: contract)
             documentsView(for: contract)
-            addRemoveButton(for: contract, isExpanded: isExpanded)
+            removeButton(for: contract, isExpanded: isExpanded)
         }
         .padding(.bottom, (isExpanded && !contract.isAddon && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
     }
@@ -337,35 +341,32 @@ private struct ContractCardView: View {
         }
     }
 
-    @ViewBuilder
-    func addRemoveButton(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
-        if let removeModel = contract.removeModel {
-            let canBeAdded = vm.removedContracts.contains(contract.id)
-            let canBeDeleted = !vm.removedContracts.contains(contract.id) && isExpanded
-            if canBeAdded || canBeDeleted {
-                let buttonContent: hButtonContent = {
-                    if canBeAdded {
-                        return .init(title: L10n.addonAddCoverage)
-                    }
-                    return .init(title: L10n.General.remove)
-                }()
-                hButton(
-                    .medium,
-                    .secondary,
-                    content: buttonContent
-                ) {
-                    if canBeAdded {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            vm.addContract(contract)
-                        }
-                    } else {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            vm.removeModel = removeModel
-                        }
-                    }
-                }
-                .hWithTransition(.scale)
+    private func addButton(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
+        hButton(
+            .medium,
+            .secondary,
+            content: .init(title: L10n.addonAddCoverage)
+        ) {
+            withAnimation(.easeInOut(duration: 0.4)) {
+                vm.addContract(contract)
             }
+        }
+        .hWithTransition(.scale)
+    }
+
+    @ViewBuilder
+    private func removeButton(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
+        if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id) && isExpanded {
+            hButton(
+                .medium,
+                .secondary,
+                content: .init(title: L10n.General.remove)
+            ) {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    vm.removeModel = removeModel
+                }
+            }
+            .hWithTransition(.scale)
         }
     }
 
