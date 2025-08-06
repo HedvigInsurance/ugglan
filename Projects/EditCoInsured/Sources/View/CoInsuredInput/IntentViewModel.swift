@@ -7,8 +7,8 @@ import hCoreUI
 public class IntentViewModel: ObservableObject {
     @Published var intent = Intent(
         activationDate: "",
-        currentPremium: MonetaryAmount(amount: 0, currency: ""),
-        newPremium: MonetaryAmount(amount: 0, currency: ""),
+        currentCost: MonetaryAmount(amount: 0, currency: ""),
+        newCost: MonetaryAmount(amount: 0, currency: ""),
         id: "",
         state: ""
     )

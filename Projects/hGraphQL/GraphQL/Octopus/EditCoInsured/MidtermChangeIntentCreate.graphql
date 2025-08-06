@@ -2,11 +2,11 @@ mutation MidtermChangeIntentCreate($contractId: ID!, $input: MidtermChangeIntent
   midtermChangeIntentCreate(contractId: $contractId, input: $input) {
     intent {
       id
-      currentPremium {
-        ...MoneyFragment
+      currentCost {
+        ...ItemCostFragment
       }
-      newPremium {
-        ...MoneyFragment
+      newCost {
+        ...ItemCostFragment
       }
       activationDate
       state

@@ -80,8 +80,9 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
         return Intent(
             activationDate: intent.activationDate,
-            currentPremium: .init(fragment: intent.currentPremium.fragments.moneyFragment),
-            newPremium: .init(fragment: intent.newPremium.fragments.moneyFragment),
+            currentCost: .init(fragment: intent.currentCost.fragments.itemCostFragment),
+            //            currentCost: .init(fragment: intent.currentCost.fragments.itemCostFragment),
+            newCost: .init(fragment: intent.newCost.fragments.moneyFragment),
             id: intent.id,
             state: intent.state.rawValue
         )
@@ -162,6 +163,32 @@ extension CoInsuredModel {
             needsMissingInfo: data.hasMissingInfo,
             activatesOn: data.activatesOn,
             terminatesOn: data.terminatesOn
+        )
+    }
+}
+
+extension ItemCost {
+    public init(
+        fragment: OctopusGraphQL.ItemCostFragment
+    ) {
+        self.init(
+            discounts: fragment.discounts.map({ .init(fragment: $0.fragments.itemDiscountFragment) }),
+            monthlyGross: .init(fragment: fragment.monthlyGross.fragments.moneyFragment),
+            montlyNet: .init(fragment: fragment.monthlyNet.fragments.moneyFragment)
+        )
+    }
+}
+
+extension ItemDiscount {
+    public init(
+        fragment: OctopusGraphQL.ItemDiscountFragment
+    ) {
+        self.init(
+            amount: .init(fragment: fragment.amount.fragments.moneyFragment),
+            campaignCode: fragment.campaignCode,
+            displayName: fragment.displayName,
+            displayValue: fragment.displayValue,
+            explanation: fragment.explanation
         )
     }
 }
