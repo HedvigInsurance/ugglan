@@ -72,7 +72,6 @@ typealias FetchClaims = @Sendable () async throws -> [ClaimModel]
 typealias FetchFiles = () async throws -> [String: [hCore.File]]
 
 class MockFetchClaimsService: hFetchClaimsClient {
-
     var events = [Event]()
     var fetchActive: FetchClaims
     var fetchHistory: FetchClaims
