@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ClaimHistory: View {
+public struct ClaimHistoryScreen: View {
     @ObservedObject var vm = ClaimHistoryViewModel()
     var onTap: (ClaimModel) -> Void
 
@@ -15,48 +15,48 @@ public struct ClaimHistory: View {
     }
 
     public var body: some View {
-        if vm.historyClaims.isEmpty {
-            StateView(
-                type: .empty,
-                title: L10n.ClaimHistory.EmptyState.title,
-                bodyText: L10n.ClaimHistory.EmptyState.body,
-                formPosition: .center
-            )
-        } else {
-            claimHistoryView
+        Group {
+            if vm.historyClaims.isEmpty {
+                StateView(
+                    type: .empty,
+                    title: L10n.ClaimHistory.EmptyState.title,
+                    bodyText: L10n.ClaimHistory.EmptyState.body,
+                    formPosition: .center
+                )
+            } else {
+                claimHistoryView
+            }
+        }
+        .onAppear {
+            vm.fetch()
         }
     }
 
     var claimHistoryView: some View {
         hForm {
-            ForEach(vm.historyClaims, id: \.id) { claim in
-                hSection {
-                    hRow {
-                        VStack(alignment: .leading, spacing: 0) {
-                            HStack {
-                                hText(claim.claimType)
-                                Spacer()
-                                if let outcome = claim.outcome?.text {
-                                    hPill(text: outcome, color: .clear)
-                                }
-                            }
-                            if let submittedAt = getSubTitle(for: claim) {
-                                hText(submittedAt, style: .label)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
+            hSection(vm.historyClaims) { claim in
+                hRow {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            hText(claim.claimType)
+                            Spacer()
+                            if let outcome = claim.outcome?.text {
+                                hPill(text: outcome, color: .clear)
                             }
                         }
-                    }
-                    .withChevronAccessory
-                    .onTap {
-                        onTap(claim)
+                        if let submittedAt = getSubTitle(for: claim) {
+                            hText(submittedAt, style: .label)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                        }
                     }
                 }
-                .sectionContainerStyle(.transparent)
-                .hWithoutHorizontalPadding([.row])
+                .withChevronAccessory
+                .onTap {
+                    onTap(claim)
+                }
             }
-        }
-        .onAppear {
-            vm.fetch()
+            .hWithoutHorizontalPadding([.row, .divider])
+            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -79,7 +79,9 @@ class ClaimHistoryViewModel: ObservableObject {
             .map(\.historyClaims)
             .removeDuplicates()
             .sink { [weak self] state in
-                self?.historyClaims = state ?? []
+                withAnimation {
+                    self?.historyClaims = state ?? []
+                }
             }
         historyClaims = store.state.historyClaims ?? []
     }
@@ -90,7 +92,8 @@ class ClaimHistoryViewModel: ObservableObject {
 }
 
 #Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
-    return ClaimHistory(onTap: { _ in })
+    return ClaimHistoryScreen(onTap: { _ in })
 }

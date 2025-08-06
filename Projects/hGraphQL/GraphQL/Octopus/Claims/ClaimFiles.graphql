@@ -9,6 +9,28 @@ query ClaimsFiles {
   }
 }
 
+query ActiveClaimsFiles {
+  currentMember {
+	claimsActive {
+	  id
+	  files {
+		...FileFragment
+	  }
+	}
+  }
+}
+
+query HistoryClaimsFiles {
+  currentMember {
+	claimsHistory {
+	  id
+	  files {
+		...FileFragment
+	  }
+	}
+  }
+}
+
 fragment FileFragment on ClaimFile {
     id
     name

@@ -335,7 +335,7 @@ struct HomeTab: View {
         RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
+                    openClaimDetails(claim: claim, type: .claim(id: claim.id, status: .active))
                 }
                 .routerDestination(for: String.self) { _ in
                     InboxView()

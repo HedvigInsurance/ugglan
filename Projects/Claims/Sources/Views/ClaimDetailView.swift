@@ -397,7 +397,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
         )
         return ClaimDetailView(
             claim: claim,
-            type: .claim(id: claim.id)
+            type: .claim(id: claim.id, status: .active)
         )
     }
 }
