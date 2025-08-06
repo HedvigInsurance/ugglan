@@ -14,6 +14,7 @@ public struct ClaimsState: StateProtocol {
     private enum CodingKeys: String, CodingKey {
         case activeClaims
         case historyClaims
+        case files
     }
 
     @MainActor
@@ -32,11 +33,11 @@ public struct ClaimsState: StateProtocol {
 
     @MainActor
     public func claim(for id: String) -> ClaimModel? {
-        activeClaims?.first(where: { $0.id == id })
+        activeClaims?.first(where: { $0.id == id }) ?? historyClaims?.first(where: { $0.id == id })
     }
 
     @MainActor
     public func claimFromConversation(for id: String) -> ClaimModel? {
-        activeClaims?.first(where: { $0.conversation?.id == id })
+        activeClaims?.first(where: { $0.conversation?.id == id }) ?? historyClaims?.first(where: { $0.id == id })
     }
 }

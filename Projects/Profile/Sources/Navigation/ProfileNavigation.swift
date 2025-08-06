@@ -65,7 +65,7 @@ public struct ProfileNavigation<Content: View>: View {
                             .configureTitle(L10n.Profile.Certificates.title)
                             .environmentObject(profileNavigationViewModel)
                     case .claimHistory:
-                        ClaimHistory { claim in
+                        ClaimHistoryScreen { claim in
                             profileNavigationViewModel.profileRouter.push(
                                 ProfileRouterTypeWithHiddenBottomBar.claimsCard(claim: claim)
                             )
@@ -79,7 +79,7 @@ public struct ProfileNavigation<Content: View>: View {
                 ) { redirectType in
                     switch redirectType {
                     case let .claimsCard(claim):
-                        ClaimDetailView(claim: claim, type: .claim(id: claim.id))
+                        ClaimDetailView(claim: claim, type: .claim(id: claim.id, status: .history))
                             .configureTitle(L10n.claimsYourClaim)
                     }
                 }
@@ -176,7 +176,7 @@ extension ProfileRouterType: TrackingViewNameProtocol {
         case .certificates:
             return .init(describing: CertificatesScreen.self)
         case .claimHistory:
-            return .init(describing: ClaimHistory.self)
+            return .init(describing: ClaimHistoryScreen.self)
         }
     }
 }

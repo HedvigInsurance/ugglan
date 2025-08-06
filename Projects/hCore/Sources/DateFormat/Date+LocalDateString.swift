@@ -6,6 +6,9 @@ extension Date {
         Dependencies.dateService.localDateStringFormatter.string(from: self)
     }
 
+    public var localDateToIso8601Date: String? {
+        Dependencies.dateService.localDateToIso8601Date.string(from: self)
+    }
     public var localBirthDateString: String {
         Dependencies.dateService.localbirthDateStringFormatter.string(from: self)
     }
