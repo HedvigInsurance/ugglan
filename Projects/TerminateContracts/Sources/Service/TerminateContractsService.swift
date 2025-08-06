@@ -54,6 +54,13 @@ class TerminateContractsService {
         contractId: String,
         date: Date
     ) async throws -> TerminationNotification? {
-        try await client.getNotification(contractId: contractId, date: date)
+        log.info(
+            "TerminateContractsService: getNotification for contractId: \(contractId) on date: \(date)"
+        )
+        let data = try await client.getNotification(contractId: contractId, date: date)
+        log.info(
+            "TerminateContractsService: getNotification success for contractId: \(contractId) with \(data?.asString ?? "nil")"
+        )
+        return data
     }
 }
