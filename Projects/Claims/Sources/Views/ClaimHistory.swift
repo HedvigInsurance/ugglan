@@ -19,7 +19,8 @@ public struct ClaimHistory: View {
             StateView(
                 type: .empty,
                 title: L10n.ClaimHistory.EmptyState.title,
-                bodyText: L10n.ClaimHistory.EmptyState.body
+                bodyText: L10n.ClaimHistory.EmptyState.body,
+                formPosition: .center
             )
         } else {
             claimHistoryView
