@@ -11,12 +11,13 @@ struct MockData {
                 id: "id",
                 firstName: "first name",
                 lastName: "last name",
-                phone: "phone",
+                phone: "0123456789",
                 email: "email",
-                hasTravelCertificate: true
+                hasTravelCertificate: true,
+                isContactInfoUpdateNeeded: false
             )
             let partnerData: PartnerData = .init(sas: nil)
-            return (memberData, partnerData)
+            return (memberData, partnerData, true, true)
         },
         fetchMemberDetails: @escaping FetchMemberDetails = {
             let memberData: MemberDetails = .init(
@@ -25,17 +26,15 @@ struct MockData {
                 lastName: "last name",
                 phone: "phone",
                 email: "email",
-                hasTravelCertificate: true
+                hasTravelCertificate: true,
+                isContactInfoUpdateNeeded: false
             )
             return memberData
         },
         languageUpdate: @escaping LanguageUpdate = {},
         deleteRequest: @escaping DeleteRequest = {},
-        emailUpdate: @escaping EmailUpdate = { email in
-            email
-        },
-        phoneUpdate: @escaping PhoneUpdate = { phoneNumber in
-            phoneNumber
+        memberUpdate: @escaping MemberUpdate = { email, phone in
+            (email, phone)
         },
         eurobonusUpdate: @escaping EurobonusUpdate = { eurobonus in
             let partnerData: PartnerData = .init(sas: .init(eligible: true, eurobonusNumber: eurobonus))
@@ -48,8 +47,7 @@ struct MockData {
             fetchMemberDetails: fetchMemberDetails,
             languageUpdate: languageUpdate,
             deleteRequest: deleteRequest,
-            emailUpdate: emailUpdate,
-            phoneUpdate: phoneUpdate,
+            memberUpdate: memberUpdate,
             eurobonusUpdate: eurobonusUpdate,
             subscriptionPreferenceUpdate: subscriptionPreferenceUpdate
         )
@@ -58,12 +56,13 @@ struct MockData {
     }
 }
 
-typealias FetchProfileState = () async throws -> (memberData: MemberDetails, partnerData: PartnerData?)
+typealias FetchProfileState = () async throws -> (
+    memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool, hasTravelInsurances: Bool
+)
 typealias FetchMemberDetails = () async throws -> MemberDetails
 typealias LanguageUpdate = () async throws -> Void
 typealias DeleteRequest = () async throws -> Void
-typealias EmailUpdate = (String) async throws -> String
-typealias PhoneUpdate = (String) async throws -> String
+typealias MemberUpdate = (String, String) async throws -> (email: String, phone: String)
 typealias EurobonusUpdate = (String) async throws -> PartnerData
 typealias SubscriptionPreferenceUpdate = (Bool) async throws -> Void
 
@@ -74,8 +73,7 @@ class MockProfileService: ProfileClient {
     var fetchMemberDetails: FetchMemberDetails
     var languageUpdate: LanguageUpdate
     var deleteRequest: DeleteRequest
-    var emailUpdate: EmailUpdate
-    var phoneUpdate: PhoneUpdate
+    var memberUpdate: MemberUpdate
     var eurobonusUpdate: EurobonusUpdate
     var subscriptionPreferenceUpdate: SubscriptionPreferenceUpdate
 
@@ -84,8 +82,7 @@ class MockProfileService: ProfileClient {
         case getMemberDetails
         case updateLanguage
         case postDeleteRequest
-        case updateEmail
-        case updatePhone
+        case memberUpdate
         case updateEurobonus
         case updateSubscriptionPreference
     }
@@ -95,8 +92,7 @@ class MockProfileService: ProfileClient {
         fetchMemberDetails: @escaping FetchMemberDetails,
         languageUpdate: @escaping LanguageUpdate,
         deleteRequest: @escaping DeleteRequest,
-        emailUpdate: @escaping EmailUpdate,
-        phoneUpdate: @escaping PhoneUpdate,
+        memberUpdate: @escaping MemberUpdate,
         eurobonusUpdate: @escaping EurobonusUpdate,
         subscriptionPreferenceUpdate: @escaping SubscriptionPreferenceUpdate
     ) {
@@ -104,13 +100,15 @@ class MockProfileService: ProfileClient {
         self.fetchMemberDetails = fetchMemberDetails
         self.languageUpdate = languageUpdate
         self.deleteRequest = deleteRequest
-        self.emailUpdate = emailUpdate
-        self.phoneUpdate = phoneUpdate
+        self.memberUpdate = memberUpdate
         self.eurobonusUpdate = eurobonusUpdate
         self.subscriptionPreferenceUpdate = subscriptionPreferenceUpdate
     }
 
-    func getProfileState() async throws -> (memberData: Profile.MemberDetails, partnerData: Profile.PartnerData?) {
+    func getProfileState() async throws -> (
+        memberData: Profile.MemberDetails, partnerData: Profile.PartnerData?, canCreateInsuranceEvidence: Bool,
+        hasTravelInsurances: Bool
+    ) {
         events.append(.getProfileState)
         let data = try await fetchProfileState()
         return data
@@ -132,15 +130,9 @@ class MockProfileService: ProfileClient {
         try await languageUpdate()
     }
 
-    func update(email: String) async throws -> String {
-        events.append(.updateEmail)
-        let data = try await emailUpdate(email)
-        return data
-    }
-
-    func update(phone: String) async throws -> String {
-        events.append(.updatePhone)
-        let data = try await phoneUpdate(phone)
+    func update(email: String, phone: String) async throws -> (email: String, phone: String) {
+        events.append(.memberUpdate)
+        let data = try await memberUpdate(email, phone)
         return data
     }
 

@@ -18,7 +18,8 @@ final class DeleteAccountViewModelTests: XCTestCase {
         lastName: "last name",
         phone: "phone number",
         email: "email",
-        hasTravelCertificate: true
+        hasTravelCertificate: true,
+        isContactInfoUpdateNeeded: false
     )
 
     override func setUp() async throws {
