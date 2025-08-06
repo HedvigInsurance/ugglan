@@ -90,5 +90,7 @@ class ClaimHistoryViewModel: ObservableObject {
 }
 
 #Preview {
-    ClaimHistory(onTap: { _ in })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    return ClaimHistory(onTap: { _ in })
 }
