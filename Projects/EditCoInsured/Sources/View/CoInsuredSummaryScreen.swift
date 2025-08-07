@@ -20,8 +20,10 @@ struct CoInsuredSummaryScreen: View {
                         id: "id1",
                         displayName: "display name",
                         exposureName: "exposure name",
-                        newPremium: intentViewModel.intent.newCost.montlyNet,
-                        currentPremium: intentViewModel.intent.currentCost.montlyNet,
+                        newPremium: intentViewModel.intent.newTotalCost.montlyNet,
+                        currentPremium: intentViewModel.intent.currentTotalCost.montlyNet,
+                        //                        newPremium: intentViewModel.intent.montlyNet,
+                        //                        currentPremium: intentViewModel.intent.currentCost.montlyNet,
                         documents: [
                             .init(displayName: "display name", url: "", type: .generalTerms)
                         ],

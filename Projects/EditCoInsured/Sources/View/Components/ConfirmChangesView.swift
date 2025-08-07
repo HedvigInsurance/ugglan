@@ -17,8 +17,8 @@ struct ConfirmChangesView: View {
     var body: some View {
         VStack(spacing: .padding16) {
             PriceField(
-                newPremium: intentViewModel.intent.newCost.montlyNet,
-                currentPremium: intentViewModel.intent.currentCost.montlyNet,
+                newPremium: intentViewModel.intent.newTotalCost.montlyNet,
+                currentPremium: intentViewModel.intent.currentTotalCost.montlyNet,
                 subTitle: L10n.contractAddCoinsuredStartsFrom(
                     intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 )

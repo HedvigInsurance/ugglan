@@ -63,7 +63,7 @@ public struct Agreement: Codable, Hashable {
     }
 }
 
-public struct ProductVariant: Codable, Hashable {
+public struct ProductVariant: Codable, Hashable, Sendable {
     public let displayName: String
 
     public init(

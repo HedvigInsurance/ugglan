@@ -80,10 +80,48 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
         return Intent(
             activationDate: intent.activationDate,
-            currentCost: .init(fragment: intent.currentCost.fragments.itemCostFragment),
-            newCost: .init(fragment: intent.newCost.fragments.itemCostFragment),
+            //            currentCost: .init(fragment: intent.currentCost.fragments.itemCostFragment),
+            //            newCost: .init(fragment: intent.newCost.fragments.itemCostFragment),
+            currentTotalCost: .init(fragment: intent.currentCost.fragments.itemCostFragment),
+            newTotalCost: .init(fragment: intent.newCost.fragments.itemCostFragment),
             id: intent.id,
-            state: intent.state.rawValue
+            state: intent.state.rawValue,
+            quote: .init(
+                id: "quoteId",
+                currentCost: .init(
+                    discounts: [
+                        .init(
+                            amount: .sek(10),
+                            campaignCode: "code",
+                            displayName: "code name",
+                            displayValue: "display value",
+                            explanation: "explanation"
+                        )
+                    ],
+                    monthlyGross: .sek(229),
+                    montlyNet: .sek(219)
+                ),
+                newCost: .init(
+                    discounts: [
+                        .init(
+                            amount: .sek(10),
+                            campaignCode: "code",
+                            displayName: "code name",
+                            displayValue: "display value",
+                            explanation: "explanation"
+                        )
+                    ],
+                    monthlyGross: .sek(289),
+                    montlyNet: .sek(289)
+                ),
+                exposureName: "exposure name",
+                displayItems: [
+                    .init(displayTitle: "title", displaySubtitle: nil, displayValue: "value")
+                ],
+                productVariant: .init(displayName: "display name"),
+                addons: []
+            )
+            /* TODO: FILL WITH REAL DATA */
         )
     }
 

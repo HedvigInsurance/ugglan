@@ -3,24 +3,83 @@ import hCore
 
 public struct Intent: Sendable {
     let activationDate: String
-    let currentCost: ItemCost
-    let newCost: ItemCost
+    //    let currentCost: ItemCost
+    //    let newCost: ItemCost
+    let currentTotalCost: ItemCost
+    let newTotalCost: ItemCost
     let id: String
     let state: String
+    let quote: MidtermChangeQuote
 
     public init(
         activationDate: String,
-        currentCost: ItemCost,
-        newCost: ItemCost,
+        //        currentCost: ItemCost,
+        //        newCost: ItemCost,
+        currentTotalCost: ItemCost,
+        newTotalCost: ItemCost,
         id: String,
-        state: String
+        state: String,
+        quote: MidtermChangeQuote
     ) {
         self.activationDate = activationDate
-        self.currentCost = currentCost
-        self.newCost = newCost
+        //        self.currentCost = currentCost
+        //        self.newCost = newCost
+        self.currentTotalCost = currentTotalCost
+        self.newTotalCost = newTotalCost
         self.id = id
         self.state = state
+        self.quote = quote
     }
+}
+
+public struct MidtermChangeQuote: Sendable {
+    let id: String
+    let currentCost: ItemCost
+    let newCost: ItemCost
+    let exposureName: String
+    let displayItems: [MidtermQuoteDisplayItem]
+    let productVariant: ProductVariant
+    let addons: [MidtermChangeAddonQuote]
+
+    public init(
+        id: String,
+        currentCost: ItemCost,
+        newCost: ItemCost,
+        exposureName: String,
+        displayItems: [MidtermQuoteDisplayItem],
+        productVariant: ProductVariant,
+        addons: [MidtermChangeAddonQuote]
+    ) {
+        self.id = id
+        self.currentCost = currentCost
+        self.newCost = newCost
+        self.exposureName = exposureName
+        self.displayItems = displayItems
+        self.productVariant = productVariant
+        self.addons = addons
+    }
+}
+
+public struct MidtermQuoteDisplayItem: Sendable {
+    let displayTitle: String
+    let displaySubtitle: String?
+    let displayValue: String
+
+    public init(displayTitle: String, displaySubtitle: String?, displayValue: String) {
+        self.displayTitle = displayTitle
+        self.displaySubtitle = displaySubtitle
+        self.displayValue = displayValue
+    }
+}
+
+public struct MidtermChangeAddonQuote: Sendable {
+    let addonId: String
+    let currentCost: ItemCost
+    let newCost: ItemCost
+    let displayName: String
+    let coverageDisplayName: String
+    let displayItems: [MidtermQuoteDisplayItem]
+    let addonVariant: AddonVariant
 }
 
 public struct ItemCost: Sendable {
