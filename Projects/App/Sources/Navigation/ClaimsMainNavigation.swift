@@ -22,7 +22,7 @@ struct ClaimsMainNavigation: View {
                 .captureHeight(in: $measuredHeight)
                 .onDisappear {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                    claimsStore.send(.fetchClaims)
+                    claimsStore.send(.fetchActiveClaims)
                 }
                 .hidden($shouldHideHonestyPledge)
                 .routerDestination(
@@ -42,7 +42,7 @@ struct ClaimsMainNavigation: View {
                         )
                         .onDisappear {
                             let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            claimsStore.send(.fetchClaims)
+                            claimsStore.send(.fetchActiveClaims)
                         }
                     }
                 }

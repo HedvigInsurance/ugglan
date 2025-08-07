@@ -18,8 +18,8 @@ final class FetchClaimsTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testFetchClaimsSuccess() async {
-        let claims: [ClaimModel] = [
+    func testFetchActiveClaimsSuccess() async {
+        let activeClaims: [ClaimModel] = [
             .init(
                 id: "id1",
                 status: .beingHandled,
@@ -40,7 +40,7 @@ final class FetchClaimsTests: XCTestCase {
             ),
             .init(
                 id: "id2",
-                status: .closed,
+                status: .beingHandled,
                 outcome: .paid,
                 submittedAt: "2024-07-01",
                 signedAudioURL: nil,
@@ -59,12 +59,43 @@ final class FetchClaimsTests: XCTestCase {
         ]
 
         let mockService = MockData.createMockFetchClaimService(
-            fetch: { claims }
+            fetchActive: { activeClaims }
         )
         sut = mockService
 
-        let respondedClaims = try! await mockService.fetch()
-        assert(respondedClaims == claims)
+        let respondedClaims = try! await mockService.fetchActive()
+        assert(respondedClaims == activeClaims)
+    }
+
+    func testFetchHistoryClaimsSuccess() async {
+        let historyClaims: [ClaimModel] = [
+            .init(
+                id: "id3",
+                status: .closed,
+                outcome: .paid,
+                submittedAt: "2024-07-01",
+                signedAudioURL: nil,
+                memberFreeText: nil,
+                payoutAmount: nil,
+                targetFileUploadUri: "",
+                claimType: "",
+                productVariant: nil,
+                conversation: nil,
+                appealInstructionsUrl: nil,
+                isUploadingFilesEnabled: false,
+                showClaimClosedFlow: false,
+                infoText: nil,
+                displayItems: []
+            )
+        ]
+
+        let mockService = MockData.createMockFetchClaimService(
+            fetchHistory: { historyClaims }
+        )
+        sut = mockService
+
+        let respondedClaims = try! await mockService.fetchHistory()
+        assert(respondedClaims == historyClaims)
     }
 
     func testFetchFilesSuccess() async {
