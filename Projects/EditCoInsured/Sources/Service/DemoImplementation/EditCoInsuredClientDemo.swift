@@ -11,8 +11,8 @@ public class EditCoInsuredClientDemo: EditCoInsuredClient {
     public func sendIntent(contractId _: String, coInsured _: [CoInsuredModel]) async throws -> Intent {
         Intent(
             activationDate: "2024-02-22",
-            currentCost: MonetaryAmount(amount: "", currency: ""),
-            newCost: MonetaryAmount(amount: "", currency: ""),
+            currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
+            newCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
             id: "is",
             state: "state"
         )

@@ -23,7 +23,7 @@ public struct Intent: Sendable {
     }
 }
 
-public struct ItemCost {
+public struct ItemCost: Sendable {
     public let discounts: [ItemDiscount]
     public let monthlyGross: MonetaryAmount
     public let montlyNet: MonetaryAmount
@@ -35,7 +35,7 @@ public struct ItemCost {
     }
 }
 
-public struct ItemDiscount {
+public struct ItemDiscount: Sendable {
     let amount: MonetaryAmount
     let campaignCode: String
     let displayName: String
