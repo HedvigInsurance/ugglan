@@ -1,3 +1,4 @@
+import Claims
 import EditCoInsured
 import InsuranceEvidence
 import Market
@@ -63,6 +64,23 @@ public struct ProfileNavigation<Content: View>: View {
                         CertificatesScreen()
                             .configureTitle(L10n.Profile.Certificates.title)
                             .environmentObject(profileNavigationViewModel)
+                    case .claimHistory:
+                        ClaimHistoryScreen { claim in
+                            profileNavigationViewModel.profileRouter.push(
+                                ProfileRouterTypeWithHiddenBottomBar.claimsCard(claim: claim)
+                            )
+                        }
+                        .configureTitle(L10n.Profile.ClaimHistory.title)
+                    }
+                }
+                .routerDestination(
+                    for: ProfileRouterTypeWithHiddenBottomBar.self,
+                    options: [.hidesBottomBarWhenPushed]
+                ) { redirectType in
+                    switch redirectType {
+                    case let .claimsCard(claim):
+                        ClaimDetailView(claim: claim, type: .claim(id: claim.id, status: .history))
+                            .configureTitle(L10n.claimsYourClaim)
                     }
                 }
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in
@@ -120,6 +138,11 @@ public enum ProfileRouterType: Hashable {
     case settings
     case euroBonus
     case certificates
+    case claimHistory
+}
+
+public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
+    case claimsCard(claim: ClaimModel)
 }
 
 enum ProfileDetentType: TrackingViewNameProtocol {
@@ -152,6 +175,17 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: EuroBonusView.self)
         case .certificates:
             return .init(describing: CertificatesScreen.self)
+        case .claimHistory:
+            return .init(describing: ClaimHistoryScreen.self)
+        }
+    }
+}
+
+extension ProfileRouterTypeWithHiddenBottomBar: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .claimsCard:
+            return .init(describing: ClaimsCard.self)
         }
     }
 }

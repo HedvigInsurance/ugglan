@@ -35,8 +35,13 @@ public protocol hFetchClaimDetailsClient {
     func acknowledgeClosedStatus(claimId: String) async throws
 }
 
+public enum ClaimStatusType {
+    case active
+    case history
+}
+
 public enum FetchClaimDetailsType {
-    case claim(id: String)
+    case claim(id: String, status: ClaimStatusType)
     case conversation(id: String)
 }
 

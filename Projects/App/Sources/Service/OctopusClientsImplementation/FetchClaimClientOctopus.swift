@@ -6,13 +6,35 @@ import hGraphQL
 class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 
-    func get() async throws -> [ClaimModel] {
-        let data = try await octopus.client.fetch(
-            query: OctopusGraphQL.ClaimsQuery(),
+    func getActiveClaims() async throws -> [ClaimModel] {
+        if Dependencies.featureFlags().isClaimHistoryEnabled {
+            let activeClaimsData = try await octopus.client.fetch(
+                query: OctopusGraphQL.ActiveClaimsQuery(),
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let activeClaims = activeClaimsData.currentMember.claimsActive.map {
+                ClaimModel(claim: $0.fragments.claimFragment)
+            }
+            return activeClaims
+        } else {
+            let data = try await octopus.client.fetch(
+                query: OctopusGraphQL.ClaimsQuery(),
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let claims = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
+            return claims
+        }
+    }
+
+    func getHistoryClaims() async throws -> [ClaimModel] {
+        let historyClaimsData = try await octopus.client.fetch(
+            query: OctopusGraphQL.HistoryClaimsQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely
         )
-        let claimData = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
-        return claimData
+        let claimsHistory = historyClaimsData.currentMember.claimsHistory.map {
+            ClaimModel(claim: $0.fragments.claimFragment)
+        }
+        return claimsHistory
     }
 }
 

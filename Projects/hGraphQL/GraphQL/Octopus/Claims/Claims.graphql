@@ -6,6 +6,22 @@ query Claims {
     }
 }
 
+query ActiveClaims {
+    currentMember {
+        claimsActive {
+            ...ClaimFragment
+        }
+    }
+}
+
+query HistoryClaims {
+    currentMember {
+        claimsHistory {
+            ...ClaimFragment
+        }
+    }
+}
+
 fragment ClaimFragment on Claim {
     targetFileUploadUri
     id

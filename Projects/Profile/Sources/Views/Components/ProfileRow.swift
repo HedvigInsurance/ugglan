@@ -50,6 +50,8 @@ struct ProfileRow: View {
             profileNavigationViewModel.isCreateInsuranceEvidencePresented = true
         case .certificates:
             router.push(ProfileRouterType.certificates)
+        case .claimHistory:
+            router.push(ProfileRouterType.claimHistory)
         }
     }
 }
