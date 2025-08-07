@@ -13,13 +13,13 @@ public struct ClaimsCard: View {
 
     public var body: some View {
         VStack {
-            if vm.claims.isEmpty {
+            if vm.activeClaims.isEmpty {
                 Spacer().frame(height: 40)
-            } else if vm.claims.count == 1, let claim = vm.claims.first {
+            } else if vm.activeClaims.count == 1, let claim = vm.activeClaims.first {
                 ClaimStatusCard(claim: claim, enableTap: true)
                     .padding(.vertical)
             } else {
-                ClaimSection(claims: $vm.claims)
+                ClaimSection(claims: $vm.activeClaims)
                     .padding(.vertical)
             }
         }
@@ -38,17 +38,17 @@ class ClaimsViewModel: ObservableObject {
     private var pollTimerCancellable: AnyCancellable?
     private var stateObserver: AnyCancellable?
     private let refreshOn = 60
-    @Published var claims = [ClaimModel]()
+    @Published var activeClaims: [ClaimModel] = []
 
     init() {
         stateObserver = store.stateSignal
             .receive(on: RunLoop.main)
-            .map(\.claims)
+            .map(\.activeClaims)
             .removeDuplicates()
             .sink { [weak self] state in
-                self?.claims = state ?? []
+                self?.activeClaims = state ?? []
             }
-        claims = store.state.claims ?? []
+        activeClaims = store.state.activeClaims ?? []
     }
 
     func stopTimer() {
@@ -66,7 +66,7 @@ class ClaimsViewModel: ObservableObject {
     }
 
     func fetch() {
-        store.send(.fetchClaims)
+        store.send(.fetchActiveClaims)
         // added this to reset timer after we fetch becausae we could fetch from other places so we dont fetch too often
         configureTimer()
     }
