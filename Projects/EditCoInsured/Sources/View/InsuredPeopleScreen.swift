@@ -37,12 +37,9 @@ struct InsuredPeopleScreen: View {
                     saveChangesButton
                 }
                 if vm.showConfirmChangesButton {
-                    ConfirmChangesView(
-                        intentViewModel: editCoInsuredNavigation.intentViewModel,
-                        onButtonTap: {
-                            router.push(EditCoInuredRouterActions.summary)
-                        }
-                    )
+                    hContinueButton {
+                        router.push(EditCoInuredRouterActions.summary)
+                    }
                 }
                 CancelButton()
                     .disabled(intentViewModel.isLoading)
