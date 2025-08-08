@@ -82,8 +82,8 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
             activationDate: intent.activationDate,
             //            currentCost: .init(fragment: intent.currentCost.fragments.itemCostFragment),
             //            newCost: .init(fragment: intent.newCost.fragments.itemCostFragment),
-            currentTotalCost: .init(fragment: intent.currentCost.fragments.itemCostFragment),
-            newTotalCost: .init(fragment: intent.newCost.fragments.itemCostFragment),
+            currentTotalCost: .init(fragment: intent.currentTotalCost.fragments.itemCostFragment),
+            newTotalCost: .init(fragment: intent.newTotalCost.fragments.itemCostFragment),
             id: intent.id,
             state: intent.state.rawValue,
             quote: .init(

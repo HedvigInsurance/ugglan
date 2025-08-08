@@ -1,20 +1,24 @@
 mutation MidtermChangeIntentCommit($intentId: ID!) {
   midtermChangeIntentCommit(intentId: $intentId) {
     intent {
-      id
-      currentCost {
-        ...ItemCostFragment
-      }
-      newCost {
-        ...ItemCostFragment
-      }
-      activationDate
-      state
+        ...MidtermChangeIntentFragment
     }
     userError {
       message
     }
   }
+}
+
+fragment MidtermChangeIntentFragment on MidtermChangeIntent {
+      id
+      currentTotalCost {
+        ...ItemCostFragment
+      }
+      newTotalCost {
+        ...ItemCostFragment
+      }
+      activationDate
+      state
 }
 
 fragment ItemCostFragment on ItemCost {
