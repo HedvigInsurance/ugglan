@@ -41,5 +41,4 @@ struct CrossSellButtonComponent: View {
             buttonDescription: "button"
         )
     )
-
 }
