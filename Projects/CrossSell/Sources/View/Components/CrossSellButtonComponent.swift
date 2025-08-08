@@ -30,3 +30,16 @@ struct CrossSellButtonComponent: View {
         .sectionContainerStyle(.transparent)
     }
 }
+
+#Preview {
+    CrossSellButtonComponent(
+        crossSell: .init(
+            id: "id1",
+            title: "title",
+            description: "description",
+            imageUrl: nil,
+            buttonDescription: "button"
+        )
+    )
+
+}
