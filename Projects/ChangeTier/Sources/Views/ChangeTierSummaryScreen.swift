@@ -65,11 +65,29 @@ extension ChangeTierViewModel {
                 )
             )
         }
+        let totalNet: MonetaryAmount = {
+            let totalValue =
+                contracts
+                .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
+        }()
+
+        let totalGross: MonetaryAmount = {
+            let totalValue =
+                contracts
+                .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
+        }()
 
         let vm = QuoteSummaryViewModel(
             contract: contracts,
-            grossTotal: self.currentPremium,
             activationDate: self.activationDate,
+            summaryDataProvider: DirectQuoteSummaryDataProvider(
+                intentCost: .init(
+                    totalGross: totalGross,
+                    totalNet: totalNet
+                )
+            ),
             onConfirmClick: {
                 changeTierNavigationVm.isConfirmTierPresented = true
             }

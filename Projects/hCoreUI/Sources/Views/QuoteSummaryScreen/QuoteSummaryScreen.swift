@@ -88,6 +88,7 @@ public struct QuoteSummaryScreen: View {
                 ),
                 buttons: .init(
                     mainButton: .init(buttonAction: {
+                        vm.isConfirmChangesPresented = false
                         vm.onConfirmClick()
                     }),
                     dismissButton: .init(buttonAction: {
@@ -201,7 +202,11 @@ private struct ContractCardView: View {
     ) -> some View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails && !vm.isAddon {
-                showDetailsButton(contract)
+                if !vm.removedContracts.contains(contract.id) {
+                    showDetailsButton(contract)
+                } else {
+                    addButton(for: contract, isExpanded: isExpanded)
+                }
             }
 
             if isExpanded {
@@ -210,23 +215,10 @@ private struct ContractCardView: View {
                         .frame(height: isExpanded ? nil : 0, alignment: .top)
                         .clipped()
                         .accessibilityHidden(!isExpanded)
-                    if vm.removedContracts.contains(contract.id) {
-                        hButton(
-                            .medium,
-                            .secondary,
-                            content: .init(title: L10n.addonAddCoverage),
-                            {
-                                withAnimation(.easeInOut(duration: 0.4)) {
-                                    vm.addContract(contract)
-                                }
-                            }
-                        )
-                        .transition(.scale)
-                    }
                 }
             }
 
-            if !contract.discountDisplayItems.isEmpty {
+            if !contract.discountDisplayItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
                     ForEach(contract.discountDisplayItems, id: \.displayTitle) { disocuntItem in
                         rowItem(for: disocuntItem, fontSize: .label)
@@ -279,8 +271,8 @@ private struct ContractCardView: View {
         VStack(spacing: .padding16) {
             displayItemsView(for: contract)
             insuranceLimitsView(for: contract)
-            removeButtonView(for: contract, isExpanded: isExpanded)
             documentsView(for: contract)
+            removeButton(for: contract, isExpanded: isExpanded)
         }
         .padding(.bottom, (isExpanded && !contract.isAddon && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
     }
@@ -349,26 +341,32 @@ private struct ContractCardView: View {
         }
     }
 
+    private func addButton(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
+        hButton(
+            .medium,
+            .secondary,
+            content: .init(title: L10n.addonAddCoverage)
+        ) {
+            withAnimation(.easeInOut(duration: 0.4)) {
+                vm.addContract(contract)
+            }
+        }
+        .hWithTransition(.scale)
+    }
+
     @ViewBuilder
-    func removeButtonView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
-        if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id),
-            isExpanded
-        {
+    private func removeButton(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
+        if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id) && isExpanded {
             hButton(
                 .medium,
                 .secondary,
-                content: .init(title: L10n.General.remove),
-                {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.removeModel = removeModel
-                    }
+                content: .init(title: L10n.General.remove)
+            ) {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    vm.removeModel = removeModel
                 }
-            )
-            .hWithTransition(.scale)
-            .background {
-                RoundedRectangle(cornerRadius: .cornerRadiusM)
-                    .stroke(hBorderColor.primary, lineWidth: 1)
             }
+            .hWithTransition(.scale)
         }
     }
 
@@ -423,7 +421,6 @@ private struct PriceSummarySection: View {
             VStack(spacing: .padding16) {
                 let newPremium = vm.netTotal
                 let currentPremium = vm.grossTotal
-
                 if vm.isAddon {
                     HStack {
                         hText(L10n.tierFlowTotal)
@@ -569,8 +566,10 @@ private struct PriceSummarySection: View {
                 discountDisplayItems: []
             ),
         ],
-        grossTotal: .init(amount: 399, currency: "SEK"),
         activationDate: "2025-08-24".localDateToDate ?? Date(),
+        summaryDataProvider: DirectQuoteSummaryDataProvider(
+            intentCost: .init(totalGross: .sek(999), totalNet: .sek(599))
+        ),
         onConfirmClick: {}
     )
 

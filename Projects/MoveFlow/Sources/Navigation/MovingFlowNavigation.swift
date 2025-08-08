@@ -99,8 +99,11 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
-            grossTotal: nil,
-            activationDate: movingFlowQuotes.first?.startDate
+            activationDate: movingFlowQuotes.first?.startDate,
+            summaryDataProvider: MoveFlowQuoteSummaryDataProvider(
+                intentId: self.moveConfigurationModel?.id ?? "",
+                selectedHomeQuoteId: self.selectedHomeQuote?.id ?? ""
+            )
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
             Task {
