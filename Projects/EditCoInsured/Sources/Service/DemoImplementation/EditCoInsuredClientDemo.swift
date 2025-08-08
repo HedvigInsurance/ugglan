@@ -11,10 +11,21 @@ public class EditCoInsuredClientDemo: EditCoInsuredClient {
     public func sendIntent(contractId _: String, coInsured _: [CoInsuredModel]) async throws -> Intent {
         Intent(
             activationDate: "2024-02-22",
-            currentPremium: MonetaryAmount(amount: "", currency: ""),
-            newPremium: MonetaryAmount(amount: "", currency: ""),
+            currentTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
+            newTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
+            //            currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
+            //            newCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
             id: "is",
-            state: "state"
+            state: "state",
+            quote: .init(
+                id: "",
+                currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
+                newCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
+                exposureName: "",
+                displayItems: [],
+                productVariant: .init(displayName: ""),
+                addons: []
+            ),
         )
     }
 

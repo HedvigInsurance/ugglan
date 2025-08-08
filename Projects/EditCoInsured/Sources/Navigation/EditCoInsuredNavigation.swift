@@ -18,8 +18,66 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
+    @StateObject var router = Router()
+
     let coInsuredViewModel = InsuredPeopleScreenViewModel()
     let intentViewModel = IntentViewModel()
+
+    func setEditCoInsuredSummaryViewModel(router: Router) {
+
+        //        let quotes = intentViewModel.intent.currentCost
+
+        //    let movingFlowQuotes = getQuotes()
+        //    var contractInfos: [QuoteSummaryViewModel.ContractInfo] = []
+        //    movingFlowConfirmViewModel = .init()
+        //    for quote in movingFlowQuotes {
+        //        let contractQuote = QuoteSummaryViewModel.ContractInfo(
+        //            id: quote.id,
+        //            displayName: quote.displayName,
+        //            exposureName: quote.exposureName ?? "",
+        //            newPremium: quote.premium,
+        //            currentPremium: quote.premium,
+        //            documents: quote.documents.map {
+        //                .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+        //            },
+        //            onDocumentTap: { [weak self] document in
+        //                self?.document = document
+        //            },
+        //            displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
+        //            ),
+        //            insuranceLimits: quote.insurableLimits,
+        //            typeOfContract: quote.contractType
+        //        )
+        //        contractInfos.append(contractQuote)
+        //
+        //        for addonQuote in quote.addons {
+        //            let addonQuoteContractInfo = addonQuote.asContractInfo {
+        //                [weak self] document in
+        //                self?.document = document
+        //            }
+        //            contractInfos.append(addonQuoteContractInfo)
+        //        }
+        //    }
+        //
+        //    let vm = QuoteSummaryViewModel(
+        //        contract: contractInfos
+        //    )
+        //    vm.onConfirmClick = { [weak self, weak router, weak vm] in
+        //        Task {
+        //            guard let self = self,
+        //                let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel,
+        //                let vm
+        //            else { return }
+        //            await movingFlowConfirmViewModel.confirmMoveIntent(
+        //                intentId: self.moveConfigurationModel?.id ?? "",
+        //                currentHomeQuoteId: self.selectedHomeQuote?.id ?? "",
+        //                removedAddons: vm.getRemovedContractsIds()
+        //            )
+        //        }
+        //        router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
+        //    }
+        //    quoteSummaryViewModel = vm
+    }
 }
 
 extension EditCoInsuredScreenType {
@@ -164,6 +222,16 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
         )
+        .environmentObject(router)
+        .routerDestination(for: EditCoInuredRouterActions.self) { action in
+            switch action {
+            case .summary:
+                CoInsuredSummaryScreen(
+                    editCoInsuredNavigation: editCoInsuredNavigationVm,
+                    intentViewModel: editCoInsuredNavigationVm.intentViewModel
+                )
+            }
+        }
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }
@@ -211,6 +279,17 @@ public struct EditCoInsuredNavigation: View {
         openCoInsuredInput(
             coInsuredModelEdit: coInsuredInputModel
         )
+    }
+}
+
+enum EditCoInuredRouterActions: TrackingViewNameProtocol {
+    case summary
+
+    var nameForTracking: String {
+        switch self {
+        case .summary:
+            return .init(describing: CoInsuredSummaryScreen.self)
+        }
     }
 }
 

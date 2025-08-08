@@ -6,6 +6,7 @@ struct InsuredPeopleScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject var vm: InsuredPeopleScreenViewModel
     @ObservedObject var intentViewModel: IntentViewModel
+    @EnvironmentObject var router: Router
     let type: CoInsuredFieldType?
 
     private var listToDisplay: [CoInsuredListType] {
@@ -35,9 +36,10 @@ struct InsuredPeopleScreen: View {
                 if vm.showSavebutton {
                     saveChangesButton
                 }
-
                 if vm.showConfirmChangesButton {
-                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
+                    hContinueButton {
+                        router.push(EditCoInuredRouterActions.summary)
+                    }
                 }
                 CancelButton()
                     .disabled(intentViewModel.isLoading)
