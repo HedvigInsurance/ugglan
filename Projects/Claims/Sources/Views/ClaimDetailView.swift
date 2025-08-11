@@ -17,7 +17,7 @@ public struct ClaimDetailView: View {
 
     public init(
         claim: ClaimModel?,
-        type: FetchClaimDetailsType
+        type: ClaimDetailsType
     ) {
         _vm = .init(wrappedValue: .init(claim: claim, type: type))
     }
@@ -153,13 +153,13 @@ public struct ClaimDetailView: View {
                         } else {
                             NotificationCenter.default.post(
                                 name: .openChat,
-                                object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+                                object: ChatType.conversationFromClaimWithId(id: vm.claim?.conversation?.id ?? "")
                             )
                         }
                     } else {
                         NotificationCenter.default.post(
                             name: .openChat,
-                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+                            object: ChatType.conversationFromClaimWithId(id: vm.claim?.conversation?.id ?? "")
                         )
                     }
                 }
@@ -397,7 +397,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
         )
         return ClaimDetailView(
             claim: claim,
-            type: .claim(id: claim.id, status: .active)
+            type: .claim(id: "claimId")
         )
     }
 }
@@ -424,35 +424,21 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
     let fileGridViewModel: FileGridViewModel
-    let type: FetchClaimDetailsType
+    let type: ClaimDetailsType
     private var cancellables = Set<AnyCancellable>()
     public init(
         claim: ClaimModel?,
-        type: FetchClaimDetailsType
+        type: ClaimDetailsType
     ) {
         self.claim = claim
-        claimDetailsService = .init(type: type)
+        claimDetailsService = .init(id: type.claimId)
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         self.type = type
-        let files = store.state.files[claim?.id ?? ""] ?? []
+        let files = store.state.files[type.claimId] ?? []
         fileGridViewModel = .init(files: files, options: [])
         Task {
             await fetchFiles()
         }
-        store.actionSignal
-            .filter { action in
-                if case .refreshFiles = action {
-                    return true
-                }
-                return false
-            }
-            .sink { _ in
-            } receiveValue: { [weak self] _ in
-                Task { [weak self] in
-                    await self?.fetchFiles()
-                }
-            }
-            .store(in: &cancellables)
         fileGridViewModel.$files
             .sink { _ in
             } receiveValue: { [weak self] files in
@@ -519,10 +505,10 @@ public class ClaimDetailViewModel: ObservableObject {
             fetchFilesError = nil
         }
         do {
-            let data = try await claimDetailsService.getFiles()
-            store.send(.setFilesForClaim(claimId: data.claimId, files: data.files))
+            let files = try await claimDetailsService.getFiles()
+            store.send(.setFilesForClaim(claimId: type.claimId, files: files))
             withAnimation { [weak self] in
-                self?.fileGridViewModel.files = data.files
+                self?.fileGridViewModel.files = files
             }
         } catch let ex {
             withAnimation { [weak self] in

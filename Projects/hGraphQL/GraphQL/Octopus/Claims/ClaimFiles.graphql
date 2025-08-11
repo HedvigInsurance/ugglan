@@ -1,32 +1,7 @@
-query ClaimsFiles {
-  currentMember {
-    claims {
-      id
-      files {
-        ...FileFragment
-      }
-    }
-  }
-}
-
-query ActiveClaimsFiles {
-  currentMember {
-	claimsActive {
-	  id
-	  files {
+query ClaimFiles($claimId: ID!) {
+  claim(id: $claimId) {
+	files {
 		...FileFragment
-	  }
-	}
-  }
-}
-
-query HistoryClaimsFiles {
-  currentMember {
-	claimsHistory {
-	  id
-	  files {
-		...FileFragment
-	  }
 	}
   }
 }

@@ -322,13 +322,15 @@ extension View {
     @MainActor public func configureTitleView(
         title: String,
         subTitle: String? = nil,
-        titleColor: TitleColor? = nil
+        titleColor: TitleColor? = nil,
+        onTitleTap: (() -> Void)? = nil
     ) -> some View {
         introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.navigationItem.titleView = getTitleUIView(
                 title: title,
                 subTitle: subTitle,
-                titleColor: titleColor ?? .default
+                titleColor: titleColor ?? .default,
+                onTitleTap: onTitleTap
             )
         }
     }
@@ -339,9 +341,17 @@ extension View {
         }
     }
 
-    public func getTitleUIView(title: String, subTitle: String?, titleColor: TitleColor) -> UIView {
+    public func getTitleUIView(
+        title: String,
+        subTitle: String?,
+        titleColor: TitleColor,
+        onTitleTap: (() -> Void)? = nil
+    ) -> UIView {
         let view: UIView = UIHostingController(
             rootView: titleView(title: title, subTitle: subTitle, titleColor: titleColor)
+                .onTapGesture {
+                    onTitleTap?()
+                }
         )
         .view
         view.backgroundColor = .clear
