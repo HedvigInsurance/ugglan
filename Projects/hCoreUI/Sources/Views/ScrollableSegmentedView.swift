@@ -47,6 +47,9 @@ public struct ScrollableSegmentedView<Content: View>: View {
                             ForEach(vm.pageModels) { model in
                                 headerElement(for: model)
                                     .accessibilityLabel(accessibilityLabel(model: model, vm: vm))
+                                    .accessibilityAction(.default) {
+                                        vm.scrollToNext()
+                                    }
                             }
                         }
                     }
@@ -279,6 +282,20 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     func scrollTo(offset: CGFloat, withAnimation: Bool = true) {
         horizontalScrollView?
             .scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: withAnimation)
+    }
+
+    @MainActor
+    func scrollToNext() {
+        let currentPageModelIndex = pageModels.firstIndex(where: { $0.id == currentId }) ?? 0
+        var nextIndex: Int {
+            if currentPageModelIndex >= pageModels.count - 1 {
+                return 0
+            } else {
+                return currentPageModelIndex + 1
+            }
+        }
+        let nextPageModelId = pageModels[nextIndex].id
+        setSelectedTab(with: nextPageModelId)
     }
 
     public init(pageModels: [PageModel], currentId: String? = nil) {
