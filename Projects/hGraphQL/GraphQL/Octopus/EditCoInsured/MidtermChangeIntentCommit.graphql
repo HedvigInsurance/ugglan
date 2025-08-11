@@ -9,8 +9,7 @@ mutation MidtermChangeIntentCommit($intentId: ID!) {
         ...MoneyFragment
       }
       activationDate
-      state
-    }
+}
     userError {
       message
     }
