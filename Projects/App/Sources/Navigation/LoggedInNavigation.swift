@@ -178,11 +178,7 @@ struct LoggedInNavigation: View {
                 PDFPreview(document: document)
             case let .changeTier(input):
                 ChangeTierNavigation(input: input) {
-                    // added delay since we don't have a terms version at the place right after the insurance has been created
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetchContracts)
-                    }
+                    fetchContracts()
                 }
             case let .addon(input: input):
                 ChangeAddonNavigation(input: input)
@@ -212,6 +208,12 @@ struct LoggedInNavigation: View {
             hText(L10n.tabInsurancesTitle)
         }
         .tag(1)
+    }
+
+    private func fetchContracts() {
+        // added delay since we don't have a terms version at the place right after the insurance has been created
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        store.send(.fetchContracts)
     }
 
     var foreverTab: some View {
