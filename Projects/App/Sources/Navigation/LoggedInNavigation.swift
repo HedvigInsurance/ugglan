@@ -490,13 +490,11 @@ struct HomeTab: View {
             .onDeinit {
                 Task {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                    if claim?.showClaimClosedFlow ?? false {
-                        if let claim = claim {
-                            NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
-                            let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
-                            try await service.acknowledgeClosedStatus(claimId: claim.id)
-                            claimsStore.send(.fetchActiveClaims)
-                        }
+                    if claim?.showClaimClosedFlow ?? false, let claim = claim {
+                        NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
+                        let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+                        try await service.acknowledgeClosedStatus(claimId: claim.id)
+                        claimsStore.send(.fetchActiveClaims)
                     }
                 }
             }

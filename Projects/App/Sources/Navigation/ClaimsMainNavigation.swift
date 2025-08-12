@@ -33,9 +33,7 @@ struct ClaimsMainNavigation: View {
                         AskForPushNotifications(
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
-                                DispatchQueue.main.async {
-                                    claimsNavigationVm?.isClaimsFlowPresented = true
-                                }
+                                presentClaimsFlow(claimsNavigationVm: claimsNavigationVm)
                             },
                             wrapWithForm: true,
                             height: measuredHeight
@@ -59,6 +57,12 @@ struct ClaimsMainNavigation: View {
             if !presented {
                 claimsRouter.dismiss()
             }
+        }
+    }
+
+    private func presentClaimsFlow(claimsNavigationVm: ClaimsMainNavigationViewModel?) {
+        DispatchQueue.main.async {
+            claimsNavigationVm?.isClaimsFlowPresented = true
         }
     }
 
