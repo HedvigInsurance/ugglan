@@ -335,7 +335,7 @@ struct HomeTab: View {
         RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    openClaimDetails(claim: claim, type: .claim(id: claim.id, status: .active))
+                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
                 }
                 .routerDestination(for: String.self) { _ in
                     InboxView()
@@ -471,10 +471,8 @@ struct HomeTab: View {
                                     onDone()
                                 }
                             )
-                        case let .claimDetailForConversationId(id):
-                            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            let claim = claimStore.state.claimFromConversation(for: id)
-                            openClaimDetails(claim: claim, type: .conversation(id: id))
+                        case let .claimDetailFor(claimId: claimId):
+                            openClaimDetails(claim: nil, type: .conversation(claimId: claimId))
                         }
                     }
                 )
@@ -482,17 +480,17 @@ struct HomeTab: View {
         )
     }
 
-    private func openClaimDetails(claim: ClaimModel?, type: FetchClaimDetailsType) -> some View {
+    private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
         ClaimDetailView(claim: claim, type: type)
             .configureTitle(L10n.claimsYourClaim)
             .onDeinit {
                 Task {
-                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                    if claim?.showClaimClosedFlow ?? false {
-                        if let claim = claim {
+                    if let claim {
+                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                        if claim.showClaimClosedFlow {
                             NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                             let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
-                            try await service.acknowledgeClosedStatus(claimId: claim.id)
+                            try await service.acknowledgeClosedStatus(for: claim.id)
                             claimsStore.send(.fetchActiveClaims)
                         }
                     }
@@ -983,14 +981,18 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     private func handleClaimDetails(claimId: String?) async {
-        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-        await claimStore.sendAsync(.fetchActiveClaims)
-        if let claimId, let claim = claimStore.state.claim(for: claimId) {
-            UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-            selectedTab = 0
-            Task { [weak self] in
-                try await Task.sleep(nanoseconds: 200_000_000)
-                self?.homeNavigationVm.router.push(claim)
+        if let claimId {
+            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+            do {
+                let claim = try await claimService.get(for: claimId)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                selectedTab = 0
+                Task { [weak self] in
+                    try await Task.sleep(nanoseconds: 200_000_000)
+                    self?.homeNavigationVm.router.push(claim)
+                }
+            } catch {
+                Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
             }
         } else {
             Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
