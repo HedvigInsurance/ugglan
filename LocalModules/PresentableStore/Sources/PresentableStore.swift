@@ -86,29 +86,6 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where
             }
     }
 
-    //    public func send(_ action: Action) {
-    //        Task { [weak self] in
-    //            await withCheckedContinuation {
-    //                (inCont: CheckedContinuation<Void, Never>) in
-    //                self?.getQueue()
-    //                    .async { [weak self] in
-    //                        guard let self = self else { return }
-    //                        let semaphore = DispatchSemaphore(value: 0)
-    //                        Task { [weak self] in
-    //                            guard let self else {
-    //                                semaphore.signal()
-    //                                return
-    //                            }
-    //                            await self.sendAsync(action)
-    //                            semaphore.signal()
-    //                        }
-    //                        semaphore.wait()
-    //                        inCont.resume()
-    //                    }
-    //            }
-    //        }
-    //    }
-
     public func sendAsync(_ action: Action) async {
         await logger("🦄 \(String(describing: Self.self)): sending \(action)")
         let task = Task { @MainActor in
