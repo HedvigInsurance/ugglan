@@ -9,8 +9,7 @@ public class IntentViewModel: ObservableObject {
         activationDate: "",
         currentPremium: MonetaryAmount(amount: 0, currency: ""),
         newPremium: MonetaryAmount(amount: 0, currency: ""),
-        id: "",
-        state: ""
+        id: ""
     )
     @Published var isLoading: Bool = false
     @Published var firstName = ""
