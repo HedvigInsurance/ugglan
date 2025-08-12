@@ -205,20 +205,6 @@ extension Store {
     public static func destroy() {
         try? FileManager.default.removeItem(at: persistenceURL)
     }
-
-    /// Reduce to an action in another store, useful to sync between two stores
-    //    public func reduce<S: hStore>(to store: S, reducer: @escaping (_ action: Action, _ state: State) -> S.Action) -> Disposable {
-    //        actionSignal.onValue { action in
-    //            store.send(reducer(action, stateSignal.value))
-    //        }
-    //    }
-    //
-    //    /// Calls onAction whenever an action equal to action happens
-    //    public func onAction(_ action: Action, _ onAction: @escaping () -> Void) -> Disposable {
-    //        actionSignal.filter(predicate: { action == $0 }).onValue { action in
-    //            onAction()
-    //        }
-    //    }
 }
 
 public protocol Debugger {
