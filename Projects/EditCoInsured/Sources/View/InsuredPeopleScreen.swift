@@ -33,18 +33,22 @@ struct InsuredPeopleScreen: View {
     private var bottomContent: some View {
         VStack(spacing: .padding8) {
             hSection {
-                if vm.showSavebutton {
-                    saveChangesButton
-                }
-                if vm.showConfirmChangesButton {
-                    hContinueButton {
-                        router.push(EditCoInuredRouterActions.summary)
-                    }
-                }
+                buttonView
                 CancelButton()
                     .disabled(intentViewModel.isLoading)
             }
             .sectionContainerStyle(.transparent)
+        }
+    }
+
+    @ViewBuilder
+    private var buttonView: some View {
+        if vm.showSavebutton {
+            saveChangesButton
+        } else if vm.showConfirmChangesButton {
+            hContinueButton {
+                router.push(EditCoInuredRouterActions.summary)
+            }
         }
     }
 
@@ -64,7 +68,7 @@ struct InsuredPeopleScreen: View {
             }
         )
         .hButtonIsLoading(intentViewModel.isLoading)
-        .disabled(!vm.shouldShowSaveChangesButton)
+        .disabled(!vm.enableSaveChangesButton)
     }
 
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
