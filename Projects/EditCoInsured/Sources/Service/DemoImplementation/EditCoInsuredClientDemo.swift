@@ -13,10 +13,7 @@ public class EditCoInsuredClientDemo: EditCoInsuredClient {
             activationDate: "2024-02-22",
             currentTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
             newTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
-            //            currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
-            //            newCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
             id: "is",
-            state: "state",
             quote: .init(
                 id: "",
                 currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),

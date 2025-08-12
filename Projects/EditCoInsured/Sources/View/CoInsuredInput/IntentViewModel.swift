@@ -9,10 +9,7 @@ public class IntentViewModel: ObservableObject {
         activationDate: "",
         currentTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
         newTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
-        //        currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
-        //        newCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
         id: "",
-        state: "",
         quote: .init(
             id: "",
             currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),

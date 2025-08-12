@@ -3,31 +3,22 @@ import hCore
 
 public struct Intent: Sendable {
     let activationDate: String
-    //    let currentCost: ItemCost
-    //    let newCost: ItemCost
     let currentTotalCost: ItemCost
     let newTotalCost: ItemCost
     let id: String
-    let state: String
     let quote: MidtermChangeQuote
 
     public init(
         activationDate: String,
-        //        currentCost: ItemCost,
-        //        newCost: ItemCost,
         currentTotalCost: ItemCost,
         newTotalCost: ItemCost,
         id: String,
-        state: String,
         quote: MidtermChangeQuote
     ) {
         self.activationDate = activationDate
-        //        self.currentCost = currentCost
-        //        self.newCost = newCost
         self.currentTotalCost = currentTotalCost
         self.newTotalCost = newTotalCost
         self.id = id
-        self.state = state
         self.quote = quote
     }
 }
