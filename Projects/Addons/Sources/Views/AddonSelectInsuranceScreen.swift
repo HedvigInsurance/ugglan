@@ -52,12 +52,6 @@ public struct AddonSelectInsuranceScreen: View {
         )
     }
 
-    private func handleProcessingStateChange(
-        _ value: ProcessingState,
-        vm: ChangeAddonViewModel?
-    ) {
-    }
-
     public var body: some View {
         successView
             .loadingWithButtonLoading($vm.processingState)
