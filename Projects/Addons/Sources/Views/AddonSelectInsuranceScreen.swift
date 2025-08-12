@@ -42,15 +42,21 @@ public struct AddonSelectInsuranceScreen: View {
                             withAnimation {
                                 vm?.processingState = value
                             }
-                            if value == .success {
-                                changeAddonNavigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
-                                vm?.observer = nil
-                            }
+                            guard value == .success else { return }
+                            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
+                            vm?.observer = nil
                         }
                 }
             },
             buttonText: L10n.generalContinueButton
         )
+    }
+
+    private func handleProcessingStateChange(
+        _ value: ProcessingState,
+        vm: ChangeAddonViewModel?
+    ) {
+
     }
 
     public var body: some View {
