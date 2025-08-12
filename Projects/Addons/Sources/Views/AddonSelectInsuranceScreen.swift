@@ -56,7 +56,6 @@ public struct AddonSelectInsuranceScreen: View {
         _ value: ProcessingState,
         vm: ChangeAddonViewModel?
     ) {
-
     }
 
     public var body: some View {
