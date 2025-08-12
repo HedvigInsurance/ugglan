@@ -12,6 +12,7 @@ struct SlideToConfirm: View {
     @State private var progress: CGFloat = 0
     @State private var width: CGFloat = 0
     @State private var bounceSliderButton = false
+
     var body: some View {
         if #available(iOS 16.0, *) {
             slider
@@ -19,14 +20,13 @@ struct SlideToConfirm: View {
                     if didFinished {
                         return
                     }
-                    let progress = location.x + 25
                     withAnimation(.defaultSpring) {
-                        self.progress = progress
+                        self.progress = location.x + 25
                     }
                     if progress < width {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             withAnimation(.defaultSpring) {
-                                self.progress = 0
+                                resetProgress()
                             }
                         }
                     } else {
@@ -36,6 +36,10 @@ struct SlideToConfirm: View {
         } else {
             slider
         }
+    }
+
+    private func resetProgress() {
+        progress = 0
     }
 
     private var slider: some View {

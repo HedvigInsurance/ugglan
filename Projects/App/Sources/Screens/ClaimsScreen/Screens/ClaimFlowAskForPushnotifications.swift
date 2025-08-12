@@ -46,14 +46,7 @@ struct AskForPushNotifications: View {
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Blue.element)
                     .accessibilityHidden(true)
-                VStack(spacing: 0) {
-                    hText(L10n.activateNotificationsTitle)
-                        .accessibilityAddTraits(.isHeader)
-                    hText(text)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, .padding32)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
+                textContent
                 buttonsView
             }
         }
@@ -61,6 +54,17 @@ struct AskForPushNotifications: View {
         .background(
             BackgroundView().ignoresSafeArea()
         )
+    }
+
+    var textContent: some View {
+        VStack(spacing: 0) {
+            hText(L10n.activateNotificationsTitle)
+                .accessibilityAddTraits(.isHeader)
+            hText(text)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, .padding32)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
     }
 
     @ViewBuilder
