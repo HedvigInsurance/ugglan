@@ -13,8 +13,7 @@ public class EditCoInsuredClientDemo: EditCoInsuredClient {
             activationDate: "2024-02-22",
             currentPremium: MonetaryAmount(amount: "", currency: ""),
             newPremium: MonetaryAmount(amount: "", currency: ""),
-            id: "is",
-            state: "state"
+            id: "is"
         )
     }
 

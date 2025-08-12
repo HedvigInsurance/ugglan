@@ -61,6 +61,7 @@ struct CrossSellingItem: View {
                     }
                 }
                 .accessibilityElement(children: .combine)
+                .accessibilityValue(L10n.voiceoverPressTo + L10n.crossSellGetPrice)
                 .onTapGesture {
                     fieldIsClicked.toggle()
                     openExternal()

@@ -25,7 +25,9 @@ public enum Environment: Hashable {
             )
             let data = try? JSONEncoder().encode(rawCustomStorage)
 
-            if let data = data { return String(data: data, encoding: .utf8) ?? "staging" }
+            if let data = data {
+                return String(data: data, encoding: .utf8) ?? "staging"
+            }
 
             return "staging"
         }
@@ -82,7 +84,9 @@ public enum Environment: Hashable {
             let targetEnvirontmentRawValue = UserDefaults.standard.value(forKey: targetEnvironmentKey)
                 as? String, let targetEnvironment = Environment(rawValue: targetEnvirontmentRawValue)
         else {
-            if Bundle.main.bundleIdentifier == "com.hedvig.app" { return .production }
+            if Bundle.main.bundleIdentifier == "com.hedvig.app" {
+                return .production
+            }
 
             return .staging
         }
