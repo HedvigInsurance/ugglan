@@ -7,7 +7,7 @@ brew install --formula tuist@4.50.2
 
 cd $CI_PRIMARY_REPOSITORY_PATH;
 
-if [[ -n "${DATADOG_API_KEY:-}" ]]; then
+if [ "${DATADOG_API_KEY+x}" ]; then
   echo "===== Installing Node.js using Homebrew ====="
   brew install node
 
