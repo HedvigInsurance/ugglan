@@ -57,26 +57,57 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where
     /// Sends an action to the store, which is then reduced to produce a new state
     public func send(_ action: Action) {
         Task { [weak self] in
-            await withCheckedContinuation {
-                (inCont: CheckedContinuation<Void, Never>) in
-                self?.getQueue()
-                    .async { [weak self] in
-                        guard let self = self else { return }
-                        let semaphore = DispatchSemaphore(value: 0)
-                        Task { [weak self] in
-                            guard let self else {
-                                semaphore.signal()
-                                return
-                            }
-                            await self.sendAsync(action)
-                            semaphore.signal()
-                        }
-                        semaphore.wait()
-                        inCont.resume()
-                    }
+            guard let self else { return }
+            await withCheckedContinuation { continuation in
+                self.enqueueSend(action, continuation: continuation)
             }
         }
     }
+
+    nonisolated private func enqueueSend(
+        _ action: Action,
+        continuation: CheckedContinuation<Void, Never>
+    ) {
+        getQueue()
+            .async { [weak self] in
+                guard let self else {
+                    continuation.resume()
+                    return
+                }
+
+                Task { [weak self] in
+                    guard let self else {
+                        continuation.resume()
+                        return
+                    }
+                    await self.sendAsync(action)
+                    continuation.resume()
+                }
+            }
+    }
+
+    //    public func send(_ action: Action) {
+    //        Task { [weak self] in
+    //            await withCheckedContinuation {
+    //                (inCont: CheckedContinuation<Void, Never>) in
+    //                self?.getQueue()
+    //                    .async { [weak self] in
+    //                        guard let self = self else { return }
+    //                        let semaphore = DispatchSemaphore(value: 0)
+    //                        Task { [weak self] in
+    //                            guard let self else {
+    //                                semaphore.signal()
+    //                                return
+    //                            }
+    //                            await self.sendAsync(action)
+    //                            semaphore.signal()
+    //                        }
+    //                        semaphore.wait()
+    //                        inCont.resume()
+    //                    }
+    //            }
+    //        }
+    //    }
 
     public func sendAsync(_ action: Action) async {
         await logger("🦄 \(String(describing: Self.self)): sending \(action)")
