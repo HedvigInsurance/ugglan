@@ -3,11 +3,11 @@ import hCore
 import hCoreUI
 
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
-    let discountsData: [DiscountsDataForInsurance]
+    let discounts: [Discount]
     let referralsData: ReferralsData
 
-    public init(discountsData: [DiscountsDataForInsurance], referralsData: ReferralsData) {
-        self.discountsData = discountsData
+    public init(discounts: [Discount], referralsData: ReferralsData) {
+        self.discounts = discounts
         self.referralsData = referralsData
     }
 }
@@ -16,9 +16,8 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let code: String
     public let amount: MonetaryAmount?
-    public let discountPerReferral: MonetaryAmount?
     let title: String?
-    public let listOfAffectedInsurances: [AffectedInsurance]?
+    let listOfAffectedInsurances: [AffectedInsurance]
     let validUntil: ServerBasedDate?
     let canBeDeleted: Bool
     let discountId: String
@@ -27,8 +26,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         code: String,
         amount: MonetaryAmount?,
         title: String?,
-        discountPerReferral: MonetaryAmount? = nil,
-        listOfAffectedInsurances: [AffectedInsurance]? = nil,
+        listOfAffectedInsurances: [AffectedInsurance],
         validUntil: ServerBasedDate?,
         canBeDeleted: Bool,
         discountId: String
@@ -36,7 +34,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         id = UUID().uuidString
         self.code = code
         self.amount = amount
-        self.discountPerReferral = discountPerReferral
         self.title = title
         self.listOfAffectedInsurances = listOfAffectedInsurances
         self.validUntil = validUntil
@@ -47,18 +44,16 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     @MainActor
     public init(
         referral: Referral,
-        nbOfReferrals: Int,
-        discountPerReferral: MonetaryAmount? = nil,
+        nbOfReferrals _: Int
     ) {
-        self.id = UUID().uuidString
-        self.code = referral.code ?? referral.name
-        self.amount = referral.activeDiscount
-        self.title = referral.description
-        self.discountPerReferral = discountPerReferral
-        self.listOfAffectedInsurances = []
-        self.validUntil = nil
-        self.canBeDeleted = true
-        self.discountId = referral.id
+        id = UUID().uuidString
+        code = referral.code ?? referral.name
+        amount = referral.activeDiscount
+        title = referral.description
+        listOfAffectedInsurances = []
+        validUntil = nil
+        canBeDeleted = true
+        discountId = referral.id
     }
 
     @MainActor
@@ -192,17 +187,5 @@ public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sen
     ) {
         self.id = id
         self.displayName = displayName
-    }
-}
-
-public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
-    public let id: String
-    let insurance: AffectedInsurance
-    public var discount: [Discount]
-
-    public init(insurance: AffectedInsurance, discount: [Discount]) {
-        self.insurance = insurance
-        self.id = insurance.id
-        self.discount = discount
     }
 }
