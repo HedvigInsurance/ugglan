@@ -83,14 +83,10 @@ extension HomeScreen {
                         HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
                         FutureSectionInfoView()
                             .slideUpFadeAppearAnimation()
-                        VStack(spacing: .padding8) {
-                            openHelpCenter
-                        }
-                    }
-                case .loading:
-                    VStack(spacing: .padding8) {
                         openHelpCenter
                     }
+                case .loading:
+                    openHelpCenter
                 }
             }
         }
@@ -121,8 +117,8 @@ extension HomeScreen {
                 .large,
                 .secondary,
                 content: .init(title: L10n.HomeTab.getHelp),
-                {
-                    navigationVm.isHelpCenterPresented = true
+                { [weak navigationVm] in
+                    navigationVm?.isHelpCenterPresented = true
                 }
             )
         }

@@ -558,9 +558,9 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     init() {
         setupObservers()
-        homeNavigationVm.pushToProfile = {
-            self.selectedTab = 4
-            self.profileNavigationVm.pushToProfile()
+        homeNavigationVm.pushToProfile = { [weak self] in
+            self?.selectedTab = 4
+            self?.profileNavigationVm.pushToProfile()
         }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
@@ -958,24 +958,24 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     private func handleEditCoInsured(url: URL) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        Task { [weak self] in
+        Task {
             if let contractId = url.getParameter(property: .contractId),
                 let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
             {
                 let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
 
                 if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
-                    self?.homeNavigationVm.editCoInsuredVm
+                    self.homeNavigationVm.editCoInsuredVm
                         .start(
                             fromContract: contractConfig,
                             forMissingCoInsured: true
                         )
                 } else {
-                    self?.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
+                    self.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
                 }
             } else {
                 // select insurance
-                self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+                self.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
             }
         }
     }
