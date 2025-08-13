@@ -315,7 +315,6 @@ private class ContractsInformationViewModel: ObservableObject {
 }
 
 public struct CoInsuredInfoView: View {
-    @PresentableStore var store: ContractStore
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     let text: String
@@ -333,8 +332,8 @@ public struct CoInsuredInfoView: View {
             .buttons([
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                    buttonAction: {
-                        contractsNavigationVm.editCoInsuredVm.start(fromContract: config)
+                    buttonAction: { [weak contractsNavigationVm] in
+                        contractsNavigationVm?.editCoInsuredVm.start(fromContract: config)
                     }
                 )
             ])

@@ -43,8 +43,8 @@ struct ContractTable: View {
                 .loadingWithButtonLoading($vm.viewState)
                 .hStateViewButtonConfig(
                     .init(
-                        actionButton: .init(buttonAction: {
-                            store.send(.fetchContracts)
+                        actionButton: .init(buttonAction: { [weak store] in
+                            store?.send(.fetchContracts)
                         }),
                         dismissButton: nil
                     )

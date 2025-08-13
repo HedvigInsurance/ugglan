@@ -337,7 +337,7 @@ struct HomeTab: View {
         RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    openClaimDetails(claim: claim, type: .claim(id: claim.id, status: .active))
+                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
                 }
                 .routerDestination(for: String.self) { _ in
                     InboxView()
@@ -473,10 +473,8 @@ struct HomeTab: View {
                                     onDone()
                                 }
                             )
-                        case let .claimDetailForConversationId(id):
-                            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            let claim = claimStore.state.claimFromConversation(for: id)
-                            openClaimDetails(claim: claim, type: .conversation(id: id))
+                        case let .claimDetailFor(claimId: claimId):
+                            openClaimDetails(claim: nil, type: .conversation(claimId: claimId))
                         }
                     }
                 )
@@ -484,7 +482,7 @@ struct HomeTab: View {
         )
     }
 
-    private func openClaimDetails(claim: ClaimModel?, type: FetchClaimDetailsType) -> some View {
+    private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
         ClaimDetailView(claim: claim, type: type)
             .configureTitle(L10n.claimsYourClaim)
             .onDeinit {
@@ -560,9 +558,9 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     init() {
         setupObservers()
-        homeNavigationVm.pushToProfile = {
-            self.selectedTab = 4
-            self.profileNavigationVm.pushToProfile()
+        homeNavigationVm.pushToProfile = { [weak self] in
+            self?.selectedTab = 4
+            self?.profileNavigationVm.pushToProfile()
         }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
@@ -950,37 +948,41 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     private func handleEditCoInsured(url: URL) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        Task { [weak self] in
+        Task {
             if let contractId = url.getParameter(property: .contractId),
                 let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
             {
                 let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
 
                 if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
-                    self?.homeNavigationVm.editCoInsuredVm
+                    self.homeNavigationVm.editCoInsuredVm
                         .start(
                             fromContract: contractConfig,
                             forMissingCoInsured: true
                         )
                 } else {
-                    self?.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
+                    self.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
                 }
             } else {
                 // select insurance
-                self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+                self.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
             }
         }
     }
 
     private func handleClaimDetails(claimId: String?) async {
-        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-        await claimStore.sendAsync(.fetchActiveClaims)
-        if let claimId, let claim = claimStore.state.claim(for: claimId) {
-            UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-            selectedTab = 0
-            Task { [weak self] in
-                try await Task.sleep(nanoseconds: 200_000_000)
-                self?.homeNavigationVm.router.push(claim)
+        if let claimId {
+            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+            do {
+                let claim = try await claimService.get(for: claimId)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                selectedTab = 0
+                Task { [weak self] in
+                    try await Task.sleep(nanoseconds: 200_000_000)
+                    self?.homeNavigationVm.router.push(claim)
+                }
+            } catch {
+                Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
             }
         } else {
             Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
