@@ -87,12 +87,12 @@ public struct QuoteSummaryScreen: View {
                     vm.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
                 ),
                 buttons: .init(
-                    mainButton: .init(buttonAction: {
-                        vm.isConfirmChangesPresented = false
-                        vm.onConfirmClick()
+                    mainButton: .init(buttonAction: { [weak vm] in
+                        vm?.isConfirmChangesPresented = false
+                        vm?.onConfirmClick()
                     }),
-                    dismissButton: .init(buttonAction: {
-                        vm.isConfirmChangesPresented = false
+                    dismissButton: .init(buttonAction: { [weak vm] in
+                        vm?.isConfirmChangesPresented = false
                     })
                 )
             )
@@ -346,9 +346,9 @@ private struct ContractCardView: View {
             .medium,
             .secondary,
             content: .init(title: L10n.addonAddCoverage)
-        ) {
+        ) { [weak vm] in
             withAnimation(.easeInOut(duration: 0.4)) {
-                vm.addContract(contract)
+                vm?.addContract(contract)
             }
         }
         .hWithTransition(.scale)
@@ -361,9 +361,9 @@ private struct ContractCardView: View {
                 .medium,
                 .secondary,
                 content: .init(title: L10n.General.remove)
-            ) {
+            ) { [weak vm] in
                 withAnimation(.easeInOut(duration: 0.4)) {
-                    vm.removeModel = removeModel
+                    vm?.removeModel = removeModel
                 }
             }
             .hWithTransition(.scale)

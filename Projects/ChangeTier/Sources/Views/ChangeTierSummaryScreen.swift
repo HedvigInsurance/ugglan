@@ -3,16 +3,12 @@ import hCore
 import hCoreUI
 
 struct ChangeTierSummaryScreen: View {
-    @ObservedObject var changeTierVm: ChangeTierViewModel
-    let quoteSummaryVm: QuoteSummaryViewModel
-    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    private let quoteSummaryVm: QuoteSummaryViewModel
 
     init(
         changeTierVm: ChangeTierViewModel,
         changeTierNavigationVm: ChangeTierNavigationViewModel
     ) {
-        self.changeTierVm = changeTierVm
-        self.changeTierNavigationVm = changeTierNavigationVm
         quoteSummaryVm = changeTierVm.asQuoteSummaryViewModel(changeTierNavigationVm: changeTierNavigationVm)
     }
 
@@ -88,8 +84,9 @@ extension ChangeTierViewModel {
                     totalNet: totalNet
                 )
             ),
-            onConfirmClick: {
-                changeTierNavigationVm.isConfirmTierPresented = true
+            onConfirmClick: { [weak changeTierNavigationVm] in
+                changeTierNavigationVm?.vm.commitTier()
+                changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
             }
         )
 
