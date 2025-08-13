@@ -20,7 +20,6 @@ final class StoreDiscountsTests: XCTestCase {
     }
 
     func testFetchDiscountsSuccess() async throws {
-
         let discounts: [Discount] = [
             .init(
                 code: "code",
@@ -39,13 +38,7 @@ final class StoreDiscountsTests: XCTestCase {
                 discountPerMember: .init(amount: "10", currency: "SEK"),
                 discount: .init(amount: "10", currency: "SEK"),
                 referrals: [
-                    .init(
-                        id: "referralId",
-                        name: "name",
-                        code: "referralId",
-                        description: "description",
-                        status: .active
-                    )
+                    .init(id: "referralId", name: "name", code: nil, description: "desciption", status: .active)
                 ]
             )
         )

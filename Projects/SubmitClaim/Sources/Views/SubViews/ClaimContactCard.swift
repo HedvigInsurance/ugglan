@@ -12,7 +12,6 @@ struct ClaimContactCard: View {
             sectionContent
         }
         .sectionContainerStyle(.black)
-
     }
 
     private var sectionContent: some View {
@@ -49,7 +48,7 @@ struct ClaimContactCard: View {
                             .secondaryAlt,
                             content: .init(title: model.buttonText ?? ""),
                             {
-                                UIApplication.shared.open(url)
+                                Dependencies.urlOpener.open(url)
                             }
                         )
                         .colorScheme(.light)
@@ -63,7 +62,7 @@ struct ClaimContactCard: View {
                             getPhoneNumberButtonType(),
                             content: .init(title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber)),
                             {
-                                UIApplication.shared.open(url)
+                                Dependencies.urlOpener.open(url)
                             }
                         )
                         .colorScheme(getPhoneNumberSchema())
@@ -75,7 +74,6 @@ struct ClaimContactCard: View {
                         .foregroundColor(hTextColor.Opaque.tertiary)
                         .padding(.top, .padding16)
                 }
-
             }
             .sectionContainerStyle(.transparent)
         }
@@ -145,6 +143,5 @@ struct ClaimContactCard_Previews: PreviewProvider {
                 )
             )
         }
-
     }
 }

@@ -90,6 +90,6 @@ extension EnvironmentValues {
 
 extension View {
     public var hExtraTopPadding: some View {
-        self.environment(\.hExtraTopPadding, true)
+        environment(\.hExtraTopPadding, true)
     }
 }

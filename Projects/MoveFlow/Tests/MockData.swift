@@ -18,15 +18,14 @@ struct MockData {
                 maxHouseSquareMeters: nil
             )
         },
-        moveIntentRequest: @escaping MoveIntentRequest = { input in
+        moveIntentRequest: @escaping MoveIntentRequest = { _ in
             .init(
                 homeQuotes: [],
                 mtaQuotes: [],
                 changeTierModel: nil
             )
         },
-        moveIntentConfirm: @escaping MoveIntentConfirm = { intentId, homeQuoteId, removedAddons in
-
+        moveIntentConfirm: @escaping MoveIntentConfirm = { _, _, _ in
         }
     ) -> MockMoveFlowService {
         let service = MockMoveFlowService(

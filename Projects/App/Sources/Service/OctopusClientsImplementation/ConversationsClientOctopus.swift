@@ -4,14 +4,14 @@ import PresentableStore
 import hCore
 import hGraphQL
 
-public class ConversationsClientOctopus: ConversationsClient {
+class ConversationsClientOctopus: ConversationsClient {
     @Inject private var octopus: hOctopus
-    public init() {}
-    public func getConversations() async throws -> [Conversation] {
+
+    func getConversations() async throws -> [Conversation] {
         let query = hGraphQL.OctopusGraphQL.ConversationsQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        let conversationsFragment = data.currentMember.conversations.compactMap({ $0.fragments.conversationFragment })
-        var conversations = conversationsFragment.compactMap({ $0.asConversation(type: .service) })
+        let conversationsFragment = data.currentMember.conversations.compactMap(\.fragments.conversationFragment)
+        var conversations = conversationsFragment.compactMap { $0.asConversation(type: .service) }
 
         if let legacyFragment = data.currentMember.legacyConversation?.fragments.conversationFragment {
             let legacyConversation = legacyFragment.asConversation(type: .legacy)
@@ -19,13 +19,13 @@ public class ConversationsClientOctopus: ConversationsClient {
         }
 
         let conversationsSortedByDate = conversations.sorted(by: {
-            if $0.hasNewMessage && !$1.hasNewMessage {
+            if $0.hasNewMessage, !$1.hasNewMessage {
                 return true
-            } else if !$0.hasNewMessage && $1.hasNewMessage {
+            } else if !$0.hasNewMessage, $1.hasNewMessage {
                 return false
-            } else if $0.isOpened && $1.isClosed {
+            } else if $0.isOpened, $1.isClosed {
                 return true
-            } else if $0.isClosed && $1.isOpened {
+            } else if $0.isClosed, $1.isOpened {
                 return false
             }
             return $0.getAnyDate > $1.getAnyDate
@@ -33,7 +33,7 @@ public class ConversationsClientOctopus: ConversationsClient {
         return conversationsSortedByDate
     }
 
-    public func createConversation(with id: UUID) async throws -> Conversation {
+    func createConversation(with id: UUID) async throws -> Conversation {
         let input = OctopusGraphQL.ConversationStartInput(id: id.uuidString)
         let mutation = hGraphQL.OctopusGraphQL.ConversationStartMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
@@ -43,19 +43,17 @@ public class ConversationsClientOctopus: ConversationsClient {
     }
 }
 
-public class ConversationClientOctopus: ConversationClient {
+class ConversationClientOctopus: ConversationClient {
     @Inject var octopus: hOctopus
     var chatFileUploaderService = ChatFileUploaderService()
 
-    public init() {}
-
-    public func send(message: Message, for conversationId: String) async throws -> Message {
+    func send(message: Message, for conversationId: String) async throws -> Message {
         var textToSend: String?
         var fileToken: String?
         switch message.type {
-        case .text(let text):
+        case let .text(text):
             textToSend = text
-        case .file(let file):
+        case let .file(file):
             do {
                 let uploadResponse = try await chatFileUploaderService.upload(files: [file]) { _ in }
                 fileToken = uploadResponse.first?.uploadToken ?? ""
@@ -79,10 +77,9 @@ public class ConversationClientOctopus: ConversationClient {
             throw ConversationsError.errorMesage(message: errorMessage)
         }
         throw ConversationsError.missingData
-
     }
 
-    public func getConversationMessages(
+    func getConversationMessages(
         for conversationId: String,
         olderToken: String?,
         newerToken: String?
@@ -99,7 +96,7 @@ public class ConversationClientOctopus: ConversationClient {
         else {
             throw ConversationsError.missingConversation
         }
-        let messages = conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
+        let messages = conversation.messagePage.messages.compactMap { $0.fragments.messageFragment.asMessage() }
         let newerToken = conversation.messagePage.newerToken
         let newOlderToken = conversation.messagePage.olderToken
         let banner = conversation.statusMessage
@@ -123,16 +120,16 @@ public class ConversationClientOctopus: ConversationClient {
 @MainActor
 extension OctopusGraphQL.ConversationFragment {
     func asConversation(type: ConversationType) -> Conversation {
-        return .init(
+        .init(
             id: id,
             type: type,
-            newestMessage: self.newestMessage?.fragments.messageFragment.asMessage(),
-            createdAt: self.createdAt,
-            statusMessage: self.statusMessage,
-            status: self.isOpen ? .open : .closed,
-            hasClaim: self.claim != nil,
-            claimType: self.claim?.claimType,
-            unreadMessageCount: self.unreadMessageCount
+            newestMessage: newestMessage?.fragments.messageFragment.asMessage(),
+            createdAt: createdAt,
+            statusMessage: statusMessage,
+            status: isOpen ? .open : .closed,
+            hasClaim: claim != nil,
+            claimType: claim?.claimType,
+            unreadMessageCount: unreadMessageCount
         )
     }
 }
@@ -140,28 +137,28 @@ extension OctopusGraphQL.ConversationFragment {
 @MainActor
 extension OctopusGraphQL.MessageFragment {
     func asMessage() -> Message {
-        return .init(
+        .init(
             id: id,
             type: messageType,
-            sender: self.sender == .hedvig ? .hedvig : .member,
-            date: self.sentAt.localDateToIso8601Date ?? Date()
+            sender: sender == .hedvig ? .hedvig : .member,
+            date: sentAt.localDateToIso8601Date ?? Date()
         )
     }
 
     private var messageType: MessageType {
-        if let action = self.asChatMessageAction {
+        if let action = asChatMessageAction {
             let urlText = action.actionUrl.trimmingCharacters(in: .whitespacesAndNewlines)
             if let url = URL(string: urlText), urlText.isUrl {
                 let data = ActionMessage(url: url, text: action.actionText, buttonTitle: action.actionTitle)
                 return .action(action: data)
             }
-        } else if let text = self.asChatMessageText?.text {
+        } else if let text = asChatMessageText?.text {
             let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
             if let url = URL(string: urlText), urlText.isUrl {
                 if urlText.isGIFURL {
                     return .file(
                         file: .init(
-                            id: self.id,
+                            id: id,
                             size: 0,
                             mimeType: .GIF,
                             name: "",
@@ -178,7 +175,7 @@ extension OctopusGraphQL.MessageFragment {
             } else {
                 return .text(text: text)
             }
-        } else if let file = self.asChatMessageFile {
+        } else if let file = asChatMessageFile {
             if let url = URL(string: file.signedUrl) {
                 let mimeType = MimeType.findBy(mimeType: file.mimeType)
                 return .file(

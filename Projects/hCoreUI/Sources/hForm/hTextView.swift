@@ -86,7 +86,6 @@ public struct hTextView: View {
                 hText(errorMessage, style: .label).foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.horizontal, .padding16)
             }
-
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(placeholder)
@@ -129,9 +128,9 @@ public struct hTextView: View {
         vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
 
         continueAction.execute = { [weak vc] in
-            self.selectedValue = value
-            self.value = value
-            self.onContinue(value)
+            selectedValue = value
+            value = value
+            onContinue(value)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 vc?.dismiss(animated: true)
             }
@@ -212,11 +211,11 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         self.title = title
         self.continueAction = continueAction
         self.cancelAction = cancelAction
-        self._value = value
+        _value = value
         self.placeholder = placeholder
         self.maxCharacters = maxCharacters
         self.enableTransition = enableTransition
-        self._height = height
+        _height = height
     }
 
     public var body: some View {
@@ -320,7 +319,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                 keyboard = newHeight - 44 + 12
             }
         }
-        .onChange(of: inEdit) { inEdit in
+        .onChange(of: inEdit) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 if keyboard == 303.99 {
                     withAnimation {
@@ -339,7 +338,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
             hSignalColor.Red.element
         }
     }
-
 }
 
 private struct SwiftUITextView: UIViewRepresentable {
@@ -353,8 +351,8 @@ private struct SwiftUITextView: UIViewRepresentable {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.hTextFieldError) var errorMessage
     let enableTransition: Bool
-    var onBeginEditing: (() -> Void)? = nil
-    internal func makeUIView(context: Context) -> UITextView {
+    var onBeginEditing: (() -> Void)?
+    func makeUIView(context _: Context) -> UITextView {
         let textView = TextView(
             placeholder: placeholder,
             inputText: $text,
@@ -375,7 +373,7 @@ private struct SwiftUITextView: UIViewRepresentable {
         return textView
     }
 
-    internal func updateUIView(_ uiView: UITextView, context: Context) {
+    func updateUIView(_ uiView: UITextView, context _: Context) {
         if let textView = uiView as? TextView {
             if disabled {
                 textView.setText(text: text)
@@ -386,9 +384,7 @@ private struct SwiftUITextView: UIViewRepresentable {
         }
         uiView.backgroundColor = hSurfaceColor.Opaque.primary.colorFor(.init(.init(colorScheme))!, .base).color
             .uiColor()
-
     }
-
 }
 
 private class TextView: UITextView, UITextViewDelegate {
@@ -398,19 +394,21 @@ private class TextView: UITextView, UITextViewDelegate {
     @Binding private var width: CGFloat
     @Binding private var inEdit: Bool
     private let placeholderView = UITextView()
-    var onBeginEditing: (() -> Void)? = nil
+    var onBeginEditing: (() -> Void)?
 
     var errorMessage: String? {
         didSet {
             layoutSubviews()
         }
     }
+
     var colorSchema: ColorScheme = .light {
         didSet {
-            self.textColor = getTextColor()
-            self.placeholderView.textColor = getPlaceholderColor()
+            textColor = getTextColor()
+            placeholderView.textColor = getPlaceholderColor()
         }
     }
+
     init(
         placeholder: String,
         inputText: Binding<String>,
@@ -421,22 +419,22 @@ private class TextView: UITextView, UITextViewDelegate {
         inEdit: Binding<Bool>,
         onBeginEditing: (() -> Void)? = nil
     ) {
-        self._inputText = inputText
+        _inputText = inputText
         self.disabled = disabled
-        self._height = height
-        self._width = width
-        self._inEdit = inEdit
+        _height = height
+        _width = width
+        _inEdit = inEdit
         self.onBeginEditing = onBeginEditing
         super.init(frame: .zero, textContainer: nil)
-        self.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
-        self.delegate = self
-        self.font = Fonts.fontFor(style: .body1)
-        self.backgroundColor = .clear
-        self.layer.cornerRadius = 12
-        self.setText(text: inputText.wrappedValue)
-        self.textContainer.lineBreakMode = .byTruncatingTail
-        self.keyboardAppearance = .dark
-        self.addSubview(placeholderView)
+        textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
+        delegate = self
+        font = Fonts.fontFor(style: .body1)
+        backgroundColor = .clear
+        layer.cornerRadius = 12
+        setText(text: inputText.wrappedValue)
+        textContainer.lineBreakMode = .byTruncatingTail
+        keyboardAppearance = .dark
+        addSubview(placeholderView)
         placeholderView.textColor = getPlaceholderColor()
         placeholderView.delegate = self
         placeholderView.backgroundColor = .clear
@@ -450,7 +448,7 @@ private class TextView: UITextView, UITextViewDelegate {
         } else {
             isEditable = false
             let gesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
-            self.addGestureRecognizer(gesture)
+            addGestureRecognizer(gesture)
         }
 
         updateHeight()
@@ -462,10 +460,11 @@ private class TextView: UITextView, UITextViewDelegate {
     }
 
     @objc private func handleTapGesture() {
-        self.onBeginEditing?()
+        onBeginEditing?()
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -476,26 +475,26 @@ private class TextView: UITextView, UITextViewDelegate {
             }
             return false
         } else if textView == placeholderView {
-            self.becomeFirstResponder()
+            becomeFirstResponder()
             return false
         }
         return true
     }
 
-    func textViewDidBeginEditing(_ textView: UITextView) {
+    func textViewDidBeginEditing(_: UITextView) {
         inEdit = true
     }
 
     func textViewDidChange(_ textView: UITextView) {
         inputText = textView.text
-        self.textColor = getTextColor()
+        textColor = getTextColor()
         updateHeight()
     }
 
     func setText(text: String) {
         self.text = text
-        self.textColor = getTextColor()
-        self.placeholderView.isHidden = text != ""
+        textColor = getTextColor()
+        placeholderView.isHidden = text != ""
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -504,7 +503,7 @@ private class TextView: UITextView, UITextViewDelegate {
         inputText = text
     }
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    func textView(_: UITextView, shouldChangeTextIn _: NSRange, replacementText _: String) -> Bool {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
             self?.updateHeight()
             self?.placeholderView.isHidden = self?.text != ""
@@ -520,7 +519,7 @@ private class TextView: UITextView, UITextViewDelegate {
     }
 
     private func getPlaceholderColor() -> UIColor {
-        return hTextColor.Opaque.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
+        hTextColor.Opaque.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
     }
 
     func updateHeight() {
@@ -545,28 +544,28 @@ private class TextView: UITextView, UITextViewDelegate {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let frameWidth = self.frame.width
-        let labelSize = self.placeholderView.sizeThatFits(.init(width: self.frame.width, height: .infinity))
-        self.placeholderView.frame = .init(x: 0, y: 0, width: frameWidth, height: labelSize.height)
+        let frameWidth = frame.width
+        let labelSize = placeholderView.sizeThatFits(.init(width: frame.width, height: .infinity))
+        placeholderView.frame = .init(x: 0, y: 0, width: frameWidth, height: labelSize.height)
         if disabled {
             let transparent = UIColor(white: 0, alpha: 0).cgColor
             let opaque = UIColor(white: 0, alpha: 1).cgColor
 
             let maskLayer = CALayer()
-            maskLayer.frame = self.bounds
+            maskLayer.frame = bounds
 
             let gradientLayer = CAGradientLayer()
             gradientLayer.frame = CGRect(
-                x: self.bounds.origin.x,
+                x: bounds.origin.x,
                 y: 0,
-                width: self.bounds.size.width,
-                height: self.bounds.size.height
+                width: bounds.size.width,
+                height: bounds.size.height
             )
             gradientLayer.colors = [transparent, opaque, opaque, transparent]
             gradientLayer.locations = [0.0, 0.02, 0.98, 1.0]
 
             maskLayer.addSublayer(gradientLayer)
-            self.layer.mask = maskLayer
+            layer.mask = maskLayer
         }
     }
 }
@@ -575,18 +574,17 @@ private class TextView: UITextView, UITextViewDelegate {
 private struct SafeAreaInsetsKey: @preconcurrency EnvironmentKey {
     static var defaultValue: EdgeInsets {
         let keyWindow = UIApplication.shared.connectedScenes
-            .filter({ $0.activationState == .foregroundActive })
-            .map({ $0 as? UIWindowScene })
-            .compactMap({ $0 })
+            .filter { $0.activationState == .foregroundActive }
+            .map { $0 as? UIWindowScene }
+            .compactMap { $0 }
             .first?
             .windows
-            .filter({ $0.isKeyWindow }).first
+            .filter(\.isKeyWindow).first
         return (keyWindow?.safeAreaInsets ?? .zero).insets
     }
 }
 
 extension EnvironmentValues {
-
     var safeAreaInsets: EdgeInsets {
         self[SafeAreaInsetsKey.self]
     }

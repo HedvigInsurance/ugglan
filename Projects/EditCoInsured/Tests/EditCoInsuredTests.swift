@@ -2,11 +2,9 @@ import Foundation
 @preconcurrency import XCTest
 
 @testable import EditCoInsured
-@testable import EditCoInsuredShared
 
 @MainActor
 final class ContractsEditInsuredCompleteListTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
@@ -113,7 +111,6 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         XCTAssert(list.count == 2)
         XCTAssert(list[0] == CoInsuredModel.testMemberWithSSN1)
         XCTAssert(list[1] == CoInsuredModel.testMemberWithSSN2)
-
     }
 
     func testInitialWithOneDeleted() {
@@ -221,6 +218,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         XCTAssert(list[1] == CoInsuredModel.testMemberWithBirthdate1)
     }
 }
+
 @MainActor
 extension CoInsuredModel {
     static let testMemberWithSSN1 = CoInsuredModel(

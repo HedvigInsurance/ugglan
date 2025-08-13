@@ -1,5 +1,6 @@
 import Foundation
 import WebKit
+import hCore
 
 public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
     public static let NAME = "trustlyOpenURLScheme"
@@ -15,7 +16,7 @@ public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
         {
             let canOpenApplicationUrl = UIApplication.shared.canOpenURL(appUrl)
             if canOpenApplicationUrl {
-                UIApplication.shared.open(appUrl, options: [:], completionHandler: nil)
+                Dependencies.urlOpener.open(appUrl)
             }
             let template = "%@(%@,\"%@\");"
             let js = String(format: template, callback, String(canOpenApplicationUrl), urlscheme)

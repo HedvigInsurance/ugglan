@@ -14,7 +14,7 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
     @Published public var editCoInsuredModelError: EditCoInsuredErrorWrapper?
-    public let editCoInsuredSharedService = EditCoInsuredSharedService()
+    private let service = EditCoInsuredService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
     let existingCoInsured: ExistingCoInsured
 
@@ -28,35 +28,35 @@ public class EditCoInsuredViewModel: ObservableObject {
     public func start(fromContract: InsuredPeopleConfig? = nil, forMissingCoInsured: Bool = false) {
         Task { @MainActor in
             do {
-                let activeContracts = try await editCoInsuredSharedService.fetchContracts()
+                let activeContracts = try await service.fetchContracts()
 
                 if let contract = fromContract {
                     editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                        return [contract]
+                        [contract]
                     })
                 } else {
                     let contractsSupportingCoInsured =
                         activeContracts
-                        .filter({
+                        .filter {
                             $0.showEditCoInsuredInfo
                                 && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
-                        })
-                        .compactMap({
+                        }
+                        .compactMap {
                             InsuredPeopleConfig(
                                 contract: $0,
                                 preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
                                 fromInfoCard: true
                             )
-                        })
+                        }
                     if contractsSupportingCoInsured.count > 1 {
                         editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                            return contractsSupportingCoInsured
+                            contractsSupportingCoInsured
                         })
                     } else if !contractsSupportingCoInsured.isEmpty {
                         editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                            return contractsSupportingCoInsured
+                            contractsSupportingCoInsured
                         })
-                    } else {  //if empty
+                    } else {  // if empty
                         throw EditCoInsuedError.missingContracts
                     }
                 }
@@ -72,7 +72,7 @@ public class EditCoInsuredViewModel: ObservableObject {
         editCoInsuredModelMissingAlert = nil
 
         Task { @MainActor in
-            let activeContracts = try await editCoInsuredSharedService.fetchContracts()
+            let activeContracts = try await service.fetchContracts()
             let missingContract = activeContracts.first { contract in
                 if contract.id == excludingContractId {
                     return false
@@ -105,7 +105,7 @@ enum EditCoInsuedError: Error {
 }
 
 extension EditCoInsuedError: LocalizedError {
-    public var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .missingContracts:
             return L10n.General.defaultError
@@ -122,7 +122,6 @@ public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
     ) {
         self.openSpecificScreen = openSpecificScreen
         self.contractsSupportingCoInsured = contractsSupportingCoInsured()
-
     }
 
     public var id: String = UUID().uuidString

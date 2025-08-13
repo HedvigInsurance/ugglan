@@ -3,11 +3,11 @@ import Foundation
 @MainActor
 extension String {
     public var localDateToDate: Date? {
-        return Dependencies.dateService.localDateStringFormatter.date(from: self)
+        Dependencies.dateService.localDateStringFormatter.date(from: self)
     }
 
     public var localDateToIso8601Date: Date? {
-        return Dependencies.dateService.localDateToIso8601Date.date(from: self)
+        Dependencies.dateService.localDateToIso8601Date.date(from: self)
     }
 
     public var localBirthDateStringToDate: Date? {

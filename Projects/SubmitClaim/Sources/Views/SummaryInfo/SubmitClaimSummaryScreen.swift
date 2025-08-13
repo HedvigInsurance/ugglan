@@ -78,7 +78,6 @@ public struct SubmitClaimSummaryScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .claimErrorTrackerForState($vm.viewState)
-
     }
 
     @ViewBuilder
@@ -216,9 +215,9 @@ class SubmitClaimSummaryScreenViewModel: ObservableObject {
         fileUploadStep: FlowClaimFileUploadStepModel?
     ) {
         if let fileUploadStep {
-            self.model = FilesUploadViewModel(model: fileUploadStep)
+            model = FilesUploadViewModel(model: fileUploadStep)
         } else {
-            self.model = nil
+            model = nil
         }
     }
 

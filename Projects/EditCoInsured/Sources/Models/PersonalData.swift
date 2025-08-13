@@ -11,6 +11,6 @@ public struct PersonalData: Sendable {
     ) {
         self.firstName = firstName
         self.lastName = lastName
-        self.fullname = firstName + " " + lastName
+        fullname = firstName + " " + lastName
     }
 }

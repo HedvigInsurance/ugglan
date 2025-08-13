@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,26 +8,30 @@ struct InsuredPeopleScreen: View {
     @ObservedObject var intentViewModel: IntentViewModel
     let type: CoInsuredFieldType?
 
+    private var listToDisplay: [CoInsuredListType] {
+        vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
+    }
+
     var body: some View {
         hForm {
             VStack(spacing: 0) {
-                let listToDisplay = vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
-
-                let hasContentBelow = vm.nbOfMissingCoInsuredExcludingDeleted > 0
-
-                Group {
-                    contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || hasContentBelow)
-                    coInsuredSection(list: listToDisplay)
-                    buttonSection
-                }
-                .hWithoutHorizontalPadding([.section])
+                contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || vm.hasContentBelow)
+                coInsuredSection(list: listToDisplay)
+                buttonSection
             }
+            .hWithoutHorizontalPadding([.section])
             .sectionContainerStyle(.transparent)
 
             infoCardSection
         }
         .hFormAttachToBottom {
-            VStack(spacing: .padding8) {
+            bottomContent
+        }
+    }
+
+    private var bottomContent: some View {
+        VStack(spacing: .padding8) {
+            hSection {
                 if vm.showSavebutton {
                     saveChangesButton
                 }
@@ -36,49 +39,38 @@ struct InsuredPeopleScreen: View {
                 if vm.showConfirmChangesButton {
                     ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
                 }
-                hSection {
-                    CancelButton()
-                        .disabled(intentViewModel.isLoading)
-                }
-                .sectionContainerStyle(.transparent)
+                CancelButton()
+                    .disabled(intentViewModel.isLoading)
             }
+            .sectionContainerStyle(.transparent)
         }
     }
 
     private var saveChangesButton: some View {
-        hSection {
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.generalSaveChangesButton),
-                {
-                    Task {
-                        await intentViewModel.performCoInsuredChanges(
-                            commitId: intentViewModel.intent.id
-                        )
-                    }
-                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
-                    editCoInsuredNavigation.editCoInsuredConfig = nil
+        hButton(
+            .large,
+            .primary,
+            content: .init(title: L10n.generalSaveChangesButton),
+            {
+                Task {
+                    await intentViewModel.performCoInsuredChanges(
+                        commitId: intentViewModel.intent.id
+                    )
                 }
-            )
-            .hButtonIsLoading(intentViewModel.isLoading)
-            .disabled(
-                (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
-                    < vm.config.numberOfMissingCoInsuredWithoutTermination
-            )
-        }
-        .sectionContainerStyle(.transparent)
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
+                editCoInsuredNavigation.editCoInsuredConfig = nil
+            }
+        )
+        .hButtonIsLoading(intentViewModel.isLoading)
+        .disabled(!vm.shouldShowSaveChangesButton)
     }
 
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
         hSection {
-            hRow {
-                ContractOwnerField(
-                    hasContentBelow: hasContentBelow,
-                    config: vm.config
-                )
-            }
-            .verticalPadding(0)
+            ContractOwnerField(
+                hasContentBelow: hasContentBelow,
+                config: vm.config
+            )
             .padding(.top, .padding16)
         }
     }
@@ -105,9 +97,7 @@ struct InsuredPeopleScreen: View {
                     .secondary,
                     content: .init(title: L10n.contractAddCoinsured),
                     {
-                        let hasExistingCoInsured = vm.config.preSelectedCoInsuredList
-                            .filter { !vm.coInsuredAdded.contains($0) }
-                        if hasExistingCoInsured.isEmpty {
+                        if !vm.hasExistingCoInsured {
                             editCoInsuredNavigation.coInsuredInputModel = .init(
                                 actionType: .add,
                                 coInsuredModel: CoInsuredModel(),
@@ -135,13 +125,16 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
-        if coInsured.coInsured.hasMissingData && type != .delete {
-            getAccesoryView(for: .empty, coInsured: coInsured.coInsured)
-        } else if coInsured.locallyAdded {
-            getAccesoryView(for: .localEdit, coInsured: coInsured.coInsured)
-        } else {
-            getAccesoryView(for: .delete, coInsured: coInsured.coInsured)
+        var accessoryType: CoInsuredFieldType {
+            if coInsured.coInsured.hasMissingData, type != .delete {
+                .empty
+            } else if coInsured.locallyAdded {
+                .localEdit
+            } else {
+                .delete
+            }
         }
+        getAccesoryView(for: accessoryType, coInsured: coInsured.coInsured)
     }
 
     private func getAccesoryView(for type: CoInsuredFieldType, coInsured: CoInsuredModel) -> some View {
@@ -155,17 +148,20 @@ struct InsuredPeopleScreen: View {
             }
         }
         .onTapGesture {
-            let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
-            if type == .empty && !hasExistingCoInsured.isEmpty {
-                editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
-            } else {
-                editCoInsuredNavigation.coInsuredInputModel = .init(
-                    actionType: type.action,
-                    coInsuredModel: type == .empty ? CoInsuredModel() : coInsured,
-                    title: type.title,
-                    contractId: vm.config.contractId
-                )
-            }
+            onAccessoryViewTap(type: type, coInsured: coInsured)
+        }
+    }
+
+    private func onAccessoryViewTap(type: CoInsuredFieldType, coInsured: CoInsuredModel) {
+        if type == .empty, vm.hasExistingCoInsured {
+            editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+        } else {
+            editCoInsuredNavigation.coInsuredInputModel = .init(
+                actionType: type.action,
+                coInsuredModel: type == .empty ? CoInsuredModel() : coInsured,
+                title: type.title,
+                contractId: vm.config.contractId
+            )
         }
     }
 }

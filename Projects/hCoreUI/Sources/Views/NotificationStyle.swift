@@ -98,7 +98,6 @@ struct NotificationStyle: ViewModifier {
                     .background(backgroundColor)
                     .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
             }
-
         }
     }
 

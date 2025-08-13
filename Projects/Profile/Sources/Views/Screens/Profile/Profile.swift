@@ -11,7 +11,7 @@ public struct ProfileView: View {
     @State private var showLogoutAlert = false
 
     private var logoutAlert: SwiftUI.Alert {
-        return Alert(
+        Alert(
             title: Text(L10n.logoutAlertTitle),
             message: nil,
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
@@ -39,6 +39,9 @@ public struct ProfileView: View {
                         ProfileRow(
                             row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
+                    }
+                    if Dependencies.featureFlags().isClaimHistoryEnabled {
+                        ProfileRow(row: .claimHistory)
                     }
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
@@ -85,7 +88,7 @@ public struct ProfileView: View {
 
     @ViewBuilder
     private func certificatesView(for stateData: ProfileState) -> some View {
-        if stateData.showTravelCertificate && stateData.canCreateInsuranceEvidence {
+        if stateData.showTravelCertificate, stateData.canCreateInsuranceEvidence {
             ProfileRow(row: .certificates)
         } else if store.state.showTravelCertificate {
             ProfileRow(row: .travelCertificate)

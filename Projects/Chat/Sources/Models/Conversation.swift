@@ -26,7 +26,7 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     }
 
     public var hasNewMessage: Bool {
-        return unreadMessageCount > 0
+        unreadMessageCount > 0
     }
 
     public let id: String
@@ -40,19 +40,19 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     let unreadMessageCount: Int
 
     var getConversationTitle: String {
-        if self.type == .legacy {
+        if type == .legacy {
             return L10n.chatConversationHistoryTitle
-        } else if self.hasClaim {
+        } else if hasClaim {
             return L10n.chatConversationClaimTitle
         }
         return L10n.chatConversationQuestionTitle
     }
 
     var getConversationSubTitle: String? {
-        if self.type == .legacy {
+        if type == .legacy {
             return nil
-        } else if self.hasClaim {
-            if let type = self.claimType {
+        } else if hasClaim {
+            if let type = claimType {
                 return type
             }
             return nil

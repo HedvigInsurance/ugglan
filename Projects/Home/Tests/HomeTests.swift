@@ -40,7 +40,7 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchImportantMessages: { importantMessages }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedMessages = try! await mockService.getImportantMessages()
         assert(respondedMessages == importantMessages)
@@ -62,7 +62,7 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchMemberState: { memberState }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedMemberState = try! await mockService.getMemberState()
         assert(respondedMemberState.contractState == memberState.contractState)
@@ -78,7 +78,7 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchQuickActions: { quickActions }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedQuickActions = try! await mockService.getQuickActions()
         assert(respondedQuickActions == quickActions)
@@ -94,7 +94,7 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchLatestMessageState: { lastMessagesState }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedLastMessages = try! await mockService.getMessagesState()
         assert(respondedLastMessages.hasNewMessages == lastMessagesState.hasNewMessages)
@@ -103,7 +103,6 @@ final class HomeTests: XCTestCase {
                 == lastMessagesState.hasSentOrRecievedAtLeastOneMessage
         )
         assert(respondedLastMessages.lastMessageTimeStamp == lastMessagesState.lastMessageTimeStamp)
-
     }
 
     func testHomeStoreWithMultipleActionsAtOnce() async throws {

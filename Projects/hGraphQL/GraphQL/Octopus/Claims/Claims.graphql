@@ -1,6 +1,22 @@
 query Claims {
     currentMember {
         claims {
+			...ClaimFragment
+        }
+    }
+}
+
+query ActiveClaims {
+    currentMember {
+        claimsActive {
+            ...ClaimFragment
+        }
+    }
+}
+
+query HistoryClaims {
+    currentMember {
+        claimsHistory {
             ...ClaimFragment
         }
     }

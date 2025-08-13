@@ -4,7 +4,7 @@ import hCore
 
 extension View {
     public func fileDrop(isTargetedForDropdown: Binding<Bool>, onFileDrop: @escaping (File) -> Void) -> some View {
-        return self.modifier(OnFileDropModifier(isTargetedForDropdown: isTargetedForDropdown, onFileDrop: onFileDrop))
+        modifier(OnFileDropModifier(isTargetedForDropdown: isTargetedForDropdown, onFileDrop: onFileDrop))
     }
 }
 
@@ -28,6 +28,5 @@ struct OnFileDropModifier: ViewModifier {
         } else {
             content
         }
-
     }
 }

@@ -5,11 +5,10 @@ import hCore
 import hGraphQL
 
 @MainActor
-public class TravelInsuranceClientOctopus: TravelInsuranceClient {
+class TravelInsuranceClientOctopus: TravelInsuranceClient {
     @Inject var octopus: hOctopus
 
-    public init() {}
-    public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
+    func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         let query = OctopusGraphQL.TravelCertificateQuery()
         do {
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
@@ -36,11 +35,10 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
     }
 
     @MainActor
-    public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
+    func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         let input = dto.asOctopusInput
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
-
             let delayTask = Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
             }
@@ -51,28 +49,27 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
                 return url
             }
             throw TravelInsuranceError.missingURL
-
         } catch let ex {
             throw ex
         }
     }
 
-    public func getList(
+    func getList(
         source: AddonSource
     ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
     ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
         do {
-            let data = try await self.octopus.client.fetch(
+            let data = try await octopus.client.fetch(
                 query: query,
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-            let listData = data.currentMember.travelCertificates.compactMap({
-                TravelCertificateModel.init($0)
-            })
+            let listData = data.currentMember.travelCertificates.compactMap {
+                TravelCertificateModel($0)
+            }
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
-                .filter({ $0.supportsTravelCertificate }).isEmpty
+                .filter(\.supportsTravelCertificate).isEmpty
 
             let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source.getSource))
             let bannerResponse = try await octopus.client.fetch(
@@ -98,22 +95,21 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             throw ex
         }
     }
-
 }
 
 extension TravelInsuranceFormDTO {
     fileprivate var asOctopusInput: OctopusGraphQL.TravelCertificateCreateInput {
-        return .init(
+        .init(
             contractId: contractId,
             startDate: startDate,
             isMemberIncluded: isMemberIncluded,
-            coInsured: coInsured.compactMap({
+            coInsured: coInsured.compactMap {
                 .init(
                     fullName: $0.fullName,
                     ssn: GraphQLNullable(optionalValue: $0.personalNumber),
                     dateOfBirth: GraphQLNullable(optionalValue: $0.birthDate)
                 )
-            }),
+            },
             email: email
         )
     }

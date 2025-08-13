@@ -8,15 +8,15 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct NotLoggedInView: View {
+struct NotLoggedInView: View {
     @ObservedObject var vm: NotLoggedViewModel
-    public init(
+    init(
         vm: NotLoggedViewModel
     ) {
         self.vm = vm
     }
 
-    public var body: some View {
+    var body: some View {
         ZStack {
             LoginVideoView().ignoresSafeArea()
             hSection {
@@ -48,7 +48,6 @@ public struct NotLoggedInView: View {
                             .padding(.padding8)
                             .accessibilityLabel(L10n.voiceoverSelectLanguage)
                     }
-
                 }
                 Spacer()
                 VStack {
@@ -82,14 +81,8 @@ struct NotLoggedInView_Previews: PreviewProvider {
 }
 
 @MainActor
-public class NotLoggedViewModel: ObservableObject {
-    @PresentableStore var store: MarketStore
-    @Published var blurHash: String = ""
-    @Published var imageURL: String = ""
+class NotLoggedViewModel: ObservableObject {
     @Published var bootStrapped: Bool = false
-    @Published var locale: Localization.Locale = .currentLocale.value
-    @Published var title: String = L10n.MarketLanguageScreen.title
-    @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var viewState: ViewState = .loading
     @Published var showLanguagePicker = false
     @Published var showLogin = false
@@ -98,17 +91,6 @@ public class NotLoggedViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
-        Localization.Locale.currentLocale
-            .removeDuplicates()
-            .delay(for: 0.1, scheduler: RunLoop.main)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                self?.locale = value
-                self?.title = L10n.MarketLanguageScreen.title
-                self?.buttonText = L10n.MarketLanguageScreen.continueButtonText
-            }
-            .store(in: &cancellables)
-
         $bootStrapped
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
@@ -119,7 +101,7 @@ public class NotLoggedViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        self.bootStrapped = true
+        bootStrapped = true
 
         NotificationCenter.default.addObserver(
             self,
@@ -151,8 +133,7 @@ public class NotLoggedViewModel: ObservableObject {
             .appending("utm_source", value: "ios")
             .appending("utm_medium", value: "hedvig-app")
             .appending("utm_campaign", value: "se")
-        UIApplication.shared.open(webUrl)
-
+        Dependencies.urlOpener.open(webUrl)
     }
 
     enum ViewState {

@@ -20,11 +20,11 @@ final class FileUploaderTests: XCTestCase {
         let uploadedFile: UploadFileResponseModel = .init(audioUrl: "https://audioUrl")
 
         let mockService = MockData.createMockFileUploaderService(
-            uploadFile: { flowId, file in
+            uploadFile: { _, _ in
                 uploadedFile
             }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedFile = try! await mockService.uploadFile(
             "https://audioUrl",

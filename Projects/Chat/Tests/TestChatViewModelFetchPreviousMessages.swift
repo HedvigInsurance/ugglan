@@ -32,13 +32,13 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
         await model.messageVm.fetchPreviousMessages(retry: false)
-        let successMessages = model.messageVm.messages.filter({ $0.status == .sent || $0.status == .received })
+        let successMessages = model.messageVm.messages.filter { $0.status == .sent || $0.status == .received }
         assert(successMessages.count == 1)
         assert(successMessages.first?.type == messageType)
         assert(mockService.events.count == 2)
         assert(mockService.events.first == .getNewMessages)
         assert(mockService.events.last == .getPreviousMessages)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testFetchPreviousMessagesFailure() async {
@@ -49,12 +49,12 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
         await model.messageVm.fetchPreviousMessages(retry: false)
-        let successMessages = model.messageVm.messages.filter({ $0.status == .sent || $0.status == .received })
+        let successMessages = model.messageVm.messages.filter { $0.status == .sent || $0.status == .received }
         assert(successMessages.count == 0)
         assert(mockService.events.count == 2)
         assert(mockService.events.first == .getNewMessages)
         assert(mockService.events.last == .getPreviousMessages)
-        self.sut = mockService
+        sut = mockService
     }
 
     func testFetchPreviousMessagesWithInitialFailureSuccess() async {
@@ -65,7 +65,7 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
             fetchPreviousMessages: { throw ChatError.fetchPreviousMessagesFailed }
         )
 
-        //update fetchPreviousMessages to return messages
+        // update fetchPreviousMessages to return messages
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             mockService.fetchPreviousMessages = {
                 .init(
@@ -80,13 +80,12 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
         await model.startFetchingNewMessages()
         await model.messageVm.fetchPreviousMessages(retry: true)
 
-        let successMessages = model.messageVm.messages.filter({ $0.status == .sent || $0.status == .received })
+        let successMessages = model.messageVm.messages.filter { $0.status == .sent || $0.status == .received }
         assert(successMessages.count == 1)
         assert(successMessages.first?.type == messageType)
         assert(mockService.events.count == 3)
         assert(mockService.events.first == .getNewMessages)
         assert(mockService.events.last == .getPreviousMessages)
-        self.sut = mockService
+        sut = mockService
     }
-
 }

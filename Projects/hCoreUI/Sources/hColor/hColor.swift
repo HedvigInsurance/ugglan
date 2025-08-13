@@ -49,13 +49,13 @@ public struct ShapeEnvironmentRedraw<Content: View>: View {
 
 @MainActor
 extension Shape {
-    public func fill<S>(_ content: S, style: FillStyle = FillStyle()) -> some View where S: hColor {
+    public func fill<S>(_ content: S, style _: FillStyle = FillStyle()) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
         }
     }
 
-    public func fill2<S>(_ content: S, _ content2: S, style: FillStyle = FillStyle()) -> some View where S: hColor {
+    public func fill2<S>(_ content: S, _: S, style _: FillStyle = FillStyle()) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
         }
@@ -102,8 +102,8 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
     public init(
         _ always: Color
     ) where LightInnerHColor == hColorBase, DarkInnerHColor == hColorBase {
-        self.light = hColorBase(always)
-        self.dark = hColorBase(always)
+        light = hColorBase(always)
+        dark = hColorBase(always)
     }
 
     public func colorFor(_ scheme: ColorScheme, _ level: UIUserInterfaceLevel) -> hColorBase {
@@ -173,17 +173,17 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
 
 extension View {
     public func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
-        self.modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
+        modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
     }
 
     public func border<Color: hColor>(_ color: Color?, width: CGFloat = 0) -> some View {
-        self.modifier(hColorViewModifier(color: color, colorType: .border(width: width)))
+        modifier(hColorViewModifier(color: color, colorType: .border(width: width)))
     }
 }
 
 extension View {
     public func tint<Color: hColor>(_ color: Color?) -> some View {
-        self.modifier(hColorViewModifier(color: color, colorType: .tintColor))
+        modifier(hColorViewModifier(color: color, colorType: .tintColor))
     }
 }
 
@@ -213,8 +213,8 @@ public struct hColorLevel<InnerHColor: hColor>: hColor {
     init(
         _ always: Color
     ) where InnerHColor == hColorBase {
-        self.base = hColorBase(always)
-        self.elevated = hColorBase(always)
+        base = hColorBase(always)
+        elevated = hColorBase(always)
     }
 
     public func colorFor(_ scheme: ColorScheme, _ level: UIUserInterfaceLevel) -> hColorBase {
@@ -260,8 +260,8 @@ public struct hColorBase: hColor, View {
         self.color = color
     }
 
-    public func colorFor(_ scheme: ColorScheme, _ level: UIUserInterfaceLevel) -> hColorBase {
-        return self
+    public func colorFor(_: ColorScheme, _: UIUserInterfaceLevel) -> hColorBase {
+        self
     }
 
     public var asCgColor: CGColor {
@@ -270,7 +270,7 @@ public struct hColorBase: hColor, View {
     }
 
     public func opacity(_ opacity: Double) -> some hColor {
-        hColorBase(self.color.opacity(opacity))
+        hColorBase(color.opacity(opacity))
     }
 
     public var inverted: hColorBase {
@@ -1239,85 +1239,85 @@ public struct hGrayscaleTranslucentLight {
 @MainActor
 public struct hGrayscaleTranslucentDark {
     public static var greyScaleTranslucent50: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.98)
         )
     }
 
     public static var greyScaleTranslucent100: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.957)
         )
     }
 
     public static var greyScaleTranslucent200: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.93)
         )
     }
 
     public static var greyScaleTranslucent300: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.89)
         )
     }
 
     public static var greyScaleTranslucent400: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.815)
         )
     }
 
     public static var greyScaleTranslucent450: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.772)
         )
     }
 
     public static var greyScaleTranslucent500: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.7)
         )
     }
 
     public static var greyScaleTranslucent600: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.57)
         )
     }
 
     public static var greyScaleTranslucent700: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.405)
         )
     }
 
     public static var greyScaleTranslucent750: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.335)
         )
     }
 
     public static var greyScaleTranslucent800: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.266)
         )
     }
 
     public static var greyScaleTranslucent900: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.13)
         )
     }
 
     public static var black: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "#FAFAFA").opacity(0.02)
         )
     }
 
     public static var white: some hColor {
-        return hColorScheme(
+        hColorScheme(
             Color(hexString: "FFFFFF").opacity(0.98)
         )
     }
@@ -1326,105 +1326,105 @@ public struct hGrayscaleTranslucentDark {
 @MainActor
 public struct hGrayscaleTranslucent {
     public static var greyScaleTranslucent50: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent50,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent50
         )
     }
 
     public static var greyScaleTranslucent100: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent100
         )
     }
 
     public static var greyScaleTranslucent200: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent200,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent200
         )
     }
 
     public static var greyScaleTranslucent300: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent300,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent300
         )
     }
 
     public static var greyScaleTranslucent400: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent400,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent400
         )
     }
 
     public static var greyScaleTranslucent450: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent450,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent450
         )
     }
 
     public static var greyScaleTranslucent500: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent500,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent500
         )
     }
 
     public static var greyScaleTranslucent600: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent600,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent600
         )
     }
 
     public static var greyScaleTranslucent700: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent700,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent700
         )
     }
 
     public static var greyScaleTranslucent750: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent750,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent750
         )
     }
 
     public static var greyScaleTranslucent800: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent800,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent800
         )
     }
 
     public static var greyScaleTranslucent900: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.greyScaleTranslucent900,
             dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
         )
     }
 
     public static var black: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.black,
             dark: hGrayscaleTranslucentDark.black
         )
     }
 
     public static var white: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: hGrayscaleTranslucentLight.white,
             dark: hGrayscaleTranslucentDark.white
         )
     }
 
     public static var transparent: some hColor {
-        return hColorScheme(
+        hColorScheme(
             light: Color.clear,
             dark: Color.clear
         )

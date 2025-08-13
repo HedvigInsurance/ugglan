@@ -1,5 +1,5 @@
 import Addons
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import TerminateContracts
@@ -60,23 +60,24 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let ssn: String?
     public var coInsured: [CoInsuredModel]
     public var fullName: String {
-        return firstName + " " + lastName
+        firstName + " " + lastName
     }
+
     public var nbOfMissingCoInsured: Int {
-        return self.coInsured.filter({ $0.hasMissingInfo }).count
+        coInsured.filter(\.hasMissingInfo).count
     }
 
     public var nbOfMissingCoInsuredWithoutTermination: Int {
-        return self.coInsured.filter({ $0.hasMissingInfo && $0.terminatesOn == nil }).count
+        coInsured.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
     public var showEditCoInsuredInfo: Bool {
-        return supportsCoInsured && self.terminationDate == nil
+        supportsCoInsured && terminationDate == nil
     }
 
     @MainActor
     public var showEditInfo: Bool {
-        return EditType.getTypes(for: self).count > 0 && self.terminationDate == nil
+        EditType.getTypes(for: self).count > 0 && terminationDate == nil
     }
 
     @MainActor
@@ -86,11 +87,11 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     }
 
     public var canTerminate: Bool {
-        return terminationDate == nil
+        terminationDate == nil
     }
 
     public var isTerminated: Bool {
-        return terminationDate != nil
+        terminationDate != nil
     }
 
     @MainActor
@@ -103,7 +104,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
 
     @MainActor
     public var terminatedInPast: Bool {
-        if let terminationDate = self.terminationDate?.localDateToDate,
+        if let terminationDate = terminationDate?.localDateToDate,
             let localDate = Date().localDateString.localDateToDate
         {
             let daysBetween = terminationDate.daysBetween(start: localDate) < 0
@@ -158,7 +159,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
                 return nil
             }
         }
-        return self.typeOfContract.pillowType
+        return typeOfContract.pillowType
     }
 
     public var isNonPayingMember: Bool {
@@ -283,9 +284,9 @@ public struct Agreement: Codable, Hashable, Sendable {
         self.displayItems = displayItems
         self.productVariant = productVariant
         self.addonVariant = addonVariant
-        self.certificateUrl = nil
-        self.activeFrom = nil
-        self.activeTo = nil
+        certificateUrl = nil
+        activeFrom = nil
+        activeTo = nil
     }
 }
 
@@ -347,7 +348,7 @@ extension InsuredPeopleConfig {
 
 extension Contract {
     public var asTerminationConfirmConfig: TerminationConfirmConfig {
-        return .init(
+        .init(
             contractId: id,
             contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
@@ -360,8 +361,7 @@ extension Contract {
 extension Sequence where Iterator.Element == Contract {
     public var hasMissingCoInsured: Bool {
         let contractsWithMissingCoInsured =
-            self
-            .filter { contract in
+            filter { contract in
                 if !contract.supportsCoInsured {
                     return false
                 } else if contract.coInsured.isEmpty {
@@ -379,7 +379,6 @@ extension Sequence where Iterator.Element == Contract {
 
 extension Contract: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ContractDetail.self)
+        .init(describing: ContractDetail.self)
     }
-
 }

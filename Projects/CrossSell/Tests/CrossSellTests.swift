@@ -22,21 +22,21 @@ final class CrossSellTests: XCTestCase {
                 title: "car",
                 description: "description",
                 imageUrl: nil,
-                buttonDescription: "button desription"
+                buttonDescription: "button description"
             ),
             .init(
                 id: "2",
                 title: "pet",
                 description: "description",
                 imageUrl: nil,
-                buttonDescription: "button desription"
+                buttonDescription: "button description"
             ),
         ]
 
         let mockService = MockData.createMockCrossSellService(
             fetchCrossSell: { crossSell }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedCrossSell = try! await mockService.fetchCrossSell()
         assert(respondedCrossSell == crossSell)
@@ -53,7 +53,7 @@ final class CrossSellTests: XCTestCase {
         let mockService = MockData.createMockCrossSellService(
             fetchAddonBannerModel: { _ in addonBannerModel }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedAddonBannerModel = try! await mockService.getAddonBannerModel(source: .insurances)
         assert(respondedAddonBannerModel == addonBannerModel)

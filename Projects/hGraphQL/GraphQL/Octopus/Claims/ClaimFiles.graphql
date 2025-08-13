@@ -1,11 +1,8 @@
-query ClaimsFiles {
-  currentMember {
-    claims {
-      id
-      files {
-        ...FileFragment
-      }
-    }
+query ClaimFiles($claimId: ID!) {
+  claim(id: $claimId) {
+	files {
+		...FileFragment
+	}
   }
 }
 

@@ -1,6 +1,5 @@
 query PaymentData {
     currentMember {
-        ...ReedemCampaignsFragment
         referralInformation {
             ...MemberReferralInformationCodeFragment
         }
@@ -66,6 +65,7 @@ fragment MemberChargeFragment on MemberCharge{
 
 fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {
     code
+	description
     discount {
         ...MoneyFragment
     }

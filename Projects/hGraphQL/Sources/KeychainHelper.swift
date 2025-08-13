@@ -1,13 +1,13 @@
 import Foundation
 
 @MainActor
-final public class KeychainHelper {
-
+public final class KeychainHelper {
     static let standard = KeychainHelper()
     private init() {}
     private let account: String = "hedvig"
 
     // MARK: - Public methods
+
     ///  Saves value in keychain
     /// - Parameters:
     ///   - item: Object of type `Codable` that needs to be entried to keychain
@@ -52,6 +52,7 @@ final public class KeychainHelper {
     }
 
     // MARK: - Private methods
+
     private func save(_ data: Data, key: String) {
         let query =
             [

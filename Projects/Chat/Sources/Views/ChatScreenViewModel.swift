@@ -14,13 +14,6 @@ public class ChatConversationViewModel: ObservableObject {
     @Published var shouldShowBanner = true
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
-    private let onTitleTap: () -> Void?
-
-    public init(
-        onTitleTap: @escaping () -> Void = {}
-    ) {
-        self.onTitleTap = onTitleTap
-    }
 }
 
 @MainActor
@@ -39,11 +32,10 @@ public class ChatMessageViewModel: ObservableObject {
     @Published var isFetchingPreviousMessages = false
 
     public init(
-        chatService: ChatServiceProtocol,
-        onTitleTap: @escaping () -> Void = {}
+        chatService: ChatServiceProtocol
     ) {
         self.chatService = chatService
-        self.conversationVm = .init(onTitleTap: onTitleTap)
+        conversationVm = .init()
     }
 
     @MainActor
@@ -61,9 +53,9 @@ public class ChatMessageViewModel: ObservableObject {
                         $0.sender == .member
                     })
                 }
-                self.conversationVm.banner = chatData.banner
-                self.conversationVm.conversationStatus = chatData.conversationStatus ?? .open
-                addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+                conversationVm.banner = chatData.banner
+                conversationVm.conversationStatus = chatData.conversationStatus ?? .open
+                addedMessagesIds.append(contentsOf: newMessages.compactMap(\.id))
                 self.hasNext = chatData.hasPreviousMessage
                 isFetchingPreviousMessages = false
             } catch _ {
@@ -80,12 +72,12 @@ public class ChatMessageViewModel: ObservableObject {
 
     @MainActor
     func fetchMessages() async {
-        //skip if have message that are in process of sending
+        // skip if have message that are in process of sending
         if sendingMessagesIds.isEmpty {
             do {
                 let store: ChatStore = globalPresentableStoreContainer.get()
                 let chatData = try await chatService.getNewMessages()
-                self.conversationVm.conversationId = chatData.conversationId
+                conversationVm.conversationId = chatData.conversationId
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
                 withAnimation {
                     self.messages.append(contentsOf: newMessages)
@@ -95,7 +87,7 @@ public class ChatMessageViewModel: ObservableObject {
                             let failedMessages = store.state.failedMessages[conversationId]
                         {
                             self.messages.insert(contentsOf: failedMessages.reversed(), at: 0)
-                            addedMessagesIds.append(contentsOf: failedMessages.compactMap({ $0.id }))
+                            addedMessagesIds.append(contentsOf: failedMessages.compactMap(\.id))
                         }
                     }
                     self.messages.sort(by: { $0.sentAt > $1.sentAt })
@@ -103,18 +95,18 @@ public class ChatMessageViewModel: ObservableObject {
                         $0.sender == .member
                     })
                 }
-                self.conversationVm.banner = chatData.banner
-                self.conversationVm.conversationStatus = chatData.conversationStatus ?? .open
-                addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+                conversationVm.banner = chatData.banner
+                conversationVm.conversationStatus = chatData.conversationStatus ?? .open
+                addedMessagesIds.append(contentsOf: newMessages.compactMap(\.id))
 
                 if hasNext == nil {
                     hasNext = chatData.hasPreviousMessage
                 }
-                self.conversationVm.title = chatData.title ?? L10n.chatTitle
-                self.conversationVm.subTitle = chatData.subtitle
-                self.conversationVm.claimId = chatData.claimId
+                conversationVm.title = chatData.title ?? L10n.chatTitle
+                conversationVm.subTitle = chatData.subtitle
+                conversationVm.claimId = chatData.claimId
             } catch _ {
-                //We ignore this errors since we will fetch this every 5 seconds
+                // We ignore this errors since we will fetch this every 5 seconds
             }
         }
     }
@@ -139,7 +131,7 @@ public class ChatMessageViewModel: ObservableObject {
     func send(message: Message) async {
         handleAddingLocal(for: message)
         await sendToClient(message: message)
-        if self.conversationVm.title == L10n.chatNewConversationTitle {
+        if conversationVm.title == L10n.chatNewConversationTitle {
             await fetchMessages()
         }
     }
@@ -161,7 +153,7 @@ public class ChatMessageViewModel: ObservableObject {
             messages.insert(message, at: 0)
         }
         addedMessagesIds.append(message.id)
-        self.scrollToMessage = message
+        scrollToMessage = message
     }
 
     @MainActor
@@ -170,26 +162,25 @@ public class ChatMessageViewModel: ObservableObject {
         case let .file(file):
             if file.mimeType.isImage {
                 switch file.source {
-                case .localFile(let results):
+                case let .localFile(results):
                     if let results {
                         if let data = try? await results.itemProvider.getData().data, let image = UIImage(data: data) {
                             let processor = DownsamplingImageProcessor(
                                 size: CGSize(width: 300, height: 300)
                             )
-                            var options = KingfisherParsedOptionsInfo.init(nil)
+                            var options = KingfisherParsedOptionsInfo(nil)
                             options.processor = processor
                             try? await ImageCache.default.store(image, forKey: remoteMessage.id, options: options)
                         }
                     }
-                    break
                 case .url:
                     break
-                case .data(let data):
+                case let .data(data):
                     if let image = UIImage(data: data) {
                         let processor = DownsamplingImageProcessor(
                             size: CGSize(width: 300, height: 300)
                         )
-                        var options = KingfisherParsedOptionsInfo.init(nil)
+                        var options = KingfisherParsedOptionsInfo(nil)
                         options.processor = processor
                         try? await ImageCache.default.store(image, forKey: remoteMessage.id, options: options)
                     }
@@ -200,7 +191,7 @@ public class ChatMessageViewModel: ObservableObject {
         }
         addedMessagesIds.append(remoteMessage.id)
 
-        //replace local message with remote one
+        // replace local message with remote one
         if let index = messages.firstIndex(where: { $0.id == localMessage.id }) {
             withAnimation {
                 messages[index] = remoteMessage
@@ -208,7 +199,7 @@ public class ChatMessageViewModel: ObservableObject {
             }
         }
 
-        //add some delay so it looks smoother
+        // add some delay so it looks smoother
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             withAnimation {
                 self?.lastDeliveredMessage = self?.messages.first(where: { $0.sender == .member })
@@ -228,7 +219,7 @@ public class ChatMessageViewModel: ObservableObject {
                 messages[index] = newMessage
                 let store: ChatStore = globalPresentableStoreContainer.get()
                 switch newMessage.type {
-                case .file(let file):
+                case let .file(file):
                     if let newFile = try? await file.getAsData() {
                         let fileMessage = newMessage.copyWith(type: .file(file: newFile))
                         store.send(
@@ -264,16 +255,15 @@ public class ChatScreenViewModel: ObservableObject {
     private var openDeepLinkObserver: NSObjectProtocol?
 
     public init(
-        chatService: ChatServiceProtocol,
-        onTitleTap: @escaping () -> Void = {}
+        chatService: ChatServiceProtocol
     ) {
-        self.messageVm = .init(chatService: chatService)
+        messageVm = .init(chatService: chatService)
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 if Dependencies.featureFlags().isDemoMode {
                     switch message.type {
-                    case .file(let file):
+                    case let .file(file):
                         if let newFile = file.getAsDataFromUrl() {
                             let fileMessage = message.copyWith(type: .file(file: newFile))
                             await self?.messageVm.send(message: fileMessage)
@@ -289,7 +279,7 @@ public class ChatScreenViewModel: ObservableObject {
 
         hideBannerCancellable = chatInputVm.$showBottomMenu.combineLatest(chatInputVm.$keyboardIsShown)
             .receive(on: RunLoop.main)
-            .sink { [weak self] (showBottomMenu, isKeyboardShown) in
+            .sink { [weak self] showBottomMenu, isKeyboardShown in
                 let shouldShowBanner = !showBottomMenu && !isKeyboardShown
                 if self?.messageVm.conversationVm.shouldShowBanner != false {
                     withAnimation {
@@ -338,7 +328,7 @@ public class ChatScreenViewModel: ObservableObject {
                     await self?.messageVm.fetchMessages()
                 }
             })
-        await self.messageVm.fetchMessages()
+        await messageVm.fetchMessages()
     }
 }
 

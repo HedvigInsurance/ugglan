@@ -3,11 +3,10 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class ForeverClientOctopus: ForeverClient {
+class ForeverClientOctopus: ForeverClient {
     @Inject var octopus: hOctopus
-    public init() {}
 
-    public func getMemberReferralInformation() async throws -> ForeverData {
+    func getMemberReferralInformation() async throws -> ForeverData {
         let query = OctopusGraphQL.MemberReferralInformationQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             .currentMember
@@ -40,7 +39,7 @@ public class ForeverClientOctopus: ForeverClient {
         return foreverData
     }
 
-    public func changeCode(code: String) async throws {
+    func changeCode(code: String) async throws {
         let mutation = OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: code)
         let response = try await octopus.client.perform(mutation: mutation)
         if let errorMessage = response.memberReferralInformationCodeUpdate.userError?.message {

@@ -1,5 +1,5 @@
 import Combine
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -113,17 +113,14 @@ struct ContractInformationView: View {
                     }
                 }
 
-                hRow {
-                    let hasContentBelow =
-                        !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
-                    ContractOwnerField(
-                        enabled: true,
-                        hasContentBelow: hasContentBelow,
-                        fullName: contract.fullName,
-                        SSN: contract.ssn ?? ""
-                    )
-                }
-                .verticalPadding(0)
+                let hasContentBelow =
+                    !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
+                ContractOwnerField(
+                    enabled: true,
+                    hasContentBelow: hasContentBelow,
+                    fullName: contract.fullName,
+                    SSN: contract.ssn ?? ""
+                )
                 .padding(.top, .padding16)
             }
 
@@ -136,7 +133,7 @@ struct ContractInformationView: View {
                             date: coInsured.coInsured.terminatesOn ?? coInsured.coInsured.activatesOn
                         )
                         .onTapGesture {
-                            if contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil {
+                            if contract.showEditCoInsuredInfo, coInsured.coInsured.terminatesOn == nil {
                                 let contract: InsuredPeopleConfig = .init(
                                     contract: contract,
                                     fromInfoCard: false
@@ -155,7 +152,7 @@ struct ContractInformationView: View {
                 }
             }
 
-            if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditCoInsuredInfo {
+            if contract.nbOfMissingCoInsuredWithoutTermination != 0, contract.showEditCoInsuredInfo {
                 hSection {
                     CoInsuredInfoView(
                         text: L10n.contractCoinsuredAddPersonalInfo,
@@ -179,7 +176,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func getAccessoryView(contract: Contract, coInsured: CoInsuredModel) -> some View {
-        if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
+        if contract.showEditCoInsuredInfo, coInsured.terminatesOn == nil {
             hCoreUIAssets.warningTriangleFilledSmall.view
         } else {
             EmptyView()
@@ -217,11 +214,11 @@ struct ContractInformationView: View {
             hSection {
                 HStack {
                     if contract.coInsured.first(where: {
-                        return ($0.activatesOn != nil || $0.terminatesOn != nil)
+                        $0.activatesOn != nil || $0.terminatesOn != nil
                     }) != nil {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
-                                contract.coInsured.filter({ !$0.isTerminated }).count,
+                                contract.coInsured.filter { !$0.isTerminated }.count,
                                 upcomingChangedAgreement.activeFrom?.localDateToDate?
                                     .displayDateDDMMMYYYYFormat ?? ""
                             ),
@@ -273,9 +270,9 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func moveAddressButton(contract: Contract) -> some View {
-        let contractsThatSupportsMoving = store.state.activeContracts.filter({ $0.supportsAddressChange })
-        if contract.supportsAddressChange && featureFlags.isMovingFlowEnabled
-            && contractsThatSupportsMoving.count < 2 && !contract.isTerminated
+        let contractsThatSupportsMoving = store.state.activeContracts.filter(\.supportsAddressChange)
+        if contract.supportsAddressChange, featureFlags.isMovingFlowEnabled,
+            contractsThatSupportsMoving.count < 2, !contract.isTerminated
         {
             hSection {
                 hButton(
@@ -297,7 +294,7 @@ private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
-        return contract.coInsured
+        contract.coInsured
             .map {
                 CoInsuredListType(
                     coInsured: $0,
@@ -318,7 +315,6 @@ private class ContractsInformationViewModel: ObservableObject {
 }
 
 public struct CoInsuredInfoView: View {
-    @PresentableStore var store: ContractStore
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     let text: String
@@ -336,8 +332,8 @@ public struct CoInsuredInfoView: View {
             .buttons([
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                    buttonAction: {
-                        contractsNavigationVm.editCoInsuredVm.start(fromContract: config)
+                    buttonAction: { [weak contractsNavigationVm] in
+                        contractsNavigationVm?.editCoInsuredVm.start(fromContract: config)
                     }
                 )
             ])

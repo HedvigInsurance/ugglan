@@ -40,13 +40,13 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         self.masking = masking
         self.placeholder = placeholder ?? masking.placeholderText ?? ""
         self.suffix = suffix
-        self._value = value
-        self._equals = equals
+        _value = value
+        _equals = equals
         self.focusValue = focusValue
         self.onReturn = onReturn
-        self._error = error ?? Binding.constant(nil)
-        self._previousInnerValue = State(initialValue: value.wrappedValue)
-        self._innerValue = State(initialValue: value.wrappedValue)
+        _error = error ?? Binding.constant(nil)
+        _previousInnerValue = State(initialValue: value.wrappedValue)
+        _innerValue = State(initialValue: value.wrappedValue)
         self.textFieldPlaceholder = textFieldPlaceholder
         updateMoveLabel(false)
     }
@@ -105,14 +105,14 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: equals) { equals in
             if equals == focusValue {
-                self.vm.textField?.becomeFirstResponder()
-            } else if self.vm.textField?.isEditing == true {
-                self.vm.textField?.resignFirstResponder()
+                vm.textField?.becomeFirstResponder()
+            } else if vm.textField?.isEditing == true {
+                vm.textField?.resignFirstResponder()
             }
         }
         .onChange(of: innerValue) { currentValue in
             withAnimation {
-                self.error = nil
+                error = nil
             }
             if animationEnabled {
                 updateMoveLabel(true)
@@ -120,13 +120,13 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
         }
         .onTapGesture {
-            self.equals = self.focusValue
-            self.vm.textField?.becomeFirstResponder()
+            equals = focusValue
+            vm.textField?.becomeFirstResponder()
         }
-        .onChange(of: error) { error in
-            self.animate = true
+        .onChange(of: error) { _ in
+            animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                self.animate = false
+                animate = false
             }
         }
         .introspect(.textField, on: .iOS(.v13...)) { [weak vm] textField in
@@ -149,7 +149,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: vm.onBeginEditing) { _ in
             withAnimation {
-                self.error = nil
+                error = nil
             }
             updateMoveLabel(true)
             equals = focusValue
@@ -168,22 +168,21 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             onReturn()
         }
         .onChange(of: value) { value in
-            self.innerValue = value
+            innerValue = value
         }
-
     }
 
     private func startAnimation(_ value: String) {
-        self.animate = true
+        animate = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             if value == innerValue {
-                self.animate = false
+                animate = false
             }
         }
     }
 
     private func updateMoveLabel(_ animation: Bool) {
-        if (innerValue != "" || equals == focusValue) && !shouldMoveLabel {
+        if innerValue != "" || equals == focusValue, !shouldMoveLabel {
             if animation {
                 withAnimation(Animation.easeInOut(duration: 0.2)) {
                     shouldMoveLabel = true
@@ -191,7 +190,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             } else {
                 shouldMoveLabel = true
             }
-        } else if shouldMoveLabel && (innerValue == "" && equals != focusValue) {
+        } else if shouldMoveLabel, innerValue == "", equals != focusValue {
             if animation {
                 withAnimation(Animation.easeInOut(duration: 0.2)) {
                     shouldMoveLabel = false
@@ -218,7 +217,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     }
                 }
             }
-
     }
 
     @hColorBuilder
@@ -271,12 +269,11 @@ struct hFloatingTextField_Previews: PreviewProvider {
             .disabled(true)
         }
         .hFieldSize(.large)
-
     }
 
     enum PreviewType: Int, CaseIterable, hTextFieldFocusStateCompliant {
         static var last: PreviewType {
-            return PreviewType.allCases.last!
+            PreviewType.allCases.last!
         }
 
         var next: PreviewType? {
@@ -313,7 +310,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hBackgroundOption(option: [BackgroundOption]) -> some View {
-        self.environment(\.hBackgroundOption, option)
+        environment(\.hBackgroundOption, option)
     }
 }
 
@@ -347,7 +344,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hFieldSize(_ size: hFieldSize) -> some View {
-        self.environment(\.hFieldSize, size)
+        environment(\.hFieldSize, size)
     }
 }
 
@@ -364,7 +361,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hFieldAttachToRight<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hFieldRightAttachedView, AnyView(content()))
+        environment(\.hFieldRightAttachedView, AnyView(content()))
     }
 }
 
@@ -377,7 +374,7 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
     func body(content: Content) -> some View {
         HStack(alignment: .center, spacing: 0) {
             content
-            if fieldText != "" && equals == focusValue {
+            if fieldText != "", equals == focusValue {
                 SwiftUI.Button(
                     action: {
                         fieldText = ""
@@ -389,7 +386,6 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
                             .foregroundColor(hTextColor.Opaque.primary)
                     }
                 )
-
             } else if error != nil {
                 hCoreUIAssets.warningTriangleFilled.view
                     .foregroundColor(hSignalColor.Amber.element)
@@ -406,7 +402,7 @@ extension View {
         error: Binding<String?>,
         focusValue: Value
     ) -> some View {
-        self.modifier(
+        modifier(
             TextFieldClearButtonOrError(
                 fieldText: text,
                 equals: equals,
@@ -428,7 +424,7 @@ extension hFieldSize {
     }
 
     var fieldOffset: CGFloat {
-        return .padding8
+        .padding8
     }
 
     var labelFont: HFontTextStyle {
@@ -453,6 +449,6 @@ extension EnvironmentValues {
 
 extension View {
     public func hAnimateField(_ animate: Bool) -> some View {
-        self.environment(\.hAnimateField, animate)
+        environment(\.hAnimateField, animate)
     }
 }

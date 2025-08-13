@@ -11,7 +11,7 @@ struct MessageView: View {
     @ObservedObject var vm: ChatScreenViewModel
     @State var showRetryOptions = false
 
-    public var body: some View {
+    var body: some View {
         HStack(spacing: 0) {
             if case .failed = message.status {
                 messageFailContent
@@ -98,7 +98,7 @@ struct MessageView: View {
     }
 
     private func accessilityLabel(for message: Message) -> String {
-        var displayString: String = ""
+        var displayString = ""
         switch message.type {
         case .text:
             displayString = message.trimmedText
@@ -151,8 +151,7 @@ struct MessageViewConfirmationDialog: ViewModifier {
                 Button(L10n.General.remove, role: .destructive) {
                     vm?.messageVm.deleteFailed(message: message)
                 }
-                Button(L10n.generalCancelButton, role: .cancel) {
-                }
+                Button(L10n.generalCancelButton, role: .cancel) {}
             }
     }
 }

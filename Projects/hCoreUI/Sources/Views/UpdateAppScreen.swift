@@ -24,7 +24,6 @@ public struct UpdateAppScreen: View {
     }
 
     private var buttonsInit: StateViewButtonConfig {
-
         var dismissButton: StateViewButtonConfig.StateViewButton? {
             if withoutDismissButton {
                 return nil
@@ -41,7 +40,7 @@ public struct UpdateAppScreen: View {
                 .init(
                     buttonTitle: L10n.embarkUpdateAppButton,
                     buttonAction: {
-                        UIApplication.shared.open(Environment.current.appStoreURL)
+                        Dependencies.urlOpener.open(Environment.current.appStoreURL)
                         onSelected()
                     }
                 ),

@@ -100,17 +100,15 @@ extension AppDelegate {
     }
 }
 
-public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
-    public init() {}
-
-    public func rumView(for viewController: UIViewController) -> RUMView? {
-        return nil
+struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
+    func rumView(for _: UIViewController) -> RUMView? {
+        nil
     }
 }
 
 extension View {
     func trackViewName(name: String? = nil) -> some View {
-        self.onAppear {
+        onAppear {
             RUMMonitor.shared()
                 .startView(key: .init(describing: self), name: name ?? .init(describing: self), attributes: [:])
         }

@@ -1,5 +1,5 @@
 import Apollo
-import EditCoInsuredShared
+import EditCoInsured
 import PresentableStore
 import SwiftUI
 import TerminateContracts
@@ -32,7 +32,7 @@ extension EditType {
             editTypes.append(.coInsured)
         }
 
-        if Dependencies.featureFlags().isTerminationFlowEnabled && contract.canTerminate {
+        if Dependencies.featureFlags().isTerminationFlowEnabled, contract.canTerminate {
             editTypes.append(.cancellation)
         }
 

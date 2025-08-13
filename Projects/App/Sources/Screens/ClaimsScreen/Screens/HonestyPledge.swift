@@ -103,9 +103,9 @@ struct SlideToConfirm: View {
     }
 
     private func promiseConfirmed() {
-        self.didFinished = true
+        didFinished = true
         withAnimation(.defaultSpring) {
-            self.progress = width
+            progress = width
         }
         withAnimation(.defaultSpring.speed(2)) {
             bounceSliderButton = true
@@ -183,7 +183,5 @@ struct HonestyPledge: View {
 }
 
 #Preview {
-    HonestyPledge {
-
-    }
+    HonestyPledge {}
 }

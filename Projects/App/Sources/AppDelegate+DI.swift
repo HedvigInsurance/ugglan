@@ -8,7 +8,6 @@ import Claims
 import Contracts
 import CrossSell
 import EditCoInsured
-import EditCoInsuredShared
 import Environment
 import Forever
 import Foundation
@@ -26,11 +25,12 @@ import hGraphQL
 
 @MainActor
 enum DI {
-    public static func initServices() {
+    static func initServices() {
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+        Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
     }
 
-    public static func initAndRegisterClient() {
+    static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
@@ -74,7 +74,6 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
             Dependencies.shared.add(module: Module { () -> hCampaignClient in campaignClient })
             Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
-
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
@@ -83,7 +82,6 @@ enum DI {
             let foreverService = ForeverClientOctopus()
             let profileService = ProfileClientOctopus()
             let editCoInsuredService = EditCoInsuredClientOctopus()
-            let editCoInsuredSharedService = EditCoInsuredSharedClientOctopus()
             let homeService = HomeClientOctopus()
             let terminateContractsService = TerminateContractsClientOctopus()
             let fetchContractsService = FetchContractsClientOctopus()
@@ -117,9 +115,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in foreverService })
                 Dependencies.shared.add(module: Module { () -> ProfileClient in profileService })
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in editCoInsuredService })
-                Dependencies.shared.add(
-                    module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
-                )
                 Dependencies.shared.add(module: Module { () -> HomeClient in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
@@ -147,9 +142,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in foreverService })
                 Dependencies.shared.add(module: Module { () -> ProfileClient in profileService })
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in editCoInsuredService })
-                Dependencies.shared.add(
-                    module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
-                )
                 Dependencies.shared.add(module: Module { () -> HomeClient in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
@@ -167,9 +159,8 @@ enum DI {
         }
     }
 
-    public static func initNetworkClients() async {
+    static func initNetworkClients() async {
         let hApollo = await ApolloClient.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
     }
-
 }

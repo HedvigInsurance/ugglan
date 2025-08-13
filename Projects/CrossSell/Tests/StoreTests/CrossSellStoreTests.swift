@@ -12,6 +12,7 @@ final class CrossSellStoreTests: XCTestCase {
         try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
+
     @MainActor
     override func tearDown() async throws {
         try await super.tearDown()
@@ -89,14 +90,14 @@ extension CrossSell {
             title: "car",
             description: "description",
             imageUrl: nil,
-            buttonDescription: "button desription"
+            buttonDescription: "button description"
         ),
         .init(
             id: "2",
             title: "home",
             description: "description",
             imageUrl: nil,
-            buttonDescription: "button desription"
+            buttonDescription: "button description"
         ),
     ]
 }

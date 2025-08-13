@@ -25,7 +25,7 @@ struct MockData {
 
     @discardableResult
     static func createMockSubmitClaimService(
-        start: @escaping ClaimStart = { entrypointId, entrypointOptionId in
+        start: @escaping ClaimStart = { _, _ in
             .init(
                 claimId: "claim id",
                 context: "context",
@@ -34,7 +34,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        update: @escaping ContractUpdate = { phoneNumber, context, model in
+        update: @escaping ContractUpdate = { phoneNumber, context, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -43,7 +43,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        dateOfOccurrenceAndLocation: @escaping DateOfOccurrenceAndLocation = { context, model in
+        dateOfOccurrenceAndLocation: @escaping DateOfOccurrenceAndLocation = { context, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -52,7 +52,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        audioRecording: @escaping AudioRecording = { type, context, currentClaimId, model in
+        audioRecording: @escaping AudioRecording = { _, context, _, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -63,7 +63,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        singleItem: @escaping SingleItem = { context, model in
+        singleItem: @escaping SingleItem = { context, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -82,9 +82,8 @@ struct MockData {
                 ),
                 nextStepId: ""
             )
-
         },
-        summary: @escaping Summary = { context, model in
+        summary: @escaping Summary = { context, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -102,7 +101,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        singleItemCheckout: @escaping SingleItemCheckout = { context, model in
+        singleItemCheckout: @escaping SingleItemCheckout = { context, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -124,7 +123,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        contractSelect: @escaping ContractSelect = { contractId, context, model in
+        contractSelect: @escaping ContractSelect = { _, context, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -133,7 +132,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        emergencyConfirm: @escaping EmergencyConfirm = { isEmeregency, context in
+        emergencyConfirm: @escaping EmergencyConfirm = { _, context in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -144,7 +143,7 @@ struct MockData {
                 nextStepId: ""
             )
         },
-        submitFile: @escaping SubmitFile = { ids, context, model in
+        submitFile: @escaping SubmitFile = { _, context, _ in
             .init(
                 claimId: "claim id",
                 context: context,
@@ -172,7 +171,7 @@ struct MockData {
 
     @discardableResult
     static func createMockFileUploaderService(
-        uploadFile: @escaping Upload = { flowId, file in
+        uploadFile: @escaping Upload = { _, _ in
             .init(audioUrl: "https://audioUrl")
         }
     ) -> MockFileUploaderService {

@@ -5,15 +5,15 @@ import hCoreUI
 struct CrossSellPillowComponent: View {
     let crossSell: CrossSell
 
-    public var body: some View {
+    var body: some View {
         VStack(spacing: .padding16) {
             ZStack(alignment: .topTrailing) {
                 KFImage(crossSell.imageUrl)
-                    .placeholder({
+                    .placeholder {
                         hCoreUIAssets.bigPillowHome.view
                             .resizable()
                             .frame(width: 140, height: 140)
-                    })
+                    }
                     .fade(duration: 0)
                     .resizable()
                 if let discountText = crossSell.discountText {

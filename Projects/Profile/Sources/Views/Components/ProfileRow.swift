@@ -16,7 +16,7 @@ struct ProfileRow: View {
         self.row = row
     }
 
-    public var body: some View {
+    var body: some View {
         hRow {
             HStack(spacing: .padding16) {
                 row.icon
@@ -50,6 +50,8 @@ struct ProfileRow: View {
             profileNavigationViewModel.isCreateInsuranceEvidencePresented = true
         case .certificates:
             router.push(ProfileRouterType.certificates)
+        case .claimHistory:
+            router.push(ProfileRouterType.claimHistory)
         }
     }
 }

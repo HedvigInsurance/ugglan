@@ -41,7 +41,6 @@ public struct MoveConfigurationModel: Sendable {
             return maxHouseNumberCoInsured ?? 5
         }
     }
-
 }
 
 public enum MovingFlowError: Error {

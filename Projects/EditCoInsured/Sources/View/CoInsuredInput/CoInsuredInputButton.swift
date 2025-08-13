@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -15,85 +14,44 @@ public struct CoInsuredInputButton: View {
     ) {
         self.vm = vm
         self.editCoInsuredNavigation = editCoInsuredNavigation
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     public var body: some View {
         hSection {
             HStack {
                 if vm.actionType == .delete {
-                    deleteCoInsuredButton
+                    CoInsuredActionButton(
+                        style: .alert,
+                        title: L10n.removeConfirmationButton,
+                        vm: vm,
+                        intentViewModel:
+                            intentViewModel,
+                        onTap: {
+                            await performIntent(for: .delete)
+                        }
+                    )
                 } else {
-                    addCoInsuredButton
+                    CoInsuredActionButton(
+                        style: .primary,
+                        title: vm.buttonDisplayText,
+                        vm: vm,
+                        intentViewModel: intentViewModel,
+                        onTap: {
+                            await vm.handleAddOrEditAction(performIntent: {
+                                await performIntent(for: vm.actionType)
+                            })
+                        }
+                    )
                 }
             }
         }
         .padding(.top, .padding12)
-        .disabled(buttonIsDisabled && !(vm.actionType == .delete))
-    }
-
-    private var deleteCoInsuredButton: some View {
-        hButton(
-            .large,
-            .alert,
-            content: .init(title: L10n.removeConfirmationButton),
-            {
-                Task {
-                    await getIntent(for: .delete)
-                }
-            }
-        )
-        .transition(.opacity.animation(.easeOut))
-        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
-    }
-
-    private var addCoInsuredButton: some View {
-        hButton(
-            .large,
-            .primary,
-            content: .init(title: buttonDisplayText),
-            {
-                if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
-                    Task {
-                        await vm.getNameFromSSN(SSN: vm.SSN)
-                    }
-                } else if vm.nameFetchedFromSSN || vm.noSSN {
-                    Task {
-                        await getIntent(for: vm.actionType)
-                    }
-                }
-            }
-        )
-        .transition(.opacity.animation(.easeOut))
-        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
-    }
-
-    var buttonDisplayText: String {
-        if !vm.noSSN && !vm.nameFetchedFromSSN {
-            return L10n.contractSsnFetchInfo
-        } else {
-            return L10n.contractAddCoinsured
-        }
-    }
-
-    var buttonIsDisabled: Bool {
-        if vm.noSSN {
-            let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: vm.birthday)
-            let firstNameValid = Masking(type: .firstName).isValid(text: vm.personalData.firstName)
-            let lastNameValid = Masking(type: .lastName).isValid(text: vm.personalData.lastName)
-            if birthdayIsValid && firstNameValid && lastNameValid {
-                return false
-            }
-        } else {
-            let masking = Masking(type: .personalNumber(minAge: 0))
-            let personalNumberValid = masking.isValid(text: vm.SSN)
-            return !personalNumberValid
-        }
-        return true
+        .disabled(vm.buttonIsDisabled && !(vm.actionType == .delete))
     }
 
     var coInsuredToDelete: CoInsuredModel {
-        return (vm.personalData.firstName == "" && vm.SSN == "")
+        (vm.personalData.firstName == "" && vm.SSN == "")
             ? .init()
             : .init(
                 firstName: vm.personalData.firstName,
@@ -105,7 +63,7 @@ public struct CoInsuredInputButton: View {
     }
 
     var coInsuredPerformModel: CoInsuredModel {
-        return .init(
+        .init(
             firstName: vm.personalData.firstName,
             lastName: vm.personalData.lastName,
             SSN: vm.noSSN ? nil : vm.SSN,
@@ -122,7 +80,7 @@ public struct CoInsuredInputButton: View {
         }
     }
 
-    private func getIntent(for action: CoInsuredAction) async {
+    private func performIntent(for action: CoInsuredAction) async {
         let coInsuredModel: [CoInsuredModel] = {
             switch action {
             case .add:
@@ -130,7 +88,9 @@ public struct CoInsuredInputButton: View {
                     addCoInsured: coInsuredPerformModel
                 )
             case .edit:
-                return editCoInsuredNavigation.coInsuredViewModel.completeList()
+                return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
+                    editCoInsured: coInsuredPerformModel
+                )
             case .delete:
                 return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
                     removedCoInsured: coInsuredToDelete
@@ -148,10 +108,8 @@ public struct CoInsuredInputButton: View {
             switch action {
             case .delete:
                 editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
-            case .edit:
-                editCoInsuredNavigation.coInsuredViewModel.editCoInsured(coInsuredPerformModel)
-            case .add:
-                editCoInsuredNavigation.coInsuredViewModel.addCoInsured(coInsuredPerformModel)
+            case .edit, .add:
+                break
             }
             editCoInsuredNavigation.coInsuredInputModel = nil
         } else {
@@ -159,5 +117,76 @@ public struct CoInsuredInputButton: View {
         }
 
         editCoInsuredNavigation.selectCoInsured = nil
+    }
+}
+
+private struct CoInsuredActionButton: View {
+    let style: hButtonConfigurationType
+    let title: String
+    @ObservedObject var vm: CoInusuredInputViewModel
+    @ObservedObject private var intentViewModel: IntentViewModel
+    let onTap: () async -> Void
+
+    init(
+        style: hButtonConfigurationType,
+        title: String,
+        vm: CoInusuredInputViewModel,
+        intentViewModel: IntentViewModel,
+        onTap: @escaping () async -> Void
+    ) {
+        self.style = style
+        self.title = title
+        self.vm = vm
+        self.intentViewModel = intentViewModel
+        self.onTap = onTap
+    }
+
+    var body: some View {
+        hButton(
+            .large,
+            style,
+            content: .init(title: title),
+            {
+                Task {
+                    await onTap()
+                }
+            }
+        )
+        .transition(.opacity.animation(.easeOut))
+        .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
+    }
+}
+
+extension CoInusuredInputViewModel {
+    var buttonDisplayText: String {
+        if !noSSN, !nameFetchedFromSSN {
+            return L10n.contractSsnFetchInfo
+        } else {
+            return L10n.contractAddCoinsured
+        }
+    }
+
+    var buttonIsDisabled: Bool {
+        if noSSN {
+            let birthdayIsValid = Masking(type: .birthDateCoInsured(minAge: 0)).isValid(text: birthday)
+            let firstNameValid = Masking(type: .firstName).isValid(text: personalData.firstName)
+            let lastNameValid = Masking(type: .lastName).isValid(text: personalData.lastName)
+            if birthdayIsValid, firstNameValid, lastNameValid {
+                return false
+            }
+        } else {
+            let masking = Masking(type: .personalNumber(minAge: 0))
+            let personalNumberValid = masking.isValid(text: SSN)
+            return !personalNumberValid
+        }
+        return true
+    }
+
+    func handleAddOrEditAction(performIntent: @escaping () async -> Void) async {
+        if !(buttonIsDisabled || nameFetchedFromSSN || noSSN) {
+            await getNameFromSSN(SSN: SSN)
+        } else if nameFetchedFromSSN || noSSN {
+            await performIntent()
+        }
     }
 }

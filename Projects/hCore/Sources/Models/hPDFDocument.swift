@@ -9,17 +9,17 @@ public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable, Sendable
     public init(
         _ data: OctopusGraphQL.ProductVariantFragment.Document
     ) {
-        self.displayName = data.displayName
-        self.url = data.url
-        self.type = data.type.asTypeOfDocument
+        displayName = data.displayName
+        url = data.url
+        type = data.type.asTypeOfDocument
     }
 
     public init(
         _ data: OctopusGraphQL.AddonVariantFragment.Document
     ) {
-        self.displayName = data.displayName
-        self.url = data.url
-        self.type = data.type.asTypeOfDocument
+        displayName = data.displayName
+        url = data.url
+        type = data.type.asTypeOfDocument
     }
 
     public init(
@@ -46,7 +46,7 @@ public enum TypeOfDocument: Codable, Hashable, Sendable {
 extension GraphQLEnum<OctopusGraphQL.InsuranceDocumentType> {
     public var asTypeOfDocument: TypeOfDocument {
         switch self {
-        case .case(let type):
+        case let .case(type):
             switch type {
             case .generalTerms:
                 return .generalTerms

@@ -33,7 +33,9 @@ final class ProfileStoreTests: XCTestCase {
         let partnerData: PartnerData = .init(sas: nil)
 
         let mockService = MockData.createMockProfileService(
-            fetchProfileState: { (memberData, partnerData, true, true) }
+            fetchProfileState: {
+                (memberData, partnerData, canCreateInsuranceEvidence: true, hasTravelInsurances: true)
+            }
         )
 
         let store = ProfileStore()

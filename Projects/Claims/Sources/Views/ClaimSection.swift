@@ -9,7 +9,7 @@ struct ClaimSection: View {
     @EnvironmentObject var homeRouter: Router
 
     var tapAction: (ClaimModel) -> Void {
-        return { claim in
+        { claim in
             homeRouter.push(claim)
         }
     }

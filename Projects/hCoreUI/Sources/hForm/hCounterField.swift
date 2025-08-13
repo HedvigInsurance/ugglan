@@ -22,13 +22,12 @@ public struct hCounterField: View {
         error: Binding<String?>? = nil,
         textForValue: @escaping (Int) -> String?
     ) {
-
         self.placeholder = placeholder ?? ""
         self.textForValue = textForValue
         self.minValue = minValue
         self.maxValue = maxValue
-        self._value = value
-        self._error = error ?? Binding.constant(nil)
+        _value = value
+        _error = error ?? Binding.constant(nil)
     }
 
     public var body: some View {
@@ -72,7 +71,6 @@ public struct hCounterField: View {
                                 .foregroundColor(foregroundColor.opacity(maxValue == value ? 0.4 : 1))
                                 .frame(width: 35, height: 35)
                                 .accessibilityLabel(L10n.generalAddButton)
-
                         }
                     }
                     .accessibilityHint(placeholder + String(value))
@@ -84,11 +82,11 @@ public struct hCounterField: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
-            self.startAnimation()
+            startAnimation()
         }
         .onAppear {
             withAnimation {
-                self.textToShow = textForValue(value) ?? ""
+                textToShow = textForValue(value) ?? ""
             }
         }
         .onChange(of: textToShow) { value in
@@ -99,13 +97,13 @@ public struct hCounterField: View {
     private func increase() {
         value += 1
         startAnimation()
-        self.textToShow = textForValue(value) ?? ""
+        textToShow = textForValue(value) ?? ""
     }
 
     private func decrease() {
         value -= 1
         startAnimation()
-        self.textToShow = textForValue(value) ?? ""
+        textToShow = textForValue(value) ?? ""
     }
 
     private var getTextLabel: some View {
@@ -115,10 +113,10 @@ public struct hCounterField: View {
 
     private func startAnimation() {
         withAnimation {
-            self.animate = true
+            animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 withAnimation {
-                    self.animate = false
+                    animate = false
                 }
             }
         }

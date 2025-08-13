@@ -44,13 +44,13 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
     init(
         left: Left
     ) {
-        self.storage = .left(value: left)
+        storage = .left(value: left)
     }
 
     init(
         right: Right
     ) {
-        self.storage = .right(value: right)
+        storage = .right(value: right)
     }
 
     public var body: some View {
@@ -67,7 +67,7 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
 @resultBuilder
 public struct hColorBuilder {
     public static func buildBlock<Color: hColor>(_ color: Color) -> some hColor {
-        return color
+        color
     }
 
     public static func buildEither<Left: hColor, Right: hColor>(first color: Left) -> EitherHColor<Left, Right> {

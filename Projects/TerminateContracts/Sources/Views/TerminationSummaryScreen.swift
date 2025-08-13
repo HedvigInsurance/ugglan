@@ -81,6 +81,7 @@ struct TerminationSummaryScreen: View {
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
+        .padding(.bottom, .padding16)
     }
 
     private var addonContent: some View {
@@ -105,7 +106,7 @@ struct TerminationSummaryScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        if let notification = terminationNavigationVm.terminationDateStepModel?.notification {
+        if let notification = terminationNavigationVm.notification {
             let type: NotificationType = {
                 switch notification.type {
                 case .info:
@@ -113,14 +114,12 @@ struct TerminationSummaryScreen: View {
                 case .warning:
                     return .attention
                 }
-
             }()
             hSection {
                 InfoCard(text: notification.message, type: type)
             }
         }
     }
-
 }
 
 #Preview {
@@ -137,13 +136,22 @@ struct TerminationSummaryScreen: View {
         ],
         terminateInsuranceViewModel: .init()
     )
+    navigationModel.config = navigationModel.configs.first!
     navigationModel.terminationDateStepModel = .init(
         id: "id",
         maxDate: "",
         minDate: "",
-        extraCoverageItem: [],
-        notification: .init(message: "This is a message for the user to see in the notification.", type: .info)
+        extraCoverageItem: []
     )
+    navigationModel.notification = .init(
+        message: "This is a message for the user to see in the notification.",
+        type: .info
+    )
+
+    navigationModel.extraCoverage = [
+        .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
+        .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
+    ]
     return TerminationSummaryScreen()
         .environmentObject(
             navigationModel

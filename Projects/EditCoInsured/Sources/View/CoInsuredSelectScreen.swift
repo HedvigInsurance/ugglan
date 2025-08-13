@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,7 +8,7 @@ struct CoInsuredSelectScreen: View {
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     let itemPickerConfig: ItemConfig<CoInsuredModel>
-    public init(
+    init(
         contractId: String,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
@@ -17,24 +16,21 @@ struct CoInsuredSelectScreen: View {
         self.editCoInsuredNavigation = editCoInsuredNavigation
         let vm = editCoInsuredNavigation.coInsuredViewModel
         let alreadyAddedCoinsuredMembers = editCoInsuredNavigation.coInsuredViewModel.config.preSelectedCoInsuredList
-            .filter({
+            .filter {
                 !editCoInsuredNavigation.coInsuredViewModel.coInsuredAdded.contains($0)
-            })
+            }
         let intentViewModel = editCoInsuredNavigation.intentViewModel
 
         itemPickerConfig = .init(
-            items: {
-                return
-                    alreadyAddedCoinsuredMembers
-                    .compactMap {
-                        ((object: $0, displayName: .init(title: $0.fullName ?? "")))
-                    }
-            }(),
+            items:
+                alreadyAddedCoinsuredMembers
+                .compactMap {
+                    (object: $0, displayName: .init(title: $0.fullName ?? ""))
+                },
             preSelectedItems: { [] },
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
                     if let object = selectedCoinsured.0 {
-
                         vm.addCoInsured(
                             .init(
                                 firstName: object.firstName,
@@ -72,7 +68,6 @@ struct CoInsuredSelectScreen: View {
                                 )
                             }
                         }
-                        editCoInsuredNavigation.selectCoInsured = nil
                     }
                 }
             },
@@ -94,7 +89,8 @@ struct CoInsuredSelectScreen: View {
                     actionType: .add,
                     contractId: contractId
                 ),
-                editCoInsuredNavigation: editCoInsuredNavigation
+                editCoInsuredNavigation: editCoInsuredNavigation,
+                showEnterManuallyButton: false
             )
         } else {
             picker
@@ -127,7 +123,7 @@ struct CoInsuredSelectScreen: View {
             .padding(.bottom, -4)
         }
         .hItemPickerAttributes([.singleSelect, .attachToBottom])
-        .hFormContentPosition(.bottom)
+        .hFormContentPosition(.compact)
         .hButtonIsLoading(vm.isLoading)
     }
 }

@@ -56,7 +56,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
     }
 
     @ViewBuilder
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration _: Configuration) -> some View {
         VStack {
             Rectangle().fill(getInnerCircleColor)
                 .frame(width: isRecording ? 24 : 32, height: isRecording ? 24 : 32)

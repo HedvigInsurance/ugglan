@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import Foundation
 import hCore
 import hCoreUI
@@ -8,11 +7,12 @@ public protocol EditCoInsuredClient {
     func sendMidtermChangeIntentCommit(commitId: String) async throws
     func getPersonalInformation(SSN: String) async throws -> PersonalData?
     func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent
+    func fetchContracts() async throws -> [Contract]
 }
 
 public enum CoInsuredAction: Codable, Identifiable {
     public var id: Self {
-        return self
+        self
     }
 
     case delete
@@ -22,7 +22,7 @@ public enum CoInsuredAction: Codable, Identifiable {
 
 extension CoInsuredAction: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: SuccessScreen.self)
+        .init(describing: SuccessScreen.self)
     }
 }
 

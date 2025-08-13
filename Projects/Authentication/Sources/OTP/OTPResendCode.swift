@@ -43,6 +43,7 @@ struct ResendOTPCode: View {
         .padding(.top, 44)
     }
 }
+
 @MainActor
 class ResendOTPCodeViewModel: ObservableObject {
     private var authenticationService = AuthenticationService()
@@ -78,7 +79,7 @@ class ResendOTPCodeViewModel: ObservableObject {
                     otpState.isResending = false
                     self?.showToast()
                 }
-            } catch let error {
+            } catch {
                 otpState?.codeErrorMessage = error.localizedDescription
             }
             otpState?.isResending = false

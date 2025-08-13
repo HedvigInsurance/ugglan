@@ -1,19 +1,12 @@
 import Foundation
 import TerminateContracts
-//
-//  Untitled.swift
-//  Ugglan
-//
-//  Created by Sladan Nimcevic on 2025-03-24.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
 import hCore
 import hGraphQL
 
-public class TerminateContractsClientOctopus: TerminateContractsClient {
-    public init() {}
+class TerminateContractsClientOctopus: TerminateContractsClient {
+    @Inject private var octopus: hOctopus
 
-    public func startTermination(contractId: String) async throws -> TerminateStepResponse {
+    func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
             context: nil
@@ -21,7 +14,7 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
         return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
     }
 
-    public func sendTerminationDate(
+    func sendTerminationDate(
         inputDateToString: String,
         terminationContext: String
     ) async throws -> TerminateStepResponse {
@@ -36,7 +29,7 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
         return data
     }
 
-    public func sendConfirmDelete(
+    func sendConfirmDelete(
         terminationContext: String,
         model: TerminationFlowDeletionNextModel?
     ) async throws -> TerminateStepResponse {
@@ -51,18 +44,43 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
         return try await dataTask
     }
 
-    public func sendSurvey(
+    func sendSurvey(
         terminationContext: String,
         option: String,
         inputData: String?
     ) async throws -> TerminateStepResponse {
         let input = OctopusGraphQL.FlowTerminationSurveyDataInput(
             optionId: option,
-            text: GraphQLNullable.init(optionalValue: inputData)
+            text: GraphQLNullable(optionalValue: inputData)
         )
         let data = OctopusGraphQL.FlowTerminationSurveyInput(data: input)
         let mutation = OctopusGraphQL.FlowTerminationSurveyNextMutation(input: data, context: terminationContext)
         return try await mutation.execute(\.flowTerminationSurveyNext.fragments.flowTerminationFragment.currentStep)
+    }
+
+    public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
+        let input = OctopusGraphQL.TerminationFlowNotificationInput(
+            contractId: contractId,
+            terminationDate: date.localDateString
+        )
+
+        let query = OctopusGraphQL.TerminationFlowNotificationQuery(input: input)
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+
+        guard let terminationFlowNotification = data.currentMember.terminationFlowNotification else { return nil }
+
+        return .init(with: terminationFlowNotification.fragments.flowTerminationNotificationFragment)
+    }
+}
+
+extension TerminationNotification {
+    init(
+        with data: OctopusGraphQL.FlowTerminationNotificationFragment
+    ) {
+        self.init(
+            message: data.message,
+            type: data.type.asNotificationType
+        )
     }
 }
 
@@ -73,15 +91,15 @@ private protocol Into {
 
 extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
     func into(with progress: Float) -> (step: TerminationContractStep, progress: Float?) {
-        if let step = self.asFlowTerminationDateStep?.fragments.flowTerminationDateStepFragment {
+        if let step = asFlowTerminationDateStep?.fragments.flowTerminationDateStepFragment {
             return (step: .setTerminationDateStep(model: .init(with: step)), progress)
-        } else if let step = self.asFlowTerminationDeletionStep?.fragments.flowTerminationDeletionFragment {
+        } else if let step = asFlowTerminationDeletionStep?.fragments.flowTerminationDeletionFragment {
             return (step: .setTerminationDeletion(model: .init(with: step)), progress)
-        } else if let step = self.asFlowTerminationFailedStep?.fragments.flowTerminationFailedFragment {
+        } else if let step = asFlowTerminationFailedStep?.fragments.flowTerminationFailedFragment {
             return (step: .setFailedStep(model: .init(with: step)), nil)
-        } else if let step = self.asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
+        } else if let step = asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
             return (step: .setSuccessStep(model: .init(terminationDate: step.terminationDate)), nil)
-        } else if let step = self.asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
+        } else if let step = asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
             return (step: .setTerminationSurveyStep(model: .init(with: step)), progress)
         } else {
             return (step: .openTerminationUpdateAppScreen, nil)
@@ -117,53 +135,53 @@ protocol TerminationStepContext {
 
 extension OctopusGraphQL.FlowTerminationStartMutation.Data: TerminationStepContext {
     func getContext() -> String {
-        return self.flowTerminationStart.context
+        flowTerminationStart.context
     }
 }
 
 extension OctopusGraphQL.FlowTerminationDateNextMutation.Data: TerminationStepContext {
     func getContext() -> String {
-        return self.flowTerminationDateNext.context
+        flowTerminationDateNext.context
     }
 }
 
 extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationStepContext {
     func getContext() -> String {
-        return self.flowTerminationDeletionNext.context
+        flowTerminationDeletionNext.context
     }
 }
 
 extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStepContext {
     func getContext() -> String {
-        return self.flowTerminationSurveyNext.context
+        flowTerminationSurveyNext.context
     }
 }
 
 extension OctopusGraphQL.FlowTerminationStartMutation.Data: TerminationStepProgress {
     func getProgress() -> Float {
-        Float(self.flowTerminationStart.progress?.clearedSteps ?? 0)
-            / Float(self.flowTerminationStart.progress?.totalSteps ?? 0)
+        Float(flowTerminationStart.progress?.clearedSteps ?? 0)
+            / Float(flowTerminationStart.progress?.totalSteps ?? 0)
     }
 }
 
 extension OctopusGraphQL.FlowTerminationDateNextMutation.Data: TerminationStepProgress {
     func getProgress() -> Float {
-        Float(self.flowTerminationDateNext.progress?.clearedSteps ?? 0)
-            / Float(self.flowTerminationDateNext.progress?.totalSteps ?? 0)
+        Float(flowTerminationDateNext.progress?.clearedSteps ?? 0)
+            / Float(flowTerminationDateNext.progress?.totalSteps ?? 0)
     }
 }
 
 extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationStepProgress {
     func getProgress() -> Float {
-        Float(self.flowTerminationDeletionNext.progress?.clearedSteps ?? 0)
-            / Float(self.flowTerminationDeletionNext.progress?.totalSteps ?? 0)
+        Float(flowTerminationDeletionNext.progress?.clearedSteps ?? 0)
+            / Float(flowTerminationDeletionNext.progress?.totalSteps ?? 0)
     }
 }
 
 extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStepProgress {
     func getProgress() -> Float {
-        Float(self.flowTerminationSurveyNext.progress?.clearedSteps ?? 0)
-            / Float(self.flowTerminationSurveyNext.progress?.totalSteps ?? 0)
+        Float(flowTerminationSurveyNext.progress?.clearedSteps ?? 0)
+            / Float(flowTerminationSurveyNext.progress?.totalSteps ?? 0)
     }
 }
 
@@ -173,34 +191,34 @@ extension TerminationFlowSurveyStepModel {
         for layer1 in data.options {
             var subOptions = [TerminationFlowSurveyStepModelOption]()
             layer1.subOptions?
-                .forEach({ subOption in
+                .forEach { subOption in
                     var subSubOptions = [TerminationFlowSurveyStepModelOption]()
                     subOption.subOptions?
-                        .forEach({ subSubOption in
+                        .forEach { subSubOption in
                             var subSubSubOptions = [TerminationFlowSurveyStepModelOption]()
                             subSubOption.subOptions?
-                                .forEach({ subSubOption in
+                                .forEach { subSubOption in
                                     subSubSubOptions.append(
                                         .init(
                                             with: subSubOption.fragments.flowTerminationSurveyStepOptionFragment,
                                             subOptions: []
                                         )
                                     )
-                                })
+                                }
                             subSubOptions.append(
                                 .init(
                                     with: subSubOption.fragments.flowTerminationSurveyStepOptionFragment,
                                     subOptions: subSubSubOptions
                                 )
                             )
-                        })
+                        }
                     subOptions.append(
                         .init(
                             with: subOption.fragments.flowTerminationSurveyStepOptionFragment,
                             subOptions: subSubOptions
                         )
                     )
-                })
+                }
             let stepOptionFragment = layer1.fragments.flowTerminationSurveyStepOptionFragment
             options.append(.init(with: stepOptionFragment, subOptions: subOptions))
         }
@@ -213,7 +231,6 @@ extension TerminationFlowSurveyStepModel {
 }
 
 extension TerminationFlowSurveyStepModelOption {
-
     init(
         with data: OctopusGraphQL.FlowTerminationSurveyStepOptionFragment,
         subOptions: [TerminationFlowSurveyStepModelOption]
@@ -227,9 +244,10 @@ extension TerminationFlowSurveyStepModelOption {
         )
     }
 }
+
 extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
     var asSuggestion: TerminationFlowSurveyStepSuggestion? {
-        if let optionActionSuggestion = self.asFlowTerminationSurveyOptionSuggestionAction,
+        if let optionActionSuggestion = asFlowTerminationSurveyOptionSuggestionAction,
             let action = optionActionSuggestion.action.asFlowTerminationSurveyRedirectAction
         {
             let buttonTitle = optionActionSuggestion.buttonTitle
@@ -243,7 +261,7 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
                     type: optionActionSuggestion.infoType.value?.asInfoType ?? .offer
                 )
             )
-        } else if let optionRedirectSuggestion = self.asFlowTerminationSurveyOptionSuggestionRedirect {
+        } else if let optionRedirectSuggestion = asFlowTerminationSurveyOptionSuggestionRedirect {
             return .redirect(
                 redirect: .init(
                     id: optionRedirectSuggestion.id,
@@ -253,7 +271,7 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
                     type: optionRedirectSuggestion.infoType.value?.asInfoType ?? .offer
                 )
             )
-        } else if let optionSuggestionInfo = self.asFlowTerminationSurveyOptionSuggestionInfo {
+        } else if let optionSuggestionInfo = asFlowTerminationSurveyOptionSuggestionInfo {
             return .suggestionInfo(
                 info: .init(
                     id: optionSuggestionInfo.id,
@@ -269,7 +287,7 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
 extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
     var asFlowTerminationSurveyRedirectAction: FlowTerminationSurveyRedirectAction? {
         switch self {
-        case .case(let t):
+        case let .case(t):
             switch t {
             case .updateAddress:
                 return .updateAddress
@@ -286,7 +304,7 @@ extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
 
 extension OctopusGraphQL.FlowTerminationSurveyOptionFeedbackFragment {
     var asFeedback: TerminationFlowSurveyStepFeedback? {
-        .init(id: self.id, isRequired: self.isRequired)
+        .init(id: id, isRequired: isRequired)
     }
 }
 
@@ -308,13 +326,7 @@ extension TerminationFlowDateNextStepModel {
             maxDate: data.maxDate,
             minDate: data.minDate,
             date: nil,
-            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) }),
-            notification: {
-                if let notification = data.notification {
-                    return .init(message: notification.message, type: notification.type.asNotificationType)
-                }
-                return nil
-            }()
+            extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) }
         )
     }
 }
@@ -322,7 +334,7 @@ extension TerminationFlowDateNextStepModel {
 extension GraphQLEnum<OctopusGraphQL.FlowTerminationNotificationType> {
     var asNotificationType: TerminationNotificationType {
         switch self {
-        case .case(let t):
+        case let .case(t):
             switch t {
             case .info:
                 return .info
@@ -332,9 +344,9 @@ extension GraphQLEnum<OctopusGraphQL.FlowTerminationNotificationType> {
         default:
             return .info
         }
-
     }
 }
+
 extension ExtraCoverageItem {
     init(
         fragment: OctopusGraphQL.ExtraCoverageItemFragment
@@ -360,11 +372,11 @@ extension TerminationFlowDeletionNextModel {
     ) {
         self.init(
             id: data.id,
-            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
+            extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) }
         )
     }
 
     public func returnDeletionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
-        return OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
+        OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
     }
 }

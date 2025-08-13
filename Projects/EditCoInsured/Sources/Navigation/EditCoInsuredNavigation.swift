@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -45,7 +44,6 @@ extension EditCoInsuredScreenType {
 }
 
 enum EditCoInsuredScreenTrackingType: TrackingViewNameProtocol {
-
     case newInsurance
     case removeCoInsured
     case insuredPeople
@@ -89,7 +87,7 @@ public struct EditCoInsuredNavigation: View {
     ) {
         self.config = config
         self.openSpecificScreen = openSpecificScreen ?? .none
-        self.editCoInsuredNavigationVm = .init(config: config)
+        editCoInsuredNavigationVm = .init(config: config)
     }
 
     public var body: some View {
@@ -161,7 +159,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openInsuredPeopleScreen() -> some View {
-        return InsuredPeopleScreen(
+        InsuredPeopleScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel,
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
@@ -201,7 +199,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openRemoveCoInsuredScreen() -> some View {
-        return InsuredPeopleScreen(
+        InsuredPeopleScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel,
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .delete
@@ -246,7 +244,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
 
 extension EditCoInsuredSelectInsuranceNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: CoInsuredSelectInsuranceScreen.self)
+        .init(describing: CoInsuredSelectInsuranceScreen.self)
     }
 }
 
@@ -268,7 +266,7 @@ public struct EditCoInsuredAlertNavigation: View {
     }
 
     public func openMissingCoInsuredAlert() -> some View {
-        return MissingCoInsuredAlert(
+        MissingCoInsuredAlert(
             config: config,
             onButtonAction: { [weak editCoInsuredViewModel] in
                 editCoInsuredViewModel?.editCoInsuredModelMissingAlert = nil
@@ -282,15 +280,16 @@ public struct EditCoInsuredAlertNavigation: View {
         )
     }
 }
+
 extension EditCoInsuredAlertNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: MissingCoInsuredAlert.self)
+        .init(describing: MissingCoInsuredAlert.self)
     }
 }
 
 extension View {
     func addDismissEditCoInsuredFlow() -> some View {
-        self.withDismissButton(
+        withDismissButton(
             title: L10n.General.areYouSure,
             message: L10n.Claims.Alert.body,
             confirmButton: L10n.General.yes,

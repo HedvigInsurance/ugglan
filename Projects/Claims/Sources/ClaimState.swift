@@ -5,33 +5,29 @@ import hCore
 
 public struct ClaimsState: StateProtocol {
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
-    var claims: [ClaimModel]? = nil
+    var activeClaims: [ClaimModel]?
+    var historyClaims: [ClaimModel]?
     var files: [String: [File]] = [:]
 
     public init() {}
 
     private enum CodingKeys: String, CodingKey {
-        case claims
+        case activeClaims
+        case historyClaims
+        case files
     }
 
+    @MainActor
     public var hasActiveClaims: Bool {
-        if let claims = claims {
+        if let claims = activeClaims {
             return
-                !claims.filter {
+                !claims
+                .filter {
                     $0.status == .beingHandled || $0.status == .reopened
                         || $0.status == .submitted
                 }
                 .isEmpty
         }
         return false
-    }
-
-    public func claim(for id: String) -> ClaimModel? {
-        self.claims?.first(where: { $0.id == id })
-    }
-
-    @MainActor
-    public func claimFromConversation(for id: String) -> ClaimModel? {
-        self.claims?.first(where: { $0.conversation?.id == id })
     }
 }

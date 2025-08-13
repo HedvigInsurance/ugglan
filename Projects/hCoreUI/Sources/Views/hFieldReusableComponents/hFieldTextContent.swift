@@ -122,6 +122,6 @@ extension EnvironmentValues {
 
 extension View {
     public func hFieldAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hFieldBottomAttachedView, AnyView(content()))
+        environment(\.hFieldBottomAttachedView, AnyView(content()))
     }
 }

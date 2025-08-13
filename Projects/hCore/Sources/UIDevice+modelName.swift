@@ -1,7 +1,6 @@
 import SwiftUI
 
 extension UIDevice {
-
     public static let modelName: String = {
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -121,5 +120,4 @@ extension UIDevice {
 
         return mapToDevice(identifier: identifier)
     }()
-
 }

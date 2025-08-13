@@ -9,7 +9,7 @@ struct CrossSellingItem: View {
 
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
-            UIApplication.shared.open(url)
+            Dependencies.urlOpener.open(url)
         } else {
             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
         }
@@ -25,11 +25,11 @@ struct CrossSellingItem: View {
             HStack {
                 HStack(spacing: .padding16) {
                     KFImage(crossSell.imageUrl)
-                        .placeholder({
+                        .placeholder {
                             hCoreUIAssets.bigPillowHome.view
                                 .resizable()
                                 .frame(width: 48, height: 48)
-                        })
+                        }
                         .fade(duration: 0.25)
                         .resizable()
                         .frame(width: 48, height: 48)
@@ -61,6 +61,7 @@ struct CrossSellingItem: View {
                     }
                 }
                 .accessibilityElement(children: .combine)
+                .accessibilityValue(L10n.voiceoverPressTo + L10n.crossSellGetPrice)
                 .onTapGesture {
                     fieldIsClicked.toggle()
                     openExternal()

@@ -29,7 +29,7 @@ public struct InfoExpandableView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .withCustomAccessory({
+            .withCustomAccessory {
                 ZStack {
                     Image(
                         uiImage: hCoreUIAssets.minus.image
@@ -40,7 +40,7 @@ public struct InfoExpandableView: View {
                     )
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
-            })
+            }
             .onTap {
                 withAnimation(.spring) {
                     if !selectedFields.contains(title) {

@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import Foundation
 import SwiftUI
 import hCore
@@ -8,7 +7,7 @@ extension View {
     public func handleEditCoInsured(
         with vm: EditCoInsuredViewModel
     ) -> some View {
-        return modifier(EditCoInsured(vm: vm))
+        modifier(EditCoInsured(vm: vm))
     }
 }
 
@@ -27,7 +26,6 @@ struct EditCoInsured: ViewModifier {
                         configs: contractsSupportingCoInsured
                     )
                     .environmentObject(vm)
-
                 } else {
                     getEditCoInsuredNavigation(coInsuredModel: coInsuredModel)
                 }
@@ -92,7 +90,7 @@ enum InsuredPeopleConfigType {
 }
 
 extension InsuredPeopleConfigType: TrackingViewNameProtocol {
-    public var nameForTracking: String {
+    var nameForTracking: String {
         switch self {
         case .oneItem:
             return .init(describing: InsuredPeopleScreen.self)

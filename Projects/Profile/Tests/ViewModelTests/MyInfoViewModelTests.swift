@@ -25,12 +25,12 @@ final class MyInfoViewModelTests: XCTestCase {
         let mockPhoneNumber = "111111"
 
         let mockService = MockData.createMockProfileService(
-            emailPhoneUpdate: { (email, phoneNumber) in
-                return (email, phoneNumber)
+            memberUpdate: { email, phoneNumber in
+                (email, phoneNumber)
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store
@@ -62,12 +62,12 @@ final class MyInfoViewModelTests: XCTestCase {
         let mockEmail = "email@email.com"
 
         let mockService = MockData.createMockProfileService(
-            emailPhoneUpdate: { (email, phoneNumber) in
-                return (email, phoneNumber)
+            memberUpdate: { _, _ in
+                throw MyInfoSaveError.phoneNumberMalformed
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store
@@ -78,7 +78,7 @@ final class MyInfoViewModelTests: XCTestCase {
                     firstName: "first name",
                     lastName: "last name",
                     phone: mockPhoneNumber,
-                    email: mockEmail,
+                    email: "",
                     hasTravelCertificate: true,
                     isContactInfoUpdateNeeded: false
                 )
@@ -98,12 +98,12 @@ final class MyInfoViewModelTests: XCTestCase {
         let mockEmail = "email@email.com"
 
         let mockService = MockData.createMockProfileService(
-            emailPhoneUpdate: { (email, phoneNumber) in
-                return (email, phoneNumber)
+            memberUpdate: { email, phone in
+                (email, phone)
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store
@@ -114,7 +114,7 @@ final class MyInfoViewModelTests: XCTestCase {
                     id: "memberId",
                     firstName: "first name",
                     lastName: "last name",
-                    phone: "",
+                    phone: "0123456789",
                     email: mockEmail,
                     hasTravelCertificate: true,
                     isContactInfoUpdateNeeded: false
@@ -134,12 +134,12 @@ final class MyInfoViewModelTests: XCTestCase {
         let mockPhone = "email@email"
 
         let mockService = MockData.createMockProfileService(
-            emailPhoneUpdate: { (email, phone) in
+            memberUpdate: { _, _ in
                 throw MyInfoSaveError.emailEmpty
             }
         )
 
-        self.sut = mockService
+        sut = mockService
 
         let store = ProfileStore()
         self.store = store
@@ -156,6 +156,9 @@ final class MyInfoViewModelTests: XCTestCase {
                 )
             )
         )
+
+        await store.sendAsync(.setMemberEmail(email: mockEmail))
+
         assert(store.state.memberDetails?.email == mockEmail)
         let model = MyInfoViewModel()
         model.currentEmailInput = mockEmail

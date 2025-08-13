@@ -90,7 +90,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
-            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
             self.isAddon = isAddon
             self.removeModel = removeModel
         }
@@ -124,10 +124,10 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         isAddon: Bool? = false,
         onConfirmClick: (() -> Void)? = nil
     ) {
-        self.contracts = contract
+        contracts = contract
         self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick ?? {}
-        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
+        showNoticeCard = (contract.filter { !$0.isAddon }.count > 1 || isAddon ?? false)
         if let total = total {
             self.total = total
         } else {
@@ -136,8 +136,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     }
 
     func calculateTotal() {
-        let totalValue = self.contracts.filter({ !removedContracts.contains($0.id) })
-            .reduce(0, { $0 + ($1.newPremium?.value ?? 0) })
+        let totalValue = contracts.filter { !removedContracts.contains($0.id) }
+            .reduce(0) { $0 + ($1.newPremium?.value ?? 0) }
         total = .init(amount: totalValue, currency: contracts.first?.newPremium?.currency ?? "")
     }
 }
@@ -290,9 +290,7 @@ public struct QuoteSummaryScreen: View {
                         }
                     )
                     .transition(.scale)
-
-                } else if contract.shouldShowDetails && !vm.isAddon {
-
+                } else if contract.shouldShowDetails, !vm.isAddon {
                     hButton(
                         .medium,
                         .secondary,
@@ -464,7 +462,7 @@ public struct QuoteSummaryScreen: View {
         dark: hBlueColor.blue900
     )
 
-    private func buttonComponent(proxy: ScrollViewProxy) -> some View {
+    private func buttonComponent(proxy _: ScrollViewProxy) -> some View {
         hSection {
             VStack(spacing: .padding16) {
                 HStack {
@@ -570,7 +568,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: documents,
-                onDocumentTap: { document in },
+                onDocumentTap: { _ in },
                 displayItems: [
                     .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
                     .init(title: "Documents", value: "documents"),
@@ -586,7 +584,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: nil,
                 documents: documents,
-                onDocumentTap: { document in },
+                onDocumentTap: { _ in },
                 displayItems: [
                     .init(title: "Limits", value: "mockLimits"),
                     .init(title: "Documents", value: "documents"),
@@ -615,7 +613,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: documents,
-                onDocumentTap: { document in },
+                onDocumentTap: { _ in },
                 displayItems: [],
                 insuranceLimits: [
                     .init(label: "label", limit: "limit", description: "description"),
@@ -631,7 +629,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: [],
-                onDocumentTap: { document in },
+                onDocumentTap: { _ in },
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seAccident
@@ -643,7 +641,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: [],
-                onDocumentTap: { document in },
+                onDocumentTap: { _ in },
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seDogStandard
@@ -668,6 +666,6 @@ extension EnvironmentValues {
 
 extension View {
     public var hAccessibilityWithoutCombinedElements: some View {
-        self.environment(\.hAccessibilityWithoutCombinedElements, true)
+        environment(\.hAccessibilityWithoutCombinedElements, true)
     }
 }

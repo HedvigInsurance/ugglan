@@ -2,23 +2,22 @@ import InsuranceEvidence
 import hCore
 import hGraphQL
 
-public class InsuranceEvidenceClientOctopus: InsuranceEvidenceClient {
+class InsuranceEvidenceClientOctopus: InsuranceEvidenceClient {
     @Inject var octopus: hOctopus
 
-    public init() {}
-
-    public func getInitialData() async throws -> InsuranceEvidenceInitialData {
+    func getInitialData() async throws -> InsuranceEvidenceInitialData {
         let query = OctopusGraphQL.InsuranceEvidenceInitialDataQuery()
         let response = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return .init(email: response.currentMember.email)
     }
 
-    public func canCreateInsuranceEvidence() async throws -> Bool {
+    func canCreateInsuranceEvidence() async throws -> Bool {
         let query = OctopusGraphQL.InsuranceEvidenceCanCreateQuery()
         let response = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         return response.currentMember.memberActions?.isCreatingOfInsuranceEvidenceEnabled ?? false
     }
-    public func createInsuranceEvidence(input: InsuranceEvidenceInput) async throws -> InsuranceEvidence {
+
+    func createInsuranceEvidence(input: InsuranceEvidenceInput) async throws -> InsuranceEvidence {
         let mutation = OctopusGraphQL.InsuranceEvidenceCreateMutation(input: .init(email: input.email))
         let response = try await octopus.client.perform(mutation: mutation)
         guard let response = response.insuranceEvidenceCreate.insuranceEvidenceInformation else {
@@ -28,7 +27,6 @@ public class InsuranceEvidenceClientOctopus: InsuranceEvidenceClient {
             throw InsuranceEvidenceError.errorMessage(message: L10n.General.defaultError)
         }
         return .init(url: response.signedUrl)
-
     }
 }
 

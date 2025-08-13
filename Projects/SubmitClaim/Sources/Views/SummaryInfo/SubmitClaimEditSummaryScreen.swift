@@ -15,10 +15,8 @@ public struct SubmitClaimEditSummaryScreen: View {
                 header: hText(L10n.Claims.Incident.Screen.header, style: .body1)
                     .foregroundColor(hTextColor.Opaque.secondary)
             ) {
-
                 displayDateOfIncidentField()
                 displayPlaceOfIncidentField()
-
             }
 
             hSection(
@@ -47,7 +45,6 @@ public struct SubmitClaimEditSummaryScreen: View {
         hRow {
             hText(L10n.Claims.Item.Screen.Date.Of.Incident.button)
                 .foregroundColor(hTextColor.Opaque.primary)
-
         }
         .withCustomAccessory {
             Spacer()
@@ -96,7 +93,6 @@ public struct SubmitClaimEditSummaryScreen: View {
     }
 
     @ViewBuilder func displayDateOfPurchaseField() -> some View {
-
         hRow {
             hText(L10n.Claims.Item.Screen.Date.Of.Purchase.button)
                 .foregroundColor(hTextColor.Opaque.primary)
@@ -117,7 +113,6 @@ public struct SubmitClaimEditSummaryScreen: View {
     }
 
     @ViewBuilder func displayTypeOfDamageField() -> some View {
-
         hRow {
             HStack {
                 hText(L10n.Claims.Item.Screen.Damage.button)

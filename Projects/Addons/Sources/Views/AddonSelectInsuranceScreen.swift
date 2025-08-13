@@ -14,10 +14,10 @@ public struct AddonSelectInsuranceScreen: View {
     ) {
         self.changeAddonNavigationVm = changeAddonNavigationVm
         self.vm = vm
-        self.itemPickerConfig = .init(
+        itemPickerConfig = .init(
             items: {
                 let addonContractConfigs: [AddonConfig] = changeAddonNavigationVm.input.contractConfigs ?? []
-                let items = addonContractConfigs.map({
+                let items = addonContractConfigs.map {
                     (
                         object: $0,
                         displayName: ItemModel(
@@ -25,14 +25,14 @@ public struct AddonSelectInsuranceScreen: View {
                             subTitle: $0.exposureName
                         )
                     )
-                })
+                }
 
                 return items
             }(),
             preSelectedItems: { vm.selectedItems },
             onSelected: { selected in
                 if let selectedContract = selected.first?.0 {
-                    vm.selectedItems = selected.compactMap({ $0.0 })
+                    vm.selectedItems = selected.compactMap(\.0)
                     changeAddonNavigationVm.changeAddonVm = .init(
                         contractId: selectedContract.contractId,
                         addonSource: changeAddonNavigationVm.input.addonSource
@@ -52,6 +52,7 @@ public struct AddonSelectInsuranceScreen: View {
             buttonText: L10n.generalContinueButton
         )
     }
+
     public var body: some View {
         successView
             .loadingWithButtonLoading($vm.processingState)
@@ -94,7 +95,6 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
                 contractConfigs: [
                     .init(contractId: "1", exposureName: "1", displayName: "1"),
                     .init(contractId: "2", exposureName: "2", displayName: "2"),
-
                 ]
             )
         )

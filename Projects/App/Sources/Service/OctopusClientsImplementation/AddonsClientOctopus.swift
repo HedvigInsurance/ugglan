@@ -2,12 +2,10 @@ import Addons
 import hCore
 import hGraphQL
 
-public class AddonsClientOctopus: AddonsClient {
+class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
-    public init() {}
-
-    public func getAddon(contractId: String) async throws -> AddonOffer {
+    func getAddon(contractId: String) async throws -> AddonOffer {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
 
@@ -29,26 +27,24 @@ public class AddonsClientOctopus: AddonsClient {
                     quoteId: "quoteId",
                     addonId: "addonId",
                     addonSubtype: "addonSubtype",
-                    displayItems: currentAddon.displayItems.map({
+                    displayItems: currentAddon.displayItems.map {
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
-                    }),
+                    },
                     price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
                     addonVariant: nil
                 )
-
             }()
             let addonData = AddonOffer(
                 titleDisplayName: addonOffer.titleDisplayName,
                 description: addonOffer.descriptionDisplayName,
                 activationDate: addonOffer.activationDate.localDateToDate,
                 currentAddon: currentAddon,
-                quotes: addonOffer.quotes.map({ quote in
+                quotes: addonOffer.quotes.map { quote in
                     .init(fragment: quote.fragments.upsellTravelAddonQuoteFragment)
-                })
+                }
             )
 
             return addonData
-
         } catch let exception {
             if let exception = exception as? AddonsError {
                 throw exception
@@ -57,7 +53,7 @@ public class AddonsClientOctopus: AddonsClient {
         }
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws {
+    func submitAddon(quoteId: String, addonId: String) async throws {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonActivateMutation(quoteId: quoteId, addonId: addonId)
             let delayTask = Task {
@@ -68,7 +64,6 @@ public class AddonsClientOctopus: AddonsClient {
             if let error = response.upsellTravelAddonActivate.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
             }
-
         } catch let exception {
             if let exception = exception as? AddonsError {
                 throw exception
@@ -82,9 +77,9 @@ extension AddonQuote {
     init(
         fragment: OctopusGraphQL.UpsellTravelAddonQuoteFragment
     ) {
-        let displayItems: [AddonDisplayItem] = fragment.displayItems.map({
+        let displayItems: [AddonDisplayItem] = fragment.displayItems.map {
             .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
-        })
+        }
         self.init(
             displayName: fragment.displayName,
             quoteId: fragment.quoteId,

@@ -1,7 +1,7 @@
 import Apollo
 import Combine
 import Contracts
-import EditCoInsuredShared
+import EditCoInsured
 import Payment
 import PresentableStore
 import SwiftUI
@@ -62,6 +62,7 @@ class HomeBottomScrollViewModel: ObservableObject {
             }
         }
     }
+
     private var showConnectPaymentCardView = false
     var cancellables = Set<AnyCancellable>()
 
@@ -92,7 +93,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
-            .map({ $0.memberContractState })
+            .map(\.memberContractState)
             .prepend()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
@@ -111,17 +112,17 @@ class HomeBottomScrollViewModel: ObservableObject {
             handleItem(.terminated, with: false)
         }
         let needsPaymentSetupPublisher = paymentStore.stateSignal
-            .map({ $0.paymentStatusData?.status })
+            .map { $0.paymentStatusData?.status }
             .removeDuplicates()
             .prepend()
         let memberStatePublisher = homeStore.stateSignal
-            .map({ $0.memberContractState })
+            .map(\.memberContractState)
             .removeDuplicates()
             .prepend()
 
         Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
             .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] (paymentStatus, memberState) in
+            .sink(receiveValue: { [weak self] paymentStatus, memberState in
                 self?.setConnectPayments(for: memberState, status: paymentStatus)
             })
             .store(in: &cancellables)
@@ -143,7 +144,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handleImportantMessages() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
-            .map({ $0.getImportantMessageToShow() })
+            .map { $0.getImportantMessageToShow() }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] importantMessages in
@@ -170,14 +171,14 @@ class HomeBottomScrollViewModel: ObservableObject {
             .store(in: &cancellables)
         let itemsToShow = homeStore.state.getImportantMessageToShow()
         for importantMessage in itemsToShow {
-            self.handleItem(.importantMessage(message: importantMessage.id), with: true)
+            handleItem(.importantMessage(message: importantMessage.id), with: true)
         }
     }
 
     private func handleRenewalCardView() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
-            .map({ $0.upcomingRenewalContracts.count > 0 })
+            .map { $0.upcomingRenewalContracts.count > 0 }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
@@ -190,7 +191,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handleUpdateOfMemberId() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .compactMap({ $0.memberInfo?.id })
+            .compactMap { $0.memberInfo?.id }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { memberId in
@@ -214,9 +215,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handleMissingCoInsured() {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal
-            .map({
-                $0.activeContracts.hasMissingCoInsured
-            })
+            .map(\.activeContracts.hasMissingCoInsured)
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
@@ -231,7 +230,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     func handleTerminatedMessage() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .map({ $0.memberContractState })
+            .map(\.memberContractState)
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
@@ -253,7 +252,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     func handleUpdateContactInfo() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .compactMap({ $0.memberInfo?.isContactInfoUpdateNeeded })
+            .compactMap { $0.memberInfo?.isContactInfoUpdateNeeded }
             .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
                 self?.handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
             })
@@ -274,7 +273,7 @@ struct HomeBottomScrollView_Previews: PreviewProvider {
 struct InfoCardView: Identifiable, Hashable {
     let id: InfoCardType
     init(with type: InfoCardType) {
-        self.id = type
+        id = type
     }
 }
 

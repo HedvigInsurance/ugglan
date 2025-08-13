@@ -68,7 +68,7 @@ public struct BlurredProgressOverlay<Content: View>: View {
                     isAnimating = true
                 }
             }
-            .onChange(of: colorScheme) { newValue in
+            .onChange(of: colorScheme) { _ in
                 withAnimation {
                     isAnimating = false
                 }

@@ -4,12 +4,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class ChangeTierClientOctopus: ChangeTierClient {
+class ChangeTierClientOctopus: ChangeTierClient {
     @Inject @preconcurrency var octopus: hOctopus
 
-    public init() {}
-
-    public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {
             switch input.source {
             case .changeTier: return .selfService
@@ -79,7 +77,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         }
     }
 
-    public func commitTier(quoteId: String) async throws {
+    func commitTier(quoteId: String) async throws {
         let input = OctopusGraphQL.ChangeTierDeductibleCommitIntentInput(quoteId: quoteId)
         let mutation = OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation(input: input)
 
@@ -107,40 +105,38 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         var allTiers: [Tier] = []
 
         var uniqueTierNames: [String] = []
-        intent.quotes
-            .forEach({ tier in
-                let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
-                if let tierName = tier.tierName, tierNameIsNotInList ?? true {
-                    uniqueTierNames.append(tierName)
-                }
-            })
+        for tier in intent.quotes {
+            let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
+            if let tierName = tier.tierName, tierNameIsNotInList ?? true {
+                uniqueTierNames.append(tierName)
+            }
+        }
 
         /* filter tiers and deductibles*/
-        uniqueTierNames.forEach({ tierName in
-            let allQuotesWithNameX = intent.quotes.filter({ $0.tierName == tierName })
+        for tierName in uniqueTierNames {
+            let allQuotesWithNameX = intent.quotes.filter { $0.tierName == tierName }
             var allDeductiblesForX: [Quote] = []
 
-            allQuotesWithNameX
-                .forEach({ quote in
-                    let deductible = Quote(
-                        id: quote.id,
-                        quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
-                        quotePercentage: (quote.deductible?.percentage == 0)
-                            ? nil : quote.deductible?.percentage,
-                        subTitle: (quote.deductible?.displayText == "") ? nil : quote.deductible?.displayText,
-                        basePremium: .init(fragment: quote.premium.fragments.moneyFragment),
-                        displayItems: quote.displayItems.map({
-                            .init(
-                                title: $0.displayTitle,
-                                subTitle: $0.displayValue == "" ? nil : $0.displaySubtitle,
-                                value: $0.displayValue
-                            )
-                        }),
-                        productVariant: .init(data: quote.productVariant.fragments.productVariantFragment),
-                        addons: quote.addons.compactMap({ .init(with: $0) })
-                    )
-                    allDeductiblesForX.append(deductible)
-                })
+            for quote in allQuotesWithNameX {
+                let deductible = Quote(
+                    id: quote.id,
+                    quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
+                    quotePercentage: (quote.deductible?.percentage == 0)
+                        ? nil : quote.deductible?.percentage,
+                    subTitle: (quote.deductible?.displayText == "") ? nil : quote.deductible?.displayText,
+                    basePremium: .init(fragment: quote.premium.fragments.moneyFragment),
+                    displayItems: quote.displayItems.map {
+                        .init(
+                            title: $0.displayTitle,
+                            subTitle: $0.displayValue == "" ? nil : $0.displaySubtitle,
+                            value: $0.displayValue
+                        )
+                    },
+                    productVariant: .init(data: quote.productVariant.fragments.productVariantFragment),
+                    addons: quote.addons.compactMap { .init(with: $0) }
+                )
+                allDeductiblesForX.append(deductible)
+            }
 
             allTiers.append(
                 .init(
@@ -151,8 +147,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     exposureName: currentContract.exposureDisplayName
                 )
             )
-
-        })
+        }
         return allTiers
     }
 
@@ -161,7 +156,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         currentContract: OctopusGraphQL.ContractQuery.Data.Contract,
         intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
     ) -> Tier {
-        return filteredTiers.first(where: {
+        filteredTiers.first(where: {
             $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
         })
             ?? Tier(
@@ -187,7 +182,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 ],
                 exposureName: currentContract.exposureDisplayName
             )
-
     }
 
     private func getCurrentDeductible(
@@ -214,7 +208,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         return currentDeductible
     }
 
-    public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
+    func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
         do {
             let productVariantQuery = OctopusGraphQL.ProductVariantComparisonQuery(termsVersions: termsVersion)
             let productVariantData = try await octopus.client.fetch(
@@ -223,12 +217,12 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             )
 
             let productVariantRows: [ProductVariantComparison.ProductVariantComparisonRow] =
-                productVariantData.productVariantComparison.rows.map({
+                productVariantData.productVariantComparison.rows.map {
                     .init(data: $0.fragments.productVariantComparisonRowFragment)
-                })
+                }
 
             let productVariantColumns: [ProductVariant] = productVariantData.productVariantComparison
-                .variantColumns.map({ .init(data: $0.fragments.productVariantFragment) })
+                .variantColumns.map { .init(data: $0.fragments.productVariantFragment) }
 
             let productVariantComparision = ProductVariantComparison(
                 rows: productVariantRows,
@@ -250,7 +244,7 @@ extension ProductVariantComparison.ProductVariantComparisonRow {
             title: data.title,
             description: data.description,
             colorCode: data.colorCode,
-            cells: data.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
+            cells: data.cells.map { .init(isCovered: $0.isCovered, coverageText: $0.coverageText) }
         )
     }
 }
@@ -263,7 +257,7 @@ extension Quote.Addon {
         self.init(
             addonId: data.addonId,
             addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment),
-            displayItems: data.displayItems.map({ Quote.DisplayItem.init(with: $0) }),
+            displayItems: data.displayItems.map { Quote.DisplayItem(with: $0) },
             displayName: data.displayName,
             premium: .init(fragment: data.premium.fragments.moneyFragment),
             previousPremium: .init(fragment: data.previousPremium.fragments.moneyFragment)

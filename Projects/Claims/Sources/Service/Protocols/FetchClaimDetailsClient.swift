@@ -6,37 +6,47 @@ import hCore
 class FetchClaimDetailsService {
     @Inject var client: hFetchClaimDetailsClient
     @PresentableStore var store: ClaimsStore
-    let type: FetchClaimDetailsType
+    let id: String
 
-    init(type: FetchClaimDetailsType) {
-        self.type = type
+    init(id: String) {
+        self.id = id
     }
 
     func get() async throws -> ClaimModel {
-        log.info("\(FetchClaimDetailsService.self): get for \(type)", error: nil, attributes: nil)
-        return try await client.get(for: type)
-    }
-    func getFiles() async throws -> (claimId: String, files: [File]) {
-        log.info("\(FetchClaimDetailsService.self): getFiles for \(type)", error: nil, attributes: nil)
-        return try await client.getFiles(for: type)
+        log.info("\(FetchClaimDetailsService.self): get for \(id)", error: nil, attributes: nil)
+        return try await client.get(for: id)
     }
 
-    func acknowledgeClosedStatus(statusId: String) async throws {
-        log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(type)", error: nil, attributes: nil)
-        return try await client.acknowledgeClosedStatus(claimId: statusId)
+    func getFiles() async throws -> [File] {
+        log.info("\(FetchClaimDetailsService.self): getFiles for \(id)", error: nil, attributes: nil)
+        return try await client.getFiles(for: id)
+    }
+
+    func acknowledgeClosedStatus() async throws {
+        log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(id)", error: nil, attributes: nil)
+        return try await client.acknowledgeClosedStatus(for: id)
     }
 }
 
 @MainActor
 public protocol hFetchClaimDetailsClient {
-    func get(for type: FetchClaimDetailsType) async throws -> ClaimModel
-    func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [File])
-    func acknowledgeClosedStatus(claimId: String) async throws
+    func get(for id: String) async throws -> ClaimModel
+    func getFiles(for id: String) async throws -> [File]
+    func acknowledgeClosedStatus(for id: String) async throws
 }
 
-public enum FetchClaimDetailsType {
+public enum ClaimDetailsType {
     case claim(id: String)
-    case conversation(id: String)
+    case conversation(claimId: String)
+
+    var claimId: String {
+        switch self {
+        case let .claim(id):
+            return id
+        case let .conversation(claimId):
+            return claimId
+        }
+    }
 }
 
 public enum FetchClaimDetailsError: Error {
@@ -46,7 +56,6 @@ public enum FetchClaimDetailsError: Error {
 
 extension FetchClaimDetailsError: LocalizedError {
     public var errorDescription: String? {
-        return L10n.General.errorBody
+        L10n.General.errorBody
     }
-
 }

@@ -59,7 +59,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var infoText: String?
     public let displayItems: [ClaimDisplayItem]
     public var statusParagraph: String? {
-        switch self.status {
+        switch status {
         case .submitted:
             return L10n.ClaimStatus.Submitted.supportText
         case .beingHandled:
@@ -134,10 +134,12 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
             }
         }
     }
+
     public struct ClaimDisplayItem: Codable, Equatable, Hashable, Sendable, Identifiable {
         public var id: String {
             displayTitle
         }
+
         let displayTitle: String
         let displayValue: String
 
@@ -150,7 +152,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
 
 extension ClaimModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ClaimDetailView.self)
+        .init(describing: ClaimDetailView.self)
     }
 }
 
@@ -171,7 +173,7 @@ private struct ClaimCrossSellAdditionalInfo: Codable, Equatable {
     let typeOfContract: String?
 
     static func fromClaim(_ claim: ClaimModel) -> Self {
-        Self.init(
+        Self(
             id: claim.id,
             type: claim.claimType,
             status: claim.status.title,

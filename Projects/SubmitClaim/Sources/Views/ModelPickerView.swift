@@ -14,12 +14,9 @@ struct ModelPickerView: View {
         self.brand = brand
         let step = claimsNavigationVm.singleItemModel
         let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
-        self.itemPickerConfig = .init(
-            items: {
-                return step?.getListOfModels(for: brand.itemBrandId)?
-                    .compactMap({ ($0, .init(title: $0.displayName)) }) ?? []
-
-            }(),
+        itemPickerConfig = .init(
+            items: step?.getListOfModels(for: brand.itemBrandId)?
+                .compactMap { ($0, .init(title: $0.displayName)) } ?? [],
             preSelectedItems: {
                 if let item = step?.getListOfModels()?.first(where: { $0.itemModelId == step?.selectedItemModel }) {
                     return [item]

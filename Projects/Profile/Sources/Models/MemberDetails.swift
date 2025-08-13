@@ -27,7 +27,7 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendabl
         self.lastName = lastName
         self.phone = phone
         self.email = email
-        self.isTravelCertificateEnabled = hasTravelCertificate
+        isTravelCertificateEnabled = hasTravelCertificate
         self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
     }
 }

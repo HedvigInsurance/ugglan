@@ -2,19 +2,17 @@ import Foundation
 import hCore
 
 @testable import EditCoInsured
-@testable import EditCoInsuredShared
 
 @MainActor
 struct MockData {
     @discardableResult
     static func createMockEditCoInsuredService(
-        sendMidtermChangeIntent: @escaping SendMidtermChangeIntent = { commitId in
-
+        sendMidtermChangeIntent: @escaping SendMidtermChangeIntent = { _ in
         },
-        fetchPersonalInformation: @escaping FetchPersonalInformation = { SSN in
+        fetchPersonalInformation: @escaping FetchPersonalInformation = { _ in
             .init(firstName: "first name", lastName: "last name")
         },
-        submitIntent: @escaping SendIntent = { contractId, coInsured in
+        submitIntent: @escaping SendIntent = { _, _ in
             .init(
                 activationDate: Date().localDateString,
                 currentPremium: .init(amount: "239", currency: "SEK"),

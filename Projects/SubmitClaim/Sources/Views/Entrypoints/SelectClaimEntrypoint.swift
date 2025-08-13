@@ -29,9 +29,7 @@ public struct SelectClaimEntrypointGroup: View {
             .hFormAttachToBottom {
                 VStack {
                     ShowTagList(
-                        tagsToShow: claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.map({
-                            $0.displayName
-                        }),
+                        tagsToShow: claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.map(\.displayName),
                         onTap: { tag in
                             claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup = tag
                             claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints =
@@ -68,7 +66,6 @@ public struct SelectClaimEntrypointGroup: View {
                                         claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
                                     claimsNavigationVm.router.push(SubmitClaimRouterActions.triagingEntrypoint)
                                 }
-
                             }
                         },
                         oldValue: $claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup,
@@ -95,7 +92,6 @@ public struct SelectClaimEntrypointGroup: View {
                 )
             )
             .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
-
     }
 }
 
@@ -108,7 +104,7 @@ struct SelectClaimEntrypointType: View {
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @EnvironmentObject var router: Router
 
-    public init() {}
+    init() {}
 
     var body: some View {
         hForm {}
@@ -152,7 +148,6 @@ struct SelectClaimEntrypointType: View {
                                     )
                                     buttonIsLoading = false
                                 }
-
                             } else {
                                 router.push(SubmitClaimRouterActions.triagingOption)
                             }
@@ -163,7 +158,6 @@ struct SelectClaimEntrypointType: View {
                 )
             }
             .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
-
     }
 
     func entrypointsToStringArray(entrypoints: [ClaimEntryPointResponseModel]) -> [String] {
@@ -201,7 +195,7 @@ struct SelectClaimEntrypointOption: View {
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @State var buttonIsLoading: Bool = false
 
-    public init() {}
+    init() {}
 
     var body: some View {
         hForm {}
@@ -240,7 +234,6 @@ struct SelectClaimEntrypointOption: View {
                 )
             }
             .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
-
     }
 
     func mapNametoEntrypointOptionId(input: [ClaimEntryPointOptionResponseModel]) -> String {
@@ -320,7 +313,7 @@ struct ShowTagList: View {
                     }
                 }
                 hContinueButton {
-                    if selection != nil && selection != "" {
+                    if selection != nil, selection != "" {
                         notValid = false
                         onButtonClick()
                     } else {
@@ -365,7 +358,6 @@ struct ShowTagList: View {
                 .foregroundColor(PrimaryAlt().resting)
                 .asAnyView
                 .hShadow()
-
         } else {
             RoundedRectangle(cornerRadius: 12)
                 .foregroundColor(hGrayscaleOpaqueColor.greyScale100)
@@ -397,7 +389,6 @@ public class SelectClaimEntrypointViewModel: ObservableObject {
     }
 
     func fetchClaimEntrypointGroups() {
-
         withAnimation {
             self.viewState = .loading
         }

@@ -25,6 +25,7 @@ extension String {
         }
     }
 }
+
 extension String {
     public var isUrl: Bool {
         let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)

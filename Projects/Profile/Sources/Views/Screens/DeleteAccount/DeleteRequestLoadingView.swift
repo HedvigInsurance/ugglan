@@ -91,6 +91,7 @@ public struct DeleteRequestLoadingView: View {
             errorState(errorMessage: errorMessage)
         }
     }
+
     @MainActor
     private func sendSlackMessage(details: MemberDetails) async {
         do {

@@ -6,7 +6,6 @@ import hCoreUI
 struct UpcomingChangesScreen: View {
     let updateDate: String
     let upcomingAgreement: Agreement?
-    @PresentableStore var store: ContractStore
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -17,7 +16,8 @@ struct UpcomingChangesScreen: View {
         self.updateDate = updateDate
         self.upcomingAgreement = upcomingAgreement
     }
-    public var body: some View {
+
+    var body: some View {
         hForm {
             if let upcomingAgreement {
                 hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in

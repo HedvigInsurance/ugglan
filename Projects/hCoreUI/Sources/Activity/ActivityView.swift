@@ -10,7 +10,7 @@ public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable
         self.vm = vm
     }
 
-    public func makeUIView(context: Context) -> UIView {
+    public func makeUIView(context _: Context) -> UIView {
         let vc = UIHostingController(rootView: content())
         vc.view.backgroundColor = .clear
         vc.view.layer.cornerRadius = 12
@@ -19,7 +19,7 @@ public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable
         return vc.view
     }
 
-    public func updateUIView(_ uiView: UIView, context: Context) {
+    public func updateUIView(_ uiView: UIView, context _: Context) {
         vm.view = uiView
     }
 }

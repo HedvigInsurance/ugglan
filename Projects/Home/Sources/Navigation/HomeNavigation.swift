@@ -2,7 +2,7 @@ import Chat
 import Combine
 import Contracts
 import CrossSell
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import Payment
 import PresentableStore
@@ -12,7 +12,7 @@ import hCoreUI
 
 extension String: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return self
+        self
     }
 }
 
@@ -29,18 +29,10 @@ public class HomeNavigationViewModel: ObservableObject {
     public init() {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
-
             var openChat: ChatConversation?
 
             if let chatType = notification.object as? ChatType {
-                switch chatType {
-                case let .conversationId(conversationId):
-                    openChat = .init(chatType: .conversationId(id: conversationId))
-                case .newConversation:
-                    openChat = .init(chatType: .newConversation)
-                case .inbox:
-                    openChat = .init(chatType: .inbox)
-                }
+                openChat = .init(chatType: chatType)
             } else {
                 openChat = .init(chatType: .inbox)
             }

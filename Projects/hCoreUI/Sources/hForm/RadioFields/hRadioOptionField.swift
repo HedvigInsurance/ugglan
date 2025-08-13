@@ -8,7 +8,7 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     let value: T
 
     public init(selectedValue: Binding<T?>, value: T) {
-        self._selectedValue = selectedValue
+        _selectedValue = selectedValue
         self.value = value
     }
 
