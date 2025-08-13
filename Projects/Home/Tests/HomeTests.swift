@@ -124,7 +124,7 @@ final class HomeTests: XCTestCase {
         ]
         let randomIndex = Int(arc4random()) % futureStatuses.count
         let futureStatus = futureStatuses[randomIndex]
-        let memberState = MemberState.init(
+        let memberState = MemberState(
             memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
             contracts: [],
             contractState: MemberContractState.allCases.randomElement() ?? .active,

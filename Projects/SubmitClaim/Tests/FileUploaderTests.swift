@@ -1,3 +1,4 @@
+import Claims
 @preconcurrency import XCTest
 import hCore
 

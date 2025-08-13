@@ -1,3 +1,4 @@
+import Claims
 import hCore
 
 @testable import Claims
