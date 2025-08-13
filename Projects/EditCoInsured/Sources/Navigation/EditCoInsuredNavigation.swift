@@ -222,16 +222,7 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
         )
-        .environmentObject(router)
-        .routerDestination(for: EditCoInuredRouterActions.self) { action in
-            switch action {
-            case .summary:
-                CoInsuredSummaryScreen(
-                    editCoInsuredNavigation: editCoInsuredNavigationVm,
-                    intentViewModel: editCoInsuredNavigationVm.intentViewModel
-                )
-            }
-        }
+        .environmentObject(router)  // needed?
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }
@@ -279,17 +270,6 @@ public struct EditCoInsuredNavigation: View {
         openCoInsuredInput(
             coInsuredModelEdit: coInsuredInputModel
         )
-    }
-}
-
-enum EditCoInuredRouterActions: TrackingViewNameProtocol {
-    case summary
-
-    var nameForTracking: String {
-        switch self {
-        case .summary:
-            return .init(describing: CoInsuredSummaryScreen.self)
-        }
     }
 }
 

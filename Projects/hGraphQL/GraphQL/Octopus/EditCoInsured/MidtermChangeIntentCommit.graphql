@@ -34,6 +34,9 @@ fragment ItemCostFragment on ItemCost {
 }
 
 fragment ItemDiscountFragment on ItemDiscount {
+    amount {
+        ...MoneyFragment
+    }
     campaignCode
     displayName
     displayValue

@@ -43,12 +43,8 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private var buttonView: some View {
-        if vm.showSavebutton {
-            saveChangesButton
-        } else if vm.showConfirmChangesButton {
-            hContinueButton {
-                router.push(EditCoInuredRouterActions.summary)
-            }
+        if vm.showConfirmChangesButton {
+            ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
         }
     }
 
