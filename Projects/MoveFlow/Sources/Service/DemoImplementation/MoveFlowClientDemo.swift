@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 @MainActor
 public class MoveFlowClientDemo: MoveFlowClient {

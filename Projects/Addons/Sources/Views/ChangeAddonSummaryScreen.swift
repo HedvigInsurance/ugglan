@@ -21,28 +21,30 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
+        let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
+            id: contractId,
+            displayName: selectedQuote?.addonVariant?.displayName ?? "",
+            exposureName: L10n.addonFlowSummaryActiveFrom(
+                addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+            ),
+            newPremium: selectedQuote?.price,
+            currentPremium: addonOffer?.currentAddon?.price,
+            documents: selectedQuote?.addonVariant?.documents ?? [],
+            onDocumentTap: { document in
+                changeAddonNavigationVm.document = document
+            },
+            displayItems: compareAddonDisplayItems(
+                currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
+                newDisplayItems: selectedQuote?.displayItems ?? []
+            ),
+            insuranceLimits: [],
+            typeOfContract: nil,
+            isAddon: true
+        )
+
         let vm = QuoteSummaryViewModel(
             contract: [
-                .init(
-                    id: contractId,
-                    displayName: selectedQuote?.addonVariant?.displayName ?? "",
-                    exposureName: L10n.addonFlowSummaryActiveFrom(
-                        addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    newPremium: selectedQuote?.price,
-                    currentPremium: addonOffer?.currentAddon?.price,
-                    documents: selectedQuote?.addonVariant?.documents ?? [],
-                    onDocumentTap: { document in
-                        changeAddonNavigationVm.document = document
-                    },
-                    displayItems: compareAddonDisplayItems(
-                        currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
-                        newDisplayItems: selectedQuote?.displayItems ?? []
-                    ),
-                    insuranceLimits: [],
-                    typeOfContract: nil,
-                    isAddon: true
-                )
+                contractInfo
             ],
             total: getTotalPrice(
                 currentPrice: addonOffer?.currentAddon?.price,
