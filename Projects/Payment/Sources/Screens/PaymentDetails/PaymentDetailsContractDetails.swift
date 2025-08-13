@@ -113,7 +113,7 @@ struct ContractDetails: View {
                             currentPremium: contract.grossAmount,
                             title: L10n.paymentsSubtotal
                         )
-                        .hWithStrikeThroughPrice(setTo: .none)
+                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                         .hPriceFormatting(setTo: .month)
                     }
                 }
