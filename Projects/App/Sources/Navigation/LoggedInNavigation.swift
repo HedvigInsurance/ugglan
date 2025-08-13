@@ -809,12 +809,13 @@ class LoggedInNavigationViewModel: ObservableObject {
                         }
                     }
                 } else {
-                    Task { [weak self] in
+                    Task { [weak self, weak contractStore] in
                         do {
                             try await Task.sleep(nanoseconds: 200_000_000)
-                            let contractsConfig = contractStore.state.activeContracts
+                            let contractsConfig =
+                                contractStore?.state.activeContracts
                                 .filter(\.canTerminate)
-                                .map(\.asTerminationConfirmConfig)
+                                .map(\.asTerminationConfirmConfig) ?? []
                             try await self?.terminateInsuranceVm.start(with: contractsConfig)
                         } catch let exception {
                             Toasts.shared.displayToastBar(
