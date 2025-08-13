@@ -70,8 +70,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
-                netPremium: quote.netPremium,
-                grossPremium: quote.grossPremium,
+                newPremium: quote.premium,
+                currentPremium: quote.premium,
                 documents: quote.documents.map {
                     .init(displayName: $0.displayName, url: $0.url, type: .unknown)
                 },
@@ -81,10 +81,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                 ),
                 insuranceLimits: quote.insurableLimits,
-                typeOfContract: quote.contractType,
-                discountDisplayItems: quote.discountDisplayItems.map {
-                    .init(title: $0.displayTitle, value: $0.displayValue)
-                }
+                typeOfContract: quote.contractType
             )
             contractInfos.append(contractQuote)
 
@@ -98,12 +95,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         }
 
         let vm = QuoteSummaryViewModel(
-            contract: contractInfos,
-            activationDate: movingFlowQuotes.first?.startDate,
-            summaryDataProvider: MoveFlowQuoteSummaryDataProvider(
-                intentId: self.moveConfigurationModel?.id ?? "",
-                selectedHomeQuoteId: self.selectedHomeQuote?.id ?? ""
-            )
+            contract: contractInfos
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
             Task {
@@ -131,7 +123,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     }
 
     var movingDate: String {
-        (selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate)?.displayDateDDMMMYYYYFormat ?? ""
+        selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate ?? ""
     }
 }
 
@@ -402,8 +394,8 @@ extension AddonDataModel {
             id: id,
             displayName: quoteInfo.title ?? "",
             exposureName: coverageDisplayName,
-            netPremium: netPremium,
-            grossPremium: grossPremium,
+            newPremium: price,
+            currentPremium: nil,
             documents: addonVariant.documents,
             onDocumentTap: { document in
                 ondocumentClicked(document)
@@ -414,10 +406,7 @@ extension AddonDataModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            removeModel: removeModel,
-            discountDisplayItems: self.discountDisplayItems.map({
-                .init(title: $0.displayTitle, value: $0.displayValue)
-            })
+            removeModel: removeModel
         )
         return addonQuoteContractInfo
     }

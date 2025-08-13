@@ -33,16 +33,15 @@ extension ChangeTierViewModel {
                 id: currentTier?.id ?? "",
                 displayName: displayName ?? "",
                 exposureName: activationDate,
-                netPremium: newPremium,
-                grossPremium: currentPremium,
-                documents: self.selectedQuote?.productVariant?.documents ?? [],
+                newPremium: newPremium,
+                currentPremium: currentPremium,
+                documents: selectedQuote?.productVariant?.documents ?? [],
                 onDocumentTap: { [weak changeTierNavigationVm] document in
                     changeTierNavigationVm?.document = document
                 },
                 displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
-                typeOfContract: typeOfContract,
-                discountDisplayItems: []
+                typeOfContract: typeOfContract
             )
         )
         for addon in selectedQuote?.addons ?? [] {
@@ -51,8 +50,8 @@ extension ChangeTierViewModel {
                     id: addon.addonId,
                     displayName: addon.displayName,
                     exposureName: activationDate,
-                    netPremium: addon.premium,
-                    grossPremium: addon.previousPremium,
+                    newPremium: addon.premium,
+                    currentPremium: addon.previousPremium,
                     documents: addon.addonVariant.documents,
                     onDocumentTap: { [weak changeTierNavigationVm] document in
                         changeTierNavigationVm?.document = document
@@ -60,34 +59,13 @@ extension ChangeTierViewModel {
                     displayItems: addon.displayItems.compactMap { .init(title: $0.title, value: $0.value) },
                     insuranceLimits: [],
                     typeOfContract: nil,
-                    isAddon: true,
-                    discountDisplayItems: []
+                    isAddon: true
                 )
             )
         }
-        let totalNet: MonetaryAmount = {
-            let totalValue =
-                contracts
-                .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
-        }()
-
-        let totalGross: MonetaryAmount = {
-            let totalValue =
-                contracts
-                .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
-        }()
 
         let vm = QuoteSummaryViewModel(
             contract: contracts,
-            activationDate: self.activationDate,
-            summaryDataProvider: DirectQuoteSummaryDataProvider(
-                intentCost: .init(
-                    totalGross: totalGross,
-                    totalNet: totalNet
-                )
-            ),
             onConfirmClick: {
                 changeTierNavigationVm.isConfirmTierPresented = true
             }

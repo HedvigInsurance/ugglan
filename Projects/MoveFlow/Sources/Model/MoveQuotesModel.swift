@@ -21,9 +21,8 @@ public struct MoveQuotesModel: Sendable {
 
 public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     typealias KeyValue = (key: String, value: String)
-    let grossPremium: MonetaryAmount
-    let netPremium: MonetaryAmount
-    let startDate: Date
+    let premium: MonetaryAmount
+    let startDate: String
     let displayName: String
     let insurableLimits: [InsurableLimits]
     let perils: [Perils]
@@ -33,12 +32,10 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     let displayItems: [DisplayItem]
     let exposureName: String?
     let addons: [AddonDataModel]
-    let discountDisplayItems: [DisplayItem]
 
     public init(
-        grossPremium: MonetaryAmount,
-        netPremium: MonetaryAmount,
-        startDate: Date,
+        premium: MonetaryAmount,
+        startDate: String,
         displayName: String,
         insurableLimits: [InsurableLimits],
         perils: [Perils],
@@ -47,11 +44,9 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         id: String,
         displayItems: [DisplayItem],
         exposureName: String?,
-        addons: [AddonDataModel],
-        discountDisplayItems: [DisplayItem]
+        addons: [AddonDataModel]
     ) {
-        self.grossPremium = grossPremium
-        self.netPremium = netPremium
+        self.premium = premium
         self.startDate = startDate
         self.displayName = displayName
         self.insurableLimits = insurableLimits
@@ -62,7 +57,6 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         self.displayItems = displayItems
         self.exposureName = exposureName
         self.addons = addons
-        self.discountDisplayItems = discountDisplayItems
     }
 }
 
@@ -93,34 +87,28 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
     let quoteInfo: InfoViewDataModel
     let displayItems: [DisplayItem]
     let coverageDisplayName: String
-    let grossPremium: MonetaryAmount
-    let netPremium: MonetaryAmount
+    let price: MonetaryAmount
     let addonVariant: AddonVariant
     let startDate: Date
     let removeDialogInfo: RemoveDialogInfo?
-    let discountDisplayItems: [DisplayItem]
 
     public init(
         id: String,
         quoteInfo: InfoViewDataModel,
         displayItems: [DisplayItem],
         coverageDisplayName: String,
-        grossPremium: MonetaryAmount,
-        netPremium: MonetaryAmount,
+        price: MonetaryAmount,
         addonVariant: AddonVariant,
         startDate: Date,
-        discountDisplayItems: [DisplayItem],
-        removeDialogInfo: RemoveDialogInfo?,
+        removeDialogInfo: RemoveDialogInfo?
     ) {
         self.id = id
         self.quoteInfo = quoteInfo
         self.displayItems = displayItems
         self.coverageDisplayName = coverageDisplayName
-        self.grossPremium = grossPremium
-        self.netPremium = netPremium
+        self.price = price
         self.addonVariant = addonVariant
         self.startDate = startDate
-        self.discountDisplayItems = discountDisplayItems
         self.removeDialogInfo = removeDialogInfo
     }
 }

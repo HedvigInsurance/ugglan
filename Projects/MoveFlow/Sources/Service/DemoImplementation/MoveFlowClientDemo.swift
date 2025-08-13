@@ -25,8 +25,4 @@ public class MoveFlowClientDemo: MoveFlowClient {
         currentHomeQuoteId _: String,
         removedAddons _: [String]
     ) async throws {}
-
-    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
-        .init(totalGross: .sek(1000), totalNet: .sek(900))
-    }
 }

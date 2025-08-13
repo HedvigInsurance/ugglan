@@ -1,22 +1,15 @@
 import SwiftUI
 import hCore
 
-@MainActor
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]
-    @Published public var activationDate: Date?
-    @Published var netTotal: MonetaryAmount = .init(amount: "", currency: "")
-    @Published var grossTotal: MonetaryAmount = .init(amount: "", currency: "")
+    @Published var total: MonetaryAmount = .init(amount: "", currency: "")
     @Published var expandedContracts: [String] = []
     @Published var removedContracts: [String] = []
-    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
-    @Published var isConfirmChangesPresented: Bool = false
-
     public var onConfirmClick: () -> Void
     let isAddon: Bool
     let showNoticeCard: Bool
-
-    let summaryDataProvider: QuoteSummaryDataProvider
+    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
 
     func toggleContract(_ contract: ContractInfo) {
         if expandedContracts.contains(contract.id) {
@@ -49,12 +42,22 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         calculateTotal()
     }
 
+    func strikeThroughPriceType(_ contractId: String) -> StrikeThroughPriceType {
+        if removedContracts.contains(contractId) {
+            return .crossNewPrice
+        }
+        if isAddon {
+            return .crossOldPrice
+        }
+        return .none
+    }
+
     public struct ContractInfo: Identifiable {
         public var id: String
         let displayName: String
         let exposureName: String
-        public let netPremium: MonetaryAmount?
-        public let grossPremium: MonetaryAmount?
+        let newPremium: MonetaryAmount?
+        let currentPremium: MonetaryAmount?
         let displayItems: [QuoteDisplayItem]
         let documents: [hPDFDocument]
         let onDocumentTap: (_ document: hPDFDocument) -> Void
@@ -63,37 +66,33 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let shouldShowDetails: Bool
         let removeModel: RemoveModel?
         let isAddon: Bool
-        let discountDisplayItems: [QuoteDisplayItem]
-
         public init(
             id: String,
             displayName: String,
             exposureName: String,
-            netPremium: MonetaryAmount?,
-            grossPremium: MonetaryAmount?,
+            newPremium: MonetaryAmount?,
+            currentPremium: MonetaryAmount?,
             documents: [hPDFDocument],
             onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
-            isAddon: Bool? = false,
-            removeModel: RemoveModel? = nil,
-            discountDisplayItems: [QuoteDisplayItem]
+            isAddon: Bool = false,
+            removeModel: RemoveModel? = nil
         ) {
             self.id = id
             self.displayName = displayName
             self.exposureName = exposureName
-            self.netPremium = netPremium
-            self.grossPremium = grossPremium
+            self.newPremium = newPremium
+            self.currentPremium = currentPremium
             self.documents = documents
             self.onDocumentTap = onDocumentTap
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
-            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
-            self.isAddon = isAddon ?? false
+            shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.isAddon = isAddon
             self.removeModel = removeModel
-            self.discountDisplayItems = discountDisplayItems
         }
 
         public struct RemoveModel: Identifiable, Equatable {
@@ -121,43 +120,25 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 
     public init(
         contract: [ContractInfo],
-        activationDate: Date?,
+        total: MonetaryAmount? = nil,
         isAddon: Bool? = false,
-        summaryDataProvider: QuoteSummaryDataProvider,
-        onConfirmClick: (() -> Void)? = nil,
+        onConfirmClick: (() -> Void)? = nil
     ) {
-        self.contracts = contract
+        contracts = contract
         self.isAddon = isAddon ?? false
-        self.activationDate = activationDate
         self.onConfirmClick = onConfirmClick ?? {}
-        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
-        self.summaryDataProvider = summaryDataProvider
-        calculateTotal()
-    }
-    private var calculateTotalTask: Task<(), any Error>?
-    private func calculateTotal() {
-        calculateTotalTask?.cancel()
-        calculateTotalTask = Task { [weak self] in
-            guard let self = self else { return }
-            let includedAddonIds = self.contracts
-                .filter(\.isAddon)
-                .filter { !removedContracts.contains($0.id) }
-                .map(\.id)
-            do {
-                let data = try await summaryDataProvider.getTotal(includedAddonIds: includedAddonIds)
-                withAnimation {
-                    grossTotal = data.totalGross
-                    netTotal = data.totalNet
-                }
-            } catch _ {
-                // we don't care about the error here, we just want to recalculate the totals
-                self.calculateTotal()
-            }
+        showNoticeCard = (contract.filter { !$0.isAddon }.count > 1 || isAddon ?? false)
+        if let total = total {
+            self.total = total
+        } else {
+            calculateTotal()
         }
     }
 
-    deinit {
-        calculateTotalTask?.cancel()
+    func calculateTotal() {
+        let totalValue = contracts.filter { !removedContracts.contains($0.id) }
+            .reduce(0) { $0 + ($1.newPremium?.value ?? 0) }
+        total = .init(amount: totalValue, currency: contracts.first?.newPremium?.currency ?? "")
     }
 }
 

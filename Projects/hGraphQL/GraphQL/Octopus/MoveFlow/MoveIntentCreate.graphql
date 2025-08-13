@@ -34,20 +34,22 @@ fragment MoveAddressFragment on MoveAddress {
 
 fragment QuoteFragment on MoveIntent {
       mtaQuotes {
+        premium {
+            ...MoneyFragment
+        }
         startDate
         exposureName
         productVariant {
             ...ProductVariantFragment
         }
         displayItems {
-            ...MoveQuoteDisplayItemFragment
+            displayTitle
+            displaySubtitle
+            displayValue
         }
         addons {
             ...MoveAddonQuoteFragment
         }
-		cost {
-			...ItemCostFragment
-		}
       }
        homeQuotes {
         deductible {
@@ -59,10 +61,15 @@ fragment QuoteFragment on MoveIntent {
         }
         defaultChoice
         displayItems {
-            ...MoveQuoteDisplayItemFragment
+            displaySubtitle
+            displayTitle
+            displayValue
         }
         exposureName
         id
+        premium {
+            ...MoneyFragment
+        }
         productVariant {
             ...ProductVariantFragment
         }
@@ -72,9 +79,6 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
-		cost {
-			...ItemCostFragment
-		}
       }
 }
 
@@ -83,38 +87,15 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     displayName
     coverageDisplayName
     displayItems {
-        ...MoveQuoteDisplayItemFragment
+        displayTitle
+        displaySubtitle
+        displayValue
+    }
+    premium {
+        ...MoneyFragment
     }
 	startDate
 	addonVariant {
         ...AddonVariantFragment
     }
-	cost {
-		...ItemCostFragment
-	}
-}
-
-fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
-    displayTitle
-    displaySubtitle
-    displayValue
-}
-
-fragment ItemCostFragment on ItemCost {
-	monthlyGross {
-		...MoneyFragment
-	}
-	monthlyNet {
-		...MoneyFragment
-	}
-	discounts {
-		...ItemDiscountFragment
-	}
-}
-
-fragment ItemDiscountFragment on ItemDiscount {
-	displayName
-	displayValue
-	explanation
-	campaignCode
 }

@@ -27,8 +27,8 @@ extension ChangeAddonViewModel {
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
-            netPremium: selectedQuote?.price,
-            grossPremium: addonOffer?.currentAddon?.price,
+            newPremium: selectedQuote?.price,
+            currentPremium: addonOffer?.currentAddon?.price,
             documents: selectedQuote?.addonVariant?.documents ?? [],
             onDocumentTap: { document in
                 changeAddonNavigationVm.document = document
@@ -39,26 +39,18 @@ extension ChangeAddonViewModel {
             ),
             insuranceLimits: [],
             typeOfContract: nil,
-            isAddon: true,
-            discountDisplayItems: []
+            isAddon: true
         )
 
         let vm = QuoteSummaryViewModel(
             contract: [
                 contractInfo
             ],
-            activationDate: self.addonOffer?.activationDate,
-            isAddon: true,
-            summaryDataProvider: DirectQuoteSummaryDataProvider(
-                intentCost: .init(
-                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.grossPremium
-                        ?? .init(amount: "", currency: ""),
-                    totalNet: getTotalPrice(
-                        currentPrice: addonOffer?.currentAddon?.price,
-                        newPrice: selectedQuote?.price
-                    )
-                )
-            )
+            total: getTotalPrice(
+                currentPrice: addonOffer?.currentAddon?.price,
+                newPrice: selectedQuote?.price
+            ),
+            isAddon: true
         ) {
             changeAddonNavigationVm.isConfirmAddonPresented = true
         }
