@@ -212,8 +212,10 @@ struct LoggedInNavigation: View {
 
     private func fetchContracts() {
         // added delay since we don't have a terms version at the place right after the insurance has been created
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        store.send(.fetchContracts)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            let store: ContractStore = globalPresentableStoreContainer.get()
+            store.send(.fetchContracts)
+        }
     }
 
     var foreverTab: some View {
@@ -723,28 +725,50 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
 
         switch deepLink {
-        case .forever: dismissAndSelectTab(2)
-        case .directDebit: homeNavigationVm.connectPaymentVm.set(for: nil)
-        case .profile: dismissAndSelectTab(4)
-        case .insurances: dismissAndSelectTab(1)
-        case .home: dismissAndSelectTab(0)
-        case .sasEuroBonus: isEuroBonusPresented = true
-        case .contract: handleContractDeeplink(url)
-        case .payments: dismissAndSelectTab(3)
-        case .travelCertificate: isTravelInsurancePresented = true
-        case .insuranceEvidence: handleInsuranceEvidence()
-        case .helpCenter: handleHelpCenterDeeplink(url)
-        case .helpCenterTopic: handleHelpCenterTopic(url)
-        case .helpCenterQuestion: handleHelpCenterQuestion(url)
-        case .moveContract: isMoveContractPresented = true
-        case .terminateContract: handleTerminateContract(url)
-        case .conversation: handleDeeplinkConversation(url)
-        case .chat, .inbox: NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
-        case .contactInfo: handleDeeplinkContactInfo(url)
-        case .changeTier: handleChangeTier(contractId: url.getParameter(property: .contractId))
-        case .travelAddon: Task { await handleTravelAddon() }
-        case .editCoInsured: handleEditCoInsured(url: url)
-        case .claimDetails: Task { await self.handleClaimDetails(claimId: url.getParameter(property: .claimId)) }
+        case .forever:
+            dismissAndSelectTab(2)
+        case .directDebit:
+            homeNavigationVm.connectPaymentVm.set(for: nil)
+        case .profile:
+            dismissAndSelectTab(4)
+        case .insurances:
+            dismissAndSelectTab(1)
+        case .home:
+            dismissAndSelectTab(0)
+        case .sasEuroBonus:
+            isEuroBonusPresented = true
+        case .contract:
+            handleContractDeeplink(url)
+        case .payments:
+            dismissAndSelectTab(3)
+        case .travelCertificate:
+            isTravelInsurancePresented = true
+        case .insuranceEvidence:
+            handleInsuranceEvidence()
+        case .helpCenter:
+            handleHelpCenterDeeplink(url)
+        case .helpCenterTopic:
+            handleHelpCenterTopic(url)
+        case .helpCenterQuestion:
+            handleHelpCenterQuestion(url)
+        case .moveContract:
+            isMoveContractPresented = true
+        case .terminateContract:
+            handleTerminateContract(url)
+        case .conversation:
+            handleDeeplinkConversation(url)
+        case .chat, .inbox:
+            NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
+        case .contactInfo:
+            handleDeeplinkContactInfo(url)
+        case .changeTier:
+            handleChangeTier(contractId: url.getParameter(property: .contractId))
+        case .travelAddon:
+            Task { await handleTravelAddon() }
+        case .editCoInsured:
+            handleEditCoInsured(url: url)
+        case .claimDetails:
+            Task { await self.handleClaimDetails(claimId: url.getParameter(property: .claimId)) }
         case .submitClaim:
             selectedTab = 0
             homeNavigationVm.isSubmitClaimPresented = true

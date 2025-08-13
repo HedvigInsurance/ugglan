@@ -56,7 +56,7 @@ struct AskForPushNotifications: View {
         )
     }
 
-    var textContent: some View {
+    private var textContent: some View {
         VStack(spacing: 0) {
             hText(L10n.activateNotificationsTitle)
                 .accessibilityAddTraits(.isHeader)

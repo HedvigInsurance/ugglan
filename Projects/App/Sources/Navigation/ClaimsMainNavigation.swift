@@ -28,12 +28,12 @@ struct ClaimsMainNavigation: View {
                 .routerDestination(
                     for: SubmitClaimRouterActionsWithoutBackButton.self,
                     options: .hidesBackButton
-                ) { [weak claimsNavigationVm] destination in
+                ) { destination in
                     if destination == .askForPushNotifications {
                         AskForPushNotifications(
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
-                                presentClaimsFlow(claimsNavigationVm: claimsNavigationVm)
+                                presentClaimsFlow()
                             },
                             wrapWithForm: true,
                             height: measuredHeight
@@ -60,8 +60,8 @@ struct ClaimsMainNavigation: View {
         }
     }
 
-    private func presentClaimsFlow(claimsNavigationVm: ClaimsMainNavigationViewModel?) {
-        DispatchQueue.main.async {
+    private func presentClaimsFlow() {
+        DispatchQueue.main.async { [weak claimsNavigationVm] in
             claimsNavigationVm?.isClaimsFlowPresented = true
         }
     }

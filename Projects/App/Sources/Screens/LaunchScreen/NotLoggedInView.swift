@@ -30,12 +30,13 @@ struct NotLoggedInView: View {
         }
     }
 
-    var contentView: some View {
+    @ViewBuilder
+    private var contentView: some View {
         switch vm.viewState {
         case .loading:
-            return AnyView(ZStack {})
+            EmptyView()
         case .language:
-            return AnyView(languageView)
+            languageView
         }
     }
 
