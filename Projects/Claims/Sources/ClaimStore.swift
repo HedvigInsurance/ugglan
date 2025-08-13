@@ -49,8 +49,6 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             }
         case let .setFilesForClaim(claimId, files):
             newState.files[claimId] = files
-        default:
-            break
         }
         return newState
     }

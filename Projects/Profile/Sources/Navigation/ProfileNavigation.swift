@@ -79,7 +79,7 @@ public struct ProfileNavigation<Content: View>: View {
                 ) { redirectType in
                     switch redirectType {
                     case let .claimsCard(claim):
-                        ClaimDetailView(claim: claim, type: .claim(id: claim.id, status: .history))
+                        ClaimDetailView(claim: claim, type: .claim(id: claim.id))
                             .configureTitle(L10n.claimsYourClaim)
                     }
                 }

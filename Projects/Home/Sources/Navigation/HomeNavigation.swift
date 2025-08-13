@@ -32,14 +32,7 @@ public class HomeNavigationViewModel: ObservableObject {
             var openChat: ChatConversation?
 
             if let chatType = notification.object as? ChatType {
-                switch chatType {
-                case let .conversationId(conversationId):
-                    openChat = .init(chatType: .conversationId(id: conversationId))
-                case .newConversation:
-                    openChat = .init(chatType: .newConversation)
-                case .inbox:
-                    openChat = .init(chatType: .inbox)
-                }
+                openChat = .init(chatType: chatType)
             } else {
                 openChat = .init(chatType: .inbox)
             }
