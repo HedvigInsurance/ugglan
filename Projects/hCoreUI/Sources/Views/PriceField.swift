@@ -2,12 +2,11 @@ import SwiftUI
 import hCore
 
 public struct PriceField: View {
-    let newPremium: MonetaryAmount?
-    let currentPremium: MonetaryAmount?
-    let title: String?
-    let subTitle: String?
+    @StateObject var viewModel: PriceFieldViewModel
+
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
     @SwiftUI.Environment(\.hPriceFormatting) var formatting
+    @SwiftUI.Environment(\.hPriceFieldFormat) var fieldFormat
 
     public init(
         newPremium: MonetaryAmount?,
@@ -15,69 +14,147 @@ public struct PriceField: View {
         title: String? = nil,
         subTitle: String? = nil
     ) {
-        self.newPremium = newPremium
-        self.currentPremium = currentPremium
-        self.title = title
-        self.subTitle = subTitle
+        _viewModel = StateObject(
+            wrappedValue: .init(
+                newPremium: newPremium,
+                currentPremium: currentPremium,
+                title: title,
+                subTitle: subTitle
+            )
+        )
     }
 
     public var body: some View {
+        viewModel.setEnvironmentVariables(
+            strikeThroughPrice: strikeThroughPrice,
+            formatting: formatting,
+            fieldFormat: fieldFormat
+        )
+        return Group {
+            if fieldFormat == .multipleRow {
+                multipleRowContent
+            } else {
+                mainContent()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var multipleRowContent: some View {
+        hSection {
+            hRow {
+                mainContent(for: .currentPrice)
+            }
+            hRow {
+                mainContent(for: .newPrice)
+            }
+        }
+        .hWithoutHorizontalPadding([.all])
+        .sectionContainerStyle(.transparent)
+    }
+
+    private func mainContent(for priceType: PriceType? = nil) -> some View {
         VStack(spacing: .padding2) {
             HStack(alignment: .top) {
-                hText(title ?? L10n.tierFlowTotal)
-                    .foregroundColor(getTotalColor())
+                titleField(for: priceType)
                 Spacer()
-
-                if strikeThroughPrice != .none, newPremium != currentPremium {
-                    if #available(iOS 16.0, *) {
-                        hText(currentPremium?.priceFormat(formatting) ?? "")
-                            .strikethrough()
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                            .accessibilityValue(L10n.voiceoverCurrentPrice)
-                    } else {
-                        hText(currentPremium?.priceFormat(formatting) ?? "")
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                }
-
-                VStack(alignment: .trailing, spacing: 0) {
-                    if strikeThroughPrice == .crossNewPrice {
-                        if #available(iOS 16.0, *) {
-                            hText(newPremium?.priceFormat(formatting) ?? "")
-                                .strikethrough()
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                                .accessibilityValue(
-                                    L10n.voiceoverCurrentPrice
-                                )
-                        } else {
-                            hText(newPremium?.priceFormat(formatting) ?? "")
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                                .accessibilityValue(
-                                    L10n.ReferralsActive.Your.New.Price.title
-                                )
-                        }
-                    } else {
-                        hText(newPremium?.priceFormat(formatting) ?? currentPremium?.priceFormat(formatting) ?? "")
-                    }
-
-                    if let currentPremium, let newPremium, newPremium != currentPremium,
-                        strikeThroughPrice != .crossOldPrice
-                    {
-                        hText(
-                            L10n.tierFlowPreviousPrice(currentPremium.priceFormat(formatting)),
-                            style: .label
-                        )
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                }
+                priceFieldView(
+                    showCurrentPremium: priceType != .newPrice,
+                    showNewPremium: priceType != .currentPrice
+                )
             }
-            if let subTitle {
-                hText(subTitle, style: .label)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+            if priceType != .currentPrice, let subTitle = viewModel.subTitle {
+                subTitleField(text: subTitle)
             }
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private func titleField(for priceType: PriceType?) -> some View {
+        var text: String {
+            if let priceType {
+                return priceType == .currentPrice ? L10n.pricePreviousPrice : L10n.priceNewPrice
+            }
+            return viewModel.title ?? L10n.tierFlowTotal
+        }
+        return hText(text)
+            .foregroundColor(getTotalColor())
+    }
+
+    @ViewBuilder
+    private func subTitleField(text: String) -> some View {
+        hText(text, style: .label)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .foregroundColor(hTextColor.Opaque.secondary)
+    }
+
+    @ViewBuilder
+    private func priceFieldView(
+        showCurrentPremium: Bool = true,
+        showNewPremium: Bool = true
+    ) -> some View {
+
+        if viewModel.shouldShowCurrentPremium(showCurrentPremium) {
+            if #available(iOS 16.0, *), fieldFormat != .multipleRow {
+                currentPremiumView
+                    .strikethrough()
+                    .accessibilityValue(L10n.voiceoverCurrentPrice)
+            } else {
+                currentPremiumView
+            }
+        }
+
+        VStack(alignment: .trailing, spacing: 0) {
+            if viewModel.shouldStrikeThroughNewPremium(showNewPremium) {
+                if #available(iOS 16.0, *) {
+                    newPremiumView()
+                        .strikethrough()
+                        .accessibilityValue(
+                            L10n.voiceoverCurrentPrice
+                        )
+                } else {
+                    newPremiumView()
+                        .accessibilityValue(
+                            L10n.ReferralsActive.Your.New.Price.title
+                        )
+                }
+            } else if showNewPremium {
+                newPremiumView(usePrimary: true)
+            }
+
+            if viewModel.shouldShowPreviousPriceLabel {
+                subTitleField(text: L10n.tierFlowPreviousPrice(viewModel.currentPremium?.priceFormat(formatting) ?? ""))
+            }
+        }
+    }
+
+    private var currentPremiumView: some View {
+        hText(viewModel.currentPremium?.priceFormat(formatting) ?? "")
+            .foregroundColor(currentPremiumColor)
+    }
+
+    private func newPremiumView(usePrimary: Bool = false) -> some View {
+        hText(viewModel.newPremium?.priceFormat(formatting) ?? viewModel.currentPremium?.priceFormat(formatting) ?? "")
+            .foregroundColor(newPremiumColor(usePrimary: usePrimary))
+    }
+
+    @hColorBuilder
+    private var currentPremiumColor: some hColor {
+        switch fieldFormat {
+        case .multipleRow:
+            hTextColor.Opaque.primary
+        case .default:
+            hTextColor.Opaque.secondary
+        }
+    }
+
+    @hColorBuilder
+    private func newPremiumColor(usePrimary: Bool = false) -> some hColor {
+        if usePrimary {
+            hTextColor.Opaque.primary
+        } else {
+            hTextColor.Opaque.secondary
+        }
     }
 
     @hColorBuilder
@@ -88,6 +165,60 @@ public struct PriceField: View {
         case .crossOldPrice, .none:
             hTextColor.Opaque.primary
         }
+    }
+
+    enum PriceType {
+        case currentPrice
+        case newPrice
+    }
+}
+
+class PriceFieldViewModel: ObservableObject {
+    let newPremium: MonetaryAmount?
+    let currentPremium: MonetaryAmount?
+    let title: String?
+    let subTitle: String?
+    var strikeThroughPrice: StrikeThroughPriceType = .none
+    var formatting: PriceFormatting = .perMonth
+    var fieldFormat: PriceFieldFormat = .default
+
+    init(
+        newPremium: MonetaryAmount?,
+        currentPremium: MonetaryAmount?,
+        title: String?,
+        subTitle: String?
+    ) {
+        self.newPremium = newPremium
+        self.currentPremium = currentPremium
+        self.title = title
+        self.subTitle = subTitle
+    }
+
+    func setEnvironmentVariables(
+        strikeThroughPrice: StrikeThroughPriceType,
+        formatting: PriceFormatting,
+        fieldFormat: PriceFieldFormat
+    ) {
+        self.strikeThroughPrice = strikeThroughPrice
+        self.formatting = formatting
+        self.fieldFormat = fieldFormat
+    }
+
+    func shouldShowCurrentPremium(_ showCurrentPremium: Bool) -> Bool {
+        let hasStrikeThrough = strikeThroughPrice != .none && fieldFormat != .multipleRow
+        let noStrikeThroughMultipleRow = strikeThroughPrice == .none && fieldFormat == .multipleRow
+        return (hasStrikeThrough || noStrikeThroughMultipleRow) && newPremium != currentPremium && showCurrentPremium
+    }
+
+    func shouldStrikeThroughNewPremium(_ showNewPremium: Bool) -> Bool {
+        strikeThroughPrice == .crossNewPrice && fieldFormat != .multipleRow && showNewPremium
+    }
+
+    var shouldShowPreviousPriceLabel: Bool {
+        if let currentPremium, let newPremium {
+            return newPremium != currentPremium && strikeThroughPrice != .crossOldPrice && fieldFormat != .multipleRow
+        }
+        return false
     }
 }
 
@@ -116,6 +247,14 @@ public struct PriceField: View {
             subTitle: "sub title"
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+
+        PriceField(
+            newPremium: .init(amount: "115", currency: "SEK"),
+            currentPremium: MonetaryAmount(amount: "139", currency: "SEK"),
+            subTitle: "Changes activates on 16 nov 2025"
+        )
+        .hPriceFieldFormat(.multipleRow)
+        .hWithoutHorizontalPadding(.all)
     }
     .sectionContainerStyle(.transparent)
 }
@@ -140,6 +279,28 @@ extension EnvironmentValues {
 extension View {
     public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
         environment(\.hWithStrikeThroughPrice, setTo)
+    }
+}
+
+private struct EnvironmentHPriceFieldFormat: EnvironmentKey {
+    static let defaultValue: PriceFieldFormat = .default
+}
+
+public enum PriceFieldFormat: Sendable {
+    case `default`
+    case multipleRow
+}
+
+extension EnvironmentValues {
+    public var hPriceFieldFormat: PriceFieldFormat {
+        get { self[EnvironmentHPriceFieldFormat.self] }
+        set { self[EnvironmentHPriceFieldFormat.self] = newValue }
+    }
+}
+
+extension View {
+    public func hPriceFieldFormat(_ format: PriceFieldFormat) -> some View {
+        environment(\.hPriceFieldFormat, format)
     }
 }
 

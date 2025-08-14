@@ -304,6 +304,7 @@ public enum HorizontalPadding: Sendable {
     case section
     case row
     case divider
+    case all
 }
 
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
@@ -319,7 +320,17 @@ extension EnvironmentValues {
 
 extension View {
     public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
-        environment(\.hWithoutHorizontalPadding, attributes)
+        if attributes.contains(.all) {
+            return environment(\.hWithoutHorizontalPadding, [.section, .row, .divider])
+        }
+        return environment(\.hWithoutHorizontalPadding, attributes)
+    }
+
+    public func hWithoutHorizontalPadding(_ attributes: HorizontalPadding) -> some View {
+        if attributes == .all {
+            return environment(\.hWithoutHorizontalPadding, [.section, .row, .divider])
+        }
+        return environment(\.hWithoutHorizontalPadding, [attributes])
     }
 }
 

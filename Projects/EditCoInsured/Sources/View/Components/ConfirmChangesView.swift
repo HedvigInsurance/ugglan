@@ -17,12 +17,9 @@ struct ConfirmChangesView: View {
         VStack(spacing: .padding16) {
             PriceField(
                 newPremium: intentViewModel.intent.newTotalCost.montlyNet,
-                currentPremium: intentViewModel.intent.currentTotalCost.montlyNet,
-                subTitle: L10n.contractAddCoinsuredStartsFrom(
-                    intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                )
+                currentPremium: intentViewModel.intent.currentTotalCost.montlyNet
             )
-            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+            .hPriceFieldFormat(.multipleRow)
 
             hButton(
                 .large,
@@ -40,4 +37,9 @@ struct ConfirmChangesView: View {
             .hButtonIsLoading(intentViewModel.isLoading)
         }
     }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ConfirmChangesView(editCoInsuredNavigation: .init(config: .init()))
 }
