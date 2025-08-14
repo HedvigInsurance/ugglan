@@ -148,12 +148,7 @@ public enum Environment: Hashable {
                 URL(string: "https://hedvigtest.page.link")!, URL(string: "https://dev.hedvigit.com/deeplink/")!,
                 URL(string: "https://link.dev.hedvigit.com")!,
             ]
-        case .production:
-            return [
-                URL(string: "https://hedvig.page.link")!, URL(string: "https://www.hedvig.com/deeplink/")!,
-                URL(string: "https://link.hedvig.com")!,
-            ]
-        case .custom:
+        case .production, .custom:
             return [
                 URL(string: "https://hedvig.page.link")!, URL(string: "https://www.hedvig.com/deeplink/")!,
                 URL(string: "https://link.hedvig.com")!,

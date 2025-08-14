@@ -31,21 +31,8 @@ struct AddonSelectSubOptionScreen: View {
                             id: quote,
                             itemModel: nil,
                             leftView: {
-                                HStack {
-                                    hText(quote.displayName ?? "")
-                                    Spacer()
-                                    hPill(
-                                        text: L10n.addonFlowPriceLabel(
-                                            addonOffer
-                                                .getTotalPrice(selectedQuote: quote)?
-                                                .formattedAmount ?? ""
-                                        ),
-                                        color: .grey,
-                                        colorLevel: .one
-                                    )
-                                    .hFieldSize(.small)
-                                }
-                                .asAnyView
+                                leftView(for: quote)
+                                    .asAnyView
                             },
                             selected: $selectedQuote,
                             error: .constant(nil),
@@ -82,6 +69,23 @@ struct AddonSelectSubOptionScreen: View {
         }
         .hFormContentPosition(.compact)
         .configureTitleView(title: L10n.addonFlowSelectSuboptionTitle, subTitle: L10n.addonFlowSelectSuboptionSubtitle)
+    }
+
+    private func leftView(for quote: AddonQuote) -> some View {
+        HStack {
+            hText(quote.displayName ?? "")
+            Spacer()
+            hPill(
+                text: L10n.addonFlowPriceLabel(
+                    addonOffer
+                        .getTotalPrice(selectedQuote: quote)?
+                        .formattedAmount ?? ""
+                ),
+                color: .grey,
+                colorLevel: .one
+            )
+            .hFieldSize(.small)
+        }
     }
 }
 

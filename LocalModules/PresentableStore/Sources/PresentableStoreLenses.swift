@@ -24,9 +24,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         self.setter = setter
         self.content = content
-
-        let store: S = globalPresentableStoreContainer.get()
-        self.store = store
+        self.store = globalPresentableStoreContainer.get()
 
         _value = State(initialValue: getter(store.state))
     }
@@ -39,9 +37,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         self.getter = getter
         setter = { _ in nil }
         self.content = { value, _ in content(value) }
-
-        let store: S = globalPresentableStoreContainer.get()
-        self.store = store
+        self.store = globalPresentableStoreContainer.get()
 
         _value = State(initialValue: getter(store.state))
     }
@@ -97,8 +93,7 @@ public struct PresentableLoadingStoreLens<
         self.loadingContent = loadingContent
         self.errorContent = errorContent
         self.finishedContent = finishedContent
-        let store: S = globalPresentableStoreContainer.get()
-        self.store = store
+        self.store = globalPresentableStoreContainer.get()
         self.loadingState = loadingState
         let value = store.loadingState.first(where: { $0.key == loadingState })?.value
         _state = State(initialValue: value)

@@ -9,19 +9,8 @@ struct AddonLearnMoreView: View {
         hForm {
             VStack(spacing: .padding8) {
                 hSection {
-                    VStack(alignment: .leading, spacing: .padding4) {
-                        hText(model.title, style: .body2)
-                            .accessibilityAddTraits(.isHeader)
-                        hText(model.description, style: .body1)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-
-                    hPill(text: L10n.addonLearnMoreLabel, color: .blue)
-                        .hFieldSize(.medium)
-                        .padding(.top, .padding32)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .accessibilityAddTraits(.isHeader)
+                    headerText
+                    pillSection
                 }
                 .sectionContainerStyle(.transparent)
 
@@ -30,6 +19,24 @@ struct AddonLearnMoreView: View {
                 }
             }
         }
+    }
+
+    private var headerText: some View {
+        VStack(alignment: .leading, spacing: .padding4) {
+            hText(model.title, style: .body2)
+                .accessibilityAddTraits(.isHeader)
+            hText(model.description, style: .body1)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var pillSection: some View {
+        hPill(text: L10n.addonLearnMoreLabel, color: .blue)
+            .hFieldSize(.medium)
+            .padding(.top, .padding32)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityAddTraits(.isHeader)
     }
 }
 
