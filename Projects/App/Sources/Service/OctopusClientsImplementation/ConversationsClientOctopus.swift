@@ -196,19 +196,23 @@ extension OctopusGraphQL.MessageFragment {
 
     //had to wrap text with a function to ensure that links are encoded correctly for markdown
     private func encodeLinks(in text: String) -> String {
-        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        let matches = detector.matches(in: text, options: [], range: NSRange(text.startIndex..., in: text))
+        do {
+            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            let matches = detector.matches(in: text, options: [], range: NSRange(text.startIndex..., in: text))
 
-        var result = text
-        for match in matches.reversed() {
-            guard let range = Range(match.range, in: text) else { continue }
+            var result = text
+            for match in matches.reversed() {
+                guard let range = Range(match.range, in: text) else { continue }
 
-            let urlText = String(text[range])
-            let encodedURL = encodeURLForMarkdown(urlText)
-            result.replaceSubrange(range, with: encodedURL)
+                let urlText = String(text[range])
+                let encodedURL = encodeURLForMarkdown(urlText)
+                result.replaceSubrange(range, with: encodedURL)
+            }
+
+            return result
+        } catch {
+            return text  // Return original text if encoding fails
         }
-
-        return result
     }
 
     private func encodeURLForMarkdown(_ urlString: String) -> String {
