@@ -194,7 +194,7 @@ extension OctopusGraphQL.MessageFragment {
         return .unknown
     }
 
-    //had to wrap text with a function to ensure that links are encoded correctly for markdown
+    // Encodes all URLs in the text so they are safe to use in Markdown links
     private func encodeLinks(in text: String) -> String {
         do {
             let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
