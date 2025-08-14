@@ -63,7 +63,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     }
 
     func makeUIView(context _: Context) -> UIView {
-        //had to add wrapper for text view to avoid issues with SwiftUI and UITextView
+        // wrapping the text view with a view to avoid issues with SwiftUI and UITextView
         let view = UIView(frame: .zero)
         view.backgroundColor = .clear
         let textView = CustomTextView(
