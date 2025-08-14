@@ -23,29 +23,11 @@ struct MainNavigation: App {
     @StateObject var vm = MainNavigationViewModel()
     @AppStorage(ApplicationState.key) var state: ApplicationState.Screen = .notLoggedIn
     @InjectObservableObject var featureFlags: FeatureFlags
+
     var body: some Scene {
         WindowGroup {
             ZStack {
-                Group {
-                    if featureFlags.osVersionTooLow {
-                        UpdateOSScreen()
-                            .trackViewName(name: .init(describing: UpdateOSScreen.self))
-                    } else if featureFlags.isUpdateNecessary {
-                        UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
-                            .trackViewName(name: .init(describing: UpdateAppScreen.self))
-                    } else if vm.hasLaunchFinished {
-                        switch vm.stateToShow {
-                        case .loggedIn:
-                            LoggedInNavigation(vm: vm.loggedInVm)
-                                .environmentObject(vm)
-                        case .impersonation:
-                            ImpersonationSettings()
-                                .trackViewName(name: .init(describing: ImpersonationSettings.self))
-                        default:
-                            LoginNavigation(vm: vm.notLoggedInVm)
-                        }
-                    }
-                }
+                rootContent
                 if vm.showLaunchScreen {
                     BackgroundView()
                         .ignoresSafeArea()
@@ -64,6 +46,33 @@ struct MainNavigation: App {
             .onChange(of: state) { _ in
                 vm.state = state
             }
+        }
+    }
+
+    @ViewBuilder
+    private var rootContent: some View {
+        if featureFlags.osVersionTooLow {
+            UpdateOSScreen()
+                .trackViewName(name: .init(describing: UpdateOSScreen.self))
+        } else if featureFlags.isUpdateNecessary {
+            UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
+                .trackViewName(name: .init(describing: UpdateAppScreen.self))
+        } else if vm.hasLaunchFinished {
+            loggedInContent
+        }
+    }
+
+    @ViewBuilder
+    private var loggedInContent: some View {
+        switch vm.stateToShow {
+        case .loggedIn:
+            LoggedInNavigation(vm: vm.loggedInVm)
+                .environmentObject(vm)
+        case .impersonation:
+            ImpersonationSettings()
+                .trackViewName(name: .init(describing: ImpersonationSettings.self))
+        default:
+            LoginNavigation(vm: vm.notLoggedInVm)
         }
     }
 
@@ -142,9 +151,7 @@ class MainNavigationViewModel: ObservableObject {
                 self?.hasLaunchFinished = true
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    self?.showLaunchScreen = false
-                }
+                self?.hideLaunchScreen()
             }
         }
         if state == .loggedIn {
@@ -159,6 +166,12 @@ class MainNavigationViewModel: ObservableObject {
         // we want to show it initially when app launches if there is any
         ToolbarOptionType.newOfferNotification.resetTooltipDisplayState()
         ToolbarOptionType.chatNotification.resetTooltipDisplayState()
+    }
+
+    private func hideLaunchScreen() {
+        withAnimation(.easeInOut(duration: 0.5)) {
+            showLaunchScreen = false
+        }
     }
 
     private func checkForFeatureFlags() async {

@@ -31,15 +31,7 @@ public struct AddonCardView: View {
                     hText(addon.descriptionDisplayName, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
 
-                    hButton(
-                        .small,
-                        .secondary,
-                        content: .init(title: L10n.addonFlowSeePriceButton),
-                        {
-                            openAddon()
-                        }
-                    )
-                    .hButtonTakeFullWidth(true)
+                    seePriceButton
                 }
             }
         }
@@ -50,6 +42,20 @@ public struct AddonCardView: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSeePriceButton)
+    }
+
+    var seePriceButton: some View {
+        hButton(
+            .small,
+            .secondary,
+            content: .init(title: L10n.addonFlowSeePriceButton),
+            handleSeePrice
+        )
+        .hButtonTakeFullWidth(true)
+    }
+
+    private func handleSeePrice() {
+        openAddon()
     }
 }
 

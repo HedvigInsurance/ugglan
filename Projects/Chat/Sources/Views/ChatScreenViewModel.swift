@@ -14,13 +14,6 @@ public class ChatConversationViewModel: ObservableObject {
     @Published var shouldShowBanner = true
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
-    private let onTitleTap: () -> Void?
-
-    public init(
-        onTitleTap: @escaping () -> Void = {}
-    ) {
-        self.onTitleTap = onTitleTap
-    }
 }
 
 @MainActor
@@ -39,11 +32,10 @@ public class ChatMessageViewModel: ObservableObject {
     @Published var isFetchingPreviousMessages = false
 
     public init(
-        chatService: ChatServiceProtocol,
-        onTitleTap: @escaping () -> Void = {}
+        chatService: ChatServiceProtocol
     ) {
         self.chatService = chatService
-        conversationVm = .init(onTitleTap: onTitleTap)
+        conversationVm = .init()
     }
 
     @MainActor
@@ -263,8 +255,7 @@ public class ChatScreenViewModel: ObservableObject {
     private var openDeepLinkObserver: NSObjectProtocol?
 
     public init(
-        chatService: ChatServiceProtocol,
-        onTitleTap _: @escaping () -> Void = {}
+        chatService: ChatServiceProtocol
     ) {
         messageVm = .init(chatService: chatService)
 

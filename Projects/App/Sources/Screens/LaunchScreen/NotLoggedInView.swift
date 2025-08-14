@@ -21,17 +21,22 @@ struct NotLoggedInView: View {
             LoginVideoView().ignoresSafeArea()
             hSection {
                 VStack {
-                    switch vm.viewState {
-                    case .loading:
-                        ZStack {}
-                    case .language:
-                        languageView
-                    }
+                    contentView
                 }
                 .environment(\.colorScheme, .light)
                 .opacity(vm.viewState == .loading ? 0 : 1)
             }
             .sectionContainerStyle(.transparent)
+        }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        switch vm.viewState {
+        case .loading:
+            EmptyView()
+        case .language:
+            languageView
         }
     }
 

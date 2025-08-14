@@ -11,6 +11,7 @@ struct LoginNavigation: View {
     @ObservedObject var vm: NotLoggedViewModel
     @StateObject private var router = Router()
     @StateObject private var otpState = OTPState()
+
     var body: some View {
         RouterHost(router: router, options: .navigationBarHidden, tracking: LoginDetentType.notLoggedIn) {
             NotLoggedInView(vm: vm)
@@ -30,12 +31,8 @@ struct LoginNavigation: View {
             )
         }
         .detent(presented: $vm.showLogin, transitionType: .detent(style: [.large])) {
-            Group {
-                BankIDLoginQRView {
-                    let store: UgglanStore = globalPresentableStoreContainer.get()
-                    await store.sendAsync(.setIsDemoMode(to: true))
-                    DI.initAndRegisterClient()
-                }
+            BankIDLoginQRView {
+                await handleDemoModeActivation()
             }
             .environmentObject(otpState)
             .withDismissButton()
@@ -55,6 +52,12 @@ struct LoginNavigation: View {
             }
             .embededInNavigation(tracking: Localization.Locale.currentLocale.value.code)
         }
+    }
+
+    private func handleDemoModeActivation() async {
+        let store: UgglanStore = globalPresentableStoreContainer.get()
+        await store.sendAsync(.setIsDemoMode(to: true))
+        DI.initAndRegisterClient()
     }
 }
 
