@@ -93,7 +93,6 @@ public struct PriceField: View {
         showCurrentPremium: Bool = true,
         showNewPremium: Bool = true
     ) -> some View {
-
         if viewModel.shouldShowCurrentPremium(showCurrentPremium) {
             if #available(iOS 16.0, *), fieldFormat != .multipleRow {
                 currentPremiumView
