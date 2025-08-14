@@ -74,15 +74,8 @@ final class SubmitClaimTests: XCTestCase {
         assert(respons.step == dateOfOccurrenceAndLocationResponse.step)
     }
 
-    func testAudioRecordingSuccess() async {
+    func testAudioRecordingSuccess() async throws {
         let claimId = "claimId"
-        let model = FlowClaimAudioRecordingStepModel(
-            id: "id",
-            questions: [],
-            textQuestions: [],
-            inputTextContent: nil,
-            optionalAudio: false
-        )
 
         let audioRecordingType: SubmitAudioRecordingType = .audio(url: URL(string: "/file")!)
         let fileUploaderClient: MockFileUploaderService = .init(
@@ -91,6 +84,18 @@ final class SubmitClaimTests: XCTestCase {
             }
         )
 
+        let uploadResponse = try await fileUploaderClient.upload(
+            flowId: "flowId",
+            file: .init(data: Data(), name: "name", mimeType: MimeType.PDF.mime)
+        )
+        let model = FlowClaimAudioRecordingStepModel(
+            id: "id",
+            questions: [],
+            audioContent: .init(audioUrl: "/file", signedUrl: uploadResponse.audioUrl),
+            textQuestions: [],
+            inputTextContent: nil,
+            optionalAudio: false
+        )
         let audioRecordingResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
