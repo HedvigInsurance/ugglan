@@ -16,8 +16,11 @@ struct ConfirmChangesView: View {
     var body: some View {
         VStack(spacing: .padding16) {
             PriceField(
-                newPremium: intentViewModel.intent.newTotalCost.montlyNet,
-                currentPremium: intentViewModel.intent.currentTotalCost.montlyNet
+                viewModel: .init(
+                    newPremium: intentViewModel.intent.newTotalCost.montlyNet,
+                    currentPremium: intentViewModel.intent.currentTotalCost.montlyNet,
+                    withInfoButton: true
+                )
             )
             .hPriceFieldFormat(.multipleRow)
 
