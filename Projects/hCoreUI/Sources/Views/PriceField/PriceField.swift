@@ -27,6 +27,11 @@ public struct PriceField: View {
                 mainContent()
             }
         }
+        .detent(
+            item: $viewModel.isInfoViewPresented
+        ) { model in
+            PriceCalculatorView(model: model)
+        }
     }
     
     @ViewBuilder
@@ -52,7 +57,22 @@ public struct PriceField: View {
                 HStack(spacing: .padding4) {
                     titleField(for: priceType)
                     if withInfoButton {
-                        InfoViewHolder(title: "", description: "")
+                        hCoreUIAssets.infoFilled.view
+                            .foregroundColor(hFillColor.Opaque.secondary)
+                            .onTapGesture {
+                                viewModel.isInfoViewPresented = .init(
+                                    displayItems: [
+                                        .init(title: "Homeowner Insurance", value: "370 kr/mo"),
+                                        .init(title: "Extended travel 60 days", value: "79 kr/mo"),
+                                        .init(title: "15% bundle discount", value: "-79 kr/mo")
+                                    ],
+                                    currentPrice: viewModel.currentPremium ?? .sek(0),
+                                    newPrice: viewModel.newPremium ?? .sek(0),
+                                    onDismiss: {
+                                        viewModel.isInfoViewPresented = nil
+                                    }
+                                )
+                            }
                     }
                 }
                 Spacer()
@@ -179,6 +199,7 @@ public class PriceFieldViewModel: ObservableObject {
     var formatting: PriceFormatting = .perMonth
     var fieldFormat: PriceFieldFormat = .default
     var withInfoButton: Bool
+    @Published var isInfoViewPresented: PriceCalculatorModel?
     
     public init(
         newPremium: MonetaryAmount?,
