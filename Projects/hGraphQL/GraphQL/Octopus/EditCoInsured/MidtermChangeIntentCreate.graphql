@@ -1,15 +1,7 @@
 mutation MidtermChangeIntentCreate($contractId: ID!, $input: MidtermChangeIntentCreateInput!) {
   midtermChangeIntentCreate(contractId: $contractId, input: $input) {
     intent {
-      id
-      currentPremium {
-        ...MoneyFragment
-      }
-      newPremium {
-        ...MoneyFragment
-      }
-      activationDate
-      state
+        ...MidtermChangeIntentFragment
     }
     userError {
       message
