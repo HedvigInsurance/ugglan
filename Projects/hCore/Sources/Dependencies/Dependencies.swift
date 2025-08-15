@@ -11,7 +11,9 @@ public class Dependencies {
     private init() {}
     deinit { modules.removeAll() }
 
-    public func add(module: Module) { modules[module.name] = module }
+    public func add(module: Module) {
+        modules[module.name] = module
+    }
 
     public func resolve<T>(for name: String? = nil) -> T {
         let name = name ?? String(describing: T.self)

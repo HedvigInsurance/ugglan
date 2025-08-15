@@ -189,13 +189,6 @@ extension Project {
                 ]),
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
-                scripts: [
-                    .post(
-                        path: "../../scripts/post-build-action.sh",
-                        arguments: [],
-                        name: "Clean frameworks"
-                    )
-                ],
                 dependencies: [
                     [
                         .target(name: "\(name)"),
@@ -210,7 +203,9 @@ extension Project {
                 settings: .settings(
                     base: [
                         "PROVISIONING_PROFILE_SPECIFIER":
-                            "match Development com.hedvig.example.*"
+                            "match Development com.hedvig.example.*",
+                        "CODE_SIGN_STYLE": "automatic",
+
                     ],
                     configurations: appConfigurations
                 )

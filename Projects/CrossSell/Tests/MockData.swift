@@ -13,7 +13,7 @@ struct MockData {
                     title: "title",
                     description: "description",
                     imageUrl: nil,
-                    buttonDescription: "button description",
+                    buttonDescription: "button description"
                 )
             ]
         },

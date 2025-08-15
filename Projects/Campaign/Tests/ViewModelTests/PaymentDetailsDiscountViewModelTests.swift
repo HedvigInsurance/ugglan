@@ -10,16 +10,16 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        sut = nil
     }
 
     override func tearDown() async throws {
-        try await Task.sleep(nanoseconds: 100)
+        try await super.tearDown()
+        try await Task.sleep(nanoseconds: 100_000_000)
         Dependencies.shared.remove(for: hCampaignClient.self)
         XCTAssertNil(sut)
     }
 
-    func testPaymentDetailsDiscountViewModelRemoveTrueSuccess() async {
+    func testPaymentDetailsDiscountViewModelRemoveTrueSuccess() async throws {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [
             .forPayment, .showExpire,
         ]
@@ -42,9 +42,8 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         assert(model.shouldShowExpire == false)
     }
 
-    func testPaymentDetailsDiscountViewModelRemoveFalseSuccess() async {
+    func testPaymentDetailsDiscountViewModelRemoveFalseSuccess() async throws {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [.forPayment, .showExpire]
-
         let discount: Discount = .init(
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
@@ -63,9 +62,8 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         assert(model.shouldShowExpire == false)
     }
 
-    func testPaymentDetailsDiscountViewModelExpireTrueSuccess() async {
+    func testPaymentDetailsDiscountViewModelExpireTrueSuccess() async throws {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [.forPayment, .showExpire]
-
         if let date = "2024-07-07".localDateToDate {
             let nonValidServerBasedDate = date.localDateString
 
@@ -81,7 +79,6 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
 
             let mockService = MockCampaignData.createMockCampaignService()
             sut = mockService
-
             let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
             assert(model.shouldShowExpire == true)

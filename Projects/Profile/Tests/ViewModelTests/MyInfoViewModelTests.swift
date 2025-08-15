@@ -58,7 +58,8 @@ final class MyInfoViewModelTests: XCTestCase {
     }
 
     func testPhoneUpdateFailure() async throws {
-        let mockPhoneNumber = "111111"
+        let mockPhoneNumber = ""
+        let mockEmail = "email@email.com"
 
         let mockService = MockData.createMockProfileService(
             memberUpdate: { _, _ in
@@ -88,8 +89,9 @@ final class MyInfoViewModelTests: XCTestCase {
 
         let model = MyInfoViewModel()
         model.currentPhoneInput = mockPhoneNumber
+        model.currentEmailInput = mockEmail
         await model.save()
-        assert(model.phoneError == MyInfoSaveError.phoneNumberMalformed.localizedDescription)
+        assert(model.phoneError == MyInfoSaveError.phoneNumberEmpty.localizedDescription)
     }
 
     func testEmailUpdateSuccess() async throws {
@@ -128,7 +130,9 @@ final class MyInfoViewModelTests: XCTestCase {
     }
 
     func testEmailUpdateFailure() async throws {
-        let mockEmail = "email@email.com"
+        let mockEmail = "email@email"
+        let mockPhone = "email@email"
+
         let mockService = MockData.createMockProfileService(
             memberUpdate: { _, _ in
                 throw MyInfoSaveError.emailEmpty
@@ -145,7 +149,7 @@ final class MyInfoViewModelTests: XCTestCase {
                     id: "memberId",
                     firstName: "first name",
                     lastName: "last name",
-                    phone: "",
+                    phone: mockPhone,
                     email: mockEmail,
                     hasTravelCertificate: true,
                     isContactInfoUpdateNeeded: false
@@ -158,6 +162,7 @@ final class MyInfoViewModelTests: XCTestCase {
         assert(store.state.memberDetails?.email == mockEmail)
         let model = MyInfoViewModel()
         model.currentEmailInput = mockEmail
+        model.currentPhoneInput = mockPhone
         await model.save()
         assert(model.emailError == MyInfoSaveError.emailMalformed.localizedDescription)
     }

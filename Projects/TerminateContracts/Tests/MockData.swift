@@ -146,6 +146,5 @@ class MockTerminateContractsService: TerminateContractsClient {
         events.append(.getNotification)
         let data = try await getNotification(contractId, date)
         return data
-
     }
 }

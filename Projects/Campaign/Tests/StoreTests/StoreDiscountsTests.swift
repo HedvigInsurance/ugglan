@@ -1,5 +1,6 @@
 import PresentableStore
 @preconcurrency import XCTest
+import hCore
 
 @testable import Campaign
 
@@ -14,6 +15,7 @@ final class StoreDiscountsTests: XCTestCase {
 
     override func tearDown() async throws {
         try await super.tearDown()
+        Dependencies.shared.remove(for: hCampaignClient.self)
         assert(store == nil)
     }
 

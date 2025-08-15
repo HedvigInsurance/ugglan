@@ -132,7 +132,5 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
         let vm = SetTerminationDateLandingScreenViewModel(terminationNavigationVm: navigationModel)
         self.viewModel = vm
         return vm
-
     }
-
 }
