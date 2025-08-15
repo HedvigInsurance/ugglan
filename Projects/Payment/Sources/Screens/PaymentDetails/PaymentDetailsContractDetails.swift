@@ -43,6 +43,7 @@ struct ContractDetails: View {
                         hText(contract.netAmount.formattedAmount)
                     }
                     .layoutPriority(1)
+                    .layoutPriority(1)
 
                     hCoreUIAssets.chevronDown.view
                         .resizable()

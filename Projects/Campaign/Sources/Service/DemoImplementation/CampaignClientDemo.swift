@@ -23,6 +23,7 @@ public class hCampaignClientDemo: hCampaignClient {
                     canBeDeleted: false,
                     discountId: "CODE 2"
                 ),
+
             ],
             referralsData: .init(
                 code: "CODE",

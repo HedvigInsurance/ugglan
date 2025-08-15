@@ -22,6 +22,7 @@ extension PaymentDiscountsData {
     ) {
         let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter { $0.type == .voucher }
             .compactMap { .init(with: $0, amountFromPaymentData: amountFromPaymentData) }
+
         self.init(
             discounts: discounts,
             referralsData: .init(with: data.currentMember.referralInformation)
@@ -34,7 +35,6 @@ extension Discount {
     init(
         with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign,
         amountFromPaymentData: MonetaryAmount?
-
     ) {
         self.init(
             code: data.code,

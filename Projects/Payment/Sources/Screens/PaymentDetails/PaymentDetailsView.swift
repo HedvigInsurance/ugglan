@@ -1,12 +1,10 @@
 import Campaign
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct PaymentDetailsView: View {
     private let data: PaymentData
-    @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
     @Inject var featureFlags: FeatureFlags
@@ -45,6 +43,7 @@ struct PaymentDetailsView: View {
                 title: L10n.paymentsReferralsInfoTitle,
                 withoutBottomPadding: false
             )
+
             .sectionContainerStyle(.transparent)
             .hSectionHeaderWithDivider
             .hWithoutHorizontalPadding([.row, .divider])

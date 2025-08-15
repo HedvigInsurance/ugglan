@@ -43,7 +43,14 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
         let model = QuoteSummaryViewModel(
             contract: [],
-            isAddon: false
+            activationDate: Date(),
+            isAddon: false,
+            summaryDataProvider: DirectQuoteSummaryDataProvider(
+                intentCost: .init(
+                    totalGross: .sek(399),
+                    totalNet: .sek(399)
+                )
+            )
         ) {}
         Localization.Locale.currentLocale.send(.en_SE)
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
