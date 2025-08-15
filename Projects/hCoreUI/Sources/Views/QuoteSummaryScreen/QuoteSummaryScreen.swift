@@ -237,7 +237,7 @@ private struct ContractCardView: View {
                 newPremium: contract.netPremium,
                 currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium
             )
-            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+            .hWithStrikeThroughPrice(setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice)
         }
     }
 
