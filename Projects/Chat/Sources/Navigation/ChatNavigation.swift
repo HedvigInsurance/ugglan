@@ -43,11 +43,9 @@ public class ChatNavigationViewModel: ObservableObject {
     }
 
     func showClaimDetail(claimId: String) {
-        switch chatType {
-        //came from claim details screen, do nothing
-        case .conversationFromClaimWithId:
-            break
-        default:
+        if case .conversationFromClaimWithId = chatType {
+            //came from claim details screen, do nothing
+        } else {
             router.push(ChatRedirectViewType.claimDetailFor(claimId: claimId))
         }
     }
