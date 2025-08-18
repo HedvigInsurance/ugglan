@@ -173,7 +173,7 @@ extension OctopusGraphQL.MessageFragment {
                     return .otherLink(url: url)
                 }
             } else {
-                return .text(text: text)
+                return .text(text: encodeLinks(in: text))
             }
         } else if let file = asChatMessageFile {
             if let url = URL(string: file.signedUrl) {
@@ -192,6 +192,33 @@ extension OctopusGraphQL.MessageFragment {
             }
         }
         return .unknown
+    }
+
+    // Encodes all URLs in the text so they are safe to use in Markdown links
+    private func encodeLinks(in text: String) -> String {
+        do {
+            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            let matches = detector.matches(in: text, options: [], range: NSRange(text.startIndex..., in: text))
+
+            var result = text
+            for match in matches.reversed() {
+                guard let range = Range(match.range, in: text) else { continue }
+
+                let urlText = String(text[range])
+                let encodedURL = encodeURLForMarkdown(urlText)
+                result.replaceSubrange(range, with: encodedURL)
+            }
+
+            return result
+        } catch {
+            return text  // Return original text if encoding fails
+        }
+    }
+
+    private func encodeURLForMarkdown(_ urlString: String) -> String {
+        var allowed = CharacterSet.urlFragmentAllowed
+        allowed.remove(charactersIn: "_")  // force `_` to be encoded
+        return urlString.addingPercentEncoding(withAllowedCharacters: allowed) ?? urlString
     }
 }
 

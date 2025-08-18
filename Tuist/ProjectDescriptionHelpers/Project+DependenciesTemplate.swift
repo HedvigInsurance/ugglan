@@ -53,7 +53,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/bmoliveira/MarkdownKit",
-                    .upToNextMajor(from: "1.7.1")
+                    .upToNextMajor(from: "1.7.3")
                 )
             ]
         case .reveal: return []
