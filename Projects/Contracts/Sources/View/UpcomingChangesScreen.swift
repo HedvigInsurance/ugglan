@@ -6,7 +6,6 @@ import hCoreUI
 struct UpcomingChangesScreen: View {
     let updateDate: String
     let upcomingAgreement: Agreement?
-    @PresentableStore var store: ContractStore
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 

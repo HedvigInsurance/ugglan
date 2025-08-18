@@ -31,7 +31,8 @@ extension AppDelegate {
         Localization.Locale.currentLocale
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { _ in
+            .sink { [weak self] _ in
+                guard let self else { return }
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
             .store(in: &cancellables)
@@ -42,7 +43,8 @@ extension AppDelegate {
             .map { $0.memberDetails?.id }
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { _ in
+            .sink { [weak self] _ in
+                guard let self else { return }
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
             .store(in: &cancellables)
