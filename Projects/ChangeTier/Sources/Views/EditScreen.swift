@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-enum EditType {
+enum EditTierType {
     case tier
     case deductible
 }
@@ -11,32 +11,28 @@ struct EditScreen: View {
     @State var selectedItem: String?
     private let vm: ChangeTierViewModel
     private let quotes: [Quote]
-    private let type: EditType
-    private let onCancel: () -> Void
+    private let type: EditTierType
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
         vm: ChangeTierViewModel,
-        type: EditType,
-        onCancel: @escaping () -> Void
+        type: EditTierType
     ) {
         self.vm = vm
         self.type = type
-        self.onCancel = onCancel
-
-        if !(vm.selectedTier?.quotes.isEmpty ?? true) {
-            quotes = vm.selectedTier?.quotes ?? []
-        } else {
-            quotes = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
-        }
-
-        _selectedItem = State(
-            initialValue: vm.selectedQuote?.id ?? vm.selectedTier?.quotes.first?.id
-        )
 
         if type == .deductible {
+            _selectedItem = State(
+                initialValue: vm.selectedQuote?.id ?? vm.selectedTier?.quotes.first?.id
+            )
+            if !(vm.selectedTier?.quotes.isEmpty ?? true) {
+                quotes = vm.selectedTier?.quotes ?? []
+            } else {
+                quotes = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
+            }
         } else {
             _selectedItem = State(initialValue: vm.selectedTier?.name ?? vm.tiers.first?.name)
+            quotes = []
         }
     }
 
@@ -52,7 +48,6 @@ struct EditScreen: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-
                     if type == .deductible {
                         ForEach(listToDisplayDeductible, id: \.self) { item in
                             hRadioField(
@@ -78,6 +73,9 @@ struct EditScreen: View {
                     }
                 }
             }
+            .padding(.top, .padding16)
+            .sectionContainerStyle(.transparent)
+            .hFieldSize(.medium)
         }
         .hFormContentPosition(.compact)
         .hFormAttachToBottom {
@@ -138,7 +136,7 @@ struct EditScreen: View {
                         content: .init(title: L10n.generalConfirm),
                         {
                             vm.setDeductible(for: selectedItem ?? "")
-                            changeTierNavigationVm.isEditDeductiblePresented = false
+                            changeTierNavigationVm.isEditTierPresented = nil
                         }
                     )
                     .accessibilityHint(
@@ -151,13 +149,13 @@ struct EditScreen: View {
                             for: selectedItem
                                 ?? ""
                         )
-                        changeTierNavigationVm.isEditTierPresented = false
+                        changeTierNavigationVm.isEditTierPresented = nil
                     }
                     .accessibilityHint(L10n.voiceoverOptionSelected + (selectedItem ?? ""))
                 }
 
                 hCancelButton {
-                    onCancel()
+                    changeTierNavigationVm.isEditTierPresented = nil
                 }
             }
         }
@@ -172,7 +170,15 @@ struct EditScreen: View {
     let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
     return EditScreen(
         vm: .init(changeTierInput: input),
-        type: .deductible,
-        onCancel: {}
+        type: .deductible
+    )
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
+    return EditScreen(
+        vm: .init(changeTierInput: input),
+        type: .tier
     )
 }
