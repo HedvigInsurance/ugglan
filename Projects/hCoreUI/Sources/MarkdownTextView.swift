@@ -62,7 +62,10 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         _width = width
     }
 
-    func makeUIView(context _: Context) -> CustomTextView {
+    func makeUIView(context _: Context) -> UIView {
+        // wrapping the text view with a view to avoid issues with SwiftUI and UITextView
+        let view = UIView(frame: .zero)
+        view.backgroundColor = .clear
         let textView = CustomTextView(
             config: config,
             fixedWidth: fixedWidth,
@@ -70,25 +73,23 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
             width: $width,
             colorScheme: colorScheme
         )
+        view.addSubview(textView)
         textView.accessibilityLabel = accessibilityLabel
         textView.setContent(from: config.text)
         textView.calculateHeight()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak textView] in
-            textView?.setContent(from: config.text)
-            textView?.calculateHeight()
+        textView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
-        return textView
+        return view
     }
 
-    func updateUIView(_ uiView: CustomTextView, context _: Context) {
-        uiView.setContent(from: config.text)
-        uiView.calculateHeight()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak uiView] in
-            uiView?.setContent(from: config.text)
-            uiView?.calculateHeight()
-        }
-        if let accessibilityLabel {
-            uiView.accessibilityLabel = accessibilityLabel
+    func updateUIView(_ uiView: UIView, context _: Context) {
+        if let textView = uiView.subviews.first as? CustomTextView {
+            textView.setContent(from: config.text)
+            textView.calculateHeight()
+            if let accessibilityLabel {
+                textView.accessibilityLabel = accessibilityLabel
+            }
         }
     }
 }
@@ -176,7 +177,7 @@ class CustomTextView: UITextView, UITextViewDelegate {
         frame.size = newSize
         DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
-            self?.width = newSize.width - 12
+            self?.width = newSize.width
         }
     }
 
