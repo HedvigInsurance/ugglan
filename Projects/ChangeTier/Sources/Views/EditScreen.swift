@@ -2,11 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-enum EditTierType {
-    case tier
-    case deductible
-}
-
 struct EditScreen: View {
     @State var selectedItem: String?
     private let vm: ChangeTierViewModel
@@ -49,10 +44,16 @@ struct EditScreen: View {
             hSection {
                 VStack(spacing: .padding4) {
                     if type == .deductible {
-                        ForEach(listToDisplayDeductible, id: \.self) { item in
+                        ForEach(listToDisplayDeductible, id: \.self) { quote in
                             hRadioField(
-                                id: item.id,
-                                leftView: { leftView(quote: item, tier: nil) },
+                                id: quote.id,
+                                leftView: {
+                                    leftView(
+                                        title: quote.displayTitle,
+                                        premium: quote.basePremium.formattedAmountPerMonth,
+                                        subTitle: quote.subTitle
+                                    )
+                                },
                                 selected: $selectedItem,
                                 error: nil,
                                 useAnimation: true
@@ -60,10 +61,16 @@ struct EditScreen: View {
                             .hFieldLeftAttachedView
                         }
                     } else {
-                        ForEach(listToDisplayTiers, id: \.self) { item in
+                        ForEach(listToDisplayTiers, id: \.self) { tier in
                             hRadioField(
-                                id: item.name,
-                                leftView: { leftView(quote: nil, tier: item) },
+                                id: tier.name,
+                                leftView: {
+                                    leftView(
+                                        title: tier.quotes.first?.productVariant?.displayNameTier ?? tier.name,
+                                        premium: tier.getPremiumLabel(),
+                                        subTitle: tier.quotes.first?.productVariant?.tierDescription
+                                    )
+                                },
                                 selected: $selectedItem,
                                 error: nil,
                                 useAnimation: true
@@ -87,47 +94,26 @@ struct EditScreen: View {
         )
     }
 
-    private func leftView(quote: Quote?, tier: Tier?) -> AnyView {
-        if let quote {
-            return VStack(alignment: .leading, spacing: .padding8) {
-                HStack {
-                    hText(quote.displayTitle)
-                    Spacer()
+    private func leftView(title: String, premium: String?, subTitle: String?) -> AnyView {
+        VStack(alignment: .leading, spacing: .padding8) {
+            HStack {
+                hText(title)
+                Spacer()
+                if let premium {
                     hPill(
-                        text: quote.basePremium.formattedAmountPerMonth,
+                        text: premium,
                         color: .grey,
                         colorLevel: .two
                     )
                     .hFieldSize(.small)
                 }
-                if let subTitle = quote.subTitle, subTitle != "" {
-                    hText(subTitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                }
             }
-            .asAnyView
-        } else if let tier {
-            return VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    hText(tier.quotes.first?.productVariant?.displayNameTier ?? tier.name)
-                    Spacer()
-                    if let premiumLabel = tier.getPremiumLabel() {
-                        hPill(
-                            text: premiumLabel,
-                            color: .grey,
-                            colorLevel: .two
-                        )
-                        .hFieldSize(.small)
-                    }
-                }
-                if let subTitle = tier.quotes.first?.productVariant?.tierDescription {
-                    hText(subTitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                }
+            if let subTitle, subTitle != "" {
+                hText(subTitle, style: .label)
+                    .foregroundColor(hTextColor.Translucent.secondary)
             }
-            .asAnyView
         }
-        return AnyView(EmptyView())
+        .asAnyView
     }
 
     private var bottomView: some View {
@@ -166,6 +152,11 @@ struct EditScreen: View {
         .sectionContainerStyle(.transparent)
         .padding(.top, .padding16)
     }
+}
+
+enum EditTierType {
+    case tier
+    case deductible
 }
 
 #Preview {
