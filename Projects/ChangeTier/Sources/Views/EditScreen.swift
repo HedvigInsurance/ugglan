@@ -81,6 +81,10 @@ struct EditScreen: View {
         .hFormAttachToBottom {
             bottomView
         }
+        .configureTitleView(
+            title: type == .deductible ? L10n.tierFlowSelectDeductibleTitle : L10n.tierFlowSelectCoverageTitle,
+            subTitle: type == .deductible ? L10n.tierFlowSelectDeductibleSubtitle : L10n.tierFlowSelectCoverageSubtitle
+        )
     }
 
     private func leftView(quote: Quote?, tier: Tier?) -> AnyView {
