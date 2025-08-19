@@ -28,7 +28,10 @@ struct ContractDocumentsView: View {
                         contractsNavigationViewModel.document = document
                     }
 
-                    if let addonVariant = contract.currentAgreement?.addonVariant {
+                    let addonVariant = contract.currentAgreement?.addonVariant
+                    let addonHasDocuments = addonVariant?.first(where: { !$0.documents.isEmpty }) != nil
+
+                    if let addonVariant = contract.currentAgreement?.addonVariant, addonHasDocuments {
                         ForEach(addonVariant, id: \.self) { addonVariant in
                             addonDocumentSection(for: addonVariant)
                         }
