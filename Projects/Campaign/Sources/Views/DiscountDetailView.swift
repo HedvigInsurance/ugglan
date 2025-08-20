@@ -27,7 +27,7 @@ public struct DiscountDetailView: View {
                     }
                     .padding(.horizontal, .padding8)
                     .background(
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: .padding8)
                             .fill(hSurfaceColor.Translucent.primary)
                     )
                     Spacer()

@@ -106,9 +106,9 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
             if let smallestPremium = quotes.sorted(by: { $0.basePremium.floatAmount < $1.basePremium.floatAmount })
                 .first?
                 .basePremium
-                .formattedAmountPerMonth
+                .formattedAmount
             {
-                return smallestPremium
+                return L10n.tierFlowPriceLabelWithoutCurrency(smallestPremium)
             }
         }
         return nil
