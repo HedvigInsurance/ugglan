@@ -28,10 +28,7 @@ struct ContractDocumentsView: View {
                         contractsNavigationViewModel.document = document
                     }
 
-                    let addonVariant = contract.currentAgreement?.addonVariant
-                    let addonHasDocuments = addonVariant?.first(where: { !$0.documents.isEmpty }) != nil
-
-                    if let addonVariant = contract.currentAgreement?.addonVariant, addonHasDocuments {
+                    if let addonVariant = contract.currentAgreement?.addonVariant {
                         ForEach(addonVariant, id: \.self) { addonVariant in
                             addonDocumentSection(for: addonVariant)
                         }
@@ -43,17 +40,19 @@ struct ContractDocumentsView: View {
 
     @ViewBuilder
     private func addonDocumentSection(for addonVariant: AddonVariant) -> some View {
-        hSection {
-            hPill(text: addonVariant.displayName, color: .blue)
-                .hFieldSize(.medium)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.top, .padding24)
+        if !addonVariant.documents.isEmpty {
+            hSection {
+                hPill(text: addonVariant.displayName, color: .blue)
+                    .hFieldSize(.medium)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.top, .padding24)
 
-        InsuranceTermView(
-            documents: addonVariant.documents
-        ) { document in
-            contractsNavigationViewModel.document = document
+            InsuranceTermView(
+                documents: addonVariant.documents
+            ) { document in
+                contractsNavigationViewModel.document = document
+            }
         }
     }
 
