@@ -1,4 +1,4 @@
-public struct Contract: Codable, Hashable, Equatable, Identifiable {
+public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public init(
         id: String,
         exposureDisplayName: String,
@@ -50,7 +50,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
     }
 }
 
-public struct Agreement: Codable, Hashable {
+public struct Agreement: Codable, Hashable, Sendable {
     public let activeFrom: String?
     public let productVariant: ProductVariant
 
@@ -63,7 +63,7 @@ public struct Agreement: Codable, Hashable {
     }
 }
 
-public struct ProductVariant: Codable, Hashable {
+public struct ProductVariant: Codable, Hashable, Sendable {
     public let displayName: String
 
     public init(

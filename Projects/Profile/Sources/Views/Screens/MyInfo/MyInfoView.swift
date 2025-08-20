@@ -195,23 +195,19 @@ public class MyInfoViewModel: ObservableObject {
             throw MyInfoSaveError.emailMalformed
         }
 
-        do {
-            let updatedContactData = try await profileService.update(
-                email: currentEmailInput,
-                phone: currentPhoneInput
-            )
+        let updatedContactData = try await profileService.update(
+            email: currentEmailInput,
+            phone: currentPhoneInput
+        )
 
-            let newPhone = updatedContactData.phone
-            let newEmail = updatedContactData.email
+        let newPhone = updatedContactData.phone
+        let newEmail = updatedContactData.email
 
-            originalPhone = newPhone
-            originalEmail = newEmail
+        originalPhone = newPhone
+        originalEmail = newEmail
 
-            store.send(.setMemberPhone(phone: newPhone))
-            store.send(.setMemberEmail(email: newEmail))
-        } catch let exception {
-            throw MyInfoSaveError.error(message: exception.localizedDescription)
-        }
+        store.send(.setMemberPhone(phone: newPhone))
+        store.send(.setMemberEmail(email: newEmail))
     }
 
     enum MyInfoViewEditType: hTextFieldFocusStateCompliant {

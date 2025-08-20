@@ -343,7 +343,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                     } catch {
                         //ignore since it only be cancellation error
                     }
-
                 }
             }
         }
