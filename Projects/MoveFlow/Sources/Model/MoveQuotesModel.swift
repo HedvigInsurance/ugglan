@@ -8,7 +8,11 @@ public struct MoveQuotesModel: Sendable {
     let mtaQuotes: [MovingFlowQuote]
     let changeTierModel: ChangeTierIntentModel?
 
-    public init(homeQuotes: [MovingFlowQuote], mtaQuotes: [MovingFlowQuote], changeTierModel: ChangeTierIntentModel?) {
+    public init(
+        homeQuotes: [MovingFlowQuote],
+        mtaQuotes: [MovingFlowQuote],
+        changeTierModel: ChangeTierIntentModel?
+    ) {
         self.homeQuotes = homeQuotes
         self.mtaQuotes = mtaQuotes
         self.changeTierModel = changeTierModel

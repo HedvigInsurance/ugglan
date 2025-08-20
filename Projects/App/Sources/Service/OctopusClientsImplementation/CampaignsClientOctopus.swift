@@ -22,8 +22,22 @@ extension PaymentDiscountsData {
     ) {
         let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter { $0.type == .voucher }
             .compactMap { .init(with: $0, amountFromPaymentData: amountFromPaymentData) }
+
+        let insuranceToDiscounts = discounts.reduce(into: [String: DiscountsDataForInsurance]()) { result, discount in
+            discount.listOfAffectedInsurances?
+                .forEach { insurance in
+                    if result[insurance.id] != nil {
+                        result[insurance.id]?.discount.append(discount)
+                    } else {
+                        result[insurance.id] = DiscountsDataForInsurance(
+                            insurance: insurance,
+                            discount: [discount]
+                        )
+                    }
+                }
+        }
         self.init(
-            discounts: discounts,
+            discountsData: Array(insuranceToDiscounts.values),
             referralsData: .init(with: data.currentMember.referralInformation)
         )
     }
@@ -34,7 +48,6 @@ extension Discount {
     init(
         with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign,
         amountFromPaymentData: MonetaryAmount?
-
     ) {
         self.init(
             code: data.code,
@@ -55,12 +68,14 @@ extension Discount {
 
     public init(
         with moneyFragment: OctopusGraphQL.MoneyFragment,
-        discountDto discount: ReedeemedCampaingDTO?
+        discountDto discount: ReedeemedCampaingDTO?,
+        discountPerReferral: MonetaryAmount?
     ) {
         self.init(
             code: discount?.code ?? "",
             amount: .init(fragment: moneyFragment),
             title: discount?.description ?? "",
+            discountPerReferral: discountPerReferral,
             listOfAffectedInsurances: [],
             validUntil: nil,
             canBeDeleted: false,

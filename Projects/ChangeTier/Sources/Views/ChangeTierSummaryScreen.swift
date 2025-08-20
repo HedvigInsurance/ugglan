@@ -63,6 +63,7 @@ extension ChangeTierViewModel {
                 )
             )
         }
+
         let vm = QuoteSummaryViewModel(
             contract: contracts,
             onConfirmClick: {
