@@ -18,6 +18,8 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
+    @StateObject var router = Router()
+
     let coInsuredViewModel = InsuredPeopleScreenViewModel()
     let intentViewModel = IntentViewModel()
 }
@@ -164,6 +166,7 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
         )
+        .environmentObject(router)  // needed?
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }

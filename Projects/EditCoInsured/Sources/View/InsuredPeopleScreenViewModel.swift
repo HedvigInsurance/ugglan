@@ -8,12 +8,16 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     @Published var noSSN = false
     var config: InsuredPeopleConfig = .init()
     @Published var isLoading = false
-    @Published var showSavebutton: Bool = false
     @Published var showInfoCard: Bool = false
 
-    var shouldShowSaveChangesButton: Bool {
+    var showSavebutton: Bool {
+        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
+        return coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
+    }
+
+    var enableSaveChangesButton: Bool {
         let totalAddedCoInsured = config.contractCoInsured.count + coInsuredAdded.count
-        return totalAddedCoInsured < config.numberOfMissingCoInsuredWithoutTermination
+        return totalAddedCoInsured >= config.numberOfMissingCoInsuredWithoutTermination
     }
 
     var hasContentBelow: Bool {
@@ -92,8 +96,6 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         coInsuredAdded = []
         coInsuredDeleted = []
         self.config = config
-        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-        showSavebutton = coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
     }
 
     func addCoInsured(_ coInsuredModel: CoInsuredModel) {

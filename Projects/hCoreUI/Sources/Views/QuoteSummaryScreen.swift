@@ -266,8 +266,10 @@ public struct QuoteSummaryScreen: View {
     ) -> some View {
         VStack(spacing: .padding16) {
             PriceField(
-                newPremium: contract.newPremium,
-                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
+                viewModel: .init(
+                    newPremium: contract.newPremium,
+                    currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
+                )
             )
             .hWithStrikeThroughPrice(
                 setTo: vm.strikeThroughPriceType(contract.id)

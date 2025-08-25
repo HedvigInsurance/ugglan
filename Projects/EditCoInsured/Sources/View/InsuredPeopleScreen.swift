@@ -6,6 +6,7 @@ struct InsuredPeopleScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject var vm: InsuredPeopleScreenViewModel
     @ObservedObject var intentViewModel: IntentViewModel
+    @EnvironmentObject var router: Router
     let type: CoInsuredFieldType?
 
     private var listToDisplay: [CoInsuredListType] {
@@ -32,17 +33,18 @@ struct InsuredPeopleScreen: View {
     private var bottomContent: some View {
         VStack(spacing: .padding8) {
             hSection {
-                if vm.showSavebutton {
-                    saveChangesButton
-                }
-
-                if vm.showConfirmChangesButton {
-                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
-                }
+                buttonView
                 CancelButton()
                     .disabled(intentViewModel.isLoading)
             }
             .sectionContainerStyle(.transparent)
+        }
+    }
+
+    @ViewBuilder
+    private var buttonView: some View {
+        if vm.showConfirmChangesButton {
+            ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
         }
     }
 
@@ -62,7 +64,7 @@ struct InsuredPeopleScreen: View {
             }
         )
         .hButtonIsLoading(intentViewModel.isLoading)
-        .disabled(!vm.shouldShowSaveChangesButton)
+        .disabled(!vm.enableSaveChangesButton)
     }
 
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
