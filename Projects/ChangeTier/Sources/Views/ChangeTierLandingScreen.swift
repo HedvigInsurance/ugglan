@@ -126,7 +126,7 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: vm.selectedTier != nil
                     ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
             ) {
-                changeTierNavigationVm.isEditTierPresented = true
+                changeTierNavigationVm.isEditTierPresented = .init(type: .tier)
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
@@ -153,7 +153,7 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
             ) {
-                changeTierNavigationVm.isEditDeductiblePresented = true
+                changeTierNavigationVm.isEditTierPresented = .init(type: .deductible)
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
