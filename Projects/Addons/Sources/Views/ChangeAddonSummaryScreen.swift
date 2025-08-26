@@ -59,8 +59,12 @@ extension ChangeAddonViewModel {
                     )
                 )
             )
-        ) {
-            changeAddonNavigationVm.isConfirmAddonPresented = true
+        ) { [weak self, weak changeAddonNavigationVm] in
+            changeAddonNavigationVm?.isAddonProcessingPresented = true
+            Task {
+                guard let self else { return }
+                await self.submitAddons()
+            }
         }
 
         return vm

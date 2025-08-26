@@ -35,17 +35,15 @@ struct AddonProcessingScreen: View {
         .init(
             actionButton: .init(
                 buttonAction: {
-                    Task {
-                        await addonNavigationVm.changeAddonVm!.submitAddons()
-                    }
+                    addonNavigationVm.isAddonProcessingPresented = false
                 }
             ),
-            dismissButton:
-                .init(
-                    buttonAction: {
-                        addonNavigationVm.router.dismiss(withDismissingAll: true)
-                    }
-                )
+            dismissButton: .init(
+                buttonTitle: L10n.generalCancelButton,
+                buttonAction: {
+                    addonNavigationVm.router.dismiss(withDismissingAll: true)
+                }
+            )
         )
     }
 }

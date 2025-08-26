@@ -39,7 +39,6 @@ struct AddonInfo: Equatable, Identifiable {
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: AddonInfo?
     @Published var isChangeCoverageDaysPresented: AddonOffer?
-    @Published var isConfirmAddonPresented = false
     @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel?
     @Published var document: hPDFDocument?
@@ -136,19 +135,6 @@ public struct ChangeAddonNavigation: View {
                 .environmentObject(changeAddonNavigationVm)
         }
         .detent(
-            presented: $changeAddonNavigationVm.isConfirmAddonPresented,
-
-            options: .constant(.alwaysOpenOnTop),
-            content: {
-                ConfirmChangeAddonScreen()
-                    .embededInNavigation(
-                        options: .navigationBarHidden,
-                        tracking: ChangeAddonTrackingType.confirmAddonScreen
-                    )
-                    .environmentObject(changeAddonNavigationVm)
-            }
-        )
-        .detent(
             item: $changeAddonNavigationVm.document,
             transitionType: .detent(style: [.large])
         ) { document in
@@ -180,8 +166,6 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
             return .init(describing: ChangeAddonScreen.self)
         case .selectSubOptionScreen:
             return .init(describing: AddonSelectSubOptionScreen.self)
-        case .confirmAddonScreen:
-            return .init(describing: ConfirmChangeAddonScreen.self)
         case .processing:
             return .init(describing: AddonProcessingScreen.self)
         case .addonLearnMoreView:
@@ -191,7 +175,6 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
 
     case changeAddonScreen
     case selectSubOptionScreen
-    case confirmAddonScreen
     case processing
     case addonLearnMoreView
 }
