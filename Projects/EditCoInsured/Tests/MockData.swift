@@ -17,8 +17,7 @@ struct MockData {
                 activationDate: Date().localDateString,
                 currentPremium: .init(amount: "239", currency: "SEK"),
                 newPremium: .init(amount: "269", currency: "SEK"),
-                id: "id",
-                state: "state"
+                id: "id"
             )
         },
         fetchContracts: @escaping FetchContracts = {
@@ -39,7 +38,7 @@ struct MockData {
 typealias SendMidtermChangeIntent = (String) async throws -> Void
 typealias FetchPersonalInformation = (String) async throws -> PersonalData?
 typealias SendIntent = @Sendable (String, [CoInsuredModel]) async throws -> Intent
-typealias FetchContracts = @Sendable () async throws -> [Contract]
+typealias FetchContracts = () async throws -> [Contract]
 
 class MockEditCoInsuredService: EditCoInsuredClient {
     var events = [Event]()
@@ -70,8 +69,7 @@ class MockEditCoInsuredService: EditCoInsuredClient {
 
     func fetchContracts() async throws -> [Contract] {
         events.append(.fetchContracts)
-        let data = try await fetchContracts()
-        return data
+        return try await fetchContracts()
     }
 
     func sendMidtermChangeIntentCommit(commitId: String) async throws {

@@ -42,6 +42,7 @@ public struct ClaimHistoryScreen: View {
                             Spacer()
                             if let outcome = claim.outcome?.text {
                                 hPill(text: outcome, color: .clear)
+                                    .hFieldSize(.small)
                             }
                         }
                         if let submittedAt = getSubTitle(for: claim) {
