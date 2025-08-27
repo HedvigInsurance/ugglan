@@ -41,7 +41,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
         let claimsStore = ClaimsStore()
         self.claimsStore = claimsStore
         await claimsStore.sendAsync(
-            .setClaims(claims: [
+            .setActiveClaims(claims: [
                 .init(
                     id: "id",
                     status: .beingHandled,

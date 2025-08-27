@@ -40,17 +40,19 @@ struct ContractDocumentsView: View {
 
     @ViewBuilder
     private func addonDocumentSection(for addonVariant: AddonVariant) -> some View {
-        hSection {
-            hPill(text: addonVariant.displayName, color: .blue)
-                .hFieldSize(.medium)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.top, .padding24)
+        if !addonVariant.documents.isEmpty {
+            hSection {
+                hPill(text: addonVariant.displayName, color: .blue)
+                    .hFieldSize(.medium)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.top, .padding24)
 
-        InsuranceTermView(
-            documents: addonVariant.documents
-        ) { document in
-            contractsNavigationViewModel.document = document
+            InsuranceTermView(
+                documents: addonVariant.documents
+            ) { document in
+                contractsNavigationViewModel.document = document
+            }
         }
     }
 

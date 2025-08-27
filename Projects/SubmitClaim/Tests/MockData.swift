@@ -1,5 +1,7 @@
+import Claims
 import hCore
 
+@testable import Claims
 @testable import SubmitClaim
 
 @MainActor

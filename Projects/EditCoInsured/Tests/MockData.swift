@@ -17,15 +17,18 @@ struct MockData {
                 activationDate: Date().localDateString,
                 currentPremium: .init(amount: "239", currency: "SEK"),
                 newPremium: .init(amount: "269", currency: "SEK"),
-                id: "id",
-                state: "state"
+                id: "id"
             )
+        },
+        fetchContracts: @escaping FetchContracts = {
+            []
         }
     ) -> MockEditCoInsuredService {
         let service = MockEditCoInsuredService(
             sendMidtermChangeIntent: sendMidtermChangeIntent,
             fetchPersonalInformation: fetchPersonalInformation,
-            submitIntent: submitIntent
+            submitIntent: submitIntent,
+            fetchContracts: fetchContracts
         )
         Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in service })
         return service
@@ -34,7 +37,8 @@ struct MockData {
 
 typealias SendMidtermChangeIntent = (String) async throws -> Void
 typealias FetchPersonalInformation = (String) async throws -> PersonalData?
-typealias SendIntent = @Sendable (String, [EditCoInsuredShared.CoInsuredModel]) async throws -> Intent
+typealias SendIntent = @Sendable (String, [CoInsuredModel]) async throws -> Intent
+typealias FetchContracts = () async throws -> [Contract]
 
 class MockEditCoInsuredService: EditCoInsuredClient {
     var events = [Event]()
@@ -42,21 +46,29 @@ class MockEditCoInsuredService: EditCoInsuredClient {
     var sendMidtermChangeIntent: SendMidtermChangeIntent
     var fetchPersonalInformation: FetchPersonalInformation
     var submitIntent: SendIntent
-
+    var fetchContracts: FetchContracts
     enum Event {
         case sendMidtermChangeIntentCommit
         case getPersonalInformation
         case sendIntent
+        case fetchContracts
     }
 
     init(
         sendMidtermChangeIntent: @escaping SendMidtermChangeIntent,
         fetchPersonalInformation: @escaping FetchPersonalInformation,
-        submitIntent: @escaping SendIntent
+        submitIntent: @escaping SendIntent,
+        fetchContracts: @escaping FetchContracts
     ) {
         self.sendMidtermChangeIntent = sendMidtermChangeIntent
         self.fetchPersonalInformation = fetchPersonalInformation
         self.submitIntent = submitIntent
+        self.fetchContracts = fetchContracts
+    }
+
+    func fetchContracts() async throws -> [Contract] {
+        events.append(.fetchContracts)
+        return try await fetchContracts()
     }
 
     func sendMidtermChangeIntentCommit(commitId: String) async throws {
@@ -70,7 +82,7 @@ class MockEditCoInsuredService: EditCoInsuredClient {
         return data
     }
 
-    func sendIntent(contractId: String, coInsured: [EditCoInsuredShared.CoInsuredModel]) async throws -> Intent {
+    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
         events.append(.sendIntent)
         let data = try await submitIntent(contractId, coInsured)
         return data
