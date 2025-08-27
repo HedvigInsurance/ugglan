@@ -43,9 +43,9 @@ fragment QuoteFragment on MoveIntent {
             ...ProductVariantFragment
         }
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+            displayTitle
+            displaySubtitle
+            displayValue
         }
         addons {
             ...MoveAddonQuoteFragment
@@ -61,9 +61,9 @@ fragment QuoteFragment on MoveIntent {
         }
         defaultChoice
         displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
+            displaySubtitle
+            displayTitle
+            displayValue
         }
         exposureName
         id
@@ -94,8 +94,8 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     premium {
         ...MoneyFragment
     }
-     startDate
-     addonVariant {
+	startDate
+	addonVariant {
         ...AddonVariantFragment
     }
 }
