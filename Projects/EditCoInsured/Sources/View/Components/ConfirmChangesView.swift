@@ -19,7 +19,9 @@ struct ConfirmChangesView: View {
                 viewModel: .init(
                     newPremium: intentViewModel.intent.newTotalCost.montlyNet,
                     currentPremium: intentViewModel.intent.currentTotalCost.montlyNet,
-                    withInfoButton: true
+                    infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
+                        .init(title: $0.displayTitle, value: $0.displayValue)
+                    })
                 )
             )
             .hPriceFieldFormat(.multipleRow)

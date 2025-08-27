@@ -13,9 +13,17 @@ public struct PriceCalculatorModel: Equatable, Identifiable {
         lhs.id == rhs.id
     }
 
-    struct DisplayItem {
+    public struct DisplayItem {
         let title: String
         let value: String
+
+        public init(
+            title: String,
+            value: String
+        ) {
+            self.title = title
+            self.value = value
+        }
     }
 }
 

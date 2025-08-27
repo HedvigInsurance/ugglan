@@ -7,18 +7,10 @@ import hCoreUI
 public class IntentViewModel: ObservableObject {
     @Published var intent = Intent(
         activationDate: "",
-        currentTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
-        newTotalCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
+        currentTotalCost: .init(monthlyGross: .sek(0), montlyNet: .sek(0)),
+        newTotalCost: .init(monthlyGross: .sek(0), montlyNet: .sek(0)),
         id: "",
-        quote: .init(
-            id: "",
-            currentCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
-            newCost: .init(discounts: [], monthlyGross: .sek(0), montlyNet: .sek(0)),
-            exposureName: "",
-            displayItems: [],
-            productVariant: .init(displayName: ""),
-            addons: []
-        )
+        newCostBreakdown: []
     )
     @Published var isLoading: Bool = false
     @Published var firstName = ""

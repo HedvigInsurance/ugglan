@@ -12,33 +12,27 @@ mutation MidtermChangeIntentCommit($intentId: ID!) {
 fragment MidtermChangeIntentFragment on MidtermChangeIntent {
       id
       currentTotalCost {
-        ...ItemCostFragment
+        ...TotalCostFragment
       }
       newTotalCost {
-        ...ItemCostFragment
+        ...TotalCostFragment
       }
       activationDate
-      state
+      newCostBreakdown {
+        ...MidtermChangePriceDetailItemFragment
+      }
 }
 
-fragment ItemCostFragment on ItemCost {
-    discounts {
-        ...ItemDiscountFragment
-    }
+fragment MidtermChangePriceDetailItemFragment on MidtermChangePriceDetailItem {
+    displayTitle
+    displayValue
+}
+
+fragment TotalCostFragment on TotalCost {
     monthlyGross {
         ...MoneyFragment
     }
     monthlyNet {
         ...MoneyFragment
     }
-}
-
-fragment ItemDiscountFragment on ItemDiscount {
-    amount {
-        ...MoneyFragment
-    }
-    campaignCode
-    displayName
-    displayValue
-    explanation
 }

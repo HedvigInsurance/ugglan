@@ -80,45 +80,12 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
         return Intent(
             activationDate: intent.activationDate,
-            currentTotalCost: .init(fragment: intent.currentTotalCost.fragments.itemCostFragment),
-            newTotalCost: .init(fragment: intent.newTotalCost.fragments.itemCostFragment),
+            currentTotalCost: .init(fragment: intent.currentTotalCost.fragments.totalCostFragment),
+            newTotalCost: .init(fragment: intent.newTotalCost.fragments.totalCostFragment),
             id: intent.id,
-            quote: .init(
-                id: "quoteId",
-                currentCost: .init(
-                    discounts: [
-                        .init(
-                            amount: .sek(10),
-                            campaignCode: "code",
-                            displayName: "code name",
-                            displayValue: "display value",
-                            explanation: "explanation"
-                        )
-                    ],
-                    monthlyGross: .sek(229),
-                    montlyNet: .sek(219)
-                ),
-                newCost: .init(
-                    discounts: [
-                        .init(
-                            amount: .sek(10),
-                            campaignCode: "code",
-                            displayName: "code name",
-                            displayValue: "display value",
-                            explanation: "explanation"
-                        )
-                    ],
-                    monthlyGross: .sek(289),
-                    montlyNet: .sek(289)
-                ),
-                exposureName: "exposure name",
-                displayItems: [
-                    .init(displayTitle: "title", displaySubtitle: nil, displayValue: "value")
-                ],
-                productVariant: .init(displayName: "display name"),
-                addons: []
-            )
-            /* TODO: FILL WITH REAL DATA */
+            newCostBreakdown: intent.newCostBreakdown.compactMap({
+                .init(fragment: $0.fragments.midtermChangePriceDetailItemFragment)
+            })
         )
     }
 
@@ -201,28 +168,38 @@ extension CoInsuredModel {
     }
 }
 
-extension ItemCost {
+extension TotalCost {
     public init(
-        fragment: OctopusGraphQL.ItemCostFragment
+        fragment: OctopusGraphQL.TotalCostFragment
     ) {
         self.init(
-            discounts: fragment.discounts.map({ .init(fragment: $0.fragments.itemDiscountFragment) }),
             monthlyGross: .init(fragment: fragment.monthlyGross.fragments.moneyFragment),
             montlyNet: .init(fragment: fragment.monthlyNet.fragments.moneyFragment)
         )
     }
 }
 
-extension ItemDiscount {
+extension MidtermChangePriceDetailItem {
     public init(
-        fragment: OctopusGraphQL.ItemDiscountFragment
+        fragment: OctopusGraphQL.MidtermChangePriceDetailItemFragment
     ) {
         self.init(
-            amount: .init(fragment: fragment.amount.fragments.moneyFragment),
-            campaignCode: fragment.campaignCode,
-            displayName: fragment.displayName,
-            displayValue: fragment.displayValue,
-            explanation: fragment.explanation
+            displayTitle: fragment.displayTitle,
+            displayValue: fragment.displayValue
         )
     }
 }
+
+//extension ItemDiscount {
+//    public init(
+//        fragment: OctopusGraphQL.ItemDiscountFragment
+//    ) {
+//        self.init(
+//            amount: .init(fragment: fragment.amount.fragments.moneyFragment),
+//            campaignCode: fragment.campaignCode,
+//            displayName: fragment.displayName,
+//            displayValue: fragment.displayValue,
+//            explanation: fragment.explanation
+//        )
+//    }
+//}

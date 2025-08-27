@@ -43,7 +43,7 @@ public struct PriceField: View {
             hRow {
                 mainContent(
                     for: .newPrice,
-                    withInfoButton: viewModel.withInfoButton
+                    infoButtonDisplayItems: viewModel.infoButtonDisplayItems
                 )
             }
         }
@@ -51,21 +51,17 @@ public struct PriceField: View {
         .sectionContainerStyle(.transparent)
     }
 
-    private func mainContent(for priceType: PriceType? = nil, withInfoButton: Bool = false) -> some View {
+    private func mainContent(for priceType: PriceType? = nil, infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]? = nil) -> some View {
         VStack(spacing: .padding2) {
             HStack(alignment: .top) {
                 HStack(spacing: .padding4) {
                     titleField(for: priceType)
-                    if withInfoButton {
+                    if let infoButtonDisplayItems {
                         hCoreUIAssets.infoFilled.view
                             .foregroundColor(hFillColor.Opaque.secondary)
                             .onTapGesture {
                                 viewModel.isInfoViewPresented = .init(
-                                    displayItems: [
-                                        .init(title: "Homeowner Insurance", value: "370 kr/mo"),
-                                        .init(title: "Extended travel 60 days", value: "79 kr/mo"),
-                                        .init(title: "15% bundle discount", value: "-79 kr/mo"),
-                                    ],
+                                    displayItems: infoButtonDisplayItems,
                                     currentPrice: viewModel.currentPremium ?? .sek(0),
                                     newPrice: viewModel.newPremium ?? .sek(0),
                                     onDismiss: {
@@ -198,7 +194,7 @@ public class PriceFieldViewModel: ObservableObject {
     var strikeThroughPrice: StrikeThroughPriceType = .none
     var formatting: PriceFormatting = .perMonth
     var fieldFormat: PriceFieldFormat = .default
-    var withInfoButton: Bool
+    var infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]?
     @Published var isInfoViewPresented: PriceCalculatorModel?
 
     public init(
@@ -206,13 +202,13 @@ public class PriceFieldViewModel: ObservableObject {
         currentPremium: MonetaryAmount?,
         title: String? = nil,
         subTitle: String? = nil,
-        withInfoButton: Bool = false
+        infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]? = nil
     ) {
         self.newPremium = newPremium
         self.currentPremium = currentPremium
         self.title = title
         self.subTitle = subTitle
-        self.withInfoButton = withInfoButton
+        self.infoButtonDisplayItems = infoButtonDisplayItems
     }
 
     func setEnvironmentVariables(
@@ -282,7 +278,8 @@ public class PriceFieldViewModel: ObservableObject {
                 newPremium: .init(amount: "115", currency: "SEK"),
                 currentPremium: MonetaryAmount(amount: "139", currency: "SEK"),
                 subTitle: "Changes activates on 16 nov 2025",
-                withInfoButton: true
+                infoButtonDisplayItems: [
+                    .init(title: "title", value: "value")                ]
             )
         )
         .hPriceFieldFormat(.multipleRow)
