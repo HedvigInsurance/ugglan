@@ -50,7 +50,10 @@ public struct PriceField: View {
         .sectionContainerStyle(.transparent)
     }
 
-    private func mainContent(for priceType: PriceType? = nil, infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]? = nil) -> some View {
+    private func mainContent(
+        for priceType: PriceType? = nil,
+        infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]? = nil
+    ) -> some View {
         VStack(spacing: .padding2) {
             HStack(alignment: .top) {
                 HStack(spacing: .padding4) {
@@ -278,7 +281,8 @@ public class PriceFieldViewModel: ObservableObject {
                 currentPremium: MonetaryAmount(amount: "139", currency: "SEK"),
                 subTitle: "Changes activates on 16 nov 2025",
                 infoButtonDisplayItems: [
-                    .init(title: "title", value: "value")                ]
+                    .init(title: "title", value: "value")
+                ]
             )
         )
         .hPriceFieldFormat(.multipleRow)
