@@ -34,7 +34,7 @@ struct PriceCalculatorView: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: .padding16) {
-                    hText("Price details")
+                    hText(L10n.priceDetailsTitle)
 
                     VStack(spacing: .padding4) {
                         ForEach(model.displayItems, id: \.title) { item in

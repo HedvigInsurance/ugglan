@@ -166,7 +166,6 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
         )
-        .environmentObject(router)  // needed?
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }

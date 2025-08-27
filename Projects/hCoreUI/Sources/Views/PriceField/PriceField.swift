@@ -2,8 +2,7 @@ import SwiftUI
 import hCore
 
 public struct PriceField: View {
-    @StateObject var viewModel: PriceFieldViewModel
-
+    @ObservedObject var viewModel: PriceFieldViewModel
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
     @SwiftUI.Environment(\.hPriceFormatting) var formatting
     @SwiftUI.Environment(\.hPriceFieldFormat) var fieldFormat
@@ -11,7 +10,7 @@ public struct PriceField: View {
     public init(
         viewModel: PriceFieldViewModel
     ) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
 
     public var body: some View {
@@ -98,7 +97,7 @@ public struct PriceField: View {
     @ViewBuilder
     private func subTitleField(text: String) -> some View {
         hText(text, style: .label)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .trailing)
             .foregroundColor(hTextColor.Opaque.secondary)
     }
 

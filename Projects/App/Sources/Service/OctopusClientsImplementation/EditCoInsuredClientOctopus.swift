@@ -189,17 +189,3 @@ extension MidtermChangePriceDetailItem {
         )
     }
 }
-
-//extension ItemDiscount {
-//    public init(
-//        fragment: OctopusGraphQL.ItemDiscountFragment
-//    ) {
-//        self.init(
-//            amount: .init(fragment: fragment.amount.fragments.moneyFragment),
-//            campaignCode: fragment.campaignCode,
-//            displayName: fragment.displayName,
-//            displayValue: fragment.displayValue,
-//            explanation: fragment.explanation
-//        )
-//    }
-//}
