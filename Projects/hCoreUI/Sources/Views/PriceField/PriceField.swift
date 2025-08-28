@@ -14,11 +14,6 @@ public struct PriceField: View {
     }
 
     public var body: some View {
-        viewModel.setEnvironmentVariables(
-            strikeThroughPrice: strikeThroughPrice,
-            formatting: formatting,
-            fieldFormat: fieldFormat
-        )
         return Group {
             if fieldFormat == .multipleRow {
                 multipleRowContent
@@ -29,7 +24,7 @@ public struct PriceField: View {
         .detent(
             item: $viewModel.isInfoViewPresented
         ) { model in
-            PriceCalculatorView(model: model)
+            PriceBreakdownView(model: model)
         }
     }
 
@@ -52,7 +47,7 @@ public struct PriceField: View {
 
     private func mainContent(
         for priceType: PriceType? = nil,
-        infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]? = nil
+        infoButtonDisplayItems: [PriceBreakdownViewModel.DisplayItem]? = nil
     ) -> some View {
         VStack(spacing: .padding2) {
             HStack(alignment: .top) {
@@ -64,11 +59,8 @@ public struct PriceField: View {
                             .onTapGesture {
                                 viewModel.isInfoViewPresented = .init(
                                     displayItems: infoButtonDisplayItems,
-                                    currentPrice: viewModel.currentPremium ?? .sek(0),
-                                    newPrice: viewModel.newPremium ?? .sek(0),
-                                    onDismiss: {
-                                        viewModel.isInfoViewPresented = nil
-                                    }
+                                    initialPrice: viewModel.currentPremium ?? .sek(0),
+                                    finalPrice: viewModel.newPremium ?? .sek(0)
                                 )
                             }
                     }
@@ -109,7 +101,11 @@ public struct PriceField: View {
         showCurrentPremium: Bool = true,
         showNewPremium: Bool = true
     ) -> some View {
-        if viewModel.shouldShowCurrentPremium(showCurrentPremium) {
+        if viewModel.shouldShowCurrentPremium(
+            showCurrentPremium,
+            strikeThroughPrice: strikeThroughPrice,
+            fieldFormat: fieldFormat
+        ) {
             if #available(iOS 16.0, *), fieldFormat != .multipleRow {
                 currentPremiumView
                     .strikethrough()
@@ -120,7 +116,11 @@ public struct PriceField: View {
         }
 
         VStack(alignment: .trailing, spacing: 0) {
-            if viewModel.shouldStrikeThroughNewPremium(showNewPremium) {
+            if viewModel.shouldStrikeThroughNewPremium(
+                showNewPremium,
+                strikeThroughPrice: strikeThroughPrice,
+                fieldFormat: fieldFormat
+            ) {
                 if #available(iOS 16.0, *) {
                     newPremiumView()
                         .strikethrough()
@@ -137,7 +137,10 @@ public struct PriceField: View {
                 newPremiumView(usePrimary: true)
             }
 
-            if viewModel.shouldShowPreviousPriceLabel {
+            if viewModel.shouldShowPreviousPriceLabel(
+                strikeThroughPrice: strikeThroughPrice,
+                fieldFormat: fieldFormat
+            ) {
                 subTitleField(text: L10n.tierFlowPreviousPrice(viewModel.currentPremium?.priceFormat(formatting) ?? ""))
             }
         }
@@ -193,18 +196,15 @@ public class PriceFieldViewModel: ObservableObject {
     let currentPremium: MonetaryAmount?
     let title: String?
     let subTitle: String?
-    var strikeThroughPrice: StrikeThroughPriceType = .none
-    var formatting: PriceFormatting = .perMonth
-    var fieldFormat: PriceFieldFormat = .default
-    var infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]?
-    @Published var isInfoViewPresented: PriceCalculatorModel?
+    var infoButtonDisplayItems: [PriceBreakdownViewModel.DisplayItem]?
+    @Published var isInfoViewPresented: PriceBreakdownViewModel?
 
     public init(
         newPremium: MonetaryAmount?,
         currentPremium: MonetaryAmount?,
         title: String? = nil,
         subTitle: String? = nil,
-        infoButtonDisplayItems: [PriceCalculatorModel.DisplayItem]? = nil
+        infoButtonDisplayItems: [PriceBreakdownViewModel.DisplayItem]? = nil
     ) {
         self.newPremium = newPremium
         self.currentPremium = currentPremium
@@ -213,27 +213,28 @@ public class PriceFieldViewModel: ObservableObject {
         self.infoButtonDisplayItems = infoButtonDisplayItems
     }
 
-    func setEnvironmentVariables(
+    func shouldShowCurrentPremium(
+        _ showCurrentPremium: Bool,
         strikeThroughPrice: StrikeThroughPriceType,
-        formatting: PriceFormatting,
         fieldFormat: PriceFieldFormat
-    ) {
-        self.strikeThroughPrice = strikeThroughPrice
-        self.formatting = formatting
-        self.fieldFormat = fieldFormat
-    }
-
-    func shouldShowCurrentPremium(_ showCurrentPremium: Bool) -> Bool {
+    ) -> Bool {
         let hasStrikeThrough = strikeThroughPrice != .none && fieldFormat != .multipleRow
         let noStrikeThroughMultipleRow = strikeThroughPrice == .none && fieldFormat == .multipleRow
         return (hasStrikeThrough || noStrikeThroughMultipleRow) && newPremium != currentPremium && showCurrentPremium
     }
 
-    func shouldStrikeThroughNewPremium(_ showNewPremium: Bool) -> Bool {
+    func shouldStrikeThroughNewPremium(
+        _ showNewPremium: Bool,
+        strikeThroughPrice: StrikeThroughPriceType,
+        fieldFormat: PriceFieldFormat
+    ) -> Bool {
         strikeThroughPrice == .crossNewPrice && fieldFormat != .multipleRow && showNewPremium
     }
 
-    var shouldShowPreviousPriceLabel: Bool {
+    func shouldShowPreviousPriceLabel(
+        strikeThroughPrice: StrikeThroughPriceType,
+        fieldFormat: PriceFieldFormat
+    ) -> Bool {
         if let currentPremium, let newPremium {
             return newPremium != currentPremium && strikeThroughPrice != .crossOldPrice && fieldFormat != .multipleRow
         }

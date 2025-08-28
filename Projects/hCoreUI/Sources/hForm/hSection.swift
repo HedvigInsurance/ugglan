@@ -300,11 +300,16 @@ extension View {
     }
 }
 
-public enum HorizontalPadding: Sendable {
-    case section
-    case row
-    case divider
-    case all
+public struct HorizontalPadding: OptionSet, Sendable {
+    public init(rawValue: UInt) {
+        self.rawValue = rawValue
+    }
+
+    public let rawValue: UInt
+    public static let section = HorizontalPadding(rawValue: 1 << 0)
+    public static let row = HorizontalPadding(rawValue: 1 << 1)
+    public static let divider = HorizontalPadding(rawValue: 1 << 2)
+    public static let all: HorizontalPadding = [.section, .row, .divider]
 }
 
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
