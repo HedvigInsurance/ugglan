@@ -14,7 +14,7 @@ public struct PriceField: View {
     }
 
     public var body: some View {
-        return Group {
+        Group {
             if fieldFormat == .multipleRow {
                 multipleRowContent
             } else {
