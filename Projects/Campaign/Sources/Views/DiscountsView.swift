@@ -14,15 +14,15 @@ struct DiscountsView: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                discounts
-                forever
+                discountsView
+                foreverView
             }
             .padding(.vertical, .padding16)
         }
         .sectionContainerStyle(.transparent)
     }
 
-    private var discounts: some View {
+    private var discountsView: some View {
         hSection(data.discounts) { discount in
             DiscountDetailView(
                 vm: .init(
@@ -35,7 +35,7 @@ struct DiscountsView: View {
     }
 
     @ViewBuilder
-    private var forever: some View {
+    private var foreverView: some View {
         hSection(data.referralsData.referrals, id: \.id) { referral in
             getRefferalView(referral, nbOfReferrals: data.referralsData.referrals.count(where: { !$0.invitedYou }))
         }
@@ -120,6 +120,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         canBeDeleted: false,
                         discountId: "id3"
                     ),
+
                 ],
                 referralsData: .init(
                     code: "CODE",

@@ -35,7 +35,7 @@ struct ChangeTierProcessingView: View {
         .init(
             actionButton: .init(
                 buttonAction: {
-                    vm.commitTier()
+                    changeTierNavigationVm.router.pop()
                 }
             ),
             dismissButton:
