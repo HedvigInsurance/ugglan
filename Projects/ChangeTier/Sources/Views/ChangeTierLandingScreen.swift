@@ -126,8 +126,8 @@ public struct ChangeTierLandingScreen: View {
                 value: vm.selectedTier?.name ?? "",
                 placeHolder: vm.selectedTier != nil
                     ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
-            ) { [weak changeTierNavigationVm] in
-                changeTierNavigationVm?.isEditTierPresented = true
+            ) {
+                changeTierNavigationVm.isEditTierPresented = .init(type: .tier)
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
@@ -153,8 +153,8 @@ public struct ChangeTierLandingScreen: View {
                 value: vm.selectedQuote?.displayTitle ?? "",
                 placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
-            ) { [weak changeTierNavigationVm] in
-                changeTierNavigationVm?.isEditDeductiblePresented = true
+            ) {
+                changeTierNavigationVm.isEditTierPresented = .init(type: .deductible)
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
