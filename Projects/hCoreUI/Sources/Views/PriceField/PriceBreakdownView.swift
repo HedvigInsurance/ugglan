@@ -11,17 +11,9 @@ struct PriceBreakdownView: View {
             hSection {
                 VStack(alignment: .leading, spacing: .padding16) {
                     hText(L10n.priceDetailsTitle)
-
-                    VStack(spacing: .padding4) {
-                        ForEach(model.displayItems, id: \.title) { item in
-                            rowItem(for: item)
-                        }
-                    }
-
+                    displayItemsView
                     hRowDivider()
-
-                    PriceField(viewModel: .init(newPremium: model.finalPrice, currentPremium: model.initialPrice))
-                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                    priceFieldView
                 }
                 .padding(.top, .padding32)
                 .padding(.horizontal, .padding8)
@@ -37,6 +29,24 @@ struct PriceBreakdownView: View {
             }
         }
         .embededInNavigation(router: router, options: [.navigationBarHidden], tracking: self)
+    }
+
+    private var displayItemsView: some View {
+        VStack(spacing: .padding4) {
+            ForEach(model.displayItems, id: \.title) { item in
+                rowItem(for: item)
+            }
+        }
+    }
+
+    private var priceFieldView: some View {
+        PriceField(
+            viewModel: .init(
+                newPremium: model.finalPrice,
+                currentPremium: model.initialPrice
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
     }
 
     private func rowItem(for item: PriceBreakdownViewModel.DisplayItem) -> some View {
