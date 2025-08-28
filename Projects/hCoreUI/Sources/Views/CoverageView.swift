@@ -26,22 +26,29 @@ public struct CoverageView: View {
             .hWithoutHorizontalPadding([.row, .divider])
             VStack(spacing: .padding32) {
                 ForEach(perils, id: \.title) { perils in
-                    VStack(spacing: .padding8) {
-                        if let title = perils.title {
-                            hSection {
-                                HStack {
-                                    hPill(text: title, color: .blue)
-                                        .hFieldSize(.medium)
-                                    Spacer()
-                                }
-                            }
-                        }
-                        VStack(spacing: .padding4) {
-                            PerilCollection(
-                                perils: perils.perils
-                            )
+                    perilInfo(for: perils)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func perilInfo(for peril: (title: String?, perils: [Perils])) -> some View {
+        if !peril.perils.isEmpty {
+            VStack(spacing: .padding8) {
+                if let title = peril.title {
+                    hSection {
+                        HStack {
+                            hPill(text: title, color: .blue)
+                                .hFieldSize(.medium)
+                            Spacer()
                         }
                     }
+                }
+                VStack(spacing: .padding4) {
+                    PerilCollection(
+                        perils: peril.perils
+                    )
                 }
             }
         }
