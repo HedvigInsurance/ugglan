@@ -6,6 +6,7 @@ public struct PriceField: View {
     let currentPremium: MonetaryAmount?
     let title: String?
     let subTitle: String?
+    let withoutPreviousPriceText: Bool
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
     @SwiftUI.Environment(\.hPriceFormatting) var formatting
 
@@ -13,12 +14,14 @@ public struct PriceField: View {
         newPremium: MonetaryAmount?,
         currentPremium: MonetaryAmount?,
         title: String? = nil,
-        subTitle: String? = nil
+        subTitle: String? = nil,
+        withoutPreviousPriceText: Bool? = false
     ) {
         self.newPremium = newPremium
         self.currentPremium = currentPremium
         self.title = title
         self.subTitle = subTitle
+        self.withoutPreviousPriceText = withoutPreviousPriceText ?? false
     }
 
     public var body: some View {
@@ -61,7 +64,7 @@ public struct PriceField: View {
                     }
 
                     if let currentPremium, let newPremium, newPremium != currentPremium,
-                        strikeThroughPrice != .crossOldPrice
+                        strikeThroughPrice != .crossOldPrice && !withoutPreviousPriceText
                     {
                         hText(
                             L10n.tierFlowPreviousPrice(currentPremium.priceFormat(formatting)),

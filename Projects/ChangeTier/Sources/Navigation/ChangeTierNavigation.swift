@@ -10,7 +10,6 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: hPDFDocument?
     @Published public var isInfoViewPresented: InfoViewDataModel? = nil
-    @Published public var isConfirmTierPresented = false
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}
@@ -260,19 +259,6 @@ public struct ChangeTierNavigation: View {
                 description: info.description ?? ""
             )
         }
-        .detent(
-            presented: $changeTierNavigationVm.isConfirmTierPresented,
-
-            options: .constant(.alwaysOpenOnTop),
-            content: {
-                ConfirmChangeTierScreen()
-                    .embededInNavigation(
-                        options: .navigationBarHidden,
-                        tracking: ChangeTierTrackingType.confirmTier
-                    )
-                    .environmentObject(changeTierNavigationVm)
-            }
-        )
     }
 
     private var wrapperHost: some View {
@@ -333,8 +319,6 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
             return .init(describing: EditScreen.self)
         case .compareTier:
             return .init(describing: CompareTierScreen.self)
-        case .confirmTier:
-            return .init(describing: ConfirmChangeTierScreen.self)
         case .info:
             return "Addon Info"
         }
@@ -343,7 +327,6 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
     case changeTierLandingScreen
     case edit(type: EditTierType)
     case compareTier
-    case confirmTier
     case info
 }
 

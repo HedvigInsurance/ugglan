@@ -26,12 +26,16 @@ struct MockData {
             )
         },
         moveIntentConfirm: @escaping MoveIntentConfirm = { _, _, _ in
+        },
+        getMoveIntentCost: @escaping GetMoveIntentCost = { _ in
+            IntentCost(totalGross: .sek(1000), totalNet: .sek(800))
         }
     ) -> MockMoveFlowService {
         let service = MockMoveFlowService(
             submitMoveIntent: submitMoveIntent,
             moveIntentRequest: moveIntentRequest,
-            moveIntentConfirm: moveIntentConfirm
+            moveIntentConfirm: moveIntentConfirm,
+            getMoveIntentCost: getMoveIntentCost
         )
         Dependencies.shared.add(module: Module { () -> MoveFlowClient in service })
         return service
@@ -41,6 +45,7 @@ struct MockData {
 typealias SubmitMoveIntent = () async throws -> MoveConfigurationModel
 typealias MoveIntentRequest = (RequestMoveIntentInput) async throws -> MoveQuotesModel
 typealias MoveIntentConfirm = (String, String, [String]) async throws -> Void
+typealias GetMoveIntentCost = (GetMoveIntentCostInput) async throws -> IntentCost
 
 @MainActor
 class MockMoveFlowService: MoveFlowClient {
@@ -49,21 +54,25 @@ class MockMoveFlowService: MoveFlowClient {
     var submitMoveIntent: SubmitMoveIntent
     var moveIntentRequest: MoveIntentRequest
     var moveIntentConfirm: MoveIntentConfirm
+    var getMoveIntentCost: GetMoveIntentCost
 
     enum Event {
         case sendMoveIntent
         case requestMoveIntent
         case confirmMoveIntent
+        case getMoveIntentCost
     }
 
     init(
         submitMoveIntent: @escaping SubmitMoveIntent,
         moveIntentRequest: @escaping MoveIntentRequest,
-        moveIntentConfirm: @escaping MoveIntentConfirm
+        moveIntentConfirm: @escaping MoveIntentConfirm,
+        getMoveIntentCost: @escaping GetMoveIntentCost
     ) {
         self.submitMoveIntent = submitMoveIntent
         self.moveIntentRequest = moveIntentRequest
         self.moveIntentConfirm = moveIntentConfirm
+        self.getMoveIntentCost = getMoveIntentCost
     }
 
     func sendMoveIntent() async throws -> MoveConfigurationModel {
@@ -85,5 +94,10 @@ class MockMoveFlowService: MoveFlowClient {
     ) async throws {
         events.append(.confirmMoveIntent)
         try await moveIntentConfirm(intentId, homeQuoteId, removedAddons)
+    }
+
+    func getMoveIntentCost(input: MoveFlow.GetMoveIntentCostInput) async throws -> IntentCost {
+        events.append(.getMoveIntentCost)
+        return try await getMoveIntentCost(input: input)
     }
 }
