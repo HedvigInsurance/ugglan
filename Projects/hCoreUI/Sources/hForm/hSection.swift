@@ -467,28 +467,41 @@ public struct hSection<Header: View, Content: View>: View {
 
         public var body: some View {
             VStack(alignment: .leading, spacing: .padding16) {
-                HStack {
-                    if let extraView = extraView, extraView.alignment == .top {
-                        extraView.view
-                    }
-
-                    hText(title)
-                    if withInfoButton, let infoButtonDescription {
-                        Spacer()
-                        InfoViewHolder(
-                            title: title,
-                            description: infoButtonDescription
-                        )
-                        .accessibilityAddTraits(.isButton)
-                        .accessibilityHint(title)
-                    }
-                }
-
-                if let extraView = extraView, extraView.alignment == .bottom {
-                    extraView.view
-                }
+                headerView
+                bottomExtraView
             }
             .padding(.bottom, withoutBottomPadding ? -8 : .padding8)
+        }
+
+        private var headerView: some View {
+            HStack {
+                topExtraView
+
+                hText(title)
+                if withInfoButton, let infoButtonDescription {
+                    Spacer()
+                    InfoViewHolder(
+                        title: title,
+                        description: infoButtonDescription
+                    )
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint(title)
+                }
+            }
+        }
+
+        @ViewBuilder
+        private var topExtraView: some View {
+            if let extraView, extraView.alignment == .top {
+                extraView.view
+            }
+        }
+
+        @ViewBuilder
+        private var bottomExtraView: some View {
+            if let extraView, extraView.alignment == .bottom {
+                extraView.view
+            }
         }
     }
 }
