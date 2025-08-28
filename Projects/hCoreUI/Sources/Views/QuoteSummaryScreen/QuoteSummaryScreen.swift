@@ -234,8 +234,10 @@ private struct ContractCardView: View {
             }
 
             PriceField(
-                newPremium: contract.netPremium,
-                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium
+                viewModel: .init(
+                    newPremium: contract.netPremium,
+                    currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium
+                )
             )
             .hWithStrikeThroughPrice(setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice)
         }
@@ -438,10 +440,14 @@ private struct PriceSummarySection: View {
                     .accessibilityElement(children: .combine)
                 } else {
                     PriceField(
-                        newPremium: newPremium,
-                        currentPremium: currentPremium,
-                        title: nil,
-                        subTitle: L10n.summaryTotalPriceSubtitle(vm.activationDate?.displayDateDDMMMYYYYFormat ?? "")
+                        viewModel: .init(
+                            newPremium: newPremium,
+                            currentPremium: currentPremium,
+                            title: nil,
+                            subTitle: L10n.summaryTotalPriceSubtitle(
+                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                            )
+                        )
                     )
                     .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                 }
