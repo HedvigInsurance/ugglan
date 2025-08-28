@@ -9,14 +9,7 @@ struct PriceBreakdownView: View {
     var body: some View {
         hForm {
             hSection {
-                VStack(alignment: .leading, spacing: .padding16) {
-                    hText(L10n.priceDetailsTitle)
-                    displayItemsView
-                    hRowDivider()
-                    priceFieldView
-                }
-                .padding(.top, .padding32)
-                .padding(.horizontal, .padding8)
+                mainContent
             }
             .sectionContainerStyle(.transparent)
             .hWithoutHorizontalPadding([.divider])
@@ -29,6 +22,17 @@ struct PriceBreakdownView: View {
             }
         }
         .embededInNavigation(router: router, options: [.navigationBarHidden], tracking: self)
+    }
+
+    private var mainContent: some View {
+        VStack(alignment: .leading, spacing: .padding16) {
+            hText(L10n.priceDetailsTitle)
+            displayItemsView
+            hRowDivider()
+            priceFieldView
+        }
+        .padding(.top, .padding32)
+        .padding(.horizontal, .padding8)
     }
 
     private var displayItemsView: some View {
