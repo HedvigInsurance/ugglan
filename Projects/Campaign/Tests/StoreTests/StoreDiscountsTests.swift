@@ -31,6 +31,7 @@ final class StoreDiscountsTests: XCTestCase {
                 discountId: "id"
             )
         ]
+
         let discountsData: PaymentDiscountsData = .init(
             discounts: discounts,
             referralsData: .init(

@@ -21,36 +21,50 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
+        let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
+            id: contractId,
+            displayName: selectedQuote?.addonVariant?.displayName ?? "",
+            exposureName: L10n.addonFlowSummaryActiveFrom(
+                addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+            ),
+            netPremium: selectedQuote?.price,
+            grossPremium: addonOffer?.currentAddon?.price,
+            documents: selectedQuote?.addonVariant?.documents ?? [],
+            onDocumentTap: { document in
+                changeAddonNavigationVm.document = document
+            },
+            displayItems: compareAddonDisplayItems(
+                currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
+                newDisplayItems: selectedQuote?.displayItems ?? []
+            ),
+            insuranceLimits: [],
+            typeOfContract: nil,
+            isAddon: true,
+            discountDisplayItems: []
+        )
+
         let vm = QuoteSummaryViewModel(
             contract: [
-                .init(
-                    id: contractId,
-                    displayName: selectedQuote?.addonVariant?.displayName ?? "",
-                    exposureName: L10n.addonFlowSummaryActiveFrom(
-                        addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    newPremium: selectedQuote?.price,
-                    currentPremium: addonOffer?.currentAddon?.price,
-                    documents: selectedQuote?.addonVariant?.documents ?? [],
-                    onDocumentTap: { document in
-                        changeAddonNavigationVm.document = document
-                    },
-                    displayItems: compareAddonDisplayItems(
-                        currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
-                        newDisplayItems: selectedQuote?.displayItems ?? []
-                    ),
-                    insuranceLimits: [],
-                    typeOfContract: nil,
-                    isAddon: true
-                )
+                contractInfo
             ],
-            total: getTotalPrice(
-                currentPrice: addonOffer?.currentAddon?.price,
-                newPrice: selectedQuote?.price
-            ),
-            isAddon: true
-        ) {
-            changeAddonNavigationVm.isConfirmAddonPresented = true
+            activationDate: self.addonOffer?.activationDate,
+            isAddon: true,
+            summaryDataProvider: DirectQuoteSummaryDataProvider(
+                intentCost: .init(
+                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.grossPremium
+                        ?? .init(amount: "", currency: ""),
+                    totalNet: getTotalPrice(
+                        currentPrice: addonOffer?.currentAddon?.price,
+                        newPrice: selectedQuote?.price
+                    )
+                )
+            )
+        ) { [weak self, weak changeAddonNavigationVm] in
+            changeAddonNavigationVm?.isAddonProcessingPresented = true
+            Task {
+                guard let self else { return }
+                await self.submitAddons()
+            }
         }
 
         return vm

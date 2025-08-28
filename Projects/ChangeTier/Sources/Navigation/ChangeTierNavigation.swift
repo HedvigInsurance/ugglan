@@ -5,13 +5,11 @@ import hCoreUI
 
 @MainActor
 public class ChangeTierNavigationViewModel: ObservableObject {
-    @Published public var isEditTierPresented = false
-    @Published public var isEditDeductiblePresented = false
+    @Published public var isEditTierPresented: EditTypeModel?
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: hPDFDocument?
     @Published public var isInfoViewPresented: InfoViewDataModel? = nil
-    @Published public var isConfirmTierPresented = false
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}
@@ -212,23 +210,17 @@ public struct ChangeTierNavigation: View {
         }
         .environmentObject(changeTierNavigationVm)
         .detent(
-            presented: $changeTierNavigationVm.isEditTierPresented,
-            transitionType: .detent(style: [.height])
-        ) {
-            EditTierScreen(vm: changeTierNavigationVm.vm)
-                .embededInNavigation(options: .navigationType(type: .large), tracking: ChangeTierTrackingType.editTier)
-                .environmentObject(changeTierNavigationVm)
-        }
-        .detent(
-            presented: $changeTierNavigationVm.isEditDeductiblePresented,
-            transitionType: .detent(style: [.height])
-        ) {
-            EditDeductibleScreen(vm: changeTierNavigationVm.vm)
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: ChangeTierTrackingType.editDeductible
-                )
-                .environmentObject(changeTierNavigationVm)
+            item: $changeTierNavigationVm.isEditTierPresented
+        ) { model in
+            EditScreen(
+                vm: changeTierNavigationVm.vm,
+                type: model.type
+            )
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: ChangeTierTrackingType.edit(type: model.type)
+            )
+            .environmentObject(changeTierNavigationVm)
         }
         .detent(
             item: $changeTierNavigationVm.isInsurableLimitPresented,
@@ -267,19 +259,6 @@ public struct ChangeTierNavigation: View {
                 description: info.description ?? ""
             )
         }
-        .detent(
-            presented: $changeTierNavigationVm.isConfirmTierPresented,
-
-            options: .constant(.alwaysOpenOnTop),
-            content: {
-                ConfirmChangeTierScreen()
-                    .embededInNavigation(
-                        options: .navigationBarHidden,
-                        tracking: ChangeTierTrackingType.confirmTier
-                    )
-                    .environmentObject(changeTierNavigationVm)
-            }
-        )
     }
 
     private var wrapperHost: some View {
@@ -336,23 +315,22 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
         switch self {
         case .changeTierLandingScreen:
             return .init(describing: ChangeTierLandingScreen.self)
-        case .editTier:
-            return .init(describing: EditTierScreen.self)
-        case .editDeductible:
-            return .init(describing: EditDeductibleScreen.self)
+        case .edit:
+            return .init(describing: EditScreen.self)
         case .compareTier:
             return .init(describing: CompareTierScreen.self)
-        case .confirmTier:
-            return .init(describing: ConfirmChangeTierScreen.self)
         case .info:
             return "Addon Info"
         }
     }
 
     case changeTierLandingScreen
-    case editTier
-    case editDeductible
+    case edit(type: EditTierType)
     case compareTier
-    case confirmTier
     case info
+}
+
+public struct EditTypeModel: Identifiable, Equatable {
+    public let id = UUID().uuidString
+    let type: EditTierType
 }
