@@ -87,13 +87,14 @@ struct StatusCardBackgroundModifier: ViewModifier {
         if backgroundColor == .default {
             content
                 .background(
-                    RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                    Rectangle()
                         .fill(hSurfaceColor.Opaque.primary)
                 )
+                .cornerRadius(.cornerRadiusXL)
         } else {
             content
                 .background(
-                    RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                    Rectangle()
                         .fill(hBackgroundColor.primary)
                 )
                 .cornerRadius(.cornerRadiusXXL)
