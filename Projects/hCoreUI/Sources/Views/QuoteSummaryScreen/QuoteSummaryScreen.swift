@@ -331,7 +331,6 @@ private struct ContractCardView: View {
                     .accessibilityAddTraits(.isHeader)
                 ForEach(contract.documents, id: \.displayName) { document in
                     documentItem(for: document)
-                        .background(hSurfaceColor.Opaque.primary)
                         .accessibilityElement(children: .combine)
                         .onTapGesture {
                             contract.onDocumentTap(document)
