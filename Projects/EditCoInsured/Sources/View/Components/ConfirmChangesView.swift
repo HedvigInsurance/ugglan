@@ -16,13 +16,18 @@ struct ConfirmChangesView: View {
     var body: some View {
         VStack(spacing: .padding16) {
             PriceField(
-                newPremium: intentViewModel.intent.newPremium,
-                currentPremium: intentViewModel.intent.currentPremium,
-                subTitle: L10n.contractAddCoinsuredStartsFrom(
-                    intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                viewModel: .init(
+                    newPremium: intentViewModel.intent.newTotalCost.montlyNet,
+                    currentPremium: intentViewModel.intent.currentTotalCost.montlyNet,
+                    subTitle: L10n.summaryTotalPriceSubtitle(
+                        intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
+                        .init(title: $0.displayTitle, value: $0.displayValue)
+                    })
                 )
             )
-            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+            .hPriceFieldFormat(.multipleRow)
 
             hButton(
                 .large,
@@ -40,4 +45,9 @@ struct ConfirmChangesView: View {
             .hButtonIsLoading(intentViewModel.isLoading)
         }
     }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ConfirmChangesView(editCoInsuredNavigation: .init(config: .init()))
 }

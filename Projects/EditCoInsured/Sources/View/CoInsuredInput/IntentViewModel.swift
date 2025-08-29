@@ -7,9 +7,10 @@ import hCoreUI
 public class IntentViewModel: ObservableObject {
     @Published var intent = Intent(
         activationDate: "",
-        currentPremium: MonetaryAmount(amount: 0, currency: ""),
-        newPremium: MonetaryAmount(amount: 0, currency: ""),
-        id: ""
+        currentTotalCost: .init(monthlyGross: .sek(0), montlyNet: .sek(0)),
+        newTotalCost: .init(monthlyGross: .sek(0), montlyNet: .sek(0)),
+        id: "",
+        newCostBreakdown: []
     )
     @Published var isLoading: Bool = false
     @Published var firstName = ""
