@@ -12,7 +12,6 @@ where MainContent: View, BottomContent: View {
     @Environment(\.hCardWithoutSpacing) var cardWithoutSpacing
     @Environment(\.hCardWithDivider) var withDivider
     @Environment(\.hAccessibilityWithoutCombinedElements) var accessibilityWithoutCombinedElements
-    @Environment(\.hCardBackgroundColor) var backgroundColor
 
     public init(
         onSelected: (() -> Void)? = nil,
