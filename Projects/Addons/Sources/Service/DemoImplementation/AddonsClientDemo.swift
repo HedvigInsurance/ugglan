@@ -14,7 +14,8 @@ public class AddonsClientDemo: AddonsClient {
                 .init(displayTitle: "Insured people", displayValue: "You+1"),
             ],
             price: .init(amount: "49", currency: "SEK"),
-            addonVariant: nil
+            addonVariant: nil,
+            documents: []
         )
 
         let addons: AddonOffer = .init(
@@ -40,7 +41,8 @@ public class AddonsClientDemo: AddonsClient {
                         perils: [],
                         product: "",
                         termsVersion: ""
-                    )
+                    ),
+                    documents: []
                 ),
             ]
         )
