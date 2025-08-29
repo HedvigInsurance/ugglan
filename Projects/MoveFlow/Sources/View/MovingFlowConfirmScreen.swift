@@ -4,9 +4,12 @@ import hCoreUI
 
 struct MovingFlowConfirmScreen: View {
     let quoteSummaryViewModel: QuoteSummaryViewModel
+    @EnvironmentObject var router: Router
+
     var body: some View {
         QuoteSummaryScreen(vm: quoteSummaryViewModel)
             .hAccessibilityWithoutCombinedElements
+            .environmentObject(router)
     }
 }
 

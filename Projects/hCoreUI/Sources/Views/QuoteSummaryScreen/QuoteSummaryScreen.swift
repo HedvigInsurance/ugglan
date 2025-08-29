@@ -3,6 +3,7 @@ import hCore
 
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
+    @EnvironmentObject var router: Router
     private let showCoverageId = "showCoverageId"
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -190,6 +191,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
+            .hCardBackgroundColor(.light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -244,7 +246,7 @@ private struct ContractCardView: View {
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         hButton(
             .medium,
-            .secondary,
+            .ghost,
             content: .init(
                 title: vm.expandedContracts.firstIndex(of: contract.id) != nil
                     ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
@@ -265,6 +267,7 @@ private struct ContractCardView: View {
             }
         )
         .hWithTransition(.scale)
+        .hButtonWithBorder
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -415,6 +418,7 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         hSection {
@@ -456,6 +460,10 @@ private struct PriceSummarySection: View {
                             vm?.isConfirmChangesPresented = true
                         }
                     )
+
+                    hCancelButton {
+                        router.dismiss()
+                    }
                 }
             }
         }
