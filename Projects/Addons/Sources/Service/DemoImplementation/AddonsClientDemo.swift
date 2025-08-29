@@ -14,7 +14,11 @@ public class AddonsClientDemo: AddonsClient {
                 .init(displayTitle: "Insured people", displayValue: "You+1"),
             ],
             price: .init(amount: "49", currency: "SEK"),
-            addonVariant: nil
+            addonVariant: nil,
+            discountDisplayItems: [
+                .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
+                .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
+            ]
         )
 
         let addons: AddonOffer = .init(
@@ -40,7 +44,11 @@ public class AddonsClientDemo: AddonsClient {
                         perils: [],
                         product: "",
                         termsVersion: ""
-                    )
+                    ),
+                    discountDisplayItems: [
+                        .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
+                        .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
+                    ]
                 ),
             ]
         )

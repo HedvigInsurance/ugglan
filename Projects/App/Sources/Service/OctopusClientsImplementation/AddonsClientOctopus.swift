@@ -31,7 +31,11 @@ class AddonsClientOctopus: AddonsClient {
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
                     },
                     price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
-                    addonVariant: nil
+                    addonVariant: nil,
+                    discountDisplayItems: [
+                        .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
+                        .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
+                    ] /* TODO: add data */
                 )
             }()
             let addonData = AddonOffer(
@@ -87,7 +91,11 @@ extension AddonQuote {
             addonSubtype: fragment.addonSubtype,
             displayItems: displayItems,
             price: .init(fragment: fragment.premium.fragments.moneyFragment),
-            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
+            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
+            discountDisplayItems: [
+                .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
+                .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
+            ] /* TODO: ADD DATA */
         )
     }
 }

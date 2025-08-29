@@ -42,7 +42,8 @@ extension ChangeAddonViewModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            discountDisplayItems: []
+            discountDisplayItems: selectedQuote?.discountDisplayItems
+                .map({ .init(title: $0.displayTitle, value: $0.displayValue) }) ?? []
         )
 
         let vm = QuoteSummaryViewModel(
