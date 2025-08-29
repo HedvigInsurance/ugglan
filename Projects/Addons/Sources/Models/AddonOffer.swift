@@ -81,6 +81,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     let displayItems: [AddonDisplayItem]
     let price: MonetaryAmount?
     let addonVariant: AddonVariant?
+    let discountDisplayItems: [AddonDisplayItem]
 
     public init(
         displayName: String?,
@@ -89,7 +90,8 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
         addonSubtype: String,
         displayItems: [AddonDisplayItem],
         price: MonetaryAmount?,
-        addonVariant: AddonVariant?
+        addonVariant: AddonVariant?,
+        discountDisplayItems: [AddonDisplayItem]
     ) {
         self.displayName = displayName
         self.quoteId = quoteId
@@ -98,6 +100,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
         self.displayItems = displayItems
         self.price = price
         self.addonVariant = addonVariant
+        self.discountDisplayItems = discountDisplayItems
     }
 }
 
@@ -109,4 +112,9 @@ public struct AddonDisplayItem: Equatable, Hashable, Sendable {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
     }
+}
+
+struct AddonDocument {
+    let displayItems: String
+    let url: String
 }

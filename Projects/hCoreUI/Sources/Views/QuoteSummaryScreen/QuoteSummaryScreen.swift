@@ -3,6 +3,7 @@ import hCore
 
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
+    @EnvironmentObject var router: Router
     private let showCoverageId = "showCoverageId"
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -157,7 +158,7 @@ private struct ContractCardView: View {
     @ViewBuilder
     private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
-        let isExpanded = vm.isAddon ? true : (index != nil)
+        let isExpanded = index != nil
 
         if !contract.documents.isEmpty {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
@@ -190,6 +191,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
+            .hCardBackgroundColor(.light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -201,7 +203,7 @@ private struct ContractCardView: View {
         isExpanded: Bool
     ) -> some View {
         VStack(spacing: .padding16) {
-            if contract.shouldShowDetails && !vm.isAddon {
+            if contract.shouldShowDetails {
                 if !vm.removedContracts.contains(contract.id) {
                     showDetailsButton(contract)
                 } else {
@@ -226,9 +228,7 @@ private struct ContractCardView: View {
                 }
             }
 
-            if ((contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty)
-                && !contract.isAddon
-            {
+            if (contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
@@ -244,7 +244,7 @@ private struct ContractCardView: View {
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         hButton(
             .medium,
-            .secondary,
+            .ghost,
             content: .init(
                 title: vm.expandedContracts.firstIndex(of: contract.id) != nil
                     ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
@@ -265,6 +265,7 @@ private struct ContractCardView: View {
             }
         )
         .hWithTransition(.scale)
+        .hButtonWithBorder
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -274,7 +275,7 @@ private struct ContractCardView: View {
             documentsView(for: contract)
             removeButton(for: contract, isExpanded: isExpanded)
         }
-        .padding(.bottom, (isExpanded && !contract.isAddon && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
+        .padding(.bottom, (isExpanded && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
     }
 
     @ViewBuilder
@@ -328,7 +329,6 @@ private struct ContractCardView: View {
                     .accessibilityAddTraits(.isHeader)
                 ForEach(contract.documents, id: \.displayName) { document in
                     documentItem(for: document)
-                        .background(hSurfaceColor.Opaque.primary)
                         .accessibilityElement(children: .combine)
                         .onTapGesture {
                             contract.onDocumentTap(document)
@@ -415,6 +415,7 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         hSection {
@@ -427,7 +428,7 @@ private struct PriceSummarySection: View {
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
                             if newPremium.value >= 0 {
-                                hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
+                                hText(newPremium.formattedAmountPerMonth)
                             } else {
                                 hText(newPremium.formattedAmountPerMonth)
                             }
@@ -450,12 +451,16 @@ private struct PriceSummarySection: View {
                         .large,
                         .primary,
                         content: .init(
-                            title: vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer
+                            title: L10n.changeAddressAcceptOffer
                         ),
                         { [weak vm] in
                             vm?.isConfirmChangesPresented = true
                         }
                     )
+
+                    hCancelButton {
+                        router.dismiss()
+                    }
                 }
             }
         }
