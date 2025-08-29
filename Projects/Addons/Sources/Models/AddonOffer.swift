@@ -81,7 +81,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     let displayItems: [AddonDisplayItem]
     let price: MonetaryAmount?
     let addonVariant: AddonVariant?
-    public let documents: [hPDFDocument]
+    let documents: [hPDFDocument]
     public init(
         displayName: String?,
         quoteId: String,
