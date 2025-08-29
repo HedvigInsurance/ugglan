@@ -33,7 +33,8 @@ final class AddonsServiceTests: XCTestCase {
                         perils: [],
                         product: "",
                         termsVersion: ""
-                    )
+                    ),
+                    documents: []
                 ),
                 .init(
                     displayName: "option title",
@@ -48,7 +49,8 @@ final class AddonsServiceTests: XCTestCase {
                         perils: [],
                         product: "",
                         termsVersion: ""
-                    )
+                    ),
+                    documents: []
                 ),
             ]
         )
