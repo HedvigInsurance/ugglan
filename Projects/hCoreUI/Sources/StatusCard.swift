@@ -76,20 +76,7 @@ where MainContent: View, BottomContent: View {
                 onSelected()
             }
         }
-        .background(
-            RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                .fill(getBackgroundColor)
-        )
         .modifier(StatusCardBackgroundModifier())
-    }
-
-    @hColorBuilder
-    private var getBackgroundColor: some hColor {
-        if backgroundColor == .grey {
-            hSurfaceColor.Opaque.primary
-        } else {
-            hBackgroundColor.primary
-        }
     }
 }
 
@@ -97,10 +84,18 @@ struct StatusCardBackgroundModifier: ViewModifier {
     @Environment(\.hCardBackgroundColor) var backgroundColor
 
     func body(content: Content) -> some View {
-        if backgroundColor == .grey {
+        if backgroundColor == .default {
             content
+                .background(
+                    RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                        .fill(hSurfaceColor.Opaque.primary)
+                )
         } else {
             content
+                .background(
+                    RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                        .fill(hBackgroundColor.primary)
+                )
                 .cornerRadius(.cornerRadiusXXL)
                 .shadow(color: Color(red: 0.07, green: 0.07, blue: 0.07).opacity(0.05), radius: 5, x: 0, y: 4)
 
@@ -188,12 +183,12 @@ extension View {
 }
 
 public enum CardBackgroundColor: Sendable {
-    case grey
-    case white
+    case `default`
+    case light
 }
 
 private struct EnvironmentHCardBackgroundColor: EnvironmentKey {
-    static let defaultValue = CardBackgroundColor.grey
+    static let defaultValue = CardBackgroundColor.default
 }
 
 extension EnvironmentValues {
