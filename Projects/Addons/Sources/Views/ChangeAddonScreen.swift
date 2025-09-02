@@ -50,93 +50,95 @@ struct ChangeAddonScreen: View {
                 )
             )
             .hFormAttachToBottom {
-                CardView {
-                    hRow {
-                        addOnSection
-                    }
-                    hRow {
-                        coverageButtonView
-                    }
-                    .verticalPadding(0)
-                    .padding(.bottom, .padding16)
-                }
+                VStack(spacing: .padding8) {
+                    addOnSection
+                    hSection {
+                        InfoCard(
+                            text: L10n.addonFlowTravelInformationCardText,
+                            type: .neutral
+                        )
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.addonFlowLearnMoreButton,
+                                buttonAction: {
+                                    changeAddonNavigationVm.isLearnMorePresented = .init(
+                                        .init(
+                                            title: L10n.addonFlowTravelInformationTitle,
+                                            description: L10n.addonFlowTravelInformationDescription,
+                                            perils: changeAddonNavigationVm.changeAddonVm?.selectedQuote?.addonVariant?
+                                                .perils ?? []
+                                        )
+                                    )
+                                }
+                            )
+                        ])
 
-                hSection {
-                    VStack(spacing: .padding8) {
                         hContinueButton {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
                         }
+                        .padding(.top, .padding16)
 
                         hCancelButton {
                             changeAddonNavigationVm.router.dismiss()
                         }
                     }
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.transparent)
             }
     }
 
     @ViewBuilder
     private var addOnSection: some View {
-        if let addonOffer = changeAddonVm.addonOffer {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    hText(addonOffer.title)
-                        .fixedSize()
-                    Spacer()
-                    hPill(
-                        text: L10n.addonFlowPriceLabel(
-                            changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
-                                .formattedAmount ?? ""
-                        ),
-                        color: .grey,
-                        colorLevel: .one
-                    )
-                    .hFieldSize(.small)
+        VStack(spacing: .padding4) {
+            hSection {
+                hRow {
+                    if let addonOffer = changeAddonVm.addonOffer {
+                        getAddonOptionView(for: addonOffer)
+                    }
                 }
-                if let subTitle = addonOffer.description {
-                    hText(subTitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                        .padding(.top, .padding8)
-                }
-
-                DropdownView(
-                    value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
-                    placeHolder: L10n.addonFlowSelectDaysPlaceholder
-                ) {
-                    changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
-                }
-                .padding(.top, .padding16)
-                //            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary]) /* TODO: CHECK DARK THEME DESIGN */
-                .hWithoutHorizontalPadding([.section])
-                .accessibilityHidden(false)
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-            .accessibilityAction {
-                changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
-            }
-            .fixedSize(horizontal: false, vertical: true)
         }
     }
 
-    private var coverageButtonView: some View {
-        hButton(
-            .medium,
-            .ghost,
-            content: .init(title: "See what is covered")
-        ) {
-            changeAddonNavigationVm.isLearnMorePresented = .init(
-                .init(
-                    title: L10n.addonFlowTravelInformationTitle,
-                    description: L10n.addonFlowTravelInformationDescription,
-                    perils: changeAddonNavigationVm.changeAddonVm?.selectedQuote?.addonVariant?
-                        .perils ?? []
+    private func getAddonOptionView(for addon: AddonOffer) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                hText(addon.title)
+                    .fixedSize()
+                Spacer()
+                hPill(
+                    text: L10n.addonFlowPriceLabel(
+                        changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
+                            .formattedAmount ?? ""
+                    ),
+                    color: .grey,
+                    colorLevel: .one
                 )
-            )
+                .hFieldSize(.small)
+            }
+            if let subTitle = addon.description {
+                hText(subTitle, style: .label)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .padding(.top, .padding8)
+            }
+
+            DropdownView(
+                value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
+                placeHolder: L10n.addonFlowSelectDaysPlaceholder
+            ) {
+                changeAddonNavigationVm.isChangeCoverageDaysPresented = addon
+            }
+            .padding(.top, .padding16)
+            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
+            .hWithoutHorizontalPadding([.section])
+            .accessibilityHidden(false)
         }
-        .hButtonWithBorder
-        .hButtonTakeFullWidth(true)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
+        .accessibilityAction {
+            changeAddonNavigationVm.isChangeCoverageDaysPresented = addon
+        }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 

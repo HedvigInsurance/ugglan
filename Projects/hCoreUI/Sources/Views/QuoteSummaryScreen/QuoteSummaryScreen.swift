@@ -158,7 +158,7 @@ private struct ContractCardView: View {
     @ViewBuilder
     private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
-        let isExpanded = index != nil
+        let isExpanded = vm.isAddon ? true : (index != nil)
 
         if !contract.documents.isEmpty {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
@@ -191,7 +191,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
-            .hCardBackgroundColor(.light)
+            .hCardBackgroundColor(vm.isAddon ? .default : .light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -203,7 +203,7 @@ private struct ContractCardView: View {
         isExpanded: Bool
     ) -> some View {
         VStack(spacing: .padding16) {
-            if contract.shouldShowDetails {
+            if contract.shouldShowDetails && !vm.isAddon {
                 if !vm.removedContracts.contains(contract.id) {
                     showDetailsButton(contract)
                 } else {
@@ -228,7 +228,9 @@ private struct ContractCardView: View {
                 }
             }
 
-            if (contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty {
+            if ((contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty)
+                && !contract.isAddon
+            {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
@@ -241,31 +243,59 @@ private struct ContractCardView: View {
         }
     }
 
+    @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        hButton(
-            .medium,
-            .ghost,
-            content: .init(
-                title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-            ),
-            {
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    vm.toggleContract(contract)
-                    Task { [weak vm] in
-                        guard let vm else { return }
-                        try await Task.sleep(nanoseconds: 200_000_000)
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            if vm.expandedContracts.contains(contract.id) {
-                                proxy.scrollTo(contract.id, anchor: .top)
+
+        if vm.isAddon {
+            hButton(
+                .medium,
+                .secondary,
+                content: .init(
+                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+                ),
+                {
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        vm.toggleContract(contract)
+                        Task { [weak vm] in
+                            guard let vm else { return }
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                if vm.expandedContracts.contains(contract.id) {
+                                    proxy.scrollTo(contract.id, anchor: .top)
+                                }
                             }
                         }
                     }
                 }
-            }
-        )
-        .hWithTransition(.scale)
-        .hButtonWithBorder
+            )
+            .hWithTransition(.scale)
+        } else {
+            hButton(
+                .medium,
+                .ghost,
+                content: .init(
+                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+                ),
+                {
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        vm.toggleContract(contract)
+                        Task { [weak vm] in
+                            guard let vm else { return }
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                if vm.expandedContracts.contains(contract.id) {
+                                    proxy.scrollTo(contract.id, anchor: .top)
+                                }
+                            }
+                        }
+                    }
+                }
+            )
+            .hWithTransition(.scale)
+            .hButtonWithBorder
+        }
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -275,7 +305,7 @@ private struct ContractCardView: View {
             documentsView(for: contract)
             removeButton(for: contract, isExpanded: isExpanded)
         }
-        .padding(.bottom, (isExpanded && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
+        .padding(.bottom, (isExpanded && !contract.isAddon && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
     }
 
     @ViewBuilder
@@ -428,7 +458,7 @@ private struct PriceSummarySection: View {
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
                             if newPremium.value >= 0 {
-                                hText(newPremium.formattedAmountPerMonth)
+                                hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
                             } else {
                                 hText(newPremium.formattedAmountPerMonth)
                             }
@@ -451,7 +481,7 @@ private struct PriceSummarySection: View {
                         .large,
                         .primary,
                         content: .init(
-                            title: L10n.changeAddressAcceptOffer
+                            title: vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer
                         ),
                         { [weak vm] in
                             vm?.isConfirmChangesPresented = true

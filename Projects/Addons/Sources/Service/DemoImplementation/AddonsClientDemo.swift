@@ -15,10 +15,6 @@ public class AddonsClientDemo: AddonsClient {
             ],
             price: .init(amount: "49", currency: "SEK"),
             addonVariant: nil,
-            discountDisplayItems: [
-                .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
-                .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-            ],
             documents: []
         )
 
@@ -46,10 +42,6 @@ public class AddonsClientDemo: AddonsClient {
                         product: "",
                         termsVersion: ""
                     ),
-                    discountDisplayItems: [
-                        .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
-                        .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-                    ],
                     documents: []
                 ),
             ]
