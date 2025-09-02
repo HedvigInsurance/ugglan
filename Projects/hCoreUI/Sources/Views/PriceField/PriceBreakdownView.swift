@@ -46,8 +46,9 @@ struct PriceBreakdownView: View {
     private var priceFieldView: some View {
         PriceField(
             viewModel: .init(
-                newPremium: model.finalPrice,
-                currentPremium: model.initialPrice
+                newNetPremium: model.finalPrice,
+                newGrossPremium: model.finalPrice,
+                currentNetPremium: model.initialPrice
             )
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)

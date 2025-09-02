@@ -15,10 +15,11 @@ struct ConfirmChangesView: View {
 
     var body: some View {
         VStack(spacing: .padding16) {
-            PriceField(
+            PriceFieldMultipleRows(
                 viewModel: .init(
-                    newPremium: intentViewModel.intent.newTotalCost.montlyNet,
-                    currentPremium: intentViewModel.intent.currentTotalCost.montlyNet,
+                    newNetPremium: intentViewModel.intent.newTotalCost.montlyNet,
+                    newGrossPremium: intentViewModel.intent.newTotalCost.monthlyGross,
+                    currentNetPremium: intentViewModel.intent.currentTotalCost.montlyNet,
                     subTitle: L10n.summaryTotalPriceSubtitle(
                         intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
@@ -27,8 +28,6 @@ struct ConfirmChangesView: View {
                     })
                 )
             )
-            .hPriceFieldFormat(.multipleRow)
-            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
 
             hButton(
                 .large,

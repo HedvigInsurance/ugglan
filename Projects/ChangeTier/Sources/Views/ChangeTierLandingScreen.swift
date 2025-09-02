@@ -94,8 +94,8 @@ public struct ChangeTierLandingScreen: View {
                 hRow {
                     PriceField(
                         viewModel: .init(
-                            newPremium: vm.newPremium,
-                            currentPremium: vm.currentPremium
+                            newNetPremium: vm.newPremium,
+                            currentNetPremium: vm.currentPremium
                         )
                     )
                 }

@@ -109,8 +109,8 @@ struct ContractDetails: View {
                     hRow {
                         PriceField(
                             viewModel: .init(
-                                newPremium: contract.netAmount,
-                                currentPremium: contract.grossAmount,
+                                newNetPremium: contract.netAmount,
+                                currentNetPremium: contract.grossAmount,
                                 title: L10n.paymentsSubtotal
                             )
                         )
