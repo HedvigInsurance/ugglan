@@ -290,8 +290,10 @@ struct hFloatingTextField_Previews: PreviewProvider {
 }
 
 public enum BackgroundOption: Sendable {
+    case negative /* TODO: REMOVE LATER */
     case withoutDisabled
     case locked
+    case secondary /* TODO: REMOVE LATER */
 }
 
 private struct EnvironmentHBackgroundOption: EnvironmentKey {

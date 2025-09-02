@@ -64,7 +64,7 @@ public struct ChangeTierLandingScreen: View {
                 )
             )
             .hFormAttachToBottom {
-                VStack(spacing: .padding16) {
+                VStack(spacing: .padding4) {
                     informationCard
                     buttons
                 }
@@ -72,23 +72,26 @@ public struct ChangeTierLandingScreen: View {
     }
 
     private var informationCard: some View {
-        CardView {
-            hRow {
-                ContractInformation(
-                    displayName: vm.displayName,
-                    exposureName: vm.exposureName,
-                    pillowImage: vm.typeOfContract?.pillowType.bgImage
-                )
-            }
-
-            VStack(spacing: .padding4) {
-                editTierView
-                if vm.showDeductibleField {
-                    deductibleView
+        hSection {
+            VStack(spacing: 0) {
+                hRow {
+                    ContractInformation(
+                        displayName: vm.displayName,
+                        exposureName: vm.exposureName,
+                        pillowImage: vm.typeOfContract?.pillowType.bgImage
+                    )
                 }
+                .hWithoutDivider
+
+                VStack(spacing: .padding4) {
+                    editTierView
+                    if vm.showDeductibleField {
+                        deductibleView
+                    }
+                }
+                .hFieldSize(.small)
+                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
             }
-            .hFieldSize(.small)
-            //                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary]) /* TODO: CHECK DARK THEME DESIGN */
 
             hRow {
                 PriceField(
@@ -108,7 +111,7 @@ public struct ChangeTierLandingScreen: View {
                         value: vm.selectedTier?.name ?? "",
                         placeholder: L10n.tierFlowCoverageLabel
                     ) {}
-                    .hBackgroundOption(option: [.locked])
+                    .hBackgroundOption(option: [.locked, .secondary, .negative])
                     .hFieldTrailingView {
                         hCoreUIAssets.lock.view
                             .foregroundColor(hTextColor.Translucent.secondary)
@@ -139,13 +142,13 @@ public struct ChangeTierLandingScreen: View {
                     value: vm.selectedQuote?.displayTitle ?? "",
                     placeholder: L10n.tierFlowDeductibleLabel
                 ) {}
-                .hBackgroundOption(option: [.locked])
+                .hBackgroundOption(option: [.locked, .secondary, .negative])
                 .hFieldTrailingView {
                     hCoreUIAssets.lock.view
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
-            .padding(.bottom, 8)
+            .padding(.bottom, .padding8)
         } else {
             DropdownView(
                 value: vm.selectedQuote?.displayTitle ?? "",
@@ -163,6 +166,17 @@ public struct ChangeTierLandingScreen: View {
     private var buttons: some View {
         hSection {
             VStack(spacing: .padding8) {
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(
+                        title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
+                    ),
+                    { [weak changeTierNavigationVm] in
+                        changeTierNavigationVm?.isCompareTiersPresented = true
+                    }
+                )
+
                 hContinueButton { [weak vm, weak changeTierNavigationVm] in
                     guard let vm, let changeTierNavigationVm else { return }
                     switch vm.changeTierInput {
@@ -177,17 +191,6 @@ public struct ChangeTierLandingScreen: View {
                     }
                 }
                 .disabled(!vm.isValid)
-
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(
-                        title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
-                    ),
-                    { [weak changeTierNavigationVm] in
-                        changeTierNavigationVm?.isCompareTiersPresented = true
-                    }
-                )
             }
         }
         .sectionContainerStyle(.transparent)
