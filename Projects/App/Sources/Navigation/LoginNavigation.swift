@@ -50,7 +50,7 @@ struct LoginNavigation: View {
                     LoginErrorView(message: message)
                 }
             }
-            .embededInNavigation(tracking: Localization.Locale.currentLocale.value.code)
+            .embededInNavigation(tracking: String.init(describing: BankIDLoginQRView.self))
         }
     }
 
