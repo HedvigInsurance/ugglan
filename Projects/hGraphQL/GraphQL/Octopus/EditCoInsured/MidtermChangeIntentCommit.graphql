@@ -24,7 +24,7 @@ fragment MidtermChangeIntentFragment on MidtermChangeIntent {
 }
 
 fragment MidtermChangePriceDetailItemFragment on MidtermChangePriceDetailItem {
-    displayTitle
+    displayName
     displayValue
 }
 

@@ -184,7 +184,7 @@ extension MidtermChangePriceDetailItem {
         fragment: OctopusGraphQL.MidtermChangePriceDetailItemFragment
     ) {
         self.init(
-            displayTitle: fragment.displayTitle,
+            displayTitle: fragment.displayName,
             displayValue: fragment.displayValue
         )
     }
