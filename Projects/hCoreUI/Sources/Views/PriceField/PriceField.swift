@@ -5,13 +5,13 @@ public struct PriceField: View {
     @ObservedObject var viewModel: PriceFieldViewModel
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
     @SwiftUI.Environment(\.hPriceFormatting) var formatting
-    
+
     public init(
         viewModel: PriceFieldViewModel
     ) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         PriceFieldContent(
             viewModel: viewModel,
@@ -19,7 +19,7 @@ public struct PriceField: View {
             priceFieldView: priceFieldView
         )
     }
-    
+
     @ViewBuilder
     private var priceFieldView: some View {
         if viewModel.shouldShowCurrentPremium(
@@ -31,34 +31,36 @@ public struct PriceField: View {
                 usePrimary: false
             )
         }
-        
+
         VStack(alignment: .trailing, spacing: 0) {
             PremiumText(
                 text: newPremiumText,
                 strikeThrough: strikeThroughPrice == .crossNewPrice,
                 usePrimary: true
             )
-            
+
             if viewModel.shouldShowPreviousPriceLabel(
                 strikeThroughPrice: strikeThroughPrice
             ) {
-                subTitleField(text: L10n.tierFlowPreviousPrice(viewModel.currentNetPremium?.priceFormat(formatting) ?? ""))
+                subTitleField(
+                    text: L10n.tierFlowPreviousPrice(viewModel.currentNetPremium?.priceFormat(formatting) ?? "")
+                )
             }
         }
     }
-    
+
     @ViewBuilder
     private func subTitleField(text: String) -> some View {
         hText(text, style: .label)
             .frame(maxWidth: .infinity, alignment: .trailing)
             .foregroundColor(hTextColor.Opaque.secondary)
     }
-    
+
     private var currentPremiumText: String {
         viewModel.currentNetPremium?.priceFormat(formatting) ?? ""
     }
-    
-    private var newPremiumText: String{
+
+    private var newPremiumText: String {
         viewModel.newNetPremium?.priceFormat(formatting) ?? viewModel.currentNetPremium?.priceFormat(formatting) ?? ""
     }
 }
@@ -72,7 +74,7 @@ public struct PriceField: View {
                 currentNetPremium: MonetaryAmount(amount: "49", currency: "SEK"),
             )
         )
-        
+
         PriceField(
             viewModel: .init(
                 newNetPremium: .init(amount: "99", currency: "SEK"),
@@ -81,7 +83,7 @@ public struct PriceField: View {
             )
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-        
+
         PriceField(
             viewModel: .init(
                 newNetPremium: .init(amount: "99", currency: "SEK"),
@@ -90,7 +92,7 @@ public struct PriceField: View {
             )
         )
         .hWithStrikeThroughPrice(setTo: .crossNewPrice)
-        
+
         PriceField(
             viewModel: .init(
                 newNetPremium: .init(amount: "99", currency: "SEK"),
@@ -100,7 +102,7 @@ public struct PriceField: View {
             )
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-        
+
         PriceFieldMultipleRows(
             viewModel: .init(
                 newNetPremium: .init(amount: "115", currency: "SEK"),
