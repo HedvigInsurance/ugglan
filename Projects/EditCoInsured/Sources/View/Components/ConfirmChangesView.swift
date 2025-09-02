@@ -28,6 +28,7 @@ struct ConfirmChangesView: View {
                 )
             )
             .hPriceFieldFormat(.multipleRow)
+            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
 
             hButton(
                 .large,
