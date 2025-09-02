@@ -31,7 +31,7 @@ extension ChangeAddonViewModel {
             ),
             netPremium: selectedQuote?.price,
             grossPremium: addonOffer?.currentAddon?.price,
-            documents: selectedQuote?.addonVariant?.documents ?? [],
+            documents: selectedQuote?.documents ?? [],
             onDocumentTap: { document in
                 changeAddonNavigationVm.document = document
             },

@@ -29,7 +29,8 @@ final class AddonsViewModelTests: XCTestCase {
                 perils: [],
                 product: "product",
                 termsVersion: "termsVersion"
-            )
+            ),
+            documents: []
         )
 
         let addonModel: AddonOffer = .init(
@@ -52,7 +53,8 @@ final class AddonsViewModelTests: XCTestCase {
                         perils: [],
                         product: "product",
                         termsVersion: "termsVersion"
-                    )
+                    ),
+                    documents: []
                 ),
             ]
         )

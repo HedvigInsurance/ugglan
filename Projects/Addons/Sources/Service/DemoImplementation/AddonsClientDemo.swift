@@ -18,7 +18,8 @@ public class AddonsClientDemo: AddonsClient {
             discountDisplayItems: [
                 .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
                 .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-            ]
+            ],
+            documents: []
         )
 
         let addons: AddonOffer = .init(
@@ -48,7 +49,8 @@ public class AddonsClientDemo: AddonsClient {
                     discountDisplayItems: [
                         .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
                         .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-                    ]
+                    ],
+                    documents: []
                 ),
             ]
         )

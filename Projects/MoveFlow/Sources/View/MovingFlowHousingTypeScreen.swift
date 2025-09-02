@@ -106,13 +106,13 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
 
 @MainActor
 class MovingFlowHousingTypeViewModel: ObservableObject {
-    @Published var selectedHousingType: String? = HousingType.apartment.rawValue
+    @Published var selectedHousingType: String? = HousingType.rental.rawValue
     init() {}
 }
 
 public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
-    case apartment
     case rental
+    case apartment
     case house
 
     var title: String {

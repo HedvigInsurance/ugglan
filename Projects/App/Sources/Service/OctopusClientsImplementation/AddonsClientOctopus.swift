@@ -35,7 +35,8 @@ class AddonsClientOctopus: AddonsClient {
                     discountDisplayItems: [
                         .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
                         .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-                    ] /* TODO: add data */
+                    ], /* TODO: add data */
+                    documents: []
                 )
             }()
             let addonData = AddonOffer(
@@ -84,6 +85,9 @@ extension AddonQuote {
         let displayItems: [AddonDisplayItem] = fragment.displayItems.map {
             .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
         }
+        let documents = fragment.documents.compactMap { document in
+            hPDFDocument(displayName: document.displayName, url: document.url, type: .unknown)
+        }
         self.init(
             displayName: fragment.displayName,
             quoteId: fragment.quoteId,
@@ -95,7 +99,8 @@ extension AddonQuote {
             discountDisplayItems: [
                 .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
                 .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-            ] /* TODO: ADD DATA */
+            ], /* TODO: ADD DATA */
+            documents: documents
         )
     }
 }
