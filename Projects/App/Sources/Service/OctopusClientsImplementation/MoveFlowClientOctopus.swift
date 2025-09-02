@@ -291,7 +291,7 @@ extension ChangeTierIntentModel {
                         quotePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
                         basePremium: .init(
-                            fragment: quote.cost.fragments.itemCostFragment.monthlyGross.fragments.moneyFragment
+                            fragment: quote.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment
                         ),
                         displayItems: [],
                         productVariant: ProductVariant(

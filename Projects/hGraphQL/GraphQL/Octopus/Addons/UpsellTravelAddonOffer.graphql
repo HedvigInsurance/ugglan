@@ -36,6 +36,10 @@ fragment UpsellTravelAddonQuoteFragment on UpsellTravelAddonQuote {
     addonVariant {
         ...AddonVariantFragment
     }
+	documents {
+	  displayName
+	  url
+	}
 }
 
 fragment UpsellTravelAddonDisplayItemFragment on UpsellTravelAddonDisplayItem {
