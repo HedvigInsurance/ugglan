@@ -245,7 +245,6 @@ private struct ContractCardView: View {
 
     @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-
         if vm.isAddon {
             hButton(
                 .medium,
