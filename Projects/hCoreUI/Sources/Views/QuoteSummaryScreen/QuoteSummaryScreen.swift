@@ -232,14 +232,17 @@ private struct ContractCardView: View {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
-
-            PriceField(
-                viewModel: .init(
-                    initialValue: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium,
-                    newValue: contract.netPremium!
+            if let netPremium = contract.netPremium {
+                PriceField(
+                    viewModel: .init(
+                        initialValue: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium,
+                        newValue: netPremium
+                    )
                 )
-            )
-            .hWithStrikeThroughPrice(setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice)
+                .hWithStrikeThroughPrice(
+                    setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice
+                )
+            }
         }
     }
 
