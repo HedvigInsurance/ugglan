@@ -193,3 +193,56 @@ extension MonetaryAmount {
         }
     }
 }
+
+//MARK: Previews
+#Preview {
+    hSection {
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossNewPrice)
+
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK"),
+                subTitle: "sub title"
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+        PriceFieldMultipleRows(
+            viewModels: [
+                .init(
+                    initialValue: nil,
+                    newValue: .init(amount: "99", currency: "SEK")
+                ),
+                .init(
+                    initialValue: .init(amount: "139", currency: "SEK"),
+                    newValue: .init(amount: "115", currency: "SEK"),
+                    subTitle: "Changes activates on 16 nov 2025",
+                    infoButtonDisplayItems: [
+                        .init(title: "title", value: "value")
+                    ]
+                ),
+            ]
+        )
+    }
+    .hWithoutHorizontalPadding(.all)
+}
