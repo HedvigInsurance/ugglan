@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 
 struct PriceBreakdownView: View {
-    let model: PriceBreakdownViewModel
+    let model: PriceFieldModel
     private let router = Router()
 
     var body: some View {
@@ -37,54 +37,26 @@ struct PriceBreakdownView: View {
 
     private var displayItemsView: some View {
         VStack(spacing: .padding4) {
-            ForEach(model.displayItems, id: \.title) { item in
+            ForEach(model.infoButtonDisplayItems, id: \.title) { item in
                 rowItem(for: item)
             }
         }
     }
 
     private var priceFieldView: some View {
-        PriceField(
-            viewModel: .init(
-                newNetPremium: model.finalPrice,
-                newGrossPremium: model.finalPrice,
-                currentNetPremium: model.initialPrice
-            )
+        PriceFieldView(
+            viewModel: model.withoutDisplayItems()
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
     }
 
-    private func rowItem(for item: PriceBreakdownViewModel.DisplayItem) -> some View {
+    private func rowItem(for item: PriceFieldModel.DisplayItem) -> some View {
         HStack {
             hText(item.title, style: .label)
                 .foregroundColor(hTextColor.Opaque.secondary)
             Spacer()
             hText(item.value, style: .label)
                 .foregroundColor(hTextColor.Opaque.secondary)
-        }
-    }
-}
-
-public struct PriceBreakdownViewModel: Equatable, Identifiable {
-    public let id = UUID().uuidString
-    let displayItems: [DisplayItem]
-    let initialPrice: MonetaryAmount
-    let finalPrice: MonetaryAmount
-
-    public static func == (lhs: PriceBreakdownViewModel, rhs: PriceBreakdownViewModel) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    public struct DisplayItem {
-        let title: String
-        let value: String
-
-        public init(
-            title: String,
-            value: String
-        ) {
-            self.title = title
-            self.value = value
         }
     }
 }
@@ -98,13 +70,13 @@ extension PriceBreakdownView: TrackingViewNameProtocol {
 #Preview {
     PriceBreakdownView(
         model: .init(
-            displayItems: [
+            initialValue: .sek(299),
+            newValue: .sek(229),
+            infoButtonDisplayItems: [
                 .init(title: "Homeowner Insurance", value: "370 kr/mo"),
                 .init(title: "Extended travel 60 days", value: "79 kr/mo"),
                 .init(title: "15% bundle discount", value: "-79 kr/mo"),
-            ],
-            initialPrice: .sek(299),
-            finalPrice: .sek(229)
+            ]
         )
     )
 }

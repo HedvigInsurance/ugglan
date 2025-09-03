@@ -92,10 +92,10 @@ public struct ChangeTierLandingScreen: View {
                 .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
 
                 hRow {
-                    PriceField(
+                    PriceFieldView(
                         viewModel: .init(
-                            newNetPremium: vm.newPremium,
-                            currentNetPremium: vm.currentPremium
+                            initialValue: vm.currentPremium,
+                            newValue: vm.newPremium ?? .sek(0)
                         )
                     )
                 }
