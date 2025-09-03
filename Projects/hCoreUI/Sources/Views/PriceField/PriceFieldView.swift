@@ -184,7 +184,7 @@ extension View {
 }
 
 extension MonetaryAmount {
-    func priceFormat(_ format: PriceFormatting) -> String {
+    public func priceFormat(_ format: PriceFormatting) -> String {
         switch format {
         case .perMonth:
             return formattedAmountPerMonth
