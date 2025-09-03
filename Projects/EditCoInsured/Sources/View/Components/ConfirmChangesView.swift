@@ -19,11 +19,13 @@ struct ConfirmChangesView: View {
                 viewModels: [
                     .init(
                         initialValue: nil,
-                        newValue: intentViewModel.intent.currentTotalCost.montlyNet
+                        newValue: intentViewModel.intent.currentTotalCost.montlyNet,
+                        title: L10n.pricePreviousPrice
                     ),
                     .init(
                         initialValue: intentViewModel.intent.newTotalCost.monthlyGross,
                         newValue: intentViewModel.intent.newTotalCost.montlyNet,
+                        title: L10n.priceNewPrice,
                         subTitle: L10n.summaryTotalPriceSubtitle(
                             intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         ),

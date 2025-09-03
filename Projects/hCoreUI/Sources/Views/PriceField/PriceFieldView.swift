@@ -19,13 +19,7 @@ public struct PriceFieldView: View {
             HStack(alignment: .top) {
                 HStack(spacing: .padding4) {
                     titleField
-                    if !viewModel.infoButtonDisplayItems.isEmpty {
-                        hCoreUIAssets.infoFilled.view
-                            .foregroundColor(hFillColor.Opaque.secondary)
-                            .onTapGesture {
-                                isInfoViewPresented = viewModel
-                            }
-                    }
+                    infoButton
                 }
 
                 Spacer()
@@ -44,6 +38,17 @@ public struct PriceFieldView: View {
     private var titleField: some View {
         hText(viewModel.title ?? L10n.tierFlowTotal)
             .foregroundColor(getTotalColor())
+    }
+
+    @ViewBuilder
+    private var infoButton: some View {
+        if !viewModel.infoButtonDisplayItems.isEmpty {
+            hCoreUIAssets.infoFilled.view
+                .foregroundColor(hFillColor.Opaque.secondary)
+                .onTapGesture {
+                    isInfoViewPresented = viewModel
+                }
+        }
     }
 
     @ViewBuilder
