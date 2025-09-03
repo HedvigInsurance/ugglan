@@ -29,7 +29,7 @@ struct PriceBreakdownView: View {
             hText(L10n.priceDetailsTitle)
             displayItemsView
             hRowDivider()
-            priceFieldView
+            priceField
         }
         .padding(.top, .padding32)
         .padding(.horizontal, .padding8)
@@ -43,8 +43,8 @@ struct PriceBreakdownView: View {
         }
     }
 
-    private var priceFieldView: some View {
-        PriceFieldView(
+    private var priceField: some View {
+        PriceField(
             viewModel: model.withoutDisplayItems()
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)

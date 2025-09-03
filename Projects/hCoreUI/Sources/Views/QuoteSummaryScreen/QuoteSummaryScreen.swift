@@ -233,7 +233,7 @@ private struct ContractCardView: View {
                     .hWithoutHorizontalPadding([.divider])
             }
 
-            PriceFieldView(
+            PriceField(
                 viewModel: .init(
                     initialValue: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium,
                     newValue: contract.netPremium!
@@ -439,7 +439,7 @@ private struct PriceSummarySection: View {
                     }
                     .accessibilityElement(children: .combine)
                 } else {
-                    PriceFieldView(
+                    PriceField(
                         viewModel: .init(
                             initialValue: currentPremium,
                             newValue: newPremium,

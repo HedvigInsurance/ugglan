@@ -107,7 +107,7 @@ struct ContractDetails: View {
                         }
                     }
                     hRow {
-                        PriceFieldView(
+                        PriceField(
                             viewModel: .init(
                                 initialValue: contract.grossAmount,
                                 newValue: contract.netAmount,

@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-public struct PriceFieldView: View {
+public struct PriceField: View {
     let viewModel: PriceFieldModel
     @State var isInfoViewPresented: PriceFieldModel?
 
@@ -23,7 +23,7 @@ public struct PriceFieldView: View {
                 }
 
                 Spacer()
-                priceFieldView
+                priceField
             }
             subTitleField
         }
@@ -61,7 +61,7 @@ public struct PriceFieldView: View {
     }
 
     @ViewBuilder
-    private var priceFieldView: some View {
+    private var priceField: some View {
         if viewModel.shouldShowPreviousPriceLabel(
             strikeThroughPrice: strikeThroughPrice
         ) {

@@ -11,7 +11,7 @@ public struct PriceFieldMultipleRows: View {
     public var body: some View {
         hSection(viewModels) { viewModel in
             hRow {
-                PriceFieldView(viewModel: viewModel)
+                PriceField(viewModel: viewModel)
             }
         }
         .hWithoutHorizontalPadding([.all])
