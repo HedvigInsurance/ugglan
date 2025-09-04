@@ -92,8 +92,8 @@ public struct ChangeTierLandingScreen: View {
 
             hRow {
                 PriceField(
-                    newPremium: vm.newPremium,
-                    currentPremium: vm.currentPremium
+                    newPremium: vm.newTotalCost?.net,
+                    currentPremium: vm.currentTotalCost?.net
                 )
             }
         }

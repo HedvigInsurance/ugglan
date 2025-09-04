@@ -44,7 +44,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let activationDate: Date
     public let tiers: [Tier]
-    let currentPremium: MonetaryAmount?
     let currentTier: Tier?
     let currentQuote: Quote?
     let selectedTier: Tier?
@@ -56,7 +55,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         displayName: String,
         activationDate: Date,
         tiers: [Tier],
-        currentPremium: MonetaryAmount?,
         currentTier: Tier?,
         currentQuote: Quote?,
         selectedTier: Tier?,
@@ -67,7 +65,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         self.displayName = displayName
         self.activationDate = activationDate
         self.tiers = tiers
-        self.currentPremium = currentPremium
         self.currentTier = currentTier
         self.currentQuote = currentQuote
         self.selectedTier = selectedTier
@@ -101,11 +98,10 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     @MainActor
     func getPremiumLabel() -> String? {
         if quotes.count == 1 {
-            return quotes.first?.basePremium.formattedAmountPerMonth
+            return quotes.first?.newTotalCost.net.formattedAmountPerMonth
         } else {
-            if let smallestPremium = quotes.sorted(by: { $0.basePremium.floatAmount < $1.basePremium.floatAmount })
+            if let smallestPremium = quotes.map({ $0.newTotalCost.net }).sorted(by: { $0.amount < $1.amount })
                 .first?
-                .basePremium
                 .formattedAmount
             {
                 return L10n.tierFlowPriceLabelWithoutCurrency(smallestPremium)
@@ -120,28 +116,34 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
     let deductableAmount: MonetaryAmount?
     let deductablePercentage: Int?
     let subTitle: String?
-    let basePremium: MonetaryAmount
+    public let currentTotalCost: TotalCost
+    let newTotalCost: TotalCost
     public let displayItems: [DisplayItem]
     public let productVariant: ProductVariant?
     let addons: [Addon]
+    let costBreakdown: [DisplayItem]
     public init(
         id: String,
         quoteAmount: MonetaryAmount?,
         quotePercentage: Int?,
         subTitle: String?,
-        basePremium: MonetaryAmount,
+        currentTotalCost: TotalCost,
+        newTotalCost: TotalCost,
         displayItems: [DisplayItem],
         productVariant: ProductVariant?,
-        addons: [Addon]
+        addons: [Addon],
+        costBreakdown: [DisplayItem]
     ) {
         self.id = id
         deductableAmount = quoteAmount
         deductablePercentage = quotePercentage
         self.subTitle = subTitle
-        self.basePremium = basePremium
+        self.currentTotalCost = currentTotalCost
+        self.newTotalCost = newTotalCost
         self.displayItems = displayItems
         self.productVariant = productVariant
         self.addons = addons
+        self.costBreakdown = costBreakdown
     }
 
     public struct DisplayItem: Codable, Equatable, Hashable, Sendable {
@@ -163,27 +165,21 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
     }
 
     public struct Addon: Codable, Equatable, Hashable, Sendable {
-        let addonId: String
         let addonVariant: AddonVariant
-        let displayItems: [Quote.DisplayItem]
-        let displayName: String
-        let premium: MonetaryAmount
-        let previousPremium: MonetaryAmount
-
         public init(
-            addonId: String,
             addonVariant: AddonVariant,
-            displayItems: [Quote.DisplayItem],
-            displayName: String,
-            premium: MonetaryAmount,
-            previousPremium: MonetaryAmount
         ) {
-            self.addonId = addonId
             self.addonVariant = addonVariant
-            self.displayItems = displayItems
-            self.displayName = displayName
-            self.premium = premium
-            self.previousPremium = previousPremium
+        }
+    }
+
+    public struct TotalCost: Codable, Equatable, Hashable, Sendable {
+        let gross: MonetaryAmount
+        let net: MonetaryAmount
+
+        public init(gross: MonetaryAmount, net: MonetaryAmount) {
+            self.gross = gross
+            self.net = net
         }
     }
 
