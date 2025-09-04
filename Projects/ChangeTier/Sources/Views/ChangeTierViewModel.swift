@@ -15,10 +15,10 @@ public class ChangeTierViewModel: ObservableObject {
     var activationDate: Date?
     var typeOfContract: TypeOfContract?
 
-    @Published var currentPremium: MonetaryAmount?
+    @Published var currentTotalCost: Quote.TotalCost?
     var currentTier: Tier?
     private var currentQuote: Quote?
-    var newPremium: MonetaryAmount?
+    var newTotalCost: Quote.TotalCost?
     @Published var canEditTier: Bool = false
     @Published var canEditDeductible: Bool = false
 
@@ -64,14 +64,14 @@ public class ChangeTierViewModel: ObservableObject {
             selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
             .displayName ?? displayName
         selectedTier = newSelectedTier
-        newPremium = selectedQuote?.basePremium
+        newTotalCost = selectedQuote?.newTotalCost
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
         if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
             selectedQuote = deductible
-            newPremium = deductible.basePremium
+            newTotalCost = deductible.newTotalCost
         }
     }
 
@@ -124,7 +124,7 @@ public class ChangeTierViewModel: ObservableObject {
     private func updateDisplayProperties(_ data: ChangeTierIntentModel) {
         self.displayName = data.displayName
         self.exposureName = data.tiers.first?.exposureName
-        self.currentPremium = data.currentPremium
+        self.currentTotalCost = data.currentQuote?.currentTotalCost
         self.activationDate = data.activationDate
         self.typeOfContract = data.typeOfContract
     }
@@ -148,7 +148,7 @@ public class ChangeTierViewModel: ObservableObject {
             self.canEditDeductible = true
         }
 
-        self.newPremium = selectedQuote?.basePremium
+        self.newTotalCost = selectedQuote?.newTotalCost
     }
 
     private func handleError(_ exception: Error) {

@@ -32,7 +32,7 @@ struct EditScreen: View {
     }
 
     private var listToDisplayDeductible: [Quote] {
-        quotes.sorted(by: { $0.basePremium.value > $1.basePremium.value })
+        quotes.sorted(by: { $0.newTotalCost.net.value > $1.newTotalCost.net.value })
     }
 
     private var listToDisplayTiers: [Tier] {
@@ -50,7 +50,7 @@ struct EditScreen: View {
                                 leftView: {
                                     leftView(
                                         title: quote.displayTitle,
-                                        premium: quote.basePremium.formattedAmountPerMonth,
+                                        premium: quote.newTotalCost.net.formattedAmountPerMonth,
                                         subTitle: quote.subTitle
                                     )
                                 },

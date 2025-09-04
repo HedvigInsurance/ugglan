@@ -92,7 +92,7 @@ public struct ChangeTierLandingScreen: View {
                 PriceField(
                     viewModel: .init(
                         initialValue: nil,
-                        newValue: vm.newPremium ?? .sek(0),
+                        newValue: vm.newTotalCost?.net ?? .sek(0),
                         subTitle: getPriceSubtitle()
                     )
                 )
@@ -101,8 +101,8 @@ public struct ChangeTierLandingScreen: View {
     }
 
     private func getPriceSubtitle() -> String? {
-        if let currentPremium = vm.currentPremium, vm.newPremium != currentPremium {
-            let formattedAmount = currentPremium.priceFormat(PriceFormatting.perMonth)
+        if let currentPremium = vm.currentTotalCost, vm.newTotalCost != currentPremium {
+            let formattedAmount = currentPremium.net.priceFormat(PriceFormatting.perMonth)
             return L10n.tierFlowPreviousPrice(formattedAmount)
         }
         return nil
