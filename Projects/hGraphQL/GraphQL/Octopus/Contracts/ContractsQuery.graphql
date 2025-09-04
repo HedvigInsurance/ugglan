@@ -34,9 +34,6 @@ query ContractBundle($options: DisplayItemOptions) {
 		}
 		exposureDisplayName
 		id
-		premium {
-			...MoneyFragment
-		}
 		basePremium {
 			...MoneyFragment
 		}

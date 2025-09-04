@@ -192,7 +192,6 @@ extension Contract {
         ssn: String?
     ) {
         let currentAgreement = Agreement(
-            premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
             basePremium: .init(fragment: pendingContract.basePremium.fragments.moneyFragment),
             itemCost: itemCost,
             displayItems: pendingContract.displayItems.map { .init(data: $0.fragments.agreementDisplayItemFragment) },
@@ -261,7 +260,6 @@ extension Agreement {
             certificateUrl: agreement.certificateUrl,
             activeFrom: agreement.activeFrom,
             activeTo: agreement.activeTo,
-            premium: .init(fragment: agreement.premium.fragments.moneyFragment),
             basePremium: .init(fragment: agreement.basePremium.fragments.moneyFragment),
             itemCost: itemCost,
             displayItems: displayItems,

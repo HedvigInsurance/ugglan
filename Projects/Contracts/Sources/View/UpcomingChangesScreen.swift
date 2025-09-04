@@ -66,7 +66,6 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
         return UpcomingChangesScreen(
             updateDate: "DATE",
             upcomingAgreement: .init(
-                premium: MonetaryAmount(amount: 0, currency: ""),
                 basePremium: .sek(200),
                 itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
                 displayItems: [

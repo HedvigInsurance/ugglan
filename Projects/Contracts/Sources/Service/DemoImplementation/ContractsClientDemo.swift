@@ -38,7 +38,6 @@ public class FetchContractsClientDemo: FetchContractsClient {
             certificateUrl: nil,
             activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
             activeTo: nil,
-            premium: .sek(200),
             basePremium: .sek(200),
             itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
             displayItems: [
