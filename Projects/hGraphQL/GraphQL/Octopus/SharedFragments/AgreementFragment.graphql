@@ -3,12 +3,9 @@ fragment AgreementFragment on Agreement {
     activeTo
     certificateUrl
     creationCause
-    displayItems {
-        ...AgreementDisplayItemFragment
-    }
-    premium {
-        ...MoneyFragment
-    }
+	basePremium {
+		...MoneyFragment
+	}
     productVariant {
         ...ProductVariantFragment
     }
@@ -17,11 +14,6 @@ fragment AgreementFragment on Agreement {
             ...AddonVariantFragment
         }
     }
-}
-
-fragment AgreementDisplayItemFragment on AgreementDisplayItem {
-    displayTitle
-    displayValue
 }
 
 fragment ContractFragment on Contract {
