@@ -23,15 +23,19 @@ struct ItemCostView: View {
             hCoreUIAssets.infoFilled.view
                 .foregroundColor(hFillColor.Opaque.secondary)
                 .onTapGesture {
-                    detentPriceBreakdownModel = .init(
-                        initialValue: itemCost.gross,
-                        newValue: itemCost.net,
-                        title: L10n.detailsTableInsurancePremium,
-                        infoButtonDisplayItems: itemCost.discounts.map { item in
-                            .init(title: item.displayName, value: item.displayValue)
-                        }
-                    )
+                    infoButtonTapAction()
                 }
         }
+    }
+
+    private func infoButtonTapAction() {
+        detentPriceBreakdownModel = .init(
+            initialValue: itemCost.gross,
+            newValue: itemCost.net,
+            title: L10n.detailsTableInsurancePremium,
+            infoButtonDisplayItems: itemCost.discounts.map { item in
+                .init(title: item.displayName, value: item.displayValue)
+            }
+        )
     }
 }
