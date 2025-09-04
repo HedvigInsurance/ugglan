@@ -15,26 +15,11 @@ struct ConfirmChangesView: View {
 
     var body: some View {
         VStack(spacing: .padding16) {
-            PriceFieldMultipleRows(
-                viewModels: [
-                    .init(
-                        initialValue: nil,
-                        newValue: intentViewModel.intent.currentTotalCost.montlyNet,
-                        title: L10n.pricePreviousPrice
-                    ),
-                    .init(
-                        initialValue: intentViewModel.intent.newTotalCost.monthlyGross,
-                        newValue: intentViewModel.intent.newTotalCost.montlyNet,
-                        title: L10n.priceNewPrice,
-                        subTitle: L10n.summaryTotalPriceSubtitle(
-                            intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        ),
-                        infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
-                            .init(title: $0.displayTitle, value: $0.displayValue)
-                        })
-                    ),
-                ]
-            )
+            let showCostBreakdown =
+                intentViewModel.intent.newTotalCost.montlyNet != intentViewModel.intent.currentTotalCost.montlyNet
+            if showCostBreakdown {
+                priceBreakdownView
+            }
 
             hButton(
                 .large,
@@ -51,6 +36,29 @@ struct ConfirmChangesView: View {
             )
             .hButtonIsLoading(intentViewModel.isLoading)
         }
+    }
+
+    private var priceBreakdownView: some View {
+        PriceFieldMultipleRows(
+            viewModels: [
+                .init(
+                    initialValue: nil,
+                    newValue: intentViewModel.intent.currentTotalCost.montlyNet,
+                    title: L10n.pricePreviousPrice
+                ),
+                .init(
+                    initialValue: intentViewModel.intent.newTotalCost.monthlyGross,
+                    newValue: intentViewModel.intent.newTotalCost.montlyNet,
+                    title: L10n.priceNewPrice,
+                    subTitle: L10n.summaryTotalPriceSubtitle(
+                        intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
+                        .init(title: $0.displayTitle, value: $0.displayValue)
+                    })
+                ),
+            ]
+        )
     }
 }
 
