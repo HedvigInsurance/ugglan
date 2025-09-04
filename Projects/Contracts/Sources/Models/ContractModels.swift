@@ -253,6 +253,8 @@ public struct Agreement: Codable, Hashable, Sendable {
         activeFrom: String?,
         activeTo: String?,
         premium: MonetaryAmount,
+        basePremium: MonetaryAmount,
+        itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
         productVariant: hCore.ProductVariant,
         addonVariant: [AddonVariant]
@@ -261,29 +263,36 @@ public struct Agreement: Codable, Hashable, Sendable {
         self.activeFrom = activeFrom
         self.activeTo = activeTo
         self.premium = premium
+        self.basePremium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
         self.addonVariant = addonVariant
+        self.itemCost = itemCost
     }
 
     public let certificateUrl: String?
     public let activeFrom: String?
     public let activeTo: String?
     public let premium: MonetaryAmount
+    public let basePremium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: hCore.ProductVariant
     public let addonVariant: [AddonVariant]
-
+    public let itemCost: ItemCost?
     public init(
         premium: MonetaryAmount,
+        basePremium: MonetaryAmount,
+        itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
         productVariant: hCore.ProductVariant,
         addonVariant: [AddonVariant]
     ) {
         self.premium = premium
+        self.basePremium = basePremium
         self.displayItems = displayItems
         self.productVariant = productVariant
         self.addonVariant = addonVariant
+        self.itemCost = itemCost
         certificateUrl = nil
         activeFrom = nil
         activeTo = nil
@@ -318,6 +327,28 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
 
     public let displayName: String
     public let url: String
+}
+
+public struct ItemCost: Codable, Hashable, Sendable {
+    let gross: MonetaryAmount
+    let net: MonetaryAmount
+    let discounts: [ItemCostDiscount]
+
+    public init(gross: MonetaryAmount, net: MonetaryAmount, discounts: [ItemCostDiscount]) {
+        self.gross = gross
+        self.net = net
+        self.discounts = discounts
+    }
+
+    public struct ItemCostDiscount: Codable, Hashable, Sendable {
+        let displayName: String
+        let displayValue: String
+
+        public init(displayName: String, displayValue: String) {
+            self.displayName = displayName
+            self.displayValue = displayValue
+        }
+    }
 }
 
 @MainActor

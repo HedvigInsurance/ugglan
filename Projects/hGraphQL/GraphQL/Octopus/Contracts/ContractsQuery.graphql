@@ -1,26 +1,76 @@
-query ContractBundle {
+query ContractBundle($options: DisplayItemOptions) {
   currentMember {
     firstName
     lastName
     ssn
     activeContracts {
-        ...ContractFragment
+		...ContractFragment
+		currentAgreement {
+			cost {
+				...ItemCostFragment
+			}
+			addons {
+				...AddonPriceFragment
+			}
+			displayItems(options: $options) {
+				...AgreementDisplayItemFragment
+			}
+		}
+		upcomingChangedAgreement {
+			cost {
+				...ItemCostFragment
+			}
+			addons {
+				...AddonPriceFragment
+			}
+			displayItems(options: $options) {
+				...AgreementDisplayItemFragment
+			}
+		}
     }
     pendingContracts {
-      displayItems {
-        ...AgreementDisplayItemFragment
-      }
-      exposureDisplayName
-      id
-      premium {
-        ...MoneyFragment
-      }
-      productVariant {
-        ...ProductVariantFragment
-      }
+		displayItems(options: $options) {
+			...AgreementDisplayItemFragment
+		}
+		exposureDisplayName
+		id
+		premium {
+			...MoneyFragment
+		}
+		basePremium {
+			...MoneyFragment
+		}
+		productVariant {
+			...ProductVariantFragment
+		}
+		addons {
+			addonVariant {
+				...AddonVariantFragment
+			}
+			...AddonPriceFragment
+		}
+		cost {
+			...ItemCostFragment
+		}
     }
     terminatedContracts {
         ...ContractFragment
+		currentAgreement {
+			displayItems(options: $options) {
+				...AgreementDisplayItemFragment
+			}
+		}
     }
   }
+}
+
+fragment AddonPriceFragment on Addon {
+	premium {
+		...MoneyFragment
+	}
+}
+
+fragment AgreementDisplayItemFragment on AgreementDisplayItem {
+	displayTitle
+	displayValue
 }

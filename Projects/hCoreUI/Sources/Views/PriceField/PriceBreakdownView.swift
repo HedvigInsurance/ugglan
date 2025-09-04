@@ -80,3 +80,19 @@ extension PriceBreakdownView: TrackingViewNameProtocol {
         )
     )
 }
+
+extension View {
+    public func showPriceBreakdown(for model: Binding<PriceFieldModel?>) -> some View {
+        self.modifier(PriceBreakdownViewDetent(model: model))
+    }
+}
+
+struct PriceBreakdownViewDetent: ViewModifier {
+    @Binding var model: PriceFieldModel?
+
+    func body(content: Content) -> some View {
+        content.detent(item: $model) { model in
+            PriceBreakdownView(model: model)
+        }
+    }
+}

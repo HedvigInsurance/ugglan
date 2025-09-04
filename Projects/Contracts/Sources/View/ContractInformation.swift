@@ -13,6 +13,7 @@ struct ContractInformationView: View {
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
     @InjectObservableObject private var featureFlags: FeatureFlags
+    @State private var priceFieldModel: PriceFieldModel?
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -47,6 +48,14 @@ struct ContractInformationView: View {
                                 }
                                 .accessibilityElement(children: .combine)
                             }
+
+                            if let currentAgreementCost = contract.currentAgreement?.itemCost {
+                                itemCostView(itemCost: currentAgreementCost)
+                            }
+                            if let upcomingAgreementCost = contract.upcomingChangedAgreement?.itemCost {
+                                itemCostView(itemCost: upcomingAgreementCost)
+                            }
+
                             if contract.supportsCoInsured {
                                 hRowDivider()
                                     .padding(.horizontal, .padding16)
@@ -85,6 +94,7 @@ struct ContractInformationView: View {
             }
         }
         .sectionContainerStyle(.transparent)
+        .showPriceBreakdown(for: $priceFieldModel)
     }
 
     func insuredField(contract: Contract) -> some View {
@@ -100,6 +110,34 @@ struct ContractInformationView: View {
             }
         }
         .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func itemCostView(itemCost: ItemCost) -> some View {
+        hRowDivider()
+            .padding(.horizontal, .padding16)
+        hSection {
+            hRow {
+                HStack(spacing: 0) {
+                    hText(L10n.detailsTableInsurancePremium)
+                    Spacer()
+                    hText(itemCost.net.priceFormat(.perMonth))
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                    hCoreUIAssets.infoFilled.view
+                        .foregroundColor(hFillColor.Opaque.secondary)
+                        .onTapGesture {
+                            priceFieldModel = .init(
+                                initialValue: itemCost.gross,
+                                newValue: itemCost.net,
+                                title: L10n.detailsTableInsurancePremium,
+                                infoButtonDisplayItems: itemCost.discounts.map { item in
+                                    .init(title: item.displayName, value: item.displayValue)
+                                }
+                            )
+                        }
+                }
+            }
+        }
     }
 
     @ViewBuilder
