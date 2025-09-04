@@ -20,13 +20,20 @@ struct UpcomingChangesScreen: View {
     var body: some View {
         hForm {
             if let upcomingAgreement {
-                hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in
-                    hRow {
-                        HStack {
-                            hText(item.displayTitle)
-                            Spacer()
-                            hText(item.displayValue).foregroundColor(hTextColor.Opaque.secondary)
+                VStack(spacing: 0) {
+                    hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in
+                        hRow {
+                            HStack {
+                                hText(item.displayTitle)
+                                Spacer()
+                                hText(item.displayValue).foregroundColor(hTextColor.Opaque.secondary)
+                            }
                         }
+                    }
+                    if let cost = upcomingAgreement.itemCost {
+                        hRowDivider()
+                            .padding(.horizontal, .padding16)
+                        ItemCostView(itemCost: cost)
                     }
                 }
             }
@@ -57,6 +64,7 @@ struct UpcomingChangesScreen: View {
             .padding(.top, .padding16)
         }
         .hWithoutHorizontalPadding([.row, .divider])
+        .hFormContentPosition(.compact)
     }
 }
 
