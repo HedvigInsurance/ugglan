@@ -232,12 +232,17 @@ private struct ContractCardView: View {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
-
-            PriceField(
-                newPremium: contract.netPremium,
-                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium
-            )
-            .hWithStrikeThroughPrice(setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice)
+            if let netPremium = contract.netPremium {
+                PriceField(
+                    viewModel: .init(
+                        initialValue: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium,
+                        newValue: netPremium
+                    )
+                )
+                .hWithStrikeThroughPrice(
+                    setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice
+                )
+            }
         }
     }
 
@@ -438,10 +443,14 @@ private struct PriceSummarySection: View {
                     .accessibilityElement(children: .combine)
                 } else {
                     PriceField(
-                        newPremium: newPremium,
-                        currentPremium: currentPremium,
-                        title: nil,
-                        subTitle: L10n.summaryTotalPriceSubtitle(vm.activationDate?.displayDateDDMMMYYYYFormat ?? "")
+                        viewModel: .init(
+                            initialValue: currentPremium,
+                            newValue: newPremium,
+                            title: nil,
+                            subTitle: L10n.summaryTotalPriceSubtitle(
+                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                            )
+                        )
                     )
                     .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                 }
