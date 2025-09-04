@@ -2,32 +2,72 @@ import SwiftUI
 import hCore
 
 public struct PriceField: View {
-    @ObservedObject var viewModel: PriceFieldViewModel
+    let viewModel: PriceFieldModel
+    @State var isInfoViewPresented: PriceFieldModel?
+
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
     @SwiftUI.Environment(\.hPriceFormatting) var formatting
 
     public init(
-        viewModel: PriceFieldViewModel
+        viewModel: PriceFieldModel
     ) {
         self.viewModel = viewModel
     }
 
     public var body: some View {
-        PriceFieldContent(
-            viewModel: viewModel,
-            title: viewModel.title ?? L10n.tierFlowTotal,
-            priceFieldView: priceFieldView
-        )
+        VStack(spacing: .padding2) {
+            HStack(alignment: .top) {
+                HStack(spacing: .padding4) {
+                    titleField
+                    infoButton
+                }
+
+                Spacer()
+                priceField
+            }
+            subTitleField
+        }
+        .accessibilityElement(children: .combine)
+        .detent(
+            item: $isInfoViewPresented
+        ) { model in
+            PriceBreakdownView(model: model)
+        }
+    }
+
+    private var titleField: some View {
+        hText(viewModel.title ?? L10n.tierFlowTotal)
+            .foregroundColor(getTotalColor())
     }
 
     @ViewBuilder
-    private var priceFieldView: some View {
-        if viewModel.shouldShowCurrentPremium(
+    private var infoButton: some View {
+        if !viewModel.infoButtonDisplayItems.isEmpty {
+            hCoreUIAssets.infoFilled.view
+                .foregroundColor(hFillColor.Opaque.secondary)
+                .onTapGesture {
+                    isInfoViewPresented = viewModel
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var subTitleField: some View {
+        if let subTitle = viewModel.subTitle {
+            hText(subTitle, style: .label)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var priceField: some View {
+        if viewModel.shouldShowPreviousPriceLabel(
             strikeThroughPrice: strikeThroughPrice
         ) {
             PremiumText(
                 text: currentPremiumText,
-                strikeThrough: true,
+                strikeThrough: strikeThroughPrice == .crossOldPrice,
                 usePrimary: false
             )
         }
@@ -38,14 +78,6 @@ public struct PriceField: View {
                 strikeThrough: strikeThroughPrice == .crossNewPrice,
                 usePrimary: true
             )
-
-            if viewModel.shouldShowPreviousPriceLabel(
-                strikeThroughPrice: strikeThroughPrice
-            ) {
-                subTitleField(
-                    text: L10n.tierFlowPreviousPrice(viewModel.currentNetPremium?.priceFormat(formatting) ?? "")
-                )
-            }
         }
     }
 
@@ -57,68 +89,55 @@ public struct PriceField: View {
     }
 
     private var currentPremiumText: String {
-        viewModel.currentNetPremium?.priceFormat(formatting) ?? ""
+        viewModel.initialValue?.priceFormat(formatting) ?? ""
     }
 
     private var newPremiumText: String {
-        viewModel.newNetPremium?.priceFormat(formatting) ?? viewModel.currentNetPremium?.priceFormat(formatting) ?? ""
+        viewModel.newValue.priceFormat(formatting)
+    }
+
+    @hColorBuilder
+    private func getTotalColor() -> some hColor {
+        switch strikeThroughPrice {
+        case .crossNewPrice:
+            hTextColor.Translucent.secondary
+        case .crossOldPrice, .none:
+            hTextColor.Opaque.primary
+        }
     }
 }
 
-#Preview {
-    hSection {
-        PriceField(
-            viewModel: .init(
-                newNetPremium: .init(amount: "99", currency: "SEK"),
-                newGrossPremium: .init(amount: "139", currency: "SEK"),
-                currentNetPremium: MonetaryAmount(amount: "49", currency: "SEK"),
-            )
-        )
+fileprivate struct PremiumText: View {
+    let text: String
+    let strikeThrough: Bool
+    let usePrimary: Bool
 
-        PriceField(
-            viewModel: .init(
-                newNetPremium: .init(amount: "99", currency: "SEK"),
-                newGrossPremium: .init(amount: "139", currency: "SEK"),
-                currentNetPremium: MonetaryAmount(amount: "49", currency: "SEK")
-            )
-        )
-        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+    public var body: some View {
+        Group {
+            if #available(iOS 16.0, *), strikeThrough {
+                hText(text)
+                    .strikethrough()
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            } else {
+                hText(text)
+                    .foregroundColor(newPremiumColor)
+            }
+        }
 
-        PriceField(
-            viewModel: .init(
-                newNetPremium: .init(amount: "99", currency: "SEK"),
-                newGrossPremium: .init(amount: "139", currency: "SEK"),
-                currentNetPremium: nil
-            )
-        )
-        .hWithStrikeThroughPrice(setTo: .crossNewPrice)
-
-        PriceField(
-            viewModel: .init(
-                newNetPremium: .init(amount: "99", currency: "SEK"),
-                newGrossPremium: .init(amount: "139", currency: "SEK"),
-                currentNetPremium: MonetaryAmount(amount: "49", currency: "SEK"),
-                subTitle: "sub title"
-            )
-        )
-        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-
-        PriceFieldMultipleRows(
-            viewModel: .init(
-                newNetPremium: .init(amount: "115", currency: "SEK"),
-                newGrossPremium: .init(amount: "139", currency: "SEK"),
-                currentNetPremium: MonetaryAmount(amount: "139", currency: "SEK"),
-                subTitle: "Changes activates on 16 nov 2025",
-                infoButtonDisplayItems: [
-                    .init(title: "title", value: "value")
-                ]
-            )
-        )
-        .hWithoutHorizontalPadding(.all)
+        .accessibilityValue(L10n.voiceoverCurrentPrice)
     }
-    .sectionContainerStyle(.transparent)
+
+    @hColorBuilder
+    private var newPremiumColor: some hColor {
+        if usePrimary {
+            hTextColor.Opaque.primary
+        } else {
+            hTextColor.Opaque.secondary
+        }
+    }
 }
 
+// MARK: Envionment Keys
 private struct EnvironmentHWithStrikeThroughPrice: EnvironmentKey {
     static let defaultValue: StrikeThroughPriceType = .none
 }
@@ -165,7 +184,7 @@ extension View {
 }
 
 extension MonetaryAmount {
-    func priceFormat(_ format: PriceFormatting) -> String {
+    public func priceFormat(_ format: PriceFormatting) -> String {
         switch format {
         case .perMonth:
             return formattedAmountPerMonth
@@ -173,4 +192,57 @@ extension MonetaryAmount {
             return formattedAmount
         }
     }
+}
+
+//MARK: Previews
+#Preview {
+    hSection {
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossNewPrice)
+
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK"),
+                subTitle: "sub title"
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+        PriceFieldMultipleRows(
+            viewModels: [
+                .init(
+                    initialValue: nil,
+                    newValue: .init(amount: "99", currency: "SEK")
+                ),
+                .init(
+                    initialValue: .init(amount: "139", currency: "SEK"),
+                    newValue: .init(amount: "115", currency: "SEK"),
+                    subTitle: "Changes activates on 16 nov 2025",
+                    infoButtonDisplayItems: [
+                        .init(title: "title", value: "value")
+                    ]
+                ),
+            ]
+        )
+    }
+    .hWithoutHorizontalPadding(.all)
 }

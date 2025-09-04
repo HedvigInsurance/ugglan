@@ -16,17 +16,24 @@ struct ConfirmChangesView: View {
     var body: some View {
         VStack(spacing: .padding16) {
             PriceFieldMultipleRows(
-                viewModel: .init(
-                    newNetPremium: intentViewModel.intent.newTotalCost.montlyNet,
-                    newGrossPremium: intentViewModel.intent.newTotalCost.monthlyGross,
-                    currentNetPremium: intentViewModel.intent.currentTotalCost.montlyNet,
-                    subTitle: L10n.summaryTotalPriceSubtitle(
-                        intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                viewModels: [
+                    .init(
+                        initialValue: nil,
+                        newValue: intentViewModel.intent.currentTotalCost.montlyNet,
+                        title: L10n.pricePreviousPrice
                     ),
-                    infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
-                        .init(title: $0.displayTitle, value: $0.displayValue)
-                    })
-                )
+                    .init(
+                        initialValue: intentViewModel.intent.newTotalCost.monthlyGross,
+                        newValue: intentViewModel.intent.newTotalCost.montlyNet,
+                        title: L10n.priceNewPrice,
+                        subTitle: L10n.summaryTotalPriceSubtitle(
+                            intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                        ),
+                        infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
+                            .init(title: $0.displayTitle, value: $0.displayValue)
+                        })
+                    ),
+                ]
             )
 
             hButton(

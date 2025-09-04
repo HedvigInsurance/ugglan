@@ -94,13 +94,22 @@ public struct ChangeTierLandingScreen: View {
                 hRow {
                     PriceField(
                         viewModel: .init(
-                            newNetPremium: vm.newPremium,
-                            currentNetPremium: vm.currentPremium
+                            initialValue: nil,
+                            newValue: vm.newPremium ?? .sek(0),
+                            subTitle: getPriceSubtitle()
                         )
                     )
                 }
             }
         }
+    }
+
+    private func getPriceSubtitle() -> String? {
+        if let currentPremium = vm.currentPremium, vm.newPremium != currentPremium {
+            let formattedAmount = currentPremium.priceFormat(PriceFormatting.perMonth)
+            return L10n.tierFlowPreviousPrice(formattedAmount)
+        }
+        return nil
     }
 
     @ViewBuilder
