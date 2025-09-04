@@ -88,15 +88,24 @@ public struct ChangeTierLandingScreen: View {
                 }
             }
             .hFieldSize(.small)
-            //                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary]) /* TODO: CHECK DARK THEME DESIGN */
-
             hRow {
                 PriceField(
-                    newPremium: vm.newTotalCost?.net,
-                    currentPremium: vm.currentTotalCost?.net
+                    viewModel: .init(
+                        initialValue: nil,
+                        newValue: vm.newTotalCost?.net ?? .sek(0),
+                        subTitle: getPriceSubtitle()
+                    )
                 )
             }
         }
+    }
+
+    private func getPriceSubtitle() -> String? {
+        if let currentPremium = vm.currentTotalCost, vm.newTotalCost != currentPremium {
+            let formattedAmount = currentPremium.net.priceFormat(PriceFormatting.perMonth)
+            return L10n.tierFlowPreviousPrice(formattedAmount)
+        }
+        return nil
     }
 
     @ViewBuilder

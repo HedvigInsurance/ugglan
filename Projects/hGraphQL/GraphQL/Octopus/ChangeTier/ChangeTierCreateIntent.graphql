@@ -72,12 +72,3 @@ fragment ChangeTierDeductibleFromAgreementFragment on ChangeTierDeductibleFromAg
             ...ProductVariantFragment
         }
 }
-
-fragment TotalCostFragment on TotalCost {
-	monthlyGross {
-		...MoneyFragment
-	}
-	monthlyNet {
-		...MoneyFragment
-	}
-}
