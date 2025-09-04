@@ -13,68 +13,14 @@ class FetchContractsClientOctopus: FetchContractsClient {
         let query = OctopusGraphQL.ContractBundleQuery(
             options: .some(OctopusGraphQL.DisplayItemOptions(hidePrice: true))
         )
-        let contracts = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let contractsData = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
-        let firstName = contracts.currentMember.firstName
-        let lastName = contracts.currentMember.lastName
-        let ssn = contracts.currentMember.ssn
-        let activeContracts = contracts.currentMember.activeContracts.map { contract in
-            var agreementCosts = [ItemCost.ItemCostDiscount]()
-            agreementCosts.append(
-                .init(
-                    displayName: contract.currentAgreement.productVariant.displayName,
-                    displayValue: MonetaryAmount(
-                        fragment: contract.currentAgreement.basePremium.fragments.moneyFragment
-                    )
-                    .priceFormat(.perMonth)
-                )
-            )
-            agreementCosts.append(
-                contentsOf: contract.currentAgreement.addons.map { addon in
-                    .init(
-                        displayName: addon.addonVariant.displayName,
-                        displayValue: MonetaryAmount(fragment: addon.premium.fragments.moneyFragment)
-                            .priceFormat(.perMonth)
-                    )
-                }
-            )
+        let firstName = contractsData.currentMember.firstName
+        let lastName = contractsData.currentMember.lastName
+        let ssn = contractsData.currentMember.ssn
+        let activeContracts = handleActiveContracts(data: contractsData)
 
-            let currentAgreement = Agreement(
-                agreement: contract.currentAgreement.fragments.agreementFragment,
-                itemCost: .init(
-                    itemCostDiscounts: agreementCosts,
-                    fragment: contract.currentAgreement.cost.fragments.itemCostFragment
-                ),
-                displayItems: contract.currentAgreement.displayItems.map {
-                    .init(data: $0.fragments.agreementDisplayItemFragment)
-                }
-            )
-            let upcomingAgreement: Agreement? = {
-                if let upcomingAgreement = contract.upcomingChangedAgreement {
-                    return .init(
-                        agreement: upcomingAgreement.fragments.agreementFragment,
-                        itemCost: .init(
-                            itemCostDiscounts: [],
-                            fragment: upcomingAgreement.cost.fragments.itemCostFragment
-                        ),
-                        displayItems: upcomingAgreement.displayItems.map {
-                            .init(data: $0.fragments.agreementDisplayItemFragment)
-                        }
-                    )
-                }
-                return nil
-            }()
-            return Contract(
-                contract: contract.fragments.contractFragment,
-                currentAgreement: currentAgreement,
-                upcomoingAgreement: upcomingAgreement,
-                firstName: firstName,
-                lastName: lastName,
-                ssn: ssn
-            )
-        }
-
-        let terminatedContracts = contracts.currentMember.terminatedContracts.map { contract in
+        let terminatedContracts = contractsData.currentMember.terminatedContracts.map { contract in
             let currentAgreement = Agreement(
                 agreement: contract.currentAgreement.fragments.agreementFragment,
                 itemCost: nil,
@@ -92,9 +38,20 @@ class FetchContractsClientOctopus: FetchContractsClient {
             )
         }
 
-        let pendingContracts = contracts.currentMember.pendingContracts.map { contract in
+        let pendingContracts = contractsData.currentMember.pendingContracts.map { contract in
             Contract(
                 pendingContract: contract,
+                itemCost: getCost(
+                    productVariantFragment: contract.productVariant.fragments.productVariantFragment,
+                    basePremium: contract.basePremium.fragments.moneyFragment,
+                    costFragment: contract.cost.fragments.itemCostFragment,
+                    addonCostDiscounts: contract.addons.map { addon in
+                        getAddonDiscount(
+                            addonVariant: addon.addonVariant.fragments.addonVariantFragment,
+                            amount: addon.premium.fragments.moneyFragment
+                        )
+                    }
+                ),
                 firstName: firstName,
                 lastName: lastName,
                 ssn: ssn
@@ -123,39 +80,121 @@ class FetchContractsClientOctopus: FetchContractsClient {
             throw AddonsError.missingContracts
         }
     }
+
+    private func handleActiveContracts(data: OctopusGraphQL.ContractBundleQuery.Data) -> [Contract] {
+        data.currentMember.activeContracts.map { contract in
+            let currentAgreement = Agreement(
+                agreement: contract.currentAgreement.fragments.agreementFragment,
+                itemCost: getCost(
+                    productVariantFragment: contract.currentAgreement.productVariant.fragments.productVariantFragment,
+                    basePremium: contract.currentAgreement.fragments.agreementFragment.basePremium.fragments
+                        .moneyFragment,
+                    costFragment: contract.currentAgreement.cost.fragments.itemCostFragment,
+                    addonCostDiscounts: contract.currentAgreement.addons.map { addon in
+                        getAddonDiscount(
+                            addonVariant: addon.addonVariant.fragments.addonVariantFragment,
+                            amount: addon.premium.fragments.moneyFragment
+                        )
+                    }
+                ),
+                displayItems: contract.currentAgreement.displayItems.map {
+                    .init(data: $0.fragments.agreementDisplayItemFragment)
+                }
+            )
+            let upcomingAgreement: Agreement? = {
+                if let upcomingAgreement = contract.upcomingChangedAgreement {
+                    return .init(
+                        agreement: upcomingAgreement.fragments.agreementFragment,
+                        itemCost: getCost(
+                            productVariantFragment: upcomingAgreement.productVariant.fragments.productVariantFragment,
+                            basePremium: upcomingAgreement.basePremium.fragments.moneyFragment,
+                            costFragment: upcomingAgreement.cost.fragments.itemCostFragment,
+                            addonCostDiscounts: upcomingAgreement.addons.map { addon in
+                                getAddonDiscount(
+                                    addonVariant: addon.addonVariant.fragments.addonVariantFragment,
+                                    amount: addon.premium.fragments.moneyFragment
+                                )
+                            }
+                        ),
+                        displayItems: upcomingAgreement.displayItems.map {
+                            .init(data: $0.fragments.agreementDisplayItemFragment)
+                        }
+                    )
+                }
+                return nil
+            }()
+            return Contract(
+                contract: contract.fragments.contractFragment,
+                currentAgreement: currentAgreement,
+                upcomoingAgreement: upcomingAgreement,
+                firstName: data.currentMember.firstName,
+                lastName: data.currentMember.lastName,
+                ssn: data.currentMember.ssn
+            )
+        }
+    }
+
+    private func getCost(
+        productVariantFragment: OctopusGraphQL.ProductVariantFragment,
+        basePremium: OctopusGraphQL.MoneyFragment,
+        costFragment: OctopusGraphQL.ItemCostFragment,
+        addonCostDiscounts: [ItemCost.ItemCostDiscount]
+    ) -> ItemCost {
+        var discounts = [ItemCost.ItemCostDiscount]()
+
+        //add insurance disocunt
+        discounts.append(
+            .init(
+                displayName: productVariantFragment.displayName,
+                displayValue: MonetaryAmount(
+                    fragment: basePremium
+                )
+                .priceFormat(.perMonth)
+            )
+        )
+
+        //add additional discounts eg for addons
+        discounts.append(
+            contentsOf: addonCostDiscounts
+        )
+
+        //add cost fragment discounts
+        discounts.append(
+            contentsOf: costFragment.discounts.map { .init(displayName: $0.displayName, displayValue: $0.displayValue) }
+        )
+
+        return .init(
+            gross: .init(fragment: costFragment.monthlyGross.fragments.moneyFragment),
+            net: .init(fragment: costFragment.monthlyNet.fragments.moneyFragment),
+            discounts: discounts
+        )
+    }
+
+    private func getAddonDiscount(
+        addonVariant: OctopusGraphQL.AddonVariantFragment,
+        amount: OctopusGraphQL.MoneyFragment
+    ) -> ItemCost.ItemCostDiscount {
+        .init(
+            displayName: addonVariant.displayName,
+            displayValue: MonetaryAmount(fragment: amount)
+                .priceFormat(.perMonth)
+        )
+    }
 }
 
 @MainActor
 extension Contract {
     init(
         pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
+        itemCost: ItemCost,
         firstName: String,
         lastName: String,
         ssn: String?
     ) {
-        var agreementCosts = [ItemCost.ItemCostDiscount]()
-        agreementCosts.append(
-            .init(
-                displayName: pendingContract.productVariant.displayName,
-                displayValue: MonetaryAmount(fragment: pendingContract.basePremium.fragments.moneyFragment)
-                    .priceFormat(.perMonth)
-            )
-        )
-        agreementCosts.append(
-            contentsOf: pendingContract.addons.map { addon in
-                .init(
-                    displayName: addon.addonVariant.displayName,
-                    displayValue: MonetaryAmount(fragment: addon.premium.fragments.moneyFragment).priceFormat(.perMonth)
-                )
-            }
-        )
         let currentAgreement = Agreement(
             premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
             basePremium: .init(fragment: pendingContract.basePremium.fragments.moneyFragment),
-            itemCost: .init(
-                itemCostDiscounts: agreementCosts,
-                fragment: pendingContract.cost.fragments.itemCostFragment
-            ),
+            itemCost: itemCost,
             displayItems: pendingContract.displayItems.map { .init(data: $0.fragments.agreementDisplayItemFragment) },
             productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
             addonVariant: pendingContract.addons.map { .init(fragment: $0.addonVariant.fragments.addonVariantFragment) }
@@ -249,29 +288,6 @@ extension AgreementDisplayItem {
         self.init(
             title: data.displayTitle,
             value: data.displayValue
-        )
-    }
-}
-
-extension ItemCost {
-    public init?(
-        itemCostDiscounts: [ItemCost.ItemCostDiscount],
-        fragment: OctopusGraphQL.ItemCostFragment?
-    ) {
-        guard let fragment else {
-            return nil
-        }
-        var discounts = [ItemCost.ItemCostDiscount]()
-        discounts.append(contentsOf: itemCostDiscounts)
-        discounts.append(
-            contentsOf: fragment.discounts.map { discount in
-                .init(displayName: discount.displayName, displayValue: discount.displayValue)
-            }
-        )
-        self.init(
-            gross: .init(fragment: fragment.monthlyGross.fragments.moneyFragment),
-            net: .init(fragment: fragment.monthlyNet.fragments.moneyFragment),
-            discounts: discounts
         )
     }
 }

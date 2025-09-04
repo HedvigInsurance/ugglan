@@ -118,7 +118,7 @@ struct ContractInformationView: View {
             .padding(.horizontal, .padding16)
         hSection {
             hRow {
-                HStack(spacing: 0) {
+                HStack(spacing: .padding2) {
                     hText(L10n.detailsTableInsurancePremium)
                     Spacer()
                     hText(itemCost.net.priceFormat(.perMonth))
