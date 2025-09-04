@@ -18,8 +18,8 @@ class FetchContractsClientOctopus: FetchContractsClient {
         let firstName = contractsData.currentMember.firstName
         let lastName = contractsData.currentMember.lastName
         let ssn = contractsData.currentMember.ssn
-        let activeContracts = handleActiveContracts(data: contractsData)
 
+        let activeContracts = handleActiveContracts(data: contractsData)
         let terminatedContracts = contractsData.currentMember.terminatedContracts.map { contract in
             let currentAgreement = Agreement(
                 agreement: contract.currentAgreement.fragments.agreementFragment,
@@ -39,18 +39,19 @@ class FetchContractsClientOctopus: FetchContractsClient {
         }
 
         let pendingContracts = contractsData.currentMember.pendingContracts.map { contract in
-            Contract(
+            let addonsDiscount = contract.addons.map { addon in
+                getAddonDiscount(
+                    addonVariant: addon.addonVariant.fragments.addonVariantFragment,
+                    amount: addon.premium.fragments.moneyFragment
+                )
+            }
+            return Contract(
                 pendingContract: contract,
                 itemCost: getCost(
                     productVariantFragment: contract.productVariant.fragments.productVariantFragment,
                     basePremium: contract.basePremium.fragments.moneyFragment,
                     costFragment: contract.cost.fragments.itemCostFragment,
-                    addonCostDiscounts: contract.addons.map { addon in
-                        getAddonDiscount(
-                            addonVariant: addon.addonVariant.fragments.addonVariantFragment,
-                            amount: addon.premium.fragments.moneyFragment
-                        )
-                    }
+                    addonCostDiscounts: addonsDiscount
                 ),
                 firstName: firstName,
                 lastName: lastName,
@@ -83,6 +84,12 @@ class FetchContractsClientOctopus: FetchContractsClient {
 
     private func handleActiveContracts(data: OctopusGraphQL.ContractBundleQuery.Data) -> [Contract] {
         data.currentMember.activeContracts.map { contract in
+            let currentAgreementAddonsDiscount = contract.currentAgreement.addons.map { addon in
+                getAddonDiscount(
+                    addonVariant: addon.addonVariant.fragments.addonVariantFragment,
+                    amount: addon.premium.fragments.moneyFragment
+                )
+            }
             let currentAgreement = Agreement(
                 agreement: contract.currentAgreement.fragments.agreementFragment,
                 itemCost: getCost(
@@ -90,12 +97,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
                     basePremium: contract.currentAgreement.fragments.agreementFragment.basePremium.fragments
                         .moneyFragment,
                     costFragment: contract.currentAgreement.cost.fragments.itemCostFragment,
-                    addonCostDiscounts: contract.currentAgreement.addons.map { addon in
-                        getAddonDiscount(
-                            addonVariant: addon.addonVariant.fragments.addonVariantFragment,
-                            amount: addon.premium.fragments.moneyFragment
-                        )
-                    }
+                    addonCostDiscounts: currentAgreementAddonsDiscount
                 ),
                 displayItems: contract.currentAgreement.displayItems.map {
                     .init(data: $0.fragments.agreementDisplayItemFragment)
@@ -103,18 +105,19 @@ class FetchContractsClientOctopus: FetchContractsClient {
             )
             let upcomingAgreement: Agreement? = {
                 if let upcomingAgreement = contract.upcomingChangedAgreement {
+                    let upcomingAgreementAddonsDiscount = contract.currentAgreement.addons.map { addon in
+                        getAddonDiscount(
+                            addonVariant: addon.addonVariant.fragments.addonVariantFragment,
+                            amount: addon.premium.fragments.moneyFragment
+                        )
+                    }
                     return .init(
                         agreement: upcomingAgreement.fragments.agreementFragment,
                         itemCost: getCost(
                             productVariantFragment: upcomingAgreement.productVariant.fragments.productVariantFragment,
                             basePremium: upcomingAgreement.basePremium.fragments.moneyFragment,
                             costFragment: upcomingAgreement.cost.fragments.itemCostFragment,
-                            addonCostDiscounts: upcomingAgreement.addons.map { addon in
-                                getAddonDiscount(
-                                    addonVariant: addon.addonVariant.fragments.addonVariantFragment,
-                                    amount: addon.premium.fragments.moneyFragment
-                                )
-                            }
+                            addonCostDiscounts: upcomingAgreementAddonsDiscount
                         ),
                         displayItems: upcomingAgreement.displayItems.map {
                             .init(data: $0.fragments.agreementDisplayItemFragment)
@@ -134,6 +137,12 @@ class FetchContractsClientOctopus: FetchContractsClient {
         }
     }
 
+    /// We are building the cost object here by combining the insurance cost discounts with the addon cost discounts
+    /// - Parameters:
+    ///  - productVariantFragment: The product variant fragment of the insurance
+    ///  - basePremium: The base premium of the insurance
+    ///  - costFragment: The cost fragment of the insurance
+    ///  - addonCostDiscounts: The cost discounts of the addons
     private func getCost(
         productVariantFragment: OctopusGraphQL.ProductVariantFragment,
         basePremium: OctopusGraphQL.MoneyFragment,
