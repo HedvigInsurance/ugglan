@@ -47,6 +47,18 @@ struct ContractInformationView: View {
                                 }
                                 .accessibilityElement(children: .combine)
                             }
+
+                            if let currentAgreementCost = contract.currentAgreement?.itemCost {
+                                hRowDivider()
+                                    .padding(.horizontal, .padding16)
+                                ItemCostView(itemCost: currentAgreementCost)
+                            }
+                            if let upcomingAgreementCost = contract.upcomingChangedAgreement?.itemCost {
+                                hRowDivider()
+                                    .padding(.horizontal, .padding16)
+                                ItemCostView(itemCost: upcomingAgreementCost)
+                            }
+
                             if contract.supportsCoInsured {
                                 hRowDivider()
                                     .padding(.horizontal, .padding16)
