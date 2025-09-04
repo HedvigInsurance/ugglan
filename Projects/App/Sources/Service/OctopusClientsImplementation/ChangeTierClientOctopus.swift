@@ -52,10 +52,6 @@ class ChangeTierClientOctopus: ChangeTierClient {
                     ?? intent.quotes.first?.productVariant.displayName) ?? "",
                 activationDate: intent.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
-                currentPremium: .init(
-                    amount: String(agreementToChange.basePremium.amount),
-                    currency: agreementToChange.basePremium.currencyCode.rawValue
-                ),
                 currentTier: currentTier,
                 currentQuote: currentDeductible,
                 selectedTier: nil,
@@ -124,7 +120,8 @@ class ChangeTierClientOctopus: ChangeTierClient {
                     quotePercentage: (quote.deductible?.percentage == 0)
                         ? nil : quote.deductible?.percentage,
                     subTitle: (quote.deductible?.displayText == "") ? nil : quote.deductible?.displayText,
-                    basePremium: .init(fragment: quote.premium.fragments.moneyFragment),
+                    currentTotalCost: quote.currentTotalCost.fragments.totalCostFragment.asTotalCost(),
+                    newTotalCost: quote.newTotalCost.fragments.totalCostFragment.asTotalCost(),
                     displayItems: quote.displayItems.map {
                         .init(
                             title: $0.displayTitle,
@@ -133,7 +130,10 @@ class ChangeTierClientOctopus: ChangeTierClient {
                         )
                     },
                     productVariant: .init(data: quote.productVariant.fragments.productVariantFragment),
-                    addons: quote.addons.compactMap { .init(with: $0) }
+                    addons: quote.addons.compactMap { .init(with: $0) },
+                    costBreakdown: quote.costBreakdown.map({ item in
+                        .init(title: item.displayName, subTitle: nil, value: item.displayValue)
+                    })
                 )
                 allDeductiblesForX.append(deductible)
             }
@@ -156,7 +156,17 @@ class ChangeTierClientOctopus: ChangeTierClient {
         currentContract: OctopusGraphQL.ContractQuery.Data.Contract,
         intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
     ) -> Tier {
-        filteredTiers.first(where: {
+        let totalCost: Quote.TotalCost = {
+            if let firstQuoteTotalCost = intent.quotes.first?.currentTotalCost.fragments.totalCostFragment.asTotalCost()
+            {
+                return firstQuoteTotalCost
+            }
+            return Quote.TotalCost(
+                gross: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment),
+                net: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment)
+            )
+        }()
+        return filteredTiers.first(where: {
             $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
         })
             ?? Tier(
@@ -172,12 +182,14 @@ class ChangeTierClientOctopus: ChangeTierClient {
                         quotePercentage: (intent.agreementToChange.deductible?.percentage == 0)
                             ? nil : intent.agreementToChange.deductible?.percentage,
                         subTitle: nil,
-                        basePremium: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment),
+                        currentTotalCost: totalCost,
+                        newTotalCost: totalCost,
                         displayItems: [],
                         productVariant: .init(
                             data: intent.agreementToChange.productVariant.fragments.productVariantFragment
                         ),
-                        addons: []
+                        addons: [],
+                        costBreakdown: []
                     )
                 ],
                 exposureName: currentContract.exposureDisplayName
@@ -190,6 +202,15 @@ class ChangeTierClientOctopus: ChangeTierClient {
         currentTier: Tier
     ) -> Quote? {
         let deductible = agreementToChange.deductible
+        let totalCost: Quote.TotalCost = {
+            if let firstTierQuote = currentTier.quotes.first {
+                return firstTierQuote.currentTotalCost
+            }
+            let currentTotalGrossCost = MonetaryAmount(fragment: agreementToChange.basePremium.fragments.moneyFragment)
+            let currentTotalNetCost = MonetaryAmount(fragment: agreementToChange.basePremium.fragments.moneyFragment)
+            return Quote.TotalCost(gross: currentTotalGrossCost, net: currentTotalNetCost)
+        }()
+
         let currentDeductible: Quote? = {
             if let deductible {
                 return Quote(
@@ -197,10 +218,12 @@ class ChangeTierClientOctopus: ChangeTierClient {
                     quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
                     quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                     subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
-                    basePremium: .init(fragment: agreementToChange.basePremium.fragments.moneyFragment),
+                    currentTotalCost: totalCost,
+                    newTotalCost: totalCost,
                     displayItems: currentTier.quotes.first?.displayItems ?? [],
                     productVariant: currentTier.quotes.first?.productVariant,
-                    addons: []
+                    addons: [],
+                    costBreakdown: []
                 )
             }
             return nil
@@ -255,25 +278,16 @@ extension Quote.Addon {
             .Quote.Addon
     ) {
         self.init(
-            addonId: data.addonId,
-            addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment),
-            displayItems: data.displayItems.map { Quote.DisplayItem(with: $0) },
-            displayName: data.displayName,
-            premium: .init(fragment: data.premium.fragments.moneyFragment),
-            previousPremium: .init(fragment: data.previousPremium.fragments.moneyFragment)
+            addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment)
         )
     }
 }
 
-extension Quote.DisplayItem {
-    init(
-        with data: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
-            .Quote.Addon.DisplayItem
-    ) {
-        self.init(
-            title: data.displayTitle,
-            subTitle: data.displaySubtitle,
-            value: data.displayValue
+extension OctopusGraphQL.TotalCostFragment {
+    func asTotalCost() -> Quote.TotalCost {
+        Quote.TotalCost(
+            gross: .init(fragment: self.monthlyGross.fragments.moneyFragment),
+            net: .init(fragment: self.monthlyNet.fragments.moneyFragment)
         )
     }
 }

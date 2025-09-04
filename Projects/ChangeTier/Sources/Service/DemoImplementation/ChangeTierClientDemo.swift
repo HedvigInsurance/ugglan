@@ -17,7 +17,14 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 quoteAmount: .init(amount: "1000", currency: "SEK"),
                 quotePercentage: 0,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                basePremium: .init(amount: "1167", currency: "SEK"),
+                currentTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
+                newTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
@@ -52,14 +59,22 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
                 ),
-                addons: []
+                addons: [],
+                costBreakdown: []
             ),
             .init(
                 id: "id2",
                 quoteAmount: .init(amount: "2000", currency: "SEK"),
                 quotePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                basePremium: .init(amount: "999", currency: "SEK"),
+                currentTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
+                newTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
@@ -94,14 +109,22 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
                 ),
-                addons: []
+                addons: [],
+                costBreakdown: []
             ),
             .init(
                 id: "id3",
                 quoteAmount: .init(amount: "3000", currency: "SEK"),
                 quotePercentage: 15,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                basePremium: .init(amount: "569", currency: "SEK"),
+                currentTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
+                newTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
@@ -136,7 +159,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
                 ),
-                addons: []
+                addons: [],
+                costBreakdown: []
             ),
         ]
 
@@ -150,10 +174,18 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     quoteAmount: .init(amount: "220", currency: "SEK"),
                     quotePercentage: 0,
                     subTitle: nil,
-                    basePremium: .init(amount: "220", currency: "SEK"),
+                    currentTotalCost: .init(
+                        gross: .init(amount: "200", currency: "SEK"),
+                        net: .init(amount: "160", currency: "SEK"),
+                    ),
+                    newTotalCost: .init(
+                        gross: .init(amount: "200", currency: "SEK"),
+                        net: .init(amount: "160", currency: "SEK"),
+                    ),
                     displayItems: [],
                     productVariant: nil,
-                    addons: []
+                    addons: [],
+                    costBreakdown: []
                 )
             ],
             exposureName: "Standard"
@@ -179,7 +211,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     exposureName: "Bellmansgatan 19A"
                 ),
             ],
-            currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: .init(
                 id: "id",
                 name: "Max",
@@ -192,7 +223,14 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 quoteAmount: .init(amount: "449", currency: "SEK"),
                 quotePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                basePremium: .init(amount: "999", currency: "SEK"),
+                currentTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
+                newTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
@@ -227,7 +265,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
                 ),
-                addons: []
+                addons: [],
+                costBreakdown: []
             ),
             selectedTier: selectedTier,
             selectedQuote: nil,

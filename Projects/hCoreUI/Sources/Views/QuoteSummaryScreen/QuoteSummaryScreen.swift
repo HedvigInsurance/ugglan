@@ -3,6 +3,7 @@ import hCore
 
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
+    @EnvironmentObject var router: Router
     private let showCoverageId = "showCoverageId"
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -190,6 +191,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
+            .hCardBackgroundColor(vm.isAddon ? .default : .light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -246,30 +248,58 @@ private struct ContractCardView: View {
         }
     }
 
+    @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        hButton(
-            .medium,
-            .secondary,
-            content: .init(
-                title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-            ),
-            {
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    vm.toggleContract(contract)
-                    Task { [weak vm] in
-                        guard let vm else { return }
-                        try await Task.sleep(nanoseconds: 200_000_000)
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            if vm.expandedContracts.contains(contract.id) {
-                                proxy.scrollTo(contract.id, anchor: .top)
+        if vm.isAddon {
+            hButton(
+                .medium,
+                .secondary,
+                content: .init(
+                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+                ),
+                {
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        vm.toggleContract(contract)
+                        Task { [weak vm] in
+                            guard let vm else { return }
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                if vm.expandedContracts.contains(contract.id) {
+                                    proxy.scrollTo(contract.id, anchor: .top)
+                                }
                             }
                         }
                     }
                 }
-            }
-        )
-        .hWithTransition(.scale)
+            )
+            .hWithTransition(.scale)
+        } else {
+            hButton(
+                .medium,
+                .ghost,
+                content: .init(
+                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+                ),
+                {
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        vm.toggleContract(contract)
+                        Task { [weak vm] in
+                            guard let vm else { return }
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                if vm.expandedContracts.contains(contract.id) {
+                                    proxy.scrollTo(contract.id, anchor: .top)
+                                }
+                            }
+                        }
+                    }
+                }
+            )
+            .hWithTransition(.scale)
+            .hButtonWithBorder
+        }
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -333,7 +363,6 @@ private struct ContractCardView: View {
                     .accessibilityAddTraits(.isHeader)
                 ForEach(contract.documents, id: \.displayName) { document in
                     documentItem(for: document)
-                        .background(hSurfaceColor.Opaque.primary)
                         .accessibilityElement(children: .combine)
                         .onTapGesture {
                             contract.onDocumentTap(document)
@@ -420,6 +449,7 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         hSection {
@@ -465,6 +495,10 @@ private struct PriceSummarySection: View {
                             vm?.isConfirmChangesPresented = true
                         }
                     )
+
+                    hCancelButton {
+                        router.dismiss()
+                    }
                 }
             }
         }

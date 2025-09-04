@@ -77,6 +77,10 @@ struct ChangeAddonScreen: View {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
                         }
                         .padding(.top, .padding16)
+
+                        hCancelButton {
+                            changeAddonNavigationVm.router.dismiss()
+                        }
                     }
                     .sectionContainerStyle(.transparent)
                 }
@@ -93,7 +97,6 @@ struct ChangeAddonScreen: View {
                     }
                 }
             }
-            .hFieldSize(.medium)
         }
     }
 

@@ -241,10 +241,18 @@ extension Perils {
                 quoteAmount: .init(amount: "220", currency: "SEK"),
                 quotePercentage: 0,
                 subTitle: nil,
-                basePremium: .init(amount: "220", currency: "SEK"),
+                currentTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
+                newTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
                 displayItems: [],
                 productVariant: nil,
-                addons: []
+                addons: [],
+                costBreakdown: []
             )
         ],
         exposureName: "Standard"
@@ -260,10 +268,18 @@ extension Perils {
                 quoteAmount: .init(amount: "220", currency: "SEK"),
                 quotePercentage: 0,
                 subTitle: nil,
-                basePremium: .init(amount: "220", currency: "SEK"),
+                currentTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
+                newTotalCost: .init(
+                    gross: .init(amount: "200", currency: "SEK"),
+                    net: .init(amount: "160", currency: "SEK"),
+                ),
                 displayItems: [],
                 productVariant: nil,
-                addons: []
+                addons: [],
+                costBreakdown: []
             )
         ],
         exposureName: "exposure name"
@@ -281,10 +297,18 @@ extension Perils {
                         quoteAmount: .init(amount: "220", currency: "SEK"),
                         quotePercentage: 0,
                         subTitle: nil,
-                        basePremium: .init(amount: "220", currency: "SEK"),
+                        currentTotalCost: .init(
+                            gross: .init(amount: "200", currency: "SEK"),
+                            net: .init(amount: "160", currency: "SEK"),
+                        ),
+                        newTotalCost: .init(
+                            gross: .init(amount: "200", currency: "SEK"),
+                            net: .init(amount: "160", currency: "SEK"),
+                        ),
                         displayItems: [],
                         productVariant: nil,
-                        addons: []
+                        addons: [],
+                        costBreakdown: []
                     )
                 ],
                 exposureName: "exposure name"

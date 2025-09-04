@@ -290,14 +290,20 @@ extension ChangeTierIntentModel {
                         quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
                         quotePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
-                        basePremium: .init(
-                            fragment: quote.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment
+                        currentTotalCost: .init(
+                            gross: .init(fragment: quote.cost.monthlyGross.fragments.moneyFragment),
+                            net: .init(fragment: quote.cost.monthlyNet.fragments.moneyFragment)
+                        ),
+                        newTotalCost: .init(
+                            gross: .init(fragment: quote.cost.monthlyGross.fragments.moneyFragment),
+                            net: .init(fragment: quote.cost.monthlyNet.fragments.moneyFragment)
                         ),
                         displayItems: [],
                         productVariant: ProductVariant(
                             data: firstQuote.productVariant.fragments.productVariantFragment
                         ),
-                        addons: []
+                        addons: [],
+                        costBreakdown: []
                     )
                 }
                 let tier = Tier(
@@ -328,7 +334,6 @@ extension ChangeTierIntentModel {
                 .displayName ?? "",
             activationDate: data.first?.startDate.localDateToDate ?? Date(),
             tiers: tiers,
-            currentPremium: nil,
             currentTier: nil,
             currentQuote: nil,
             selectedTier: currentTierAndQuote.tier,

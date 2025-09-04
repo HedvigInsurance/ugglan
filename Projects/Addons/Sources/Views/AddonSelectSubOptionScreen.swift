@@ -116,7 +116,6 @@ struct AddonSelectSubOptionScreen: View {
         ),
         documents: [
             .init(displayName: "dodument1", url: "www.hedvig.com", type: .unknown)
-
         ]
     )
 

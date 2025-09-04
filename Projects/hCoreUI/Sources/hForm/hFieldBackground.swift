@@ -25,20 +25,12 @@ struct hFieldBackgroundModifier: ViewModifier {
                 hSurfaceColor.Opaque.secondary
             }
         } else {
-            if backgroundOption.contains(.translucent) {
-                if backgroundOption.contains(.negative) {
-                    hFillColor.Translucent.negative
-                } else {
-                    hFillColor.Translucent.primary
-                }
+            if backgroundOption.contains(.negative) {
+                hFillColor.Opaque.negative
+            } else if backgroundOption.contains(.secondary) {
+                hSurfaceColor.Opaque.secondary
             } else {
-                if backgroundOption.contains(.negative) {
-                    hFillColor.Opaque.negative
-                } else if backgroundOption.contains(.secondary) {
-                    hSurfaceColor.Opaque.secondary
-                } else {
-                    hSurfaceColor.Opaque.primary
-                }
+                hSurfaceColor.Opaque.primary
             }
         }
     }
