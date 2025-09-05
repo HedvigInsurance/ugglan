@@ -124,7 +124,7 @@ struct ChangeAddonScreen: View {
         hButton(
             .medium,
             .ghost,
-            content: .init(title: "See what is covered")
+            content: .init(title: L10n.addonFlowCoverButton)
         ) {
             changeAddonNavigationVm.isLearnMorePresented = .init(
                 .init(
