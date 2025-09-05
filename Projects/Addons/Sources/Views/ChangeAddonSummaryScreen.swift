@@ -27,9 +27,9 @@ extension ChangeAddonViewModel {
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
-            newPremium: selectedQuote?.price,
-            currentPremium: addonOffer?.currentAddon?.price,
-            documents: selectedQuote?.addonVariant?.documents ?? [],
+            netPremium: selectedQuote?.price,
+            grossPremium: addonOffer?.currentAddon?.price,
+            documents: selectedQuote?.documents ?? [],
             onDocumentTap: { document in
                 changeAddonNavigationVm.document = document
             },
@@ -39,20 +39,32 @@ extension ChangeAddonViewModel {
             ),
             insuranceLimits: [],
             typeOfContract: nil,
-            isAddon: true
+            isAddon: true,
+            discountDisplayItems: []
         )
 
         let vm = QuoteSummaryViewModel(
             contract: [
                 contractInfo
             ],
-            total: getTotalPrice(
-                currentPrice: addonOffer?.currentAddon?.price,
-                newPrice: selectedQuote?.price
-            ),
-            isAddon: true
-        ) {
-            changeAddonNavigationVm.isConfirmAddonPresented = true
+            activationDate: self.addonOffer?.activationDate,
+            isAddon: true,
+            summaryDataProvider: DirectQuoteSummaryDataProvider(
+                intentCost: .init(
+                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.grossPremium
+                        ?? .init(amount: "", currency: ""),
+                    totalNet: getTotalPrice(
+                        currentPrice: addonOffer?.currentAddon?.price,
+                        newPrice: selectedQuote?.price
+                    )
+                )
+            )
+        ) { [weak self, weak changeAddonNavigationVm] in
+            changeAddonNavigationVm?.isAddonProcessingPresented = true
+            Task {
+                guard let self else { return }
+                await self.submitAddons()
+            }
         }
 
         return vm

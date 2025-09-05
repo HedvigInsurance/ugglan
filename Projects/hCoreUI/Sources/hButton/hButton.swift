@@ -119,7 +119,7 @@ struct _hButton<Content: View>: View {
 
 extension View {
     @ViewBuilder
-    func buttonCornerModifier(_ size: hButtonSize) -> some View {
+    func buttonCornerModifier(_ size: hButtonSize, withBorder: Bool) -> some View {
         var cornerRadius: CGFloat {
             switch size {
             case .small: .cornerRadiusS
@@ -127,8 +127,16 @@ extension View {
             case .large: .cornerRadiusL
             }
         }
-        clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+
+        self.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .overlay(
+                Group {
+                    if withBorder {
+                        RoundedRectangle(cornerRadius: cornerRadius).stroke(hBorderColor.primary, lineWidth: 1)
+                    }
+                }
+            )
     }
 }
 
@@ -159,6 +167,23 @@ extension EnvironmentValues {
 extension View {
     public var hUseLightMode: some View {
         environment(\.hUseLightMode, true)
+    }
+}
+
+private struct EnvironmentHButtonWithBorder: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hButtonWithBorder: Bool {
+        get { self[EnvironmentHButtonWithBorder.self] }
+        set { self[EnvironmentHButtonWithBorder.self] = newValue }
+    }
+}
+
+extension View {
+    public var hButtonWithBorder: some View {
+        environment(\.hButtonWithBorder, true)
     }
 }
 

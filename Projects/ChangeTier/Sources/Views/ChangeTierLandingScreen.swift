@@ -16,7 +16,8 @@ public struct ChangeTierLandingScreen: View {
     public var body: some View {
         if vm.missingQuotes {
             InfoScreen(text: L10n.terminationNoTierQuotesSubtitle, dismissButtonTitle: L10n.embarkGoBackButton) {
-                changeTierNavigationVm.missingQuotesGoBackPressed()
+                [weak changeTierNavigationVm] in
+                changeTierNavigationVm?.missingQuotesGoBackPressed()
             }
         } else {
             ProcessingStateView(
@@ -126,7 +127,7 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: vm.selectedTier != nil
                     ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
             ) {
-                changeTierNavigationVm.isEditTierPresented = true
+                changeTierNavigationVm.isEditTierPresented = .init(type: .tier)
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
@@ -153,7 +154,7 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
             ) {
-                changeTierNavigationVm.isEditDeductiblePresented = true
+                changeTierNavigationVm.isEditTierPresented = .init(type: .deductible)
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
@@ -170,12 +171,13 @@ public struct ChangeTierLandingScreen: View {
                     content: .init(
                         title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
                     ),
-                    {
-                        changeTierNavigationVm.isCompareTiersPresented = true
+                    { [weak changeTierNavigationVm] in
+                        changeTierNavigationVm?.isCompareTiersPresented = true
                     }
                 )
 
-                hContinueButton {
+                hContinueButton { [weak vm, weak changeTierNavigationVm] in
+                    guard let vm, let changeTierNavigationVm else { return }
                     switch vm.changeTierInput {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)

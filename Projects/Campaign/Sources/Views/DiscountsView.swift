@@ -33,6 +33,8 @@ struct DiscountsView: View {
                         discount: discount
                     )
                 )
+                .hWithoutDivider
+                hRowDivider()
             }
             .withHeader(title: discountData.insurance.displayName)
         }

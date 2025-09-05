@@ -113,7 +113,11 @@ struct AddonSelectSubOptionScreen: View {
             perils: [],
             product: "",
             termsVersion: ""
-        )
+        ),
+        documents: [
+            .init(displayName: "dodument1", url: "www.hedvig.com", type: .unknown)
+
+        ]
     )
 
     AddonSelectSubOptionScreen(
@@ -144,7 +148,8 @@ struct AddonSelectSubOptionScreen: View {
                         perils: [],
                         product: "",
                         termsVersion: ""
-                    )
+                    ),
+                    documents: []
                 ),
             ]
         ),

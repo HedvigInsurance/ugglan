@@ -31,7 +31,8 @@ class AddonsClientOctopus: AddonsClient {
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
                     },
                     price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
-                    addonVariant: nil
+                    addonVariant: nil,
+                    documents: []
                 )
             }()
             let addonData = AddonOffer(
@@ -80,6 +81,9 @@ extension AddonQuote {
         let displayItems: [AddonDisplayItem] = fragment.displayItems.map {
             .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
         }
+        let documents = fragment.documents.compactMap { document in
+            hPDFDocument(displayName: document.displayName, url: document.url, type: .unknown)
+        }
         self.init(
             displayName: fragment.displayName,
             quoteId: fragment.quoteId,
@@ -87,7 +91,8 @@ extension AddonQuote {
             addonSubtype: fragment.addonSubtype,
             displayItems: displayItems,
             price: .init(fragment: fragment.premium.fragments.moneyFragment),
-            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
+            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
+            documents: documents
         )
     }
 }

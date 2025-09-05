@@ -68,7 +68,7 @@ fragment MemberChargeFragment on MemberCharge{
 
 fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {
     code
-	description
+    description
     discount {
         ...MoneyFragment
     }

@@ -52,7 +52,9 @@ public class ChangeAddonViewModel: ObservableObject {
                 self.submittingAddonsViewState = .success
             }
         } catch let exception {
-            self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+            withAnimation {
+                self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+            }
         }
     }
 

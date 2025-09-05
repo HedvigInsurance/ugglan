@@ -34,21 +34,19 @@ fragment MoveAddressFragment on MoveAddress {
 
 fragment QuoteFragment on MoveIntent {
       mtaQuotes {
-        premium {
-            ...MoneyFragment
-        }
         startDate
         exposureName
         productVariant {
             ...ProductVariantFragment
         }
         displayItems {
-            displayTitle
-            displaySubtitle
-            displayValue
+            ...MoveQuoteDisplayItemFragment
         }
         addons {
             ...MoveAddonQuoteFragment
+        }
+        cost {
+            ...ItemCostFragment
         }
       }
        homeQuotes {
@@ -61,15 +59,10 @@ fragment QuoteFragment on MoveIntent {
         }
         defaultChoice
         displayItems {
-            displaySubtitle
-            displayTitle
-            displayValue
+            ...MoveQuoteDisplayItemFragment
         }
         exposureName
         id
-        premium {
-            ...MoneyFragment
-        }
         productVariant {
             ...ProductVariantFragment
         }
@@ -79,6 +72,9 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
+        cost {
+            ...ItemCostFragment
+        }
       }
 }
 
@@ -87,15 +83,38 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     displayName
     coverageDisplayName
     displayItems {
-        displayTitle
-        displaySubtitle
-        displayValue
+        ...MoveQuoteDisplayItemFragment
     }
-    premium {
-        ...MoneyFragment
-    }
-	startDate
-	addonVariant {
+    startDate
+    addonVariant {
         ...AddonVariantFragment
     }
+    cost {
+        ...ItemCostFragment
+    }
+}
+
+fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
+    displayTitle
+    displaySubtitle
+    displayValue
+}
+
+fragment ItemCostFragment on ItemCost {
+    monthlyGross {
+        ...MoneyFragment
+    }
+    monthlyNet {
+        ...MoneyFragment
+    }
+    discounts {
+        ...ItemDiscountFragment
+    }
+}
+
+fragment ItemDiscountFragment on ItemDiscount {
+    displayName
+    displayValue
+    explanation
+    campaignCode
 }
