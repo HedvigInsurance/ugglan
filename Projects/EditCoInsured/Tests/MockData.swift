@@ -47,6 +47,7 @@ class MockEditCoInsuredService: EditCoInsuredClient {
     var fetchPersonalInformation: FetchPersonalInformation
     var submitIntent: SendIntent
     var fetchContracts: FetchContracts
+
     enum Event {
         case sendMidtermChangeIntentCommit
         case getPersonalInformation
