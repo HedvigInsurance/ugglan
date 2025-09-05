@@ -81,6 +81,7 @@ public struct ChangeTierLandingScreen: View {
                         pillowImage: vm.typeOfContract?.pillowType.bgImage
                     )
                 }
+                .hWithoutDivider
 
                 VStack(spacing: .padding4) {
                     editTierView
@@ -90,16 +91,16 @@ public struct ChangeTierLandingScreen: View {
                 }
                 .hFieldSize(.small)
                 .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
+            }
 
-                hRow {
-                    PriceField(
-                        viewModel: .init(
-                            initialValue: nil,
-                            newValue: vm.newPremium ?? .sek(0),
-                            subTitle: getPriceSubtitle()
-                        )
+            hRow {
+                PriceField(
+                    viewModel: .init(
+                        initialValue: nil,
+                        newValue: vm.newPremium ?? .sek(0),
+                        subTitle: getPriceSubtitle()
                     )
-                }
+                )
             }
         }
     }
@@ -158,7 +159,7 @@ public struct ChangeTierLandingScreen: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
-            .padding(.bottom, 8)
+            .padding(.bottom, .padding8)
         } else {
             DropdownView(
                 value: vm.selectedQuote?.displayTitle ?? "",
@@ -211,4 +212,10 @@ public struct ChangeTierLandingScreen: View {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     let inputData = ChangeTierInputData(source: .betterCoverage, contractId: "")
     return ChangeTierLandingScreen(vm: .init(changeTierInput: ChangeTierInput.contractWithSource(data: inputData)))
+        .environmentObject(
+            ChangeTierNavigationViewModel(
+                changeTierContractsInput: .init(source: .betterCoverage, contracts: []),
+                onChangedTier: {}
+            )
+        )
 }

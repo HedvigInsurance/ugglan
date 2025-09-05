@@ -4,6 +4,7 @@ import hCoreUI
 
 struct ChangeTierSummaryScreen: View {
     private let quoteSummaryVm: QuoteSummaryViewModel
+    @EnvironmentObject var navigationVm: ChangeTierNavigationViewModel
 
     init(
         changeTierVm: ChangeTierViewModel,
@@ -15,6 +16,7 @@ struct ChangeTierSummaryScreen: View {
     var body: some View {
         QuoteSummaryScreen(vm: quoteSummaryVm)
             .hAccessibilityWithoutCombinedElements
+            .environmentObject(navigationVm.router)
     }
 }
 

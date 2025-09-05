@@ -4,9 +4,10 @@ import hCoreUI
 
 struct ChangeAddonSummaryScreen: View {
     let quoteSummaryVm: QuoteSummaryViewModel
+    @EnvironmentObject var navigationVm: ChangeAddonNavigationViewModel
 
     init(
-        changeAddonNavigationVm: ChangeAddonNavigationViewModel
+        changeAddonNavigationVm: ChangeAddonNavigationViewModel,
     ) {
         quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
             .asQuoteSummaryViewModel(
@@ -16,6 +17,7 @@ struct ChangeAddonSummaryScreen: View {
 
     var body: some View {
         QuoteSummaryScreen(vm: quoteSummaryVm)
+            .environmentObject(navigationVm.router)
     }
 }
 
@@ -40,7 +42,8 @@ extension ChangeAddonViewModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            discountDisplayItems: []
+            discountDisplayItems: selectedQuote?.discountDisplayItems
+                .map({ .init(title: $0.displayTitle, value: $0.displayValue) }) ?? []
         )
 
         let vm = QuoteSummaryViewModel(

@@ -114,9 +114,12 @@ struct AddonSelectSubOptionScreen: View {
             product: "",
             termsVersion: ""
         ),
+        discountDisplayItems: [
+            .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
+            .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
+        ],
         documents: [
             .init(displayName: "dodument1", url: "www.hedvig.com", type: .unknown)
-
         ]
     )
 
@@ -149,6 +152,10 @@ struct AddonSelectSubOptionScreen: View {
                         product: "",
                         termsVersion: ""
                     ),
+                    discountDisplayItems: [
+                        .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
+                        .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
+                    ],
                     documents: []
                 ),
             ]
