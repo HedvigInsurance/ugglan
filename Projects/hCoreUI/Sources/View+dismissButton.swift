@@ -81,7 +81,7 @@ private struct DismissAlertPopup: ViewModifier {
             .alert(title, isPresented: $isPresented) {
                 HStack {
                     Button(cancelButton, role: .cancel) {
-                        isPresented = false
+                        dismiss()
                     }
                     Button(confirmButton, role: .destructive) { [weak vm] in
                         vm?.vc?.dismiss(animated: true)
@@ -93,6 +93,10 @@ private struct DismissAlertPopup: ViewModifier {
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
             }
+    }
+
+    private func dismiss() {
+        isPresented = false
     }
 }
 

@@ -17,10 +17,7 @@ public struct PriceField: View {
     public var body: some View {
         VStack(spacing: .padding2) {
             HStack(alignment: .top) {
-                HStack(spacing: .padding4) {
-                    titleField
-                    infoButton
-                }
+                titleField
 
                 Spacer()
                 priceField
@@ -35,9 +32,13 @@ public struct PriceField: View {
         }
     }
 
+    @ViewBuilder
     private var titleField: some View {
-        hText(viewModel.title ?? L10n.tierFlowTotal)
-            .foregroundColor(getTotalColor())
+        HStack(spacing: .padding4) {
+            hText(viewModel.title ?? L10n.tierFlowTotal)
+                .foregroundColor(getTotalColor())
+            infoButton
+        }
     }
 
     @ViewBuilder
