@@ -53,11 +53,6 @@ struct ContractInformationView: View {
                                     .padding(.horizontal, .padding16)
                                 ItemCostView(itemCost: currentAgreementCost)
                             }
-                            if let upcomingAgreementCost = contract.upcomingChangedAgreement?.itemCost {
-                                hRowDivider()
-                                    .padding(.horizontal, .padding16)
-                                ItemCostView(itemCost: upcomingAgreementCost)
-                            }
 
                             if contract.supportsCoInsured {
                                 hRowDivider()

@@ -3,7 +3,7 @@ import hCore
 
 public struct PriceField: View {
     let viewModel: PriceFieldModel
-    @State var isInfoViewPresented: PriceFieldModel?
+    @State var isInfoViewPresented: PriceFieldModel.PriceFieldInfoModel?
 
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
     @SwiftUI.Environment(\.hPriceFormatting) var formatting
@@ -42,11 +42,11 @@ public struct PriceField: View {
 
     @ViewBuilder
     private var infoButton: some View {
-        if !viewModel.infoButtonDisplayItems.isEmpty {
+        if let infoViewModel = viewModel.infoButtonModel, infoViewModel.infoButtonDisplayItems.count > 0 {
             hCoreUIAssets.infoFilled.view
                 .foregroundColor(hFillColor.Opaque.secondary)
                 .onTapGesture {
-                    isInfoViewPresented = viewModel
+                    isInfoViewPresented = infoViewModel
                 }
         }
     }
@@ -237,9 +237,12 @@ extension MonetaryAmount {
                     initialValue: .init(amount: "139", currency: "SEK"),
                     newValue: .init(amount: "115", currency: "SEK"),
                     subTitle: "Changes activates on 16 nov 2025",
-                    infoButtonDisplayItems: [
-                        .init(title: "title", value: "value")
-                    ]
+                    infoButtonModel: .init(
+                        initialValue: .init(amount: "139", currency: "SEK"),
+                        newValue: .init(amount: "115", currency: "SEK"),
+                        infoButtonDisplayItems: [.init(title: "title", value: "value")]
+                    )
+
                 ),
             ]
         )
