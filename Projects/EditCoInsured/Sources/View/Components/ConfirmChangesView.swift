@@ -47,18 +47,23 @@ struct ConfirmChangesView: View {
                     title: L10n.pricePreviousPrice
                 ),
                 .init(
-                    initialValue: intentViewModel.intent.newTotalCost.monthlyGross,
+                    initialValue: nil,
                     newValue: intentViewModel.intent.newTotalCost.montlyNet,
                     title: L10n.priceNewPrice,
                     subTitle: L10n.summaryTotalPriceSubtitle(
                         intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
-                    infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
-                        .init(title: $0.displayTitle, value: $0.displayValue)
-                    })
+                    infoButtonModel: .init(
+                        initialValue: intentViewModel.intent.newTotalCost.monthlyGross,
+                        newValue: intentViewModel.intent.newTotalCost.montlyNet,
+                        infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
+                            .init(title: $0.displayTitle, value: $0.displayValue)
+                        })
+                    )
                 ),
             ]
         )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
     }
 }
 

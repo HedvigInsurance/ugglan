@@ -32,10 +32,6 @@ class AddonsClientOctopus: AddonsClient {
                     },
                     price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
                     addonVariant: nil,
-                    discountDisplayItems: [
-                        .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
-                        .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-                    ], /* TODO: add data */
                     documents: []
                 )
             }()
@@ -96,10 +92,6 @@ extension AddonQuote {
             displayItems: displayItems,
             price: .init(fragment: fragment.premium.fragments.moneyFragment),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
-            discountDisplayItems: [
-                .init(displayTitle: "Travel Plus 60 days", displayValue: "79 kr/mo"),
-                .init(displayTitle: "15% bundle discount", displayValue: "-19 kr/mo"),
-            ], /* TODO: ADD DATA */
             documents: documents
         )
     }

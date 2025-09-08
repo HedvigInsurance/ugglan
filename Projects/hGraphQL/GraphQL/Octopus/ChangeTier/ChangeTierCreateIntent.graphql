@@ -16,9 +16,7 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
           percentage
           displayText
         }
-        premium {
-            ...MoneyFragment
-        }
+		
         displayItems {
           displayTitle
           displaySubtitle
@@ -28,24 +26,22 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
             ...ProductVariantFragment
         }
         addons {
-          addonId
-          addonVariant {
+		  addonVariant {
             ...AddonVariantFragment
           }
-          displayItems {
-            displayTitle
-            displaySubtitle
-            displayValue
-          }
-          displayName
-          premium {
-            ...MoneyFragment
-          }
-          previousPremium {
-            ...MoneyFragment
-          }
         }
+		costBreakdown {
+			displayName
+			displayValue
+		}
+		currentTotalCost {
+			...TotalCostFragment
+		}
+		newTotalCost {
+			...TotalCostFragment
+		}
       }
+	
     }
     userError {
       message

@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ItemCostView: View {
     let itemCost: ItemCost
-    @State private var detentPriceBreakdownModel: PriceFieldModel?
+    @State private var detentPriceBreakdownModel: PriceFieldModel.PriceFieldInfoModel?
     var body: some View {
         hSection {
             hRow {
@@ -32,7 +32,6 @@ struct ItemCostView: View {
         detentPriceBreakdownModel = .init(
             initialValue: itemCost.gross,
             newValue: itemCost.net,
-            title: L10n.detailsTableInsurancePremium,
             infoButtonDisplayItems: itemCost.discounts.map { item in
                 .init(title: item.displayName, value: item.displayValue)
             }

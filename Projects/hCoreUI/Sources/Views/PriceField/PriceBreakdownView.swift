@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 
 struct PriceBreakdownView: View {
-    let model: PriceFieldModel
+    let model: PriceFieldModel.PriceFieldInfoModel
     private let router = Router()
 
     var body: some View {
@@ -45,7 +45,10 @@ struct PriceBreakdownView: View {
 
     private var priceField: some View {
         PriceField(
-            viewModel: model.withoutDisplayItems()
+            viewModel: .init(
+                initialValue: model.initialValue,
+                newValue: model.newValue
+            )
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
     }
@@ -82,13 +85,13 @@ extension PriceBreakdownView: TrackingViewNameProtocol {
 }
 
 extension View {
-    public func showPriceBreakdown(for model: Binding<PriceFieldModel?>) -> some View {
+    public func showPriceBreakdown(for model: Binding<PriceFieldModel.PriceFieldInfoModel?>) -> some View {
         self.modifier(PriceBreakdownViewDetent(model: model))
     }
 }
 
 struct PriceBreakdownViewDetent: ViewModifier {
-    @Binding var model: PriceFieldModel?
+    @Binding var model: PriceFieldModel.PriceFieldInfoModel?
 
     func body(content: Content) -> some View {
         content.detent(item: $model) { model in

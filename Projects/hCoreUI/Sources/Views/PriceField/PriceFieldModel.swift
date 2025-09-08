@@ -7,20 +7,20 @@ public struct PriceFieldModel: Identifiable, Equatable {
     let newValue: MonetaryAmount
     let title: String?
     let subTitle: String?
-    var infoButtonDisplayItems: [DisplayItem]
+    let infoButtonModel: PriceFieldInfoModel?
 
     public init(
         initialValue: MonetaryAmount?,
         newValue: MonetaryAmount,
         title: String? = nil,
         subTitle: String? = nil,
-        infoButtonDisplayItems: [DisplayItem] = []
+        infoButtonModel: PriceFieldInfoModel? = nil
     ) {
         self.initialValue = initialValue
         self.newValue = newValue
         self.title = title
         self.subTitle = subTitle
-        self.infoButtonDisplayItems = infoButtonDisplayItems
+        self.infoButtonModel = infoButtonModel
     }
 
     func shouldShowPreviousPriceLabel(
@@ -30,6 +30,19 @@ public struct PriceFieldModel: Identifiable, Equatable {
             return newValue != initialValue
         }
         return false
+    }
+
+    public struct PriceFieldInfoModel: Identifiable, Equatable {
+        public let id = UUID().uuidString
+        let initialValue: MonetaryAmount?
+        let newValue: MonetaryAmount
+        let infoButtonDisplayItems: [DisplayItem]
+
+        public init(initialValue: MonetaryAmount?, newValue: MonetaryAmount, infoButtonDisplayItems: [DisplayItem]) {
+            self.initialValue = initialValue
+            self.newValue = newValue
+            self.infoButtonDisplayItems = infoButtonDisplayItems
+        }
     }
 
     public struct DisplayItem: Equatable {
@@ -43,9 +56,5 @@ public struct PriceFieldModel: Identifiable, Equatable {
             self.title = title
             self.value = value
         }
-    }
-
-    func withoutDisplayItems() -> PriceFieldModel {
-        .init(initialValue: initialValue, newValue: newValue)
     }
 }

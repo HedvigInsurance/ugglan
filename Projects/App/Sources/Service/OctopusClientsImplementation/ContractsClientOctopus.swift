@@ -198,12 +198,8 @@ extension AgreementDisplayItem {
 extension FetchContractsClientOctopus {
     private func handleActiveContracts(data: OctopusGraphQL.ContractBundleQuery.Data) -> [Contract] {
         data.currentMember.activeContracts.map { contract in
-            let currentAgreementAddonsDiscount = contract.currentAgreement.addons.map { addon in
-                getAddonDiscount(
-                    addonVariant: addon.addonVariant.fragments.addonVariantFragment,
-                    amount: addon.premium.fragments.moneyFragment
-                )
-            }
+            let currentAgreementAddonsDiscount = contract.currentAgreement.addons.compactMap(discount)
+
             let currentAgreement = Agreement(
                 agreement: contract.currentAgreement.fragments.agreementFragment,
                 itemCost: getCost(
@@ -213,9 +209,7 @@ extension FetchContractsClientOctopus {
                     costFragment: contract.currentAgreement.cost.fragments.itemCostFragment,
                     addonCostDiscounts: currentAgreementAddonsDiscount
                 ),
-                displayItems: contract.currentAgreement.displayItems.map {
-                    .init(data: $0.fragments.agreementDisplayItemFragment)
-                }
+                displayItems: contract.currentAgreement.displayItems.map(makeDisplayItem)
             )
             let upcomingAgreement: Agreement? = {
                 if let upcomingAgreement = contract.upcomingChangedAgreement {
@@ -249,6 +243,23 @@ extension FetchContractsClientOctopus {
                 ssn: data.currentMember.ssn
             )
         }
+    }
+
+    private func discount(
+        for addon: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.Addon?
+    ) -> ItemCost.ItemCostDiscount? {
+        guard let variantFragment = addon?.addonVariant.fragments.addonVariantFragment,
+            let amount = addon?.premium.fragments.moneyFragment
+        else {
+            return nil
+        }
+        return getAddonDiscount(addonVariant: variantFragment, amount: amount)
+    }
+
+    private func makeDisplayItem(
+        from item: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.DisplayItem
+    ) -> AgreementDisplayItem {
+        .init(data: item.fragments.agreementDisplayItemFragment)
     }
 }
 

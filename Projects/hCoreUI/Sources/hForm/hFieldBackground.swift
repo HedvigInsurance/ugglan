@@ -25,14 +25,7 @@ struct hFieldBackgroundModifier: ViewModifier {
                 hSurfaceColor.Opaque.secondary
             }
         } else {
-            /* TODO: REMOVE LATER */
-            if backgroundOption.contains(.negative) {
-                hFillColor.Opaque.negative
-            } else if backgroundOption.contains(.secondary) {
-                hSurfaceColor.Opaque.secondary
-            } else {
-                hSurfaceColor.Opaque.primary
-            }
+            hSurfaceColor.Opaque.primary
         }
     }
 }

@@ -3,7 +3,6 @@ import hCore
 
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-    @EnvironmentObject var router: Router
     private let showCoverageId = "showCoverageId"
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -158,7 +157,7 @@ private struct ContractCardView: View {
     @ViewBuilder
     private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
-        let isExpanded = index != nil
+        let isExpanded = (index != nil)
 
         if !contract.documents.isEmpty {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
@@ -191,7 +190,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
-            .hCardBackgroundColor(vm.isAddon ? .light : .default)
+            .hCardBackgroundColor(.light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -228,7 +227,7 @@ private struct ContractCardView: View {
                 }
             }
 
-            if (contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty {
+            if ((contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty) {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
@@ -248,56 +247,30 @@ private struct ContractCardView: View {
 
     @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        if vm.isAddon {
-            hButton(
-                .medium,
-                .ghost,
-                content: .init(
-                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-                ),
-                {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.toggleContract(contract)
-                        Task { [weak vm] in
-                            guard let vm else { return }
-                            try await Task.sleep(nanoseconds: 200_000_000)
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                if vm.expandedContracts.contains(contract.id) {
-                                    proxy.scrollTo(contract.id, anchor: .top)
-                                }
+        hButton(
+            .medium,
+            .ghost,
+            content: .init(
+                title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+            ),
+            {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    vm.toggleContract(contract)
+                    Task { [weak vm] in
+                        guard let vm else { return }
+                        try await Task.sleep(nanoseconds: 200_000_000)
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            if vm.expandedContracts.contains(contract.id) {
+                                proxy.scrollTo(contract.id, anchor: .top)
                             }
                         }
                     }
                 }
-            )
-            .hWithTransition(.scale)
-            .hButtonWithBorder
-        } else {
-            hButton(
-                .medium,
-                .secondary,
-                content: .init(
-                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-                ),
-                {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.toggleContract(contract)
-                        Task { [weak vm] in
-                            guard let vm else { return }
-                            try await Task.sleep(nanoseconds: 200_000_000)
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                if vm.expandedContracts.contains(contract.id) {
-                                    proxy.scrollTo(contract.id, anchor: .top)
-                                }
-                            }
-                        }
-                    }
-                }
-            )
-            .hWithTransition(.scale)
-        }
+            }
+        )
+        .hWithTransition(.scale)
+        .hButtonWithBorder
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -447,8 +420,7 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-    @EnvironmentObject var router: Router
-
+    @State private var isCancelAlertPresented = false
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
@@ -460,7 +432,7 @@ private struct PriceSummarySection: View {
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
                             if newPremium.value >= 0 {
-                                hText(newPremium.formattedAmountPerMonth)
+                                hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
                             } else {
                                 hText(newPremium.formattedAmountPerMonth)
                             }
@@ -495,12 +467,13 @@ private struct PriceSummarySection: View {
                     )
 
                     hCancelButton {
-                        router.dismiss()
+                        isCancelAlertPresented = true
                     }
                 }
             }
         }
         .sectionContainerStyle(.transparent)
+        .withDismissAlert(isPresented: $isCancelAlertPresented)
     }
 }
 
