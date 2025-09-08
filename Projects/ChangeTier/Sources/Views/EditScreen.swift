@@ -42,9 +42,7 @@ struct EditScreen: View {
     var body: some View {
         hForm {
             hSection {
-                VStack(spacing: .padding4) {
-                    radioFields
-                }
+                radioFields
             }
             .padding(.top, .padding16)
             .sectionContainerStyle(.transparent)
@@ -62,27 +60,29 @@ struct EditScreen: View {
 
     @ViewBuilder
     private var radioFields: some View {
-        if type == .deductible {
-            ForEach(listToDisplayDeductible, id: \.self) { quote in
-                hRadioField(
-                    id: quote.id,
-                    leftView: { leftViewForQuote(quote) },
-                    selected: $selectedItem,
-                    error: nil,
-                    useAnimation: true
-                )
-                .hFieldLeftAttachedView
-            }
-        } else {
-            ForEach(listToDisplayTiers, id: \.self) { tier in
-                hRadioField(
-                    id: tier.name,
-                    leftView: { leftViewForTier(tier) },
-                    selected: $selectedItem,
-                    error: nil,
-                    useAnimation: true
-                )
-                .hFieldLeftAttachedView
+        VStack(spacing: .padding4) {
+            if type == .deductible {
+                ForEach(listToDisplayDeductible, id: \.self) { quote in
+                    hRadioField(
+                        id: quote.id,
+                        leftView: { leftViewForQuote(quote) },
+                        selected: $selectedItem,
+                        error: nil,
+                        useAnimation: true
+                    )
+                    .hFieldLeftAttachedView
+                }
+            } else {
+                ForEach(listToDisplayTiers, id: \.self) { tier in
+                    hRadioField(
+                        id: tier.name,
+                        leftView: { leftViewForTier(tier) },
+                        selected: $selectedItem,
+                        error: nil,
+                        useAnimation: true
+                    )
+                    .hFieldLeftAttachedView
+                }
             }
         }
     }
