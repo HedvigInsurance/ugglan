@@ -24,43 +24,35 @@ extension ChangeTierViewModel {
             selectedQuote?.displayItems.map { .init(title: $0.title, value: $0.value) } ?? []
         let activationDate = L10n.changeAddressActivationDate(activationDate?.displayDateDDMMMYYYYFormat ?? "")
         var contracts: [QuoteSummaryViewModel.ContractInfo] = []
+
+        //merge documents for in surance and addons
+        var documents = self.selectedQuote?.productVariant?.documents ?? []
+        selectedQuote?.addons
+            .forEach { addon in
+                documents.append(contentsOf: addon.addonVariant.documents)
+            }
+
         contracts.append(
             .init(
                 id: currentTier?.id ?? "",
                 displayName: displayName ?? "",
                 exposureName: activationDate,
-                netPremium: newPremium,
-                grossPremium: currentPremium,
-                documents: self.selectedQuote?.productVariant?.documents ?? [],
+                netPremium: newTotalCost?.net,
+                grossPremium: newTotalCost?.gross,
+                documents: documents,
                 onDocumentTap: { [weak changeTierNavigationVm] document in
                     changeTierNavigationVm?.document = document
                 },
                 displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
-                discountDisplayItems: []
+                discountDisplayItems: selectedQuote?.costBreakdown
+                    .map({ item in
+                        .init(title: item.title, value: item.value)
+                    }) ?? []
             )
         )
-        for addon in selectedQuote?.addons ?? [] {
-            contracts.append(
-                .init(
-                    id: addon.addonId,
-                    displayName: addon.displayName,
-                    exposureName: activationDate,
-                    netPremium: addon.premium,
-                    grossPremium: addon.previousPremium,
-                    documents: addon.addonVariant.documents,
-                    onDocumentTap: { [weak changeTierNavigationVm] document in
-                        changeTierNavigationVm?.document = document
-                    },
-                    displayItems: addon.displayItems.compactMap { .init(title: $0.title, value: $0.value) },
-                    insuranceLimits: [],
-                    typeOfContract: nil,
-                    isAddon: true,
-                    discountDisplayItems: []
-                )
-            )
-        }
+
         let totalNet: MonetaryAmount = {
             let totalValue =
                 contracts

@@ -190,6 +190,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
+            .hCardBackgroundColor(vm.isAddon ? .default : .light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -203,7 +204,12 @@ private struct ContractCardView: View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails && !vm.isAddon {
                 if !vm.removedContracts.contains(contract.id) {
-                    showDetailsButton(contract)
+                    if vm.isAddon {
+                        showDetailsButton(contract)
+                    } else {
+                        showDetailsButton(contract)
+                            .hButtonWithBorder
+                    }
                 } else {
                     addButton(for: contract, isExpanded: isExpanded)
                 }
@@ -246,10 +252,18 @@ private struct ContractCardView: View {
         }
     }
 
+    @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+        let type: hButtonConfigurationType = {
+            if vm.isAddon {
+                return .secondary
+            } else {
+                return .ghost
+            }
+        }()
         hButton(
             .medium,
-            .secondary,
+            type,
             content: .init(
                 title: vm.expandedContracts.firstIndex(of: contract.id) != nil
                     ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
@@ -333,7 +347,6 @@ private struct ContractCardView: View {
                     .accessibilityAddTraits(.isHeader)
                 ForEach(contract.documents, id: \.displayName) { document in
                     documentItem(for: document)
-                        .background(hSurfaceColor.Opaque.primary)
                         .accessibilityElement(children: .combine)
                         .onTapGesture {
                             contract.onDocumentTap(document)
@@ -420,7 +433,7 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-
+    @State private var isCancelAlertPresented = false
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
@@ -465,10 +478,15 @@ private struct PriceSummarySection: View {
                             vm?.isConfirmChangesPresented = true
                         }
                     )
+
+                    hCancelButton {
+                        isCancelAlertPresented = true
+                    }
                 }
             }
         }
         .sectionContainerStyle(.transparent)
+        .withDismissAlert(isPresented: $isCancelAlertPresented)
     }
 }
 

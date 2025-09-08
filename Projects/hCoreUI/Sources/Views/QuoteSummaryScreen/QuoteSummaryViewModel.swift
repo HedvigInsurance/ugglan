@@ -124,7 +124,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         activationDate: Date?,
         isAddon: Bool? = false,
         summaryDataProvider: QuoteSummaryDataProvider,
-        onConfirmClick: (() -> Void)? = nil,
+        onConfirmClick: (() -> Void)? = nil
     ) {
         self.contracts = contract
         self.isAddon = isAddon ?? false

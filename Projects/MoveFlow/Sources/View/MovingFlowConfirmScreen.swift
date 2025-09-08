@@ -4,6 +4,7 @@ import hCoreUI
 
 struct MovingFlowConfirmScreen: View {
     let quoteSummaryViewModel: QuoteSummaryViewModel
+
     var body: some View {
         QuoteSummaryScreen(vm: quoteSummaryViewModel)
             .hAccessibilityWithoutCombinedElements
