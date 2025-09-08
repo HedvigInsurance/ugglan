@@ -17,7 +17,6 @@ struct ChangeAddonSummaryScreen: View {
 
     var body: some View {
         QuoteSummaryScreen(vm: quoteSummaryVm)
-            .environmentObject(navigationVm.router)
     }
 }
 

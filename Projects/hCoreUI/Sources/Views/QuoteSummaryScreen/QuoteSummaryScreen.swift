@@ -450,7 +450,7 @@ private struct ContractCardView: View {
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
     @EnvironmentObject var router: Router
-
+    @State private var isCancelAlertPresented = false
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
@@ -497,12 +497,13 @@ private struct PriceSummarySection: View {
                     )
 
                     hCancelButton {
-                        router.dismiss()
+                        isCancelAlertPresented = true
                     }
                 }
             }
         }
         .sectionContainerStyle(.transparent)
+        .withDismissAlert(isPresented: $isCancelAlertPresented)
     }
 }
 
