@@ -239,7 +239,6 @@ public struct MovingFlowNavigation: View {
             )
         )
         .environmentObject(movingFlowNavigationVm)
-        .environmentObject(router)
         .detent(
             item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
             transitionType: .detent(style: [.height])

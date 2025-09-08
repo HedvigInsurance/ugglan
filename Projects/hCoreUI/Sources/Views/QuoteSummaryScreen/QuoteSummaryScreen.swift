@@ -3,7 +3,6 @@ import hCore
 
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-    @EnvironmentObject var router: Router
     private let showCoverageId = "showCoverageId"
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -205,7 +204,12 @@ private struct ContractCardView: View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails && !vm.isAddon {
                 if !vm.removedContracts.contains(contract.id) {
-                    showDetailsButton(contract)
+                    if vm.isAddon {
+                        showDetailsButton(contract)
+                    } else {
+                        showDetailsButton(contract)
+                            .hButtonWithBorder
+                    }
                 } else {
                     addButton(for: contract, isExpanded: isExpanded)
                 }
@@ -250,56 +254,36 @@ private struct ContractCardView: View {
 
     @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        if vm.isAddon {
-            hButton(
-                .medium,
-                .secondary,
-                content: .init(
-                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-                ),
-                {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.toggleContract(contract)
-                        Task { [weak vm] in
-                            guard let vm else { return }
-                            try await Task.sleep(nanoseconds: 200_000_000)
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                if vm.expandedContracts.contains(contract.id) {
-                                    proxy.scrollTo(contract.id, anchor: .top)
-                                }
+        let type: hButtonConfigurationType = {
+            if vm.isAddon {
+                return .secondary
+            } else {
+                return .ghost
+            }
+        }()
+        hButton(
+            .medium,
+            type,
+            content: .init(
+                title: vm.expandedContracts.firstIndex(of: contract.id) != nil
+                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+            ),
+            {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    vm.toggleContract(contract)
+                    Task { [weak vm] in
+                        guard let vm else { return }
+                        try await Task.sleep(nanoseconds: 200_000_000)
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            if vm.expandedContracts.contains(contract.id) {
+                                proxy.scrollTo(contract.id, anchor: .top)
                             }
                         }
                     }
                 }
-            )
-            .hWithTransition(.scale)
-        } else {
-            hButton(
-                .medium,
-                .ghost,
-                content: .init(
-                    title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                        ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-                ),
-                {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.toggleContract(contract)
-                        Task { [weak vm] in
-                            guard let vm else { return }
-                            try await Task.sleep(nanoseconds: 200_000_000)
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                if vm.expandedContracts.contains(contract.id) {
-                                    proxy.scrollTo(contract.id, anchor: .top)
-                                }
-                            }
-                        }
-                    }
-                }
-            )
-            .hWithTransition(.scale)
-            .hButtonWithBorder
-        }
+            }
+        )
+        .hWithTransition(.scale)
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -449,7 +433,6 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-    @EnvironmentObject var router: Router
     @State private var isCancelAlertPresented = false
     var body: some View {
         hSection {
