@@ -38,11 +38,7 @@ public struct CoverageView: View {
             VStack(spacing: .padding8) {
                 if let title = peril.title {
                     hSection {
-                        HStack {
-                            hPill(text: title, color: .blue)
-                                .hFieldSize(.medium)
-                            Spacer()
-                        }
+                        titleSection(title)
                     }
                 }
                 VStack(spacing: .padding4) {
@@ -51,6 +47,14 @@ public struct CoverageView: View {
                     )
                 }
             }
+        }
+    }
+
+    private func titleSection(_ title: String) -> some View {
+        HStack {
+            hPill(text: title, color: .blue)
+                .hFieldSize(.medium)
+            Spacer()
         }
     }
 }
