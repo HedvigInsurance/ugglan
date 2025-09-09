@@ -53,47 +53,40 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         public var id: String
         let displayName: String
         let exposureName: String
-        public let netPremium: MonetaryAmount?
-        public let grossPremium: MonetaryAmount?
-        let displayItems: [QuoteDisplayItem]
-        let documents: [hPDFDocument]
-        let onDocumentTap: (_ document: hPDFDocument) -> Void
+        public let premium: Premium?
+        let displayItemSection: DisplayItemsSection
+        let documentSection: DocumentSection
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
         let removeModel: RemoveModel?
         let isAddon: Bool
-        let discountDisplayItems: [QuoteDisplayItem]
 
         public init(
             id: String,
             displayName: String,
             exposureName: String,
-            netPremium: MonetaryAmount?,
-            grossPremium: MonetaryAmount?,
-            documents: [hPDFDocument],
-            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
-            displayItems: [QuoteDisplayItem],
+            premium: Premium?,
+            documentSection: DocumentSection,
+            displayItemSection: DisplayItemsSection,
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
             isAddon: Bool? = false,
             removeModel: RemoveModel? = nil,
-            discountDisplayItems: [QuoteDisplayItem]
         ) {
             self.id = id
             self.displayName = displayName
             self.exposureName = exposureName
-            self.netPremium = netPremium
-            self.grossPremium = grossPremium
-            self.documents = documents
-            self.onDocumentTap = onDocumentTap
-            self.displayItems = displayItems
+            self.premium = premium
+            self.documentSection = documentSection
+            self.displayItemSection = displayItemSection
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
-            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.shouldShowDetails =
+                !(documentSection.documents.isEmpty && displayItemSection.displayItems.isEmpty
+                && insuranceLimits.isEmpty)
             self.isAddon = isAddon ?? false
             self.removeModel = removeModel
-            self.discountDisplayItems = discountDisplayItems
         }
 
         public struct RemoveModel: Identifiable, Equatable {
@@ -115,6 +108,26 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
                 self.description = description
                 self.confirmButtonTitle = confirmButtonTitle
                 self.cancelRemovalButtonTitle = cancelRemovalButtonTitle
+            }
+        }
+
+        public struct DocumentSection {
+            public let documents: [hPDFDocument]
+            public let onTap: (_ document: hPDFDocument) -> Void
+
+            public init(documents: [hPDFDocument], onTap: @escaping (_: hPDFDocument) -> Void) {
+                self.documents = documents
+                self.onTap = onTap
+            }
+        }
+
+        public struct DisplayItemsSection {
+            public let displayItems: [QuoteDisplayItem]
+            public let discountDisplayItems: [QuoteDisplayItem]
+
+            public init(displayItems: [QuoteDisplayItem], discountDisplayItems: [QuoteDisplayItem]) {
+                self.displayItems = displayItems
+                self.discountDisplayItems = discountDisplayItems
             }
         }
     }
