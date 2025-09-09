@@ -213,12 +213,7 @@ extension FetchContractsClientOctopus {
             )
             let upcomingAgreement: Agreement? = {
                 if let upcomingAgreement = contract.upcomingChangedAgreement {
-                    let upcomingAgreementAddonsDiscount = contract.currentAgreement.addons.map { addon in
-                        getAddonDiscount(
-                            addonVariant: addon.addonVariant.fragments.addonVariantFragment,
-                            amount: addon.premium.fragments.moneyFragment
-                        )
-                    }
+                    let upcomingAgreementAddonsDiscount = contract.currentAgreement.addons.compactMap(discount)
                     return .init(
                         agreement: upcomingAgreement.fragments.agreementFragment,
                         itemCost: getCost(
@@ -227,9 +222,7 @@ extension FetchContractsClientOctopus {
                             costFragment: upcomingAgreement.cost.fragments.itemCostFragment,
                             addonCostDiscounts: upcomingAgreementAddonsDiscount
                         ),
-                        displayItems: upcomingAgreement.displayItems.map {
-                            .init(data: $0.fragments.agreementDisplayItemFragment)
-                        }
+                        displayItems: upcomingAgreement.displayItems.map(makeDisplayItem)
                     )
                 }
                 return nil
@@ -258,6 +251,13 @@ extension FetchContractsClientOctopus {
 
     private func makeDisplayItem(
         from item: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.DisplayItem
+    ) -> AgreementDisplayItem {
+        .init(data: item.fragments.agreementDisplayItemFragment)
+    }
+
+    private func makeDisplayItem(
+        from item: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.UpcomingChangedAgreement
+            .DisplayItem
     ) -> AgreementDisplayItem {
         .init(data: item.fragments.agreementDisplayItemFragment)
     }
