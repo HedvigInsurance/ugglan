@@ -1,7 +1,7 @@
 import Apollo
 import Combine
 import Foundation
-import SwiftUICore
+import SwiftUI
 
 @MainActor
 public class Dependencies {
