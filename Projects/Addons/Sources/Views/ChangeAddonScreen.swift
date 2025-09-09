@@ -63,13 +63,7 @@ struct ChangeAddonScreen: View {
 
                 hSection {
                     VStack(spacing: .padding8) {
-                        hContinueButton {
-                            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
-                        }
-
-                        hCancelButton {
-                            changeAddonNavigationVm.router.dismiss()
-                        }
+                        buttonsView
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -117,6 +111,16 @@ struct ChangeAddonScreen: View {
                 changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
             }
             .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var buttonsView: some View {
+        hContinueButton {
+            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+        }
+
+        hCancelButton {
+            changeAddonNavigationVm.router.dismiss()
         }
     }
 
