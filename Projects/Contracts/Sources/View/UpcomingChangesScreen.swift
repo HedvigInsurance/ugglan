@@ -4,37 +4,35 @@ import hCore
 import hCoreUI
 
 struct UpcomingChangesScreen: View {
-    let updateDate: String
-    let upcomingAgreement: Agreement?
-
+    let agreement: Agreement
+    private let date: String
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     init(
-        updateDate: String,
-        upcomingAgreement: Agreement?
+        agreement: Agreement
     ) {
-        self.updateDate = updateDate
-        self.upcomingAgreement = upcomingAgreement
+        self.agreement = agreement
+        self.date =
+            agreement
+            .activeFrom ?? ""
     }
 
     var body: some View {
         hForm {
-            if let upcomingAgreement {
-                VStack(spacing: 0) {
-                    hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in
-                        hRow {
-                            HStack {
-                                hText(item.displayTitle)
-                                Spacer()
-                                hText(item.displayValue).foregroundColor(hTextColor.Opaque.secondary)
-                            }
+            VStack(spacing: 0) {
+                hSection(agreement.displayItems, id: \.displayValue) { item in
+                    hRow {
+                        HStack {
+                            hText(item.displayTitle)
+                            Spacer()
+                            hText(item.displayValue).foregroundColor(hTextColor.Opaque.secondary)
                         }
                     }
-                    if let cost = upcomingAgreement.itemCost {
-                        hRowDivider()
-                            .padding(.horizontal, .padding16)
-                        ItemCostView(itemCost: cost)
-                    }
+                }
+                if let cost = agreement.itemCost {
+                    hRowDivider()
+                        .padding(.horizontal, .padding16)
+                    ItemCostView(itemCost: cost)
                 }
             }
         }
@@ -42,7 +40,19 @@ struct UpcomingChangesScreen: View {
         .hFormAttachToBottom {
             VStack(spacing: .padding16) {
                 hSection {
-                    InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdatedWithInfo(updateDate), type: .info)
+                    InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdatedWithInfo(date), type: .info)
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.contractViewCertificateButton,
+                                buttonAction: {
+                                    contractsNavigationVm.document = hPDFDocument(
+                                        displayName: L10n.myDocumentsInsuranceCertificate,
+                                        url: agreement.certificateUrl ?? "",
+                                        type: .unknown
+                                    )
+                                }
+                            )
+                        ])
                 }
                 hSection {
                     VStack(spacing: .padding8) {
@@ -72,8 +82,8 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .init(.en_SE)
         return UpcomingChangesScreen(
-            updateDate: "DATE",
-            upcomingAgreement: .init(
+            agreement: .init(
+                id: UUID().uuidString,
                 basePremium: .sek(200),
                 itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
                 displayItems: [

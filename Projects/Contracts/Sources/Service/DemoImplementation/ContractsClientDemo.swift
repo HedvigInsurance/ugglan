@@ -35,6 +35,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             tierDescription: "Vårt mellanpaket med hög ersättning."
         )
         let agreement = Agreement(
+            id: UUID().uuidString,
             certificateUrl: nil,
             activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
             activeTo: nil,
