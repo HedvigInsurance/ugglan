@@ -62,9 +62,7 @@ struct ChangeAddonScreen: View {
                 }
 
                 hSection {
-                    VStack(spacing: .padding8) {
-                        buttonsView
-                    }
+                    buttonsView
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -115,12 +113,14 @@ struct ChangeAddonScreen: View {
     }
 
     private var buttonsView: some View {
-        hContinueButton {
-            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
-        }
+        VStack(spacing: .padding8) {
+            hContinueButton {
+                changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+            }
 
-        hCancelButton {
-            changeAddonNavigationVm.router.dismiss()
+            hCancelButton {
+                changeAddonNavigationVm.router.dismiss()
+            }
         }
     }
 
