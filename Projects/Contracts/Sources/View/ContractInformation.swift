@@ -246,7 +246,7 @@ struct ContractInformationView: View {
                     } else {
                         InfoCard(
                             text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
-                                upcomingChangedAgreement.activeFrom ?? ""
+                                upcomingChangedAgreement.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                             ),
                             type: .info
                         )

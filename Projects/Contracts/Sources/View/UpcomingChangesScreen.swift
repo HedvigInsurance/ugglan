@@ -72,7 +72,7 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .init(.en_SE)
         return UpcomingChangesScreen(
-            updateDate: "DATE",
+            updateDate: Date().displayDateDDMMMYYYYFormat,
             upcomingAgreement: .init(
                 basePremium: .sek(200),
                 itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
