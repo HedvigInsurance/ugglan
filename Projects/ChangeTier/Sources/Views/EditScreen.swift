@@ -42,47 +42,7 @@ struct EditScreen: View {
     var body: some View {
         hForm {
             hSection {
-                //<<<<<<< HEAD
-                //                VStack(spacing: .padding4) {
-                //                    if type == .deductible {
-                //                        ForEach(listToDisplayDeductible, id: \.self) { quote in
-                //                            hRadioField(
-                //                                id: quote.id,
-                //                                leftView: {
-                //                                    leftView(
-                //                                        title: quote.displayTitle,
-                //                                        premium: quote.newTotalCost.net.formattedAmountPerMonth,
-                //                                        subTitle: quote.subTitle
-                //                                    )
-                //                                },
-                //                                selected: $selectedItem,
-                //                                error: nil,
-                //                                useAnimation: true
-                //                            )
-                //                            .hFieldLeftAttachedView
-                //                        }
-                //                    } else {
-                //                        ForEach(listToDisplayTiers, id: \.self) { tier in
-                //                            hRadioField(
-                //                                id: tier.name,
-                //                                leftView: {
-                //                                    leftView(
-                //                                        title: tier.quotes.first?.productVariant?.displayNameTier ?? tier.name,
-                //                                        premium: tier.getPremiumLabel(),
-                //                                        subTitle: tier.quotes.first?.productVariant?.tierDescription
-                //                                    )
-                //                                },
-                //                                selected: $selectedItem,
-                //                                error: nil,
-                //                                useAnimation: true
-                //                            )
-                //                            .hFieldLeftAttachedView
-                //                        }
-                //                    }
-                //                }
-                //=======
                 radioFields
-                //>>>>>>> main
             }
             .padding(.top, .padding16)
             .sectionContainerStyle(.transparent)
