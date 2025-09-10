@@ -37,13 +37,9 @@ struct UpcomingChangesScreen: View {
                     InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdatedWithInfo(date), type: .info)
                         .buttons([
                             .init(
-                                buttonTitle: L10n.contractViewCertificateButton,
+                                buttonTitle: L10n.openChat,
                                 buttonAction: {
-                                    contractsNavigationVm.document = hPDFDocument(
-                                        displayName: L10n.myDocumentsInsuranceCertificate,
-                                        url: agreement.certificateUrl ?? "",
-                                        type: .unknown
-                                    )
+                                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                                 }
                             )
                         ])
@@ -53,11 +49,14 @@ struct UpcomingChangesScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            content: .init(title: L10n.openChat),
-                            {
-                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                            }
-                        )
+                            content: .init(title: L10n.contractViewCertificateButton)
+                        ) { [weak contractsNavigationVm] in
+                            contractsNavigationVm?.document = hPDFDocument(
+                                displayName: L10n.myDocumentsInsuranceCertificate,
+                                url: agreement.certificateUrl ?? "",
+                                type: .unknown
+                            )
+                        }
 
                         hCloseButton {
                             contractsNavigationVm.insuranceUpdate = nil
