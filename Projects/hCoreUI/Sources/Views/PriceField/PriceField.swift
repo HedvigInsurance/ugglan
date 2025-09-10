@@ -25,6 +25,9 @@ public struct PriceField: View {
             subTitleField
         }
         .accessibilityElement(children: .combine)
+        .accessibilityValue(
+            viewModel.infoButtonModel != nil ? L10n.voiceoverDoubleClickTo + L10n.voiceoverPriceBreakdown : ""
+        )
         .detent(
             item: $isInfoViewPresented
         ) { model in
