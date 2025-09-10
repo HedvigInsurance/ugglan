@@ -293,7 +293,11 @@ private struct ContractCardView: View {
             documentsView(for: contract)
             removeButton(for: contract, isExpanded: isExpanded)
         }
-        .padding(.bottom, (isExpanded && !contract.isAddon && !contract.displayItemSection.discountDisplayItems.isEmpty) ? .padding16 : 0)
+        .padding(
+            .bottom,
+            (isExpanded && !contract.isAddon && !contract.displayItemSection.discountDisplayItems.isEmpty)
+                ? .padding16 : 0
+        )
     }
 
     @ViewBuilder

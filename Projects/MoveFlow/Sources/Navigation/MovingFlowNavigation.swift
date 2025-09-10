@@ -84,7 +84,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 ),
                 displayItemSection: .init(
                     displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
-                                                        ),
+                    ),
                     discountDisplayItems: quote.discountDisplayItems.map {
                         .init(title: $0.displayTitle, value: $0.displayValue)
                     }
