@@ -247,8 +247,9 @@ public struct ContractRenewal: Codable, Hashable, Sendable {
     }
 }
 
-public struct Agreement: Codable, Hashable, Sendable {
+public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     public init(
+        id: String,
         certificateUrl: String?,
         activeFrom: String?,
         activeTo: String?,
@@ -258,6 +259,7 @@ public struct Agreement: Codable, Hashable, Sendable {
         productVariant: hCore.ProductVariant,
         addonVariant: [AddonVariant]
     ) {
+        self.id = id
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
         self.activeTo = activeTo
@@ -267,7 +269,7 @@ public struct Agreement: Codable, Hashable, Sendable {
         self.addonVariant = addonVariant
         self.itemCost = itemCost
     }
-
+    public let id: String
     public let certificateUrl: String?
     public let activeFrom: String?
     public let activeTo: String?
@@ -277,12 +279,14 @@ public struct Agreement: Codable, Hashable, Sendable {
     public let addonVariant: [AddonVariant]
     public let itemCost: ItemCost?
     public init(
+        id: String,
         basePremium: MonetaryAmount,
         itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
         productVariant: hCore.ProductVariant,
         addonVariant: [AddonVariant]
     ) {
+        self.id = id
         self.basePremium = basePremium
         self.displayItems = displayItems
         self.productVariant = productVariant

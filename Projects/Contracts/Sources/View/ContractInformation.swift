@@ -23,7 +23,7 @@ struct ContractInformationView: View {
         ) { contract in
             if let contract {
                 VStack(spacing: 0) {
-                    upatedContractView(contract)
+                    updatedContractView(contract)
                         .transition(.opacity.combined(with: .scale))
                     VStack(spacing: 0) {
                         if let displayItems = contract.currentAgreement?.displayItems {
@@ -191,7 +191,7 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func upatedContractView(_ contract: Contract) -> some View {
+    private func updatedContractView(_ contract: Contract) -> some View {
         if let upcomingRenewal = contract.upcomingRenewal,
             let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
             URL(string: upcomingRenewal.certificateUrl) != nil
@@ -219,47 +219,21 @@ struct ContractInformationView: View {
             URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
             hSection {
-                HStack {
-                    if contract.coInsured.first(where: {
-                        $0.activatesOn != nil || $0.terminatesOn != nil
-                    }) != nil {
-                        InfoCard(
-                            text: L10n.contractCoinsuredUpdateInFuture(
-                                contract.coInsured.filter { !$0.isTerminated }.count,
-                                upcomingChangedAgreement.activeFrom?.localDateToDate?
-                                    .displayDateDDMMMYYYYFormat ?? ""
-                            ),
-                            type: .info
-                        )
-                        .buttons([
-                            .init(
-                                buttonTitle: L10n.contractViewCertificateButton,
-                                buttonAction: {
-                                    contractsNavigationVm.document = hPDFDocument(
-                                        displayName: L10n.myDocumentsInsuranceCertificate,
-                                        url: upcomingChangedAgreement.certificateUrl ?? "",
-                                        type: .unknown
-                                    )
-                                }
-                            )
-                        ])
-                    } else {
-                        InfoCard(
-                            text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
-                                upcomingChangedAgreement.activeFrom?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                            ),
-                            type: .info
-                        )
-                        .buttons([
-                            .init(
-                                buttonTitle: L10n.InsurancesTab.viewDetails,
-                                buttonAction: {
-                                    contractsNavigationVm.insuranceUpdate = contract
-                                }
-                            )
-                        ])
-                    }
-                }
+                InfoCard(
+                    text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
+                        upcomingChangedAgreement.activeFrom?.localDateToDate?
+                            .displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    type: .info
+                )
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.InsurancesTab.viewDetails,
+                        buttonAction: {
+                            contractsNavigationVm.insuranceUpdate = upcomingChangedAgreement
+                        }
+                    )
+                ])
             }
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             upcomingChangedAgreement.certificateUrl == nil
