@@ -109,7 +109,8 @@ public struct ContractsNavigation<Content: View>: View {
             transitionType: .detent(style: [.height])
         ) { insuranceUpdate in
             UpcomingChangesScreen(
-                updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
+                updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom?.localDateToDate?
+                    .displayDateDDMMMYYYYFormat ?? "",
                 upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
             )
             .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
