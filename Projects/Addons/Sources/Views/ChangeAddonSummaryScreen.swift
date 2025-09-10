@@ -27,20 +27,26 @@ extension ChangeAddonViewModel {
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
-            netPremium: selectedQuote?.price,
-            grossPremium: addonOffer?.currentAddon?.price,
-            documents: selectedQuote?.documents ?? [],
-            onDocumentTap: { document in
-                changeAddonNavigationVm.document = document
-            },
-            displayItems: compareAddonDisplayItems(
-                currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
-                newDisplayItems: selectedQuote?.displayItems ?? []
+            premium: .init(
+                net: selectedQuote?.price,
+                gross: addonOffer?.currentAddon?.price
+            ),
+            documentSection: .init(
+                documents: selectedQuote?.documents ?? [],
+                onTap: { document in
+                    changeAddonNavigationVm.document = document
+                }
+            ),
+            displayItemSection: .init(
+                displayItems: compareAddonDisplayItems(
+                    currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
+                    newDisplayItems: selectedQuote?.displayItems ?? []
+                ),
+                discountDisplayItems: []
             ),
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            discountDisplayItems: []
         )
 
         let vm = QuoteSummaryViewModel(
@@ -51,7 +57,7 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.grossPremium
+                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.premium?.gross
                         ?? .init(amount: "", currency: ""),
                     totalNet: getTotalPrice(
                         currentPrice: addonOffer?.currentAddon?.price,

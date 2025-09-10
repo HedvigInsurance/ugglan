@@ -70,21 +70,27 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
-                netPremium: quote.netPremium,
-                grossPremium: quote.grossPremium,
-                documents: quote.documents.map {
-                    .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-                },
-                onDocumentTap: { [weak self] document in
-                    self?.document = document
-                },
-                displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
+                premium: .init(
+                    net: quote.netPremium,
+                    gross: quote.grossPremium
+                ),
+                documentSection: .init(
+                    documents: quote.documents.map {
+                        .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+                    },
+                    onTap: { [weak self] document in
+                        self?.document = document
+                    }
+                ),
+                displayItemSection: .init(
+                    displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
+                    ),
+                    discountDisplayItems: quote.discountDisplayItems.map {
+                        .init(title: $0.displayTitle, value: $0.displayValue)
+                    }
                 ),
                 insuranceLimits: quote.insurableLimits,
                 typeOfContract: quote.contractType,
-                discountDisplayItems: quote.discountDisplayItems.map {
-                    .init(title: $0.displayTitle, value: $0.displayValue)
-                }
             )
             contractInfos.append(contractQuote)
 
@@ -402,22 +408,28 @@ extension AddonDataModel {
             id: id,
             displayName: quoteInfo.title ?? "",
             exposureName: coverageDisplayName,
-            netPremium: netPremium,
-            grossPremium: grossPremium,
-            documents: addonVariant.documents,
-            onDocumentTap: { document in
-                ondocumentClicked(document)
-            },
-            displayItems: displayItems.map {
-                .init(title: $0.displayTitle, value: $0.displayValue)
-            },
+            premium: .init(
+                net: netPremium,
+                gross: grossPremium
+            ),
+            documentSection: .init(
+                documents: addonVariant.documents,
+                onTap: { document in
+                    ondocumentClicked(document)
+                }
+            ),
+            displayItemSection: .init(
+                displayItems: displayItems.map {
+                    .init(title: $0.displayTitle, value: $0.displayValue)
+                },
+                discountDisplayItems: self.discountDisplayItems.map({
+                    .init(title: $0.displayTitle, value: $0.displayValue)
+                })
+            ),
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
             removeModel: removeModel,
-            discountDisplayItems: self.discountDisplayItems.map({
-                .init(title: $0.displayTitle, value: $0.displayValue)
-            })
         )
         return addonQuoteContractInfo
     }
