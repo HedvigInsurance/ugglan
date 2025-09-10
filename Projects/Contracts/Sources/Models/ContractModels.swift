@@ -251,8 +251,7 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     public init(
         id: String,
         certificateUrl: String?,
-        activeFrom: String?,
-        activeTo: String?,
+        agreementDate: AgreementDate?,
         basePremium: MonetaryAmount,
         itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
@@ -261,8 +260,7 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     ) {
         self.id = id
         self.certificateUrl = certificateUrl
-        self.activeFrom = activeFrom
-        self.activeTo = activeTo
+        self.agreementDate = agreementDate
         self.basePremium = basePremium
         self.displayItems = displayItems
         self.productVariant = productVariant
@@ -271,8 +269,7 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     }
     public let id: String
     public let certificateUrl: String?
-    public let activeFrom: String?
-    public let activeTo: String?
+    public let agreementDate: AgreementDate?
     public let basePremium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: hCore.ProductVariant
@@ -293,8 +290,17 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
         self.addonVariant = addonVariant
         self.itemCost = itemCost
         certificateUrl = nil
-        activeFrom = nil
-        activeTo = nil
+        agreementDate = nil
+    }
+
+    public struct AgreementDate: Codable, Hashable, Sendable {
+        public let activeFrom: String?
+        public let activeTo: String?
+
+        public init(activeFrom: String?, activeTo: String?) {
+            self.activeFrom = activeFrom
+            self.activeTo = activeTo
+        }
     }
 }
 
@@ -361,7 +367,7 @@ extension InsuredPeopleConfig {
             id: contract.id,
             contractCoInsured: contract.coInsured,
             contractId: contract.id,
-            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+            activeFrom: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
@@ -382,7 +388,7 @@ extension Contract {
             contractId: id,
             contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
-            activeFrom: currentAgreement?.activeFrom,
+            activeFrom: currentAgreement?.agreementDate?.activeFrom,
             typeOfContract: TypeOfContract.resolve(for: currentAgreement?.productVariant.typeOfContract ?? "")
         )
     }

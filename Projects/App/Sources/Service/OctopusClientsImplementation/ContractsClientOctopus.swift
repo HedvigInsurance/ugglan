@@ -164,8 +164,10 @@ extension Agreement {
         self.init(
             id: agreement.id,
             certificateUrl: agreement.certificateUrl,
-            activeFrom: agreement.activeFrom,
-            activeTo: agreement.activeTo,
+            agreementDate: .init(
+                activeFrom: agreement.activeFrom,
+                activeTo: agreement.activeTo
+            ),
             basePremium: .init(fragment: agreement.basePremium.fragments.moneyFragment),
             itemCost: itemCost,
             displayItems: displayItems,

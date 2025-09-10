@@ -58,7 +58,7 @@ public struct ContractDetail: View {
                             terminationMessage: contract.terminationMessage,
                             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
                             contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                            activeFrom: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
                             activeInFuture: contract.activeInFuture,
                             masterInceptionDate: contract.masterInceptionDate,
                             tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier

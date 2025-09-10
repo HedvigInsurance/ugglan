@@ -37,8 +37,10 @@ public class FetchContractsClientDemo: FetchContractsClient {
         let agreement = Agreement(
             id: UUID().uuidString,
             certificateUrl: nil,
-            activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
-            activeTo: nil,
+            agreementDate: .init(
+                activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
+                activeTo: nil
+            ),
             basePremium: .sek(200),
             itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
             displayItems: [
