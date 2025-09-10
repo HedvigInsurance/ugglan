@@ -14,7 +14,9 @@ struct UpcomingChangesScreen: View {
         self.agreement = agreement
         self.date =
             agreement
-            .activeFrom ?? ""
+            .activeFrom?
+            .localDateToDate?
+            .displayDateDDMMMYYYYFormat ?? ""
     }
 
     var body: some View {
