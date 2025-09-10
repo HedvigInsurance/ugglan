@@ -22,9 +22,16 @@ struct ItemCostView: View {
                 .foregroundColor(hTextColor.Opaque.secondary)
             hCoreUIAssets.infoFilled.view
                 .foregroundColor(hFillColor.Opaque.secondary)
-                .onTapGesture {
-                    infoButtonTapAction()
-                }
+                .accessibilityLabel(
+                    L10n.voiceoverMoreInfo
+                )
+        }
+        .onTapGesture {
+            infoButtonTapAction()
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAction {
+            infoButtonTapAction()
         }
     }
 

@@ -417,6 +417,7 @@ private struct ContractCardView: View {
                 )
         }
         .foregroundColor(hTextColor.Translucent.secondary)
+        .accessibilityElement(children: .combine)
     }
 
     func documentItem(for document: hPDFDocument) -> some View {

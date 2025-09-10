@@ -49,6 +49,13 @@ public struct PriceField: View {
                 .onTapGesture {
                     isInfoViewPresented = infoViewModel
                 }
+                .accessibilityLabel(
+                    L10n.voiceoverMoreInfo
+                )
+                .accessibilityAddTraits(.isButton)
+                .accessibilityAction {
+                    isInfoViewPresented = infoViewModel
+                }
         }
     }
 
@@ -124,8 +131,7 @@ fileprivate struct PremiumText: View {
                     .foregroundColor(newPremiumColor)
             }
         }
-
-        .accessibilityValue(L10n.voiceoverCurrentPrice)
+        .accessibilityHidden(strikeThrough)
     }
 
     @hColorBuilder

@@ -61,6 +61,7 @@ struct PriceBreakdownView: View {
             hText(item.value, style: .label)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
