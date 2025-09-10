@@ -60,4 +60,15 @@ enum CoInsuredFieldType {
             return L10n.contractRemoveCoinsuredConfirmation
         }
     }
+
+    var accessibilityValue: String {
+        switch self {
+        case .empty:
+            return L10n.voiceoverDoubleClickTo + L10n.voiceoverAddInformation
+        case .localEdit:
+            return L10n.voiceoverDoubleClickTo + L10n.voiceoverEdit
+        case .delete:
+            return L10n.voiceoverDoubleClickTo + L10n.voiceoverRemove
+        }
+    }
 }
