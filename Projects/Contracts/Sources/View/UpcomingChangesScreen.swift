@@ -21,13 +21,7 @@ struct UpcomingChangesScreen: View {
         hForm {
             VStack(spacing: 0) {
                 hSection(agreement.displayItems, id: \.displayValue) { item in
-                    hRow {
-                        HStack {
-                            hText(item.displayTitle)
-                            Spacer()
-                            hText(item.displayValue).foregroundColor(hTextColor.Opaque.secondary)
-                        }
-                    }
+                    displayItemView(item)
                 }
                 if let cost = agreement.itemCost {
                     hRowDivider()
@@ -75,6 +69,16 @@ struct UpcomingChangesScreen: View {
         }
         .hWithoutHorizontalPadding([.row, .divider])
         .hFormContentPosition(.compact)
+    }
+
+    private func displayItemView(_ item: AgreementDisplayItem) -> some View {
+        hRow {
+            HStack {
+                hText(item.displayTitle)
+                Spacer()
+                hText(item.displayValue).foregroundColor(hTextColor.Opaque.secondary)
+            }
+        }
     }
 }
 
