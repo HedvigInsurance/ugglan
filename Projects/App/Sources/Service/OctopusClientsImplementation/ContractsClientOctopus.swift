@@ -96,6 +96,7 @@ extension Contract {
         ssn: String?
     ) {
         let currentAgreement = Agreement(
+            id: pendingContract.id,
             basePremium: .init(fragment: pendingContract.basePremium.fragments.moneyFragment),
             itemCost: itemCost,
             displayItems: pendingContract.displayItems.map { .init(data: $0.fragments.agreementDisplayItemFragment) },
@@ -161,6 +162,7 @@ extension Agreement {
             return nil
         }
         self.init(
+            id: agreement.id,
             certificateUrl: agreement.certificateUrl,
             activeFrom: agreement.activeFrom,
             activeTo: agreement.activeTo,
@@ -198,7 +200,12 @@ extension AgreementDisplayItem {
 extension FetchContractsClientOctopus {
     private func handleActiveContracts(data: OctopusGraphQL.ContractBundleQuery.Data) -> [Contract] {
         data.currentMember.activeContracts.map { contract in
-            let currentAgreementAddonsDiscount = contract.currentAgreement.addons.compactMap(discount)
+            let currentAgreementAddonsDiscount = contract.currentAgreement.addons.map {
+                getAddonDiscount(
+                    addonVariant: $0.addonVariant.fragments.addonVariantFragment,
+                    amount: $0.premium.fragments.moneyFragment
+                )
+            }
 
             let currentAgreement = Agreement(
                 agreement: contract.currentAgreement.fragments.agreementFragment,
@@ -213,10 +220,10 @@ extension FetchContractsClientOctopus {
             )
             let upcomingAgreement: Agreement? = {
                 if let upcomingAgreement = contract.upcomingChangedAgreement {
-                    let upcomingAgreementAddonsDiscount = contract.currentAgreement.addons.map { addon in
+                    let upcomingAgreementAddonsDiscount = upcomingAgreement.addons.map {
                         getAddonDiscount(
-                            addonVariant: addon.addonVariant.fragments.addonVariantFragment,
-                            amount: addon.premium.fragments.moneyFragment
+                            addonVariant: $0.addonVariant.fragments.addonVariantFragment,
+                            amount: $0.premium.fragments.moneyFragment
                         )
                     }
                     return .init(
@@ -227,9 +234,7 @@ extension FetchContractsClientOctopus {
                             costFragment: upcomingAgreement.cost.fragments.itemCostFragment,
                             addonCostDiscounts: upcomingAgreementAddonsDiscount
                         ),
-                        displayItems: upcomingAgreement.displayItems.map {
-                            .init(data: $0.fragments.agreementDisplayItemFragment)
-                        }
+                        displayItems: upcomingAgreement.displayItems.map(makeDisplayItem)
                     )
                 }
                 return nil
@@ -245,19 +250,15 @@ extension FetchContractsClientOctopus {
         }
     }
 
-    private func discount(
-        for addon: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.Addon?
-    ) -> ItemCost.ItemCostDiscount? {
-        guard let variantFragment = addon?.addonVariant.fragments.addonVariantFragment,
-            let amount = addon?.premium.fragments.moneyFragment
-        else {
-            return nil
-        }
-        return getAddonDiscount(addonVariant: variantFragment, amount: amount)
+    private func makeDisplayItem(
+        from item: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.DisplayItem
+    ) -> AgreementDisplayItem {
+        .init(data: item.fragments.agreementDisplayItemFragment)
     }
 
     private func makeDisplayItem(
-        from item: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.DisplayItem
+        from item: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.UpcomingChangedAgreement
+            .DisplayItem
     ) -> AgreementDisplayItem {
         .init(data: item.fragments.agreementDisplayItemFragment)
     }

@@ -37,34 +37,40 @@ extension ChangeTierViewModel {
                 id: currentTier?.id ?? "",
                 displayName: displayName ?? "",
                 exposureName: activationDate,
-                netPremium: newTotalCost?.net,
-                grossPremium: newTotalCost?.gross,
-                documents: documents,
-                onDocumentTap: { [weak changeTierNavigationVm] document in
-                    changeTierNavigationVm?.document = document
-                },
-                displayItems: displayItems,
+                premium: .init(
+                    net: newTotalCost?.net,
+                    gross: newTotalCost?.gross
+                ),
+                documentSection: .init(
+                    documents: documents,
+                    onTap: { [weak changeTierNavigationVm] document in
+                        changeTierNavigationVm?.document = document
+                    },
+                ),
+                displayItemSection: .init(
+                    displayItems: displayItems,
+                    discountDisplayItems: selectedQuote?.costBreakdown
+                        .map({ item in
+                            .init(title: item.title, value: item.value)
+                        }) ?? []
+                ),
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
-                discountDisplayItems: selectedQuote?.costBreakdown
-                    .map({ item in
-                        .init(title: item.title, value: item.value)
-                    }) ?? []
             )
         )
 
         let totalNet: MonetaryAmount = {
             let totalValue =
                 contracts
-                .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
+                .reduce(0, { $0 + ($1.premium?.net?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.premium?.net?.currency ?? "")
         }()
 
         let totalGross: MonetaryAmount = {
             let totalValue =
                 contracts
-                .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
+                .reduce(0, { $0 + ($1.premium?.gross?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.premium?.gross?.currency ?? "")
         }()
 
         let vm = QuoteSummaryViewModel(

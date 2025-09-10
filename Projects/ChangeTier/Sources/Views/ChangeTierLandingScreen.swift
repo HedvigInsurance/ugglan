@@ -125,6 +125,7 @@ public struct ChangeTierLandingScreen: View {
                     hText(L10n.tierFlowLockedInfoDescription, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
                         .padding(.leading, .padding16)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding(.bottom, .padding8)

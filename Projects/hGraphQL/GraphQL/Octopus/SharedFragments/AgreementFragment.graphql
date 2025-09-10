@@ -1,4 +1,5 @@
 fragment AgreementFragment on Agreement {
+	id
     activeFrom
     activeTo
     certificateUrl
