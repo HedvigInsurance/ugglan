@@ -255,16 +255,14 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
         basePremium: MonetaryAmount,
         itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
-        productVariant: hCore.ProductVariant,
-        addonVariant: [AddonVariant]
+        agreementVariant: AgreementVariant,
     ) {
         self.id = id
         self.certificateUrl = certificateUrl
         self.agreementDate = agreementDate
         self.basePremium = basePremium
         self.displayItems = displayItems
-        self.productVariant = productVariant
-        self.addonVariant = addonVariant
+        self.agreementVariant = agreementVariant
         self.itemCost = itemCost
     }
     public let id: String
@@ -272,22 +270,19 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     public let agreementDate: AgreementDate?
     public let basePremium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
-    public let productVariant: hCore.ProductVariant
-    public let addonVariant: [AddonVariant]
+    public let agreementVariant: AgreementVariant
     public let itemCost: ItemCost?
     public init(
         id: String,
         basePremium: MonetaryAmount,
         itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
-        productVariant: hCore.ProductVariant,
-        addonVariant: [AddonVariant]
+        agreementVariant: AgreementVariant
     ) {
         self.id = id
         self.basePremium = basePremium
         self.displayItems = displayItems
-        self.productVariant = productVariant
-        self.addonVariant = addonVariant
+        self.agreementVariant = agreementVariant
         self.itemCost = itemCost
         certificateUrl = nil
         agreementDate = nil
@@ -300,6 +295,16 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
         public init(activeFrom: String?, activeTo: String?) {
             self.activeFrom = activeFrom
             self.activeTo = activeTo
+        }
+    }
+
+    public struct AgreementVariant: Codable, Hashable, Sendable {
+        public let productVariant: hCore.ProductVariant
+        public let addonVariant: [AddonVariant]
+
+        public init(productVariant: hCore.ProductVariant, addonVariant: [AddonVariant]) {
+            self.productVariant = productVariant
+            self.addonVariant = addonVariant
         }
     }
 }
@@ -370,10 +375,10 @@ extension InsuredPeopleConfig {
             activeFrom: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
-            displayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            displayName: contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
             preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
-            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            contractDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn,
@@ -386,10 +391,12 @@ extension Contract {
     public var asTerminationConfirmConfig: TerminationConfirmConfig {
         .init(
             contractId: id,
-            contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
+            contractDisplayName: currentAgreement?.agreementVariant.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
             activeFrom: currentAgreement?.agreementDate?.activeFrom,
-            typeOfContract: TypeOfContract.resolve(for: currentAgreement?.productVariant.typeOfContract ?? "")
+            typeOfContract: TypeOfContract.resolve(
+                for: currentAgreement?.agreementVariant.productVariant.typeOfContract ?? ""
+            )
         )
     }
 }

@@ -100,8 +100,12 @@ extension Contract {
             basePremium: .init(fragment: pendingContract.basePremium.fragments.moneyFragment),
             itemCost: itemCost,
             displayItems: pendingContract.displayItems.map { .init(data: $0.fragments.agreementDisplayItemFragment) },
-            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
-            addonVariant: pendingContract.addons.map { .init(fragment: $0.addonVariant.fragments.addonVariantFragment) }
+            agreementVariant: .init(
+                productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
+                addonVariant: pendingContract.addons.map {
+                    .init(fragment: $0.addonVariant.fragments.addonVariantFragment)
+                }
+            )
         )
         self.init(
             id: pendingContract.id,
@@ -171,8 +175,10 @@ extension Agreement {
             basePremium: .init(fragment: agreement.basePremium.fragments.moneyFragment),
             itemCost: itemCost,
             displayItems: displayItems,
-            productVariant: .init(data: agreement.productVariant.fragments.productVariantFragment),
-            addonVariant: agreement.addons.map { .init(fragment: $0.addonVariant.fragments.addonVariantFragment) }
+            agreementVariant: .init(
+                productVariant: .init(data: agreement.productVariant.fragments.productVariantFragment),
+                addonVariant: agreement.addons.map { .init(fragment: $0.addonVariant.fragments.addonVariantFragment) }
+            )
         )
     }
 }

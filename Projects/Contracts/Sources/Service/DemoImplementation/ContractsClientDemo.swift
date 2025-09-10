@@ -51,8 +51,10 @@ public class FetchContractsClientDemo: FetchContractsClient {
                 .init(title: "Living area", value: "56 m²"),
                 .init(title: "Insured people", value: "Only you"),
             ],
-            productVariant: variant,
-            addonVariant: []
+            agreementVariant: .init(
+                productVariant: variant,
+                addonVariant: []
+            )
         )
         let contract = Contract(
             id: "contractId",
