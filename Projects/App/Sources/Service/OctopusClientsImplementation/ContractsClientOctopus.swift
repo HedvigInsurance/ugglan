@@ -213,7 +213,7 @@ extension FetchContractsClientOctopus {
             )
             let upcomingAgreement: Agreement? = {
                 if let upcomingAgreement = contract.upcomingChangedAgreement {
-                    let upcomingAgreementAddonsDiscount = contract.currentAgreement.addons.compactMap(discount)
+                    let upcomingAgreementAddonsDiscount = upcomingAgreement.addons.compactMap(discount)
                     return .init(
                         agreement: upcomingAgreement.fragments.agreementFragment,
                         itemCost: getCost(
