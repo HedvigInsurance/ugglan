@@ -198,7 +198,12 @@ extension AgreementDisplayItem {
 extension FetchContractsClientOctopus {
     private func handleActiveContracts(data: OctopusGraphQL.ContractBundleQuery.Data) -> [Contract] {
         data.currentMember.activeContracts.map { contract in
-            let currentAgreementAddonsDiscount = contract.currentAgreement.addons.compactMap(discount)
+            let currentAgreementAddonsDiscount = contract.currentAgreement.addons.map {
+                getAddonDiscount(
+                    addonVariant: $0.addonVariant.fragments.addonVariantFragment,
+                    amount: $0.premium.fragments.moneyFragment
+                )
+            }
 
             let currentAgreement = Agreement(
                 agreement: contract.currentAgreement.fragments.agreementFragment,
@@ -213,7 +218,12 @@ extension FetchContractsClientOctopus {
             )
             let upcomingAgreement: Agreement? = {
                 if let upcomingAgreement = contract.upcomingChangedAgreement {
-                    let upcomingAgreementAddonsDiscount = upcomingAgreement.addons.compactMap(discount)
+                    let upcomingAgreementAddonsDiscount = upcomingAgreement.addons.map {
+                        getAddonDiscount(
+                            addonVariant: $0.addonVariant.fragments.addonVariantFragment,
+                            amount: $0.premium.fragments.moneyFragment
+                        )
+                    }
                     return .init(
                         agreement: upcomingAgreement.fragments.agreementFragment,
                         itemCost: getCost(
@@ -236,17 +246,6 @@ extension FetchContractsClientOctopus {
                 ssn: data.currentMember.ssn
             )
         }
-    }
-
-    private func discount(
-        for addon: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.Addon?
-    ) -> ItemCost.ItemCostDiscount? {
-        guard let variantFragment = addon?.addonVariant.fragments.addonVariantFragment,
-            let amount = addon?.premium.fragments.moneyFragment
-        else {
-            return nil
-        }
-        return getAddonDiscount(addonVariant: variantFragment, amount: amount)
     }
 
     private func makeDisplayItem(
