@@ -179,10 +179,9 @@ struct HonestyPledge: View {
                 }
             }
             .padding(.horizontal, .padding24)
-            .fixedSize(horizontal: false, vertical: true)
+            .padding(.top, -8)
         }
         .hFormContentPosition(.compact)
-        .padding(.top, -8)
     }
 }
 

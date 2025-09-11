@@ -319,19 +319,31 @@ extension View {
         }
     }
 
+    @ViewBuilder
     @MainActor public func configureTitleView(
         title: String,
         subTitle: String? = nil,
         titleColor: TitleColor? = nil,
         onTitleTap: (() -> Void)? = nil
     ) -> some View {
-        introspect(.viewController, on: .iOS(.v13...)) { vc in
-            vc.navigationItem.titleView = getTitleUIView(
-                title: title,
-                subTitle: subTitle,
-                titleColor: titleColor ?? .default,
-                onTitleTap: onTitleTap
-            )
+        if #available(iOS 26.0, *) {
+            self.toolbar {
+                ToolbarItem(placement: .title) {
+                    titleView(title: title, subTitle: subTitle, titleColor: titleColor ?? .default)
+                        .onTapGesture {
+                            onTitleTap?()
+                        }
+                }
+            }
+        } else {
+            introspect(.viewController, on: .iOS(.v13...)) { vc in
+                vc.navigationItem.titleView = getTitleUIView(
+                    title: title,
+                    subTitle: subTitle,
+                    titleColor: titleColor ?? .default,
+                    onTitleTap: onTitleTap
+                )
+            }
         }
     }
 

@@ -14,6 +14,6 @@ extension View {
 struct DismissKeyboardModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .scrollDismissesKeyboard(.immediately)
+            .scrollDismissesKeyboard(.interactively)
     }
 }
