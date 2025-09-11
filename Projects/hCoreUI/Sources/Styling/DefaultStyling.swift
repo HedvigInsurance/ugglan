@@ -50,9 +50,9 @@ class NavBar: UINavigationBar {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        if let additionalHeight {
-            for subview in subviews {
-                let stringFromClass = NSStringFromClass(subview.classForCoder)
+        for subview in subviews {
+            let stringFromClass = NSStringFromClass(subview.classForCoder)
+            if let additionalHeight {
                 if stringFromClass.contains("UIProgressView") {
                     subview.frame = CGRect(
                         x: subview.frame.origin.x,
@@ -61,27 +61,33 @@ class NavBar: UINavigationBar {
                         height: subview.frame.height
                     )
                 }
-                if stringFromClass.contains("BarContent") {
-                    subview.frame = CGRect(
-                        x: 0,
-                        y: additionalHeight,
-                        width: frame.width,
-                        height: subview.frame.size.height
-                    )
-                }
             }
-        }
-        for subview in subviews {
-            let stringFromClass = NSStringFromClass(subview.classForCoder)
             if stringFromClass.contains("BarContent") {
                 subview.clipsToBounds = false
+                if #available(iOS 26.0, *) {
+                    setClipsToBounds(for: subview)
+                }
                 subview.frame = CGRect(
                     x: 0,
-                    y: 0,
+                    y: additionalHeight ?? 0,
                     width: frame.width + 4,
                     height: subview.frame.size.height
                 )
             }
+        }
+    }
+
+    //used for
+    func setClipsToBounds(for view: UIView, force: Bool = false) {
+        if force {
+            view.clipsToBounds = false
+        }
+
+        let isNavigationBarPlatter = NSStringFromClass(type(of: view))
+            .localizedCaseInsensitiveContains("navigationbarplatter")
+
+        view.subviews.forEach { subview in
+            setClipsToBounds(for: subview, force: force || isNavigationBarPlatter)
         }
     }
 }
