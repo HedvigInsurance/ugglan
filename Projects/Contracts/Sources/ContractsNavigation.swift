@@ -31,7 +31,7 @@ public struct ContractsNavigation<Content: View>: View {
                 .routerDestination(for: Contract.self) { contract in
                     ContractDetail(id: contract.id)
                         .environmentObject(contractsNavigationVm)
-                        .configureTitle(contract.currentAgreement?.productVariant.displayName ?? "")
+                        .configureTitle(contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "")
                 }
                 .routerDestination(for: ContractsRouterType.self) { type in
                     switch type {
@@ -188,10 +188,12 @@ extension TerminationConfirmConfig {
     ) {
         self.init(
             contractId: contract.id,
-            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            contractDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
             contractExposureName: contract.exposureDisplayName,
-            activeFrom: contract.currentAgreement?.activeFrom,
-            typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement?.productVariant.typeOfContract ?? "")
+            activeFrom: contract.currentAgreement?.agreementDate?.activeFrom,
+            typeOfContract: TypeOfContract.resolve(
+                for: contract.currentAgreement?.agreementVariant.productVariant.typeOfContract ?? ""
+            )
         )
     }
 }

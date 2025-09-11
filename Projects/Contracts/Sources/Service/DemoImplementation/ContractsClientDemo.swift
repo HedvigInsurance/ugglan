@@ -37,8 +37,10 @@ public class FetchContractsClientDemo: FetchContractsClient {
         let agreement = Agreement(
             id: UUID().uuidString,
             certificateUrl: nil,
-            activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
-            activeTo: nil,
+            agreementDate: .init(
+                activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
+                activeTo: nil
+            ),
             basePremium: .sek(200),
             itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
             displayItems: [
@@ -49,8 +51,10 @@ public class FetchContractsClientDemo: FetchContractsClient {
                 .init(title: "Living area", value: "56 m²"),
                 .init(title: "Insured people", value: "Only you"),
             ],
-            productVariant: variant,
-            addonVariant: []
+            agreementVariant: .init(
+                productVariant: variant,
+                addonVariant: []
+            )
         )
         let contract = Contract(
             id: "contractId",

@@ -17,7 +17,7 @@ struct ContractCoverageView: View {
         ) { contract in
             if let contract = contract {
                 CoverageView(
-                    limits: contract.currentAgreement?.productVariant.insurableLimits ?? [],
+                    limits: contract.currentAgreement?.agreementVariant.productVariant.insurableLimits ?? [],
                     didTapInsurableLimit: { limit in
                         contractsNavigationVm.insurableLimit = limit
                     },
@@ -31,9 +31,9 @@ struct ContractCoverageView: View {
 extension Contract {
     var allPerils: [(title: String?, perils: [Perils])] {
         var allPerils: [(title: String?, perils: [Perils])] = []
-        allPerils.append((nil, currentAgreement?.productVariant.perils ?? []))
+        allPerils.append((nil, currentAgreement?.agreementVariant.productVariant.perils ?? []))
         let addonPerils: [(title: String?, perils: [Perils])] =
-            currentAgreement?.addonVariant.compactMap { ($0.displayName, $0.perils) } ?? []
+            currentAgreement?.agreementVariant.addonVariant.compactMap { ($0.displayName, $0.perils) } ?? []
         allPerils.append(contentsOf: addonPerils)
         return allPerils
     }

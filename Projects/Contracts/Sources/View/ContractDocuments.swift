@@ -28,7 +28,7 @@ struct ContractDocumentsView: View {
                         contractsNavigationViewModel.document = document
                     }
 
-                    if let addonVariant = contract.currentAgreement?.addonVariant {
+                    if let addonVariant = contract.currentAgreement?.agreementVariant.addonVariant {
                         ForEach(addonVariant, id: \.self) { addonVariant in
                             addonDocumentSection(for: addonVariant)
                         }
@@ -58,7 +58,7 @@ struct ContractDocumentsView: View {
 
     func getDocumentsToDisplay(contract: Contract) -> [hPDFDocument] {
         var documents: [hPDFDocument] = []
-        contract.currentAgreement?.productVariant.documents
+        contract.currentAgreement?.agreementVariant.productVariant.documents
             .forEach { document in
                 documents.append(document)
             }
