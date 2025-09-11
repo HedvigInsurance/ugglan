@@ -2,8 +2,8 @@ import hCore
 
 public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
     public init() {}
-    public func get(for type: FetchClaimDetailsType) async throws -> ClaimModel {
-        return .init(
+    public func get(for _: String) async throws -> ClaimModel {
+        .init(
             id: "1",
             status: .submitted,
             outcome: .none,
@@ -13,13 +13,19 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "",
-            incidentDate: nil,
             productVariant: nil,
-            conversation: nil
+            conversation: nil,
+            appealInstructionsUrl: "If you have more receipts related to this claim, you can upload more on this page.",
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true,
+            infoText: "info text",
+            displayItems: []
         )
     }
 
-    public func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [hCore.File]) {
-        return (claimId: "1", files: [])
+    public func getFiles(for _: String) async throws -> [File] {
+        []
     }
+
+    public func acknowledgeClosedStatus(for _: String) async throws {}
 }

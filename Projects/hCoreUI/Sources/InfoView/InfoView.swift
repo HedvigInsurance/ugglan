@@ -2,9 +2,8 @@ import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
-import hGraphQL
 
-public class InfoViewNavigationViewModel: ObservableObject {
+class InfoViewNavigationViewModel: ObservableObject {
     @Published var isInfoViewPresented: InfoViewNavigationModel?
 }
 
@@ -25,14 +24,14 @@ public struct InfoViewHolder: View {
         SwiftUI.Button {
             showInfoView()
         } label: {
-            Image(uiImage: type.image)
+            type.image
                 .foregroundColor(type.color)
         }
         .detent(
             item: $infoViewNavigationModel.isInfoViewPresented,
-            style: [.height],
+
             options: .constant(.withoutGrabber)
-        ) { freeTextPickerVm in
+        ) { _ in
             InfoView(
                 title: title,
                 description: description
@@ -58,12 +57,12 @@ public struct InfoViewHolder: View {
         case regular
         case navigation
 
-        var image: UIImage {
+        var image: some View {
             switch self {
             case .regular:
-                hCoreUIAssets.infoFilled.image
+                hCoreUIAssets.infoFilled.view
             case .navigation:
-                hCoreUIAssets.infoOutlined.image
+                hCoreUIAssets.infoOutlined.view
             }
         }
 
@@ -130,25 +129,33 @@ public struct InfoView: View {
             VStack(spacing: .padding8) {
                 if let button = extraButton {
                     if button.style != .alert {
-                        hButton.LargeButton(type: .primary) {
-                            button.action()
-                        } content: {
-                            hText(button.text)
-                        }
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: button.text),
+                            {
+                                button.action()
+                            }
+                        )
                     } else {
-                        hButton.LargeButton(type: .alert) {
-                            button.action()
-                        } content: {
-                            hText(button.text)
-                        }
-
+                        hButton(
+                            .large,
+                            .alert,
+                            content: .init(title: button.text),
+                            {
+                                button.action()
+                            }
+                        )
                     }
                 }
-                hButton.LargeButton(type: .ghost) {
-                    vm.vc?.dismiss(animated: true)
-                } content: {
-                    hText(closeButtonTitle)
-                }
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: closeButtonTitle),
+                    {
+                        vm.vc?.dismiss(animated: true)
+                    }
+                )
             }
             .padding(.horizontal, .padding24)
         }
@@ -178,25 +185,84 @@ class InfoViewModel: ObservableObject {
     weak var vc: UIViewController?
 }
 
-struct InfoViewNavigationModel: Equatable, Identifiable {
-    var id: String?
+public struct InfoViewNavigationModel: Equatable, Identifiable {
+    public var id: String?
 
-    static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
-        return lhs.id == rhs.id
+    public static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
+        lhs.id == rhs.id
     }
 
     let title: String
     let description: String
-    let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
     @StateObject fileprivate var vm = InfoViewModel()
 
     public init(
         title: String,
         description: String,
-        extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)? = nil
     ) {
         self.title = title
         self.description = description
-        self.extraButton = extraButton
+    }
+}
+
+extension View {
+    public func addNavigationInfoButton(
+        placement: ListToolBarPlacement,
+        title: String,
+        description: String
+    ) -> some View {
+        modifier(NavigationInfoButton(placement: placement, title: title, description: description))
+    }
+}
+
+struct NavigationInfoButton: ViewModifier {
+    let placement: ListToolBarPlacement
+    let title: String
+    let description: String
+    @StateObject var vm = InfoButtonViewModel()
+    init(
+        placement: ListToolBarPlacement,
+        title: String,
+        description: String
+    ) {
+        self.placement = placement
+        self.title = title
+        self.description = description
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
+                let navBarItem = UIBarButtonItem(
+                    image: hCoreUIAssets.infoOutlined.image,
+                    style: .plain,
+                    target: vm,
+                    action: #selector(vm.transformDataToActivityView)
+                )
+                vc.navigationItem.leftBarButtonItem = navBarItem
+            }
+            .onAppear {
+                vm.title = title
+                vm.description = description
+            }
+            .detent(
+                item: $vm.isInfoViewPresented,
+
+                options: .constant(.withoutGrabber)
+            ) { _ in
+                InfoView(
+                    title: title,
+                    description: description
+                )
+            }
+    }
+}
+
+class InfoButtonViewModel: ObservableObject {
+    @Published var isInfoViewPresented: InfoViewNavigationModel?
+    var title: String?
+    var description: String?
+    @objc func transformDataToActivityView() {
+        isInfoViewPresented = .init(title: title!, description: description!)
     }
 }

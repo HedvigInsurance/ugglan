@@ -6,14 +6,13 @@ import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 enum ContractDetailsViews: String, CaseIterable, Identifiable {
     case overview
     case coverage
     case details
 
-    var id: String { self.rawValue }
+    var id: String { rawValue }
     var title: String {
         switch self {
         case .overview: return L10n.InsuranceDetailsView.tab1Title
@@ -23,11 +22,11 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
     }
 
     var index: Int {
-        return ContractDetailsViews.allCases.firstIndex(of: self) ?? 0
+        ContractDetailsViews.allCases.firstIndex(of: self) ?? 0
     }
 
     func move(_ otherPanel: ContractDetailsViews) -> AnyTransition {
-        return otherPanel.index < self.index ? .move(edge: .trailing) : .move(edge: .leading)
+        otherPanel.index < index ? .move(edge: .trailing) : .move(edge: .leading)
     }
 }
 
@@ -37,7 +36,7 @@ public struct ContractDetail: View {
     var id: String
 
     @StateObject var scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-        pageModels: ContractDetailsViews.allCases.compactMap({ .init(id: $0.id, title: $0.title) })
+        pageModels: ContractDetailsViews.allCases.compactMap { .init(id: $0.id, title: $0.title) }
     )
     @State private var selectedView = ContractDetailsViews.overview
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
@@ -46,7 +45,7 @@ public struct ContractDetail: View {
         id: String
     ) {
         self.id = id
-        self._vm = .init(wrappedValue: .init(id: id))
+        _vm = .init(wrappedValue: .init(id: id))
     }
 
     public var body: some View {
@@ -84,10 +83,10 @@ public struct ContractDetail: View {
                     )
                     .padding(.top, .padding16)
                     .padding(.bottom, .padding8)
-                    .hWithoutDividerPadding
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding8)
+                Spacer(minLength: 0)
             }
             .presentableStoreLensAnimation(.default)
             .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
@@ -111,7 +110,7 @@ class ContractDetailsViewModel: ObservableObject {
     private func observeContractState() {
         let id = self.id
         observeContractStateCancellable = store.stateSignal
-            .map({ $0.contractForId(id)?.id })
+            .map { $0.contractForId(id)?.id }
             .eraseToAnyPublisher()
             .removeDuplicates()
             .sink { [weak self] value in

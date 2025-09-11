@@ -1,49 +1,32 @@
 import Foundation
+import hCore
 
 @MainActor
 public class MoveFlowClientDemo: MoveFlowClient {
-    public func sendMoveIntent() async throws -> MovingFlowModel {
-        return MovingFlowModel(
+    public func sendMoveIntent() async throws -> MoveConfigurationModel {
+        MoveConfigurationModel(
             id: "id",
+            currentHomeAddresses: [],
+            extraBuildingTypes: [],
             isApartmentAvailableforStudent: false,
             maxApartmentNumberCoInsured: nil,
             maxApartmentSquareMeters: nil,
             maxHouseNumberCoInsured: nil,
-            maxHouseSquareMeters: nil,
-            minMovingDate: Date().localDateString,
-            maxMovingDate: "2025-06-01",
-            suggestedNumberCoInsured: 2,
-            currentHomeAddresses: [],
-            potentialHomeQuotes: [],
-            mtaQuotes: [],
-            faqs: [],
-            extraBuildingTypes: []
+            maxHouseSquareMeters: nil
         )
     }
 
-    public func requestMoveIntent(
-        intentId: String,
-        addressInputModel: AddressInputModel,
-        houseInformationInputModel: HouseInformationInputModel
-    ) async throws -> MovingFlowModel {
-        return MovingFlowModel(
-            id: "id",
-            isApartmentAvailableforStudent: false,
-            maxApartmentNumberCoInsured: nil,
-            maxApartmentSquareMeters: nil,
-            maxHouseNumberCoInsured: nil,
-            maxHouseSquareMeters: nil,
-            minMovingDate: Date().localDateString,
-            maxMovingDate: "2025-06-01",
-            suggestedNumberCoInsured: 2,
-            currentHomeAddresses: [],
-            potentialHomeQuotes: [],
-            mtaQuotes: [],
-            faqs: [],
-            extraBuildingTypes: []
-        )
+    public func requestMoveIntent(input _: RequestMoveIntentInput) async throws -> MoveQuotesModel {
+        MoveQuotesModel(homeQuotes: [], mtaQuotes: [], changeTierModel: nil)
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
+    public func confirmMoveIntent(
+        intentId _: String,
+        currentHomeQuoteId _: String,
+        removedAddons _: [String]
+    ) async throws {}
+
+    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
+        .init(totalGross: .sek(1000), totalNet: .sek(900))
     }
 }

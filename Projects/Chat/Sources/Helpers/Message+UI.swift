@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import hCoreUI
 
 @MainActor
@@ -48,6 +49,7 @@ extension Message {
             return 0
         }
     }
+
     var verticalPadding: CGFloat {
         switch type {
         case .text, .deepLink:
@@ -55,5 +57,19 @@ extension Message {
         default:
             return 0
         }
+    }
+}
+
+struct MessageViewBackground: ViewModifier {
+    let message: Message
+    let conversationStatus: ConversationStatus
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, message.horizontalPadding)
+            .padding(.vertical, message.verticalPadding)
+            .background(message.bgColor(conversationStatus: conversationStatus, type: message.type))
+            .foregroundColor(message.textColor)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

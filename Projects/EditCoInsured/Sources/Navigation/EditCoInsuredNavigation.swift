@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -19,7 +18,7 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
-    let coInsuredViewModel = InsuredPeopleNewScreenModel()
+    let coInsuredViewModel = InsuredPeopleScreenViewModel()
     let intentViewModel = IntentViewModel()
 }
 
@@ -45,7 +44,6 @@ extension EditCoInsuredScreenType {
 }
 
 enum EditCoInsuredScreenTrackingType: TrackingViewNameProtocol {
-
     case newInsurance
     case removeCoInsured
     case insuredPeople
@@ -53,9 +51,9 @@ enum EditCoInsuredScreenTrackingType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .newInsurance:
-            return .init(describing: InsuredPeopleNewScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         case .removeCoInsured:
-            return .init(describing: RemoveCoInsuredScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         case .insuredPeople:
             return .init(describing: InsuredPeopleScreen.self)
         }
@@ -89,7 +87,7 @@ public struct EditCoInsuredNavigation: View {
     ) {
         self.config = config
         self.openSpecificScreen = openSpecificScreen ?? .none
-        self.editCoInsuredNavigationVm = .init(config: config)
+        editCoInsuredNavigationVm = .init(config: config)
     }
 
     public var body: some View {
@@ -122,7 +120,7 @@ public struct EditCoInsuredNavigation: View {
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { coInsuredInputModel in
             coInsuredInput(coInsuredInputModel: coInsuredInputModel)
                 .embededInNavigation(
@@ -132,10 +130,14 @@ public struct EditCoInsuredNavigation: View {
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { selectCoInsured in
             openCoInsuredSelectScreen(contractId: selectCoInsured.id)
                 .environmentObject(editCoInsuredNavigationVm)
+                .embededInNavigation(
+                    options: [.navigationType(type: .large)],
+                    tracking: EditCoInsuredDetentType.selectCoInsured
+                )
         }
         .modally(presented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
             openProgress(showSuccess: true)
@@ -153,18 +155,14 @@ public struct EditCoInsuredNavigation: View {
 
     func openNewInsuredPeopleScreen() -> some View {
         openSpecificScreen = .none
-        return InsuredPeopleNewScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel,
-            intentViewModel: editCoInsuredNavigationVm.intentViewModel
-        )
-        .configureTitle(L10n.coinsuredEditTitle)
-        .addDismissEditCoInsuredFlow()
+        return openInsuredPeopleScreen()
     }
 
     func openInsuredPeopleScreen() -> some View {
-        return InsuredPeopleScreen(
+        InsuredPeopleScreen(
             vm: editCoInsuredNavigationVm.coInsuredViewModel,
-            intentViewModel: editCoInsuredNavigationVm.intentViewModel
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel,
+            type: .none
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -200,21 +198,11 @@ public struct EditCoInsuredNavigation: View {
         .environmentObject(editCoInsuredViewModel)
     }
 
-    func openSuccessScreen(title: String) -> some View {
-        hForm {
-            SuccessScreen(title: title)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        editCoInsuredNavigationVm.coInsuredInputModel = nil
-                    }
-                }
-        }
-        .hFormContentPosition(.compact)
-    }
-
     func openRemoveCoInsuredScreen() -> some View {
-        return RemoveCoInsuredScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel
+        InsuredPeopleScreen(
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel,
+            type: .delete
         )
         .configureTitle(L10n.coinsuredEditTitle)
     }
@@ -223,19 +211,6 @@ public struct EditCoInsuredNavigation: View {
         openCoInsuredInput(
             coInsuredModelEdit: coInsuredInputModel
         )
-        .routerDestination(for: CoInsuredAction.self, options: .hidesBackButton) { actionType in
-            var title: String {
-                switch actionType {
-                case .add:
-                    return L10n.contractCoinsuredAdded
-                case .delete:
-                    return L10n.contractCoinsuredRemoved
-                default:
-                    return ""
-                }
-            }
-            openSuccessScreen(title: title)
-        }
     }
 }
 
@@ -258,44 +233,18 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 
     func openSelectInsurance() -> some View {
-        ItemPickerScreen<InsuredPeopleConfig>(
-            config: .init(
-                items: {
-                    return configs.compactMap({
-                        (object: $0, displayName: .init(title: $0.displayName))
-                    })
-                }(),
-                preSelectedItems: {
-                    if let first = configs.first {
-                        return [first]
-                    }
-                    return []
-                },
-                onSelected: { [weak editCoInsuredViewModel] selectedConfigs in
-                    if let selectedConfig = selectedConfigs.first {
-                        if let object = selectedConfig.0 {
-                            editCoInsuredViewModel?.editCoInsuredModelDetent = nil
-                            editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                                return [object]
-                            })
-                            self.editCoInsuredNavigationVm.coInsuredViewModel.initializeCoInsured(with: object)
-                        }
-                    }
-                },
-                onCancel: { [weak router] in
-                    router?.dismiss()
-                },
-                singleSelect: true,
-                hButtonText: L10n.generalContinueButton
-            )
+        CoInsuredSelectInsuranceScreen(
+            configs: configs,
+            editCoInsuredNavigationVm: editCoInsuredNavigationVm,
+            editCoInsuredViewModel: editCoInsuredViewModel,
+            router: router
         )
-        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 }
 
 extension EditCoInsuredSelectInsuranceNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
+        .init(describing: CoInsuredSelectInsuranceScreen.self)
     }
 }
 
@@ -317,7 +266,7 @@ public struct EditCoInsuredAlertNavigation: View {
     }
 
     public func openMissingCoInsuredAlert() -> some View {
-        return MissingCoInsuredAlert(
+        MissingCoInsuredAlert(
             config: config,
             onButtonAction: { [weak editCoInsuredViewModel] in
                 editCoInsuredViewModel?.editCoInsuredModelMissingAlert = nil
@@ -331,15 +280,16 @@ public struct EditCoInsuredAlertNavigation: View {
         )
     }
 }
+
 extension EditCoInsuredAlertNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: MissingCoInsuredAlert.self)
+        .init(describing: MissingCoInsuredAlert.self)
     }
 }
 
 extension View {
     func addDismissEditCoInsuredFlow() -> some View {
-        self.withDismissButton(
+        withDismissButton(
             title: L10n.General.areYouSure,
             message: L10n.Claims.Alert.body,
             confirmButton: L10n.General.yes,

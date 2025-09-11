@@ -15,9 +15,9 @@ struct StartDateScreen: View {
             .sectionContainerStyle(.transparent)
             .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whenIsYourTrip, alignment: .leading))
             .hFormAttachToBottom {
-                VStack(spacing: 16) {
-                    hSection {
-                        VStack(spacing: 4) {
+                hSection {
+                    VStack(spacing: .padding16) {
+                        VStack(spacing: .padding4) {
                             hDatePickerField(
                                 config: .init(
                                     minDate: vm.specification.minStartDate,
@@ -39,20 +39,15 @@ struct StartDateScreen: View {
                                 error: $vm.emailError
                             )
                         }
-                    }
-                    hSection {
                         InfoCard(
                             text: L10n.TravelCertificate.startDateInfo(vm.specification.maxDuration),
                             type: .info
                         )
-                    }
-                    hSection {
-                        hButton.LargeButton(type: .primary) {
+                        .accessibilitySortPriority(2)
+                        hContinueButton {
                             Task {
                                 await submit()
                             }
-                        } content: {
-                            hText(L10n.generalContinueButton)
                         }
                     }
                 }
@@ -62,13 +57,13 @@ struct StartDateScreen: View {
     func submit() async {
         if Masking(type: .email).isValid(text: vm.email) {
             DispatchQueue.main.async {
-                self.vm.emailError = nil
+                vm.emailError = nil
                 router.push(TravelCertificateRouterActions.whoIsTravelling(specifiction: vm.specification))
             }
         } else {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.vm.emailError = L10n.myInfoEmailMalformedError
+                    vm.emailError = L10n.myInfoEmailMalformedError
                 }
             }
         }
@@ -89,7 +84,7 @@ class StartDateViewModel: ObservableObject {
 
     enum StartDateViewEditType: hTextFieldFocusStateCompliant {
         static var last: StartDateViewEditType {
-            return StartDateViewEditType.email
+            StartDateViewEditType.email
         }
 
         var next: StartDateViewEditType? {
@@ -108,16 +103,18 @@ class StartDateViewModel: ObservableObject {
 
 struct StartDateView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return NavigationView {
             StartDateScreen(
                 vm: .init(
                     specification: .init(
                         contractId: "",
+                        displayName: "display name",
+                        exposureDisplayName: "exposure display name",
                         minStartDate: Date(),
                         maxStartDate: Date().addingTimeInterval(60 * 60 * 24 * 10),
                         numberOfCoInsured: 0,
                         maxDuration: 45,
-                        street: "",
                         email: nil,
                         fullName: "full name"
                     )

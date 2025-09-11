@@ -4,7 +4,6 @@
 
 @MainActor
 final class TestChatViewModelBanner: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -22,8 +21,8 @@ final class TestChatViewModelBanner: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.banner == banner)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.banner == banner)
+        sut = mockService
     }
 
     func testBannerFailure() async {
@@ -31,10 +30,10 @@ final class TestChatViewModelBanner: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let chatInitialBanner = model.banner
+        let chatInitialBanner = model.messageVm.conversationVm.banner
         await model.startFetchingNewMessages()
-        assert(model.banner == chatInitialBanner)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.banner == chatInitialBanner)
+        sut = mockService
     }
 
     func testFetchBannerAfterFetchingPreviousMessagesSuccess() async {
@@ -46,10 +45,9 @@ final class TestChatViewModelBanner: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.banner == banner)
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.banner == updatedBanner)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.banner == banner)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.conversationVm.banner == updatedBanner)
+        sut = mockService
     }
-
 }

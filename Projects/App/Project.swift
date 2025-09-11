@@ -98,6 +98,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
         .project(target: "Claims", path: .relativeToRoot("Projects/Claims")),
+        .project(target: "SubmitClaim", path: .relativeToRoot("Projects/SubmitClaim")),
         .project(target: "Chat", path: .relativeToRoot("Projects/Chat")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),
         .project(target: "Payment", path: .relativeToRoot("Projects/Payment")),
@@ -107,9 +108,10 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Profile", path: .relativeToRoot("Projects/Profile")),
         .project(target: "Authentication", path: .relativeToRoot("Projects/Authentication")),
         .project(target: "EditCoInsured", path: .relativeToRoot("Projects/EditCoInsured")),
-        .project(target: "EditCoInsuredShared", path: .relativeToRoot("Projects/EditCoInsuredShared")),
         .project(target: "ChangeTier", path: .relativeToRoot("Projects/ChangeTier")),
         .project(target: "Addons", path: .relativeToRoot("Projects/Addons")),
+        .project(target: "CrossSell", path: .relativeToRoot("Projects/CrossSell")),
+        .project(target: "Campaign", path: .relativeToRoot("Projects/Campaign")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
         .project(
@@ -155,7 +157,7 @@ let project = Project(
             name: "Ugglan",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.hedvig.test.app",
+            bundleId: "com.hedvigForsakring.test.app",
             deploymentTargets: .iOS("15.0"),
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**", ""],
@@ -205,7 +207,7 @@ let project = Project(
             name: "NotificationService",
             destinations: .iOS,
             product: .appExtension,
-            bundleId: "com.hedvig.test.app.NotificationService",
+            bundleId: "com.hedvigForsakring.test.app.NotificationService",
             deploymentTargets: .iOS("15.0"),
             infoPlist: "../../Projects/NotificationService/Info.plist",
             sources: "../NotificationService/**",
@@ -240,7 +242,7 @@ let project = Project(
                     //                    TestableTarget.test
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "AppTests"),
-                        isParallelizable: true
+                        parallelization: .enabled
                     )
                 ],
                 arguments: Arguments.arguments(
@@ -267,7 +269,5 @@ let project = Project(
             runAction: .runAction(executable: "Hedvig")
         ),
     ],
-    additionalFiles: [
-        .folderReference(path: "GraphQL")
-    ]
+    additionalFiles: []
 )

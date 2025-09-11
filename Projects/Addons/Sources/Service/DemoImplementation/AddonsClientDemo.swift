@@ -3,17 +3,19 @@ import Foundation
 public class AddonsClientDemo: AddonsClient {
     public init() {}
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
+    public func getAddon(contractId _: String) async throws -> AddonOffer {
         let currentAddon: AddonQuote = .init(
             displayName: "45 days",
             quoteId: "quoteId45",
             addonId: "addonId45",
+            addonSubtype: "addonSubtype45",
             displayItems: [
                 .init(displayTitle: "Coverage", displayValue: "45 days"),
                 .init(displayTitle: "Insured people", displayValue: "You+1"),
             ],
             price: .init(amount: "49", currency: "SEK"),
-            addonVariant: nil
+            addonVariant: nil,
+            documents: []
         )
 
         let addons: AddonOffer = .init(
@@ -27,6 +29,7 @@ public class AddonsClientDemo: AddonsClient {
                     displayName: "60 days",
                     quoteId: "quoteId60",
                     addonId: "addonId60",
+                    addonSubtype: "addonSubtype60",
                     displayItems: [
                         .init(displayTitle: "Coverage", displayValue: "60 days"),
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
@@ -38,7 +41,8 @@ public class AddonsClientDemo: AddonsClient {
                         perils: [],
                         product: "",
                         termsVersion: ""
-                    )
+                    ),
+                    documents: []
                 ),
             ]
         )
@@ -46,5 +50,5 @@ public class AddonsClientDemo: AddonsClient {
         return addons
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws {}
+    public func submitAddon(quoteId _: String, addonId _: String) async throws {}
 }

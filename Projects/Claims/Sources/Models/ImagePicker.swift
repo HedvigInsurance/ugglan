@@ -5,10 +5,16 @@ import PhotosUI
 import SwiftUI
 import hCore
 
-struct ImagePicker: UIViewControllerRepresentable {
+public struct ImagePicker: UIViewControllerRepresentable {
     let filesSelected: (_ files: [File]) -> Void
 
-    func makeUIViewController(context: Context) -> PHPickerViewController {
+    public init(
+        filesSelected: @escaping (_: [File]) -> Void
+    ) {
+        self.filesSelected = filesSelected
+    }
+
+    public func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
         config.filter = .any(of: [.images, .videos])
 
@@ -18,22 +24,20 @@ struct ImagePicker: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
+    public func updateUIViewController(_: PHPickerViewController, context _: Context) {}
 
-    }
-
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+    public class Coordinator: NSObject, PHPickerViewControllerDelegate {
         let parent: ImagePicker
         var didFinishAdding = false
         init(_ parent: ImagePicker) {
             self.parent = parent
         }
 
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.isEditing = false
             guard !didFinishAdding else { return }
             didFinishAdding = true
@@ -47,7 +51,7 @@ struct ImagePicker: UIViewControllerRepresentable {
                             id: id,
                             size: 0,
                             mimeType: .JPEG,
-                            name: "\(Date().currentTimeMillis).jpeg",
+                            name: "\(Date().displayDateWithTimeStamp).jpeg",
                             source: .localFile(results: selectedItem)
                         )
                     files.append(file)
@@ -58,7 +62,7 @@ struct ImagePicker: UIViewControllerRepresentable {
                             id: id,
                             size: 0,
                             mimeType: .MOV,
-                            name: "\(Date().currentTimeMillis).mov",
+                            name: "\(Date().displayDateWithTimeStamp).mov",
                             source: .localFile(results: selectedItem)
                         )
                     files.append(file)
@@ -72,27 +76,32 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-struct FileImporterView: UIViewControllerRepresentable {
+public struct FileImporterView: UIViewControllerRepresentable {
     let imagesSelected: (_ filesSelected: [File]) -> Void
-
     @Environment(\.presentationMode) var presentationMode
 
-    func makeCoordinator() -> Coordinator {
+    public init(
+        imagesSelected: @escaping (_: [File]) -> Void
+    ) {
+        self.imagesSelected = imagesSelected
+    }
+
+    public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+    public func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item])
         picker.allowsMultipleSelection = true
         picker.delegate = context.coordinator
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {
+    public func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {
         // No update needed
     }
 
-    class Coordinator: NSObject, UIDocumentPickerDelegate {
+    public class Coordinator: NSObject, UIDocumentPickerDelegate {
         let parent: FileImporterView
         var didFinishAdding = false
 
@@ -100,7 +109,7 @@ struct FileImporterView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        public func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             var files: [File] = []
             guard !didFinishAdding else { return }
             didFinishAdding = true
@@ -114,10 +123,9 @@ struct FileImporterView: UIViewControllerRepresentable {
             }
             parent.imagesSelected(files)
             parent.presentationMode.wrappedValue.dismiss()
-
         }
 
-        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        public func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
     }

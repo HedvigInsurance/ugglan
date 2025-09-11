@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public struct AddonConfig: Hashable {
     let contractId: String
@@ -18,7 +17,7 @@ public struct AddonConfig: Hashable {
     }
 }
 
-public struct AddonBannerModel: Sendable {
+public struct AddonBannerModel: Sendable, Equatable, Codable, Hashable {
     public let contractIds: [String]
     let titleDisplayName: String
     let descriptionDisplayName: String
@@ -52,7 +51,7 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
         currentAddon: AddonQuote?,
         quotes: [AddonQuote]
     ) {
-        self.title = titleDisplayName
+        title = titleDisplayName
         self.description = description
         self.activationDate = activationDate
         self.currentAddon = currentAddon
@@ -74,47 +73,42 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     public var id: String {
         addonId
     }
+
     let displayName: String?
     let quoteId: String
     let addonId: String
+    let addonSubtype: String
     let displayItems: [AddonDisplayItem]
     let price: MonetaryAmount?
     let addonVariant: AddonVariant?
-}
-
-struct AddonDisplayItem: Equatable, Hashable {
-    let displayTitle: String
-    let displayValue: String
-}
-
-public struct AddonVariant: Codable, Equatable, Hashable, Sendable {
-    public let displayName: String
-    public let documents: [hPDFDocument]
-    public let perils: [Perils]
-    public let product: String
-    public let termsVersion: String
-
+    let documents: [hPDFDocument]
     public init(
-        fragment: OctopusGraphQL.AddonVariantFragment?
-    ) {
-        self.displayName = fragment?.displayName ?? ""
-        self.documents = fragment?.documents.map({ .init($0) }) ?? []
-        self.perils = fragment?.addonPerils.map({ .init(fragment: $0) }) ?? []
-        self.product = fragment?.product ?? ""
-        self.termsVersion = fragment?.termsVersion ?? ""
-    }
-
-    public init(
-        displayName: String,
-        documents: [hPDFDocument],
-        perils: [Perils],
-        product: String,
-        termsVersion: String
+        displayName: String?,
+        quoteId: String,
+        addonId: String,
+        addonSubtype: String,
+        displayItems: [AddonDisplayItem],
+        price: MonetaryAmount?,
+        addonVariant: AddonVariant?,
+        documents: [hPDFDocument]
     ) {
         self.displayName = displayName
+        self.quoteId = quoteId
+        self.addonId = addonId
+        self.addonSubtype = addonSubtype
+        self.displayItems = displayItems
+        self.price = price
+        self.addonVariant = addonVariant
         self.documents = documents
-        self.perils = perils
-        self.product = product
-        self.termsVersion = termsVersion
+    }
+}
+
+public struct AddonDisplayItem: Equatable, Hashable, Sendable {
+    let displayTitle: String
+    let displayValue: String
+
+    public init(displayTitle: String, displayValue: String) {
+        self.displayTitle = displayTitle
+        self.displayValue = displayValue
     }
 }

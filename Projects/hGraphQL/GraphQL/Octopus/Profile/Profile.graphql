@@ -1,0 +1,18 @@
+query Profile {
+  currentMember {
+    memberActions {
+      isTravelCertificateEnabled
+      isCreatingOfInsuranceEvidenceEnabled
+      isContactInfoUpdateNeeded
+    }
+    travelCertificates {
+      id
+    }
+  id
+  email
+  phoneNumber
+  firstName
+  lastName
+    ...PartnerDataFragment
+  }
+}

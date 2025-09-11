@@ -3,7 +3,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractCoverageView: View {
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
@@ -24,7 +23,6 @@ struct ContractCoverageView: View {
                     },
                     perils: contract.allPerils
                 )
-                .hWithoutHorizontalPadding
             }
         }
     }
@@ -35,9 +33,8 @@ extension Contract {
         var allPerils: [(title: String?, perils: [Perils])] = []
         allPerils.append((nil, currentAgreement?.productVariant.perils ?? []))
         let addonPerils: [(title: String?, perils: [Perils])] =
-            currentAgreement?.addonVariant.compactMap({ ($0.displayName, $0.perils) }) ?? []
+            currentAgreement?.addonVariant.compactMap { ($0.displayName, $0.perils) } ?? []
         allPerils.append(contentsOf: addonPerils)
         return allPerils
-
     }
 }

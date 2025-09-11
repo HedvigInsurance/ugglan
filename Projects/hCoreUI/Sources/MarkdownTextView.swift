@@ -3,17 +3,19 @@ import MarkdownKit
 import SnapKit
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct MarkdownView: View {
     private let config: CustomTextViewRepresentableConfig
     @State private var height: CGFloat = 20
     @State private var width: CGFloat = 0
+    @Environment(\.colorScheme) var colorScheme
+
     public init(
         config: CustomTextViewRepresentableConfig
     ) {
         self.config = config
     }
+
     public var body: some View {
         if let maxWidth = config.maxWidth {
             CustomTextViewRepresentable(
@@ -22,6 +24,7 @@ public struct MarkdownView: View {
                 height: $height,
                 width: $width
             )
+            .frame(maxWidth: maxWidth)
             .frame(width: width, height: height)
         } else {
             GeometryReader { geo in
@@ -35,7 +38,6 @@ public struct MarkdownView: View {
                 )
             }
             .frame(height: height)
-
         }
     }
 }
@@ -46,6 +48,8 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding private var height: CGFloat
     @Binding private var width: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
+    @Environment(\.hEnvironmentAccessibilityLabel) var accessibilityLabel
+
     init(
         config: CustomTextViewRepresentableConfig,
         fixedWidth: CGFloat,
@@ -58,7 +62,10 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         _width = width
     }
 
-    func makeUIView(context: Context) -> some UIView {
+    func makeUIView(context _: Context) -> UIView {
+        // wrapping the text view with a view to avoid issues with SwiftUI and UITextView
+        let view = UIView(frame: .zero)
+        view.backgroundColor = .clear
         let textView = CustomTextView(
             config: config,
             fixedWidth: fixedWidth,
@@ -66,19 +73,48 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
             width: $width,
             colorScheme: colorScheme
         )
-        return textView
+        view.addSubview(textView)
+        textView.accessibilityLabel = accessibilityLabel
+        textView.setContent(from: config.text)
+        textView.calculateHeight()
+        textView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        return view
     }
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        if let uiView = uiView as? CustomTextView {
-            uiView.setContent(from: config.text)
+
+    func updateUIView(_ uiView: UIView, context _: Context) {
+        if let textView = uiView.subviews.first as? CustomTextView {
+            textView.setContent(from: config.text)
+            textView.calculateHeight()
+            if let accessibilityLabel {
+                textView.accessibilityLabel = accessibilityLabel
+            }
         }
     }
 }
 
-class CustomTextView: UIView, UITextViewDelegate {
+@MainActor
+private struct EnvironmentAccessibilityLabel: @preconcurrency EnvironmentKey {
+    static let defaultValue: String? = nil
+}
+
+extension EnvironmentValues {
+    public var hEnvironmentAccessibilityLabel: String? {
+        get { self[EnvironmentAccessibilityLabel.self] }
+        set { self[EnvironmentAccessibilityLabel.self] = newValue }
+    }
+}
+
+extension View {
+    public func hEnvironmentAccessibilityLabel(_ label: String?) -> some View {
+        environment(\.hEnvironmentAccessibilityLabel, label)
+    }
+}
+
+class CustomTextView: UITextView, UITextViewDelegate {
     let config: CustomTextViewRepresentableConfig
     let fixedWidth: CGFloat
-    let textView: UITextView
     @Binding var height: CGFloat
     @Binding var width: CGFloat
     var colorScheme: ColorScheme
@@ -93,83 +129,76 @@ class CustomTextView: UIView, UITextViewDelegate {
         _width = width
         self.config = config
         self.fixedWidth = fixedWidth
-        self.textView = UITextView()
         self.colorScheme = colorScheme
-        super.init(frame: .zero)
-        self.addSubview(textView)
+        super.init(frame: .zero, textContainer: nil)
         configureTextView()
-        setContent(from: config.text)
-        calculateHeight()
-        self.clipsToBounds = false
+        snp.makeConstraints { make in
+            make.width.lessThanOrEqualTo(fixedWidth)
+        }
     }
 
     private func configureTextView() {
-        self.backgroundColor = .clear
-        textView.isEditable = false
-        textView.isUserInteractionEnabled = true
-        textView.isScrollEnabled = false
-        textView.isSelectable = true
-        textView.backgroundColor = .clear
-        textView.dataDetectorTypes = [.address, .link, .phoneNumber]
-        textView.clipsToBounds = false
+        backgroundColor = .clear
+        isEditable = false
+        isUserInteractionEnabled = true
+        isScrollEnabled = false
+        isSelectable = true
+        dataDetectorTypes = [.address, .link, .phoneNumber]
+        accessibilityTraits = .staticText
         var linkTextAttributes = [NSAttributedString.Key: Any]()
         linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
         linkTextAttributes[.underlineColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
         if let linkUnderlineStyle = config.linkUnderlineStyle {
             linkTextAttributes[.underlineStyle] = linkUnderlineStyle.rawValue
         }
-        textView.linkTextAttributes = linkTextAttributes
-        textView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(-6)
-            make.trailing.equalToSuperview().offset(6)
-            make.top.equalToSuperview()
-        }
-        textView.textContainerInset = .zero
-        textView.delegate = self
+        self.linkTextAttributes = linkTextAttributes
+        textContainerInset = .zero
+        delegate = self
     }
 
     func setContent(from text: String) {
-        configureTextView()
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: config.fontStyle),
             color: config.color.colorFor(colorScheme, .base).color.uiColor()
         )
         let attributedString = markdownParser.parse(text)
+
         if !text.isEmpty {
             let mutableAttributedString = NSMutableAttributedString(
                 attributedString: attributedString
             )
-            textView.attributedText = mutableAttributedString
-            textView.textAlignment = config.textAlignment
+            attributedText = mutableAttributedString
+            textAlignment = config.textAlignment
         }
     }
 
-    private func calculateHeight() {
+    func calculateHeight() {
         let newSize = getSize()
+        frame.size = newSize
         DispatchQueue.main.async { [weak self] in
             self?.height = newSize.height
-            self?.width = newSize.width - 12
+            self?.width = newSize.width
         }
     }
 
     private func getSize() -> CGSize {
-        let newSize = textView.sizeThatFits(
+        let newSize = sizeThatFits(
             CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude)
         )
         return newSize
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-
+    func textView(_: UITextView, shouldInteractWith URL: URL, in _: NSRange) -> Bool {
         let emailMasking = Masking(type: .email)
         if emailMasking.isValid(text: URL.absoluteString) {
             let emailURL = "mailto:" + URL.absoluteString
             if let url = Foundation.URL(string: emailURL) {
-                UIApplication.shared.open(url)
+                Dependencies.urlOpener.open(url)
             }
         } else {
             config.onUrlClicked(URL)

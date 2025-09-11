@@ -1,15 +1,15 @@
 import Foundation
 
 public class HomeClientDemo: HomeClient {
-
     public init() {}
 
     public func getImportantMessages() async throws -> [ImportantMessage] {
-        return []
+        []
     }
 
     public func getMemberState() async throws -> MemberState {
-        return .init(
+        .init(
+            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
             contracts: [],
             contractState: MemberContractState.active,
             futureState: FutureStatus.none
@@ -17,16 +17,17 @@ public class HomeClientDemo: HomeClient {
     }
 
     public func getQuickActions() async throws -> [QuickAction] {
-        return []
+        []
     }
 
     public func getMessagesState() async throws -> MessageState {
-        return .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: true, lastMessageTimeStamp: nil)
+        .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: true, lastMessageTimeStamp: nil)
     }
 
     public func getNumberOfClaims() async throws -> Int {
-        return 0
+        0
     }
+
     public func getFAQ() async throws -> HelpCenterFAQModel {
         let question1 = FAQModel(
             id: "id1",
@@ -61,5 +62,4 @@ public class HomeClientDemo: HomeClient {
             ]
         )
     }
-
 }

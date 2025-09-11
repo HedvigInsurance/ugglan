@@ -1,18 +1,18 @@
 import Chat
 import Combine
 import Contracts
-import EditCoInsuredShared
+import CrossSell
+import EditCoInsured
 import Foundation
 import Payment
 import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 extension String: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return self
+        self
     }
 }
 
@@ -25,23 +25,14 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
     private var cancellables = Set<AnyCancellable>()
-    public init() {
 
+    public init() {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
-
-            //            let openChatTask = await Task {
             var openChat: ChatConversation?
 
             if let chatType = notification.object as? ChatType {
-                switch chatType {
-                case let .conversationId(conversationId):
-                    openChat = .init(chatType: .conversationId(id: conversationId))
-                case .newConversation:
-                    openChat = .init(chatType: .newConversation)
-                case .inbox:
-                    openChat = .init(chatType: .inbox)
-                }
+                openChat = .init(chatType: chatType)
             } else {
                 openChat = .init(chatType: .inbox)
             }
@@ -58,6 +49,30 @@ public class HomeNavigationViewModel: ObservableObject {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
+            [weak self] notification in
+            guard let crossSellInfo = notification.object as? CrossSellInfo else { return }
+
+            Task { @MainActor in
+                let crossSells = try await crossSellInfo.getCrossSell()
+                if let recommended = crossSells.recommended {
+                    if crossSells.others.isEmpty {
+                        self?.navBarItems.isNewOfferPresentedCenter = recommended
+                    } else {
+                        self?.navBarItems.isNewOfferPresentedModal = crossSells
+                    }
+                } else {
+                    self?.navBarItems.isNewOfferPresentedDetent = crossSells
+                }
+
+                crossSellInfo.logCrossSellEvent()
+
+                if let recommended = crossSells.recommended {
+                    let store: CrossSellStore = globalPresentableStoreContainer.get()
+                    store.send(.setHasSeenRecommendedWith(id: recommended.id))
+                }
+            }
+        }
     }
 
     public var router = Router()
@@ -72,23 +87,9 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct NavBarItems {
         public var isFirstVetPresented = false
-        public var isNewOfferPresented = false
-    }
-
-    public struct FileUrlModel: Identifiable, Equatable {
-        public var id: String?
-        public var type: FileUrlModelType
-
-        public init(
-            type: FileUrlModelType
-        ) {
-            self.type = type
-        }
-
-        public enum FileUrlModelType: Codable, Equatable {
-            case url(url: URL, mimeType: MimeType)
-            case data(data: Data, mimeType: MimeType)
-        }
+        public var isNewOfferPresentedModal: CrossSells?
+        public var isNewOfferPresentedCenter: CrossSell?
+        public var isNewOfferPresentedDetent: CrossSells?
     }
 
     deinit {
@@ -99,15 +100,5 @@ public class HomeNavigationViewModel: ObservableObject {
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
-}
-
-extension HomeNavigationViewModel.FileUrlModel.FileUrlModelType {
-    public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
-        switch self {
-        case let .url(url, mimeType):
-            return .url(url: url, mimeType: mimeType)
-        case let .data(data, mimeType):
-            return .data(data: data, mimeType: mimeType)
-        }
-    }
+    public var pushToProfile: (() -> Void)?
 }

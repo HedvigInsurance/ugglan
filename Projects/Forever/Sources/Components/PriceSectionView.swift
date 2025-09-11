@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct PriceSectionView: View {
     @State var monthlyDiscount: MonetaryAmount
@@ -15,9 +14,9 @@ struct PriceSectionView: View {
             hText(L10n.foreverTabMonthlyDiscount)
             HStack(spacing: 4) {
                 hText(monthlyDiscountAnimate.negative.formattedAmount + "/" + L10n.monthAbbreviationLabel)
-                Image(uiImage: hCoreUIAssets.infoFilled.image)
+                hCoreUIAssets.infoFilled.view
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 20)
                     .onTapGesture {
                         didPressInfo()
                     }

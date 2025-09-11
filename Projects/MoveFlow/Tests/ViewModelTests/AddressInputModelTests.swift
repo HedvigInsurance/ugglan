@@ -1,4 +1,3 @@
-import PresentableStore
 @preconcurrency import XCTest
 import hCore
 
@@ -11,8 +10,7 @@ final class AddressInputModelTests: XCTestCase {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     }
 
-    override func tearDown() async throws {
-    }
+    override func tearDown() async throws {}
 
     func testIsStudentEnabledFalseInputValidSuccess() async {
         let model = AddressInputModel()

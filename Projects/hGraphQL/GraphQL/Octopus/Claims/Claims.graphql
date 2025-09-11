@@ -1,0 +1,51 @@
+query Claims {
+    currentMember {
+        claims {
+			...ClaimFragment
+        }
+    }
+}
+
+query ActiveClaims {
+    currentMember {
+        claimsActive {
+            ...ClaimFragment
+        }
+    }
+}
+
+query HistoryClaims {
+    currentMember {
+        claimsHistory {
+            ...ClaimFragment
+        }
+    }
+}
+
+fragment ClaimFragment on Claim {
+    targetFileUploadUri
+    id
+    outcome
+    status
+    submittedAt
+    audioUrl
+    memberFreeText
+    payoutAmount {
+        ...MoneyFragment
+    }
+    productVariant {
+        ...ProductVariantFragment
+    }
+    claimType
+    conversation {
+        ...ConversationFragment
+    }
+    appealInstructionsUrl
+    isUploadingFilesEnabled
+    showClaimClosedFlow
+    infoText
+    displayItems {
+    	displayTitle
+        displayValue
+    }
+}

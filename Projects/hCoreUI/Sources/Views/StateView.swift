@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-struct StateView: View {
+public struct StateView: View {
     let type: StateType
     let title: String
     let bodyText: String?
@@ -11,7 +11,7 @@ struct StateView: View {
     @Environment(\.hSuccessBottomAttachedView) var bottomAttachedView
     @Environment(\.hExtraTopPadding) var extraTopPadding
 
-    init(
+    public init(
         type: StateType,
         title: String,
         bodyText: String?,
@@ -25,7 +25,7 @@ struct StateView: View {
         self.attachContentToBottom = attachContentToBottom
     }
 
-    var body: some View {
+    public var body: some View {
         if let formPosition {
             hForm {
                 if !attachContentToBottom {
@@ -40,18 +40,15 @@ struct StateView: View {
                     .padding(.vertical, .padding16)
             }
         } else {
-            if buttonConfig != nil && bottomAttachedView == nil {
-                ZStack(alignment: .bottom) {
-                    BackgroundView().ignoresSafeArea()
-                    VStack {
-                        Spacer()
-                        centralContent
-                        Spacer()
-                    }
+            if buttonConfig != nil, bottomAttachedView == nil {
+                VStack(spacing: .padding8) {
+                    Spacer()
+                    centralContent
+                    Spacer()
                     bottomButtonsView
                 }
             } else {
-                ZStack(alignment: .bottom) {
+                VStack(spacing: 0) {
                     VStack {
                         Spacer()
                         centralContent
@@ -67,9 +64,9 @@ struct StateView: View {
 
     private var centralContent: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 if let image = type.image {
-                    Image(uiImage: image)
+                    image
                         .resizable()
                         .frame(width: 40, height: 40)
                         .foregroundColor(type.imageColor)
@@ -91,11 +88,14 @@ struct StateView: View {
                 .accessibilityElement(children: .combine)
 
                 if let button = buttonConfig?.actionButton {
-                    hButton.MediumButton(type: .primary) {
-                        button.buttonAction()
-                    } content: {
-                        hText(button.buttonTitle ?? type.buttonText)
-                    }
+                    hButton(
+                        .medium,
+                        .primary,
+                        content: .init(title: button.buttonTitle ?? type.buttonText),
+                        {
+                            button.buttonAction()
+                        }
+                    )
                 }
             }
         }
@@ -111,21 +111,27 @@ struct StateView: View {
                         .padding(.top, extraTopPadding ? 32 : 0)
                 }
                 if let actionButton = buttonConfig?.actionButtonAttachedToBottom {
-                    hButton.LargeButton(type: .primary) {
-                        actionButton.buttonAction()
-                    } content: {
-                        hText(actionButton.buttonTitle ?? "")
-                    }
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: actionButton.buttonTitle ?? ""),
+                        {
+                            actionButton.buttonAction()
+                        }
+                    )
                 }
                 if let dismissButton = buttonConfig?.dismissButton {
-                    hButton.LargeButton(type: .ghost) {
-                        dismissButton.buttonAction()
-                    } content: {
-                        hText(
-                            dismissButton.buttonTitle ?? (type == .success ? L10n.generalCloseButton : L10n.openChat),
-                            style: .body1
-                        )
-                    }
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(
+                            title: dismissButton.buttonTitle
+                                ?? (type == .success ? L10n.generalCloseButton : L10n.openChat)
+                        ),
+                        {
+                            dismissButton.buttonAction()
+                        }
+                    )
                 }
             }
         }
@@ -134,23 +140,23 @@ struct StateView: View {
 }
 
 @MainActor
-enum StateType {
+public enum StateType {
     case error
     case information
     case success
     case bankId
     case empty
 
-    var image: UIImage? {
+    var image: Image? {
         switch self {
         case .error:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .information:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         case .success:
-            return hCoreUIAssets.checkmarkFilled.image
+            return hCoreUIAssets.checkmarkFilled.view
         case .bankId:
-            return hCoreUIAssets.bankID.image
+            return hCoreUIAssets.bankID.view
         case .empty:
             return nil
         }
@@ -235,7 +241,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hStateViewButtonConfig(_ stateViewButtonConfigKey: StateViewButtonConfig?) -> some View {
-        self.environment(\.hStateViewButtonConfig, stateViewButtonConfigKey)
+        environment(\.hStateViewButtonConfig, stateViewButtonConfigKey)
     }
 }
 

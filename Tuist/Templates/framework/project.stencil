@@ -10,6 +10,5 @@ let project = Project.framework(
        .testing
     ]),
     dependencies: [],
-    sdks: [],
-    includesGraphQL: true
+    sdks: []
 )

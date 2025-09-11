@@ -9,13 +9,14 @@ public struct ClaimFilesView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     public init(endPoint: String, files: [File], onSuccess: @escaping (_ data: [ClaimFileUploadResponse]) -> Void) {
-        self.vm = .init(
+        vm = .init(
             endPoint: endPoint,
             files: files,
             options: [.add, .delete],
             onSuccess: onSuccess
         )
     }
+
     public var body: some View {
         Group {
             if vm.isLoading || vm.success {
@@ -48,26 +49,30 @@ public struct ClaimFilesView: View {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .padding(.vertical, .padding16)
-
                 }
                 .hFormAttachToBottom {
                     hSection {
-                        VStack(spacing: 8) {
-                            hButton.LargeButton(type: .secondary) {
-                                showFilePickerAlert()
-                            } content: {
-                                hText(L10n.ClaimStatusDetail.addMoreFiles)
-
-                            }
+                        VStack(spacing: .padding8) {
+                            hButton(
+                                .large,
+                                .secondary,
+                                content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
+                                {
+                                    showFilePickerAlert()
+                                }
+                            )
                             .disabled(vm.isLoading)
 
-                            hButton.LargeButton(type: .primary) {
-                                Task {
-                                    await vm.uploadFiles()
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.fileUploadUploadFiles),
+                                {
+                                    Task {
+                                        await vm.uploadFiles()
+                                    }
                                 }
-                            } content: {
-                                hText(L10n.fileUploadUploadFiles)
-                            }
+                            )
                             .hButtonIsLoading(vm.isLoading)
                             .disabled(vm.fileGridViewModel.files.isEmpty)
                         }
@@ -123,7 +128,7 @@ public struct ClaimFilesView: View {
                         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                             return
                         }
-                        await UIApplication.shared.open(settingsUrl)
+                        Dependencies.urlOpener.open(settingsUrl)
                     case .authorized, .limited:
                         showImagePicker = true
                     @unknown default:
@@ -137,17 +142,19 @@ public struct ClaimFilesView: View {
     }
 
     private var loadingView: some View {
-        hSection {
-            VStack(spacing: 20) {
-                Spacer()
-                hText(L10n.fileUploadIsUploading)
-                ProgressView(value: vm.progress)
-                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                    .progressViewStyle(hProgressViewStyle())
-                Spacer()
+        GeometryReader { proxy in
+            hSection {
+                VStack(spacing: 20) {
+                    Spacer()
+                    hText(L10n.fileUploadIsUploading)
+                    ProgressView(value: vm.progress)
+                        .frame(width: proxy.size.width * 0.53)
+                        .progressViewStyle(hProgressViewStyle())
+                    Spacer()
+                }
             }
+            .sectionContainerStyle(.transparent)
         }
-        .sectionContainerStyle(.transparent)
     }
 
     private var successView: some View {
@@ -156,7 +163,7 @@ public struct ClaimFilesView: View {
 }
 
 @MainActor
-class ClaimFilesViewModel: ObservableObject {
+public class ClaimFilesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var success = false
     @Published var error: String?
@@ -175,8 +182,8 @@ class ClaimFilesViewModel: ObservableObject {
     ) {
         self.endPoint = endPoint
         self.onSuccess = onSuccess
-        self.fileGridViewModel = .init(files: files, options: options)
-        self.fileGridViewModel.onDelete = { [weak self] file in
+        fileGridViewModel = .init(files: files, options: options)
+        fileGridViewModel.onDelete = { [weak self] file in
             Task {
                 self?.removeFile(id: file.id)
             }
@@ -204,14 +211,14 @@ class ClaimFilesViewModel: ObservableObject {
             setNavigationBarHidden(true)
         }
         do {
-            let filteredFiles = fileGridViewModel.files.filter({
+            let filteredFiles = fileGridViewModel.files.filter {
                 switch $0.source {
                 case .data, .localFile:
                     return true
                 case .url:
                     return false
                 }
-            })
+            }
             if !filteredFiles.isEmpty {
                 let files = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
                     [weak self] progress in
@@ -222,7 +229,7 @@ class ClaimFilesViewModel: ObservableObject {
                     }
                 }
                 success = true
-                self.onSuccess(files)
+                onSuccess(files)
             }
         } catch let ex {
             withAnimation {
@@ -237,18 +244,48 @@ class ClaimFilesViewModel: ObservableObject {
         }
     }
 
-    struct ClaimFilesViewOptions: OptionSet {
-        let rawValue: UInt
+    public struct ClaimFilesViewOptions: OptionSet, Sendable {
+        public let rawValue: UInt
 
-        static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
-        static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
-        static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
+        public init(
+            rawValue: UInt
+        ) {
+            self.rawValue = rawValue
+        }
 
+        public static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
+        public static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+        public static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {
         let nav = UIApplication.shared.getTopViewControllerNavigation()
         nav?.setNavigationBarHidden(hidden, animated: true)
+    }
+}
+
+public struct FileUrlModel: Identifiable, Equatable {
+    public var id: String?
+    public var type: FileUrlModelType
+
+    public init(
+        type: FileUrlModelType
+    ) {
+        self.type = type
+    }
+
+    public enum FileUrlModelType: Codable, Equatable {
+        case url(url: URL, mimeType: MimeType)
+        case data(data: Data, mimeType: MimeType)
+
+        public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
+            switch self {
+            case let .url(url, mimeType):
+                return .url(url: url, mimeType: mimeType)
+            case let .data(data, mimeType):
+                return .data(data: data, mimeType: mimeType)
+            }
+        }
     }
 }
 
@@ -304,12 +341,12 @@ class ClaimFilesViewModel: ObservableObject {
         ),
     ]
     return ClaimFilesView(endPoint: "", files: files) { _ in
-
     }
 }
+
 @MainActor
-struct FilePicker {
-    static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
+public struct FilePicker {
+    public static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
         let alert = UIAlertController(
             title: nil,
             message: nil,
@@ -354,7 +391,7 @@ struct FilePicker {
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
-    enum SelectedFileInputType {
+    public enum SelectedFileInputType {
         case camera
         case imagePicker
         case filePicker

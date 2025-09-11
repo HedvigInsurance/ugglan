@@ -33,7 +33,7 @@ public struct InboxView: View {
                 }
                 .background(getBackgroundColor(for: conversation))
         }
-        .hSectionWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.section])
         .sectionContainerStyle(.transparent)
     }
 
@@ -155,7 +155,7 @@ class InboxViewModel: ObservableObject {
     init() {
         configureFetching()
         chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
-            [weak self] notification in
+            [weak self] _ in
             Task {
                 await self?.configureFetching()
             }
@@ -188,7 +188,7 @@ class InboxViewModel: ObservableObject {
                 self.conversations = conversations
             }
         } catch _ {
-            //TODO: EXCEPTION
+            // TODO: EXCEPTION
         }
     }
 

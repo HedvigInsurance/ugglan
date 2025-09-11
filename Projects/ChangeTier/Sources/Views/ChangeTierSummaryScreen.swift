@@ -1,19 +1,14 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ChangeTierSummaryScreen: View {
-    @ObservedObject var changeTierVm: ChangeTierViewModel
-    let quoteSummaryVm: QuoteSummaryViewModel
-    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    private let quoteSummaryVm: QuoteSummaryViewModel
 
     init(
         changeTierVm: ChangeTierViewModel,
         changeTierNavigationVm: ChangeTierNavigationViewModel
     ) {
-        self.changeTierVm = changeTierVm
-        self.changeTierNavigationVm = changeTierNavigationVm
         quoteSummaryVm = changeTierVm.asQuoteSummaryViewModel(changeTierNavigationVm: changeTierNavigationVm)
     }
 
@@ -26,48 +21,72 @@ struct ChangeTierSummaryScreen: View {
 extension ChangeTierViewModel {
     func asQuoteSummaryViewModel(changeTierNavigationVm: ChangeTierNavigationViewModel) -> QuoteSummaryViewModel {
         let displayItems: [QuoteDisplayItem] =
-            self.selectedQuote?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
+            selectedQuote?.displayItems.map { .init(title: $0.title, value: $0.value) } ?? []
         let activationDate = L10n.changeAddressActivationDate(activationDate?.displayDateDDMMMYYYYFormat ?? "")
         var contracts: [QuoteSummaryViewModel.ContractInfo] = []
         contracts.append(
             .init(
-                id: self.currentTier?.id ?? "",
-                displayName: self.displayName ?? "",
+                id: currentTier?.id ?? "",
+                displayName: displayName ?? "",
                 exposureName: activationDate,
-                newPremium: self.newPremium,
-                currentPremium: self.currentPremium,
+                netPremium: newPremium,
+                grossPremium: currentPremium,
                 documents: self.selectedQuote?.productVariant?.documents ?? [],
                 onDocumentTap: { [weak changeTierNavigationVm] document in
                     changeTierNavigationVm?.document = document
                 },
                 displayItems: displayItems,
-                insuranceLimits: self.selectedQuote?.productVariant?.insurableLimits ?? [],
-                typeOfContract: self.typeOfContract
+                insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
+                typeOfContract: typeOfContract,
+                discountDisplayItems: []
             )
         )
-        for addon in self.selectedQuote?.addons ?? [] {
+        for addon in selectedQuote?.addons ?? [] {
             contracts.append(
                 .init(
                     id: addon.addonId,
                     displayName: addon.displayName,
                     exposureName: activationDate,
-                    newPremium: addon.premium,
-                    currentPremium: addon.previousPremium,
+                    netPremium: addon.premium,
+                    grossPremium: addon.previousPremium,
                     documents: addon.addonVariant.documents,
                     onDocumentTap: { [weak changeTierNavigationVm] document in
                         changeTierNavigationVm?.document = document
                     },
-                    displayItems: addon.displayItems.compactMap({ .init(title: $0.title, value: $0.value) }),
+                    displayItems: addon.displayItems.compactMap { .init(title: $0.title, value: $0.value) },
                     insuranceLimits: [],
                     typeOfContract: nil,
-                    isAddon: true
+                    isAddon: true,
+                    discountDisplayItems: []
                 )
             )
         }
+        let totalNet: MonetaryAmount = {
+            let totalValue =
+                contracts
+                .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
+        }()
+
+        let totalGross: MonetaryAmount = {
+            let totalValue =
+                contracts
+                .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
+        }()
+
         let vm = QuoteSummaryViewModel(
             contract: contracts,
-            onConfirmClick: {
-                changeTierNavigationVm.isConfirmTierPresented = true
+            activationDate: self.activationDate,
+            summaryDataProvider: DirectQuoteSummaryDataProvider(
+                intentCost: .init(
+                    totalGross: totalGross,
+                    totalNet: totalNet
+                )
+            ),
+            onConfirmClick: { [weak changeTierNavigationVm] in
+                changeTierNavigationVm?.vm.commitTier()
+                changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
             }
         )
 

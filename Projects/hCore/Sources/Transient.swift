@@ -10,6 +10,7 @@ public struct Transient<Value>: Codable & Equatable & Sendable where Value: Coda
             innerValue = newValue
         }
     }
+
     public var innerValue: Value?
     public var defaultValue: Value
 
@@ -18,14 +19,14 @@ public struct Transient<Value>: Codable & Equatable & Sendable where Value: Coda
         defaultValue: Value
     ) {
         self.defaultValue = defaultValue
-        self.innerValue = wrappedValue
+        innerValue = wrappedValue
     }
 
     public init(
         defaultValue: Value
     ) {
         self.defaultValue = defaultValue
-        self.innerValue = nil
+        innerValue = nil
     }
 
     enum CodingKeys: CodingKey {
@@ -43,12 +44,13 @@ public struct OptionalTransient<Value>: Codable & Equatable & Sendable where Val
             innerValue = newValue
         }
     }
+
     public var innerValue: Value?
 
     public init(
         wrappedValue: Value?
     ) {
-        self.innerValue = wrappedValue
+        innerValue = wrappedValue
     }
 
     enum CodingKeys: CodingKey {}

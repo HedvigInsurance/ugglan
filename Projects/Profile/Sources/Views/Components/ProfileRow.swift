@@ -2,11 +2,11 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ProfileRow: View {
     @PresentableStore var store: ProfileStore
     @EnvironmentObject var router: Router
+    @EnvironmentObject var profileNavigationViewModel: ProfileNavigationViewModel
 
     let row: ProfileRowType
 
@@ -16,10 +16,10 @@ struct ProfileRow: View {
         self.row = row
     }
 
-    public var body: some View {
+    var body: some View {
         hRow {
-            HStack(spacing: 16) {
-                Image(uiImage: row.icon)
+            HStack(spacing: .padding16) {
+                row.icon
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 24, height: 24)
@@ -46,6 +46,12 @@ struct ProfileRow: View {
             router.push(ProfileRouterType.euroBonus)
         case .travelCertificate:
             router.push(ProfileRedirectType.travelCertificate)
+        case .insuranceEvidence:
+            profileNavigationViewModel.isCreateInsuranceEvidencePresented = true
+        case .certificates:
+            router.push(ProfileRouterType.certificates)
+        case .claimHistory:
+            router.push(ProfileRouterType.claimHistory)
         }
     }
 }

@@ -44,8 +44,8 @@ public struct FileView: View {
                 }
             } else {
                 GeometryReader { geometry in
-                    VStack(spacing: 4) {
-                        Image(uiImage: fileImage)
+                    VStack(spacing: .padding4) {
+                        fileImage
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -69,12 +69,12 @@ public struct FileView: View {
         }
     }
 
-    private var fileImage: UIImage {
+    private var fileImage: Image {
         switch file.mimeType {
         case .PDF:
-            return hCoreUIAssets.pdf.image
+            return hCoreUIAssets.pdf.view
         default:
-            return hCoreUIAssets.file.image
+            return hCoreUIAssets.file.view
         }
     }
 
@@ -123,12 +123,10 @@ public struct FileView: View {
                     )
                 )
         }
-
     }
 }
 
 public struct hPHPickerResultImageDataProvider: ImageDataProvider {
-
     /// The possible error might be caused by the `PHPickerResultImageDataProvider`.
     /// - invalidImage: The retrieved image is invalid.
     public enum PHPickerResultImageDataProviderError: Error {
@@ -165,7 +163,6 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
             do {
                 let results = try await pickerResult.itemProvider.getData()
                 handler(.success(results.data))
-
             } catch {
                 handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
             }
@@ -174,7 +171,6 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
 }
 
 public struct InMemoryImageDataProvider: ImageDataProvider {
-
     public var cacheKey: String
     let data: Data
     /// Provides the data which represents image. Kingfisher uses the data you pass in the
@@ -202,5 +198,4 @@ public struct InMemoryImageDataProvider: ImageDataProvider {
 
     /// The content URL represents this provider, if exists.
     public var contentURL: URL?
-
 }

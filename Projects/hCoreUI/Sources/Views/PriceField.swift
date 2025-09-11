@@ -1,72 +1,83 @@
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct PriceField: View {
     let newPremium: MonetaryAmount?
     let currentPremium: MonetaryAmount?
+    let title: String?
+    let subTitle: String?
+    let withoutPreviousPriceText: Bool
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
+    @SwiftUI.Environment(\.hPriceFormatting) var formatting
 
     public init(
         newPremium: MonetaryAmount?,
-        currentPremium: MonetaryAmount?
+        currentPremium: MonetaryAmount?,
+        title: String? = nil,
+        subTitle: String? = nil,
+        withoutPreviousPriceText: Bool? = false
     ) {
         self.newPremium = newPremium
         self.currentPremium = currentPremium
+        self.title = title
+        self.subTitle = subTitle
+        self.withoutPreviousPriceText = withoutPreviousPriceText ?? false
     }
 
     public var body: some View {
-        HStack(alignment: .top) {
-            hText(L10n.tierFlowTotal)
-                .foregroundColor(getTotalColor())
-            Spacer()
+        VStack(spacing: .padding2) {
+            HStack(alignment: .top) {
+                hText(title ?? L10n.tierFlowTotal)
+                    .foregroundColor(getTotalColor())
+                Spacer()
 
-            if strikeThroughPrice != .none, newPremium != currentPremium {
-                if #available(iOS 16.0, *) {
-                    hText(currentPremium?.formattedAmountPerMonth ?? "")
-                        .strikethrough()
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .accessibilityLabel(
-                            L10n.voiceoverCurrentPrice + (currentPremium?.formattedAmountPerMonth ?? "")
-                        )
-                } else {
-                    hText(currentPremium?.formattedAmountPerMonth ?? "")
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-            }
-
-            VStack(alignment: .trailing, spacing: 0) {
-                if strikeThroughPrice == .crossNewPrice {
+                if strikeThroughPrice != .none, newPremium != currentPremium {
                     if #available(iOS 16.0, *) {
-                        hText(newPremium?.formattedAmountPerMonth ?? "")
+                        hText(currentPremium?.priceFormat(formatting) ?? "")
                             .strikethrough()
                             .foregroundColor(hTextColor.Opaque.secondary)
-                            .accessibilityLabel(
-                                L10n.voiceoverCurrentPrice + (currentPremium?.formattedAmountPerMonth ?? "")
-                            )
-
+                            .accessibilityValue(L10n.voiceoverCurrentPrice)
                     } else {
-                        hText(newPremium?.formattedAmountPerMonth ?? "")
+                        hText(currentPremium?.priceFormat(formatting) ?? "")
                             .foregroundColor(hTextColor.Opaque.secondary)
-                            .accessibilityLabel(
-                                L10n.ReferralsActive.Your.New.Price.title + (newPremium?.formattedAmountPerMonth ?? "")
-                            )
                     }
-                } else {
-                    hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
-                        .accessibilityLabel(
-                            L10n.ReferralsActive.Your.New.Price.title + (newPremium?.formattedAmountPerMonth ?? "")
+                }
+
+                VStack(alignment: .trailing, spacing: 0) {
+                    if strikeThroughPrice == .crossNewPrice {
+                        if #available(iOS 16.0, *) {
+                            hText(newPremium?.priceFormat(formatting) ?? "")
+                                .strikethrough()
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                                .accessibilityValue(
+                                    L10n.voiceoverCurrentPrice
+                                )
+                        } else {
+                            hText(newPremium?.priceFormat(formatting) ?? "")
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                                .accessibilityValue(
+                                    L10n.ReferralsActive.Your.New.Price.title
+                                )
+                        }
+                    } else {
+                        hText(newPremium?.priceFormat(formatting) ?? currentPremium?.priceFormat(formatting) ?? "")
+                    }
+
+                    if let currentPremium, let newPremium, newPremium != currentPremium,
+                        strikeThroughPrice != .crossOldPrice && !withoutPreviousPriceText
+                    {
+                        hText(
+                            L10n.tierFlowPreviousPrice(currentPremium.priceFormat(formatting)),
+                            style: .label
                         )
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                    }
                 }
-                if let currentPremium, let newPremium, newPremium != currentPremium,
-                    strikeThroughPrice != .crossOldPrice
-                {
-                    hText(
-                        L10n.tierFlowPreviousPrice(currentPremium.formattedAmountPerMonth),
-                        style: .label
-                    )
+            }
+            if let subTitle {
+                hText(subTitle, style: .label)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                     .foregroundColor(hTextColor.Opaque.secondary)
-                }
             }
         }
         .accessibilityElement(children: .combine)
@@ -85,7 +96,6 @@ public struct PriceField: View {
 
 #Preview {
     hSection {
-
         PriceField(
             newPremium: .init(amount: "99", currency: "SEK"),
             currentPremium: MonetaryAmount(amount: "49", currency: "SEK")
@@ -102,6 +112,13 @@ public struct PriceField: View {
             currentPremium: nil
         )
         .hWithStrikeThroughPrice(setTo: .crossNewPrice)
+
+        PriceField(
+            newPremium: .init(amount: "99", currency: "SEK"),
+            currentPremium: MonetaryAmount(amount: "49", currency: "SEK"),
+            subTitle: "sub title"
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
     }
     .sectionContainerStyle(.transparent)
 }
@@ -125,6 +142,39 @@ extension EnvironmentValues {
 
 extension View {
     public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
-        self.environment(\.hWithStrikeThroughPrice, setTo)
+        environment(\.hWithStrikeThroughPrice, setTo)
+    }
+}
+
+private struct EnvironmentHPriceFormatting: EnvironmentKey {
+    static let defaultValue: PriceFormatting = .perMonth
+}
+
+public enum PriceFormatting: Sendable {
+    case perMonth
+    case month
+}
+
+extension EnvironmentValues {
+    public var hPriceFormatting: PriceFormatting {
+        get { self[EnvironmentHPriceFormatting.self] }
+        set { self[EnvironmentHPriceFormatting.self] = newValue }
+    }
+}
+
+extension View {
+    public func hPriceFormatting(setTo: PriceFormatting) -> some View {
+        environment(\.hPriceFormatting, setTo)
+    }
+}
+
+extension MonetaryAmount {
+    func priceFormat(_ format: PriceFormatting) -> String {
+        switch format {
+        case .perMonth:
+            return formattedAmountPerMonth
+        case .month:
+            return formattedAmount
+        }
     }
 }

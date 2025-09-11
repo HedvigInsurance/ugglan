@@ -26,7 +26,6 @@ struct ChangeAddonScreen: View {
                     ),
                     dismissButton:
                         .init(
-                            buttonTitle: L10n.generalCloseButton,
                             buttonAction: {
                                 changeAddonNavigationVm.router.dismiss()
                             }
@@ -74,10 +73,8 @@ struct ChangeAddonScreen: View {
                             )
                         ])
 
-                        hButton.LargeButton(type: .primary) {
+                        hContinueButton {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
-                        } content: {
-                            hText(L10n.generalContinueButton)
                         }
                         .padding(.top, .padding16)
                     }
@@ -130,7 +127,7 @@ struct ChangeAddonScreen: View {
             }
             .padding(.top, .padding16)
             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
-            .hSectionWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.section])
             .accessibilityHidden(false)
         }
         .accessibilityElement(children: .combine)
@@ -145,6 +142,6 @@ struct ChangeAddonScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(changeAddonVm: .init(contractId: "id"))
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init()))
+    return ChangeAddonScreen(changeAddonVm: .init(contractId: "id", addonSource: .insurances))
+        .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }

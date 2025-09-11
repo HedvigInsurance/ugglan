@@ -1,29 +1,34 @@
 import Foundation
-import Home
 import Kingfisher
 import SafariServices
 import SwiftUI
 import hCore
 import hCoreUI
 
-struct FilesGridView: View {
+public struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
 
+    public init(
+        vm: FileGridViewModel
+    ) {
+        self.vm = vm
+    }
+
     private let adaptiveColumn = [
-        GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8),
+        GridItem(.flexible(), spacing: .padding8),
+        GridItem(.flexible(), spacing: .padding8),
+        GridItem(.flexible(), spacing: .padding8),
     ]
 
-    var body: some View {
-        LazyVGrid(columns: adaptiveColumn, spacing: 8) {
+    public var body: some View {
+        LazyVGrid(columns: adaptiveColumn, spacing: .padding8) {
             ForEach(vm.files, id: \.id) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
                     FileView(file: file) {
                         vm.show(file: file)
                     }
                     .aspectRatio(1, contentMode: .fit)
-                    .cornerRadius(12)
+                    .cornerRadius(.padding12)
                     .contentShape(Rectangle())
                     .opacity(vm.options.contains(.loading) ? 0.5 : 1)
                     if vm.options.contains(.delete) {
@@ -40,13 +45,14 @@ struct FilesGridView: View {
                                             .frame(width: 24, height: 24)
                                             .hShadow()
                                             .overlay(
-                                                Image(uiImage: HCoreUIAsset.closeSmall.image)
+                                                hCoreUIAssets.closeSmall.view
                                                     .resizable()
                                                     .frame(width: 16, height: 16)
                                                     .foregroundColor(hTextColor.Opaque.secondary)
                                             )
                                     )
                                     .offset(.init(width: 8, height: -8))
+                                    .accessibilityLabel(L10n.General.remove)
                             }
                         )
                         .zIndex(.infinity)
@@ -57,7 +63,7 @@ struct FilesGridView: View {
         }
         .detent(
             item: $vm.fileModel,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { model in
             DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
         }
@@ -65,13 +71,13 @@ struct FilesGridView: View {
 }
 
 @MainActor
-class FileGridViewModel: ObservableObject {
-    @Published var files: [File]
-    @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
-    @Published var fileModel: HomeNavigationViewModel.FileUrlModel?
-    var onDelete: ((_ file: File) -> Void)?
+public class FileGridViewModel: ObservableObject {
+    @Published public var files: [File]
+    @Published public var options: ClaimFilesViewModel.ClaimFilesViewOptions
+    @Published var fileModel: FileUrlModel?
+    public var onDelete: ((_ file: File) -> Void)?
 
-    init(
+    public init(
         files: [File],
         options: ClaimFilesViewModel.ClaimFilesViewOptions,
         onDelete: ((_ file: File) -> Void)? = nil
@@ -93,7 +99,6 @@ class FileGridViewModel: ObservableObject {
                 title: L10n.claimsFileUploadRemoveCancel,
                 style: .default,
                 handler: { _ in
-
                 }
             )
         )
@@ -110,7 +115,7 @@ class FileGridViewModel: ObservableObject {
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
-    func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
+    public func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
         withAnimation {
             self.options = options
         }

@@ -4,33 +4,47 @@ import hCore
 public struct SuccessScreen: View {
     let title: String?
     let subTitle: String?
+    let formPosition: ContentPosition?
 
     public init(
         title: String? = nil,
-        subtitle: String? = nil
+        subtitle: String? = nil,
+        formPosition: ContentPosition? = nil
     ) {
         self.title = title
-        self.subTitle = subtitle
+        subTitle = subtitle
+        self.formPosition = formPosition
     }
 
     public init(
         successViewTitle: String,
         successViewBody: String
     ) {
-        self.title = successViewTitle
-        self.subTitle = successViewBody
+        title = successViewTitle
+        subTitle = successViewBody
+        formPosition = nil
     }
 
     public var body: some View {
         StateView(
             type: .success,
             title: title ?? "",
-            bodyText: subTitle
+            bodyText: subTitle,
+            formPosition: formPosition
         )
     }
 }
 
-struct SuccessScreen_Previews: PreviewProvider {
+struct SuccessScreenWithoutButtons_Previews: PreviewProvider {
+    static var previews: some View {
+        SuccessScreen(
+            successViewTitle: "SUCCESS",
+            successViewBody: "success"
+        )
+    }
+}
+
+struct SuccessScreenWithButtons_Previews: PreviewProvider {
     static var previews: some View {
         SuccessScreen(
             successViewTitle: "SUCCESS",
@@ -60,19 +74,17 @@ struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
         return SuccessScreen(title: "TITLE", subtitle: "SUBTITLE")
             .hSuccessBottomAttachedView {
                 hSection {
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
-                        VStack(spacing: 8) {
-                            hButton.LargeButton(type: .primary) {
+                        VStack(spacing: .padding8) {
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.Certificates.download),
+                                {}
+                            )
 
-                            } content: {
-                                hText(L10n.TravelCertificate.download)
-                            }
-                            hButton.LargeButton(type: .ghost) {
-
-                            } content: {
-                                hText(L10n.generalCloseButton)
-                            }
+                            hCloseButton {}
                         }
                     }
                 }
@@ -95,7 +107,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hSuccessBottomAttachedView, AnyView(content()))
+        environment(\.hSuccessBottomAttachedView, AnyView(content()))
     }
 }
 
@@ -113,6 +125,6 @@ extension EnvironmentValues {
 
 extension View {
     public func hCustomSuccessView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hCustomSuccessView, AnyView(content()))
+        environment(\.hCustomSuccessView, AnyView(content()))
     }
 }

@@ -1,12 +1,10 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public class ChangeTierClientDemo: ChangeTierClient {
     public init() {}
 
-    public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
-
+    public func getTier(input _: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let displayItems: [Quote.DisplayItem] = [
             .init(title: "Activation date", subTitle: nil, value: "24 sep 2024"),
             .init(title: "Coverage level", subTitle: nil, value: "Standard"),
@@ -238,10 +236,10 @@ public class ChangeTierClientDemo: ChangeTierClient {
         )
     }
 
-    public func commitTier(quoteId: String) async throws {}
+    public func commitTier(quoteId _: String) async throws {}
 
-    public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
-        return .init(
+    public func compareProductVariants(termsVersion _: [String]) async throws -> ProductVariantComparison {
+        .init(
             rows: [
                 .init(
                     title: "Veterinary care",
@@ -296,13 +294,13 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     ]
                 ),
                 .init(
-                    title: "Long long long long long title",
+                    title: "Your belongings in your home",
                     description: "description",
                     colorCode: nil,
                     cells: [
                         .init(isCovered: false, coverageText: ""),
                         .init(isCovered: false, coverageText: ""),
-                        .init(isCovered: true, coverageText: ""),
+                        .init(isCovered: true, coverageText: "3 000 000 kr"),
                     ]
                 ),
 

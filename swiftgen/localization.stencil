@@ -74,21 +74,21 @@ import Foundation
 
 extension {{enumName}} {
   static func tr(_ table: String, _ key: String, _ args: [TranslationArgumentable]) -> String {
-     guard let bundle = Bundle(for: BundleToken.self).path(forResource: Localization.Locale.currentLocale.value.lprojCode, ofType: "lproj") else {
+     guard let bundle = Bundle(for: BundleToken.self).path(forResource: Localization.Locale.currentLocale.value.translationlprojCode, ofType: "lproj") else {
       return key
     }
 
     let langBundle = Bundle(path: bundle)
     // swiftlint:disable:next nslocalizedstring_key
     let format = NSLocalizedString(key, tableName: table, bundle: langBundle!, comment: "")
-    var translation = String(format: format, locale: Localization.Locale.currentLocale.value.foundation, arguments: args.map { $0.value })
+    var translation = String(format: format, locale: Localization.Locale.currentLocale.value.translationLocale, arguments: args.map { $0.value })
     translation = translation == "" ? key : translation
     translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: args)
     return translation
   }
 
   static func tr(_ table: String, _ key: String, _ args: TranslationArgumentable...) -> String {
-    guard let bundle = Bundle(for: BundleToken.self).path(forResource: Localization.Locale.currentLocale.value.lprojCode, ofType: "lproj") else {
+    guard let bundle = Bundle(for: BundleToken.self).path(forResource: Localization.Locale.currentLocale.value.translationlprojCode, ofType: "lproj") else {
       return key
     }
 
@@ -96,7 +96,7 @@ extension {{enumName}} {
     
     // swiftlint:disable:next nslocalizedstring_key
     let format = NSLocalizedString(key, tableName: table, bundle: langBundle!, comment: "")
-    var translation = String(format: format, locale: Localization.Locale.currentLocale.value.foundation, arguments: args.map { $0.value })
+    var translation = String(format: format, locale: Localization.Locale.currentLocale.value.translationLocale, arguments: args.map { $0.value })
     translation = translation == "" ? key : translation
     translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: args)
     return translation
@@ -110,7 +110,7 @@ extension {{enumName}} {
     let langBundle = Bundle(path: bundle)
     // swiftlint:disable:next nslocalizedstring_key
     let format = NSLocalizedString(key, tableName: table, bundle: langBundle!, comment: "")
-    var translation = String(format: format, locale: Localization.Locale.currentLocale.value.foundation, arguments: args.map { $0.value })
+    var translation = String(format: format, locale: Localization.Locale.currentLocale.value.translationLocale, arguments: args.map { $0.value })
     translation = translation == "" ? key : translation
     translation.derivedFromL10n = L10nDerivation(table: table, key: key, args: args)
     return translation

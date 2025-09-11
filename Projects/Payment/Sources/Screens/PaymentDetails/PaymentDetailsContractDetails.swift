@@ -1,3 +1,4 @@
+import Campaign
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,42 +9,67 @@ struct ContractDetails: View {
 
     var body: some View {
         hSection {
-            hRow {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .top, spacing: 8) {
-                        HStack {
-                            hText(contract.title)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer()
-                        }
-                        hText(contract.amount.formattedAmount)
-                        Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                            .rotationEffect(
-                                expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
-                            )
-                            .padding(.top, .padding4)
-                    }
-                    hText(contract.subtitle)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-            }
-            .withEmptyAccessory
-            .onTap {
-                withAnimation {
-                    if let index = expandedContracts.firstIndex(of: contract.id) {
-                        expandedContracts.remove(at: index)
-                    } else {
-                        expandedContracts.append(contract.id)
-                    }
-                }
-            }
-            .hWithoutDivider
+            insuranceSection
             getContractDetails(for: contract)
         }
+    }
+
+    private var insuranceSection: some View {
+        hRow {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top, spacing: .padding8) {
+                    if expandedContracts.contains(contract.id) {
+                        hText(contract.title)
+                            .multilineTextAlignment(.leading)
+                    } else {
+                        hText(contract.title)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(1)
+                    }
+                    Spacer()
+
+                    HStack(spacing: .padding8) {
+                        if contract.grossAmount != contract.netAmount {
+                            if #available(iOS 16.0, *) {
+                                hText(contract.grossAmount.formattedAmount)
+                                    .strikethrough()
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                            } else {
+                                hText(contract.grossAmount.formattedAmount)
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                            }
+                        }
+
+                        hText(contract.netAmount.formattedAmount)
+                    }
+                    .layoutPriority(1)
+
+                    hCoreUIAssets.chevronDown.view
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .rotationEffect(
+                            expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
+                        )
+                }
+                if let subtitle = contract.subtitle, !subtitle.isEmpty {
+                    hText(subtitle, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
+            }
+            .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
+        }
+        .withEmptyAccessory
+        .onTap {
+            withAnimation {
+                if let index = expandedContracts.firstIndex(of: contract.id) {
+                    expandedContracts.remove(at: index)
+                } else {
+                    expandedContracts.append(contract.id)
+                }
+            }
+        }
+        .hWithoutDivider
     }
 
     @ViewBuilder
@@ -60,29 +86,38 @@ struct ContractDetails: View {
                             Spacer()
                             hText(period.amount.formattedAmount)
                                 .foregroundColor(
-                                    getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                    getColor(hTextColor.Opaque.primary, isOutstanding: period.isOutstanding)
                                 )
-
                         }
                         if let desciption = period.desciption {
                             hText(desciption, style: .label)
                                 .foregroundColor(
-                                    getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                    getColor(hTextColor.Translucent.secondary, isOutstanding: period.isOutstanding)
                                 )
-
                         }
                     }
                 }
                 .withEmptyAccessory
+                .accessibilityElement(children: .combine)
+
                 if contract.periods.count - 1 == offset {
+                    if !contract.discounts.isEmpty {
+                        ForEach(contract.discounts) { discount in
+                            DiscountDetailView(vm: .init(options: [.forPayment], discount: discount))
+                        }
+                    }
                     hRow {
-                        hText(L10n.paymentsSubtotal)
-                        Spacer()
-                        hText(contract.amount.formattedAmount)
+                        PriceField(
+                            newPremium: contract.netAmount,
+                            currentPremium: contract.grossAmount,
+                            title: L10n.paymentsSubtotal
+                        )
+                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                        .hPriceFormatting(setTo: .month)
                     }
                 }
             }
-            .hSectionWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.section])
             .transition(.opacity)
         }
     }
@@ -94,5 +129,54 @@ struct ContractDetails: View {
         } else {
             baseColor
         }
+    }
+}
+
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var isExpanded = ["id1"]
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+    return VStack {
+        ContractDetails(
+            expandedContracts: $isExpanded,
+            contract: .init(
+                id: "id1",
+                title: "title long title thatgoes 2 lines",
+                subtitle: "subtitle which is long so it takes 2 so we can see how it looks",
+                netAmount: .sek(250),
+                grossAmount: .sek(200),
+                discounts: [
+                    .init(
+                        code: "TOGETHER",
+                        amount: .init(amount: "10", currency: "SEK"),
+                        title: "15% discount for 12 months",
+                        listOfAffectedInsurances: [],
+                        validUntil: nil,
+                        canBeDeleted: true,
+                        discountId: "id"
+                    )
+                ],
+                periods: [
+                    .init(
+                        id: "1",
+                        from: "2023-11-10",
+                        to: "2023-11-23",
+                        amount: .sek(100),
+                        isOutstanding: false,
+                        desciption: "description"
+                    ),
+                    .init(
+                        id: "2",
+                        from: "2023-11-23",
+                        to: "2023-11-30",
+                        amount: .sek(80),
+                        isOutstanding: true,
+                        desciption: nil
+                    ),
+                ]
+            )
+        )
+        Spacer()
     }
 }

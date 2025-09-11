@@ -1,0 +1,14 @@
+query ClaimFiles($claimId: ID!) {
+  claim(id: $claimId) {
+	files {
+		...FileFragment
+	}
+  }
+}
+
+fragment FileFragment on ClaimFile {
+    id
+    name
+    mimeType
+    url
+}

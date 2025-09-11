@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        ApolloClient.initAndRegisterClient()
+        DI.initAndRegisterClient()
     }
 
     func logout() {
@@ -59,16 +59,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 clearData()
             }
         }
-
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
+    func applicationWillTerminate(_: UIApplication) {
         NotificationCenter.default.post(Notification(name: .applicationWillTerminate))
         Thread.sleep(forTimeInterval: 3)
     }
 
-    func applicationDidEnterBackground(_ application: UIApplication) {
-    }
+    func applicationDidEnterBackground(_: UIApplication) {}
 
     func application(
         _: UIApplication,
@@ -88,14 +86,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
         if settings.authorizationStatus == .denied {
-            DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+            DispatchQueue.main.async { Dependencies.urlOpener.open(settingsUrl) }
         } else {
             do {
                 let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
                 _ = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
-            } catch _ {
-
-            }
+            } catch _ {}
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             let store: ProfileStore = globalPresentableStoreContainer.get()
             store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
@@ -110,7 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Task {
                 await setupSession()
                 await impersonate.impersonate(with: url)
-
             }
         }
     }
@@ -142,10 +137,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupSession() async {
-        await ApolloClient.initNetwworkClients()
-        ApolloClient.initAndRegisterClient()
+        await DI.initNetworkClients()
+        DI.initAndRegisterClient()
         urlSessionClientProvider = {
-            return InterceptingURLSessionClient()
+            InterceptingURLSessionClient()
         }
         setupAnalyticsAndTracking()
 
@@ -193,7 +188,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
         )
         let datadogLogger = Logger.create(with: config)
-        hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
+        hGraphQL.graphQlLogger = DatadogLogger(datadogLogger: datadogLogger)
+        log = DatadogLogger(datadogLogger: datadogLogger)
 
         setupPresentableStoreLogger()
 
@@ -201,17 +197,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         forceLogoutHook = { [weak self] in
             if ApplicationState.currentState != .notLoggedIn {
+                self?.dismissAllVCs()
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationState.state = .notLoggedIn
                     self?.logout()
 
                     let toast = ToastBar(
-                        type: .info,
+                        type: .neutral,
                         text: L10n.forceLogoutMessageTitle
                     )
                     Toasts.shared.displayToastBar(toast: toast)
                 }
+            }
+        }
+    }
+
+    private func dismissAllVCs() {
+        Task {
+            var hasPresentedVC = true
+            while hasPresentedVC {
+                let vcToDismiss = UIApplication.shared.getRootViewController()?.presentedViewController
+                if let vcToDismiss {
+                    vcToDismiss.dismiss(animated: true)
+                } else {
+                    hasPresentedVC = false
+                }
+                try await Task.sleep(nanoseconds: 50_000_000)
             }
         }
     }

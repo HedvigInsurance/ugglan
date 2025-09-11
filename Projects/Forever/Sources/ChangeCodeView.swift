@@ -1,34 +1,21 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ChangeCodeView: View {
     @ObservedObject private var vm: ChangeCodeViewModel
     @EnvironmentObject private var router: Router
-    @ObservedObject private var foreverNavigationVm: ForeverNavigationViewModel
 
     init(
         foreverNavigationVm: ForeverNavigationViewModel
     ) {
-        self.foreverNavigationVm = foreverNavigationVm
-
-        let inputVm = TextInputViewModel(
-            masking: .init(type: .none),
-            input: foreverNavigationVm.foreverData?.discountCode ?? "",
-            title: L10n.ReferralsEmpty.Code.headline
-        )
-
-        self.vm = .init(inputVm: inputVm, foreverVm: foreverNavigationVm.foreverVm)
+        vm = .init(input: foreverNavigationVm.foreverData?.discountCode ?? "", foreverVm: foreverNavigationVm)
     }
 
     var body: some View {
         TextInputView(vm: vm.inputVm)
             .task {
                 vm.router = router
-            }
-            .onChange(of: vm.foreverData) { newForeverData in
-                foreverNavigationVm.foreverData = newForeverData
             }
     }
 }
@@ -39,15 +26,15 @@ class ChangeCodeViewModel: ObservableObject {
     @Published var inputVm: TextInputViewModel
 
     var router: Router?
-    @Published var foreverData: ForeverData?
-    @Published var foreverVm: ForeverViewModel
+    let foreverVm: ForeverNavigationViewModel?
 
     init(
-        inputVm: TextInputViewModel,
-        foreverVm: ForeverViewModel
+        input: String,
+        foreverVm: ForeverNavigationViewModel
     ) {
-        self.inputVm = inputVm
         self.foreverVm = foreverVm
+
+        inputVm = ChangeCodeViewModel.createInputViewModel(input: input)
 
         inputVm.onSave = { [weak self] text in
             try await self?.handleOnSave(text: text)
@@ -58,19 +45,29 @@ class ChangeCodeViewModel: ObservableObject {
         }
     }
 
+    private static func createInputViewModel(input: String) -> TextInputViewModel {
+        let inputVm = TextInputViewModel(
+            masking: .init(type: .none),
+            input: input,
+            title: L10n.ReferralsEmpty.Code.headline
+        )
+        return inputVm
+    }
+
     private func dismissRouter() async throws {
-        self.router?.dismiss()
+        router?.dismiss()
     }
 
     private func handleOnSave(text: String) async throws {
-        try await self.foreverService.changeCode(code: text)
-        self.foreverData = try await foreverVm.fetchForeverData()
-        self.router?.push(ForeverRouterActions.success)
+        try await foreverService.changeCode(code: text)
+        try await foreverVm?.fetchForeverData()
+        router?.push(ForeverRouterActions.success)
     }
 }
 
 struct ChangeCodeView_Previews: PreviewProvider {
     static var previews: some View {
         ChangeCodeView(foreverNavigationVm: .init())
+            .environmentObject(Router())
     }
 }

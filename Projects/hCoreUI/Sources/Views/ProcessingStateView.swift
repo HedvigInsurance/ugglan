@@ -1,37 +1,6 @@
 import SwiftUI
 import hCore
 
-public enum ProcessingState: Equatable {
-    case loading
-    case success
-    case error(errorMessage: String)
-}
-
-private struct AnimationTiming {
-    let delay: Float
-    let duration: Float
-    let progress: Float
-}
-
-class ProcessingViewModel: ObservableObject {
-    @Published var progress: Float = 0
-}
-
-public struct hProgressViewStyle: ProgressViewStyle {
-    public init() {}
-    public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
-        return RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
-            .overlay {
-                GeometryReader(content: { geometry in
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .fill(hFillColor.Opaque.primary)
-                        .frame(width: geometry.size.width * (configuration.fractionCompleted ?? 0))
-                })
-            }
-            .frame(height: 4)
-    }
-}
-
 public struct ProcessingStateView: View {
     @StateObject var vm = ProcessingViewModel()
     @Binding var state: ProcessingState
@@ -62,7 +31,7 @@ public struct ProcessingStateView: View {
         self.successViewBody = successViewBody
         self.successViewButtonAction = successViewButtonAction
         self.onAppearLoadingView = onAppearLoadingView
-        self._state = state
+        _state = state
 
         let baseDurationFactor: Float = duration * (Float(1) / Float(24))
         animationTimings = [
@@ -131,7 +100,7 @@ public struct ProcessingStateView: View {
             return .init(
                 actionButton: nil,
                 actionButtonAttachedToBottom: nil,
-                dismissButton: .init(buttonTitle: L10n.generalCloseButton, buttonAction: successViewButtonAction ?? {})
+                dismissButton: .init(buttonAction: successViewButtonAction ?? {})
             )
         }
         return nil
@@ -148,28 +117,64 @@ public struct ProcessingStateView: View {
 
     @ViewBuilder
     private var loadingView: some View {
-        ZStack(alignment: .bottom) {
-            BackgroundView().ignoresSafeArea()
-            VStack {
-                Spacer()
-                hText(loadingViewText)
-                ProgressView(value: vm.progress)
-                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            animationTimings.forEach { item in
-                                withAnimation(
-                                    .easeInOut(duration: TimeInterval(item.duration)).delay(TimeInterval(item.delay))
-                                ) {
-                                    vm.progress = item.progress
+        GeometryReader { proxy in
+            ZStack(alignment: .bottom) {
+                BackgroundView().ignoresSafeArea()
+                VStack {
+                    Spacer()
+                    hText(loadingViewText)
+                    ProgressView(value: vm.progress)
+                        .frame(width: proxy.size.width * 0.53)
+                        .accessibilityHidden(true)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                for item in animationTimings {
+                                    withAnimation(
+                                        .easeInOut(duration: TimeInterval(item.duration))
+                                            .delay(TimeInterval(item.delay))
+                                    ) {
+                                        vm.progress = item.progress
+                                    }
                                 }
                             }
                         }
-                    }
-                    .progressViewStyle(hProgressViewStyle())
-                Spacer()
+                        .progressViewStyle(hProgressViewStyle())
+                    Spacer()
+                }
             }
+            .accessibilityElement(children: .combine)
         }
+    }
+}
+
+public enum ProcessingState: Equatable {
+    case loading
+    case success
+    case error(errorMessage: String)
+}
+
+private struct AnimationTiming {
+    let delay: Float
+    let duration: Float
+    let progress: Float
+}
+
+class ProcessingViewModel: ObservableObject {
+    @Published var progress: Float = 0
+}
+
+public struct hProgressViewStyle: ProgressViewStyle {
+    public init() {}
+    public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
+        RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
+            .overlay {
+                GeometryReader(content: { geometry in
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(hFillColor.Opaque.primary)
+                        .frame(width: geometry.size.width * (configuration.fractionCompleted ?? 0))
+                })
+            }
+            .frame(height: 4)
     }
 }
 
@@ -198,9 +203,10 @@ public struct ProcessingStateView: View {
 
 extension View {
     public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
-        self.modifier(TrackErrorState(processingState: state))
+        modifier(TrackErrorState(processingState: state))
     }
 }
+
 private struct TrackErrorState: ViewModifier {
     @State private var error: String?
     @Binding var processingState: ProcessingState
@@ -218,7 +224,7 @@ private struct TrackErrorState: ViewModifier {
         .onAppear {
             checkForError()
         }
-        .onChange(of: processingState) { value in
+        .onChange(of: processingState) { _ in
             checkForError()
         }
     }
@@ -227,9 +233,9 @@ private struct TrackErrorState: ViewModifier {
         withAnimation {
             switch processingState {
             case let .error(errorMessage):
-                self.error = errorMessage
+                error = errorMessage
             default:
-                self.error = nil
+                error = nil
             }
         }
     }

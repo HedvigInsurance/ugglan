@@ -4,7 +4,6 @@
 
 @MainActor
 final class TestChatViewModelIsConversationOpen: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -21,8 +20,8 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == .open)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.conversationStatus == .open)
+        sut = mockService
     }
 
     func testIsConverationOpenFailure() async {
@@ -30,10 +29,10 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let initialValue = model.conversationStatus
+        let initialValue = model.messageVm.conversationVm.conversationStatus
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == initialValue)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.conversationStatus == initialValue)
+        sut = mockService
     }
 
     func testIsConverationClosedSuccess() async {
@@ -42,8 +41,8 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == .closed)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.conversationStatus == .closed)
+        sut = mockService
     }
 
     func testIsConverationClosedFailure() async {
@@ -51,10 +50,9 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let initialValue = model.conversationStatus
+        let initialValue = model.messageVm.conversationVm.conversationStatus
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == initialValue)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.conversationStatus == initialValue)
+        sut = mockService
     }
-
 }

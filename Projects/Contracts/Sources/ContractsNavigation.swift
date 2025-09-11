@@ -1,6 +1,6 @@
 import Addons
 import ChangeTier
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SafariServices
@@ -8,7 +8,6 @@ import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ContractsNavigation<Content: View>: View {
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
@@ -45,7 +44,7 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.insurableLimit,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { insurableLimit in
             InfoView(
                 title: L10n.contractCoverageMoreInfo,
@@ -54,13 +53,13 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             redirect(.pdf(document: document))
         }
         .detent(
             item: $contractsNavigationVm.changeYourInformationContract,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { contract in
             EditContractScreen(
                 editTypes: EditType.getTypes(for: contract),
@@ -107,7 +106,7 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { insuranceUpdate in
             UpcomingChangesScreen(
                 updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
@@ -126,6 +125,8 @@ public struct ContractsNavigation<Content: View>: View {
             redirectAction(.termination(action: dismissType))
             switch dismissType {
             case .done, .chat, .openFeedback:
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
                 contractsNavigationVm.contractsRouter.popToRoot()
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
                 break
@@ -133,6 +134,7 @@ public struct ContractsNavigation<Content: View>: View {
         }
     }
 }
+
 @MainActor
 public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
@@ -178,7 +180,6 @@ extension ContractsRouterType: TrackingViewNameProtocol {
             return "Terminated Contracts"
         }
     }
-
 }
 
 extension TerminationConfirmConfig {
@@ -211,6 +212,6 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
 
 extension ContractsNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: Contracts.self)
+        .init(describing: Contracts.self)
     }
 }

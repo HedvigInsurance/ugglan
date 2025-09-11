@@ -1,6 +1,7 @@
 import Apollo
+import Combine
 import Foundation
-import hGraphQL
+import SwiftUI
 
 @MainActor
 public class Dependencies {
@@ -10,7 +11,9 @@ public class Dependencies {
     private init() {}
     deinit { modules.removeAll() }
 
-    public func add(module: Module) { modules[module.name] = module }
+    public func add(module: Module) {
+        modules[module.name] = module
+    }
 
     public func resolve<T>(for name: String? = nil) -> T {
         let name = name ?? String(describing: T.self)
@@ -22,7 +25,7 @@ public class Dependencies {
         return component
     }
 
-    public func remove<T>(for: T.Type) {
+    public func remove<T>(for _: T.Type) {
         modules.removeValue(forKey: String(describing: T.self))
     }
 }
@@ -53,4 +56,22 @@ public struct Module {
     public init() { name = nil }
 
     public init(_ name: String) { self.name = name }
+}
+
+@MainActor
+@propertyWrapper
+public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
+    @StateObject private var stateObject: T
+
+    public init() {
+        _stateObject = StateObject(wrappedValue: Dependencies.shared.resolve())
+    }
+
+    public var wrappedValue: T {
+        stateObject
+    }
+
+    public var projectedValue: ObservedObject<T>.Wrapper {
+        $stateObject
+    }
 }

@@ -6,8 +6,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
     private let date = Date()
     public init() {
         let newestMessage = Message(
-            localId: UUID().uuidString,
-            remoteId: UUID().uuidString,
+            id: "id1",
             type: .text(
                 text:
                     "I think someone took my computer"
@@ -29,13 +28,14 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
         messages["id1"] = [
             newestMessage,
             .init(
-                remoteId: UUID().uuidString,
+                id: "id2",
                 type: .text(text: "Hi, how may I help you?"),
                 sender: .hedvig,
                 date: date.addingTimeInterval(-60 * 60 * 21 * 2)
             ),
         ]
     }
+
     public func getConversations() async throws -> [Conversation] {
         let conversationsSortedByDate = conversations.sorted(by: {
             $0.newestMessage?.sentAt ?? Date() > $1.newestMessage?.sentAt ?? Date()
@@ -55,14 +55,14 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             claimType: nil,
             unreadMessageCount: 0
         )
-        self.conversations.append(conversation)
+        conversations.append(conversation)
         return conversation
     }
 
     public func getConversationMessages(
         for conversationId: String,
-        olderToken: String?,
-        newerToken: String?
+        olderToken _: String?,
+        newerToken _: String?
     ) async throws -> ConversationMessagesData {
         let messages = messages[conversationId] ?? []
         return .init(
@@ -101,6 +101,6 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
     }
 
     public func escalateChatMessage(reference: String) async throws -> Message? {
-        return nil
+        nil
     }
 }

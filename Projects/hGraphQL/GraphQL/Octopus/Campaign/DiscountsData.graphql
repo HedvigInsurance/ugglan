@@ -1,0 +1,47 @@
+query Discounts {
+  currentMember {
+    ...ReedemCampaignsFragment
+    referralInformation {
+      code
+      monthlyDiscountPerReferral {
+        ...MoneyFragment
+      }
+      referrals {
+        ...MemberReferralFragment2
+      }
+      referredBy {
+        ...MemberReferralFragment2
+      }
+    }
+  }
+}
+
+fragment MemberReferralFragment2 on MemberReferral {
+        name
+        code
+        status
+        activeDiscount {
+          ...MoneyFragment
+        }
+}
+
+fragment ReedemCampaignsFragment on Member {
+    redeemedCampaigns {
+        code
+        description
+        type
+        id
+        expiresAt
+        onlyApplicableToContracts {
+            exposureDisplayName
+            exposureDisplayNameShort
+            currentAgreement {
+                productVariant {
+                    displayNameShort
+                    displayName
+                }
+            }
+            id
+        }
+    }
+}

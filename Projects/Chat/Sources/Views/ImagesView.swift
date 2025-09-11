@@ -10,6 +10,7 @@ struct ImagesView: View {
     init(vm: ImagesViewModel) {
         self.vm = vm
     }
+
     var body: some View {
         Group {
             if vm.permissionNotGranted {
@@ -33,7 +34,7 @@ struct ImagesView: View {
                     LazyHStack {
                         ForEach(vm.files, id: \.creationDate) { file in
                             PHPAssetPreview(asset: file) { message in
-                                self.vm.sendMessage(message)
+                                vm.sendMessage(message)
                             }
                         }
                     }
@@ -90,16 +91,17 @@ class ImagesViewModel: ObservableObject {
                 list.append(asset)
             }
 
-            self.files = list
+            files = list
         @unknown default:
             break
         }
     }
+
     func openSettings() {
         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
             return
         }
-        UIApplication.shared.open(settingsUrl)
+        Dependencies.urlOpener.open(settingsUrl)
     }
 }
 
@@ -109,9 +111,9 @@ class ImagesViewModel: ObservableObject {
 
 #Preview {
     PHPAssetPreview(asset: .init()) { _ in
-
     }
 }
+
 struct PHPAssetPreview: View {
     let asset: PHAsset
     @State private var image: UIImage?
@@ -128,26 +130,33 @@ struct PHPAssetPreview: View {
                         .aspectRatio(contentMode: .fill)
                         .onTapGesture {
                             withAnimation {
-                                self.selected.toggle()
+                                selected.toggle()
                             }
                         }
                         .blur(radius: selected ? 20 : 0, opaque: true)
-                    hButton.MediumButton(type: .secondaryAlt) {
-                        Task {
-                            withAnimation {
-                                loading = true
-                            }
-                            do {
-                                if let file = try? await asset.getFile() {
-                                    onSend(.init(type: .file(file: file)))
+
+                    hButton(
+                        .medium,
+                        .secondaryAlt,
+                        content: .init(title: L10n.chatUploadPresend),
+                        {
+                            Task {
+                                withAnimation {
+                                    loading = true
+                                }
+                                do {
+                                    if let file = try? await asset.getFile() {
+                                        onSend(.init(type: .file(file: file)))
+                                    }
+                                }
+                                withAnimation {
+                                    loading = false
+                                    selected = false
                                 }
                             }
-                            withAnimation {
-                                loading = false
-                                self.selected = false
-                            }
                         }
-                    } content: {
+                    )
+                    .hCustomButtonView {
                         if loading {
                             ProgressView()
                                 .foregroundColor(hTextColor.Opaque.primary)
@@ -200,7 +209,7 @@ extension PHAsset {
         options.isNetworkAccessAllowed = true
         let id = UUID().uuidString
         let file = try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<File, Error>) -> Void in
+            (inCont: CheckedContinuation<File, Error>) in
             requestContentEditingInput(with: options) { contentInput, _ in
                 switch self.mediaType {
                 case .video:
@@ -220,7 +229,7 @@ extension PHAsset {
                                         return
                                     }
 
-                                    let fileName = url.path
+                                    let fileName = url.lastPathComponent
 
                                     guard let data = (try? Data(contentsOf: url))
                                     else {
@@ -249,7 +258,7 @@ extension PHAsset {
                     PHImageManager.default()
                         .requestImageDataAndOrientation(for: self, options: nil) { data, _, _, _ in
                             guard let data = data else { return }
-                            guard let fileName = contentInput?.fullSizeImageURL?.path else {
+                            guard let fileName = contentInput?.fullSizeImageURL?.lastPathComponent else {
                                 inCont.resume(throwing: GenerateFileUploadError.failedToGenerateFileName)
                                 return
                             }
@@ -272,7 +281,6 @@ extension PHAsset {
                                     source: .data(data: jpegData)
                                 )
                                 inCont.resume(returning: file)
-
                             } else {
                                 let file = File(
                                     id: id,

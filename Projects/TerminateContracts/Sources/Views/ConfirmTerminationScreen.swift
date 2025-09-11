@@ -24,7 +24,6 @@ struct ConfirmTerminationScreen: View {
                         }
                     ),
                 dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         terminationNavigationVm.isConfirmTerminationPresented = false
                     }

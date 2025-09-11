@@ -11,7 +11,7 @@ public struct CheckboxToggleStyle: ToggleStyle {
         animate: Binding<Bool>
     ) {
         self.withSubtitle = withSubtitle
-        self._animate = animate
+        _animate = animate
     }
 
     public func makeBody(configuration: Configuration) -> some View {
@@ -20,7 +20,7 @@ public struct CheckboxToggleStyle: ToggleStyle {
                 configuration.label
             }
             .verticalPadding(0)
-            .hWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.row])
             .padding(.top, getTopPadding)
             .padding(.bottom, getBottomPadding)
             .padding(.horizontal, getHorizontalPadding)
@@ -29,7 +29,7 @@ public struct CheckboxToggleStyle: ToggleStyle {
             }
         }
         .sectionContainerStyle(.transparent)
-        .onUpdate(of: configuration.isOn) { newValue in
+        .onUpdate(of: configuration.isOn) { _ in
             withAnimation {
                 animate = true
             }
@@ -97,7 +97,7 @@ public struct CheckboxToggleView: View {
     ) {
         self.title = title
         self.subtitle = subtitle
-        self._isOn = isOn
+        _isOn = isOn
     }
 
     public var body: some View {

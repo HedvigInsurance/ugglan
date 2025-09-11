@@ -25,7 +25,7 @@ public struct ListItems<T>: View {
             }
             .sectionContainerStyle(.transparent)
         } else {
-            VStack(spacing: 4) {
+            VStack(spacing: .padding4) {
                 ForEach(items, id: \.displayName) { item in
                     hSection {
                         ListItem(
@@ -64,9 +64,9 @@ public struct ListItem: View {
                     getMainContent
                 }
                 .withChevronAccessory
-                .verticalPadding(rowStyle == .filled ? 0 : 16)
-                .topPadding(rowStyle == .filled ? getTopPadding : 0)
-                .bottomPadding(rowStyle == .filled ? getBottomPadding : 0)
+                .verticalPadding(0)
+                .topPadding(getTopPadding)
+                .bottomPadding(getBottomPadding)
                 .onTap {
                     onClick()
                 }
@@ -74,9 +74,9 @@ public struct ListItem: View {
                 hRow {
                     getMainContent
                 }
-                .verticalPadding(rowStyle == .filled ? 0 : 16)
-                .topPadding(rowStyle == .filled ? getTopPadding : 0)
-                .bottomPadding(rowStyle == .filled ? getBottomPadding : 0)
+                .verticalPadding(0)
+                .topPadding(getTopPadding)
+                .bottomPadding(getBottomPadding)
                 .withCustomAccessory {
                     if style == .radioOption {
                         getRadioField
@@ -95,7 +95,7 @@ public struct ListItem: View {
 
     @ViewBuilder
     private var getMainContent: some View {
-        hText(title, style: .heading2)
+        hText(title, style: fieldSize == .large ? .heading2 : .heading1)
             .fixedSize()
             .foregroundColor(hTextColor.Opaque.primary)
         Spacer()
@@ -157,7 +157,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hListStyle(_ style: ListStyle) -> some View {
-        self.environment(\.hListStyle, style)
+        environment(\.hListStyle, style)
     }
 }
 
@@ -174,7 +174,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hListRowStyle(_ style: ListRowStyle) -> some View {
-        self.environment(\.hListRowStyle, style)
+        environment(\.hListRowStyle, style)
     }
 }
 
@@ -187,7 +187,7 @@ struct ListWithItems_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 0) {
             ListItems<ModelForPreview>(
-                onClick: { item in },
+                onClick: { _ in },
                 items: [
                     (object: .init(id: "id1", name: "Label"), displayName: "Label"),
                     (object: .init(id: "id2", name: "Label"), displayName: "Label"),
@@ -198,7 +198,7 @@ struct ListWithItems_Previews: PreviewProvider {
             )
 
             ListItems<ModelForPreview>(
-                onClick: { item in },
+                onClick: { _ in },
                 items: [
                     (object: .init(id: "id1", name: "Label"), displayName: "Label"),
                     (object: .init(id: "id2", name: "Label"), displayName: "Label"),

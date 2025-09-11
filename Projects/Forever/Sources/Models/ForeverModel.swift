@@ -1,5 +1,6 @@
 import Foundation
-import hGraphQL
+import hCore
+import hCoreUI
 
 public struct Referral: Hashable, Codable, Sendable {
     let name: String
@@ -16,10 +17,51 @@ public struct Referral: Hashable, Codable, Sendable {
         self.status = status
     }
 
+    var discountLabelText: String {
+        switch status {
+        case .active:
+            return activeDiscount?.negative.formattedAmount ?? ""
+        case .pending:
+            return L10n.referralPendingStatusLabel
+        case .terminated:
+            return L10n.referralTerminatedStatusLabel
+        }
+    }
+
+    @MainActor
     public enum State: String, Codable, Sendable {
         case terminated
         case pending
         case active
+
+        @hColorBuilder var discountLabelColor: some hColor {
+            switch self {
+            case .active:
+                hTextColor.Opaque.secondary
+            case .pending, .terminated:
+                hTextColor.Opaque.tertiary
+            }
+        }
+
+        @hColorBuilder var invitedByOtherLabelColor: some hColor {
+            switch self {
+            case .active, .pending:
+                hTextColor.Opaque.tertiary
+            case .terminated:
+                hTextColor.Opaque.tertiary
+            }
+        }
+
+        @hColorBuilder var statusColor: some hColor {
+            switch self {
+            case .active:
+                hSignalColor.Green.element
+            case .pending:
+                hSignalColor.Amber.element
+            case .terminated:
+                hSignalColor.Red.element
+            }
+        }
     }
 }
 

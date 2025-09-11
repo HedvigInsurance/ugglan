@@ -3,7 +3,6 @@ import Contracts
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel
@@ -25,7 +24,7 @@ public struct DeleteAccountView: View {
                 hSection {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
                         if let topIcon = vm.topIcon {
-                            Image(uiImage: topIcon)
+                            topIcon
                                 .foregroundColor(hSignalColor.Amber.element)
                                 .padding(.bottom, .padding16)
                         }
@@ -39,7 +38,8 @@ public struct DeleteAccountView: View {
                                 linkUnderlineStyle: .single,
                                 textAlignment: vm.textAlignment
                             ) { url in
-                                dismissAction(.openChat)
+                                router.dismiss()
+                                NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }
                         )
                     }
@@ -49,20 +49,25 @@ public struct DeleteAccountView: View {
             .hFormContentPosition(.compact)
             .hFormAttachToBottom {
                 hSection {
-                    VStack(spacing: 8) {
-                        if !vm.hasActiveClaims && !vm.hasActiveContracts {
-                            hButton.LargeButton(type: .alert) {
-                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-
-                            } content: {
-                                hText(L10n.profileDeleteAccountConfirmDeletion)
+                    VStack(spacing: .padding8) {
+                        if !vm.hasActiveClaims, !vm.hasActiveContracts {
+                            hButton(
+                                .large,
+                                .alert,
+                                content: .init(title: L10n.profileDeleteAccountConfirmDeletion),
+                                {
+                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                                }
+                            )
+                        }
+                        hButton(
+                            .large,
+                            .ghost,
+                            content: .init(title: vm.dismissButtonTitle),
+                            {
+                                router.dismiss()
                             }
-                        }
-                        hButton.LargeButton(type: .ghost) {
-                            router.dismiss()
-                        } content: {
-                            hText(vm.dismissButtonTitle)
-                        }
+                        )
                     }
                     .padding(.vertical, .padding16)
                 }
@@ -96,18 +101,19 @@ struct ParagraphTextModifier<Color: hColor>: ViewModifier {
 
 extension DeleteAccountViewModel {
     var title: String {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return L10n.DeleteAccount.youHaveActiveInsuranceTitle
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return L10n.DeleteAccount.youHaveActiveClaimTitle
         } else {
             return L10n.DeleteAccount.deleteAccountTitle
         }
     }
+
     var text: String {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return L10n.DeleteAccount.youHaveActiveInsuranceDescription
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return L10n.DeleteAccount.youHaveActiveClaimDescription
         } else {
             return L10n.DeleteAccount.deleteAccountDescription
@@ -115,9 +121,9 @@ extension DeleteAccountViewModel {
     }
 
     var alignment: HorizontalAlignment {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return .center
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return .center
         } else {
             return .leading
@@ -125,29 +131,29 @@ extension DeleteAccountViewModel {
     }
 
     var titleAndDescriptionSpacing: CGFloat {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return 0
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return 0
         } else {
             return 8
         }
     }
 
-    var topIcon: UIImage? {
-        if self.hasActiveContracts {
-            return hCoreUIAssets.warningTriangleFilled.image
-        } else if self.hasActiveClaims {
-            return hCoreUIAssets.warningTriangleFilled.image
+    var topIcon: Image? {
+        if hasActiveContracts {
+            return hCoreUIAssets.warningTriangleFilled.view
+        } else if hasActiveClaims {
+            return hCoreUIAssets.warningTriangleFilled.view
         } else {
             return nil
         }
     }
 
     var textAlignment: NSTextAlignment {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return .center
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return .center
         } else {
             return .left
@@ -155,9 +161,9 @@ extension DeleteAccountViewModel {
     }
 
     var dismissButtonTitle: String {
-        if self.hasActiveContracts {
+        if hasActiveContracts {
             return L10n.generalCloseButton
-        } else if self.hasActiveClaims {
+        } else if hasActiveClaims {
             return L10n.generalCloseButton
         } else {
             return L10n.generalCancelButton

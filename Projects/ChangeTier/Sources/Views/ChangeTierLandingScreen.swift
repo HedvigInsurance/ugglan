@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
@@ -17,7 +16,8 @@ public struct ChangeTierLandingScreen: View {
     public var body: some View {
         if vm.missingQuotes {
             InfoScreen(text: L10n.terminationNoTierQuotesSubtitle, dismissButtonTitle: L10n.embarkGoBackButton) {
-                changeTierNavigationVm.missingQuotesGoBackPressed()
+                [weak changeTierNavigationVm] in
+                changeTierNavigationVm?.missingQuotesGoBackPressed()
             }
         } else {
             ProcessingStateView(
@@ -41,7 +41,6 @@ public struct ChangeTierLandingScreen: View {
             ),
             dismissButton:
                 .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         changeTierNavigationVm.router.dismiss()
                     }
@@ -91,7 +90,6 @@ public struct ChangeTierLandingScreen: View {
                 }
                 .hFieldSize(.small)
                 .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
-                .hWithoutHorizontalPadding
 
                 hRow {
                     PriceField(
@@ -114,7 +112,7 @@ public struct ChangeTierLandingScreen: View {
                     ) {}
                     .hBackgroundOption(option: [.locked, .secondary, .negative])
                     .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.lock.image)
+                        hCoreUIAssets.lock.view
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                     hText(L10n.tierFlowLockedInfoDescription, style: .label)
@@ -122,14 +120,14 @@ public struct ChangeTierLandingScreen: View {
                         .padding(.leading, .padding16)
                 }
             }
-            .padding(.bottom, 8)
+            .padding(.bottom, .padding8)
         } else {
             DropdownView(
                 value: vm.selectedTier?.name ?? "",
                 placeHolder: vm.selectedTier != nil
                     ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
             ) {
-                changeTierNavigationVm.isEditTierPresented = true
+                changeTierNavigationVm.isEditTierPresented = .init(type: .tier)
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
@@ -145,7 +143,7 @@ public struct ChangeTierLandingScreen: View {
                 ) {}
                 .hBackgroundOption(option: [.locked, .secondary, .negative])
                 .hFieldTrailingView {
-                    Image(uiImage: hCoreUIAssets.lock.image)
+                    hCoreUIAssets.lock.view
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
@@ -156,7 +154,7 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
             ) {
-                changeTierNavigationVm.isEditDeductiblePresented = true
+                changeTierNavigationVm.isEditTierPresented = .init(type: .deductible)
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
@@ -167,12 +165,19 @@ public struct ChangeTierLandingScreen: View {
     private var buttons: some View {
         hSection {
             VStack(spacing: .padding8) {
-                hButton.LargeButton(type: .ghost) {
-                    changeTierNavigationVm.isCompareTiersPresented = true
-                } content: {
-                    hText(vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton, style: .body1)
-                }
-                hButton.LargeButton(type: .primary) {
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(
+                        title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
+                    ),
+                    { [weak changeTierNavigationVm] in
+                        changeTierNavigationVm?.isCompareTiersPresented = true
+                    }
+                )
+
+                hContinueButton { [weak vm, weak changeTierNavigationVm] in
+                    guard let vm, let changeTierNavigationVm else { return }
                     switch vm.changeTierInput {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
@@ -183,8 +188,6 @@ public struct ChangeTierLandingScreen: View {
                             changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                         }
                     }
-                } content: {
-                    hText(L10n.generalContinueButton)
                 }
                 .disabled(!vm.isValid)
             }

@@ -2,12 +2,12 @@ import Foundation
 import PresentableStore
 import hCore
 
-public typealias ConverastionId = String
+public typealias ConversationId = String
 public struct ChatState: StateProtocol {
     public init() {}
 
     @Transient(defaultValue: false) var askedForPushNotificationsPermission: Bool
-    public var failedMessages: [ConverastionId: [Message]] = [:]
+    public var failedMessages: [ConversationId: [Message]] = [:]
 }
 
 public enum ChatAction: ActionProtocol {
@@ -16,14 +16,13 @@ public enum ChatAction: ActionProtocol {
     case clearFailedMessage(conversationId: String, message: Message)
 }
 
-final public class ChatStore: StateStore<ChatState, ChatAction> {
-
-    public override func effects(
-        _ getState: @escaping () -> ChatState,
-        _ action: ChatAction
+public final class ChatStore: StateStore<ChatState, ChatAction> {
+    override public func effects(
+        _: @escaping () -> ChatState,
+        _: ChatAction
     ) async {}
 
-    public override func reduce(_ state: ChatState, _ action: ChatAction) async -> ChatState {
+    override public func reduce(_ state: ChatState, _ action: ChatAction) async -> ChatState {
         var newState = state
         switch action {
         case .checkPushNotificationStatus:

@@ -1,5 +1,5 @@
 import Combine
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -7,13 +7,12 @@ import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
-
+    @InjectObservableObject private var featureFlags: FeatureFlags
     let id: String
     var body: some View {
         PresentableStoreLens(
@@ -38,7 +37,10 @@ struct ContractInformationView: View {
                                         if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
                                             hText(date)
                                         } else {
-                                            hText(item.displayValue)
+                                            ZStack {
+                                                hText(item.displayValue)
+                                                hText(" ")
+                                            }
                                         }
                                     }
                                     .foregroundColor(hTextColor.Opaque.secondary)
@@ -47,35 +49,30 @@ struct ContractInformationView: View {
                             }
                             if contract.supportsCoInsured {
                                 hRowDivider()
-                                    .padding(.horizontal, 16)
+                                    .padding(.horizontal, .padding16)
                                 addCoInsuredView(contract: contract)
                             }
 
-                            VStack(spacing: 8) {
+                            VStack(spacing: .padding8) {
                                 if contract.showEditInfo {
                                     hSection {
-                                        hButton.LargeButton(type: .secondary) {
-                                            if contract.onlyCoInsured()
-                                                && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                        hButton(
+                                            .large,
+                                            .secondary,
+                                            content: .init(title: vm.getButtonText(contract)),
                                             {
-                                                let contract: InsuredPeopleConfig = .init(
-                                                    contract: contract,
-                                                    fromInfoCard: false
-                                                )
+                                                if contract.onlyCoInsured() {
+                                                    let contract: InsuredPeopleConfig = .init(
+                                                        contract: contract,
+                                                        fromInfoCard: false
+                                                    )
 
-                                                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-                                            } else {
-                                                contractsNavigationVm.changeYourInformationContract = contract
+                                                    contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                                                } else {
+                                                    contractsNavigationVm.changeYourInformationContract = contract
+                                                }
                                             }
-                                        } content: {
-                                            if contract.onlyCoInsured()
-                                                && Dependencies.featureFlags().isEditCoInsuredEnabled
-                                            {
-                                                hText(L10n.contractEditCoinsured)
-                                            } else {
-                                                hText(L10n.contractEditInfoLabel)
-                                            }
-                                        }
+                                        )
                                     }
                                 }
                                 moveAddressButton(contract: contract)
@@ -83,7 +80,7 @@ struct ContractInformationView: View {
                             .padding(.bottom, .padding16)
                         }
                     }
-                    .hWithoutHorizontalPadding
+                    .hWithoutHorizontalPadding([.row, .divider])
                 }
             }
         }
@@ -111,61 +108,60 @@ struct ContractInformationView: View {
         VStack(spacing: 0) {
             hSection {
                 HStack {
-                    if Dependencies.featureFlags().isEditCoInsuredEnabled {
-                        hRow {
-                            insuredField(contract: contract)
-                        }
-                    } else {
-                        hRow {
-                            insuredField(contract: contract)
-                        }
-                        .hWithoutDivider
+                    hRow {
+                        insuredField(contract: contract)
                     }
                 }
 
-                if Dependencies.featureFlags().isEditCoInsuredEnabled {
-                    hRow {
-                        let hasContentBelow =
-                            !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
-                        ContractOwnerField(
-                            enabled: true,
-                            hasContentBelow: hasContentBelow,
-                            fullName: contract.fullName,
-                            SSN: contract.ssn ?? ""
+                let hasContentBelow =
+                    !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
+                ContractOwnerField(
+                    enabled: true,
+                    hasContentBelow: hasContentBelow,
+                    fullName: contract.fullName,
+                    SSN: contract.ssn ?? ""
+                )
+                .padding(.top, .padding16)
+            }
+
+            hSection(vm.getListToDisplay(contract: contract)) { coInsured in
+                hRow {
+                    if coInsured.coInsured.hasMissingInfo {
+                        CoInsuredField(
+                            accessoryView: getAccessoryView(contract: contract, coInsured: coInsured.coInsured)
+                                .foregroundColor(hSignalColor.Amber.element),
+                            date: coInsured.coInsured.terminatesOn ?? coInsured.coInsured.activatesOn
+                        )
+                        .onTapGesture {
+                            if contract.showEditCoInsuredInfo, coInsured.coInsured.terminatesOn == nil {
+                                let contract: InsuredPeopleConfig = .init(
+                                    contract: contract,
+                                    fromInfoCard: false
+                                )
+                                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                            }
+                        }
+                        .accessibilityElement(children: .combine)
+                    } else {
+                        CoInsuredField(
+                            coInsured: coInsured.coInsured,
+                            accessoryView: EmptyView(),
+                            date: coInsured.date
                         )
                     }
-                    .verticalPadding(0)
-                    .padding(.top, .padding16)
                 }
             }
 
-            if Dependencies.featureFlags().isEditCoInsuredEnabled {
-                hSection(vm.getListToDisplay(contract: contract)) { coInsured in
-                    hRow {
-                        if coInsured.coInsured.hasMissingInfo {
-                            addMissingCoInsuredView(contract: contract, coInsured: coInsured.coInsured)
-                        } else {
-                            CoInsuredField(
-                                coInsured: coInsured.coInsured,
-                                accessoryView: EmptyView(),
-                                includeStatusPill: includeStatusPill(type: coInsured.type),
-                                date: coInsured.date
-                            )
-                        }
-                    }
-                }
-
-                if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditCoInsuredInfo {
-                    hSection {
-                        CoInsuredInfoView(
-                            text: L10n.contractCoinsuredAddPersonalInfo,
-                            config: .init(contract: contract, fromInfoCard: true)
-                        )
-                        .padding(.bottom, .padding16)
-                        .accessibilityElement(children: .combine)
-                    }
+            if contract.nbOfMissingCoInsuredWithoutTermination != 0, contract.showEditCoInsuredInfo {
+                hSection {
+                    CoInsuredInfoView(
+                        text: L10n.contractCoinsuredAddPersonalInfo,
+                        config: .init(contract: contract, fromInfoCard: true)
+                    )
+                    .padding(.bottom, .padding16)
                     .accessibilityElement(children: .combine)
                 }
+                .accessibilityElement(children: .combine)
             }
         }
     }
@@ -179,39 +175,9 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func addMissingCoInsuredView(contract: Contract, coInsured: CoInsuredModel) -> some View {
-        var statusPill: StatusPillType? {
-            if coInsured.terminatesOn != nil {
-                return .deleted
-            } else if coInsured.activatesOn != nil {
-                return .added
-            }
-            return nil
-        }
-
-        CoInsuredField(
-            accessoryView: getAccessoryView(contract: contract, coInsured: coInsured)
-                .foregroundColor(hSignalColor.Amber.element),
-            includeStatusPill: statusPill,
-            date: coInsured.terminatesOn ?? coInsured.activatesOn,
-            title: L10n.contractCoinsured,
-            subTitle: L10n.contractNoInformation
-        )
-        .onTapGesture {
-            if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-                let contract: InsuredPeopleConfig = .init(
-                    contract: contract,
-                    fromInfoCard: false
-                )
-                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-            }
-        }
-    }
-
-    @ViewBuilder
     private func getAccessoryView(contract: Contract, coInsured: CoInsuredModel) -> some View {
-        if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-            Image(uiImage: hCoreUIAssets.warningTriangleFilledSmall.image)
+        if contract.showEditCoInsuredInfo, coInsured.terminatesOn == nil {
+            hCoreUIAssets.warningTriangleFilledSmall.view
         } else {
             EmptyView()
         }
@@ -225,8 +191,8 @@ struct ContractInformationView: View {
         {
             hSection {
                 InfoCard(
-                    text: days == 0
-                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days),
+                    text: days == 1
+                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days + 1),
                     type: .info
                 )
                 .buttons([
@@ -242,18 +208,17 @@ struct ContractInformationView: View {
                     )
                 ])
             }
-            .padding(.top, .padding8)
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
             hSection {
                 HStack {
                     if contract.coInsured.first(where: {
-                        return ($0.activatesOn != nil || $0.terminatesOn != nil)
-                    }) != nil, Dependencies.featureFlags().isEditCoInsuredEnabled {
+                        $0.activatesOn != nil || $0.terminatesOn != nil
+                    }) != nil {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
-                                contract.coInsured.count,
+                                contract.coInsured.filter { !$0.isTerminated }.count,
                                 upcomingChangedAgreement.activeFrom?.localDateToDate?
                                     .displayDateDDMMMYYYYFormat ?? ""
                             ),
@@ -271,7 +236,6 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
-                        .padding(.top, .padding8)
                     } else {
                         InfoCard(
                             text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
@@ -287,7 +251,6 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
-                        .padding(.top, .padding8)
                     }
                 }
             }
@@ -307,16 +270,19 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func moveAddressButton(contract: Contract) -> some View {
-        let contractsThatSupportsMoving = store.state.activeContracts.filter({ $0.supportsAddressChange })
-        if contract.supportsAddressChange && Dependencies.featureFlags().isMovingFlowEnabled
-            && contractsThatSupportsMoving.count < 2
+        let contractsThatSupportsMoving = store.state.activeContracts.filter(\.supportsAddressChange)
+        if contract.supportsAddressChange, featureFlags.isMovingFlowEnabled,
+            contractsThatSupportsMoving.count < 2, !contract.isTerminated
         {
             hSection {
-                hButton.LargeButton(type: .ghost) {
-                    contractsNavigationVm.isChangeAddressPresented = true
-                } content: {
-                    hText(L10n.InsuranceDetails.moveButton, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.InsuranceDetails.moveButton),
+                    {
+                        contractsNavigationVm.isChangeAddressPresented = true
+                    }
+                )
             }
             .sectionContainerStyle(.transparent)
         }
@@ -326,8 +292,9 @@ struct ContractInformationView: View {
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
+
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
-        return contract.coInsured
+        contract.coInsured
             .map {
                 CoInsuredListType(
                     coInsured: $0,
@@ -336,10 +303,18 @@ private class ContractsInformationViewModel: ObservableObject {
                 )
             }
     }
+
+    @MainActor
+    func getButtonText(_ contract: Contract) -> String {
+        if contract.onlyCoInsured() {
+            return L10n.contractEditCoinsured
+        } else {
+            return L10n.contractEditInfoLabel
+        }
+    }
 }
 
 public struct CoInsuredInfoView: View {
-    @PresentableStore var store: ContractStore
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     let text: String
@@ -357,8 +332,8 @@ public struct CoInsuredInfoView: View {
             .buttons([
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                    buttonAction: {
-                        contractsNavigationVm.editCoInsuredVm.start(fromContract: config)
+                    buttonAction: { [weak contractsNavigationVm] in
+                        contractsNavigationVm?.editCoInsuredVm.start(fromContract: config)
                     }
                 )
             ])

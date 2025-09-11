@@ -1,5 +1,0 @@
-mutation ChatMessageEscalate($reference: String!) {
-  chatMessageEscalate(reference: $reference) {
-    ...ChatMessageAutomaticSuggestionsFragment
-  }
-}

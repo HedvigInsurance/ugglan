@@ -9,18 +9,18 @@ public enum NotificationType {
     case campaign
     case neutral
 
-    var image: UIImage {
+    var image: Image {
         switch self {
         case .info:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         case .attention:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .error:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .campaign:
-            return hCoreUIAssets.campaignSmall.image
+            return hCoreUIAssets.campaignSmall.view
         case .neutral:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         }
     }
 
@@ -55,6 +55,16 @@ public enum NotificationType {
             hFillColor.Opaque.secondary
         }
     }
+
+    @hColorBuilder
+    public var toastImageColor: some hColor {
+        switch self {
+        case .info:
+            hSignalColor.Green.element
+        default:
+            imageColor
+        }
+    }
 }
 
 struct NotificationStyle: ViewModifier {
@@ -74,13 +84,20 @@ struct NotificationStyle: ViewModifier {
                         )
                 )
         case .defaultStyle:
-            content
-                .background(backgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                .overlay(
-                    RoundedRectangle(cornerRadius: .cornerRadiusL)
-                        .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
-                )
+            switch type {
+            case .neutral:
+                content
+                    .background(backgroundColor)
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: .cornerRadiusL)
+                            .strokeBorder(hBorderColor.primary, lineWidth: 1)
+                    )
+            default:
+                content
+                    .background(backgroundColor)
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+            }
         }
     }
 

@@ -1,25 +1,22 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct MovingFlowHousingTypeScreen: View {
-    @ObservedObject var vm: MovingFlowHousingTypeViewModel
+    @ObservedObject var vm = MovingFlowHousingTypeViewModel()
     @EnvironmentObject var router: Router
     @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     init(
         movingFlowNavigationVm: MovingFlowNavigationViewModel
     ) {
-        self.vm = .init(movingFlowNavigationVm: movingFlowNavigationVm)
         self.movingFlowNavigationVm = movingFlowNavigationVm
     }
 
     public var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.embarkLoading,
-            state: $vm.viewState
+            state: $movingFlowNavigationVm.viewState
         )
         .hCustomSuccessView {
             hForm {}
@@ -44,7 +41,7 @@ public struct MovingFlowHousingTypeScreen: View {
                                     hRadioField(
                                         id: type.rawValue,
                                         leftView: {
-                                            hText(type.title, style: .heading2)
+                                            hText(type.title, style: .body1)
                                                 .asAnyView
                                         },
                                         selected: $vm.selectedHousingType
@@ -53,13 +50,8 @@ public struct MovingFlowHousingTypeScreen: View {
                             }
                             .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
 
-                            if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
-                                InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
-                            }
-                            hButton.LargeButton(type: .primary) {
+                            hContinueButton {
                                 continuePressed()
-                            } content: {
-                                hText(L10n.generalContinueButton, style: .body1)
                             }
                             .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
                         }
@@ -105,63 +97,22 @@ public struct MovingFlowHousingTypeScreen: View {
 
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale.send(.nb_NO)
+        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Localization.Locale.currentLocale.send(.sv_SE)
         return MovingFlowHousingTypeScreen(movingFlowNavigationVm: .init())
     }
 }
 
 @MainActor
 class MovingFlowHousingTypeViewModel: ObservableObject {
-    @Inject private var service: MoveFlowClient
-    @Published var selectedHousingType: String? = HousingType.apartment.rawValue
-    @Published var viewState: ProcessingState = .loading
-    let movingFlowNavigationVm: MovingFlowNavigationViewModel
-
-    init(movingFlowNavigationVm: MovingFlowNavigationViewModel) {
-        self.movingFlowNavigationVm = movingFlowNavigationVm
-        self.initializeData()
-    }
-
-    private func initializeData() {
-        Task {
-            let movingFlowModel = try await getMoveIntent()
-            movingFlowNavigationVm.movingFlowVm = movingFlowModel
-
-            let addressModel = AddressInputModel()
-            addressModel.moveFromAddressId = movingFlowModel?.currentHomeAddresses.first?.id
-            addressModel.nbOfCoInsured = movingFlowModel?.suggestedNumberCoInsured ?? 5
-            movingFlowNavigationVm.addressInputModel = addressModel
-        }
-    }
-
-    @MainActor
-    func getMoveIntent() async throws -> MovingFlowModel? {
-        withAnimation {
-            self.viewState = .loading
-        }
-
-        do {
-            let movingFlowData = try await service.sendMoveIntent()
-
-            withAnimation {
-                self.viewState = .success
-            }
-
-            return movingFlowData
-        } catch {
-            if let error = error as? MovingFlowError {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            } else {
-                self.viewState = .error(errorMessage: L10n.General.errorBody)
-            }
-            return nil
-        }
-    }
+    @Published var selectedHousingType: String? = HousingType.rental.rawValue
+    init() {}
 }
 
 public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
-    case apartment
     case rental
+    case apartment
     case house
 
     var title: String {
@@ -172,17 +123,6 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
             return L10n.changeAddressApartmentRentLabel
         case .house:
             return L10n.changeAddressVillaLabel
-        }
-    }
-
-    var asMoveApartmentSubType: GraphQLEnum<OctopusGraphQL.MoveApartmentSubType> {
-        switch self {
-        case .apartment:
-            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
-        case .rental:
-            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.rent)
-        case .house:
-            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
         }
     }
 }
@@ -198,5 +138,4 @@ extension HousingType: TrackingViewNameProtocol {
             return .init(describing: MovingFlowAddressScreen.self)
         }
     }
-
 }

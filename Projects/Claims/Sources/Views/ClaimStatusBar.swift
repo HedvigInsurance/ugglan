@@ -1,14 +1,12 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ClaimStatusBar: View {
     let status: ClaimModel.ClaimStatus
-    let outcome: ClaimModel.ClaimOutcome
+    let outcome: ClaimModel.ClaimOutcome?
 
     func accessibilityText(segment: ClaimModel.ClaimStatus) -> String? {
-
         let claimStatusText = L10n.ClaimStatus.title
 
         switch status {
@@ -22,12 +20,7 @@ struct ClaimStatusBar: View {
                 return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled + " "
                     + L10n.ClaimStatusDetail.submitted
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    return claimStatusText + L10n.Claim.StatusBar.beingHandled + " "
-                        + L10n.ClaimStatusDetail.missingReceipt
-                } else {
-                    return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled
-                }
+                return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled
             default:
                 return nil
             }
@@ -43,12 +36,7 @@ struct ClaimStatusBar: View {
                 return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + ": "
                     + L10n.ClaimStatusDetail.submitted
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened
-                        + L10n.ClaimStatusDetail.missingReceipt
-                } else {
-                    return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + L10n.Claim.StatusBar.beingHandled
-                }
+                return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + L10n.Claim.StatusBar.beingHandled
             default:
                 return nil
             }
@@ -71,11 +59,7 @@ struct ClaimStatusBar: View {
             case .submitted:
                 hSignalColor.Green.element
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    hSignalColor.Amber.element
-                } else {
-                    hSignalColor.Green.element
-                }
+                hSignalColor.Green.element
             default:
                 hFillColor.Opaque.disabled
             }
@@ -90,11 +74,7 @@ struct ClaimStatusBar: View {
             case .submitted:
                 hSignalColor.Green.element
             case .beingHandled:
-                if outcome == .missingReceipt {
-                    hSignalColor.Amber.element
-                } else {
-                    hSignalColor.Green.element
-                }
+                hSignalColor.Green.element
             default:
                 hFillColor.Opaque.disabled
             }
@@ -137,19 +117,20 @@ struct ClaimStatusBar: View {
     }
 
     var body: some View {
-        ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
-            if !(segment == .none || segment == .reopened) {
-                VStack {
-                    Rectangle()
-                        .fill(barColor(segment: segment))
-                        .frame(height: 4)
-                        .cornerRadius(.cornerRadiusXS)
-                    hText(segment.title, style: .label)
-                        .foregroundColor(textColor(segment: segment))
-                        .lineLimit(1)
+        HStack(alignment: .top, spacing: .padding6) {
+            ForEach(ClaimModel.ClaimStatus.allCases, id: \.title) { segment in
+                if !(segment == .none || segment == .reopened) {
+                    VStack {
+                        Rectangle()
+                            .fill(barColor(segment: segment))
+                            .frame(height: 4)
+                            .cornerRadius(.cornerRadiusXS)
+                        hText(segment.title, style: .label)
+                            .foregroundColor(textColor(segment: segment))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .accessibilityLabel(accessibilityText(segment: segment) ?? "")
                 }
-                .frame(maxWidth: .infinity)
-                .accessibilityLabel(accessibilityText(segment: segment) ?? "")
             }
         }
     }
@@ -157,25 +138,27 @@ struct ClaimStatusBar: View {
 
 struct ClaimStatusBar_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            HStack {
-                ClaimStatusBar(status: .submitted, outcome: .none)
+        hForm {
+            hSection {
+                VStack {
+                    HStack {
+                        ClaimStatusBar(status: .submitted, outcome: .none)
+                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .beingHandled, outcome: .none)
+                    //                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .closed, outcome: .paid)
+                    //                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .closed, outcome: .notCovered)
+                    //                    }
+                    //                    HStack {
+                    //                        ClaimStatusBar(status: .closed, outcome: .notCompensated)
+                    //                    }
+                }
             }
-            HStack {
-                ClaimStatusBar(status: .beingHandled, outcome: .none)
-            }
-            HStack {
-                ClaimStatusBar(status: .closed, outcome: .paid)
-            }
-            HStack {
-                ClaimStatusBar(status: .closed, outcome: .notCovered)
-            }
-            HStack {
-                ClaimStatusBar(status: .closed, outcome: .notCompensated)
-            }
-            HStack {
-                ClaimStatusBar(status: .beingHandled, outcome: .missingReceipt)
-            }
+            .sectionContainerStyle(.transparent)
         }
     }
 }

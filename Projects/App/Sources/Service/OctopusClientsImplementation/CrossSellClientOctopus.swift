@@ -1,0 +1,92 @@
+import Addons
+import CrossSell
+import Foundation
+import hCore
+import hGraphQL
+
+class CrossSellClientOctopus: CrossSellClient {
+    @Inject private var octopus: hOctopus
+
+    func getCrossSell() async throws -> [CrossSell] {
+        let query = OctopusGraphQL.CrossSellsQuery()
+        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        return crossSells.currentMember.crossSells.compactMap {
+            CrossSell($0.fragments.crossSellFragment)
+        }
+    }
+
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+        let query = OctopusGraphQL.CrossSellQuery(
+            source: GraphQLEnum<OctopusGraphQL.CrossSellSource>(source.asGraphQLSource)
+        )
+        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSell.otherCrossSells.compactMap {
+            CrossSell($0.fragments.crossSellFragment)
+        }
+        let recommendedCrossSell: CrossSell? = {
+            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell {
+                return CrossSell(crossSellFragment)
+            }
+            return nil
+        }()
+
+        return .init(recommended: recommendedCrossSell, others: otherCrossSells)
+    }
+
+    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+        let query = OctopusGraphQL.UpsellTravelAddonBannerCrossSellQuery(flow: .case(source.getSource))
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let bannerData = data.currentMember.upsellTravelAddonBanner
+
+        if let bannerData, !bannerData.contractIds.isEmpty {
+            return AddonBannerModel(
+                contractIds: bannerData.contractIds,
+                titleDisplayName: bannerData.titleDisplayName,
+                descriptionDisplayName: bannerData.descriptionDisplayName,
+                badges: bannerData.badges
+            )
+        } else {
+            throw AddonsError.missingContracts
+        }
+    }
+}
+
+extension CrossSell {
+    public init?(_ data: OctopusGraphQL.CrossSellFragment) {
+        self.init(
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            webActionURL: data.storeUrl,
+            imageUrl: URL(string: data.pillowImageSmall.src),
+            buttonDescription: ""
+        )
+    }
+
+    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
+        let crossSellFragment = data.crossSell.fragments.crossSellFragment
+        self.init(
+            id: crossSellFragment.id,
+            title: crossSellFragment.title,
+            description: crossSellFragment.description,
+            webActionURL: crossSellFragment.storeUrl,
+            bannerText: data.bannerText,
+            buttonText: data.buttonText,
+            discountText: data.discountText,
+            imageUrl: URL(string: crossSellFragment.pillowImageLarge.src),
+            buttonDescription: data.buttonDescription
+        )
+    }
+}
+
+extension CrossSellSource {
+    fileprivate var asGraphQLSource: OctopusGraphQL.CrossSellSource {
+        switch self {
+        case .home: return .home
+        case .closedClaim: return .closedClaim
+        case .changeTier: return .changeTier
+        case .addon: return .addon
+        case .movingFlow: return .movingFlow
+        }
+    }
+}

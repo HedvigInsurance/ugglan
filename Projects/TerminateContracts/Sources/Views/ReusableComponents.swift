@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct DisplayQuestionView: View {
     @EnvironmentObject var navigationVm: TerminationFlowNavigationViewModel
@@ -58,7 +57,7 @@ struct DisplayQuestionView: View {
                                 ? "deletion question clicked" : "termination question clicked"
                             log.info(stringToLog, attributes: ["question": question.questionTranslated])
                         }
-                    ) { url in
+                    ) { _ in
                         //                        store.send(.goToUrl(url: url))
                     }
                 }

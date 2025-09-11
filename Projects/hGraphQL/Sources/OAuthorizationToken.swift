@@ -19,6 +19,4 @@ public struct OAuthorizationToken: Codable {
     }
 }
 
-extension OAuthorizationToken: Sendable {
-
-}
+extension OAuthorizationToken: Sendable {}

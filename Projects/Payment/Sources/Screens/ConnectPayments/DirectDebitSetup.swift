@@ -7,7 +7,6 @@ import SwiftUI
 import WebKit
 import hCore
 import hCoreUI
-import hGraphQL
 
 private class DirectDebitWebview: UIView {
     var paymentService = hPaymentService()
@@ -21,7 +20,8 @@ private class DirectDebitWebview: UIView {
     @Binding var showErrorAlert: Bool
     let router: Router
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -31,7 +31,7 @@ private class DirectDebitWebview: UIView {
         router: Router
     ) {
         self.setupType = setupType
-        self._showErrorAlert = showErrorAlert
+        _showErrorAlert = showErrorAlert
         self.router = router
         super.init(frame: .zero)
 
@@ -44,7 +44,7 @@ private class DirectDebitWebview: UIView {
             await startRegistration()
         }
 
-        self.addSubview(vc.view)
+        addSubview(vc.view)
         vc.view.snp.makeConstraints { make in
             make.leading.trailing.bottom.top.equalToSuperview()
         }
@@ -127,7 +127,7 @@ private class DirectDebitWebview: UIView {
                 if isLoading {
                     didFailToLoadWebViewSignal.send(true)
                     if let url = URL {
-                        UIApplication.shared.open(url)
+                        Dependencies.urlOpener.open(url)
                         didFailToLoadWebViewSignal.send(true)
                     } else {
                         self?.showErrorAlert = true
@@ -149,9 +149,9 @@ private class DirectDebitWebview: UIView {
         .store(in: &cancellables)
 
         shouldDismissViewSignal
-            .filter({ $0 })
+            .filter { $0 }
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { _ in }) { [weak self] value in
+            .sink(receiveCompletion: { _ in }) { [weak self] _ in
                 self?.paymentStore.send(.fetchPaymentStatus)
                 self?.router.dismiss()
             }
@@ -242,11 +242,11 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
     @Binding var showErrorAlert: Bool
     let router: Router
 
-    public func makeUIView(context: Context) -> some UIView {
-        return DirectDebitWebview(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
+    func makeUIView(context _: Context) -> some UIView {
+        DirectDebitWebview(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
     }
 
-    public func updateUIView(_ uiView: UIViewType, context: Context) {}
+    func updateUIView(_: UIViewType, context _: Context) {}
 }
 
 public struct DirectDebitSetup: View {
@@ -269,9 +269,7 @@ public struct DirectDebitSetup: View {
                 .contains(store.state.paymentStatusData?.status ?? .active)
             return hasAlreadyConnected ? .replacement : .initial
         }()
-        showNotSupported = {
-            !Dependencies.featureFlags().isConnectPaymentEnabled
-        }()
+        showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
     }
 
@@ -298,7 +296,6 @@ public struct DirectDebitSetup: View {
                             }
                         ),
                         dismissButton: .init(
-                            buttonTitle: L10n.generalCloseButton,
                             buttonAction: {
                                 router.dismiss()
                             }
@@ -334,19 +331,21 @@ public struct DirectDebitSetup: View {
     }
 
     private var dismissButton: some View {
-        hButton.MediumButton(type: .ghost) {
-            if self.showNotSupported {
+        hText(
+            setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton,
+            style: .heading1
+        )
+        .onTapGesture {
+            if showNotSupported {
                 router.dismiss()
             } else {
                 showCancelAlert = true
             }
-        } content: {
-            hText(setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton)
         }
     }
 
     private func cancelAlert() -> SwiftUI.Alert {
-        return Alert(
+        Alert(
             title: Text(L10n.PayInIframeInAppCancelAlert.title),
             message: Text(L10n.PayInIframeInAppCancelAlert.body),
             primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) {
@@ -357,7 +356,7 @@ public struct DirectDebitSetup: View {
     }
 
     private func errorAlert() -> SwiftUI.Alert {
-        return Alert(
+        Alert(
             title: Text(L10n.generalError),
             message: Text(L10n.somethingWentWrong),
             primaryButton: .default(Text(L10n.generalRetry)),
@@ -376,13 +375,12 @@ public enum SetupType: Equatable {
 
 extension DirectDebitSetup: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: DirectDebitSetup.self)
+        .init(describing: DirectDebitSetup.self)
     }
-
 }
 
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     return DirectDebitSetup(setupType: .initial)
 }

@@ -30,10 +30,8 @@ public struct OTPEntryView: View {
         }
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
+                hContinueButton {
                     vm.onSubmit(otpState: otpVM)
-                } content: {
-                    hText(L10n.Login.continueButton)
                 }
                 .hButtonIsLoading(otpVM.isLoading)
             }
@@ -46,36 +44,25 @@ public struct OTPEntryView: View {
         }
     }
 }
+
 @MainActor
 class OTPEntryViewModel: ObservableObject {
     var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusInputField = false
     weak var router: Router?
     var masking: Masking {
-        switch Localization.Locale.currentLocale.value.market {
-        case .dk:
-            return Masking(type: .danishPersonalNumber)
-        case .no:
-            return Masking(type: .norwegianPersonalNumber)
-        case .se:
-            return Masking(type: .email)
-        }
+        Masking(type: .email)
     }
 
     var title: String {
-        switch Localization.Locale.currentLocale.value.market {
-        case .dk, .no:
-            return L10n.zignsecLoginScreenTitle
-        case .se:
-            return L10n.Login.enterYourEmailAddress
-        }
+        L10n.Login.enterYourEmailAddress
     }
 
     func onSubmit(otpState: OTPState) {
         guard masking.isValid(text: otpState.input) else {
             return
         }
-        self.focusInputField = false
+        focusInputField = false
         otpState.isLoading = true
         Task { @MainActor [weak self, weak otpState] in
             do {
@@ -89,9 +76,9 @@ class OTPEntryViewModel: ObservableObject {
                     otpState.canResendAt = Date().addingTimeInterval(60)
                     otpState.isResending = false
                     otpState.maskedEmail = data.maskedEmail
-                    self?.router?.push(AuthentificationRouterType.otpCodeEntry)
+                    self?.router?.push(AuthenticationRouterType.otpCodeEntry)
                 }
-            } catch let error {
+            } catch {
                 otpState?.isLoading = false
                 otpState?.otpInputErrorMessage = error.localizedDescription
             }

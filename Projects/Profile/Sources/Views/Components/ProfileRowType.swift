@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 enum ProfileRowType {
-    case myInfo, appInfo, settings, travelCertificate
+    case myInfo, appInfo, settings, travelCertificate, certificates, insuranceEvidence, claimHistory
     case eurobonus(hasEnteredNumber: Bool)
 
     var title: String {
@@ -19,31 +19,40 @@ enum ProfileRowType {
             return L10n.SasIntegration.title
         case .travelCertificate:
             return L10n.TravelCertificate.cardTitle
+        case .certificates:
+            return L10n.Profile.Certificates.title
+        case .insuranceEvidence:
+            return L10n.InsuranceEvidence.documentTitle
+        case .claimHistory:
+            return L10n.Profile.ClaimHistory.title
         }
     }
+
     @MainActor
-    var icon: UIImage {
+    var icon: Image {
         switch self {
         case .myInfo:
-            return hCoreUIAssets.id.image
+            return hCoreUIAssets.id.view
         case .appInfo:
-            return hCoreUIAssets.infoOutlined.image
+            return hCoreUIAssets.infoOutlined.view
         case .settings:
-            return hCoreUIAssets.settings.image
+            return hCoreUIAssets.settings.view
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
-                return hCoreUIAssets.euroBonusWithValueRowIcon.image
+                return hCoreUIAssets.euroBonusWithValueRowIcon.view
             } else {
-                return hCoreUIAssets.eurobonus.image
+                return hCoreUIAssets.eurobonus.view
             }
-        case .travelCertificate:
-            return hCoreUIAssets.documents.image
+        case .travelCertificate, .certificates, .insuranceEvidence:
+            return hCoreUIAssets.document.view
+        case .claimHistory:
+            return hCoreUIAssets.clock.view
         }
     }
 
     var imageSize: CGFloat {
         switch self {
-        case .myInfo, .appInfo, .settings, .travelCertificate:
+        case .myInfo, .appInfo, .settings, .travelCertificate, .certificates, .insuranceEvidence, .claimHistory:
             return 40
         case let .eurobonus(hasEnteredNumber):
             return hasEnteredNumber ? 25 : 40
@@ -51,6 +60,6 @@ enum ProfileRowType {
     }
 
     var paddings: CGFloat {
-        return (40 - imageSize) / 2
+        (40 - imageSize) / 2
     }
 }

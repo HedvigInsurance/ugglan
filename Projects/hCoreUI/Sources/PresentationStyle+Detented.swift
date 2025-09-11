@@ -64,11 +64,11 @@ public struct PresentationOptions: OptionSet, Sendable {
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
-    static let useBlur = PresentationOptions()
 
+    static let useBlur = PresentationOptions()
 }
 
-class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var detents: [Detent]
     var options: PresentationOptions
     var wantsGrabber: Bool
@@ -89,11 +89,11 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     }
 
     func animationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController,
-        source: UIViewController
+        forPresented _: UIViewController,
+        presenting _: UIViewController,
+        source _: UIViewController
     ) -> UIViewControllerAnimatedTransitioning? {
-        return nil
+        nil
     }
 
     func presentationController(
@@ -124,8 +124,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         if #available(iOS 16.0, *) {
             if let presentationController = presentationController as? BlurredSheetPresenationController {
                 presentationController.detents = [
-                    .custom(resolver: { context in
-                        return -50
+                    .custom(resolver: { _ in
+                        0
                     })
                 ]
             }
@@ -135,8 +135,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             [
                 .custom(
                     "zero",
-                    { viewController, containerView in
-                        return -50
+                    { _, _ in
+                        0
                     }
                 )
             ],
@@ -162,6 +162,212 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         setGrabber(on: presentationController, to: wantsGrabber)
 
         return presentationController
+    }
+}
+
+class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
+    var bottomView: AnyView?
+
+    init(
+        bottomView: AnyView? = nil
+    ) {
+        self.bottomView = bottomView
+        super.init()
+    }
+
+    func presentationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController?,
+        source _: UIViewController
+    ) -> UIPresentationController? {
+        CenteredModalPresentationController(
+            presentedViewController: presented,
+            presenting: presenting,
+            bottomView: bottomView
+        )
+    }
+}
+
+final class CenteredModalPresentationController: UIPresentationController {
+    private let blurView: PassThroughEffectView?
+    let bottomView: AnyView?
+    private var bottomHostingController: UIHostingController<AnyView>?
+
+    private var startDragPosition: CGFloat = 0
+    private var dragPercentage: CGFloat = 0
+    private var dragOffset: CGFloat = 0
+    private var dragState: ModalScaleState = .presentation
+
+    init(
+        presentedViewController: UIViewController,
+        presenting presentingViewController: UIViewController?,
+        bottomView: AnyView?
+    ) {
+        self.bottomView = bottomView
+        blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), options: [.centeredSheet, .gradient])
+
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        blurView?.alpha = 0
+
+        if let bottomView = bottomView {
+            bottomHostingController = UIHostingController(rootView: bottomView)
+            bottomHostingController?.view.backgroundColor = .clear
+        }
+    }
+
+    @objc private func dismissOnTapOutside() {
+        presentedViewController.dismiss(animated: true, completion: nil)
+    }
+
+    override func presentationTransitionWillBegin() {
+        guard let containerView = containerView, let blurView = blurView else { return }
+
+        containerView.addSubview(blurView)
+        blurView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        containerView.layoutIfNeeded()
+        addGestures()
+        if let bottomHostingView = bottomHostingController?.view {
+            bottomHostingView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview(bottomHostingView)
+            bottomHostingView.snp.makeConstraints { make in
+                make.leading.trailing.bottom.equalToSuperview()
+            }
+        }
+
+        presentedViewController.transitionCoordinator?
+            .animate(alongsideTransition: { _ in
+                blurView.alpha = 1
+            })
+    }
+
+    private func addGestures() {
+        guard let containerView = containerView, let blurView = blurView else { return }
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gesture:)))
+        containerView.addGestureRecognizer(panGesture)
+        // Dismiss on tap outside
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissOnTapOutside))
+        blurView.addGestureRecognizer(tapGesture)
+    }
+
+    override func dismissalTransitionWillBegin() {
+        guard let blurView = blurView else { return }
+        presentedViewController.transitionCoordinator?
+            .animate(
+                alongsideTransition: { [weak self] _ in
+                    blurView.alpha = 0
+                    self?.bottomHostingController?.view.removeFromSuperview()
+                }
+            )
+    }
+
+    override func containerViewWillLayoutSubviews() {
+        super.containerViewWillLayoutSubviews()
+        blurView?.frame = containerView?.bounds ?? .zero
+
+        guard let presentedView = presentedView
+        else { return }
+        switch dragState {
+        case .presentation:
+            presentedView.frame = frameOfPresentedViewInContainerView
+        case .interaction:
+            presentedView.frame.size = frameOfPresentedViewInContainerView.size
+        }
+    }
+
+    override var frameOfPresentedViewInContainerView: CGRect {
+        guard let containerView else { return .zero }
+
+        let width: CGFloat = min(containerView.bounds.width - 40, 400)
+        let calculatedHeight = UIViewController.calculateScrollViewContentHeight(for: presentedViewController)
+
+        let height = min(
+            calculatedHeight,
+            containerView.bounds.height - (bottomHostingController?.view.frame.height ?? .zero) * 2
+        )
+        let originX = (containerView.bounds.width - width) / 2
+        let originY = (containerView.bounds.height - height) / 2
+
+        return CGRect(x: originX, y: originY, width: width, height: height)
+    }
+
+    enum ModalScaleState {
+        case presentation
+        case interaction
+    }
+}
+
+// drag gesture part
+extension CenteredModalPresentationController {
+    @objc private func panGestureHandler(gesture: UIPanGestureRecognizer) {
+        guard let view = gesture.view, let superView = view.superview,
+            let presented = presentedView, let container = containerView
+        else { return }
+
+        let location = gesture.translation(in: superView)
+        let x = gesture.location(in: containerView).y
+
+        switch gesture.state {
+        case .began:
+            presented.frame.size.height = container.frame.height
+            startDragPosition = gesture.location(in: containerView).y
+            dragState = .interaction
+        case .changed:
+            switch dragState {
+            case .interaction:
+                var trueOffset = x - startDragPosition
+
+                if trueOffset < 0 {
+                    trueOffset = trueOffset / 5
+                }
+                let percentage = 1 - (trueOffset / view.frame.size.height)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0,
+                    usingSpringWithDamping: 0.5,
+                    initialSpringVelocity: 0.9,
+                    options: .curveEaseInOut,
+                    animations: {
+                        presented.transform = CGAffineTransform(translationX: 0, y: trueOffset)
+                    }
+                )
+                dragPercentage = percentage
+                dragOffset = trueOffset
+                blurView?.alpha = percentage
+            case .presentation:
+                presented.frame.origin.y = location.y
+            }
+        case .ended:
+            if dragOffset <= 100 {
+                dragPercentage = 1
+                dragOffset = 0
+                resetDrag()
+            } else {
+                presentedViewController.dismiss(animated: true, completion: nil)
+                gesture.isEnabled = false
+            }
+        default:
+            resetDrag()
+        }
+    }
+
+    private func resetDrag() {
+        guard let presented = presentedView else { return }
+        UIView.animate(
+            withDuration: 0.6,
+            delay: 0,
+            usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 1,
+            options: .curveEaseInOut,
+            animations: { [weak self] in
+                presented.transform = CGAffineTransform.identity
+                self?.blurView?.alpha = self?.dragPercentage ?? 0
+            },
+            completion: { [weak self] _ in
+                self?.dragState = .presentation
+            }
+        )
     }
 }
 
@@ -235,7 +441,7 @@ extension UIViewController {
 
     private static var _lastDetentIndex: UInt8 = 1
 
-    internal var lastDetentIndex: Int? {
+    var lastDetentIndex: Int? {
         get {
             if let lastDetentIndex = objc_getAssociatedObject(self, &UIViewController._lastDetentIndex)
                 as? Int
@@ -274,7 +480,7 @@ public enum Detent: Equatable {
 
     @MainActor
     public static var height: Detent {
-        .custom("scrollViewContentSize") { viewController, containerView in
+        .custom("scrollViewContentSize") { viewController, _ in
             let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
 
             guard
@@ -288,7 +494,7 @@ public enum Detent: Equatable {
                 viewController.navigationController ?? findNavigationController(from: viewController)
             let transitioningDelegate =
                 navigationController?.transitioningDelegate
-                as? DetentedTransitioningDelegate
+                as? DetentTransitioningDelegate
             let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
             let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
@@ -318,12 +524,12 @@ public enum Detent: Equatable {
                 + additionalViewHeight
             if keyboardHeight > 0 {
                 let keyWindow = UIApplication.shared.connectedScenes
-                    .filter({ $0.activationState == .foregroundActive })
-                    .map({ $0 as? UIWindowScene })
-                    .compactMap({ $0 })
+                    .filter { $0.activationState == .foregroundActive }
+                    .map { $0 as? UIWindowScene }
+                    .compactMap { $0 }
                     .first?
                     .windows
-                    .filter({ $0.isKeyWindow }).first
+                    .filter(\.isKeyWindow).first
                 if let keyWindow {
                     let bottomPadding = keyWindow.safeAreaInsets.bottom
                     totalHeight -= bottomPadding
@@ -335,7 +541,6 @@ public enum Detent: Equatable {
 
     @MainActor
     private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
-
         if let viewController = vc?.children.first(where: { $0.isKind(of: UINavigationController.self) })
             as? UINavigationController
         {
@@ -368,7 +573,7 @@ public enum Detent: Equatable {
                 weakViewController?.appliedDetents = detents
                 weakViewController?.sheetPresentationController?.detents =
                     weakViewController?.appliedDetents
-                    .map({
+                    .map {
                         switch $0 {
                         case .large:
                             return .large()
@@ -376,15 +581,15 @@ public enum Detent: Equatable {
                             return .medium()
                         case let .custom(name, block):
                             return UISheetPresentationController.Detent.custom(
-                                identifier: UISheetPresentationController.Detent.Identifier.init(name)
-                            ) { context in
+                                identifier: UISheetPresentationController.Detent.Identifier(name)
+                            ) { _ in
                                 if let weakViewController {
                                     return block(weakViewController, weakViewController.view)
                                 }
                                 return 0
                             }
                         }
-                    }) ?? [.medium()]
+                    } ?? [.medium()]
                 if let lastDetentIndex = lastDetentIndex {
                     setDetentIndex(on: presentationController, index: lastDetentIndex)
                 }
@@ -398,7 +603,6 @@ public enum Detent: Equatable {
                             selector,
                             with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
                         )
-
                 }
                 if let weakPresentationController {
                     setWantsBottomAttachedInCompactHeight(on: weakPresentationController, to: true)
@@ -448,11 +652,79 @@ public enum Detent: Equatable {
         }
     }
 }
-//}
 
-@available(iOS 16.0, *)
+@MainActor
+extension UIViewController {
+    static func calculateScrollViewContentHeight(for viewController: UIViewController) -> CGFloat {
+        let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
+
+        guard
+            let scrollView = allScrollViewDescendants.first(where: { _ in
+                true
+            })
+        else {
+            return 0
+        }
+        let navigationController =
+            viewController.navigationController ?? findNavigationController(from: viewController)
+        let transitioningDelegate =
+            navigationController?.transitioningDelegate
+            as? DetentTransitioningDelegate
+        let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
+
+        let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
+
+        let hasLargeTitle =
+            (navigationController?.navigationBar.prefersLargeTitles ?? false)
+            && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
+        let hasNavigationBar =
+            navigationController?.navigationBar != nil
+            && (navigationController?.isNavigationBarHidden ?? true) == false
+
+        let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
+
+        let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
+
+        let additionalNavigationSafeAreaInsets =
+            navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
+        let additionalNavigationHeight =
+            additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
+
+        let additionalViewHeight =
+            viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
+        var totalHeight: CGFloat =
+            scrollView.contentSize.height
+            + (hasNavigationBar ? navigationBarHeight : 0)
+            + additionalNavigationHeight
+            + additionalViewHeight
+        if keyboardHeight > 0 {
+            let keyWindow = UIApplication.shared.connectedScenes
+                .filter { $0.activationState == .foregroundActive }
+                .map { $0 as? UIWindowScene }
+                .compactMap { $0 }
+                .first?
+                .windows
+                .filter(\.isKeyWindow).first
+            if let keyWindow {
+                let bottomPadding = keyWindow.safeAreaInsets.bottom
+                totalHeight -= bottomPadding
+            }
+        }
+        return totalHeight
+    }
+
+    @MainActor
+    private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
+        if let viewController = vc?.children.first(where: { $0.isKind(of: UINavigationController.self) })
+            as? UINavigationController
+        {
+            return viewController
+        }
+        return nil
+    }
+}
+
 public class BlurredSheetPresenationController: UISheetPresentationController {
-
     var effectView: PassThroughEffectView?
 
     init(
@@ -461,27 +733,21 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: getBlurEffectStyle)) : nil
+        effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial)) : nil
         effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
 
-        self.detents = [
-            .custom(resolver: { context in
-                return 0
-            })
-        ]
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
+        effectView?.addGestureRecognizer(tap)
+        effectView?.isUserInteractionEnabled = true
     }
 
-    var getBlurEffectStyle: UIBlurEffect.Style {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .light
-        } else {
-            return .light
-        }
+    @objc private func didTapBackground() {
+        presentedViewController.dismiss(animated: true)
     }
 
-    public override func presentationTransitionWillBegin() {
+    override public func presentationTransitionWillBegin() {
         super.presentationTransitionWillBegin()
         if let effectView, effectView.superview == nil {
             containerView?.addSubview(effectView)
@@ -497,19 +763,63 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
             })
     }
 
-    public override func dismissalTransitionWillBegin() {
+    override public func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
 
         presentedViewController.transitionCoordinator?
-            .animate(alongsideTransition: { [weak self] context in
+            .animate(alongsideTransition: { [weak self] _ in
                 guard let self = self else { return }
                 self.effectView?.alpha = 0
             })
     }
 }
 
+public enum PassThroughEffectOptions {
+    case centeredSheet
+    case gradient
+}
+
 public class PassThroughEffectView: UIVisualEffectView {
+    let options: [PassThroughEffectOptions]
+    private let gradientLayer = CAGradientLayer()
+
+    public init(effect: UIVisualEffect?, options: [PassThroughEffectOptions]? = []) {
+        self.options = options ?? []
+        super.init(effect: effect)
+        if self.options.contains(.gradient) {
+            setupGradient()
+        }
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupGradient() {
+        gradientLayer.locations = [0.0, 0.6, 1.0]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+
+        contentView.layer.insertSublayer(gradientLayer, at: 0)
+    }
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        let blurColor = hBackgroundColor.primary.asCgColor
+
+        gradientLayer.colors = [
+            UIColor.clear.cgColor,
+            blurColor,
+            blurColor,
+        ]
+        gradientLayer.frame = contentView.bounds
+    }
+
     override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if options.contains(.centeredSheet) {
+            return bounds.contains(point) ? self : nil
+        }
         let hitView = super.hitTest(point, with: event)
 
         if hitView == self {
@@ -530,23 +840,22 @@ public protocol ParentChildRelational {
 @MainActor
 extension UIView: ParentChildRelational {
     @MainActor
-    public var parent: UIView? { return superview }
+    public var parent: UIView? { superview }
     @MainActor
-    public var children: [UIView] { return subviews }
+    public var children: [UIView] { subviews }
 }
 
-extension UIViewController: ParentChildRelational {
-}
+extension UIViewController: ParentChildRelational {}
 
 extension CALayer: ParentChildRelational {
-    public var parent: CALayer? { return superlayer }
-    public var children: [CALayer] { return sublayers ?? [] }
+    public var parent: CALayer? { superlayer }
+    public var children: [CALayer] { sublayers ?? [] }
 }
 
 extension ParentChildRelational {
     /// Returns all descendant members.
     public var allDescendants: AnySequence<Member> {
-        return AnySequence { () -> AnyIterator<Member> in
+        AnySequence { () -> AnyIterator<Member> in
             var children = self.children.makeIterator()
             var childDesendants: AnyIterator<Member>?
             return AnyIterator {
@@ -563,8 +872,8 @@ extension ParentChildRelational {
     }
 
     /// Returns all descendant members of type `type`.
-    public func allDescendants<T>(ofType type: T.Type) -> AnySequence<T> {
-        return AnySequence(allDescendants.lazy.compactMap { $0 as? T })
+    public func allDescendants<T>(ofType _: T.Type) -> AnySequence<T> {
+        AnySequence(allDescendants.lazy.compactMap { $0 as? T })
     }
 
     /// Returns all descendant members of class `class`.
@@ -581,7 +890,7 @@ extension ParentChildRelational {
                 }
 
                 /// Make sure to handle views that has been setup for KVO as well.
-                if range.upperBound == name.endIndex && name.hasPrefix("NSKVONotifying_") {
+                if range.upperBound == name.endIndex, name.hasPrefix("NSKVONotifying_") {
                     return true
                 }
 
@@ -592,12 +901,12 @@ extension ParentChildRelational {
 
     /// Returns all descendant members of class named `name`.
     public func allDescendants(ofClassNamed name: String) -> AnySequence<Member> {
-        return allDescendants(ofClass: NSClassFromString(name)!)
+        allDescendants(ofClass: NSClassFromString(name)!)
     }
 
     /// Returns all ancestors sorted from the closest to the farthest.
     public var allAncestors: AnySequence<Member> {
-        return AnySequence { () -> AnyIterator<Member> in
+        AnySequence { () -> AnyIterator<Member> in
             var parent = self.parent
             return AnyIterator {
                 defer { parent = parent?.parent }
@@ -606,7 +915,7 @@ extension ParentChildRelational {
         }
     }
 
-    ///Returns the first ancestor of type `type` if any.
+    /// Returns the first ancestor of type `type` if any.
     public func firstAncestor<T>(ofType type: T.Type) -> T? {
         guard let parent = parent else { return nil }
         if let matching = parent as? T {
@@ -619,7 +928,7 @@ extension ParentChildRelational {
 extension ParentChildRelational where Member == Self {
     /// Returns the root member of `self`.
     public var rootParent: Member {
-        return parent?.rootParent ?? self
+        parent?.rootParent ?? self
     }
 }
 
@@ -637,7 +946,7 @@ extension ParentChildRelational where Member: Equatable {
 
     /// Returns the closest common ancestor of `self` and `other` if any.
     public func closestCommonAncestor(with other: Member) -> Member? {
-        let common = self.allAncestors.filter(other.allAncestors.contains)
+        let common = allAncestors.filter(other.allAncestors.contains)
         return common.first
     }
 }
@@ -645,11 +954,11 @@ extension ParentChildRelational where Member: Equatable {
 extension UIView {
     /// Returns the frame of `self` in the `rootView`s coordinate system.
     public var absoluteFrame: CGRect {
-        return convert(bounds, to: rootView)
+        convert(bounds, to: rootView)
     }
 
     /// Returns the root view of `self`.
     public var rootView: UIView {
-        return window ?? superview?.rootView ?? self
+        window ?? superview?.rootView ?? self
     }
 }

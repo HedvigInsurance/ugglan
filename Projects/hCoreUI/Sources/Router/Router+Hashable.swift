@@ -18,10 +18,11 @@ private struct RouterDestinationModifier<D, C>: ViewModifier where D: Hashable, 
 
     @ViewBuilder
     var destination: (D) -> C
-    init(for data: D.Type, options: RouterDestionationOptions, destination: @escaping (D) -> C) {
+    init(for _: D.Type, options: RouterDestionationOptions, destination: @escaping (D) -> C) {
         self.destination = destination
         self.options = options
     }
+
     func body(content: Content) -> some View {
         content
             .onAppear { [weak router] in

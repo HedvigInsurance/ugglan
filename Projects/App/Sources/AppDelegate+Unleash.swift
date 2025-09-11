@@ -18,7 +18,7 @@ extension AppDelegate {
         let optionalDictionary: [String: String?] = [
             "memberId": memberId,
             "appVersion": Bundle.main.appVersion,
-            "market": Localization.Locale.currentLocale.value.market.rawValue,
+            "market": "SE",
             "osVersion": UIDevice.current.systemVersion,
         ]
 
@@ -31,7 +31,8 @@ extension AppDelegate {
         Localization.Locale.currentLocale
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { locale in
+            .sink { [weak self] _ in
+                guard let self else { return }
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
             .store(in: &cancellables)
@@ -39,10 +40,11 @@ extension AppDelegate {
         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
 
         profileStore.stateSignal
-            .map({ $0.memberDetails?.id })
+            .map { $0.memberDetails?.id }
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { memberId in
+            .sink { [weak self] _ in
+                guard let self else { return }
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
             .store(in: &cancellables)

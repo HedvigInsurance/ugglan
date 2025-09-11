@@ -1,4 +1,3 @@
-import PresentableStore
 @preconcurrency import XCTest
 import hCore
 
@@ -8,21 +7,10 @@ import hCore
 final class MovingFlowHousingTypeViewModelTests: XCTestCase {
     weak var sut: MockMoveFlowService?
 
-    lazy var movingFlowModel: MovingFlowModel = .init(
-        id: "intentId",
-        isApartmentAvailableforStudent: true,
-        maxApartmentNumberCoInsured: 6,
-        maxApartmentSquareMeters: nil,
-        maxHouseNumberCoInsured: nil,
-        maxHouseSquareMeters: nil,
-        minMovingDate: Date().localDateString,
-        maxMovingDate: "2025-09-08",
-        suggestedNumberCoInsured: 2,
-        currentHomeAddresses: [],
-        potentialHomeQuotes: [],
+    lazy var movingFlowModel: MoveQuotesModel = .init(
+        homeQuotes: [],
         mtaQuotes: [],
-        faqs: [],
-        extraBuildingTypes: []
+        changeTierModel: nil
     )
 
     override func setUp() async throws {
@@ -40,12 +28,10 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         let extraBuildings = [ExtraBuilding(id: "", type: "building tyoe", livingArea: 20, connectedToWater: false)]
 
         let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
-            intentId,
-            addressInputModel,
-            houseInformationInputModel in
+            _ in
             self.movingFlowModel
         })
-        self.sut = mockService
+        sut = mockService
 
         let houseModel = HouseInformationInputModel()
         houseModel.extraBuildings = extraBuildings

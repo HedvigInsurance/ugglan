@@ -1,15 +1,31 @@
 import Apollo
 import Chat
+import Combine
 import Contracts
-import EditCoInsuredShared
+import CrossSell
+import EditCoInsured
 import Foundation
 @preconcurrency import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
+public struct MemberInfo: Codable, Equatable, Sendable {
+    let id: String
+    let isContactInfoUpdateNeeded: Bool
+
+    public init(
+        id: String,
+        isContactInfoUpdateNeeded: Bool
+    ) {
+        self.id = id
+        self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
+    }
+}
+
 public struct HomeState: StateProtocol {
     public var memberContractState: MemberContractState = .loading
+    public var memberInfo: MemberInfo?
     public var futureStatus: FutureStatus = .none
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
@@ -18,21 +34,22 @@ public struct HomeState: StateProtocol {
     public var toolbarOptionTypes: [ToolbarOptionType] = []
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [HomeContract] {
-        return contracts.filter { $0.upcomingRenewal != nil }
+        contracts.filter { $0.upcomingRenewal != nil }
     }
+
     public var showChatNotification = false
     public var hasSentOrRecievedAtLeastOneMessage = false
     public var latestConversationTimeStamp = Date()
     public var latestChatTimeStamp = Date()
 
     func getImportantMessageToShow() -> [ImportantMessage] {
-        return importantMessages.filter { importantMessage in
+        importantMessages.filter { importantMessage in
             !hidenImportantMessages.contains(importantMessage.id)
         }
     }
 
     func getImportantMessage(with id: String) -> ImportantMessage? {
-        return importantMessages.first(where: { $0.id == id })
+        importantMessages.first(where: { $0.id == id })
     }
 
     public func getAllFAQ() -> [FAQModel]? {
@@ -56,6 +73,7 @@ public enum HomeAction: ActionProtocol {
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
     case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
+    case setMemberInfo(memberInfo: MemberInfo)
     case setFutureStatus(status: FutureStatus)
     case openDocument(contractURL: URL)
     case fetchQuickActions
@@ -67,6 +85,7 @@ public enum HomeAction: ActionProtocol {
     case setChatNotificationConversationTimeStamp(date: Date)
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
     case hideImportantMessage(id: String)
+    case recommendedProductUpdated
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -83,22 +102,29 @@ public enum HomeLoadingType: LoadingProtocol {
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var homeService: HomeClient
+    private var newOfferSubscription: AnyCancellable?
+    required init() {
+        super.init()
+        let store: CrossSellStore = globalPresentableStoreContainer.get()
+        newOfferSubscription = store.stateSignal.map(\.hasNewOffer).removeDuplicates()
+            .sink { [weak self] _ in
+                self?.send(.recommendedProductUpdated)
+            }
+    }
 
-    public override func effects(
-        _ getState: @escaping () -> HomeState,
+    override public func effects(
+        _: @escaping () -> HomeState,
         _ action: HomeAction
     ) async {
         switch action {
         case .fetchImportantMessages:
             do {
-                let messages = try await self.homeService.getImportantMessages()
+                let messages = try await homeService.getImportantMessages()
                 send(.setImportantMessages(messages: messages))
-            } catch {
-
-            }
+            } catch {}
         case .fetchMemberState:
             do {
-                let memberData = try await self.homeService.getMemberState()
+                let memberData = try await homeService.getMemberState()
                 send(
                     .setMemberContractState(
                         state: memberData.contractState,
@@ -107,26 +133,27 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 )
 
                 send(.setFutureStatus(status: memberData.futureState))
+                send(.setMemberInfo(memberInfo: memberData.memberInfo))
             } catch _ {
-                self.setError(L10n.General.errorBody, for: .fetchQuickActions)
+                setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchQuickActions:
             do {
-                let quickActions = try await self.homeService.getQuickActions()
+                let quickActions = try await homeService.getQuickActions()
                 send(.setQuickActions(quickActions: quickActions))
             } catch {
-                self.setError(L10n.General.errorBody, for: .fetchQuickActions)
+                setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchFAQ:
             do {
-                let faq = try await self.homeService.getFAQ()
+                let faq = try await homeService.getFAQ()
                 send(.setFAQ(faq: faq))
             } catch {
-                self.setError(L10n.General.errorBody, for: .fetchFAQ)
+                setError(L10n.General.errorBody, for: .fetchFAQ)
             }
         case .fetchChatNotifications:
             do {
-                let chatMessagesState = try await self.homeService.getMessagesState()
+                let chatMessagesState = try await homeService.getMessagesState()
                 send(.setChatNotification(hasNew: chatMessagesState.hasNewMessages))
                 send(
                     .setHasSentOrRecievedAtLeastOneMessage(
@@ -143,15 +170,17 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
     }
 
-    public override func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
+    override public func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
         var newState = state
         switch action {
-        case .setMemberContractState(let memberState, let contracts):
+        case let .setMemberInfo(memberInfo):
+            newState.memberInfo = memberInfo
+        case let .setMemberContractState(memberState, contracts):
             newState.memberContractState = memberState
             newState.contracts = contracts
-        case .setFutureStatus(let status):
+        case let .setFutureStatus(status):
             newState.futureStatus = status
-        case .setImportantMessages(let messages):
+        case let .setImportantMessages(messages):
             newState.importantMessages = messages
         case .fetchQuickActions:
             setLoading(for: .fetchQuickActions)
@@ -175,6 +204,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
             setToolbarTypes(&newState)
+        case .recommendedProductUpdated:
+            setToolbarTypes(&newState)
         default:
             break
         }
@@ -184,17 +215,21 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
-        types.append(.newOffer)
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+
+        if crossSellStore.state.hasNewOffer {
+            types.append(.newOfferNotification)
+        } else {
+            types.append(.newOffer)
+        }
 
         if state.quickActions.hasFirstVet {
             types.append(.firstVet)
         }
 
-        if state.hasSentOrRecievedAtLeastOneMessage
-            || Localization.Locale.currentLocale.value.market != .se
-        {
+        if state.hasSentOrRecievedAtLeastOneMessage {
             if state.showChatNotification {
-                types.append(.chatNotification(lastMessageTimeStamp: self.state.latestConversationTimeStamp))
+                types.append(.chatNotification)
             } else {
                 types.append(.chat)
             }

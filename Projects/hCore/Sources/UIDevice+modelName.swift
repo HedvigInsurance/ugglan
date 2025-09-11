@@ -1,7 +1,6 @@
 import SwiftUI
 
 extension UIDevice {
-
     public static let modelName: String = {
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -57,6 +56,7 @@ extension UIDevice {
                 case "iPhone17,2": return "iPhone 16 Pro Max"
                 case "iPhone17,3": return "iPhone 16"
                 case "iPhone17,4": return "iPhone 16 Plus"
+                case "iPhone17,5": return "iPhone 16e"
                 case "iPhone8,4": return "iPhone SE"
                 case "iPhone12,8": return "iPhone SE (2nd generation)"
                 case "iPhone14,6": return "iPhone SE (3rd generation)"
@@ -121,5 +121,4 @@ extension UIDevice {
 
         return mapToDevice(identifier: identifier)
     }()
-
 }

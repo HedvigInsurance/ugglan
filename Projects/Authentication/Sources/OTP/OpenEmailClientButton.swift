@@ -21,7 +21,7 @@ struct EmailClient {
             return
         }
 
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        Dependencies.urlOpener.open(url)
     }
 }
 
@@ -64,7 +64,7 @@ public struct OpenEmailClientButton: View {
     ) {
         self.options = options
         self.buttonText = buttonText
-        self._hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
+        _hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
         self.hasPressedButton = hasPressedButton
         self.buttonSize = buttonSize ?? .primary
         emailClients = {
@@ -102,17 +102,15 @@ public struct OpenEmailClientButton: View {
     }
 
     public var body: some View {
-        //        ReadOTPState { state in
         hSection {
             displayButton
         }
         .offset(x: 0, y: showButton(state: otpVM) ? 0 : 150)
         .opacity(showButton(state: otpVM) ? 1 : 0)
         .animation(.spring(), value: showButton(state: otpVM))
-        //        }
         .onUpdate(
             of: hasAcceptedAlert,
-            perform: { newValue in
+            perform: { _ in
                 sheetPresented = true
             }
         )
@@ -135,25 +133,32 @@ public struct OpenEmailClientButton: View {
     public var displayButton: some View {
         switch buttonSize {
         case .secondary:
-            hButton.LargeButton(type: .secondary) {
-                if hasAcceptedAlert {
-                    sheetPresented = true
-                } else {
-                    hasPressedButton?()
+            hButton(
+                .large,
+                .secondary,
+                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
+                {
+                    if hasAcceptedAlert {
+                        sheetPresented = true
+                    } else {
+                        hasPressedButton?()
+                    }
                 }
-            } content: {
-                hText(buttonText ?? L10n.Login.openEmailAppButton)
-            }
+            )
+
         case .primary:
-            hButton.LargeButton(type: .primary) {
-                if hasAcceptedAlert {
-                    sheetPresented = true
-                } else {
-                    hasPressedButton?()
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
+                {
+                    if hasAcceptedAlert {
+                        sheetPresented = true
+                    } else {
+                        hasPressedButton?()
+                    }
                 }
-            } content: {
-                hText(buttonText ?? L10n.Login.openEmailAppButton)
-            }
+            )
         }
     }
 }

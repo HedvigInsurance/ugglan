@@ -3,7 +3,7 @@ import hCore
 
 extension View {
     public func showInfoScreen(text: Binding<String?>, dismissButtonTitle: String) -> some View {
-        self.detent(item: text, style: [.height]) { text in
+        detent(item: text, transitionType: .detent(style: [.height])) { text in
             InfoScreenWrapper(text: text, dismissButtonTitle: dismissButtonTitle)
         }
     }
@@ -30,7 +30,7 @@ struct InfoScreenWrapper: View {
 
 extension InfoScreenWrapper: TrackingViewNameProtocol {
     var nameForTracking: String {
-        return .init(describing: TrackingViewNameProtocol.self)
+        .init(describing: TrackingViewNameProtocol.self)
     }
 }
 
@@ -64,11 +64,14 @@ public struct InfoScreen: View {
         .hFormContentPosition(contentPosition)
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .ghost) {
-                    onClickButton()
-                } content: {
-                    hText(dismissButtonTitle)
-                }
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: dismissButtonTitle),
+                    {
+                        onClickButton()
+                    }
+                )
             }
             .sectionContainerStyle(.transparent)
         }

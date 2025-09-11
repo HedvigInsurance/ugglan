@@ -5,7 +5,6 @@ import Foundation
 
 @MainActor
 final class TestChatViewModelFetchAndPreviousNewMessages: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -17,19 +16,35 @@ final class TestChatViewModelFetchAndPreviousNewMessages: XCTestCase {
     }
 
     func testFetchNewAndPreviousMessagesWithHasPreviousMessageSuccess() async {
-        let newMessages = [Message(type: .text(text: "testMessage"))]
-        let previousMessages = [Message(type: .text(text: "testMessage"))]
+        let message = Message(type: .text(text: "testMessage"))
+        let newMessages = [
+            Message(id: message.id, type: message.type, sender: message.sender, date: message.sentAt)
+        ]
+
+        let previousMessage = Message(type: .text(text: "testMessage"))
+        let previousMessages = [
+            Message(
+                id: previousMessage.id,
+                type: previousMessage.type,
+                sender: previousMessage.sender,
+                date: previousMessage.sentAt
+            )
+        ]
 
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(with: newMessages, hasPreviousMessages: true) },
+            fetchNewMessages: {
+                .init(with: newMessages, hasPreviousMessages: true)
+            },
             fetchPreviousMessages: { .init(with: previousMessages) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.messages.count == newMessages.count)
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.messages.count == newMessages.count + previousMessages.count)
-        self.sut = mockService
+        var successMessages = model.messageVm.messages.filter { $0.status == .sent || $0.status == .received }
+        assert(successMessages.count == newMessages.count)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        successMessages = model.messageVm.messages.filter { $0.status == .sent || $0.status == .received }
+        assert(successMessages.count == newMessages.count + previousMessages.count)
+        sut = mockService
     }
 
     func testFetchNewAndPreviousMessagesWithHasPreviousMessageFailure() async {
@@ -39,9 +54,9 @@ final class TestChatViewModelFetchAndPreviousNewMessages: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.messages.isEmpty)
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.messages.isEmpty)
-        self.sut = mockService
+        assert(model.messageVm.messages.isEmpty)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.messages.isEmpty)
+        sut = mockService
     }
 }

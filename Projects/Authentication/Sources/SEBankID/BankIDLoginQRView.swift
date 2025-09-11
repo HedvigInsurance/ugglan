@@ -2,7 +2,6 @@ import Combine
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct BankIDLoginQRView: View {
     @StateObject var vm = BankIDViewModel()
@@ -13,6 +12,7 @@ public struct BankIDLoginQRView: View {
     public init(onStartDemoMode: @escaping () async -> Void) {
         self.onStartDemoMode = onStartDemoMode
     }
+
     public var body: some View {
         Group {
             if vm.isLoading {
@@ -26,7 +26,7 @@ public struct BankIDLoginQRView: View {
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
             } else {
                 hForm {
-                    VStack(spacing: 32) {
+                    VStack(spacing: .padding32) {
                         ZStack {
                             if let image = vm.image {
                                 Image(uiImage: image)
@@ -76,24 +76,33 @@ public struct BankIDLoginQRView: View {
                 }
                 .hFormAttachToBottom {
                     hSection {
-                        VStack(spacing: 16) {
+                        VStack(spacing: .padding16) {
                             if vm.hasBankIdApp {
-                                hButton.LargeButton(type: .primary) {
-                                    vm.openBankId()
-                                } content: {
-                                    HStack(spacing: 8) {
-                                        Image(uiImage: hCoreUIAssets.bankID.image)
-                                        hText(L10n.authenticationBankidOpenButton)
+                                hButton(
+                                    .large,
+                                    .primary,
+                                    content: .init(
+                                        title: L10n.authenticationBankidOpenButton,
+                                        buttonImage: .init(
+                                            image: hCoreUIAssets.bankID.view,
+                                            alignment: .leading
+                                        )
+                                    ),
+                                    {
+                                        vm.openBankId()
                                     }
-                                }
+                                )
                             }
 
-                            hButton.LargeButton(type: .ghost) {
-                                router.push(AuthentificationRouterType.emailLogin)
-                                vm.cancelLogin()
-                            } content: {
-                                hText(L10n.BankidMissingLogin.emailButton)
-                            }
+                            hButton(
+                                .large,
+                                .ghost,
+                                content: .init(title: L10n.BankidMissingLogin.emailButton),
+                                {
+                                    router.push(AuthenticationRouterType.emailLogin)
+                                    vm.cancelLogin()
+                                }
+                            )
                         }
                         .padding(.bottom, .padding16)
                     }
@@ -134,9 +143,9 @@ class BankIDViewModel: ObservableObject {
                         .startSeBankId { [weak self] newStatus in
                             DispatchQueue.main.async {
                                 switch newStatus {
-                                case .started(let code):
+                                case let .started(code):
                                     self?.set(token: code)
-                                case .pending(let qrCode):
+                                case let .pending(qrCode):
                                     self?.set(qrData: qrCode)
                                 case .completed:
                                     ApplicationState.preserveState(.loggedIn)
@@ -145,9 +154,9 @@ class BankIDViewModel: ObservableObject {
                                 }
                             }
                         }
-                } catch let error {
+                } catch {
                     self?.seBankIdState = .init()
-                    self?.router?.push(AuthentificationRouterType.error(message: error.localizedDescription))
+                    self?.router?.push(AuthenticationRouterType.error(message: error.localizedDescription))
                 }
             }
             .eraseToAnyCancellable()
@@ -177,11 +186,7 @@ class BankIDViewModel: ObservableObject {
         if let url = URL(string: "bankid:///?autostarttoken=\(token)&redirect=\(urlScheme)://bankid") {
             log.info("BANK ID APP started", error: nil, attributes: ["token": token])
             if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(
-                    url,
-                    options: [:],
-                    completionHandler: nil
-                )
+                Dependencies.urlOpener.open(url)
             }
         }
     }
@@ -192,10 +197,10 @@ class BankIDViewModel: ObservableObject {
             isLoading = token == nil
         }
         guard let token else {
-            self.image = nil
+            image = nil
             return
         }
-        if hasBankIdApp && !hasAlreadyOpenedBankId {
+        if hasBankIdApp, !hasAlreadyOpenedBankId {
             hasAlreadyOpenedBankId = true
             openBankId()
         }
@@ -214,7 +219,7 @@ class BankIDViewModel: ObservableObject {
     @MainActor
     private func set(qrData: String?) {
         guard let qrData else {
-            self.image = nil
+            image = nil
             return
         }
         withAnimation(.snappy) {
@@ -252,13 +257,13 @@ struct BankIDLoginQR_Previews: PreviewProvider {
     }
 }
 
-public enum AuthentificationRouterType: Hashable {
+public enum AuthenticationRouterType: Hashable {
     case emailLogin
     case otpCodeEntry
     case error(message: String)
 }
 
-extension AuthentificationRouterType: TrackingViewNameProtocol {
+extension AuthenticationRouterType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .emailLogin:

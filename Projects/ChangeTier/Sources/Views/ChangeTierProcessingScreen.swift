@@ -1,3 +1,4 @@
+import CrossSell
 import SwiftUI
 import hCore
 import hCoreUI
@@ -20,18 +21,25 @@ struct ChangeTierProcessingView: View {
             state: $vm.viewState
         )
         .hStateViewButtonConfig(errorButtons)
+        .onDeinit { [weak vm] in
+            if vm?.viewState == .success {
+                NotificationCenter.default.post(
+                    name: .openCrossSell,
+                    object: CrossSellInfo(type: .changeTier)
+                )
+            }
+        }
     }
 
     private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonAction: {
-                    vm.commitTier()
+                    changeTierNavigationVm.router.pop()
                 }
             ),
             dismissButton:
                 .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         changeTierNavigationVm.router.dismiss()
                     }

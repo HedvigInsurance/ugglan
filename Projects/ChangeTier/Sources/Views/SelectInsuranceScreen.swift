@@ -4,53 +4,51 @@ import hCoreUI
 
 struct SelectInsuranceScreen: View {
     let changeTierContractsInput: ChangeTierContractsInput
-    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-
-    init(changeTierContractsInput: ChangeTierContractsInput) {
+    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    let itemPickerConfig: ItemConfig<ChangeTierContract>
+    init(
+        changeTierContractsInput: ChangeTierContractsInput,
+        changeTierNavigationVm: ChangeTierNavigationViewModel
+    ) {
         self.changeTierContractsInput = changeTierContractsInput
+        self.changeTierNavigationVm = changeTierNavigationVm
+        itemPickerConfig = .init(
+            items: {
+                let items = changeTierContractsInput.contracts.map {
+                    (
+                        object: $0,
+                        displayName: ItemModel(
+                            title: $0.contractDisplayName,
+                            subTitle: $0.contractExposureName
+                        )
+                    )
+                }
+                return items
+            }(),
+            preSelectedItems: { [] },
+            onSelected: { selected in
+                if let selectedContract = selected.first?.0 {
+                    changeTierNavigationVm.vm = .init(
+                        changeTierInput: .contractWithSource(
+                            data: .init(
+                                source: changeTierContractsInput.source,
+                                contractId: selectedContract.contractId
+                            )
+                        )
+                    )
+                    changeTierNavigationVm.router.push(selectedContract)
+                }
+            },
+            buttonText: L10n.generalContinueButton
+        )
     }
 
     var body: some View {
-        ItemPickerScreen<ChangeTierContract>(
-            config: .init(
-                items: {
-                    let items = changeTierContractsInput.contracts.map({
-                        (
-                            object: $0,
-                            displayName: ItemModel(
-                                title: $0.contractDisplayName,
-                                subTitle: $0.contractExposureName
-                            )
-                        )
-                    })
-                    return items
-                }(),
-                preSelectedItems: { [] },
-                onSelected: { selected in
-                    if let selectedContract = selected.first?.0 {
-                        changeTierNavigationVm.vm = .init(
-                            changeTierInput: .contractWithSource(
-                                data: .init(
-                                    source: changeTierContractsInput.source,
-                                    contractId: selectedContract.contractId
-                                )
-                            )
-                        )
-                        changeTierNavigationVm.router.push(selectedContract)
-                    }
-                },
-                singleSelect: true,
-                attachToBottom: true,
-                disableIfNoneSelected: true,
-                hButtonText: L10n.generalContinueButton,
-                fieldSize: .small
-            )
+        ContractSelectView(
+            itemPickerConfig: itemPickerConfig,
+            title: L10n.tierFlowTitle,
+            subtitle: L10n.tierFlowSelectInsuranceSubtitle
         )
-        .hFormTitle(
-            title: .init(.small, .body2, L10n.tierFlowTitle, alignment: .leading),
-            subTitle: .init(.small, .body2, L10n.tierFlowSelectInsuranceSubtitle)
-        )
-        .withDismissButton()
     }
 }
 
@@ -65,8 +63,20 @@ struct SelectInsuranceScreen: View {
                     contractDisplayName: "displayName",
                     contractExposureName: "exposureName"
                 )
-
             ]
+        ),
+        changeTierNavigationVm: .init(
+            changeTierContractsInput: .init(
+                source: .betterCoverage,
+                contracts: [
+                    .init(
+                        contractId: "contractId",
+                        contractDisplayName: "displayName",
+                        contractExposureName: "exposureName"
+                    )
+                ]
+            ),
+            onChangedTier: {}
         )
     )
 }

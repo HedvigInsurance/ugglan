@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct MovingFlowHouseScreen: View {
     @ObservedObject var houseInformationInputvm: HouseInformationInputModel
@@ -35,21 +34,19 @@ struct MovingFlowHouseScreen: View {
                 }
                 .hFieldSize(.medium)
                 .disabled(houseInformationInputvm.viewState == .loading)
-                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
-                    hSection {
-                        InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
-                    }
-                }
             }
             .padding(.bottom, .padding8)
         }
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
-                    continuePressed()
-                } content: {
-                    hText(L10n.saveAndContinueButtonLabel, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        continuePressed()
+                    }
+                )
             }
         }
         .hFormTitle(
@@ -114,7 +111,6 @@ struct MovingFlowHouseScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
-
     }
 
     private var extraBuildingTypes: some View {
@@ -142,7 +138,7 @@ struct MovingFlowHouseScreen: View {
                                     houseInformationInputvm.remove(extraBuilding: extraBuilding)
                                 }
                             } label: {
-                                Image(uiImage: hCoreUIAssets.closeSmall.image)
+                                hCoreUIAssets.closeSmall.view
                                     .resizable()
                                     .frame(width: 16, height: 16)
                                     .foregroundColor(hTextColor.Opaque.primary)
@@ -150,23 +146,27 @@ struct MovingFlowHouseScreen: View {
                         }
                         .padding(.vertical, .padding12)
                         if offset + 1 < houseInformationInputvm.extraBuildings.count {
-                            Divider()
+                            hRowDivider()
+                                .hWithoutHorizontalPadding([.divider])
                         }
                     }
-                    hButton.MediumButton(type: .primaryAlt) {
-                        addExtraBuilding()
-                    } content: {
-                        HStack {
-                            Image(uiImage: hCoreUIAssets.plusSmall.image)
-                                .resizable()
-                                .frame(width: .padding16, height: .padding16)
-                            hText(L10n.changeAddressAddBuilding)
+                    hButton(
+                        .medium,
+                        .primaryAlt,
+                        content: .init(
+                            title: L10n.changeAddressAddBuilding,
+                            buttonImage: .init(
+                                image: hCoreUIAssets.plusSmall.view,
+                                alignment: .leading
+                            )
+                        ),
+                        {
+                            addExtraBuilding()
                         }
-                    }
+                    )
                     .hButtonDontShowLoadingWhenDisabled(true)
                     .hUseLightMode
                     .padding(.top, .padding8)
-
                 }
             }
             .verticalPadding(0)
@@ -200,13 +200,14 @@ struct MovingFlowHouseScreen: View {
     func continuePressed() {
         if houseInformationInputvm.isInputValid() {
             Task {
-                if let movingFlowData = await houseInformationInputvm.requestMoveIntent(
-                    intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
-                    addressInputModel: movingFlowNavigationVm.addressInputModel
+                if let requestVm = await houseInformationInputvm.requestMoveIntent(
+                    intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
+                    addressInputModel: movingFlowNavigationVm.addressInputModel,
+                    selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                 ) {
-                    movingFlowNavigationVm.movingFlowVm = movingFlowData
+                    movingFlowNavigationVm.moveQuotesModel = requestVm
 
-                    if let changeTierModel = movingFlowData.changeTierModel {
+                    if let changeTierModel = requestVm.changeTierModel {
                         router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                     } else {
                         router.push(MovingFlowRouterActions.confirm)
@@ -219,14 +220,17 @@ struct MovingFlowHouseScreen: View {
 
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale.send(.nb_NO)
+        Localization.Locale.currentLocale.send(.sv_SE)
+        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
+            .environmentObject(MovingFlowNavigationViewModel())
     }
 }
 
 enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
     static var last: MovingFlowHouseFieldType {
-        return MovingFlowHouseFieldType.ancillaryArea
+        MovingFlowHouseFieldType.ancillaryArea
     }
 
     var next: MovingFlowHouseFieldType? {
@@ -245,36 +249,42 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 public typealias ExtraBuildingType = String
 @MainActor
 public class HouseInformationInputModel: ObservableObject, @preconcurrency Equatable, Identifiable {
-    public static func == (lhs: HouseInformationInputModel, rhs: HouseInformationInputModel) -> Bool {
-        return true
+    public static func == (_: HouseInformationInputModel, _: HouseInformationInputModel) -> Bool {
+        true
     }
 
     @Inject private var service: MoveFlowClient
     @Published var type: MovingFlowHouseFieldType?
-    @Published var yearOfConstruction: String = ""
-    @Published var ancillaryArea: String = ""
-    @Published var bathrooms: Int = 1
-    @Published var isSubleted = false
+    @Published public var yearOfConstruction: String = ""
+    @Published public var ancillaryArea: String = ""
+    @Published public var bathrooms: Int = 1
+    @Published public var isSubleted = false
     @Published var yearOfConstructionError: String?
     @Published var ancillaryAreaError: String?
     @Published var bathroomsError: String?
-    @Published var extraBuildings: [ExtraBuilding] = []
+    @Published public var extraBuildings: [ExtraBuilding] = []
     @Published var viewState: ProcessingState = .success
 
     init() {}
 
     @MainActor
-    func requestMoveIntent(intentId: String, addressInputModel: AddressInputModel) async -> MovingFlowModel? {
+    func requestMoveIntent(
+        intentId: String,
+        addressInputModel: AddressInputModel,
+        selectedAddressId: String
+    ) async -> MoveQuotesModel? {
         withAnimation {
             self.viewState = .loading
         }
 
         do {
-            let movingFlowData = try await service.requestMoveIntent(
+            let input = RequestMoveIntentInput(
                 intentId: intentId,
                 addressInputModel: addressInputModel,
-                houseInformationInputModel: self
+                houseInformationInputModel: self,
+                selectedAddressId: selectedAddressId
             )
+            let movingFlowData = try await service.requestMoveIntent(input: input)
 
             withAnimation {
                 self.viewState = .success
@@ -282,7 +292,7 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
 
             return movingFlowData
         } catch {
-            self.viewState = .error(errorMessage: error.localizedDescription)
+            viewState = .error(errorMessage: error.localizedDescription)
         }
         return nil
     }
@@ -312,26 +322,26 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
     }
 }
 
-struct ExtraBuilding: Identifiable {
-    let id: String
-    let type: ExtraBuildingType
-    let livingArea: Int
-    let connectedToWater: Bool
+public struct ExtraBuilding: Identifiable {
+    public let id: String
+    public let type: ExtraBuildingType
+    public let livingArea: Int
+    public let connectedToWater: Bool
 
     var descriptionText: String {
         var elements: [String] = []
-        elements.append("\(self.livingArea) \(L10n.changeAddressSizeSuffix)")
+        elements.append("\(livingArea) \(L10n.changeAddressSizeSuffix)")
         if connectedToWater {
             elements.append(L10n.changeAddressExtraBuildingsWaterLabel)
         }
-        return elements.joined(separator: " ∙ ")
+        return elements.displayName
     }
 }
 
 extension ExtraBuildingType {
     var translatedValue: String {
-        let key = "FIELD_EXTRA_BUIDLINGS_\(self.uppercased())_LABEL"
-        let translatedValue = L10nDerivation.init(table: "", key: key, args: []).render()
+        let key = "FIELD_EXTRA_BUIDLINGS_\(uppercased())_LABEL"
+        let translatedValue = L10nDerivation(table: "", key: key, args: []).render()
         return key == translatedValue ? self : translatedValue
     }
 }

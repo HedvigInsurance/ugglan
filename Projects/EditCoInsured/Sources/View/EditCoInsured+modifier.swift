@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import Foundation
 import SwiftUI
 import hCore
@@ -8,7 +7,7 @@ extension View {
     public func handleEditCoInsured(
         with vm: EditCoInsuredViewModel
     ) -> some View {
-        return modifier(EditCoInsured(vm: vm))
+        modifier(EditCoInsured(vm: vm))
     }
 }
 
@@ -19,7 +18,7 @@ struct EditCoInsured: ViewModifier {
         content
             .detent(
                 item: $vm.editCoInsuredModelDetent,
-                style: [.height]
+                transitionType: .detent(style: [.height])
             ) { coInsuredModel in
                 let contractsSupportingCoInsured = coInsuredModel.contractsSupportingCoInsured
                 if contractsSupportingCoInsured.count > 1 {
@@ -27,7 +26,6 @@ struct EditCoInsured: ViewModifier {
                         configs: contractsSupportingCoInsured
                     )
                     .environmentObject(vm)
-
                 } else {
                     getEditCoInsuredNavigation(coInsuredModel: coInsuredModel)
                 }
@@ -39,7 +37,7 @@ struct EditCoInsured: ViewModifier {
             }
             .detent(
                 item: $vm.editCoInsuredModelMissingAlert,
-                style: [.height]
+                transitionType: .detent(style: [.height])
             ) { config in
                 getMissingCoInsuredAlertView(
                     missingContractConfig: config
@@ -47,14 +45,13 @@ struct EditCoInsured: ViewModifier {
             }
             .detent(
                 item: $vm.editCoInsuredModelError,
-                style: [.height],
+
                 options: .constant([.alwaysOpenOnTop])
             ) { errorModel in
                 GenericErrorView(description: errorModel.errorMessage, formPosition: .compact)
                     .hStateViewButtonConfig(
                         .init(
                             actionButtonAttachedToBottom: .init(
-                                buttonTitle: L10n.generalCloseButton,
                                 buttonAction: {
                                     errorRouter.dismiss()
                                 }
@@ -93,12 +90,12 @@ enum InsuredPeopleConfigType {
 }
 
 extension InsuredPeopleConfigType: TrackingViewNameProtocol {
-    public var nameForTracking: String {
+    var nameForTracking: String {
         switch self {
         case .oneItem:
-            return .init(describing: InsuredPeopleNewScreen.self)
+            return .init(describing: InsuredPeopleScreen.self)
         case .list:
-            return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
+            return .init(describing: CoInsuredSelectInsuranceScreen.self)
         case .error:
             return .init(describing: GenericErrorView.self)
         }

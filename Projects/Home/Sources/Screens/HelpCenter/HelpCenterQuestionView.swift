@@ -7,7 +7,7 @@ import hCoreUI
 
 public struct HelpCenterQuestionNavigation: View {
     private let router = Router()
-    let question: FAQModel
+    private let question: FAQModel
 
     public init(question: FAQModel) {
         self.question = question
@@ -30,7 +30,7 @@ struct HelpCenterQuestionView: View {
     @State var height: CGFloat = 0
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
-    public init(
+    init(
         question: FAQModel,
         router: Router
     ) {
@@ -40,33 +40,13 @@ struct HelpCenterQuestionView: View {
 
     var body: some View {
         hForm {
-            VStack(alignment: .leading, spacing: 32) {
-                hSection {
-                    VStack(alignment: .leading, spacing: 32) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
-                            hText(question.question, style: .body1)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        VStack(alignment: .leading, spacing: 8) {
-                            HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
-                            MarkdownView(
-                                config: .init(
-                                    text: question.answer,
-                                    fontStyle: .body1,
-                                    color: hTextColor.Opaque.secondary,
-                                    linkColor: hTextColor.Opaque.primary,
-                                    linkUnderlineStyle: .single
-                                ) { url in
-                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                                }
-                            )
-                        }
-                    }
+            hSection {
+                VStack(alignment: .leading, spacing: .padding32) {
+                    questionView
+                    answerView
                 }
-                .sectionContainerStyle(.transparent)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .hFormAttachToBottom {
@@ -74,7 +54,32 @@ struct HelpCenterQuestionView: View {
                 .padding(.top, .padding8)
         }
         .hFormIgnoreBottomPadding
-        .edgesIgnoringSafeArea(.bottom)
+    }
+
+    private var questionView: some View {
+        VStack(alignment: .leading, spacing: .padding8) {
+            HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
+            hText(question.question, style: .body1)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var answerView: some View {
+        VStack(alignment: .leading, spacing: .padding8) {
+            HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
+            MarkdownView(
+                config: .init(
+                    text: question.answer,
+                    fontStyle: .body1,
+                    color: hTextColor.Opaque.secondary,
+                    linkColor: hTextColor.Opaque.primary,
+                    linkUnderlineStyle: .single
+                ) { url in
+                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                }
+            )
+        }
     }
 }
 

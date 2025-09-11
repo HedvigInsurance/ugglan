@@ -30,7 +30,7 @@ final class StoreLoadTests: XCTestCase {
                 ),
                 status: .upcoming,
                 contracts: [],
-                discounts: [],
+                referralDiscount: nil,
                 paymentDetails: nil,
                 addedToThePayment: nil
             ),
@@ -46,7 +46,7 @@ final class StoreLoadTests: XCTestCase {
                     ),
                     status: .pending,
                     contracts: [],
-                    discounts: [],
+                    referralDiscount: nil,
                     paymentDetails: nil,
                     addedToThePayment: nil
                 )
@@ -82,6 +82,7 @@ final class StoreLoadTests: XCTestCase {
     }
 }
 
+@MainActor
 extension XCTestCase {
     public func waitUntil(description: String, closure: @escaping () -> Bool) async {
         let exc = expectation(description: description)

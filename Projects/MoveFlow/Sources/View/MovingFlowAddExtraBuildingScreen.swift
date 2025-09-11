@@ -1,22 +1,17 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct MovingFlowAddExtraBuildingScreen: View {
     @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
     @ObservedObject var houseInformationInputVm: HouseInformationInputModel
 
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     init(
-        isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>,
         houseInformationInputVm: HouseInformationInputModel
     ) {
-        self._isBuildingTypePickerPresented = isBuildingTypePickerPresented
         self.houseInformationInputVm = houseInformationInputVm
     }
 
@@ -34,19 +29,14 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 connectedToWater
                 hSection {
                     VStack {
-                        hButton.LargeButton(type: .primary) {
+                        hSaveButton {
                             withAnimation {
                                 addExtraBuilding()
                             }
-                        } content: {
-                            hText(L10n.generalSaveButton)
                         }
-                        hButton.LargeButton(type: .ghost) {
+                        hCancelButton {
                             movingFlowNavigationVm.isAddExtraBuildingPresented = nil
-                        } content: {
-                            hText(L10n.generalCancelButton)
                         }
-
                     }
                     .padding(.vertical, .padding16)
                 }
@@ -55,6 +45,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
         }
         .hFormContentPosition(.compact)
     }
+
     @ViewBuilder
     private var typeOfBuilding: some View {
         hFloatingField(
@@ -62,7 +53,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
             placeholder: L10n.changeAddressExtraBuildingContainerTitle,
             error: $vm.buildingTypeError
         ) {
-            isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
+            movingFlowNavigationVm.isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
                 extraBuildingType: vm.buildingType,
                 addExtraBuildingVm: vm
             )
@@ -86,7 +77,6 @@ struct MovingFlowAddExtraBuildingScreen: View {
             title: L10n.changeAddressExtraBuildingsWaterInputLabel,
             isOn: $vm.connectedToWater.animation(.default)
         )
-        .hFieldSize(.large)
         .onTapGesture {
             withAnimation {
                 vm.connectedToWater.toggle()
@@ -112,15 +102,14 @@ struct MovingFlowAddExtraBuildingScreen: View {
 
 enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
     static var last: AddExtraBuildingType {
-        return AddExtraBuildingType.livingArea
+        AddExtraBuildingType.livingArea
     }
 
     var next: AddExtraBuildingType? {
-        return nil
+        nil
     }
 
     case livingArea
-
 }
 
 public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
@@ -140,11 +129,8 @@ public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
 }
 
 struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
-    @State static var isOn: ExtraBuildingTypeNavigationModel? = .init(addExtraBuildingVm: .init())
-
     static var previews: some View {
         MovingFlowAddExtraBuildingScreen(
-            isBuildingTypePickerPresented: $isOn,
             houseInformationInputVm: .init()
         )
     }

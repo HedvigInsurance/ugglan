@@ -7,7 +7,7 @@ struct MemberSubscriptionPreferenceView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
-    @Inject var featureFlags: FeatureFlags
+    @InjectObservableObject var featureFlags: FeatureFlags
     @ViewBuilder
     var body: some View {
         if featureFlags.emailPreferencesEnabled {
@@ -25,7 +25,7 @@ struct MemberSubscriptionPreferenceView: View {
             }
             .detent(
                 presented: $profileNavigationVm.isConfirmEmailPreferencesPresented,
-                style: [.height],
+
                 content: {
                     EmailPreferencesConfirmView(vm: vm)
                         .environmentObject(profileNavigationVm)
@@ -73,8 +73,8 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
             try await profileService.updateSubscriptionPreference(to: isUnsubscribed)
             let toast = ToastBar(
                 type: .campaign,
-                icon: hCoreUIAssets.checkmarkOutlined.image,
-                text: (isUnsubscribed) ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
+                icon: hCoreUIAssets.checkmarkOutlined.view,
+                text: isUnsubscribed ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
             )
             Toasts.shared.displayToastBar(toast: toast)
 
@@ -109,18 +109,14 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
                     updateUnsubscibed()
                 }
             }
-
         } catch _ {
-            //TODO: Add error handling
+            // TODO: Add error handling
         }
 
         withAnimation {
             isLoading = false
         }
-
     }
 }
 
-private struct UnsubscribedMembers {
-
-}
+private struct UnsubscribedMembers {}

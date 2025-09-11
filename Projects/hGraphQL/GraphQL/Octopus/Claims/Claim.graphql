@@ -1,0 +1,5 @@
+query Claim($claimId: ID!) {
+  claim(id: $claimId) {
+	  ...ClaimFragment
+  }
+}

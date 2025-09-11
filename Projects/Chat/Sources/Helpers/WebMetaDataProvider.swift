@@ -1,6 +1,8 @@
 @preconcurrency import Foundation
 @preconcurrency import LinkPresentation
+import SwiftUI
 import UniformTypeIdentifiers
+import hCoreUI
 
 @MainActor
 class WebMetaDataProvider {
@@ -20,11 +22,13 @@ class WebMetaDataProvider {
                 let metadata = try await metadataProvider.startFetchingMetadata(for: url)
                 if let imageProvider = metadata.imageProvider {
                     let title = metadata.title ?? ""
-                    var image: UIImage?
+                    var image: Image?
                     do {
                         let imageFromUrl = try await imageProvider.loadItem(forTypeIdentifier: UTType.image.identifier)
                         if let data = imageFromUrl as? Data {
-                            image = UIImage(data: data)
+                            if let uiImage = UIImage(data: data) {
+                                image = Image(uiImage: uiImage)
+                            }
                         }
                     }
                     let returnValue = WebMetaDataProviderData(title: title, image: image)
@@ -43,6 +47,7 @@ class WebMetaDataProvider {
         case somethingWentWrong(url: URL)
     }
 }
+
 extension WebMetaDataProvider.WebMetaDataProviderError: LocalizedError {
     var errorDescription: String? {
         switch self {
@@ -51,16 +56,15 @@ extension WebMetaDataProvider.WebMetaDataProviderError: LocalizedError {
     }
 }
 
+@MainActor
 struct WebMetaDataProviderData: Sendable {
     let title: String
-    let image: UIImage?
+    let image: Image
 
-    init(title: String, image: UIImage?) {
+    init(title: String, image: Image? = hCoreUIAssets.helipadOutlined.view) {
         self.title = title
-        self.image = image
+        self.image = image ?? hCoreUIAssets.helipadOutlined.view
     }
 }
 
-extension LPLinkMetadata: @unchecked @retroactive Sendable {
-
-}
+extension LPLinkMetadata: @unchecked @retroactive Sendable {}

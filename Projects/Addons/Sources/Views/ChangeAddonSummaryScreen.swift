@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ChangeAddonSummaryScreen: View {
     let quoteSummaryVm: QuoteSummaryViewModel
@@ -22,36 +21,50 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
+        let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
+            id: contractId,
+            displayName: selectedQuote?.addonVariant?.displayName ?? "",
+            exposureName: L10n.addonFlowSummaryActiveFrom(
+                addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+            ),
+            netPremium: selectedQuote?.price,
+            grossPremium: addonOffer?.currentAddon?.price,
+            documents: selectedQuote?.documents ?? [],
+            onDocumentTap: { document in
+                changeAddonNavigationVm.document = document
+            },
+            displayItems: compareAddonDisplayItems(
+                currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
+                newDisplayItems: selectedQuote?.displayItems ?? []
+            ),
+            insuranceLimits: [],
+            typeOfContract: nil,
+            isAddon: true,
+            discountDisplayItems: []
+        )
+
         let vm = QuoteSummaryViewModel(
             contract: [
-                .init(
-                    id: self.contractId,
-                    displayName: self.selectedQuote?.addonVariant?.displayName ?? "",
-                    exposureName: L10n.addonFlowSummaryActiveFrom(
-                        self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    newPremium: self.selectedQuote?.price,
-                    currentPremium: self.addonOffer?.currentAddon?.price,
-                    documents: self.selectedQuote?.addonVariant?.documents ?? [],
-                    onDocumentTap: { document in
-                        changeAddonNavigationVm.document = document
-                    },
-                    displayItems: self.compareAddonDisplayItems(
-                        currentDisplayItems: self.addonOffer?.currentAddon?.displayItems ?? [],
-                        newDisplayItems: self.selectedQuote?.displayItems ?? []
-                    ),
-                    insuranceLimits: [],
-                    typeOfContract: nil,
-                    isAddon: true
-                )
+                contractInfo
             ],
-            total: getTotalPrice(
-                currentPrice: self.addonOffer?.currentAddon?.price,
-                newPrice: self.selectedQuote?.price
-            ),
-            isAddon: true
-        ) {
-            changeAddonNavigationVm.isConfirmAddonPresented = true
+            activationDate: self.addonOffer?.activationDate,
+            isAddon: true,
+            summaryDataProvider: DirectQuoteSummaryDataProvider(
+                intentCost: .init(
+                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.grossPremium
+                        ?? .init(amount: "", currency: ""),
+                    totalNet: getTotalPrice(
+                        currentPrice: addonOffer?.currentAddon?.price,
+                        newPrice: selectedQuote?.price
+                    )
+                )
+            )
+        ) { [weak self, weak changeAddonNavigationVm] in
+            changeAddonNavigationVm?.isAddonProcessingPresented = true
+            Task {
+                guard let self else { return }
+                await self.submitAddons()
+            }
         }
 
         return vm
@@ -61,5 +74,5 @@ extension ChangeAddonViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init()))
+    return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init(addonSource: .insurances)))
 }

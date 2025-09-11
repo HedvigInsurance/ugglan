@@ -1,14 +1,14 @@
 import ChangeTier
 import Combine
+import Environment
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
     public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     public let id = UUID().uuidString
@@ -19,11 +19,11 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         terminateInsuranceViewModel: TerminateInsuranceViewModel?
     ) {
         self.config = config
-        self.hasSelectInsuranceStep = false
-        self.progress = stepResponse.progress
-        self.currentContext = stepResponse.context
-        self.initialStep = TerminationFlowNavigationViewModel.getInitialStep(data: stepResponse)
-        self.terminationDateStepModel = terminationDateStepModel
+        hasSelectInsuranceStep = false
+        progress = stepResponse.progress
+        currentContext = stepResponse.context
+        initialStep = TerminationFlowNavigationViewModel.getInitialStep(data: stepResponse)
+        terminationDateStepModel = terminationDateStepModel
         self.terminateInsuranceViewModel = terminateInsuranceViewModel
         setInitialModel(initialStep: initialStep)
     }
@@ -57,7 +57,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     private func setInitialModel(initialStep: TerminationFlowActions) {
         reset()
         switch initialStep {
-        case .router(let action):
+        case let .router(action):
             switch action {
             case .selectInsurance:
                 break
@@ -68,7 +68,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             case .summary:
                 break
             }
-        case .final(let action):
+        case let .final(action):
             switch action {
             case let .success(model):
                 successStepModel = model
@@ -85,6 +85,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     @Published var isProcessingPresented = false
     @Published var infoText: String?
     @Published var redirectActionLoadingState: ProcessingState = .success
+    @Published var notification: TerminationNotification?
+
     let initialStep: TerminationFlowActions
     var configs: [TerminationConfirmConfig] = []
     weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
@@ -92,7 +94,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         didSet {
             switch redirectAction {
             case .updateAddress:
-                self.router.dismiss()
+                router.dismiss()
                 var url = Environment.current.deepLinkUrls.last!
                 url.appendPathComponent(DeepLink.moveContract.rawValue)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -157,16 +159,17 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     var redirectUrl: URL? {
         didSet {
             if let redirectUrl {
-                self.router.dismiss()
+                router.dismiss()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: redirectUrl)
                 }
             }
         }
     }
+
     let router = Router()
 
-    @Inject private var terminateContractsService: TerminateContractsClient
+    private let terminateContractsService = TerminateContractsService()
 
     @Published var currentContext: String?
     @Published var progress: Float? = 0
@@ -182,6 +185,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             extraCoverage = terminationDateStepModel?.extraCoverageItem ?? []
         }
     }
+
     @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel? {
         didSet {
             extraCoverage = terminationDeleteStepModel?.extraCoverageItem ?? []
@@ -196,13 +200,12 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     @MainActor
     func startTermination(config: TerminationConfirmConfig, fromSelectInsurance: Bool) async {
+        reset()
         do {
             let data = try await terminateContractsService.startTermination(contractId: config.contractId)
             self.config = config
             navigate(data: data, fromSelectInsurance: fromSelectInsurance)
-        } catch {
-
-        }
+        } catch {}
     }
 
     func navigate(data: TerminateStepResponse, fromSelectInsurance: Bool) {
@@ -240,6 +243,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         successStepModel = nil
         failedStepModel = nil
         terminationSurveyStepModel = nil
+        notification = nil
     }
 
     @Published var confirmTerminationState: ProcessingState = .loading
@@ -272,7 +276,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 }
                 isProcessingPresented = false
                 navigate(data: data, fromSelectInsurance: false)
-            } catch let error {
+            } catch {
                 withAnimation {
                     confirmTerminationState = .error(
                         errorMessage: error.localizedDescription
@@ -302,11 +306,43 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 }
                 navigate(data: data, fromSelectInsurance: false)
                 isProcessingPresented = false
-            } catch let error {
+            } catch {
                 withAnimation {
                     confirmTerminationState = .error(
                         errorMessage: error.localizedDescription
                     )
+                }
+            }
+        }
+    }
+    var fetchNotificationTask: Task<Void, Never>?
+    func fetchNotification(isDeletion deletion: Bool) {
+        fetchNotificationTask?.cancel()
+        fetchNotificationTask = Task { [weak self] in
+            let date: Date? = {
+                if deletion {
+                    return Date()
+                }
+                return self?.terminationDateStepModel?.date
+            }()
+            if let contractId = self?.config?.contractId, let date = date {
+                do {
+                    //check for cancellation before fetching and after fetching
+                    try Task.checkCancellation()
+                    let data = try await self?.terminateContractsService
+                        .getNotification(contractId: contractId, date: date)
+                    try Task.checkCancellation()
+                    self?.notification = data
+                } catch _ {
+                    // if it fails check again after 1 second
+                    // if the task is cancelled, it will throw cancellation error
+                    do {
+                        try await Task.sleep(nanoseconds: 1_000_000_000)
+                        try Task.checkCancellation()
+                        self?.fetchNotification(isDeletion: deletion)
+                    } catch {
+                        //ignore since it only be cancellation error
+                    }
                 }
             }
         }
@@ -317,7 +353,7 @@ struct TerminationFlowNavigation: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
     let isFlowPresented: (DismissTerminationAction) -> Void
 
-    public init(
+    init(
         vm: TerminationFlowNavigationViewModel,
         isFlowPresented: @escaping (DismissTerminationAction) -> Void = { _ in }
     ) {
@@ -325,13 +361,18 @@ struct TerminationFlowNavigation: View {
         self.vm = vm
     }
 
-    public var body: some View {
+    var body: some View {
         RouterHost(
             router: vm.router,
             options: [.navigationType(type: .withProgress)],
             tracking: vm.initialStep
         ) {
             getView(for: vm.initialStep)
+                .addNavigationInfoButton(
+                    placement: .leading,
+                    title: L10n.terminationFlowCancelInfoTitle,
+                    description: L10n.terminationFlowCancelInfoText
+                )
                 .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
@@ -383,13 +424,13 @@ struct TerminationFlowNavigation: View {
         .environmentObject(vm)
         .detent(
             presented: $vm.isDatePickerPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             openSetTerminationDatePickerScreen()
         }
         .detent(
             presented: $vm.isConfirmTerminationPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             openConfirmTerminationScreen()
                 .environmentObject(vm)
@@ -438,81 +479,16 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openSetTerminationDateLandingScreen(
-        fromSelectInsurance: Bool
+        fromSelectInsurance _: Bool
     ) -> some View {
         SetTerminationDateLandingScreen(
             terminationNavigationVm: vm
         )
         .withDismissButton()
-        .toolbar {
-            ToolbarItem(
-                placement: .topBarLeading
-            ) {
-                if fromSelectInsurance {
-                    tabBarInfoView
-                }
-            }
-        }
     }
 
     private func openSelectInsuranceScreen() -> some View {
-        ItemPickerScreen<TerminationConfirmConfig>(
-            config: .init(
-                items: {
-                    let items = vm.configs.map({
-                        (
-                            object: $0,
-                            displayName: ItemModel(
-                                title: $0.contractDisplayName,
-                                subTitle: $0.contractExposureName
-                            )
-                        )
-                    })
-                    return items
-                }(),
-                preSelectedItems: { [] },
-                onSelected: { selected in
-                    if let selectedContract = selected.first?.0 {
-                        let config = TerminationConfirmConfig(
-                            contractId: selectedContract.contractId,
-                            contractDisplayName: selectedContract.contractDisplayName,
-                            contractExposureName: selectedContract.contractExposureName,
-                            activeFrom: selectedContract.activeFrom,
-                            typeOfContract: selectedContract.typeOfContract
-                        )
-                        Task {
-                            vm.hasSelectInsuranceStep = true
-                            vm.previousProgress = vm.progress
-                            if let progress = vm.progress {
-                                vm.previousProgress = progress
-                                vm.progress = progress * 0.75 + 0.25
-                            } else {
-                                vm.progress = nil
-                            }
-                            await vm.startTermination(config: config, fromSelectInsurance: true)
-                        }
-                    }
-                },
-                singleSelect: true,
-                attachToBottom: true,
-                disableIfNoneSelected: true,
-                hButtonText: L10n.generalContinueButton,
-                fieldSize: .small
-            )
-        )
-        .hFormTitle(
-            title: .init(.small, .heading2, L10n.terminationFlowTitle, alignment: .leading),
-            subTitle: .init(.small, .heading2, L10n.terminationFlowBody)
-        )
-        .withDismissButton()
-        .hFieldSize(.small)
-        .toolbar {
-            ToolbarItem(
-                placement: .topBarLeading
-            ) {
-                tabBarInfoView
-            }
-        }
+        TerminationSelectInsuranceScreen(vm: vm)
     }
 
     private func openUpdateAppTerminationScreen() -> some View {
@@ -569,7 +545,7 @@ struct TerminationFlowNavigation: View {
             successViewTitle: L10n.terminationFlowSuccessTitle,
             successViewBody: isDeletion
                 ? L10n.terminateContractTerminationComplete
-                : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate))
+                : L10n.terminationFlowSuccessSubtitleWithDate(terminationDate)
         )
         .hStateViewButtonConfig(
             .init(
@@ -577,7 +553,7 @@ struct TerminationFlowNavigation: View {
                 actionButtonAttachedToBottom: nil,
                 dismissButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
-                    self.isFlowPresented(.done)
+                    isFlowPresented(.done)
                 })
             )
         )
@@ -594,11 +570,10 @@ struct TerminationFlowNavigation: View {
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
                     buttonAction: {
-                        self.isFlowPresented(.chat)
+                        isFlowPresented(.chat)
                     }
                 ),
                 dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: { [weak vm] in
                         vm?.router.dismiss()
                     }
@@ -641,9 +616,9 @@ enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
 extension TerminationFlowActions: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
-        case .router(let action):
+        case let .router(action):
             return action.nameForTracking
-        case .final(let action):
+        case let .final(action):
             return action.nameForTracking
         }
     }

@@ -1,86 +1,70 @@
 import Foundation
 import hCore
-import hGraphQL
 
 public struct Message: Codable, Identifiable, Hashable, Sendable {
     public static func == (lhs: Message, rhs: Message) -> Bool {
-        return lhs.localId == rhs.localId || lhs.remoteId == rhs.remoteId
+        lhs.id == rhs.id
     }
 
-    let localId: String?
-    let remoteId: String?
-    public var id: String {
-        return remoteId ?? localId ?? ""
-    }
+    public let id: String
     let sender: MessageSender
     public let sentAt: Date
-    let type: MessageType
+    public let type: MessageType
     var status: MessageStatus
 
     init(
-        localId: String?,
-        remoteId: String?,
+        id: String,
         sender: MessageSender,
         sentAt: Date,
         type: MessageType,
         status: MessageStatus
     ) {
-        self.localId = localId
-        self.remoteId = remoteId
+        self.id = id
         self.sender = sender
         self.sentAt = sentAt
         self.type = type
         self.status = status
     }
 
-    init(type: MessageType) {
-        self.localId = UUID().uuidString
-        self.remoteId = nil
-        self.sender = .member
+    public init(type: MessageType) {
+        id = UUID().uuidString
+        sender = .member
         self.type = type
-        self.sentAt = Date()
-        self.status = .draft
+        sentAt = Date()
+        status = .draft
     }
 
-    init(localId: String, remoteId: String, type: MessageType, date: Date) {
-        self.localId = localId
-        self.remoteId = remoteId
-        self.sender = .member
+    public init(id: String, type: MessageType, date: Date) {
+        self.id = id
+        sender = .member
         self.type = type
-        self.sentAt = date
-        self.status = .sent
+        sentAt = date
+        status = .sent
     }
 
-    init(remoteId: String, type: MessageType, sender: MessageSender, date: Date) {
-        self.localId = nil
-        self.remoteId = remoteId
+    public init(id: String, type: MessageType, sender: MessageSender, date: Date) {
+        self.id = id
         self.sender = sender
         self.type = type
-        self.sentAt = date
-        self.status = sender == .hedvig ? .received : .sent
+        sentAt = date
+        status = sender == .hedvig ? .received : .sent
     }
 
-    private init(localId: String?, type: MessageType, date: Date, status: MessageStatus, sender: MessageSender?) {
-        self.localId = localId
-        self.remoteId = nil
+    private init(id: String, type: MessageType, date: Date, status: MessageStatus, sender: MessageSender?) {
+        self.id = id
         self.sender = sender ?? .member
         self.type = type
-        self.sentAt = date
+        sentAt = date
         self.status = status
     }
 
-    func asFailed(with error: String, message: Message?, sender: MessageSender?) -> Message {
-        return Message(
-            localId: message?.id ?? UUID().uuidString,
-            type: type,
-            date: sentAt,
-            status: .failed(error: error),
-            sender: sender
-        )
+    //    func asFailed(with error: String, message: Message?, sender: MessageSender?) -> Message {
+    func asFailed(with error: String) -> Message {
+        Message(id: UUID().uuidString, type: type, date: sentAt, status: .failed(error: error), sender: sender)
     }
 
     func copyWith(type: MessageType) -> Message {
-        return Message(localId: localId, remoteId: remoteId, sender: sender, sentAt: sentAt, type: type, status: status)
+        Message(id: id, sender: sender, sentAt: sentAt, type: type, status: status)
     }
 
     var trimmedText: String {
@@ -91,10 +75,10 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
             return ""
         }
     }
-
+    //    }
 }
 
-enum MessageSender: Codable, Hashable, Sendable {
+public enum MessageSender: Codable, Hashable, Sendable {
     case member
     case hedvig
     case automatic
@@ -111,11 +95,12 @@ enum MessageStatus: Codable, Hashable, Sendable {
         case .draft: return "draft"
         case .sent: return "sent"
         case .received: return "received"
-        case .failed(let error): return "failed\(error)"
+        case let .failed(error): return "failed\(error)"
         }
     }
 }
-enum MessageType: Codable, Hashable, Sendable {
+
+public enum MessageType: Codable, Hashable, Sendable {
     case text(text: String)
     case file(file: File)
     case crossSell(url: URL)
@@ -126,20 +111,31 @@ enum MessageType: Codable, Hashable, Sendable {
     case unknown
 }
 
-struct AutomaticSuggestions: Codable, Hashable {
+public struct AutomaticSuggestions: Codable, Hashable, Sendable {
     let suggestions: [ActionMessage?]
     let escalationReference: String?
+
+    public init(suggestions: [ActionMessage?], escalationReference: String?) {
+        self.suggestions = suggestions
+        self.escalationReference = escalationReference
+    }
 }
 
-struct ActionMessage: Codable, Hashable {
-    let url: URL?
+public struct ActionMessage: Codable, Hashable, Sendable {
+    let url: URL
     let text: String?
     let buttonTitle: String
+
+    public init(url: URL, text: String?, buttonTitle: String) {
+        self.url = url
+        self.text = text
+        self.buttonTitle = buttonTitle
+    }
 }
 
 extension Sequence where Iterator.Element == Message {
     func filterNotAddedIn(list alreadyAdded: [String]) -> [Message] {
-        return self.filter({ !alreadyAdded.contains($0.id) })
+        filter { !alreadyAdded.contains($0.id) }
     }
 }
 

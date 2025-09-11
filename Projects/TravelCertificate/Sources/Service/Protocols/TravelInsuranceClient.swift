@@ -14,25 +14,26 @@ public protocol TravelInsuranceClient {
 }
 
 public struct TravelInsuranceFormDTO: Encodable {
-    let contractId: String
-    let startDate: String
-    let isMemberIncluded: Bool
-    let coInsured: [CoInsuredDto]
-    let email: String
-}
-public struct CoInsuredDto: Encodable {
-    let fullName: String
-    let personalNumber: String?
-    let birthDate: String?
+    public let contractId: String
+    public let startDate: String
+    public let isMemberIncluded: Bool
+    public let coInsured: [CoInsuredDto]
+    public let email: String
 }
 
-enum TravelInsuranceError {
+public struct CoInsuredDto: Encodable {
+    public let fullName: String
+    public let personalNumber: String?
+    public let birthDate: String?
+}
+
+public enum TravelInsuranceError {
     case missingURL
     case graphQLError(error: String)
 }
 
 extension TravelInsuranceError: LocalizedError {
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .missingURL:
             return L10n.General.errorBody

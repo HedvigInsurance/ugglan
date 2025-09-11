@@ -7,7 +7,7 @@ import hCoreUI
 public struct ContractRow: View {
     @State var frameWidth: CGFloat = 0
 
-    let image: UIImage?
+    let image: Image?
     let terminationMessage: String?
     let contractDisplayName: String
     let contractExposureName: String
@@ -19,7 +19,7 @@ public struct ContractRow: View {
     let onClick: (() -> Void)?
 
     public init(
-        image: UIImage?,
+        image: Image?,
         terminationMessage: String?,
         contractDisplayName: String,
         contractExposureName: String,
@@ -62,7 +62,7 @@ public struct ContractRow: View {
         .background(
             GeometryReader { geo in
                 Color.clear.onReceive(Just(geo.size.width)) { width in
-                    self.frameWidth = width
+                    frameWidth = width
                 }
             }
         )
@@ -71,7 +71,7 @@ public struct ContractRow: View {
 }
 
 private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
-    let image: UIImage?
+    let image: Image?
     let contractDisplayName: String
     let contractExposureName: String
     let terminationMessage: String?
@@ -81,7 +81,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let tierDisplayName: String?
     let tagsToShow: [(text: String, type: PillType)]
     public init(
-        image: UIImage?,
+        image: Image?,
         contractDisplayName: String,
         contractExposureName: String,
         terminationMessage: String? = nil,
@@ -121,6 +121,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     ), .text
                 )
             )
+        } else if masterInceptionDate == nil {
+            tagsToShow.append((L10n.contractStatusPending, .text))
         } else {
             tagsToShow.append((L10n.dashboardInsuranceStatusActive, .text))
         }
@@ -133,7 +135,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 Rectangle()
                     .foregroundColor(.clear)
                     .background(
-                        Image(uiImage: image)
+                        image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .scaleEffect(1.32)
@@ -146,18 +148,18 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     @ViewBuilder var logo: some View {
-        Image(uiImage: HCoreUIAsset.helipadBig.image)
+        hCoreUIAssets.helipadBig.view
             .resizable()
             .frame(width: 24, height: 24)
             .foregroundColor(hFillColor.Opaque.white)
             .colorScheme(.dark)
     }
 
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration _: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
                 TagList(
-                    tags: tagsToShow.map({ $0.text }),
+                    tags: tagsToShow.map(\.text),
                     horizontalSpacing: .padding6 / 2,
                     verticalSpacing: .padding6 / 2
                 ) { tag in
@@ -219,14 +221,14 @@ private struct StatusPill: View {
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
         .background(type.getBackgroundColor).colorScheme(.light)
-        .cornerRadius(.cornerRadiusS)
+        .cornerRadius(.cornerRadiusXS)
     }
 }
 
 #Preview {
     hSection {
         ContractRow(
-            image: hCoreUIAssets.pillowHome.image,
+            image: hCoreUIAssets.pillowHome.view,
             terminationMessage: "Active",
             contractDisplayName: "Insurance",
             contractExposureName: "Address ∙ Coverage",

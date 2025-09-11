@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var id: String
@@ -8,6 +7,7 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendabl
     public var firstName: String
     public var lastName: String
     let isTravelCertificateEnabled: Bool
+    let isContactInfoUpdateNeeded: Bool
 
     public var displayName: String {
         firstName + " " + lastName
@@ -17,15 +17,17 @@ public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendabl
         id: String,
         firstName: String,
         lastName: String,
-        phone: String,
-        email: String,
-        hasTravelCertificate: Bool
+        phone: String?,
+        email: String?,
+        hasTravelCertificate: Bool,
+        isContactInfoUpdateNeeded: Bool
     ) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.phone = phone
         self.email = email
-        self.isTravelCertificateEnabled = hasTravelCertificate
+        isTravelCertificateEnabled = hasTravelCertificate
+        self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
     }
 }

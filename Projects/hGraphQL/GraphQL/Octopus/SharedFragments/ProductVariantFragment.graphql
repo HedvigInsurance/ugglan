@@ -1,0 +1,33 @@
+fragment ProductVariantFragment on ProductVariant {
+    perils {
+        ...PerilFragment
+    }
+    typeOfContract
+    termsVersion
+    partner
+    documents {
+        ...InsuranceDocumentFragment
+    }
+    displayName
+    displayNameTier
+    tierDescription
+    insurableLimits {
+        label
+        limit
+        description
+    }
+}
+
+fragment InsuranceDocumentFragment on InsuranceDocument {
+    displayName
+    type
+    url
+}
+
+fragment PerilFragment on Peril {
+    id
+    title
+    description
+    covered
+    colorCode
+}

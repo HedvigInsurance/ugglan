@@ -29,11 +29,10 @@ public struct hFloatingField: View {
         error: Binding<String?>? = nil,
         onTap: @escaping () -> Void
     ) {
-
         self.placeholder = placeholder ?? ""
         self.onTap = onTap
         self.value = value
-        self._error = error ?? Binding.constant(nil)
+        _error = error ?? Binding.constant(nil)
     }
 
     public var body: some View {
@@ -64,21 +63,25 @@ public struct hFloatingField: View {
         .onTapGesture {
             if isEnabled {
                 onTap()
-                self.startAnimation()
+                startAnimation()
             }
         }
-        .onChange(of: value) { newValue in
+        .onChange(of: value) { _ in
             if isEnabled {
-                self.startAnimation()
+                startAnimation()
             }
         }
         .accessibilityAddTraits(.isButton)
         .accessibilityElement(children: .combine)
-
     }
+
     private var getTextLabel: some View {
-        hText(value, style: size == .large ? .body2 : .body1)
-            .foregroundColor(foregroundColor)
+        HStack(spacing: 0) {
+            hText(value, style: size == .large ? .body2 : .body1)
+                .foregroundColor(foregroundColor)
+                .fixedSize(horizontal: false, vertical: true)
+            hText(" ")
+        }
     }
 
     @hColorBuilder
@@ -93,43 +96,38 @@ public struct hFloatingField: View {
     private func startAnimation() {
         if animateField {
             withAnimation {
-                self.animate = true
+                animate = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     withAnimation {
-                        self.animate = false
+                        animate = false
                     }
                 }
             }
         }
     }
-
 }
 
 struct hFloatingField_Previews: PreviewProvider {
     static var previews: some View {
-
-        @State var value: String = "S"
+        @State var value = "S"
 
         VStack {
-            hFloatingField(value: value, placeholder: "ni", error: nil) {
-            }
-            .hFieldSize(.large)
-            .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
-            }
-            hFloatingField(value: value, placeholder: "ni", error: nil) {
-            }
-            .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
-            }
-            .hFieldSize(.medium)
+            hFloatingField(value: value, placeholder: "ni", error: nil) {}
+                .hFieldSize(.large)
+                .hFieldTrailingView {
+                    hCoreUIAssets.copy.view
+                }
+            hFloatingField(value: value, placeholder: "ni", error: nil) {}
+                .hFieldTrailingView {
+                    hCoreUIAssets.copy.view
+                }
+                .hFieldSize(.medium)
 
-            hFloatingField(value: value, placeholder: "ni", error: nil) {
-            }
-            .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.copy.image)
-            }
-            .hFieldSize(.small)
+            hFloatingField(value: value, placeholder: "ni", error: nil) {}
+                .hFieldTrailingView {
+                    hCoreUIAssets.copy.view
+                }
+                .hFieldSize(.small)
         }
     }
 }
@@ -139,7 +137,7 @@ private struct EnvironmentHCFieldTrailingView: @preconcurrency EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    public var hFieldTrailingView: (AnyView)? {
+    public var hFieldTrailingView: AnyView? {
         get { self[EnvironmentHCFieldTrailingView.self] }
         set { self[EnvironmentHCFieldTrailingView.self] = newValue }
     }
@@ -147,7 +145,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hFieldTrailingView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hFieldTrailingView, AnyView(content()))
+        environment(\.hFieldTrailingView, AnyView(content()))
     }
 }
 
@@ -156,7 +154,7 @@ private struct EnvironmentWithoutFixedHeight: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    public var hWithoutFixedHeight: (Bool)? {
+    public var hWithoutFixedHeight: Bool? {
         get { self[EnvironmentWithoutFixedHeight.self] }
         set { self[EnvironmentWithoutFixedHeight.self] = newValue }
     }
@@ -164,6 +162,6 @@ extension EnvironmentValues {
 
 extension View {
     public var hWithoutFixedHeight: some View {
-        self.environment(\.hWithoutFixedHeight, true)
+        environment(\.hWithoutFixedHeight, true)
     }
 }

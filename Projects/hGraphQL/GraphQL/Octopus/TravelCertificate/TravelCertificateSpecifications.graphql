@@ -1,0 +1,25 @@
+query TravelCertificate {
+  currentMember {
+    email
+    firstName
+    lastName
+    activeContracts {
+        id
+        exposureDisplayName
+        currentAgreement {
+            productVariant {
+                displayName
+            }
+        }
+    }
+    travelCertificateSpecifications {
+      contractSpecifications {
+        contractId
+        minStartDate
+        maxStartDate
+        maxDurationDays
+        numberOfCoInsured
+      }
+    }
+  }
+}

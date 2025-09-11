@@ -18,7 +18,8 @@ final class DeleteAccountViewModelTests: XCTestCase {
         lastName: "last name",
         phone: "phone number",
         email: "email",
-        hasTravelCertificate: true
+        hasTravelCertificate: true,
+        isContactInfoUpdateNeeded: false
     )
 
     override func setUp() async throws {
@@ -35,12 +36,12 @@ final class DeleteAccountViewModelTests: XCTestCase {
 
     func testDeleteAccountViewModelSuccess() async {
         let mockService = MockData.createMockProfileService(deleteRequest: {})
-        self.sut = mockService
+        sut = mockService
 
         let claimsStore = ClaimsStore()
         self.claimsStore = claimsStore
         await claimsStore.sendAsync(
-            .setClaims(claims: [
+            .setActiveClaims(claims: [
                 .init(
                     id: "id",
                     status: .beingHandled,
@@ -51,9 +52,13 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     payoutAmount: nil,
                     targetFileUploadUri: "",
                     claimType: "claimType",
-                    incidentDate: nil,
                     productVariant: nil,
-                    conversation: nil
+                    conversation: nil,
+                    appealInstructionsUrl: nil,
+                    isUploadingFilesEnabled: true,
+                    showClaimClosedFlow: true,
+                    infoText: nil,
+                    displayItems: []
                 )
             ])
         )
@@ -115,7 +120,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
         let mockService = MockData.createMockProfileService(deleteRequest: {
             throw ProfileError.error(message: "error")
         })
-        self.sut = mockService
+        sut = mockService
 
         let claimsStore = ClaimsStore()
         self.claimsStore = claimsStore

@@ -5,7 +5,6 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel()
@@ -39,7 +38,7 @@ public struct HelpCenterStartView: View {
                         } else {
                             HStack {
                                 Spacer()
-                                Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
+                                hCoreUIAssets.bigPillowBlack.view
                                     .resizable()
                                     .frame(width: 160, height: 160)
                                     .padding(.bottom, 26)
@@ -67,28 +66,27 @@ public struct HelpCenterStartView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 if !vm.searchInProgress {
-                    SupportView(router: router)
+                    SupportView(router: router, withExtraPadding: true)
                         .padding(.top, .padding40)
                 }
             }
         }
         .hFormBottomBackgroundColor(
             vm.searchInProgress
-                ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
+                ? .default : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
-        .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
-            if !(vm?.didSetInitialSearchAppearance ?? false) {
+            guard let vm else { return }
+
+            if !vm.didSetInitialSearchAppearance {
                 vc.navigationItem.hidesSearchBarWhenScrolling = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vc] in
                     vc?.navigationItem.hidesSearchBarWhenScrolling = true
-
                 }
-                vm?.didSetInitialSearchAppearance = true
+                vm.didSetInitialSearchAppearance = true
             }
-        }
-        .introspect(.viewController, on: .iOS(.v13...)) { vc in
+
             vc.navigationItem.searchController = vm.searchController
             vc.definesPresentationContext = true
             vm.updateColors()
@@ -134,7 +132,7 @@ public struct HelpCenterStartView: View {
                         router?.push(item)
                     }
                 }
-                .hSectionWithoutHorizontalPadding
+                .hWithoutHorizontalPadding([.section])
                 .sectionContainerStyle(.opaque)
             }
         }
@@ -149,7 +147,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     @Published var quickActions: [QuickAction] = []
     @Inject var homeClient: HomeClient
 
-    //search part
+    // search part
     @Published var focusState: Bool? = false
     @Published var searchResultsQuestions: [FAQModel] = []
     @Published var searchResultsQuickActions: [QuickAction] = []
@@ -169,7 +167,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         super.init()
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
-            .map({ $0.quickActions })
+            .map(\.quickActions)
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] quickActions in
@@ -178,7 +176,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             .store(in: &cancellables)
         quickActions = store.state.quickActions
         store.stateSignal
-            .map({ $0.helpCenterFAQModel })
+            .map(\.helpCenterFAQModel)
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self, weak store] helpCenterFaqModel in
@@ -206,26 +204,16 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     }
 
     private func searchInQuestionsByQuery(query: String) -> [FAQModel] {
-        var results: [FAQModel] = [FAQModel]()
-        allQuestions.forEach { question in
-            if question.answer.lowercased().contains(query) || question.question.lowercased().contains(query) {
-                results.append(question)
-            }
+        allQuestions.filter {
+            $0.answer.lowercased().contains(query) || $0.question.lowercased().contains(query)
         }
-        return results
     }
 
     private func searchInQuickActionsByQuery(query: String) -> [QuickAction] {
         let query = query.lowercased()
-        var results: [QuickAction] = [QuickAction]()
-        quickActions.forEach { quickAction in
-            if quickAction.displayTitle.lowercased().contains(query)
-                || quickAction.displaySubtitle.lowercased().contains(query)
-            {
-                results.append(quickAction)
-            }
+        return quickActions.filter {
+            $0.displayTitle.lowercased().contains(query) || $0.displaySubtitle.lowercased().contains(query)
         }
-        return results
     }
 }
 
@@ -240,11 +228,11 @@ extension HelpCenterStartViewModel: UISearchResultsUpdating {
 }
 
 extension HelpCenterStartViewModel: UISearchControllerDelegate {
-    func didPresentSearchController(_ searchController: UISearchController) {
+    func didPresentSearchController(_: UISearchController) {
         updateColors()
     }
 
-    func willPresentSearchController(_ searchController: UISearchController) {
+    func willPresentSearchController(_: UISearchController) {
         updateColors()
     }
 
@@ -257,13 +245,11 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
         )
         button?.setTitleColor(color, for: .normal)
     }
-
 }
 
 #Preview {
-    return HelpCenterStartView(
+    HelpCenterStartView(
         onQuickAction: { _ in
-
         }
     )
 }

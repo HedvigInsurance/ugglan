@@ -1,33 +1,38 @@
+import Contracts
 import Foundation
+import PresentableStore
 import hCore
 import hCoreUI
 
 public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable, Sendable {
     let contractId: String
+    let displayName: String
+    let exposureDisplayName: String?
     let minStartDate: Date
     let maxStartDate: Date
     let numberOfCoInsured: Int
     let maxDuration: Int
-    let street: String
     let email: String?
     let fullName: String
 
-    init(
+    public init(
         contractId: String,
+        displayName: String,
+        exposureDisplayName: String?,
         minStartDate: Date,
         maxStartDate: Date,
         numberOfCoInsured: Int,
         maxDuration: Int,
-        street: String,
         email: String?,
         fullName: String
     ) {
         self.contractId = contractId
+        self.displayName = displayName
+        self.exposureDisplayName = exposureDisplayName
         self.minStartDate = minStartDate
         self.maxStartDate = maxStartDate
         self.numberOfCoInsured = numberOfCoInsured
         self.maxDuration = maxDuration
-        self.street = street
         self.email = email
         self.fullName = fullName
     }

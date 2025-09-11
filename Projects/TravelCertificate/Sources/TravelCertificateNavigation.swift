@@ -1,6 +1,6 @@
 import Addons
 import Contracts
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -13,6 +13,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     @Published var isDocumentPresented: TravelCertificateModel?
     @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var isInfoViewPresented = false
 
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
@@ -23,7 +24,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
 }
 
 struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
-    public var id: String?
+    var id: String?
     let specification: [TravelInsuranceContractSpecification]
 }
 
@@ -44,7 +45,6 @@ extension TravelCertificateRouterActions: TrackingViewNameProtocol {
             return .init(describing: ListScreen.self)
         }
     }
-
 }
 
 enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
@@ -61,17 +61,13 @@ extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProto
             return ""
         }
     }
-
-}
-
-public enum ListToolBarPlacement {
-    case trailing
-    case leading
 }
 
 public struct TravelCertificateNavigation: View {
     @ObservedObject var vm: TravelCertificateNavigationViewModel
     @StateObject var router = Router()
+    @StateObject var createNewRouter = Router()
+
     private var infoButtonPlacement: ListToolBarPlacement
     private let useOwnNavigation: Bool
 
@@ -112,11 +108,21 @@ public struct TravelCertificateNavigation: View {
         .environmentObject(vm)
         .detent(
             item: $vm.isDocumentPresented,
-            style: [.large],
+            transitionType: .detent(style: [.large]),
             options: .constant(.withoutGrabber)
         ) { model in
             PDFPreview(
                 document: .init(displayName: model.title, url: model.url.absoluteString, type: .unknown)
+            )
+        }
+        .detent(
+            presented: $vm.isInfoViewPresented,
+
+            options: .constant(.withoutGrabber)
+        ) {
+            InfoView(
+                title: L10n.TravelCertificate.Info.title,
+                description: L10n.TravelCertificate.Info.subtitle
             )
         }
         .modally(
@@ -152,6 +158,7 @@ public struct TravelCertificateNavigation: View {
                     }
                 }
                 .embededInNavigation(
+                    router: createNewRouter,
                     tracking: specificationModel.specification.count > 1
                         ? TravelCertificateRouterActions.list(specifications: specificationModel.specification)
                         : TravelCertificateRouterActions.startDate(
@@ -182,8 +189,11 @@ public struct TravelCertificateNavigation: View {
     private func showContractsList(
         for specifications: [TravelInsuranceContractSpecification]
     ) -> some View {
-        ContractsScreen(specifications: specifications)
-            .addDismissFlow()
+        TravelCertificateSelectInsuranceScreen(
+            router: createNewRouter,
+            specifications: specifications
+        )
+        .addDismissFlow()
     }
 
     private func showStartDateScreen(
@@ -197,9 +207,10 @@ public struct TravelCertificateNavigation: View {
     private func showWhoIsTravelingScreen(
         specification: TravelInsuranceContractSpecification
     ) -> some View {
-        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
+        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification, router: createNewRouter)
         return WhoIsTravelingScreen(
-            vm: vm.whoIsTravelingViewModel!
+            vm: vm.whoIsTravelingViewModel!,
+            travelCertificateNavigationVm: vm
         )
         .environmentObject(vm)
         .addDismissFlow()
@@ -214,7 +225,7 @@ public struct TravelCertificateNavigation: View {
 
 extension View {
     func addDismissFlow() -> some View {
-        self.withDismissButton(
+        withDismissButton(
             title: L10n.General.areYouSure,
             message: L10n.Claims.Alert.body,
             confirmButton: L10n.General.yes,

@@ -1,6 +1,5 @@
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct CoverageView: View {
     let limits: [InsurableLimits]
@@ -24,27 +23,38 @@ public struct CoverageView: View {
             ) { limit in
                 didTapInsurableLimit(limit)
             }
+            .hWithoutHorizontalPadding([.row, .divider])
             VStack(spacing: .padding32) {
                 ForEach(perils, id: \.title) { perils in
-                    VStack(spacing: .padding8) {
-                        if let title = perils.title {
-                            hSection {
-                                HStack {
-                                    hPill(text: title, color: .blue)
-                                        .hFieldSize(.medium)
-                                    Spacer()
-                                }
-                            }
-                        }
-                        VStack(spacing: .padding4) {
-                            PerilCollection(
-                                perils: perils.perils
-                            )
-                            .hFieldSize(.small)
-                        }
-                    }
+                    perilInfo(for: perils)
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private func perilInfo(for peril: (title: String?, perils: [Perils])) -> some View {
+        if !peril.perils.isEmpty {
+            VStack(spacing: .padding8) {
+                if let title = peril.title {
+                    hSection {
+                        titleSection(title)
+                    }
+                }
+                VStack(spacing: .padding4) {
+                    PerilCollection(
+                        perils: peril.perils
+                    )
+                }
+            }
+        }
+    }
+
+    private func titleSection(_ title: String) -> some View {
+        HStack {
+            hPill(text: title, color: .blue)
+                .hFieldSize(.medium)
+            Spacer()
         }
     }
 }
@@ -52,8 +62,7 @@ public struct CoverageView: View {
 #Preview {
     CoverageView(
         limits: [],
-        didTapInsurableLimit: { limit in
-
+        didTapInsurableLimit: { _ in
         },
         perils: [
             (

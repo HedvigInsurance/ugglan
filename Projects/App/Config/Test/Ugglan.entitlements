@@ -6,12 +6,11 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:hedvigtest.page.link</string>
-		<string>applinks:dev.hedvigit.com</string>
+		<string>applinks:link.dev.hedvigit.com</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.com.hedvig.test.app</string>
+		<string>iCloud.com.hedvigForsakringAB.test.app</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>
@@ -19,7 +18,7 @@
 	</array>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
-		<string>iCloud.com.hedvig.test.app</string>
+		<string>iCloud.com.hedvigForsakringAB.test.app</string>
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
@@ -27,7 +26,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.hedvig.test.app</string>
+		<string>group.com.hedvigForsakring.test.app</string>
 	</array>
 	<key>com.apple.security.device.audio-input</key>
 	<true/>

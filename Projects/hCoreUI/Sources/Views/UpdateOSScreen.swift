@@ -1,9 +1,7 @@
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct UpdateOSScreen: View {
-
     public init() {}
 
     public var body: some View {

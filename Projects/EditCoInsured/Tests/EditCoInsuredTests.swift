@@ -2,17 +2,15 @@ import Foundation
 @preconcurrency import XCTest
 
 @testable import EditCoInsured
-@testable import EditCoInsuredShared
 
 @MainActor
 final class ContractsEditInsuredCompleteListTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
     }
 
     func testUpcomingZeroCurrentOneSuccess() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN5
@@ -25,7 +23,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testUpcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN5,
@@ -43,7 +41,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentWith4EmptyDataUpcomingThreeSuccess() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
@@ -59,7 +57,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentFourEmptyUpcomingFourWithValueAddedOne() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
@@ -80,7 +78,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentTwoWithValuesAddingThreeWithValues() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN4,
@@ -98,7 +96,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialWithTwoAdded() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
@@ -113,11 +111,10 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         XCTAssert(list.count == 2)
         XCTAssert(list[0] == CoInsuredModel.testMemberWithSSN1)
         XCTAssert(list[1] == CoInsuredModel.testMemberWithSSN2)
-
     }
 
     func testInitialWithOneDeleted() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
@@ -135,7 +132,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialAllDeleted() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
@@ -150,7 +147,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testRemoveOne() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN1,
@@ -166,7 +163,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndMissingData() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
@@ -184,7 +181,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndAddedData() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.testMemberWithSSN1,
@@ -200,7 +197,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndAddingData() {
-        let viewModel = InsuredPeopleNewScreenModel()
+        let viewModel = InsuredPeopleScreenViewModel()
 
         viewModel.config.contractCoInsured = [
             CoInsuredModel.mockMissingData(),
@@ -221,6 +218,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         XCTAssert(list[1] == CoInsuredModel.testMemberWithBirthdate1)
     }
 }
+
 @MainActor
 extension CoInsuredModel {
     static let testMemberWithSSN1 = CoInsuredModel(

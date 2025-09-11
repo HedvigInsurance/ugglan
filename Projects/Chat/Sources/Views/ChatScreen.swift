@@ -2,10 +2,12 @@ import Combine
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
+    @ObservedObject var conversationVm: ChatConversationViewModel
+    @ObservedObject var messageVm: ChatMessageViewModel
+
     @State var infoViewHeight: CGFloat = 0
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
@@ -14,49 +16,37 @@ public struct ChatScreen: View {
     public init(
         vm: ChatScreenViewModel
     ) {
-        self._vm = StateObject(wrappedValue: vm)
+        _vm = StateObject(wrappedValue: vm)
+        messageVm = vm.messageVm
+        conversationVm = vm.messageVm.conversationVm
     }
 
     public var body: some View {
         ScrollViewReader { proxy in
             loadingPreviousMessages
             messagesContainer(with: proxy)
+                .flippedUpsideDown()
+                .padding(.bottom, -8)
             infoCard
                 .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
                 .padding(.bottom, .padding16)
+                .layoutPriority(1)
         }
-        .dismissKeyboard()
-        .findScrollView({ sv in
-            sv.delegate = chatScrollViewDelegate
-        })
-        .task {
-            vm.chatNavigationVm = chatNavigationVm
-        }
-        .configureTitleView(vm)
-        .onAppear {
-            vm.scrollCancellable = chatScrollViewDelegate.isScrolling
-                .subscribe(on: RunLoop.main)
-                .sink { [weak vm] _ in
-                    withAnimation {
-                        vm?.chatInputVm.showBottomMenu = false
-                    }
-                }
-            Task {
-                await vm.startFetchingNewMessages()
-            }
-        }
-        .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
-            Task {
-                let message = Message(type: .file(file: file))
-                await vm.send(message: message)
-            }
-        }
+        .modifier(
+            ChatScreenModifier(
+                vm: vm,
+                messageVm: messageVm,
+                conversationVm: conversationVm,
+                chatScrollViewDelegate: chatScrollViewDelegate,
+                isTargetedForDropdown: $isTargetedForDropdown
+            )
+        )
     }
 
     @ViewBuilder
     private var loadingPreviousMessages: some View {
-        if vm.isFetchingPreviousMessages {
+        if messageVm.isFetchingPreviousMessages {
             DotsActivityIndicator(.standard)
                 .useDarkColor
                 .fixedSize()
@@ -69,28 +59,27 @@ public struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                ForEach(vm.messages) { message in
-                    messageView(for: message, conversationStatus: vm.conversationStatus)
+                let messages = messageVm.messages
+                ForEach(messages) { message in
+                    messageView(for: message, conversationStatus: conversationVm.conversationStatus)
                         .flippedUpsideDown()
                         .onAppear {
-                            if message.id == vm.messages.last?.id {
+                            if message.id == messageVm.messages.last?.id {
                                 Task {
-                                    await vm.fetchPreviousMessages()
+                                    await messageVm.fetchPreviousMessages()
                                 }
                             }
                         }
                 }
             }
             .padding([.horizontal, .bottom], .padding16)
-            .padding(.top, vm.banner != nil ? .padding8 : 0)
-            .onChange(of: vm.scrollToMessage?.id) { id in
+            .padding(.top, conversationVm.banner != nil ? .padding8 : 0)
+            .onChange(of: messageVm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
                 }
             }
         }
-        .flippedUpsideDown()
-        .padding(.bottom, -8)
     }
 
     private func messageView(for message: Message, conversationStatus: ConversationStatus) -> some View {
@@ -98,52 +87,16 @@ public struct ChatScreen: View {
             if message.sender == .member {
                 Spacer()
             }
+
             VStack(
                 alignment: message.sender == .automatic ? .center : (message.sender == .hedvig ? .leading : .trailing),
-                spacing: 4
+                spacing: .padding4
             ) {
                 MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
-                    .frame(
-                        maxWidth: (message.sender != .automatic) ? 300 : .infinity,
-                        alignment: message.sender == .automatic
-                            ? .center : (message.sender == .hedvig ? .leading : .trailing)
-                    )
-                    .foregroundColor(message.textColor)
-                    .onTapGesture {
-                        if case .failed = message.status {
-                            Task {
-                                await vm.retrySending(message: message)
-                            }
-                        }
-                    }
-                    .id("MessageView_\(message.id)")
-                    .padding(.bottom, message.sender == .automatic ? .padding16 : 0)
-                if message.sender != .automatic {
-                    HStack(spacing: 0) {
-                        if vm.lastDeliveredMessage?.id == message.id {
-                            hText(message.timeStampString)
-                            hText(" ∙ \(L10n.chatDeliveredMessage)")
-                            hCoreUIAssets.checkmarkFilled.view
-                                .resizable()
-                                .frame(width: 16, height: 16)
-                                .foregroundColor(hSignalColor.Blue.element)
-                                .padding(.leading, 2)
-                        } else if case .failed = message.status {
-                            hText(L10n.chatFailedToSend)
-                            hText(" ∙ \(message.timeStampString)")
-                        } else {
-                            hText(message.timeStampString)
-                        }
 
-                    }
-                    .hTextStyle(.label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .padding(.bottom, 3)
-                    .frame(maxWidth: .infinity, alignment: message.sender == .member ? .trailing : .leading)
-                }
+                messageTimeStamp(message: message)
+                    .accessibilityHidden(true)
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(accessilityLabel(for: message))
             if message.sender == .hedvig {
                 Spacer()
             }
@@ -151,30 +104,41 @@ public struct ChatScreen: View {
         .id(message.id)
     }
 
-    private func accessilityLabel(for message: Message) -> String {
-        var displayString: String = ""
-        switch message.type {
-        case .text:
-            displayString = message.trimmedText
-        case let .file(file):
-            displayString = file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile
-        case .deepLink, .otherLink:
-            displayString = L10n.chatSentALink
-        default:
-            displayString = ""
+    @ViewBuilder
+    private func messageTimeStamp(message: Message) -> some View {
+        if message.sender != .automatic {
+            HStack(spacing: 0) {
+                if messageVm.lastDeliveredMessage?.id == message.id {
+                    hText(message.timeStampString)
+                    hText(" ∙ \(L10n.chatDeliveredMessage)")
+                    hCoreUIAssets.checkmarkFilled.view
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(hSignalColor.Blue.element)
+                        .padding(.leading, .padding2)
+                } else if case .failed = message.status {
+                    hText(L10n.chatFailedToSend)
+                    hText(" ∙ \(message.timeStampString)")
+                } else {
+                    hText(message.timeStampString)
+                }
+            }
+            .hTextStyle(.label)
+            .foregroundColor(hTextColor.Opaque.secondary)
+            .padding(.bottom, 3)
         }
-        return displayString + "\n" + message.timeStampString
     }
 
     @ViewBuilder
     private var infoCard: some View {
-        if vm.shouldShowBanner {
-            if let banner = vm.banner {
+        if conversationVm.shouldShowBanner {
+            if let banner = conversationVm.banner {
                 InfoCard(text: "", type: .info)
                     .hInfoCardCustomView {
                         MarkdownView(
                             config: .init(
-                                text: (vm.conversationStatus == .closed) ? L10n.chatConversationClosedInfo : banner,
+                                text: (conversationVm.conversationStatus == .closed)
+                                    ? L10n.chatConversationClosedInfo : banner,
                                 fontStyle: .label,
                                 color: hSignalColor.Blue.text,
                                 linkColor: hSignalColor.Blue.text,
@@ -186,17 +150,59 @@ public struct ChatScreen: View {
                     }
                     .hInfoCardLayoutStyle(.bannerStyle)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .accessibilityElement(children: .combine)
-                    .accessibilityAddTraits(.isButton)
-                    .accessibilityLabel((vm.conversationStatus == .closed) ? L10n.chatConversationClosedInfo : banner)
-                    .accessibilityHint(L10n.voiceOverInfoHelpcenter)
             }
         }
     }
 }
 
-class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
+struct ChatScreenModifier: ViewModifier {
+    @ObservedObject var vm: ChatScreenViewModel
+    @ObservedObject var messageVm: ChatMessageViewModel
+    @ObservedObject var conversationVm: ChatConversationViewModel
+    @ObservedObject var chatScrollViewDelegate: ChatScrollViewDelegate
+    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+    @Binding var isTargetedForDropdown: Bool
 
+    func body(content: Content) -> some View {
+        content
+            .dismissKeyboard()
+            .findScrollView { sv in
+                sv.delegate = chatScrollViewDelegate
+            }
+            .task {
+                messageVm.chatNavigationVm = chatNavigationVm
+            }
+            .configureTitleView(
+                title: conversationVm.title,
+                subTitle: conversationVm.subTitle,
+                onTitleTap: { [weak conversationVm, weak chatNavigationVm] in
+                    if let claimId = conversationVm?.claimId {
+                        chatNavigationVm?.showClaimDetail(claimId: claimId)
+                    }
+                }
+            )
+            .onAppear {
+                vm.scrollCancellable = chatScrollViewDelegate.isScrolling
+                    .subscribe(on: RunLoop.main)
+                    .sink { [weak vm] _ in
+                        withAnimation {
+                            vm?.chatInputVm.showBottomMenu = false
+                        }
+                    }
+                Task {
+                    await vm.startFetchingNewMessages()
+                }
+            }
+            .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
+                Task {
+                    let message = Message(type: .file(file: file))
+                    await messageVm.send(message: message)
+                }
+            }
+    }
+}
+
+class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
     let isScrolling = PassthroughSubject<Bool, Never>()
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -209,8 +215,8 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
 
     func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
-        withVelocity velocity: CGPoint,
-        targetContentOffset: UnsafeMutablePointer<CGPoint>
+        withVelocity _: CGPoint,
+        targetContentOffset _: UnsafeMutablePointer<CGPoint>
     ) {
         isScrolling.send(false)
         let vc = findProverVC(from: scrollView.viewController)
@@ -249,5 +255,22 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
             return vc?.navigationController?.view.superview?.viewController ?? vc
         }
         return nil
+    }
+}
+
+extension MessageSender {
+    var alignment: Alignment {
+        switch self {
+        case .member: return .trailing
+        case .hedvig: return .leading
+        case .automatic: return .center
+        }
+    }
+
+    var maxWidth: CGFloat {
+        switch self {
+        case .member, .hedvig: return 300
+        case .automatic: return .infinity
+        }
     }
 }

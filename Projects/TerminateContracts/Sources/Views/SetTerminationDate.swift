@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct SetTerminationDate: View {
     @State private var terminationDate = Date()
@@ -9,11 +8,11 @@ struct SetTerminationDate: View {
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
-        terminationDate: () -> Date,
+        terminationDate _: () -> Date,
         terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
         self.terminationNavigationVm = terminationNavigationVm
-        self._terminationDate = State(wrappedValue: terminationNavigationVm.terminationDateStepModel?.date ?? Date())
+        _terminationDate = State(wrappedValue: terminationNavigationVm.terminationDateStepModel?.date ?? Date())
     }
 
     var body: some View {
@@ -23,9 +22,9 @@ struct SetTerminationDate: View {
                     continueAction: {
                         terminationNavigationVm.terminationDateStepModel?.date = terminationDate
                         terminationNavigationVm.isDatePickerPresented = false
-
+                        terminationNavigationVm.fetchNotification(isDeletion: false)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            self.isHidden = true
+                            isHidden = true
                         }
                     },
                     cancelAction: {

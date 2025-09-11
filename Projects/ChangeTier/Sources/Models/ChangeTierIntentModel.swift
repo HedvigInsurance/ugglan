@@ -2,7 +2,6 @@ import Addons
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ProductVariantComparison: Codable, Equatable, Hashable {
     let rows: [ProductVariantComparisonRow]
@@ -22,9 +21,21 @@ public struct ProductVariantComparison: Codable, Equatable, Hashable {
         let colorCode: String?
         let cells: [ProductVariantComparisonCell]
 
-        struct ProductVariantComparisonCell: Codable, Equatable, Hashable {
+        public init(title: String, description: String, colorCode: String?, cells: [ProductVariantComparisonCell]) {
+            self.title = title
+            self.description = description
+            self.colorCode = colorCode
+            self.cells = cells
+        }
+
+        public struct ProductVariantComparisonCell: Codable, Equatable, Hashable {
             let isCovered: Bool
             let coverageText: String?
+
+            public init(isCovered: Bool, coverageText: String?) {
+                self.isCovered = isCovered
+                self.coverageText = coverageText
+            }
         }
     }
 }
@@ -32,7 +43,7 @@ public struct ProductVariantComparison: Codable, Equatable, Hashable {
 public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let activationDate: Date
-    let tiers: [Tier]
+    public let tiers: [Tier]
     let currentPremium: MonetaryAmount?
     let currentTier: Tier?
     let currentQuote: Quote?
@@ -65,9 +76,10 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         self.typeOfContract = typeOfContract
     }
 }
+
 public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
-    let name: String
+    public let name: String
     let level: Int
     public var quotes: [Quote]
     let exposureName: String?
@@ -94,9 +106,9 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
             if let smallestPremium = quotes.sorted(by: { $0.basePremium.floatAmount < $1.basePremium.floatAmount })
                 .first?
                 .basePremium
-                .formattedAmountPerMonth
+                .formattedAmount
             {
-                return smallestPremium
+                return L10n.tierFlowPriceLabelWithoutCurrency(smallestPremium)
             }
         }
         return nil
@@ -109,7 +121,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
     let deductablePercentage: Int?
     let subTitle: String?
     let basePremium: MonetaryAmount
-    let displayItems: [DisplayItem]
+    public let displayItems: [DisplayItem]
     public let productVariant: ProductVariant?
     let addons: [Addon]
     public init(
@@ -123,8 +135,8 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         addons: [Addon]
     ) {
         self.id = id
-        self.deductableAmount = quoteAmount
-        self.deductablePercentage = quotePercentage
+        deductableAmount = quoteAmount
+        deductablePercentage = quotePercentage
         self.subTitle = subTitle
         self.basePremium = basePremium
         self.displayItems = displayItems
@@ -158,7 +170,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         let premium: MonetaryAmount
         let previousPremium: MonetaryAmount
 
-        init(
+        public init(
             addonId: String,
             addonVariant: AddonVariant,
             displayItems: [Quote.DisplayItem],
@@ -186,7 +198,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
 }
 
 extension Quote: Equatable {
-    static public func == (lhs: Quote, rhs: Quote) -> Bool {
-        return lhs.deductableAmount == rhs.deductableAmount && lhs.deductablePercentage == rhs.deductablePercentage
+    public static func == (lhs: Quote, rhs: Quote) -> Bool {
+        lhs.deductableAmount == rhs.deductableAmount && lhs.deductablePercentage == rhs.deductablePercentage
     }
 }

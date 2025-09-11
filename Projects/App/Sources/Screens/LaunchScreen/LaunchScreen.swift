@@ -6,7 +6,7 @@ import hCoreUI
 struct LaunchScreen: View {
     @State private var offset: CGFloat = -24
     var body: some View {
-        Image(uiImage: hCoreUIAssets.wordmark.image)
+        Image(uiImage: hCoreUIAssets.hedvig.image)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 200, height: 40)
@@ -21,5 +21,6 @@ struct LaunchScreen: View {
                     }
                 }
             }
+            .accessibilityHidden(true)
     }
 }

@@ -13,8 +13,6 @@ struct SlideToConfirm: View {
     @State private var width: CGFloat = 0
     @State private var bounceSliderButton = false
 
-    private let animation = Animation.spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
-
     var body: some View {
         if #available(iOS 16.0, *) {
             slider
@@ -22,14 +20,13 @@ struct SlideToConfirm: View {
                     if didFinished {
                         return
                     }
-                    let progress = location.x + 25
-                    withAnimation(animation) {
-                        self.progress = progress
+                    withAnimation(.defaultSpring) {
+                        self.progress = location.x + 25
                     }
                     if progress < width {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(animation) {
-                                self.progress = 0
+                            withAnimation(.defaultSpring) {
+                                resetProgress()
                             }
                         }
                     } else {
@@ -39,6 +36,10 @@ struct SlideToConfirm: View {
         } else {
             slider
         }
+    }
+
+    private func resetProgress() {
+        progress = 0
     }
 
     private var slider: some View {
@@ -64,7 +65,7 @@ struct SlideToConfirm: View {
                             if didFinished {
                                 return
                             }
-                            withAnimation(animation.speed(4)) {
+                            withAnimation(.defaultSpring.speed(4)) {
                                 progress = (gesture.translation.width + gesture.startLocation.x - 29)
                             }
                             if progress + 58 >= width {
@@ -75,7 +76,7 @@ struct SlideToConfirm: View {
                             if didFinished {
                                 return
                             }
-                            withAnimation(animation.speed(2)) {
+                            withAnimation(.defaultSpring.speed(2)) {
                                 progress = 0
                             }
                         }
@@ -85,7 +86,6 @@ struct SlideToConfirm: View {
         .frame(maxWidth: .infinity)
         .background(
             GeometryReader { proxy in
-
                 hSurfaceColor.Opaque.secondary
                     .onAppear {
                         width = proxy.size.width
@@ -99,7 +99,7 @@ struct SlideToConfirm: View {
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverHonestypledgeSlider)
         .accessibilityAction {
-            withAnimation(animation.speed(2)) {
+            withAnimation(.defaultSpring.speed(2)) {
                 progress = 0
             }
             promiseConfirmed()
@@ -107,15 +107,15 @@ struct SlideToConfirm: View {
     }
 
     private func promiseConfirmed() {
-        self.didFinished = true
-        withAnimation(animation) {
-            self.progress = width
+        didFinished = true
+        withAnimation(.defaultSpring) {
+            progress = width
         }
-        withAnimation(animation.speed(2)) {
+        withAnimation(.defaultSpring.speed(2)) {
             bounceSliderButton = true
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            withAnimation(animation.speed(2)) {
+            withAnimation(.defaultSpring.speed(2)) {
                 bounceSliderButton = false
                 updateUIForFinished = true
             }
@@ -130,7 +130,7 @@ struct SlideToConfirm: View {
         if didFinished {
             hTextColor.Opaque.disabled
         } else {
-            hTextColor.Opaque.secondary
+            hTextColor.Translucent.secondary
         }
     }
 
@@ -167,7 +167,6 @@ struct HonestyPledge: View {
                     }
                     .padding(.bottom, .padding32)
                 }
-                .accessibilityElement(children: .combine)
 
                 SlideToConfirm(onConfirmAction: {
                     onConfirmAction?()
@@ -175,23 +174,18 @@ struct HonestyPledge: View {
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
 
-                hButton.LargeButton(type: .ghost) {
+                hCancelButton {
                     router.dismiss()
-                } content: {
-                    L10n.generalCancelButton.hText(.body1)
-                        .foregroundColor(hTextColor.Opaque.primary)
                 }
-
             }
             .padding(.horizontal, .padding24)
             .fixedSize(horizontal: false, vertical: true)
         }
         .hFormContentPosition(.compact)
+        .padding(.top, -8)
     }
 }
 
 #Preview {
-    HonestyPledge {
-
-    }
+    HonestyPledge {}
 }

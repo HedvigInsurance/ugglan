@@ -1,14 +1,13 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct MovingFlowAddressScreen: View {
     @ObservedObject var vm: AddressInputModel
     @EnvironmentObject var router: Router
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
-    public init(
+    init(
         vm: AddressInputModel
     ) {
         self.vm = vm
@@ -59,15 +58,9 @@ struct MovingFlowAddressScreen: View {
                 }
                 .hFieldSize(.medium)
                 .disabled(vm.viewState == .loading)
-                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
-                    hSection {
-                        InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
-                    }
-                }
             }
             .padding(.bottom, .padding8)
             .padding(.top, .padding16)
-
         }
         .hFormTitle(
             title: .init(
@@ -86,11 +79,14 @@ struct MovingFlowAddressScreen: View {
         .hFormContentPosition(.bottom)
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
-                    continuePressed()
-                } content: {
-                    hText(vm.continueButtonTitle, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: vm.continueButtonTitle),
+                    {
+                        continuePressed()
+                    }
+                )
             }
         }
     }
@@ -127,12 +123,13 @@ struct MovingFlowAddressScreen: View {
             error: $vm.squareAreaError
         )
     }
+
     func numberOfCoinsuredField() -> some View {
         hCounterField(
             value: $vm.nbOfCoInsured,
             placeholder: L10n.changeAddressCoInsuredLabel,
             minValue: 0,
-            maxValue: movingFlowNavigationVm.movingFlowVm?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
+            maxValue: movingFlowNavigationVm.moveConfigurationModel?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
         ) { value in
             vm.type = nil
             if value > 0 {
@@ -144,8 +141,8 @@ struct MovingFlowAddressScreen: View {
     }
 
     func accessDateField() -> some View {
-        let minStartDate = movingFlowNavigationVm.movingFlowVm?.minMovingDate.localDateToDate
-        let maxStartDate = movingFlowNavigationVm.movingFlowVm?.maxMovingDate.localDateToDate
+        let minStartDate = movingFlowNavigationVm.selectedHomeAddress?.minMovingDate.localDateToDate
+        let maxStartDate = movingFlowNavigationVm.selectedHomeAddress?.maxMovingDate.localDateToDate
 
         return hDatePickerField(
             config: .init(
@@ -165,6 +162,7 @@ struct MovingFlowAddressScreen: View {
             }
         )
     }
+
     func isStudentField() -> some View {
         CheckboxToggleView(
             title: L10n.changeAddressStudentLabel,
@@ -182,12 +180,12 @@ struct MovingFlowAddressScreen: View {
             switch vm.selectedHousingType {
             case .apartment, .rental:
                 Task { @MainActor in
-                    if let movingFlowData = await vm.requestMoveIntent(
-                        intentId: movingFlowNavigationVm.movingFlowVm?.id ?? ""
+                    if let requestVm = await vm.requestMoveIntent(
+                        intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
+                        selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                     ) {
-                        movingFlowNavigationVm.movingFlowVm = movingFlowData
-
-                        if let changeTierModel = movingFlowData.changeTierModel {
+                        movingFlowNavigationVm.moveQuotesModel = requestVm
+                        if let changeTierModel = requestVm.changeTierModel {
                             router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                         } else {
                             router.push(MovingFlowRouterActions.confirm)
@@ -196,7 +194,6 @@ struct MovingFlowAddressScreen: View {
                 }
             case .house:
                 router.push(MovingFlowRouterActions.houseFill)
-                break
             }
         }
     }
@@ -207,9 +204,9 @@ struct MovingFlowAddressScreen: View {
             let sizeToCompare: Int? = {
                 switch vm.selectedHousingType {
                 case .apartment, .rental:
-                    return movingFlowNavigationVm.movingFlowVm?.maxApartmentSquareMeters
+                    return movingFlowNavigationVm.moveConfigurationModel?.maxApartmentSquareMeters
                 case .house:
-                    return movingFlowNavigationVm.movingFlowVm?.maxHouseSquareMeters
+                    return movingFlowNavigationVm.moveConfigurationModel?.maxHouseSquareMeters
                 }
             }()
             if let sizeToCompare {
@@ -223,7 +220,7 @@ struct MovingFlowAddressScreen: View {
     var isStudentEnabled: Bool {
         switch vm.selectedHousingType {
         case .apartment, .rental:
-            return movingFlowNavigationVm.movingFlowVm?.isApartmentAvailableforStudent ?? false
+            return movingFlowNavigationVm.moveConfigurationModel?.isApartmentAvailableforStudent ?? false
         case .house:
             return false
         }
@@ -247,14 +244,15 @@ struct MovingFlowAddressScreen: View {
 struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Localization.Locale.currentLocale.send(.en_SE)
-        return VStack { MovingFlowAddressScreen(vm: .init()) }
+        return VStack { MovingFlowAddressScreen(vm: .init()).environmentObject(MovingFlowNavigationViewModel()) }
     }
 }
 
 enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
     static var last: MovingFlowNewAddressViewFieldType {
-        return MovingFlowNewAddressViewFieldType.squareArea
+        MovingFlowNewAddressViewFieldType.squareArea
     }
 
     var next: MovingFlowNewAddressViewFieldType? {
@@ -271,38 +269,40 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
     case address
     case postalCode
     case squareArea
-
 }
 
 @MainActor
 public class AddressInputModel: ObservableObject {
     @Inject private var service: MoveFlowClient
-    @Published var moveFromAddressId: String?
-    @Published var address: String = ""
-    @Published var postalCode: String = ""
-    @Published var squareArea: String = ""
-    @Published var nbOfCoInsured: Int = 0
-    @Published var accessDate: Date?
-    @Published var isStudent = false
+    @Published public var address: String = ""
+    @Published public var postalCode: String = ""
+    @Published public var squareArea: String = ""
+    @Published public var nbOfCoInsured: Int = 0
+    @Published public var accessDate: Date?
+    @Published public var isStudent = false
     @Published var addressError: String?
     @Published var postalCodeError: String?
     @Published var squareAreaError: String?
     @Published var accessDateError: String?
     @Published var type: MovingFlowNewAddressViewFieldType?
-    @Published var selectedHousingType: HousingType = .apartment
+    @Published public var selectedHousingType: HousingType = .apartment
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func requestMoveIntent(intentId: String) async -> MovingFlowModel? {
+    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MoveQuotesModel? {
         withAnimation {
             self.viewState = .loading
         }
 
         do {
-            let movingFlowData = try await service.requestMoveIntent(
+            let input = RequestMoveIntentInput(
                 intentId: intentId,
                 addressInputModel: self,
-                houseInformationInputModel: .init()
+                houseInformationInputModel: nil,
+                selectedAddressId: selectedAddressId
+            )
+            let movingFlowData = try await service.requestMoveIntent(
+                input: input
             )
 
             withAnimation {
@@ -311,7 +311,7 @@ public class AddressInputModel: ObservableObject {
 
             return movingFlowData
         } catch {
-            self.viewState = .error(errorMessage: error.localizedDescription)
+            viewState = .error(errorMessage: error.localizedDescription)
         }
         return nil
     }

@@ -21,26 +21,33 @@ public struct ConfirmChangesScreen: View {
             .hFormContentPosition(.compact)
             .hFormAttachToBottom {
                 hSection {
-                    VStack(alignment: .leading, spacing: .padding32) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(title)
-                            hText(subTitle)
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                        }
-                        .padding(.leading, .padding8)
-                        VStack(spacing: .padding8) {
-                            hButton.LargeButton(type: .primary) {
+                    VStack(alignment: .center, spacing: 0) {
+                        hText(title)
+                        hText(subTitle)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, .padding32)
+                    }
+                    VStack(spacing: .padding8) {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: buttons.mainButton.buttonTitle ?? L10n.generalConfirm),
+                            {
                                 buttons.mainButton.buttonAction()
-                            } content: {
-                                hText(buttons.mainButton.buttonTitle ?? L10n.generalConfirm)
                             }
+                        )
 
-                            hButton.LargeButton(type: .ghost) {
+                        hButton(
+                            .large,
+                            .ghost,
+                            content: .init(
+                                title: buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton
+                            ),
+                            {
                                 buttons.dismissButton.buttonAction()
-                            } content: {
-                                hText(buttons.dismissButton.buttonTitle ?? L10n.generalCloseButton)
                             }
-                        }
+                        )
                     }
                     .padding(.top, .padding24)
                 }
@@ -58,7 +65,12 @@ public struct ConfirmChangesButtonConfig {
         dismissButton: ConfirmChangeButton
     ) {
         self.mainButton = mainButton
-        self.dismissButton = dismissButton
+
+        if dismissButton.buttonTitle == nil {
+            self.dismissButton = .init(buttonAction: dismissButton.buttonAction)
+        } else {
+            self.dismissButton = dismissButton
+        }
     }
 
     public struct ConfirmChangeButton {
@@ -69,6 +81,12 @@ public struct ConfirmChangesButtonConfig {
             self.buttonTitle = buttonTitle
             self.buttonAction = buttonAction
         }
+    }
+}
+
+extension ConfirmChangesScreen: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        String(describing: self)
     }
 }
 

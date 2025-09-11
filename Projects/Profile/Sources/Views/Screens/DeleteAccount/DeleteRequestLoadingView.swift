@@ -3,7 +3,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
@@ -36,7 +35,7 @@ public struct DeleteRequestLoadingView: View {
     @ViewBuilder private var successState: some View {
         hForm {
             VStack(spacing: 0) {
-                Image(uiImage: hCoreUIAssets.checkmark.image)
+                hCoreUIAssets.checkmark.view
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Green.element)
@@ -52,11 +51,9 @@ public struct DeleteRequestLoadingView: View {
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .ghost) {
+                hCloseButton {
                     router.dismiss()
                     dismissAction(.makeHomeTabActive)
-                } content: {
-                    hText(L10n.generalCloseButton, style: .body1)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -71,7 +68,6 @@ public struct DeleteRequestLoadingView: View {
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         dismissAction(.makeHomeTabActive)
                     }
@@ -95,6 +91,7 @@ public struct DeleteRequestLoadingView: View {
             errorState(errorMessage: errorMessage)
         }
     }
+
     @MainActor
     private func sendSlackMessage(details: MemberDetails) async {
         do {

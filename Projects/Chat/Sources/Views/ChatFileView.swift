@@ -12,6 +12,7 @@ struct ChatFileView: View {
         self.file = file
         self.status = status
     }
+
     let processor = DownsamplingImageProcessor(
         size: CGSize(width: 300, height: 300)
     )
@@ -54,12 +55,11 @@ struct ChatFileView: View {
                 source: getSource()
             )
             .fade(duration: 0.25)
-            .placeholder({ progress in
+            .placeholder { _ in
                 ProgressView()
                     .foregroundColor(hTextColor.Opaque.primary)
                     .environment(\.colorScheme, .light)
-
-            })
+            }
             .targetCache(ImageCache.default)
             .setProcessor(processor)
             .resizable()
@@ -67,6 +67,7 @@ struct ChatFileView: View {
                 contentMode: .fill
             )
             .frame(width: 140, height: 140)
+            .contentShape(Rectangle())
         }
     }
 
@@ -94,9 +95,7 @@ struct ChatFileView: View {
                     do {
                         let data = try await results.itemProvider.getData()
                         chatNavigationVm.isFilePresented = .data(data: data.data, mimeType: data.mimeType)
-                    } catch _ {
-
-                    }
+                    } catch _ {}
                 }
             }
         case let .url(url, mimeType):
@@ -108,7 +107,7 @@ struct ChatFileView: View {
 
     private func getSource() -> Kingfisher.Source {
         switch file.source {
-        case .localFile(let results):
+        case let .localFile(results):
             return Kingfisher.Source.provider(
                 hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results!)
             )
@@ -120,7 +119,6 @@ struct ChatFileView: View {
             return Kingfisher.Source.provider(InMemoryImageDataProvider(cacheKey: file.id, data: data))
         }
     }
-
 }
 
 #Preview {

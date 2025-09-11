@@ -5,7 +5,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ProfileState: StateProtocol {
     public var partnerData: PartnerData?
@@ -14,17 +13,12 @@ public struct ProfileState: StateProtocol {
     var pushNotificationsSnoozeDate: Date?
 
     var hasTravelCertificates: Bool = false
+    var canCreateInsuranceEvidence: Bool = false
+    var canCreateTravelInsurance: Bool = false
 
     @MainActor
     var showTravelCertificate: Bool {
-        let flags: FeatureFlags = Dependencies.shared.resolve()
-        return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
-    }
-
-    @MainActor
-    public var canCreateTravelInsurance: Bool {
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        return store.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
+        hasTravelCertificates || canCreateTravelInsurance
     }
 
     public init() {
@@ -33,7 +27,6 @@ public struct ProfileState: StateProtocol {
             let status = settings.authorizationStatus.rawValue
             let store: ProfileStore = await globalPresentableStoreContainer.get()
             store.send(.setPushNotificationStatus(status: status))
-
         }
     }
 
@@ -46,8 +39,8 @@ public struct ProfileState: StateProtocol {
 
     public var shouldShowNotificationCard: Bool {
         let requiredTimeForSnooze: Double = TimeInterval.days(numberOfDays: 30)
-        return self.pushNotificationCurrentStatus() != .authorized
-            && (self.pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
+        return pushNotificationCurrentStatus() != .authorized
+            && (pushNotificationsSnoozeDate ?? Date().addingTimeInterval(-(requiredTimeForSnooze + 1)))
                 .distance(to: Date()) > requiredTimeForSnooze
     }
 }
@@ -56,14 +49,14 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
     public let sas: PartnerDataSas?
 
     public var shouldShowEuroBonus: Bool {
-        return sas?.eligible ?? false
+        sas?.eligible ?? false
     }
 
     var isConnected: Bool {
-        return !(sas?.eurobonusNumber ?? "").isEmpty
+        !(sas?.eurobonusNumber ?? "").isEmpty
     }
 
-    init(sas: PartnerDataSas?) {
+    public init(sas: PartnerDataSas?) {
         self.sas = sas
     }
 }
@@ -71,7 +64,7 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
 public struct PartnerDataSas: Codable, Equatable, Hashable, Sendable {
     let eligible: Bool
     let eurobonusNumber: String?
-    init(eligible: Bool, eurobonusNumber: String?) {
+    public init(eligible: Bool, eurobonusNumber: String?) {
         self.eligible = eligible
         self.eurobonusNumber = eurobonusNumber
     }

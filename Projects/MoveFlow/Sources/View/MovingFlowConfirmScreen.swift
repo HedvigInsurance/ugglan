@@ -1,9 +1,6 @@
-import Contracts
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct MovingFlowConfirmScreen: View {
     let quoteSummaryViewModel: QuoteSummaryViewModel
@@ -15,12 +12,11 @@ struct MovingFlowConfirmScreen: View {
 
 @MainActor
 public class MovingFlowConfirmViewModel: ObservableObject {
-
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
 
     @MainActor
-    func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async {
+    func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async {
         withAnimation {
             viewState = .loading
         }
@@ -28,7 +24,7 @@ public class MovingFlowConfirmViewModel: ObservableObject {
         do {
             try await service.confirmMoveIntent(
                 intentId: intentId,
-                homeQuoteId: homeQuoteId,
+                currentHomeQuoteId: currentHomeQuoteId,
                 removedAddons: removedAddons
             )
 
@@ -47,10 +43,15 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
         let model = QuoteSummaryViewModel(
             contract: [],
-            isAddon: false
-        ) {
-
-        }
+            activationDate: Date(),
+            isAddon: false,
+            summaryDataProvider: DirectQuoteSummaryDataProvider(
+                intentCost: .init(
+                    totalGross: .sek(399),
+                    totalNet: .sek(399)
+                )
+            )
+        ) {}
         Localization.Locale.currentLocale.send(.en_SE)
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
     }

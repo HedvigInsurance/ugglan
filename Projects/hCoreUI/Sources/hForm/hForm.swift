@@ -13,7 +13,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
-
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    @State private var ignoreKeyboard = false
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
     var content: Content
@@ -21,14 +22,14 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     public init(
         @ViewBuilder _ builder: () -> Content
     ) {
-        self.content = builder()
+        content = builder()
     }
+
     public var body: some View {
         ZStack {
-            BackgroundView().ignoresSafeArea()
             VStack(spacing: 0) {
                 scrollView
-                if !vm.keyboardVisible && !voiceOverEnabled {
+                if !vm.keyboardVisible, !voiceOverEnabled, verticalSizeClass == .regular {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                 }
@@ -37,15 +38,33 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             .frame(maxHeight: .infinity)
             .background {
                 GeometryReader { geometry in
-                    hBackgroundColor.primary
-                        .onAppear {
-                            vm.viewHeight = geometry.size.height
+                    Group {
+                        switch bottomBackgroundStyle {
+                        case let .gradient(from, to):
+                            LinearGradient(
+                                colors: [
+                                    from.colorFor(colorScheme, .base).color,
+                                    from.colorFor(colorScheme, .base).color,
+                                    to.colorFor(colorScheme, .base).color,
+                                    to.colorFor(colorScheme, .base).color,
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        case .default:
+                            hBackgroundColor.primary
                         }
-                        .onChange(of: geometry.size) { value in
-                            vm.viewHeight = value.height
-                        }
+                    }
+                    .ignoresSafeArea()
+                    .onAppear {
+                        vm.viewHeight = geometry.size.height
+                    }
+                    .onChange(of: geometry.size) { value in
+                        vm.viewHeight = value.height
+                    }
                 }
             }
+            .ignoresSafeArea(.keyboard, edges: ignoreKeyboard ? .bottom : [])
         }
         .task {
             vm.scrollBounces = hEnableScrollBounce
@@ -79,31 +98,18 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     vm.scrollView = scrollView
                     vm.keyboardCancellable = keyboardPublisher.sink { _ in
                     } receiveValue: { [weak vm] keyboardHeight in
-                        vm?.keyboardVisible = keyboardHeight != nil
+                        if vm?.vc?.presentedViewController == nil {
+                            vm?.keyboardVisible = keyboardHeight != nil
+                            ignoreKeyboard = false
+                        } else {
+                            vm?.keyboardVisible = false
+                            ignoreKeyboard = true
+                        }
                     }
                 }
             }
             .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
                 vm?.vc = vc
-            }
-            .background {
-                Group {
-                    switch bottomBackgroundStyle {
-                    case let .gradient(from, to):
-                        LinearGradient(
-                            colors: [
-                                from.colorFor(colorScheme, .base).color,
-                                from.colorFor(colorScheme, .base).color,
-                                to.colorFor(colorScheme, .base).color,
-                                to.colorFor(colorScheme, .base).color,
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    case .transparent:
-                        Color.clear
-                    }
-                }
             }
         }
     }
@@ -113,11 +119,13 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             switch contentPosition {
             case .top:
                 formTitle
-                    .layoutPriority(1)
+                    .layoutPriority(3)
                 content
+                    .layoutPriority(2)
                 Spacer(minLength: 0)
-                    .layoutPriority(1)
+                    .layoutPriority(bottomAttachedView == nil ? 2 : 1)
                 getBottomAttachedView
+                    .layoutPriority(2)
             case .center:
                 formTitle
                 Spacer(minLength: 0)
@@ -134,7 +142,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 content
                 getBottomAttachedView
             }
-            if vm.keyboardVisible || voiceOverEnabled {
+            if vm.keyboardVisible || voiceOverEnabled || verticalSizeClass == .compact {
                 getAlwaysVisibleBottomView
                     .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }
@@ -158,25 +166,34 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             .padding(.top, hFormTitle.title.type.topMargin)
             .padding(
                 .bottom,
-                hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
+                verticalSizeClass == .compact
+                    ? .padding16
+                    : hFormTitle.subTitle?.type.bottomMargin
+                        ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
             .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
         }
     }
 
     @ViewBuilder
     private var getBottomAttachedView: some View {
-        if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
-            bottomAttachedView
-        } else {
-            bottomAttachedView?.padding(.bottom, .padding16)
+        if let bottomAttachedView {
+            Group {
+                if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
+                    bottomAttachedView
+                } else {
+                    bottomAttachedView.padding(.bottom, .padding16)
+                }
+            }
+            .padding(.top, verticalSizeClass == .compact ? .padding8 : 0)
         }
     }
 
     @ViewBuilder
     private var getAlwaysVisibleBottomView: some View {
-        hFormAlwaysVisibleBottomAttachedView
+        hFormAlwaysVisibleBottomAttachedView?
             .padding(.top, .padding16)
             .padding(.bottom, hFormIgnoreBottomPadding ? 0 : .padding16)
             .background {
@@ -194,7 +211,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         Rectangle().frame(width: 100, height: 100)
         Rectangle().fill(Color.red.opacity(0.1)).frame(width: 300, height: 300)
         Rectangle().fill(Color.blue.opacity(0.1)).frame(width: 300, height: 300)
-
     }
     .hFormAttachToBottom {
         hText("BOTTOM")
@@ -207,11 +223,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     }
     .hFormTitle(title: .init(.small, .body1, "title", alignment: .leading), subTitle: nil)
 }
-//MARK: View model
+
+// MARK: View model
 
 @MainActor
 private class hUpdatedFormViewModel: ObservableObject {
-
     var keyboardCancellable: AnyCancellable?
     @Published var keyboardVisible: Bool = false
     weak var scrollView: UIScrollView? {
@@ -221,6 +237,7 @@ private class hUpdatedFormViewModel: ObservableObject {
             setBouces()
         }
     }
+
     weak var vc: UIViewController? {
         didSet {
             setScrollView()
@@ -239,7 +256,7 @@ private class hUpdatedFormViewModel: ObservableObject {
         }
     }
 
-    var scrollBounces: Bool? = nil {
+    var scrollBounces: Bool? {
         didSet {
             setBouces()
         }
@@ -264,7 +281,8 @@ private class hUpdatedFormViewModel: ObservableObject {
     }
 }
 
-//MARK: hScrollBounce
+// MARK: hScrollBounce
+
 private struct EnvironmentHScrollBounce: EnvironmentKey {
     static let defaultValue: Bool? = nil
 }
@@ -282,11 +300,12 @@ extension View {
     /// true: always on
     /// false : always off
     public func hSetScrollBounce(to value: Bool?) -> some View {
-        self.environment(\.hEnableScrollBounce, value)
+        environment(\.hEnableScrollBounce, value)
     }
 }
 
-//MARK: hAlwaysVisibleBottomAttachedView
+// MARK: hAlwaysVisibleBottomAttachedView
+
 /// not added to the scroll view
 @MainActor
 private struct EnvironmentHFormAlwaysVisibleBottomAttachedView: @preconcurrency EnvironmentKey {
@@ -303,11 +322,12 @@ extension EnvironmentValues {
 extension View {
     /// View that is not part of the scroll view, but just bellow it ignoring keyboard. Default spacing to top and bottom are added to this view
     public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
+        environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
     }
 }
 
-//MARK: hFormContentPosition
+// MARK: hFormContentPosition
+
 @MainActor
 private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
     static let defaultValue: ContentPosition = .top
@@ -322,7 +342,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hFormContentPosition(_ position: ContentPosition) -> some View {
-        self.environment(\.hFormContentPosition, position)
+        environment(\.hFormContentPosition, position)
     }
 }
 
@@ -333,7 +353,8 @@ public enum ContentPosition {
     case compact
 }
 
-//MARK: hFormBottomAttachedView
+// MARK: hFormBottomAttachedView
+
 @MainActor
 private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
@@ -348,19 +369,20 @@ extension EnvironmentValues {
 
 extension View {
     public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hFormBottomAttachedView, AnyView(content()))
+        environment(\.hFormBottomAttachedView, AnyView(content()))
     }
 }
 
-//MARK: hFormBottomBackgroundStyle
+// MARK: hFormBottomBackgroundStyle
+
 public enum hFormBottomBackgroundStyle {
-    case transparent
+    case `default`
     case gradient(from: any hColor, to: any hColor)
 }
 
 @MainActor
 private struct EnvironmentHFormBottomBackgorundColor: @preconcurrency EnvironmentKey {
-    static let defaultValue: hFormBottomBackgroundStyle = hFormBottomBackgroundStyle.transparent
+    static let defaultValue: hFormBottomBackgroundStyle = .default
 }
 
 extension EnvironmentValues {
@@ -372,11 +394,12 @@ extension EnvironmentValues {
 
 extension View {
     public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
-        self.environment(\.hFormBottomBackgroundStyle, style)
+        environment(\.hFormBottomBackgroundStyle, style)
     }
 }
 
-//MARK: hFormTitle
+// MARK: hFormTitle
+
 @MainActor
 private struct EnvironmentHFormTitle: @preconcurrency EnvironmentKey {
     static let defaultValue: (title: hTitle, subTitle: hTitle?)? = nil
@@ -436,11 +459,12 @@ extension EnvironmentValues {
 
 extension View {
     public func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
-        self.environment(\.hFormTitle, (title, subTitle))
+        environment(\.hFormTitle, (title, subTitle))
     }
 }
 
-//MARK: hFormIgnoreBottomPadding
+// MARK: hFormIgnoreBottomPadding
+
 @MainActor
 private struct EnvironmentHFormIgnoreBottomPadding: @preconcurrency EnvironmentKey {
     static let defaultValue: Bool = false
@@ -455,30 +479,29 @@ extension EnvironmentValues {
 
 extension View {
     public var hFormIgnoreBottomPadding: some View {
-        self.environment(\.hFormIgnoreBottomPadding, true)
+        environment(\.hFormIgnoreBottomPadding, true)
     }
 }
 
 public struct BackgroundView: UIViewRepresentable {
-
     public init() {}
-    public func updateUIView(_ uiView: UIViewType, context: Context) {
+    public func updateUIView(_ uiView: UIViewType, context _: Context) {
         uiView.backgroundColor = .brand(.primaryBackground())
     }
 
-    public func makeUIView(context: Context) -> some UIView {
+    public func makeUIView(context _: Context) -> some UIView {
         UIView()
     }
 }
 
 struct BackgroundBlurView: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIView {
+    func makeUIView(context _: Context) -> UIView {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        view.subviews.forEach { subview in
+        for subview in view.subviews {
             subview.backgroundColor = UIColor.clear
         }
         return view
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_: UIView, context _: Context) {}
 }

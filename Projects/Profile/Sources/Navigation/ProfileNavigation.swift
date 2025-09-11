@@ -1,6 +1,9 @@
-import EditCoInsuredShared
+import Claims
+import EditCoInsured
+import InsuranceEvidence
 import Market
 import SwiftUI
+import TravelCertificate
 import hCore
 import hCoreUI
 
@@ -10,7 +13,8 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published var isDeleteAccountAlreadyRequestedPresented = false
     @Published public var isLanguagePickerPresented = false
     @Published public var isConfirmEmailPreferencesPresented = false
-
+    @Published public var isCreateInsuranceEvidencePresented = false
+    let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
     public let profileRouter = Router()
 
     public func pushToProfile() {
@@ -56,12 +60,37 @@ public struct ProfileNavigation<Content: View>: View {
                             .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)
+                    case .certificates:
+                        CertificatesScreen()
+                            .configureTitle(L10n.Profile.Certificates.title)
+                            .environmentObject(profileNavigationViewModel)
+                    case .claimHistory:
+                        ClaimHistoryScreen { claim in
+                            profileNavigationViewModel.profileRouter.push(
+                                ProfileRouterTypeWithHiddenBottomBar.claimsCard(claim: claim)
+                            )
+                        }
+                        .configureTitle(L10n.Profile.ClaimHistory.title)
+                    }
+                }
+                .routerDestination(
+                    for: ProfileRouterTypeWithHiddenBottomBar.self,
+                    options: [.hidesBottomBarWhenPushed]
+                ) { redirectType in
+                    switch redirectType {
+                    case let .claimsCard(claim):
+                        ClaimDetailView(claim: claim, type: .claim(id: claim.id))
+                            .configureTitle(L10n.claimsYourClaim)
                     }
                 }
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in
                     switch redirectType {
                     case .travelCertificate:
-                        redirect(.travelCertificate)
+                        TravelCertificateNavigation(
+                            vm: profileNavigationViewModel.travelCertificateNavigationViewModel,
+                            infoButtonPlacement: .trailing,
+                            useOwnNavigation: false
+                        )
                     default:
                         EmptyView()
                     }
@@ -70,7 +99,7 @@ public struct ProfileNavigation<Content: View>: View {
         .environmentObject(profileNavigationViewModel)
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
-            style: [.height],
+
             options: .constant(.withoutGrabber)
         ) { memberDetails in
             redirect(
@@ -81,7 +110,7 @@ public struct ProfileNavigation<Content: View>: View {
         }
         .detent(
             presented: $profileNavigationViewModel.isLanguagePickerPresented,
-            style: [.height],
+
             content: {
                 redirect(.pickLanguage)
                     .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
@@ -97,6 +126,9 @@ public struct ProfileNavigation<Content: View>: View {
         ) {
             redirect(.deleteRequestLoading)
         }
+        .modally(presented: $profileNavigationViewModel.isCreateInsuranceEvidencePresented) {
+            InsuranceEvidenceNavigation()
+        }
     }
 }
 
@@ -105,6 +137,12 @@ public enum ProfileRouterType: Hashable {
     case appInfo
     case settings
     case euroBonus
+    case certificates
+    case claimHistory
+}
+
+public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
+    case claimsCard(claim: ClaimModel)
 }
 
 enum ProfileDetentType: TrackingViewNameProtocol {
@@ -113,7 +151,7 @@ enum ProfileDetentType: TrackingViewNameProtocol {
         case .profile:
             return .init(describing: ProfileView.self)
         case .languagePicker:
-            return .init(describing: PickLanguage.self)
+            return .init(describing: LanguagePickerView.self)
         case .emailPreferences:
             return .init(describing: EmailPreferencesConfirmView.self)
         }
@@ -135,6 +173,19 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: SettingsView.self)
         case .euroBonus:
             return .init(describing: EuroBonusView.self)
+        case .certificates:
+            return .init(describing: CertificatesScreen.self)
+        case .claimHistory:
+            return .init(describing: ClaimHistoryScreen.self)
+        }
+    }
+}
+
+extension ProfileRouterTypeWithHiddenBottomBar: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .claimsCard:
+            return .init(describing: ClaimsCard.self)
         }
     }
 }
@@ -156,8 +207,7 @@ extension ProfileRedirectType: TrackingViewNameProtocol {
         case .deleteRequestLoading:
             return .init(describing: DeleteRequestLoadingView.self)
         case .pickLanguage:
-            return .init(describing: PickLanguage.self)
+            return .init(describing: LanguagePickerView.self)
         }
     }
-
 }

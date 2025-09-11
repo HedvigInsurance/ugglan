@@ -44,17 +44,20 @@ public struct EditContractScreen: View {
                         .accessibilityElement(children: .combine)
                     }
                 }
-                infoView
+
                 hSection {
-                    VStack(spacing: 8) {
-                        hButton.LargeButton(type: .primary) { [weak router] in
-                            if let selectedType {
-                                router?.dismiss()
-                                onSelectedType(selectedType)
+                    VStack(spacing: .padding8) {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: selectedType?.buttonTitle ?? L10n.generalContinueButton),
+                            { [weak router] in
+                                if let selectedType {
+                                    router?.dismiss()
+                                    onSelectedType(selectedType)
+                                }
                             }
-                        } content: {
-                            hText(selectedType?.buttonTitle ?? L10n.generalContinueButton, style: .body1)
-                        }
+                        )
                         .disabled(selectedType == nil)
                         .accessibilityHint(
                             selectedType != nil
@@ -62,10 +65,8 @@ public struct EditContractScreen: View {
                                 : L10n.voiceoverPickerInfo(selectedType?.buttonTitle ?? L10n.generalContinueButton)
                         )
 
-                        hButton.LargeButton(type: .ghost) {
+                        hCancelButton {
                             router.dismiss()
-                        } content: {
-                            hText(L10n.generalCancelButton)
                         }
                     }
                 }
@@ -76,20 +77,6 @@ public struct EditContractScreen: View {
         .hFormContentPosition(.compact)
         .onChange(of: selectedValue) { value in
             selectedType = EditType(rawValue: value ?? "")
-        }
-    }
-
-    @ViewBuilder
-    var infoView: some View {
-        if selectedType == .coInsured && !Dependencies.featureFlags().isEditCoInsuredEnabled {
-            hSection {
-                InfoCard(
-                    text: L10n.InsurancesTab.contactUsToEditCoInsured,
-                    type: .info
-                )
-            }
-            .transition(.opacity)
-            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -115,7 +102,6 @@ public struct EditContractScreen: View {
 struct EditContract_Previews: PreviewProvider {
     static var previews: some View {
         EditContractScreen(editTypes: []) { _ in
-
         }
     }
 }

@@ -1,18 +1,17 @@
 import Addons
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public init(
         id: String,
-        currentAgreement: Agreement,
+        currentAgreement: Agreement?,
         exposureDisplayName: String,
-        masterInceptionDate: String,
+        masterInceptionDate: String?,
         terminationDate: String?,
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
@@ -61,23 +60,24 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let ssn: String?
     public var coInsured: [CoInsuredModel]
     public var fullName: String {
-        return firstName + " " + lastName
+        firstName + " " + lastName
     }
+
     public var nbOfMissingCoInsured: Int {
-        return self.coInsured.filter({ $0.hasMissingInfo }).count
+        coInsured.filter(\.hasMissingInfo).count
     }
 
     public var nbOfMissingCoInsuredWithoutTermination: Int {
-        return self.coInsured.filter({ $0.hasMissingInfo && $0.terminatesOn == nil }).count
+        coInsured.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
     public var showEditCoInsuredInfo: Bool {
-        return supportsCoInsured && self.terminationDate == nil
+        supportsCoInsured && terminationDate == nil
     }
 
     @MainActor
     public var showEditInfo: Bool {
-        return EditType.getTypes(for: self).count > 0 && self.terminationDate == nil
+        EditType.getTypes(for: self).count > 0 && terminationDate == nil
     }
 
     @MainActor
@@ -87,11 +87,11 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     }
 
     public var canTerminate: Bool {
-        return terminationDate == nil
+        terminationDate == nil
     }
 
     public var isTerminated: Bool {
-        return terminationDate != nil
+        terminationDate != nil
     }
 
     @MainActor
@@ -104,7 +104,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
 
     @MainActor
     public var terminatedInPast: Bool {
-        if let terminationDate = self.terminationDate?.localDateToDate,
+        if let terminationDate = terminationDate?.localDateToDate,
             let localDate = Date().localDateString.localDateToDate
         {
             let daysBetween = terminationDate.daysBetween(start: localDate) < 0
@@ -159,7 +159,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
                 return nil
             }
         }
-        return self.typeOfContract.pillowType
+        return typeOfContract.pillowType
     }
 
     public var isNonPayingMember: Bool {
@@ -167,60 +167,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
             return true
         }
         return false
-    }
-
-    init(
-        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
-        firstName: String,
-        lastName: String,
-        ssn: String?
-    ) {
-        exposureDisplayName = pendingContract.exposureDisplayName
-        id = pendingContract.id
-        currentAgreement = .init(
-            premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
-            displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
-            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
-            addonVariant: []
-        )
-        masterInceptionDate = nil
-        terminationDate = nil
-        supportsAddressChange = false
-        supportsCoInsured = false
-        supportsTravelCertificate = false
-        supportsChangeTier = false
-        upcomingChangedAgreement = nil
-        upcomingRenewal = nil
-        typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
-        coInsured = []
-        self.firstName = firstName
-        self.lastName = lastName
-        self.ssn = ssn
-    }
-
-    init(
-        contract: OctopusGraphQL.ContractFragment,
-        firstName: String,
-        lastName: String,
-        ssn: String?
-    ) {
-        id = contract.id
-        currentAgreement =
-            .init(agreement: contract.currentAgreement.fragments.agreementFragment)
-        exposureDisplayName = contract.exposureDisplayName
-        masterInceptionDate = contract.masterInceptionDate
-        terminationDate = contract.terminationDate
-        supportsAddressChange = contract.supportsMoving
-        supportsCoInsured = contract.supportsCoInsured
-        supportsTravelCertificate = contract.supportsTravelCertificate
-        supportsChangeTier = contract.supportsChangeTier
-        upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
-        upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
-        typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
-        coInsured = contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
-        self.firstName = firstName
-        self.lastName = lastName
-        self.ssn = ssn
     }
 }
 
@@ -282,46 +228,6 @@ extension TypeOfContract {
             return false
         case .seCatPremium:
             return false
-        case .noHouse:
-            return false
-        case .noHomeContentOwn:
-            return false
-        case .noHomeContentRent:
-            return false
-        case .noHomeContentYouthOwn:
-            return false
-        case .noHomeContentYouthRent:
-            return false
-        case .noHomeContentStudentOwn:
-            return false
-        case .noHomeContentStudentRent:
-            return false
-        case .noTravel:
-            return false
-        case .noTravelYouth:
-            return false
-        case .noTravelStudent:
-            return false
-        case .noAccident:
-            return false
-        case .dkHomeContentOwn:
-            return false
-        case .dkHomeContentRent:
-            return false
-        case .dkHomeContentStudentOwn:
-            return false
-        case .dkHomeContentStudentRent:
-            return false
-        case .dkHouse:
-            return false
-        case .dkAccident:
-            return false
-        case .dkAccidentStudent:
-            return false
-        case .dkTravel:
-            return false
-        case .dkTravelStudent:
-            return false
         case .unknown:
             return false
         }
@@ -332,18 +238,12 @@ public struct ContractRenewal: Codable, Hashable, Sendable {
     public let renewalDate: String
     public let certificateUrl: String?
 
-    init(
+    public init(
         renewalDate: String,
-        certificateUrl: String
+        certificateUrl: String?
     ) {
         self.renewalDate = renewalDate
         self.certificateUrl = certificateUrl
-    }
-
-    init?(upcoming: OctopusGraphQL.AgreementFragment?) {
-        guard let upcoming = upcoming, upcoming.creationCause == .renewal else { return nil }
-        self.renewalDate = upcoming.activeFrom
-        self.certificateUrl = upcoming.certificateUrl
     }
 }
 
@@ -374,7 +274,7 @@ public struct Agreement: Codable, Hashable, Sendable {
     public let productVariant: hCore.ProductVariant
     public let addonVariant: [AddonVariant]
 
-    init(
+    public init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
         productVariant: hCore.ProductVariant,
@@ -384,24 +284,9 @@ public struct Agreement: Codable, Hashable, Sendable {
         self.displayItems = displayItems
         self.productVariant = productVariant
         self.addonVariant = addonVariant
-        self.certificateUrl = nil
-        self.activeFrom = nil
-        self.activeTo = nil
-    }
-
-    init?(
-        agreement: OctopusGraphQL.AgreementFragment?
-    ) {
-        guard let agreement = agreement else {
-            return nil
-        }
-        certificateUrl = agreement.certificateUrl
-        activeFrom = agreement.activeFrom
-        activeTo = agreement.activeTo
-        premium = .init(fragment: agreement.premium.fragments.moneyFragment)
-        displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
-        productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
-        addonVariant = agreement.addons.map({ .init(fragment: $0.addonVariant.fragments.addonVariantFragment) })
+        certificateUrl = nil
+        activeFrom = nil
+        activeTo = nil
     }
 }
 
@@ -415,12 +300,6 @@ public struct AgreementDisplayItem: Codable, Hashable, Sendable {
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
-    }
-    public init(
-        data: OctopusGraphQL.AgreementDisplayItemFragment
-    ) {
-        self.displayTitle = data.displayTitle
-        self.displayValue = data.displayValue
     }
 }
 
@@ -456,6 +335,7 @@ extension InsuredPeopleConfig {
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            exposureDisplayName: contract.exposureDisplayName,
             preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
@@ -468,7 +348,7 @@ extension InsuredPeopleConfig {
 
 extension Contract {
     public var asTerminationConfirmConfig: TerminationConfirmConfig {
-        return .init(
+        .init(
             contractId: id,
             contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
@@ -481,8 +361,7 @@ extension Contract {
 extension Sequence where Iterator.Element == Contract {
     public var hasMissingCoInsured: Bool {
         let contractsWithMissingCoInsured =
-            self
-            .filter { contract in
+            filter { contract in
                 if !contract.supportsCoInsured {
                     return false
                 } else if contract.coInsured.isEmpty {
@@ -500,7 +379,6 @@ extension Sequence where Iterator.Element == Contract {
 
 extension Contract: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ContractDetail.self)
+        .init(describing: ContractDetail.self)
     }
-
 }

@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
@@ -11,9 +10,10 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var selectedQuote: AddonQuote?
     @Published var addonOffer: AddonOffer?
     let contractId: String
-
-    init(contractId: String) {
+    let addonSource: AddonSource
+    init(contractId: String, addonSource: AddonSource) {
         self.contractId = contractId
+        self.addonSource = addonSource
         Task {
             await getAddons()
             self._selectedQuote = Published(
@@ -29,7 +29,6 @@ public class ChangeAddonViewModel: ObservableObject {
 
         do {
             let data = try await addonService.getAddon(contractId: contractId)
-
             withAnimation {
                 self.addonOffer = data
                 self.fetchAddonsViewState = .success
@@ -48,16 +47,31 @@ public class ChangeAddonViewModel: ObservableObject {
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
-            NotificationCenter.default.post(
-                name: .addonAdded,
-                object: nil
-            )
+            logAddonEvent()
             withAnimation {
                 self.submittingAddonsViewState = .success
             }
         } catch let exception {
-            self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+            withAnimation {
+                self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+            }
         }
+    }
+
+    private func logAddonEvent() {
+        let logInfoModel = AddonLogInfo(
+            flow: addonSource,
+            subType: selectedQuote?.addonSubtype ?? "",
+            type: .travelAddon
+        )
+        let actionType =
+            addonOffer?.currentAddon == nil ? AddonEventType.addonPurchased : AddonEventType.addonUpgraded
+        log.addUserAction(
+            type: .custom,
+            name: actionType.rawValue,
+            error: nil,
+            attributes: logInfoModel.asAddonAttributes
+        )
     }
 
     func compareAddonDisplayItems(

@@ -1,20 +1,19 @@
+import Addons
 import Apollo
-import EditCoInsuredShared
+import EditCoInsured
 import PresentableStore
 import SwiftUI
 
 public struct ContractState: StateProtocol {
-
     public init() {}
 
     public var activeContracts: [Contract] = []
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
-    public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
         let coInsuredList = activeContracts.flatMap { coInsured in
-            coInsured.coInsured.filter({ !$0.hasMissingData })
+            coInsured.coInsured.filter { !$0.hasMissingData }
         }
         let unique = Set(coInsuredList)
         return unique.sorted(by: { $0.id > $1.id })
@@ -34,9 +33,9 @@ public struct ContractState: StateProtocol {
     }
 
     public func contractForId(_ id: String) -> Contract? {
-        let activeContracts = activeContracts.compactMap({ $0 })
-        let terminatedContracts = terminatedContracts.compactMap({ $0 })
-        let pendingContracts = pendingContracts.compactMap({ $0 })
+        let activeContracts = activeContracts.compactMap { $0 }
+        let terminatedContracts = terminatedContracts.compactMap { $0 }
+        let pendingContracts = pendingContracts.compactMap { $0 }
         let allContracts = activeContracts + terminatedContracts + pendingContracts
 
         if let inBundleContract =
@@ -53,10 +52,6 @@ public struct ContractState: StateProtocol {
 }
 
 extension ContractState {
-    public var hasUnseenCrossSell: Bool {
-        crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
-    }
-
     public var hasActiveContracts: Bool {
         !(activeContracts.compactMap { $0 }.isEmpty)
     }
@@ -64,7 +59,23 @@ extension ContractState {
 
 @MainActor
 extension ContractStore: ExistingCoInsured {
-    public func get(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
-        return state.fetchAllCoInsuredNotInContract(contractId: contractId)
+    public func get(contractId: String) -> [CoInsuredModel] {
+        state.fetchAllCoInsuredNotInContract(contractId: contractId)
+    }
+}
+
+extension ContractStore {
+    public func getAddonConfigsFor(contractIds ids: [String]) -> [AddonConfig] {
+        let addonContracts = ids.compactMap {
+            self.state.contractForId($0)
+        }
+        let addonContractsConfig: [AddonConfig] = addonContracts.map {
+            .init(
+                contractId: $0.id,
+                exposureName: $0.exposureDisplayName,
+                displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+            )
+        }
+        return addonContractsConfig
     }
 }

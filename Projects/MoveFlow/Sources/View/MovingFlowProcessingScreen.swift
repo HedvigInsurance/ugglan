@@ -1,8 +1,7 @@
-import PresentableStore
+import CrossSell
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct MovingFlowProcessingScreen: View {
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
@@ -15,7 +14,9 @@ struct MovingFlowProcessingScreen: View {
         ProcessingStateView(
             loadingViewText: L10n.changeAddressMakingChanges,
             successViewTitle: L10n.changeAddressSuccessTitle,
-            successViewBody: L10n.changeAddressSuccessSubtitle(movingFlowNavigationVm.movingFlowVm?.movingDate ?? ""),
+            successViewBody: L10n.changeAddressSuccessSubtitle(
+                movingFlowNavigationVm.movingDate
+            ),
             successViewButtonAction: {
                 onSuccessButtonAction()
             },
@@ -23,6 +24,14 @@ struct MovingFlowProcessingScreen: View {
             duration: 6
         )
         .hStateViewButtonConfig(errorButtons)
+        .onDeinit { [weak movingFlowConfirmVm] in
+            if movingFlowConfirmVm?.viewState == .success {
+                NotificationCenter.default.post(
+                    name: .openCrossSell,
+                    object: CrossSellInfo(type: .movingFlow)
+                )
+            }
+        }
     }
 
     private var errorButtons: StateViewButtonConfig {

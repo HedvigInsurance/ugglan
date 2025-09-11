@@ -1,4 +1,3 @@
-import Home
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,18 +5,13 @@ import hCoreUI
 struct ContactChatView: View {
     let store: ClaimsStore
     let id: String
-    let status: String
-
-    @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     init(
         store: ClaimsStore,
-        id: String,
-        status: String
+        id: String
     ) {
         self.store = store
         self.id = id
-        self.status = status
     }
 
     var body: some View {
@@ -39,7 +33,7 @@ struct ContactChatView: View {
 }
 
 struct ChatButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
+    func makeBody(configuration _: Configuration) -> some View {
         hCoreUIAssets.chatQuickNav.view
             .resizable()
             .aspectRatio(contentMode: .fit)

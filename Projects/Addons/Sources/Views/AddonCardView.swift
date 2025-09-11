@@ -31,22 +31,31 @@ public struct AddonCardView: View {
                     hText(addon.descriptionDisplayName, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
 
-                    hButton.SmallButton(type: .secondary) {
-                        openAddon()
-                    } content: {
-                        hText(L10n.addonFlowSeePriceButton)
-                    }
-                    .hButtonTakeFullWidth(true)
+                    seePriceButton
                 }
             }
         }
-        .hSectionWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.section])
         .sectionContainerStyle(.opaque)
         .overlay(
             RoundedRectangle(cornerRadius: .cornerRadiusL).stroke(hBorderColor.primary, lineWidth: 1)
         )
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSeePriceButton)
+    }
+
+    var seePriceButton: some View {
+        hButton(
+            .small,
+            .secondary,
+            content: .init(title: L10n.addonFlowSeePriceButton),
+            handleSeePrice
+        )
+        .hButtonTakeFullWidth(true)
+    }
+
+    private func handleSeePrice() {
+        openAddon()
     }
 }
 

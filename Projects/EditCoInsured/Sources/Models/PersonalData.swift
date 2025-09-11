@@ -5,12 +5,12 @@ public struct PersonalData: Sendable {
     public var lastName: String
     public let fullname: String
 
-    init(
+    public init(
         firstName: String,
         lastName: String
     ) {
         self.firstName = firstName
         self.lastName = lastName
-        self.fullname = firstName + " " + lastName
+        fullname = firstName + " " + lastName
     }
 }

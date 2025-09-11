@@ -7,8 +7,8 @@ import hCore
 struct MockData {
     @discardableResult
     static func createMockAddonsService(
-        fetchAddon: @escaping FetchAddon = { contractId in
-            return .init(
+        fetchAddon: @escaping FetchAddon = { _ in
+            .init(
                 titleDisplayName: "title",
                 description: "description",
                 activationDate: Date(),
@@ -16,8 +16,7 @@ struct MockData {
                 quotes: []
             )
         },
-        addonSubmit: @escaping AddonSubmit = { quoteId, addonId in
-
+        addonSubmit: @escaping AddonSubmit = { _, _ in
         }
     ) -> MockAddonsService {
         let service = MockAddonsService(
@@ -33,7 +32,6 @@ typealias FetchAddon = (String) async throws -> AddonOffer
 typealias AddonSubmit = (String, String) async throws -> Void
 
 class MockAddonsService: AddonsClient {
-
     var events = [Event]()
 
     var fetchAddon: FetchAddon
@@ -62,5 +60,4 @@ class MockAddonsService: AddonsClient {
         events.append(.submitAddon)
         try await addonSubmit(quoteId, addonId)
     }
-
 }

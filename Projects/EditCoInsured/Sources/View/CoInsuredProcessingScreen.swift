@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -14,7 +13,7 @@ struct CoInsuredProcessingScreen: View {
         showSuccessScreen: Bool,
         intentVM: IntentViewModel
     ) {
-        self.intentViewModel = intentVM
+        intentViewModel = intentVM
         self.showSuccessScreen = showSuccessScreen
     }
 
@@ -38,7 +37,6 @@ struct CoInsuredProcessingScreen: View {
                 EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
                     intentViewModel.contractId
                 )
-
             },
             state: $intentViewModel.viewState
         )
@@ -62,17 +60,20 @@ struct CoInsuredProcessingScreen: View {
 
     private var customBottomSuccessView: some View {
         hSection {
-            hButton.LargeButton(type: .ghost) {
-                editCoInsuredNavigation.showProgressScreenWithSuccess = false
-                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
-                editCoInsuredNavigation.editCoInsuredConfig = nil
-                editCoInsuredViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
-                EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
-                    intentViewModel.contractId
-                )
-            } content: {
-                hText(L10n.generalDoneButton)
-            }
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.generalDoneButton),
+                {
+                    editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                    editCoInsuredNavigation.editCoInsuredConfig = nil
+                    editCoInsuredViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
+                    EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
+                        intentViewModel.contractId
+                    )
+                }
+            )
         }
         .sectionContainerStyle(.transparent)
     }
@@ -80,10 +81,10 @@ struct CoInsuredProcessingScreen: View {
 
 extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
     var nameForTracking: String {
-        return .init(describing: CoInsuredProcessingScreen.self)
+        .init(describing: CoInsuredProcessingScreen.self)
     }
-
 }
+
 @MainActor
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
@@ -97,7 +98,7 @@ struct SuccessScreen_Previews: PreviewProvider {
             showSuccessScreen: true,
             intentVM: .init()
         )
-        .environmentObject(EditCoInsuredNavigationViewModel.init(config: .init()))
+        .environmentObject(EditCoInsuredNavigationViewModel(config: .init()))
         .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
     }
 }

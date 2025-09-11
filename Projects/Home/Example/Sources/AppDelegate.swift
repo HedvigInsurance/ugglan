@@ -1,4 +1,3 @@
-import ExampleUtil
 import Foundation
 import SwiftUI
 import hCoreUI
@@ -6,11 +5,10 @@ import hCoreUI
 @main class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    internal func application(
-        _ application: UIApplication,
+    func application(
+        _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        application.setup()
-        return true
+        true
     }
 }

@@ -1,4 +1,3 @@
-import EditCoInsuredShared
 import SwiftUI
 import hCore
 import hCoreUI
@@ -52,6 +51,7 @@ public struct MissingCoInsuredAlert: View {
             numberOfMissingCoInsured: 1,
             numberOfMissingCoInsuredWithoutTermination: 1,
             displayName: "Display name",
+            exposureDisplayName: nil,
             preSelectedCoInsuredList: [],
             contractDisplayName: "Contract display name",
             holderFirstName: "Fist name",

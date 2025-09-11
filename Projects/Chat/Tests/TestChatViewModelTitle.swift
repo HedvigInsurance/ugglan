@@ -4,7 +4,6 @@
 
 @MainActor
 final class TestChatViewModelTitle: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -23,9 +22,9 @@ final class TestChatViewModelTitle: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.title == title)
-        assert(model.subTitle == subtitle)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.title == title)
+        assert(model.messageVm.conversationVm.subTitle == subtitle)
+        sut = mockService
     }
 
     func testFetchTitleFailure() async {
@@ -33,12 +32,12 @@ final class TestChatViewModelTitle: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let chatInitialTitle = model.title
-        let chatInitialSubtitle = model.subTitle
+        let chatInitialTitle = model.messageVm.conversationVm.title
+        let chatInitialSubtitle = model.messageVm.conversationVm.subTitle
         await model.startFetchingNewMessages()
-        assert(model.title == chatInitialTitle)
-        assert(model.subTitle == chatInitialSubtitle)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.title == chatInitialTitle)
+        assert(model.messageVm.conversationVm.subTitle == chatInitialSubtitle)
+        sut = mockService
     }
 
     /// Previous messages shouldn't affect title and subtitle
@@ -55,12 +54,11 @@ final class TestChatViewModelTitle: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.title == title)
-        assert(model.subTitle == subtitle)
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.title == title)
-        assert(model.subTitle == subtitle)
-        self.sut = mockService
+        assert(model.messageVm.conversationVm.title == title)
+        assert(model.messageVm.conversationVm.subTitle == subtitle)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.conversationVm.title == title)
+        assert(model.messageVm.conversationVm.subTitle == subtitle)
+        sut = mockService
     }
-
 }

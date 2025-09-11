@@ -45,7 +45,6 @@ final class StorePaymentStatusTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchPaymentStatus)
         assert(store.loadingState[.getPaymentStatus] != nil)
-        assert(store.state.paymentDiscountsData == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentStatusData)
     }

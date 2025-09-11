@@ -5,7 +5,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct PaymentHistoryView: View {
     @EnvironmentObject var router: Router
@@ -37,7 +36,7 @@ public struct PaymentHistoryView: View {
         ) { history in
             if history.isEmpty {
                 VStack(spacing: .padding16) {
-                    Image(uiImage: hCoreUIAssets.infoFilled.image)
+                    hCoreUIAssets.infoFilled.view
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColor.Blue.element)
@@ -65,6 +64,7 @@ public struct PaymentHistoryView: View {
                                         }
                                         Spacer()
                                         hText(month.paymentData.payment.net.formattedAmount)
+                                        hText(" ")
                                     }
                                 }
                                 .withCustomAccessory {
@@ -72,9 +72,8 @@ public struct PaymentHistoryView: View {
                                         if month.paymentData.status.hasFailed {
                                             Spacing(height: 4)
                                                 .fixedSize()
-
                                         }
-                                        Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
+                                        hCoreUIAssets.chevronRightSmall.view
                                             .foregroundColor(hTextColor.Opaque.secondary)
                                         if month.paymentData.status.hasFailed {
                                             Spacer()
@@ -91,13 +90,11 @@ public struct PaymentHistoryView: View {
                                     )
                                 )
                                 .padding(.horizontal, -16)
+                                .accessibilityElement(children: .combine)
                             }
-                            .withHeader {
-                                hText(item.year)
-                                    .padding(.bottom, -16)
-                            }
+                            .withHeader(title: item.year, withoutBottomPadding: true)
                         }
-                        if history.flatMap({ $0.valuesPerMonth }).count >= 12 {
+                        if history.flatMap(\.valuesPerMonth).count >= 12 {
                             hSection {
                                 InfoCard(text: L10n.paymentsHistoryInfo, type: .info)
                             }

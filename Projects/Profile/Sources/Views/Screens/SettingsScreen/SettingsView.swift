@@ -4,7 +4,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct SettingsView: View {
     @PresentableStore var store: ProfileStore
@@ -18,7 +17,7 @@ struct SettingsView: View {
     var body: some View {
         hForm {
             hSection {
-                VStack(spacing: 4) {
+                VStack(spacing: .padding4) {
                     hFloatingField(
                         value: Localization.Locale.currentLocale.value.displayName,
                         placeholder: L10n.settingsLanguageTitle,
@@ -41,10 +40,9 @@ struct SettingsView: View {
                                     guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                                         return
                                     }
-                                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                                    DispatchQueue.main.async { Dependencies.urlOpener.open(settingsUrl) }
                                 } else {
                                     NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
-
                                 }
                             }
                         )
@@ -55,7 +53,6 @@ struct SettingsView: View {
                 .accessibilityAddTraits(.isButton)
                 NotificationsCardView()
                     .padding(.vertical, .padding16)
-
             }
             .padding(.top, .padding8)
         }
@@ -71,24 +68,30 @@ struct SettingsView: View {
                             lastName: "",
                             phone: "",
                             email: "",
-                            hasTravelCertificate: false
+                            hasTravelCertificate: false,
+                            isContactInfoUpdateNeeded: false
                         )
                 }
             ) { memberDetails in
                 hSection {
-                    hButton.LargeButton(type: .ghost) {
-                        if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                            let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
-                            if hasAlreadyRequested {
-                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-                            } else {
-                                profileNavigationVm.isDeleteAccountPresented = memberDetails
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(
+                            title: L10n.SettingsScreen.deleteAccountButton
+                        ),
+                        {
+                            if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                                let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                                if hasAlreadyRequested {
+                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                                } else {
+                                    profileNavigationVm.isDeleteAccountPresented = memberDetails
+                                }
                             }
                         }
-                    } content: {
-                        hText(L10n.SettingsScreen.deleteAccountButton)
-                            .foregroundColor(hSignalColor.Red.element)
-                    }
+                    )
+                    .hUseButtonTextColor(.red)
                 }
                 .sectionContainerStyle(.transparent)
             }

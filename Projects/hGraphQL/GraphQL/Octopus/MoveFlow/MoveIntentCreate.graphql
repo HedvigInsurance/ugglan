@@ -1,0 +1,120 @@
+mutation MoveIntentCreate {
+  moveIntentCreate {
+    moveIntent {
+    ...MoveIntentFragment
+    }
+    userError {
+      message
+    }
+  }
+}
+
+fragment MoveIntentFragment on MoveIntent {
+      currentHomeAddresses {
+        ...MoveAddressFragment
+      }
+      extraBuildingTypes
+      id
+      isApartmentAvailableforStudent
+      maxApartmentNumberCoInsured
+      maxApartmentSquareMeters
+      maxHouseNumberCoInsured
+      maxHouseSquareMeters
+      ...QuoteFragment
+}
+
+fragment MoveAddressFragment on MoveAddress {
+    id
+    displaySubtitle
+    displayTitle
+    maxMovingDate
+    minMovingDate
+    suggestedNumberCoInsured
+}
+
+fragment QuoteFragment on MoveIntent {
+      mtaQuotes {
+        startDate
+        exposureName
+        productVariant {
+            ...ProductVariantFragment
+        }
+        displayItems {
+            ...MoveQuoteDisplayItemFragment
+        }
+        addons {
+            ...MoveAddonQuoteFragment
+        }
+		cost {
+			...ItemCostFragment
+		}
+      }
+       homeQuotes {
+        deductible {
+          amount {
+             ...MoneyFragment
+          }
+          displayText
+          percentage
+        }
+        defaultChoice
+        displayItems {
+            ...MoveQuoteDisplayItemFragment
+        }
+        exposureName
+        id
+        productVariant {
+            ...ProductVariantFragment
+        }
+        startDate
+        tierLevel
+        tierName
+        addons {
+            ...MoveAddonQuoteFragment
+        }
+		cost {
+			...ItemCostFragment
+		}
+      }
+}
+
+fragment MoveAddonQuoteFragment on MoveAddonQuote {
+    addonId
+    displayName
+    coverageDisplayName
+    displayItems {
+        ...MoveQuoteDisplayItemFragment
+    }
+	startDate
+	addonVariant {
+        ...AddonVariantFragment
+    }
+	cost {
+		...ItemCostFragment
+	}
+}
+
+fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
+    displayTitle
+    displaySubtitle
+    displayValue
+}
+
+fragment ItemCostFragment on ItemCost {
+	monthlyGross {
+		...MoneyFragment
+	}
+	monthlyNet {
+		...MoneyFragment
+	}
+	discounts {
+		...ItemDiscountFragment
+	}
+}
+
+fragment ItemDiscountFragment on ItemDiscount {
+	displayName
+	displayValue
+	explanation
+	campaignCode
+}

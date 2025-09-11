@@ -5,8 +5,19 @@ public struct ImportantMessage: Codable, Equatable, Sendable {
     let message: String
     let linkInfo: LinkInfo?
 
-    struct LinkInfo: Codable, Equatable, Sendable {
+    public init(id: String, message: String, linkInfo: LinkInfo?) {
+        self.id = id
+        self.message = message
+        self.linkInfo = linkInfo
+    }
+
+    public struct LinkInfo: Codable, Equatable, Sendable {
         let link: URL
         let text: String
+
+        public init(link: URL, text: String) {
+            self.link = link
+            self.text = text
+        }
     }
 }

@@ -1,7 +1,6 @@
 import Foundation
 import PresentableStore
 import hCore
-import hGraphQL
 
 public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileState
@@ -9,9 +8,10 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case setMemberEmail(email: String)
     case setMemberPhone(phone: String)
     case setEurobonusNumber(partnerData: PartnerData?)
-    case isTravelCertificateEnabled(has: Bool)
+    case setCanCreateInsuranceEvidence(to: Bool)
+    case hasTravelCertificates(to: Bool)
+    case canCreateTravelCertificate(to: Bool)
     case fetchProfileStateCompleted
-    case languageChanged
     case setMemberDetails(details: MemberDetails)
     case fetchMemberDetails
     case setPushNotificationStatus(status: Int?)

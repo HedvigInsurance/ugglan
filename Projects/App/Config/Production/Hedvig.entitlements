@@ -6,8 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:hedvig.page.link</string>
-		<string>applinks:www.hedvig.com</string>
+		<string>applinks:link.hedvig.com</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
@@ -22,7 +21,7 @@
 		<string>iCloud.com.hedvig.app</string>
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
-	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
+	<string>AW656G5PFM.$(CFBundleIdentifier)</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.hedvig.app</string>

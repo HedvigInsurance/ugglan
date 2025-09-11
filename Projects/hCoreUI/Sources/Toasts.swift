@@ -3,22 +3,23 @@ import Foundation
 import SwiftUI
 import hCore
 
+@MainActor
 public struct ToastBar {
     let type: NotificationType
-    let icon: UIImage?
+    let icon: Image
     let text: String
     let action: ToastBarAction?
     let duration: Double
 
     public init(
         type: NotificationType,
-        icon: UIImage? = nil,
+        icon: Image? = nil,
         text: String,
         action: ToastBarAction? = nil,
         duration: Double = 3
     ) {
         self.type = type
-        self.icon = icon
+        self.icon = icon ?? type.image
         self.text = text
         self.action = action
         self.duration = duration
@@ -49,10 +50,11 @@ public struct ToastBarView: View {
 
     public var body: some View {
         hSection {
-            HStack(spacing: 8) {
-                Image(uiImage: toastModel.icon ?? toastModel.type.image)
+            HStack(spacing: .padding8) {
+                toastModel.icon
                     .resizable()
-                    .foregroundColor(iconColor)
+                    .foregroundColor(toastModel.type.toastImageColor)
+                    .accessibilityHidden(true)
                     .frame(width: 20, height: 20)
                 hText(toastModel.text, style: .label)
                     .foregroundColor(toastModel.type.textColor)
@@ -74,15 +76,7 @@ public struct ToastBarView: View {
             .modifier(NotificationStyle(type: toastModel.type))
         }
         .sectionContainerStyle(.transparent)
-    }
-
-    @hColorBuilder
-    private var iconColor: some hColor {
-        if toastModel.icon != nil {
-            hSignalColor.Green.element
-        } else {
-            toastModel.type.imageColor
-        }
+        .accessibilityLabel(L10n.voiceoverNotificationAlert + "\n" + toastModel.text)
     }
 }
 
@@ -121,15 +115,16 @@ public class Toasts {
     public static let shared = Toasts()
     var list = [ToastBar]()
     public func displayToastBar(toast: ToastBar) {
+        if list.contains(where: { $0.text == toast.text }) {
+            return  // do not show same toast twice
+        }
         list.append(toast)
         if list.count == 1 {
             showNext()
         }
     }
 
-    init() {
-
-    }
+    init() {}
 
     private func showNext() {
         if let toast = list.first {
@@ -147,7 +142,6 @@ public class Toasts {
             }
         }
     }
-
 }
 
 private class ToastUIView: UIView {
@@ -161,10 +155,10 @@ private class ToastUIView: UIView {
         self.model = model
         self.onDeinit = onDeinit
         super.init(frame: .zero)
-        self.addSubview(vc.view)
+        addSubview(vc.view)
         setAutoDismiss()
-        self.transform = .init(translationX: 0, y: -200)
-        self.backgroundColor = .clear
+        transform = .init(translationX: 0, y: -200)
+        backgroundColor = .clear
         UIView.animate(withDuration: 1) { [weak self] in
             self?.transform = .identity
         }
@@ -174,10 +168,11 @@ private class ToastUIView: UIView {
         }
 
         let drag = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-        self.addGestureRecognizer(drag)
+        addGestureRecognizer(drag)
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -194,7 +189,7 @@ private class ToastUIView: UIView {
         case .ended:
             let velocity = sender.velocity(in: self).y
             // dismiss if swiped with negative velocity or ended in position thats should dismiss toast
-            if velocity < 0 || (self.frame.height / 2 < -(offsetForPanGesture) && offsetForPanGesture < 0) {
+            if velocity < 0 || (frame.height / 2 < -offsetForPanGesture && offsetForPanGesture < 0) {
                 dismiss()
                 return
             } else {
@@ -214,7 +209,7 @@ private class ToastUIView: UIView {
             break
         }
 
-        //do slower animation if ended
+        // do slower animation if ended
         let duration: TimeInterval = {
             if ended {
                 return 0.5
@@ -231,7 +226,6 @@ private class ToastUIView: UIView {
             } else {
                 self?.transform = .init(translationX: 0, y: self?.offsetForPanGesture ?? 0)
             }
-
         }
     }
 

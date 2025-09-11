@@ -1,0 +1,39 @@
+query CrossSell($source: CrossSellSource!) {
+  currentMember {
+    crossSell(source: $source) {
+      otherCrossSells {
+	...CrossSellFragment
+      }
+      recommendedCrossSell {
+	bannerText
+        buttonText
+        crossSell {
+          ...CrossSellFragment
+        }
+        discountText
+	buttonDescription
+      }
+    }
+  }
+}
+
+query CrossSells {
+  currentMember {
+    crossSells {
+	...CrossSellFragment
+    }
+  }
+}
+
+fragment CrossSellFragment on CrossSell {
+    id
+    description
+    storeUrl
+    title
+    pillowImageSmall {
+        src
+    }
+    pillowImageLarge {
+        src
+    }
+}

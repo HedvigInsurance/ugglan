@@ -40,7 +40,7 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchImportantMessages: { importantMessages }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedMessages = try! await mockService.getImportantMessages()
         assert(respondedMessages == importantMessages)
@@ -48,6 +48,7 @@ final class HomeTests: XCTestCase {
 
     func testGetMemberStateSuccess() async {
         let memberState: MemberState = .init(
+            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
             contracts: [
                 .init(
                     upcomingRenewal: nil,
@@ -61,7 +62,7 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchMemberState: { memberState }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedMemberState = try! await mockService.getMemberState()
         assert(respondedMemberState.contractState == memberState.contractState)
@@ -77,16 +78,13 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchQuickActions: { quickActions }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedQuickActions = try! await mockService.getQuickActions()
         assert(respondedQuickActions == quickActions)
     }
 
     func testGetLastMessagesDatesSuccess() async {
-
-        let dateOfLastMessage = "2024-07-16".localDateToDate!
-
         let lastMessagesState = MessageState(
             hasNewMessages: true,
             hasSentOrRecievedAtLeastOneMessage: true,
@@ -96,7 +94,7 @@ final class HomeTests: XCTestCase {
         let mockService = MockData.createMockHomeService(
             fetchLatestMessageState: { lastMessagesState }
         )
-        self.sut = mockService
+        sut = mockService
 
         let respondedLastMessages = try! await mockService.getMessagesState()
         assert(respondedLastMessages.hasNewMessages == lastMessagesState.hasNewMessages)
@@ -105,7 +103,6 @@ final class HomeTests: XCTestCase {
                 == lastMessagesState.hasSentOrRecievedAtLeastOneMessage
         )
         assert(respondedLastMessages.lastMessageTimeStamp == lastMessagesState.lastMessageTimeStamp)
-
     }
 
     func testHomeStoreWithMultipleActionsAtOnce() async throws {
@@ -127,7 +124,8 @@ final class HomeTests: XCTestCase {
         ]
         let randomIndex = Int(arc4random()) % futureStatuses.count
         let futureStatus = futureStatuses[randomIndex]
-        let memberState = MemberState.init(
+        let memberState = MemberState(
+            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
             contracts: [],
             contractState: MemberContractState.allCases.randomElement() ?? .active,
             futureState: futureStatus

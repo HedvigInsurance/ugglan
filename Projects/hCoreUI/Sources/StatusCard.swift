@@ -49,13 +49,14 @@ where MainContent: View, BottomContent: View {
                     hText(title)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
-                hText(subTitle ?? " ", style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-
+                if let subTitle = subTitle {
+                    hText(subTitle, style: .label)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
             }
-            .padding(.horizontal, .padding16)
+            .padding([.horizontal], .padding16)
 
-            if withDivider && bottomComponent != nil {
+            if withDivider, bottomComponent != nil {
                 hRowDivider()
                     .foregroundColor(hSurfaceColor.Translucent.primary)
                 Spacer().frame(height: .padding16)
@@ -69,14 +70,42 @@ where MainContent: View, BottomContent: View {
         }
         .padding(.top, .padding16)
         .padding(.bottom, bottomComponent == nil ? 0 : .padding16)
-        .background(
-            RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                .fill(hSurfaceColor.Opaque.primary)
-        )
         .onTapGesture {
             if let onSelected = onSelected {
                 onSelected()
             }
+        }
+        .modifier(StatusCardBackgroundModifier())
+    }
+}
+
+struct StatusCardBackgroundModifier: ViewModifier {
+    @Environment(\.hCardBackgroundColor) var backgroundColor
+
+    func body(content: Content) -> some View {
+        if backgroundColor == .default {
+            content
+                .background(
+                    Rectangle()
+                        .fill(hSurfaceColor.Opaque.primary)
+                )
+                .cornerRadius(.cornerRadiusXL)
+        } else {
+            content
+                .background(
+                    Rectangle()
+                        .fill(hBackgroundColor.primary)
+                )
+                .cornerRadius(.cornerRadiusXXL)
+                .shadow(color: Color(red: 0.07, green: 0.07, blue: 0.07).opacity(0.05), radius: 5, x: 0, y: 4)
+
+                .shadow(color: Color(red: 0.07, green: 0.07, blue: 0.07).opacity(0.1), radius: 1, x: 0, y: 2)
+
+                .overlay(
+                    RoundedRectangle(cornerRadius: .cornerRadiusXXL)
+                        .inset(by: 0.5)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                )
         }
     }
 }
@@ -86,9 +115,7 @@ struct CardComponent_Previews: PreviewProvider {
         VStack {
             Spacer()
             StatusCard(
-                onSelected: {
-
-                },
+                onSelected: {},
                 mainContent: Text("T"),
                 title: "TITLE",
                 subTitle: "SUBTITLE",
@@ -107,9 +134,7 @@ struct FCardComponent_Previews: PreviewProvider {
         VStack {
             Spacer()
             StatusCard(
-                onSelected: {
-
-                },
+                onSelected: {},
                 mainContent: Text("T"),
                 title: "TITLE",
                 subTitle: "SUBTITLE",
@@ -136,7 +161,7 @@ extension EnvironmentValues {
 
 extension View {
     public var hCardWithoutSpacing: some View {
-        self.environment(\.hCardWithoutSpacing, true)
+        environment(\.hCardWithoutSpacing, true)
     }
 }
 
@@ -153,6 +178,28 @@ extension EnvironmentValues {
 
 extension View {
     public var hCardWithDivider: some View {
-        self.environment(\.hCardWithDivider, true)
+        environment(\.hCardWithDivider, true)
+    }
+}
+
+public enum CardBackgroundColor: Sendable {
+    case `default`
+    case light
+}
+
+private struct EnvironmentHCardBackgroundColor: EnvironmentKey {
+    static let defaultValue = CardBackgroundColor.default
+}
+
+extension EnvironmentValues {
+    public var hCardBackgroundColor: CardBackgroundColor {
+        get { self[EnvironmentHCardBackgroundColor.self] }
+        set { self[EnvironmentHCardBackgroundColor.self] = newValue }
+    }
+}
+
+extension View {
+    public func hCardBackgroundColor(_ color: CardBackgroundColor) -> some View {
+        environment(\.hCardBackgroundColor, color)
     }
 }

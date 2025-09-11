@@ -3,13 +3,13 @@ import SwiftUI
 public struct ContractInformation: View {
     let displayName: String?
     let exposureName: String?
-    let pillowImage: UIImage?
+    let pillowImage: Image?
     let status: String?
 
     public init(
         displayName: String?,
         exposureName: String?,
-        pillowImage: UIImage?,
+        pillowImage: Image?,
         status: String? = nil
     ) {
         self.displayName = displayName
@@ -21,7 +21,7 @@ public struct ContractInformation: View {
     public var body: some View {
         HStack(spacing: .padding12) {
             if let pillowImage {
-                Image(uiImage: pillowImage)
+                pillowImage
                     .resizable()
                     .frame(width: 48, height: 48)
             }
@@ -62,6 +62,5 @@ public struct ContractInformation: View {
             pillowImage: nil
         )
         .background(Color.blue)
-
     }
 })

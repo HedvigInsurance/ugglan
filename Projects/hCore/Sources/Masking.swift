@@ -6,19 +6,17 @@ public enum MaskType {
     case none
     case disabledSuggestion
     case personalNumber(minAge: Int)
-    case norwegianPersonalNumber
-    case danishPersonalNumber
     case postalCode
     case address
     case email
     case birthDate(minAge: Int)
     case birthDateCoInsured(minAge: Int)
-    case norwegianPostalCode
     case digits
     case euroBonus
     case firstName
     case lastName
 }
+
 @MainActor
 public struct Masking {
     public let type: MaskType
@@ -31,13 +29,10 @@ public struct Masking {
         textField.keyboardType = keyboardType
         textField.textContentType = textContentType
         textField.autocapitalizationType = autocapitalizationType
-
     }
 
     public func isValid(text: String) -> Bool {
         switch type {
-        case .norwegianPersonalNumber: return text.replacingOccurrences(of: "-", with: "").count == 11
-        case .danishPersonalNumber: return text.count == 11
         case .personalNumber:
             let age = calculateAge(from: text)
             return text.replacingOccurrences(of: "-", with: "").count == 12 && age != nil && (age ?? 0) >= 0
@@ -51,7 +46,6 @@ public struct Masking {
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
             return emailPredicate.evaluate(with: text)
-        case .norwegianPostalCode: return text.count == 4
         case .postalCode: return unmask(text: text).count == 5
         case .address:
             let addressRegEx = "[(A-Z|Å|Ä|Ö)a-zåäö]+(\\s*)+[0-9]*"
@@ -76,8 +70,7 @@ public struct Masking {
         case .personalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .postalCode: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .birthDate: return text
-        case .email, .norwegianPostalCode, .digits, .norwegianPersonalNumber: return text
-        case .danishPersonalNumber: return text.replacingOccurrences(of: "-", with: "")
+        case .email, .digits: return text
         case .none: return text
         case .address: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .disabledSuggestion: return text
@@ -111,7 +104,7 @@ public struct Masking {
             guard let age = components.year else { return nil }
             guard let day = components.day else { return nil }
             guard let minutes = components.minute else { return nil }
-            if age == 0 && (day < 0 || minutes < 0) {
+            if age == 0, day < 0 || minutes < 0 {
                 return age - 1
             }
             return age
@@ -120,7 +113,6 @@ public struct Masking {
         let unmaskedValue = self.unmaskedValue(text: text)
 
         switch type {
-        case .danishPersonalNumber, .norwegianPersonalNumber: return nil
         case .personalNumber, .birthDateCoInsured:
             if let age = calculate("yyyyMMdd", value: String(unmaskedValue.prefix(8))) { return age }
             return nil
@@ -140,9 +132,8 @@ public struct Masking {
 
     public var keyboardType: UIKeyboardType {
         switch type {
-        case .birthDate, .personalNumber, .norwegianPostalCode,
-            .postalCode, .digits,
-            .norwegianPersonalNumber, .danishPersonalNumber, .birthDateCoInsured:
+        case .birthDate, .personalNumber,
+            .postalCode, .digits, .birthDateCoInsured:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
@@ -175,17 +166,11 @@ public struct Masking {
             return nil
         case .personalNumber:
             return L10n.InsurelySeSsn.assistiveText
-        case .norwegianPersonalNumber:
-            return L10n.SimpleSignLogin.TextField.helperText
-        case .danishPersonalNumber:
-            return L10n.SimpleSignLogin.TextField.helperTextDk
         case .postalCode:
             return nil
         case .email:
             return L10n.emailPlaceholder
         case .birthDate, .birthDateCoInsured:
-            return nil
-        case .norwegianPostalCode:
             return nil
         case .digits:
             return nil
@@ -208,17 +193,11 @@ public struct Masking {
             return nil
         case .personalNumber:
             return nil
-        case .norwegianPersonalNumber:
-            return L10n.SimpleSignLogin.TextField.label
-        case .danishPersonalNumber:
-            return L10n.SimpleSignLogin.TextField.labelDk
         case .postalCode:
             return nil
         case .email:
             return L10n.emailRowTitle
         case .birthDate, .birthDateCoInsured:
-            return nil
-        case .norwegianPostalCode:
             return nil
         case .digits:
             return nil
@@ -239,6 +218,7 @@ public struct Masking {
         default: return false
         }
     }
+
     public var spellCheckingType: UITextSpellCheckingType {
         switch type {
         case .none, .disabledSuggestion:
@@ -304,7 +284,7 @@ public struct Masking {
             }
 
             if text.count <= maxCount {
-                let sanitizedText = String(text.filter { $0.isDigit })
+                let sanitizedText = String(text.filter(\.isDigit))
                 return sanitizedText
             }
 
@@ -315,15 +295,10 @@ public struct Masking {
         case .personalNumber:
             return delimitedDigits(delimiterPositions: [9], maxCount: 13, delimiter: "-")
         case .postalCode: return delimitedDigits(delimiterPositions: [4], maxCount: 6, delimiter: " ")
-        case .norwegianPostalCode: return delimitedDigits(delimiterPositions: [], maxCount: 4, delimiter: " ")
         case .birthDate, .birthDateCoInsured:
             return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
-        case .digits: return text.filter { $0.isDigit }
+        case .digits: return text.filter(\.isDigit)
         case .email: return text
-        case .norwegianPersonalNumber:
-            return delimitedDigits(delimiterPositions: [], maxCount: 11, delimiter: " ")
-        case .danishPersonalNumber:
-            return delimitedDigits(delimiterPositions: [7], maxCount: 11, delimiter: "-")
         case .none: return text
         case .address: return text
         case .disabledSuggestion: return text
@@ -350,6 +325,6 @@ extension Masking: ViewModifier {
 
 extension Character {
     public var isDigit: Bool {
-        return "0123456789".contains(String(self))
+        "0123456789".contains(String(self))
     }
 }

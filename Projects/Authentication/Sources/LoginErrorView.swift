@@ -18,7 +18,7 @@ public struct LoginErrorView: View {
         .hStateViewButtonConfig(
             .init(
                 dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
+                    buttonTitle: L10n.generalRetry,
                     buttonAction: {
                         router.pop()
                     }

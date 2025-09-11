@@ -1,25 +1,28 @@
 import Chat
 import Contracts
+import CrossSell
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public init(
         id: String,
         status: ClaimStatus,
-        outcome: ClaimOutcome,
+        outcome: ClaimOutcome?,
         submittedAt: String?,
         signedAudioURL: String?,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
         targetFileUploadUri: String,
         claimType: String,
-        incidentDate: String?,
         productVariant: ProductVariant?,
-        conversation: Conversation?
-
+        conversation: Conversation?,
+        appealInstructionsUrl: String?,
+        isUploadingFilesEnabled: Bool,
+        showClaimClosedFlow: Bool,
+        infoText: String?,
+        displayItems: [ClaimDisplayItem]
     ) {
         self.id = id
         self.status = status
@@ -30,25 +33,33 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.payoutAmount = payoutAmount
         self.targetFileUploadUri = targetFileUploadUri
         self.claimType = claimType
-        self.incidentDate = incidentDate
         self.productVariant = productVariant
         self.conversation = conversation
+        self.appealInstructionsUrl = appealInstructionsUrl
+        self.isUploadingFilesEnabled = isUploadingFilesEnabled
+        self.showClaimClosedFlow = showClaimClosedFlow
+        self.infoText = infoText
+        self.displayItems = displayItems
     }
 
     public let claimType: String
-    public let incidentDate: String?
     public let productVariant: ProductVariant?
     public let id: String
     public let status: ClaimStatus
-    public let outcome: ClaimOutcome
+    public let outcome: ClaimOutcome?
     public let submittedAt: String?
     public let signedAudioURL: String?
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let targetFileUploadUri: String
     public let conversation: Conversation?
-    public var statusParagraph: String {
-        switch self.status {
+    public let appealInstructionsUrl: String?
+    public let isUploadingFilesEnabled: Bool
+    public let showClaimClosedFlow: Bool
+    public var infoText: String?
+    public let displayItems: [ClaimDisplayItem]
+    public var statusParagraph: String? {
+        switch status {
         case .submitted:
             return L10n.ClaimStatus.Submitted.supportText
         case .beingHandled:
@@ -61,38 +72,24 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.ClaimStatus.NotCompensated.supportText
             case .notCovered:
                 return L10n.ClaimStatus.NotCovered.supportText
-            case .closed:
-                return L10n.ClaimStatus.Closed.supportText
-            case .missingReceipt:
-                return L10n.ClaimStatus.MissingReceipt.supportText
+            case .unresponsive:
+                return L10n.claimOutcomeUnresponsiveSupportText
             case .none:
-                return ""
+                return nil
             }
         case .reopened:
             return L10n.ClaimStatus.BeingHandledReopened.supportText
         default:
-            return ""
+            return nil
         }
     }
 
-    public enum ClaimStatus: String, Codable, CaseIterable, Sendable {
+    public enum ClaimStatus: Codable, CaseIterable, Sendable {
         case none
         case submitted
         case beingHandled
         case closed
         case reopened
-
-        public init?(
-            rawValue: RawValue
-        ) {
-            switch rawValue {
-            case "CREATED": self = .submitted
-            case "IN_PROGRESS": self = .beingHandled
-            case "CLOSED": self = .closed
-            case "REOPENED": self = .reopened
-            default: self = .none
-            }
-        }
 
         var title: String {
             switch self {
@@ -108,28 +105,21 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.Home.ClaimCard.Pill.reopened
             }
         }
+
+        var pillColor: PillColor {
+            switch self {
+            case .closed: .grey
+            case .reopened: .amber
+            default: .grey
+            }
+        }
     }
 
-    public enum ClaimOutcome: String, Codable, CaseIterable, Sendable {
+    public enum ClaimOutcome: Codable, CaseIterable, Sendable {
         case paid
         case notCompensated
         case notCovered
-        case none
-        case closed
-        case missingReceipt
-
-        public init?(
-            rawValue: RawValue
-        ) {
-            switch rawValue {
-            case "PAID": self = .paid
-            case "NOT_COMPENSATED": self = .notCompensated
-            case "NOT_COVERED": self = .notCovered
-            case "CLOSED": self = .closed
-            case "MISSING_RECIEPT": self = .missingReceipt
-            default: self = .none
-            }
-        }
+        case unresponsive
 
         var text: String {
             switch self {
@@ -139,19 +129,55 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.Claim.Decision.notCompensated
             case .notCovered:
                 return L10n.Claim.Decision.notCovered
-            case .none:
-                return L10n.Home.ClaimCard.Pill.claim
-            case .closed:
-                return L10n.ClaimStatusDetail.closed
-            case .missingReceipt:
-                return L10n.ClaimStatusDetail.missingReceipt
+            case .unresponsive:
+                return L10n.Claim.Decision.unresponsive
             }
+        }
+    }
+
+    public struct ClaimDisplayItem: Codable, Equatable, Hashable, Sendable, Identifiable {
+        public var id: String {
+            displayTitle
+        }
+
+        let displayTitle: String
+        let displayValue: String
+
+        public init(displayTitle: String, displayValue: String) {
+            self.displayTitle = displayTitle
+            self.displayValue = displayValue
         }
     }
 }
 
 extension ClaimModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ClaimDetailView.self)
+        .init(describing: ClaimDetailView.self)
+    }
+}
+
+extension ClaimModel {
+    public var asCrossSellInfo: CrossSellInfo {
+        let additionalInfo = ClaimCrossSellAdditionalInfo.fromClaim(self)
+        return .init(
+            type: .closedClaim,
+            additionalInfo: additionalInfo
+        )
+    }
+}
+
+private struct ClaimCrossSellAdditionalInfo: Codable, Equatable {
+    let id: String
+    let type: String
+    let status: String
+    let typeOfContract: String?
+
+    static func fromClaim(_ claim: ClaimModel) -> Self {
+        Self(
+            id: claim.id,
+            type: claim.claimType,
+            status: claim.status.title,
+            typeOfContract: claim.productVariant?.typeOfContract
+        )
     }
 }

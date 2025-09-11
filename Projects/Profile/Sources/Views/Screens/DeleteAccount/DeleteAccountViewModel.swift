@@ -4,7 +4,6 @@ import Combine
 import Contracts
 import Foundation
 import hCore
-import hGraphQL
 
 @MainActor
 public class DeleteAccountViewModel: ObservableObject {
@@ -13,11 +12,11 @@ public class DeleteAccountViewModel: ObservableObject {
     let contractsStore: ContractStore
 
     private var activeClaimsSignal: AnyPublisher<Bool, Never> {
-        self.claimsStore.stateSignal.map({ $0.hasActiveClaims }).eraseToAnyPublisher()
+        claimsStore.stateSignal.map(\.hasActiveClaims).eraseToAnyPublisher()
     }
 
     private var activeContractsSignal: AnyPublisher<Bool, Never> {
-        self.contractsStore.stateSignal.map({ $0.hasActiveContracts }).eraseToAnyPublisher()
+        contractsStore.stateSignal.map(\.hasActiveContracts).eraseToAnyPublisher()
     }
 
     @Published var hasActiveClaims: Bool = false
@@ -33,8 +32,8 @@ public class DeleteAccountViewModel: ObservableObject {
         self.claimsStore = claimsStore
         self.contractsStore = contractsStore
 
-        self.hasActiveClaims = self.claimsStore.state.hasActiveClaims
-        self.hasActiveContracts = self.contractsStore.state.hasActiveContracts
+        hasActiveClaims = self.claimsStore.state.hasActiveClaims
+        hasActiveContracts = self.contractsStore.state.hasActiveContracts
 
         activeClaimsSignal
             .receive(on: RunLoop.main)

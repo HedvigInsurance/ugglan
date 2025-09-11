@@ -9,90 +9,108 @@ import hCoreUI
 struct ChatInputView: View {
     @StateObject var vm: ChatInputViewModel
     @State var height: CGFloat = 0
+
     var body: some View {
         VStack(spacing: 0) {
             Rectangle().fill(hBorderColor.primary).frame(height: 1)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .bottom) {
-                    Button {
-                        withAnimation {
-                            self.vm.showBottomMenu.toggle()
-                        }
-                    } label: {
-                        Image(uiImage: hCoreUIAssets.plus.image)
-                            .resizable().frame(width: 24, height: 24)
-                            .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
-                            .foregroundColor(hTextColor.Opaque.primary)
-                            .padding(.padding8)
-                            .background(hSurfaceColor.Opaque.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-                    }
-                    .accessibilityValue(
-                        vm.showBottomMenu ? L10n.generalCloseButton : L10n.ClaimStatus.UploadedFiles.uploadButton
-                    )
-                    HStack(alignment: .bottom, spacing: 0) {
-                        CustomTextViewRepresentable(
-                            placeholder: L10n.chatInputPlaceholder,
-                            text: $vm.inputText,
-                            height: $height,
-                            keyboardIsShown: $vm.keyboardIsShown
-                        ) { file in
-                            vm.sendMessage(.init(type: .file(file: file)))
-                        }
-                        .frame(height: height)
-                        .frame(minHeight: 40)
-
-                        Button {
-                            vm.sendTextMessage()
-                        } label: {
-                            hCoreUIAssets.sendChat.view
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .padding(.padding8)
-                        }
-                        .accessibilityValue(L10n.voiceoverChatSendMessageButton)
-                    }
-                    .padding(.leading, .padding4)
-                    .background(hSurfaceColor.Opaque.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+                    addFilesButton
+                    inputField
                 }
-                .padding([.horizontal, .top], 16)
-                .fixedSize(horizontal: false, vertical: true)
+                .padding([.horizontal, .top], .padding8)
+
                 if vm.showBottomMenu {
-                    HStack(spacing: 8) {
-                        VStack(spacing: 8) {
-                            bottomMenuItem(with: hCoreUIAssets.camera.image) {
-                                vm.openCamera()
-                            }
-                            .accessibilityValue(L10n.voiceoverChatCamera)
-                            bottomMenuItem(with: hCoreUIAssets.image.image) {
-                                vm.openImagePicker()
-                            }
-                            .accessibilityValue(L10n.voiceoverChatCameraroll)
-                            bottomMenuItem(with: hCoreUIAssets.document.image) {
-                                vm.openFilePicker()
-                            }
-                            .accessibilityValue(L10n.voiceoverChatFiles)
-                        }
-                        .fixedSize(
-                            horizontal: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/,
-                            vertical: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/
-                        )
-                        ImagesView(vm: vm.imagesViewModel)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.leading, .padding16)
+                    bottomMenu
                 }
             }
         }
     }
 
-    private func bottomMenuItem(with image: UIImage, action: @escaping () -> Void) -> some View {
+    private var addFilesButton: some View {
+        Button {
+            withAnimation {
+                vm.showBottomMenu.toggle()
+            }
+        } label: {
+            hCoreUIAssets.plus.view
+                .resizable().frame(width: 24, height: 24)
+                .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
+                .foregroundColor(hTextColor.Opaque.primary)
+                .padding(.padding8)
+                .background(hSurfaceColor.Opaque.primary)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+        }
+        .accessibilityValue(
+            vm.showBottomMenu ? L10n.generalCloseButton : L10n.ClaimStatus.UploadedFiles.uploadButton
+        )
+    }
+
+    private var inputField: some View {
+        HStack(alignment: .bottom, spacing: 0) {
+            CustomTextViewRepresentable(
+                placeholder: L10n.chatInputPlaceholder,
+                text: $vm.inputText,
+                height: $height,
+                keyboardIsShown: $vm.keyboardIsShown
+            ) { file in
+                vm.sendMessage(.init(type: .file(file: file)))
+            }
+            .frame(height: height)
+            .frame(minHeight: 40)
+
+            Button {
+                vm.sendTextMessage()
+            } label: {
+                hCoreUIAssets.sendChat.view
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .padding(.padding8)
+            }
+            .frame(width: 44, height: 44)
+            .accessibilityValue(L10n.voiceoverChatSendMessageButton)
+        }
+        .padding(.leading, .padding4)
+        .background(hSurfaceColor.Opaque.primary)
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+    }
+
+    private var bottomMenu: some View {
+        HStack(spacing: .padding8) {
+            VStack(spacing: .padding8) {
+                bottomMenuItem(
+                    with: hCoreUIAssets.camera.view,
+                    action: {
+                        vm.openCamera()
+                    }
+                )
+                .accessibilityValue(L10n.voiceoverChatCamera)
+                bottomMenuItem(
+                    with: hCoreUIAssets.image.view,
+                    action: {
+                        vm.openImagePicker()
+                    }
+                )
+                .accessibilityValue(L10n.voiceoverChatCameraroll)
+                bottomMenuItem(
+                    with: hCoreUIAssets.document.view,
+                    action: {
+                        vm.openFilePicker()
+                    }
+                )
+                .accessibilityValue(L10n.voiceoverChatFiles)
+            }
+            ImagesView(vm: vm.imagesViewModel)
+        }
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .padding(.leading, .padding8)
+    }
+
+    private func bottomMenuItem(with image: Image, action: @escaping () -> Void) -> some View {
         Button {
             action()
         } label: {
-            Image(uiImage: image)
+            image
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
@@ -132,6 +150,7 @@ class ChatInputViewModel: NSObject, ObservableObject {
             }
         }
     }
+
     var imagesViewModel = ImagesViewModel()
     var sendMessage: (_ message: Message) -> Void = { _ in }
     override init() {
@@ -140,9 +159,10 @@ class ChatInputViewModel: NSObject, ObservableObject {
             self?.sendMessage(message)
         }
     }
+
     func sendTextMessage() {
         if inputText.count > 0, inputText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
-            self.sendMessage(Message(type: .text(text: inputText)))
+            sendMessage(Message(type: .text(text: inputText)))
             UIApplication.dismissKeyboard()
             inputText = ""
         }
@@ -182,7 +202,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding var keyboardIsShown: Bool
     @Environment(\.colorScheme) var schema
     let onPaste: ((File) -> Void)?
-    func makeUIView(context: Context) -> some UIView {
+    func makeUIView(context _: Context) -> some UIView {
         CustomTextView(
             placeholder: placeholder,
             inputText: $text,
@@ -192,9 +212,9 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
         )
     }
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {
+    func updateUIView(_ uiView: UIViewType, context _: Context) {
         if let uiView = uiView as? CustomTextView {
-            if text == "" && !uiView.isFirstResponder {
+            if text == "", !uiView.isFirstResponder {
                 uiView.text = text
                 uiView.updateHeight()
                 uiView.updateColors()
@@ -218,50 +238,51 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         keyboardIsShown: Binding<Bool>,
         onPaste: ((File) -> Void)?
     ) {
-        self._inputText = inputText
+        _inputText = inputText
         self.onPaste = onPaste
-        self._height = height
-        self._keyboardIsShown = keyboardIsShown
+        _height = height
+        _keyboardIsShown = keyboardIsShown
         super.init(frame: .zero, textContainer: nil)
-        self.textContainerInset = .init(top: 4, left: 4, bottom: 4, right: 4)
-        self.delegate = self
-        self.font = Fonts.fontFor(style: .body1)
-        self.text = inputText.wrappedValue
-        self.textColor = UIColor.black
-        self.backgroundColor = .clear
+        textContainerInset = .init(top: 4, left: 4, bottom: 4, right: 4)
+        delegate = self
+        font = Fonts.fontFor(style: .body1)
+        text = inputText.wrappedValue
+        textColor = UIColor.black
+        backgroundColor = .clear
         placeholderLabel.font = Fonts.fontFor(style: .body1)
         placeholderLabel.text = placeholder
-        self.addSubview(placeholderLabel)
+        addSubview(placeholderLabel)
         placeholderLabel.accessibilityElementsHidden = true
         placeholderLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(4)
             make.leading.equalToSuperview().offset(8)
         }
-        self.accessibilityLabel = placeholderLabel.text
+        accessibilityLabel = placeholderLabel.text
     }
 
     @objc private func handleDoneButtonTap() {
-        self.resignFirstResponder()
+        resignFirstResponder()
     }
 
     func updateHeight() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             withAnimation {
-                self.height = min(self.contentSize.height, 200)
+                self.height = min(self.contentSize.height, 150)
             }
         }
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func textViewDidBeginEditing(_ textView: UITextView) {
+    func textViewDidBeginEditing(_: UITextView) {
         keyboardIsShown = true
     }
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    func textView(_ textView: UITextView, shouldChangeTextIn _: NSRange, replacementText _: String) -> Bool {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
             self?.inputText = textView.text
             self?.updateHeight()
@@ -270,20 +291,21 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         return true
     }
 
-    func textViewDidEndEditing(_ textView: UITextView) {
+    func textViewDidEndEditing(_: UITextView) {
         keyboardIsShown = false
     }
 
     func updateColors() {
-        self.placeholderLabel.isHidden = !text.isEmpty
-        self.placeholderLabel.textColor = placeholderTextColor
-        self.textColor = editingTextColor
+        placeholderLabel.isHidden = !text.isEmpty
+        placeholderLabel.textColor = placeholderTextColor
+        textColor = editingTextColor
     }
 
     private var editingTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
         return hTextColor.Opaque.primary.colorFor(colorScheme, .base).color.uiColor()
     }
+
     private var placeholderTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
         return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
@@ -301,7 +323,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
                             name: "image_\(Date())",
                             source: .data(data: data)
                         )
-                        self.onPaste?(file)
+                        onPaste?(file)
                     }
                 }
                 return
@@ -340,8 +362,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 }
 
 extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
-    public func imagePickerController(
+    func imagePickerController(
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
@@ -350,14 +371,13 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
                 id: UUID().uuidString,
                 size: 0,
                 mimeType: .JPEG,
-                name: "Camera shoot",
+                name: "Camera shoot \(Date().displayDateWithTimeStamp).jpeg",
                 source: .data(data: image.jpegData(compressionQuality: 0.9)!)
             )
             sendMessage(.init(type: .file(file: file)))
         }
         picker.dismiss(animated: true)
     }
-
 }
 
 extension ChatInputViewModel: PHPickerViewControllerDelegate {
@@ -371,7 +391,7 @@ extension ChatInputViewModel: PHPickerViewControllerDelegate {
                     id: UUID().uuidString,
                     size: 0,
                     mimeType: .JPEG,
-                    name: "\(Date().currentTimeMillis).jpeg",
+                    name: "\(Date().displayDateWithTimeStamp).jpeg",
                     source: .localFile(results: selectedItem)
                 )
                 files.append(file)
@@ -380,16 +400,15 @@ extension ChatInputViewModel: PHPickerViewControllerDelegate {
                     id: UUID().uuidString,
                     size: 0,
                     mimeType: .MOV,
-                    name: "\(Date().currentTimeMillis).mov",
+                    name: "\(Date().displayDateWithTimeStamp).mov",
                     source: .localFile(results: selectedItem)
                 )
                 files.append(file)
-
             }
         }
         picker.dismiss(animated: true)
         for file in files {
-            self.sendMessage(.init(type: .file(file: file)))
+            sendMessage(.init(type: .file(file: file)))
         }
     }
 }
@@ -405,9 +424,8 @@ extension ChatInputViewModel: UIDocumentPickerDelegate {
             url.stopAccessingSecurityScopedResource()
         }
         for file in files {
-            self.sendMessage(.init(type: .file(file: file)))
+            sendMessage(.init(type: .file(file: file)))
         }
         controller.dismiss(animated: true)
-
     }
 }

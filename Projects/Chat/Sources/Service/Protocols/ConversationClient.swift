@@ -31,10 +31,34 @@ public struct ConversationMessagesData {
     let claimType: String?
     let claimId: String?
 
+    public init(
+        messages: [Message],
+        banner: Markdown?,
+        olderToken: String?,
+        newerToken: String?,
+        isConversationOpen: Bool?,
+        createdAt: String?,
+        isLegacy: Bool,
+        hasClaim: Bool,
+        claimType: String?,
+        claimId: String?
+    ) {
+        self.messages = messages
+        self.banner = banner
+        self.olderToken = olderToken
+        self.newerToken = newerToken
+        self.isConversationOpen = isConversationOpen
+        self.createdAt = createdAt
+        self.isLegacy = isLegacy
+        self.hasClaim = hasClaim
+        self.claimType = claimType
+        self.claimId = claimId
+    }
+
     var screenTitle: String {
         if isLegacy {
             return L10n.chatConversationHistoryTitle
-        } else if self.hasClaim {
+        } else if hasClaim {
             return claimType ?? L10n.chatConversationClaimTitle
         }
         return L10n.chatConversationQuestionTitle

@@ -1,0 +1,40 @@
+
+fragment ConversationFragment on Conversation {
+    createdAt
+    id
+    isOpen
+    unreadMessageCount
+    newestMessage {
+        ... MessageFragment
+    }
+    statusMessage
+    isLegacy
+    claim {
+        id
+        claimType
+    }
+}
+
+fragment MessageFragment on ChatMessage {
+    id
+    sender
+    sentAt
+    ... ChatMessageActionFragment
+    ... ChatMessageFileFragment
+    ... ChatMessageTextFragment
+}
+
+fragment ChatMessageActionFragment on ChatMessageAction {
+    actionTitle
+    actionUrl
+    actionText: text
+}
+
+fragment ChatMessageFileFragment on ChatMessageFile {
+    signedUrl
+    mimeType
+}
+
+fragment ChatMessageTextFragment on ChatMessageText {
+    text
+}

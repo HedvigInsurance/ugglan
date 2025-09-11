@@ -11,7 +11,7 @@ public struct ProfileView: View {
     @State private var showLogoutAlert = false
 
     private var logoutAlert: SwiftUI.Alert {
-        return Alert(
+        Alert(
             title: Text(L10n.logoutAlertTitle),
             message: nil,
             primaryButton: .cancel(Text(L10n.logoutAlertActionCancel)),
@@ -32,9 +32,7 @@ public struct ProfileView: View {
             ) { stateData in
                 hSection {
                     ProfileRow(row: .myInfo)
-                    if store.state.showTravelCertificate {
-                        ProfileRow(row: .travelCertificate)
-                    }
+                    certificatesView(for: stateData)
                     if store.state.partnerData?.shouldShowEuroBonus ?? false {
                         let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
                         let hasEntereNumber = !number.isEmpty
@@ -42,27 +40,35 @@ public struct ProfileView: View {
                             row: .eurobonus(hasEnteredNumber: hasEntereNumber)
                         )
                     }
+                    if Dependencies.featureFlags().isClaimHistoryEnabled {
+                        ProfileRow(row: .claimHistory)
+                    }
                     ProfileRow(row: .appInfo)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding16)
-                .hWithoutHorizontalPadding
-                .hWithoutDividerPadding
+                .hWithoutHorizontalPadding([.row, .divider])
             }
         }
         .hFormAttachToBottom {
             hSection {
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     RenewalCardView(showCoInsured: false)
                     NotificationsCardView()
-                    hButton.LargeButton(type: .ghost) {
-                        showLogoutAlert = true
-                    } content: {
-                        hText(L10n.logoutButton)
-                            .foregroundColor(hSignalColor.Red.element)
-                    }
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(
+                            title: L10n.logoutButton
+                        ),
+                        {
+                            showLogoutAlert = true
+                        }
+                    )
+                    .hUseButtonTextColor(.red)
+                    .foregroundColor(hSignalColor.Red.element)
                     .alert(isPresented: $showLogoutAlert) {
                         logoutAlert
                     }
@@ -78,5 +84,16 @@ public struct ProfileView: View {
             await store.sendAsync(.fetchProfileState)
         }
         .configureTitle(L10n.profileTitle)
+    }
+
+    @ViewBuilder
+    private func certificatesView(for stateData: ProfileState) -> some View {
+        if stateData.showTravelCertificate, stateData.canCreateInsuranceEvidence {
+            ProfileRow(row: .certificates)
+        } else if store.state.showTravelCertificate {
+            ProfileRow(row: .travelCertificate)
+        } else if stateData.canCreateInsuranceEvidence {
+            ProfileRow(row: .insuranceEvidence)
+        }
     }
 }

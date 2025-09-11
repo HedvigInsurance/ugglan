@@ -1,7 +1,0 @@
-mutation MemberUpdateEmail($input: MemberUpdateEmailInput!) {
-  memberUpdateEmail(input: $input) {
-    member {
-      email
-    }
-  }
-}

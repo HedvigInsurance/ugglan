@@ -10,11 +10,11 @@ struct PaymentStatusView: View {
         case .upcoming:
             InfoCard(text: L10n.paymentsUpcomingPayment, type: .info)
         case .success:
-            HStack(spacing: 8) {
+            HStack(spacing: .padding8) {
                 Spacer()
-                Image(uiImage: hCoreUIAssets.checkmark.image)
+                hCoreUIAssets.checkmark.view
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 20)
                     .foregroundColor(hSignalColor.Green.element)
                 hText(L10n.paymentsPaymentSuccessful, style: .label)
                     .foregroundColor(hSignalColor.Green.text)
@@ -61,6 +61,7 @@ struct PaymentStatusView: View {
 struct PaymentStatusView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return VStack {
             PaymentStatusView(status: .pending) { _ in }
             PaymentStatusView(status: .success) { _ in }

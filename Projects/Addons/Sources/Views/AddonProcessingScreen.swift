@@ -19,24 +19,31 @@ struct AddonProcessingScreen: View {
             state: $vm.submittingAddonsViewState
         )
         .hStateViewButtonConfig(errorButtons)
+        .onDeinit { [weak vm] in
+            if vm?.submittingAddonsViewState == .success {
+                Task {
+                    NotificationCenter.default.post(
+                        name: .addonAdded,
+                        object: nil
+                    )
+                }
+            }
+        }
     }
 
     private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonAction: {
-                    Task {
-                        await addonNavigationVm.changeAddonVm!.submitAddons()
-                    }
+                    addonNavigationVm.isAddonProcessingPresented = false
                 }
             ),
-            dismissButton:
-                .init(
-                    buttonTitle: L10n.generalCloseButton,
-                    buttonAction: {
-                        addonNavigationVm.router.dismiss(withDismissingAll: true)
-                    }
-                )
+            dismissButton: .init(
+                buttonTitle: L10n.generalCancelButton,
+                buttonAction: {
+                    addonNavigationVm.router.dismiss(withDismissingAll: true)
+                }
+            )
         )
     }
 }
@@ -46,7 +53,7 @@ struct AddonProcessingScreen_Previews: PreviewProvider {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
         return AddonProcessingScreen(
-            vm: .init(contractId: ""),
+            vm: .init(contractId: "", addonSource: .insurances),
             addonNavigationVm: .init()
         )
     }

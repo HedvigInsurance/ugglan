@@ -1,12 +1,12 @@
 import Addons
 import Apollo
 import Combine
+import CrossSell
 import Foundation
 import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractTable: View {
     @PresentableStore var store: ContractStore
@@ -16,7 +16,7 @@ struct ContractTable: View {
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
     @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
-
+    @InjectObservableObject private var featureFlags: FeatureFlags
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
@@ -43,43 +43,32 @@ struct ContractTable: View {
                 .loadingWithButtonLoading($vm.viewState)
                 .hStateViewButtonConfig(
                     .init(
-                        actionButton: .init(buttonAction: {
-                            store.send(.fetchContracts)
+                        actionButton: .init(buttonAction: { [weak store] in
+                            store?.send(.fetchContracts)
                         }),
                         dismissButton: nil
                     )
                 )
             if !showTerminated {
                 VStack(spacing: .padding8) {
-                    hSection {
-                        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
-                            let addonContracts = banner.contractIds.compactMap({
-                                store.state.contractForId($0)
-                            })
-
-                            let addonContractConfig: [AddonConfig] = addonContracts.map({
-                                .init(
-                                    contractId: $0.id,
-                                    exposureName: $0.exposureDisplayName,
-                                    displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                                )
-                            })
-
+                    if let banner = vm.addonBannerModel {
+                        hSection {
+                            let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
                             AddonCardView(
                                 openAddon: {
                                     contractsNavigationVm.isAddonPresented = .init(
-                                        contractConfigs: addonContractConfig,
-                                        addonId: nil
+                                        addonSource: .insurances,
+                                        contractConfigs: addonConfigs
                                     )
                                 },
                                 addon: banner
                             )
                         }
+                        .sectionContainerStyle(.transparent)
                     }
-                    .sectionContainerStyle(.transparent)
 
                     movingToANewHomeView
-                    CrossSellingStack(withHeader: true)
+                    CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
                     PresentableStoreLens(
@@ -90,9 +79,19 @@ struct ContractTable: View {
                     ) { terminatedContracts in
                         if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                             hSection {
-                                hButton.LargeButton(type: .secondary) {
-                                    router.push(ContractsRouterType.terminatedContracts)
-                                } content: {
+                                hButton(
+                                    .large,
+                                    .secondary,
+                                    content: .init(
+                                        title: L10n.InsurancesTab.cancelledInsurancesLabel(
+                                            "\(terminatedContracts.count)"
+                                        )
+                                    ),
+                                    {
+                                        router.push(ContractsRouterType.terminatedContracts)
+                                    }
+                                )
+                                .hCustomButtonView {
                                     hRow {
                                         HStack {
                                             hText(
@@ -130,7 +129,6 @@ struct ContractTable: View {
                 ContractStore.self,
                 getter: { state in
                     getContractsToShow(for: state)
-
                 }
             ) { contracts in
                 VStack(spacing: .padding8) {
@@ -148,7 +146,7 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
-                        .fixedSize(horizontal: false, vertical: sizeCategory > .large ? true : false)
+                        .fixedSize(horizontal: false, vertical: true)
                         .transition(.slide)
                     }
                 }
@@ -166,8 +164,8 @@ struct ContractTable: View {
                 state.activeContracts
             }
         ) { activeContracts in
-            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty
-                && Dependencies.featureFlags().isMovingFlowEnabled
+            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty,
+                featureFlags.isMovingFlowEnabled
             {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
@@ -211,9 +209,13 @@ public class ContractTableViewModel: ObservableObject {
             }
 
         addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
-            [weak self] notification in
+            [weak self] _ in
             Task {
                 await self?.getAddonBanner()
+            }
+            Task {
+                let store: ContractStore = await globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
             }
         }
     }
@@ -228,9 +230,14 @@ public class ContractTableViewModel: ObservableObject {
 
     func getAddonBanner() async {
         do {
-            self.addonBannerModel = try await service.getAddonBannerModel(source: .appOnlyUpsell)
+            let data = try await service.getAddonBannerModel(source: .insurances)
+            withAnimation {
+                self.addonBannerModel = data
+            }
         } catch {
-            self.addonBannerModel = nil
+            withAnimation {
+                self.addonBannerModel = nil
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ import Addons
 import ChangeTier
 import Chat
 import Contracts
-import EditCoInsuredShared
+import EditCoInsured
 import Payment
 import PresentableStore
 import SafariServices
@@ -37,8 +37,9 @@ public class HelpCenterNavigationViewModel: ObservableObject {
 
 public enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: InboxView.self)
+        .init(describing: InboxView.self)
     }
+
     case inbox
 }
 
@@ -57,7 +58,6 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
     case startView
     case firstVet
     case editYourInsurance
-
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
@@ -97,7 +97,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .ignoresSafeArea()
         .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
@@ -114,7 +114,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             getSubmitClaimDeflectScreen()
         }
@@ -135,12 +135,12 @@ public struct HelpCenterNavigation<Content: View>: View {
 
         .detent(
             item: $helpCenterVm.quickActions.editContractActions,
-            style: [.height],
+
             content: { actionsWrapper in
                 EditContractScreen(
-                    editTypes: actionsWrapper.quickActions.compactMap({ $0.asEditType }),
+                    editTypes: actionsWrapper.quickActions.compactMap(\.asEditType),
                     onSelectedType: { selectedType in
-                        self.handle(quickAction: selectedType.asQuickAction)
+                        handle(quickAction: selectedType.asQuickAction)
                     }
                 )
                 .configureTitle(L10n.hcQuickActionsEditInsuranceTitle)
@@ -181,7 +181,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         vc.preferredControlTintColor = .brand(.primaryText())
                         UIApplication.shared.getTopViewController()?.present(vc, animated: true)
                     } else {
-                        UIApplication.shared.open(url)
+                        Dependencies.urlOpener.open(url)
                     }
                 }
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
@@ -204,10 +204,8 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .cancellation:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                .filter({ $0.canTerminate })
-                .map({
-                    $0.asTerminationConfirmConfig
-                })
+                .filter(\.canTerminate)
+                .map(\.asTerminationConfirmConfig)
             Task {
                 do {
                     try await helpCenterVm.terminateInsuranceVm.start(with: contractsConfig)
@@ -220,14 +218,14 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .upgradeCoverage:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
-                .filter({ $0.supportsChangeTier })
-                .map({
+                .filter(\.supportsChangeTier)
+                .map {
                     .init(
                         contractId: $0.id,
                         contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
                         contractExposureName: $0.exposureDisplayName
                     )
-                })
+                }
             helpCenterVm.quickActions.isChangeTierPresented = .init(
                 source: .changeTier,
                 contracts: contractsSupportingChangingTier

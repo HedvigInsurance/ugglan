@@ -16,34 +16,16 @@ extension EnvironmentValues {
     }
 }
 
-private struct EnvironmentHWithoutPadding: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutDividerPadding: Bool {
-        get { self[EnvironmentHWithoutPadding.self] }
-        set { self[EnvironmentHWithoutPadding.self] = newValue }
-    }
-}
-
-extension View {
-    public var hWithoutDividerPadding: some View {
-        self.environment(\.hWithoutDividerPadding, true)
-    }
-}
-
 public struct hRowDivider: View {
     @Environment(\.hRowDividerSettings) var settings
-    @Environment(\.hWithoutDividerPadding) var withoutPadding: Bool
+    @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
     public init() {}
 
     public var body: some View {
-        let noPaddingInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         RoundedRectangle(cornerRadius: 1, style: .circular)
             .fill(hBorderColor.secondary)
             .frame(height: 1)
-            .padding(withoutPadding ? noPaddingInsets : settings.insets)
+            .padding(hWithoutHorizontalPadding.contains(.divider) ? .init() : settings.insets)
     }
 }
 
@@ -58,11 +40,11 @@ struct hRowDividerModifier: ViewModifier {
 
 extension View {
     public func dividerInsets(_ insets: EdgeInsets) -> some View {
-        self.modifier(hRowDividerModifier(insets: insets))
+        modifier(hRowDividerModifier(insets: insets))
     }
 
     public func dividerInsets(_ edges: Edge.Set = .all, _ length: CGFloat) -> some View {
-        self.modifier(
+        modifier(
             hRowDividerModifier(
                 insets: EdgeInsets(
                     top: edges.contains(.top) ? length : 0,

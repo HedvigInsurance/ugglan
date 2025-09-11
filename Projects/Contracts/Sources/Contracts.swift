@@ -1,18 +1,17 @@
-import EditCoInsuredShared
+import EditCoInsured
 import Foundation
 import PresentableStore
 import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct Contracts: View {
     @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let showTerminated: Bool
 
-    public init(
+    init(
         showTerminated: Bool
     ) {
         self.showTerminated = showTerminated
@@ -22,7 +21,7 @@ struct Contracts: View {
         store.send(.fetchContracts)
     }
 
-    public var body: some View {
+    var body: some View {
         hForm {
             ContractTable(showTerminated: showTerminated)
                 .padding(.top, .padding8)
@@ -36,7 +35,7 @@ struct Contracts: View {
             fetch()
         }
         .onPullToRefresh {
-            await store.sendAsync(.fetch)
+            await store.sendAsync(.fetchContracts)
         }
     }
 }

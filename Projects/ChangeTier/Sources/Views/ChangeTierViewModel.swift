@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
@@ -38,7 +37,7 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     var showDeductibleField: Bool {
-        return selectedTier?.quotes.filter({ $0.deductableAmount != nil || $0.deductablePercentage != nil }).count ?? 0
+        selectedTier?.quotes.filter { $0.deductableAmount != nil || $0.deductablePercentage != nil }.count ?? 0
             > 0
     }
 
@@ -54,25 +53,25 @@ public class ChangeTierViewModel: ObservableObject {
         let newSelectedTier = tiers.first(where: { $0.name == tierName })
         if newSelectedTier != selectedTier {
             if newSelectedTier?.quotes.count ?? 0 == 1 {
-                self.selectedQuote = newSelectedTier?.quotes.first
-                self.canEditDeductible = false
+                selectedQuote = newSelectedTier?.quotes.first
+                canEditDeductible = false
             } else {
-                self.selectedQuote = nil
-                self.canEditDeductible = true
+                selectedQuote = nil
+                canEditDeductible = true
             }
         }
-        self.displayName =
+        displayName =
             selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
             .displayName ?? displayName
-        self.selectedTier = newSelectedTier
-        self.newPremium = selectedQuote?.basePremium
+        selectedTier = newSelectedTier
+        newPremium = selectedQuote?.basePremium
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
         if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
-            self.selectedQuote = deductible
-            self.newPremium = deductible.basePremium
+            selectedQuote = deductible
+            newPremium = deductible.basePremium
         }
     }
 
@@ -84,67 +83,85 @@ public class ChangeTierViewModel: ObservableObject {
         Task { @MainActor in
             do {
                 let data = try await getData()
-                self.currentTier = data.currentTier
-                self.currentQuote = data.currentQuote
-
-                if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
-                    self.tiers = [currentTier] + data.tiers
-                } else {
-
-                    if let currentQuote {
-                        var currentTierInList: Tier? = data.tiers.first(where: { $0 == currentTier })
-                        let tiersWithoutCurrentTier: [Tier] = data.tiers.filter({ $0 != currentTier })
-
-                        let currentTierQuotes: [Quote] = [currentQuote] + (currentTierInList?.quotes ?? [])
-                        currentTierInList?.quotes = currentTierQuotes
-                        self.currentTier = currentTierInList
-
-                        if let currentTierInList {
-                            self.tiers = [currentTierInList] + tiersWithoutCurrentTier
-                        }
-                    } else {
-                        self.tiers = data.tiers
-                    }
-                }
-                self.displayName = data.displayName
-                self.exposureName = data.tiers.first?.exposureName
-                self.currentPremium = data.currentPremium
-                self.activationDate = data.activationDate
-                self.typeOfContract = data.typeOfContract
-
-                if tiers.count == 1 {
-                    self.selectedTier = tiers.first
-                    self.canEditTier = false
-                } else {
-                    self.selectedTier = data.selectedTier ?? currentTier
-                    self.canEditTier = data.canEditTier
-                }
-
-                self.selectedQuote = data.selectedQuote ?? currentQuote
-                if selectedTier?.quotes.count == 1 {
-                    self.canEditDeductible = false
-                } else {
-                    self.canEditDeductible = true
-                }
-
-                self.newPremium = selectedQuote?.basePremium
+                updateCurrentTiers(data)
+                updateDisplayProperties(data)
+                updateSelectedValues(data)
+                updatePremiumAndDeductible()
 
                 withAnimation {
                     self.viewState = .success
                 }
             } catch let exception {
-                if let exception = exception as? ChangeTierError {
-                    if case .emptyList = exception {
-                        withAnimation {
-                            self.missingQuotes = true
-                        }
-                        return
-                    }
-                }
-                withAnimation {
-                    self.viewState = .error(errorMessage: exception.localizedDescription)
-                }
+                handleError(exception)
             }
+        }
+    }
+
+    private func updateCurrentTiers(_ data: ChangeTierIntentModel) {
+        self.currentTier = data.currentTier
+        self.currentQuote = data.currentQuote
+
+        if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
+            self.tiers = [currentTier] + data.tiers
+        } else {
+            if let currentQuote {
+                var currentTierInList: Tier? = data.tiers.first(where: { $0 == currentTier })
+                let tiersWithoutCurrentTier: [Tier] = data.tiers.filter { $0 != currentTier }
+
+                let currentTierQuotes: [Quote] = [currentQuote] + (currentTierInList?.quotes ?? [])
+                currentTierInList?.quotes = currentTierQuotes
+                self.currentTier = currentTierInList
+
+                if let currentTierInList {
+                    self.tiers = [currentTierInList] + tiersWithoutCurrentTier
+                }
+            } else {
+                self.tiers = data.tiers
+            }
+        }
+    }
+
+    private func updateDisplayProperties(_ data: ChangeTierIntentModel) {
+        self.displayName = data.displayName
+        self.exposureName = data.tiers.first?.exposureName
+        self.currentPremium = data.currentPremium
+        self.activationDate = data.activationDate
+        self.typeOfContract = data.typeOfContract
+    }
+
+    private func updateSelectedValues(_ data: ChangeTierIntentModel) {
+        if tiers.count == 1 {
+            self.selectedTier = tiers.first
+            self.canEditTier = false
+        } else {
+            self.selectedTier = data.selectedTier ?? currentTier
+            self.canEditTier = data.canEditTier
+        }
+
+        self.selectedQuote = data.selectedQuote ?? currentQuote
+    }
+
+    private func updatePremiumAndDeductible() {
+        if selectedTier?.quotes.count == 1 {
+            self.canEditDeductible = false
+        } else {
+            self.canEditDeductible = true
+        }
+
+        self.newPremium = selectedQuote?.basePremium
+    }
+
+    private func handleError(_ exception: Error) {
+        if let exception = exception as? ChangeTierError {
+            if case .emptyList = exception {
+                withAnimation {
+                    self.missingQuotes = true
+                }
+                return
+            }
+        }
+        withAnimation {
+            self.viewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 
@@ -171,7 +188,7 @@ public class ChangeTierViewModel: ObservableObject {
                 withAnimation {
                     viewState = .success
                 }
-            } catch let error {
+            } catch {
                 withAnimation {
                     self.viewState = .error(
                         errorMessage: error.localizedDescription

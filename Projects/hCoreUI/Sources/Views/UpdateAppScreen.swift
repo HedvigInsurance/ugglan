@@ -1,6 +1,6 @@
+import Environment
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct UpdateAppScreen: View {
     let onSelected: () -> Void
@@ -24,13 +24,11 @@ public struct UpdateAppScreen: View {
     }
 
     private var buttonsInit: StateViewButtonConfig {
-
         var dismissButton: StateViewButtonConfig.StateViewButton? {
             if withoutDismissButton {
                 return nil
             }
             return .init(
-                buttonTitle: L10n.generalCloseButton,
                 buttonAction: {
                     onSelected()
                 }
@@ -42,7 +40,7 @@ public struct UpdateAppScreen: View {
                 .init(
                     buttonTitle: L10n.embarkUpdateAppButton,
                     buttonAction: {
-                        UIApplication.shared.open(Environment.current.appStoreURL)
+                        Dependencies.urlOpener.open(Environment.current.appStoreURL)
                         onSelected()
                     }
                 ),

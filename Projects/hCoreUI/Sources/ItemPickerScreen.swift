@@ -8,22 +8,10 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     var preSelectedItems: [T]
     let onSelected: ([(object: T?, displayName: String?)]) -> Void
     let onCancel: (() -> Void)?
-    let singleSelect: Bool?
-    let attachToBottom: Bool
-    let disableIfNoneSelected: Bool
-    let manualInputPlaceholder: String
-    let hButtonText: String
+    let buttonText: String
     let infoCard: ItemPickerInfoCard?
-    let listTitle: String?
-    let contentPosition: ContentPosition?
-    let useAlwaysAttachedToBottom: Bool
-
-    var fieldSize: hFieldSize
-    let manualInputId = "manualInputId"
-
+    var manualInput: ItemManualInput
     @Published var type: ItemPickerFieldType? = nil
-    @Published var manualBrandName: String = ""
-    @Published var manualInput: Bool = false
     @Published var selectedItems: [T] = []
 
     public init(
@@ -31,46 +19,18 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         preSelectedItems: @escaping () -> [T],
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
-        singleSelect: Bool? = false,
-        attachToBottom: Bool = false,
-        disableIfNoneSelected: Bool = false,
-        manualInputPlaceholder: String? = "",
-        manualBrandName: String? = nil,
-        withTitle: String? = nil,
-        hButtonText: String? = L10n.generalSaveButton,
-        infoCard: ItemPickerInfoCard? = nil,
-        fieldSize: hFieldSize? = nil,
-        contentPosition: ContentPosition? = nil,
-        useAlwaysAttachedToBottom: Bool = false
+        manualInputConfig: ItemManualInput? = nil,
+        buttonText: String? = L10n.generalSaveButton,
+        infoCard: ItemPickerInfoCard? = nil
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
         self.onSelected = onSelected
         self.onCancel = onCancel
-        self.singleSelect = singleSelect
-        self.listTitle = withTitle
-        self.attachToBottom = attachToBottom
-        self.disableIfNoneSelected = disableIfNoneSelected
-        self.manualInputPlaceholder = manualInputPlaceholder ?? ""
-        if let manualBrandName {
-            self.manualBrandName = manualBrandName
-            self.manualInput = true
-        }
-        self.hButtonText = hButtonText ?? L10n.generalSaveButton
-
-        if fieldSize != nil {
-            self.fieldSize = fieldSize ?? .large
-        } else {
-            if items.count > 3 {
-                self.fieldSize = .small
-            } else {
-                self.fieldSize = .large
-            }
-        }
-
+        manualInput = manualInputConfig ?? .init(placeholder: nil)
+        self.buttonText = buttonText ?? L10n.generalSaveButton
         self.infoCard = infoCard
-        self.contentPosition = contentPosition
-        self.useAlwaysAttachedToBottom = useAlwaysAttachedToBottom
+        selectedItems = preSelectedItems()
     }
 
     public struct ItemPickerInfoCard {
@@ -93,60 +53,53 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
             case bottom
         }
     }
+
+    public class ItemManualInput {
+        let id = "manualInputId"
+        let placeholder: String?
+        @Published public var brandName: String = ""
+        @Published var input: Bool = false
+
+        public init(
+            placeholder: String? = nil,
+            brandName: String? = nil
+        ) {
+            self.placeholder = placeholder
+            if let brandName {
+                self.brandName = brandName
+                input = true
+            }
+        }
+    }
 }
 
 public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hItemPickerBottomAttachedView) var bottomAttachedView
-    @Environment(\.hIncludeManualInput) var includeManualInput
+    @Environment(\.hItemPickerAttributes) var attributes
+    @Environment(\.hFieldSize) var fieldSize
     @ObservedObject private var config: ItemConfig<T>
 
-    let leftView: ((T?) -> AnyView?)?
     public init(
-        config: ItemConfig<T>,
-        leftView: ((T?) -> AnyView?)? = nil
+        config: ItemConfig<T>
     ) {
         self.config = config
-        self.leftView = leftView
     }
 
     @ViewBuilder
     public var body: some View {
         ScrollViewReader { proxy in
-            if config.attachToBottom {
+            if attributes.contains(.attachToBottom) {
                 hForm {}
-                    .accessibilityLabel(
-                        config.singleSelect ?? false
-                            ? L10n.voiceoverPickerInfo(config.hButtonText)
-                            : L10n.voiceoverPickerInfoMultiple(config.hButtonText)
-                    )
-                    .hFormContentPosition(config.contentPosition ?? .bottom)
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
-                            VStack(spacing: .padding16) {
-                                if let infoCard = config.infoCard, infoCard.placement == .top {
-                                    hSection {
-                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
-                                    }
-                                    .sectionContainerStyle(.transparent)
-                                }
-                                content(with: proxy)
-                                if let infoCard = config.infoCard, infoCard.placement == .bottom {
-                                    hSection {
-                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
-                                    }
-                                    .sectionContainerStyle(.transparent)
-                                }
-                            }
+                            content(with: proxy)
                             bottomContent
                         }
                     }
-                    .onAppear {
-                        onAppear(with: proxy)
-                    }
             } else {
                 Group {
-                    if config.useAlwaysAttachedToBottom {
+                    if attributes.contains(.alwaysAttachToBottom) {
                         hForm {
                             content(with: proxy)
                         }
@@ -162,114 +115,112 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                         }
                     }
                 }
-                .hFormContentPosition(config.contentPosition ?? .compact)
-
-                .onAppear {
-                    onAppear(with: proxy)
-                }
             }
         }
-        .hFieldSize(config.fieldSize)
+        .hFieldSize(fieldSize)
     }
 
     private func onAppear(with proxy: ScrollViewProxy) {
-        config.selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
-            .map({
-                $0.object
-            })
         if let selectedItem = config.selectedItems.first, config.selectedItems.count == 1 {
             proxy.scrollTo(selectedItem, anchor: .center)
         }
 
-        if config.manualInput {
-            proxy.scrollTo(config.manualInputId, anchor: .center)
+        if config.manualInput.input {
+            proxy.scrollTo(config.manualInput.id, anchor: .center)
         }
     }
 
     private func content(with proxy: ScrollViewProxy) -> some View {
-        VStack(spacing: .padding4) {
-            if let listTitle = config.listTitle {
-                hSection(config.items, id: \.object) { item in
-                    getCell(item: item.object)
-                        .id(item.object)
-                }
-                .withHeader({
-                    hText(listTitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                })
-                .hEmbeddedHeader
-                .hWithoutDividerPadding
-                .disabled(isLoading)
-            } else {
-                ForEach(config.items, id: \.object) { item in
-                    hSection {
-                        getCell(item: item.object)
-                            .id(item.object)
-                    }
-                    .disabled(isLoading)
-                }
+        VStack(spacing: .padding16) {
+            if let infoCard = config.infoCard, infoCard.placement == .top {
+                infoCardView(infoCard: infoCard)
             }
-
-            let showOtherCell = includeManualInput && !config.items.isEmpty
-            let showFreeTextField = (config.manualInput && includeManualInput) || config.items.isEmpty
-
-            if showOtherCell {
-                hSection {
-                    getCell(displayName: L10n.manualInputListOther)
-                }
-                .disabled(isLoading)
+            VStack(spacing: .padding4) {
+                itemsView
+                otherFieldView
             }
-
-            if showFreeTextField {
-                hSection {
-                    hFloatingTextField(
-                        masking: Masking(type: .none),
-                        value: $config.manualBrandName,
-                        equals: $config.type,
-                        focusValue: .inputField,
-                        placeholder: config.manualInputPlaceholder
-                    )
-                }
-                .onAppear {
-                    config.manualInput = true
-                    config.selectedItems = []
-                }
-                .id(config.manualInputId)
+            if let infoCard = config.infoCard, infoCard.placement == .bottom {
+                infoCardView(infoCard: infoCard)
             }
+        }
+        .onAppear {
+            onAppear(with: proxy)
         }
     }
 
-    var accessibilityText: String {
-        if config.selectedItems.isEmpty {
-            if config.singleSelect ?? false {
-                return L10n.voiceoverPickerInfo(config.hButtonText)
+    private var itemsView: some View {
+        ForEach(config.items, id: \.object) { item in
+            hSection {
+                getCell(for: item.object)
+                    .id(item.object)
             }
-            return L10n.voiceoverPickerInfoMultiple(config.hButtonText)
+            .disabled(isLoading)
         }
-        let selectedItemsDisplayName = config.selectedItems.map { selectedItem in
-            config.items.first(where: { $0.object == selectedItem })?.displayName.title ?? ""
+    }
+
+    @ViewBuilder
+    private var otherFieldView: some View {
+        let showOtherCell = config.manualInput.placeholder != nil && !config.items.isEmpty
+        let showFreeTextField = config.manualInput.input || config.items.isEmpty
+
+        if showOtherCell {
+            otherCell
         }
-        return L10n.voiceoverOptionSelected + selectedItemsDisplayName.joined()
+
+        if showFreeTextField {
+            freeTextField
+        }
+    }
+
+    private var otherCell: some View {
+        hSection {
+            getCell(isManualInput: true)
+        }
+        .disabled(isLoading)
+    }
+
+    private var freeTextField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .none),
+                value: $config.manualInput.brandName,
+                equals: $config.type,
+                focusValue: .inputField,
+                placeholder: config.manualInput.placeholder
+            )
+        }
+        .onAppear {
+            config.manualInput.input = true
+            config.selectedItems = []
+        }
+        .id(config.manualInput.id)
+    }
+
+    private func infoCardView(infoCard: ItemConfig<T>.ItemPickerInfoCard) -> some View {
+        hSection {
+            InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+        }
+        .sectionContainerStyle(.transparent)
     }
 
     var bottomContent: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 bottomAttachedView
-
-                hButton.LargeButton(type: .primary) {
-                    sendSelectedItems
-                } content: {
-                    hText(config.hButtonText, style: .body1)
-                }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: config.buttonText),
+                    {
+                        sendSelectedItems
+                    }
+                )
                 .hButtonIsLoading(isLoading)
-                .disabled(config.disableIfNoneSelected ? config.selectedItems.isEmpty : false)
+                .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
                 .accessibilityHint(accessibilityText)
                 if let onCancel = config.onCancel {
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         onCancel()
-                    } content: {
-                        hText(L10n.generalCancelButton, style: .body1)
                     }
                     .disabled(isLoading)
                     .hButtonDontShowLoadingWhenDisabled(true)
@@ -283,13 +234,13 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     var sendSelectedItems: Void {
         if config.selectedItems.count > 1 {
             config.onSelected(
-                config.selectedItems.map({
+                config.selectedItems.map {
                     (object: $0, displayName: nil)
-                })
+                }
             )
         } else if config.selectedItems.count == 0 {
-            if config.manualInput && includeManualInput {
-                config.onSelected([(object: nil, displayName: config.manualBrandName)])
+            if config.manualInput.input {
+                config.onSelected([(object: nil, displayName: config.manualInput.brandName)])
             } else {
                 config.onSelected([])
             }
@@ -301,20 +252,20 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCell(item: T? = nil, displayName: String? = nil) -> some View {
+    func getCell(for item: T? = nil, isManualInput: Bool = false) -> some View {
         hRow {
-            getCellContent(item, displayName)
+            getCellContent(for: item, isManualInput)
         }
         .withEmptyAccessory
         .onTap {
             if let item {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    config.manualInput = false
+                    config.manualInput.input = false
                 }
                 onTapExecuteFor(item)
             } else {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    config.manualInput = true
+                    config.manualInput.input = true
                 }
                 config.selectedItems = []
                 config.type = .inputField
@@ -323,25 +274,24 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCellContent(_ item: T?, _ itemDisplayName: String?) -> some View {
+    func getCellContent(for item: T?, _ isManualInput: Bool = false) -> some View {
         let isSelected =
-            config.selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
+            config.selectedItems.first(where: { $0 == item }) != nil
+            || (config.manualInput.input && isManualInput == true)
 
         let displayName = config.items.first(where: { $0.object == item })?.displayName
 
-        hFieldTextContent(
+        hFieldTextContent<T>(
             item: displayName,
-            fieldSize: config.fieldSize,
-            itemDisplayName: itemDisplayName,
-            leftViewWithItem: leftView,
+            fieldSize: fieldSize,
+            itemDisplayName: isManualInput ? L10n.manualInputListOther : nil,
             cellView: {
-                AnyView(
-                    selectionField(
-                        isSelected: isSelected,
-                        item,
-                        itemDisplayName
-                    )
+                selectionField(
+                    isSelected: isSelected,
+                    item,
+                    isManualInput: isManualInput
                 )
+                .asAnyView
             }
         )
         .accessibilityHint(isSelected ? L10n.voiceoverOptionSelected + (displayName?.title ?? "") : "")
@@ -350,8 +300,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     func onTapExecuteFor(_ item: T) {
         ImpactGenerator.soft()
         withAnimation(.easeInOut(duration: 0.2)) {
-            if !(config.singleSelect ?? true) {
-                if let index = self.config.selectedItems.firstIndex(where: { $0 == item }) {
+            if !attributes.contains(.singleSelect) {
+                if let index = config.selectedItems.firstIndex(where: { $0 == item }) {
                     config.selectedItems.remove(at: index)
                 } else {
                     config.selectedItems.append(item)
@@ -368,18 +318,18 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
-    func selectionField(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
+    func selectionField(isSelected _: Bool, _ item: T?, isManualInput: Bool) -> some View {
         Group {
             ZStack {
                 let isSelected =
                     config.selectedItems.first(where: { $0 == item }) != nil
-                    || (config.manualInput && itemDisplayName != nil)
-                var displayName = config.items.first(where: { $0.object == item })?.displayName
+                    || (config.manualInput.input && isManualInput)
+                let displayName = config.items.first(where: { $0.object == item })?.displayName
 
-                if itemDisplayName == L10n.manualInputListOther {
-                    let _ = displayName = .init(title: L10n.manualInputListOther, subTitle: nil)
-                }
-                getRightView(isSelected: isSelected, title: displayName?.title)
+                getRightView(
+                    isSelected: isSelected,
+                    title: isManualInput ? L10n.manualInputListOther : displayName?.title
+                )
             }
         }
         .frame(width: 24, height: 24)
@@ -387,7 +337,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
 
     @ViewBuilder
     private func getRightView(isSelected: Bool, title: String?) -> some View {
-        if let singleSelect = config.singleSelect, singleSelect {
+        if attributes.contains(.singleSelect) {
             hRadioOptionSelectedView(
                 selectedValue: .constant(isSelected ? title : nil),
                 value: title ?? ""
@@ -400,6 +350,19 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
             .hUseCheckbox
         }
     }
+
+    private var accessibilityText: String {
+        if config.selectedItems.isEmpty {
+            if attributes.contains(.singleSelect) {
+                return L10n.voiceoverPickerInfo(config.buttonText)
+            }
+            return L10n.voiceoverPickerInfoMultiple(config.buttonText)
+        }
+        let selectedItemsDisplayName = config.selectedItems.map { selectedItem in
+            config.items.first(where: { $0.object == selectedItem })?.displayName.title ?? ""
+        }
+        return L10n.voiceoverOptionSelected + selectedItemsDisplayName.joined()
+    }
 }
 
 struct ItemPickerScreen_Previews: PreviewProvider {
@@ -407,48 +370,35 @@ struct ItemPickerScreen_Previews: PreviewProvider {
         let id: String
         let name: ItemModel
     }
+
     static var previews: some View {
         VStack {
             ItemPickerScreen<ModelForPreview>(
                 config:
                     .init(
-                        items: {
-                            return [
-                                ModelForPreview(id: "id", name: .init(title: "name1")),
-                                ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
-                                ModelForPreview(
-                                    id: "id3",
-                                    name: .init(title: "title3", subTitle: "subtitle3")
-                                ),
-                                ModelForPreview(id: "id4", name: .init(title: "name4")),
-                                ModelForPreview(id: "id5", name: .init(title: "name5")),
-                                ModelForPreview(id: "id6", name: .init(title: "name6")),
-                                ModelForPreview(id: "id7", name: .init(title: "name7")),
-
-                            ]
-                            .compactMap({ (object: $0, displayName: $0.name) })
-                        }(),
+                        items: [
+                            ModelForPreview(id: "id", name: .init(title: "name1")),
+                            ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
+                            ModelForPreview(
+                                id: "id3",
+                                name: .init(title: "title3", subTitle: "subtitle3")
+                            ),
+                            ModelForPreview(id: "id4", name: .init(title: "name4")),
+                            ModelForPreview(id: "id5", name: .init(title: "name5")),
+                            ModelForPreview(id: "id6", name: .init(title: "name6")),
+                            ModelForPreview(id: "id7", name: .init(title: "name7")),
+                        ]
+                        .compactMap { (object: $0, displayName: $0.name) },
                         preSelectedItems: { [] },
-                        onSelected: { selectedLocation in
-
+                        onSelected: { _ in
                         },
-                        onCancel: {
-                        },
-                        singleSelect: true,
-                        attachToBottom: true,
-                        manualInputPlaceholder: "Enter brand name",
-                        withTitle: "Label",
-                        fieldSize: .small
-                    ),
-                leftView: { _ in
-                    Image(uiImage: hCoreUIAssets.pillowHome.image)
-                        .resizable()
-                        .frame(width: 32, height: 32)
-                        .asAnyView
-                }
+                        onCancel: {},
+                        manualInputConfig: .init(placeholder: "Enter brand name"),
+                        buttonText: L10n.generalSaveButton
+                    )
             )
-            .hEmbeddedHeader
-            .hIncludeManualInput
+            .hItemPickerAttributes([.singleSelect, .attachToBottom])
+            .hFieldSize(.small)
         }
     }
 }
@@ -466,13 +416,37 @@ extension EnvironmentValues {
 
 extension View {
     public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hItemPickerBottomAttachedView, AnyView(content()))
+        environment(\.hItemPickerBottomAttachedView, AnyView(content()))
+    }
+}
+
+public enum ItemPickerAttribute {
+    case singleSelect
+    case disableIfNoneSelected
+    case attachToBottom
+    case alwaysAttachToBottom
+}
+
+private struct EnvironmentHItemPickerAttributes: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: [ItemPickerAttribute] = []
+}
+
+extension EnvironmentValues {
+    public var hItemPickerAttributes: [ItemPickerAttribute] {
+        get { self[EnvironmentHItemPickerAttributes.self] }
+        set { self[EnvironmentHItemPickerAttributes.self] = newValue }
+    }
+}
+
+extension View {
+    public func hItemPickerAttributes(_ attributes: [ItemPickerAttribute]) -> some View {
+        environment(\.hItemPickerAttributes, attributes)
     }
 }
 
 enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
     static var last: ItemPickerFieldType {
-        return ItemPickerFieldType.inputField
+        ItemPickerFieldType.inputField
     }
 
     var next: ItemPickerFieldType? {
@@ -488,23 +462,6 @@ enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
     case none
 }
 
-private struct EnvironmentHIncludeManualInput: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hIncludeManualInput: Bool {
-        get { self[EnvironmentHIncludeManualInput.self] }
-        set { self[EnvironmentHIncludeManualInput.self] = newValue }
-    }
-}
-
-extension View {
-    public var hIncludeManualInput: some View {
-        self.environment(\.hIncludeManualInput, true)
-    }
-}
-
 private struct EnvironmentHLeftAlign: EnvironmentKey {
     static let defaultValue: Bool = false
 }
@@ -518,7 +475,7 @@ extension EnvironmentValues {
 
 extension View {
     public var hFieldLeftAttachedView: some View {
-        self.environment(\.hFieldLeftAttachedView, true)
+        environment(\.hFieldLeftAttachedView, true)
     }
 }
 
@@ -535,6 +492,6 @@ extension EnvironmentValues {
 
 extension View {
     public var hUseCheckbox: some View {
-        self.environment(\.hUseCheckbox, true)
+        environment(\.hUseCheckbox, true)
     }
 }

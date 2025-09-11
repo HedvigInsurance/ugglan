@@ -5,63 +5,52 @@ public struct AccordionView: View {
     let peril: Perils?
     let title: String
     let description: String
-    @State var extended = false
-
-    public init(
-        peril: Perils
-    ) {
+    @State private var extended = false
+    public init(peril: Perils) {
         self.peril = peril
-        self.title = peril.title
-        self.description = peril.description
+        title = peril.title
+        description = peril.description
     }
 
-    public init(
-        title: String,
-        description: String
-    ) {
+    public init(title: String, description: String) {
         self.title = title
         self.description = description
-        self.peril = nil
+        peril = nil
     }
 
     public var body: some View {
-        SwiftUI.Button {
-            withAnimation {
-                extended.toggle()
-            }
-        } label: {
-            EmptyView()
-        }
-        .buttonStyle(
-            AccordionButtonStyle(
-                peril: peril,
-                title: title,
-                description: description,
-                extended: $extended
-            )
-        )
-        .modifier(
-            BackgorundColorAnimation(
+        ZStack {
+            ColorAnimationView(
                 animationTrigger: $extended,
                 color: hSurfaceColor.Opaque.primary,
                 animationColor: hSurfaceColor.Opaque.secondary
             )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+            VStack(spacing: 0) {
+                AccordionHeader(peril: peril, title: title, extended: $extended)
+                    .padding(.bottom, .padding18)
+                    .accessibilityAddTraits(.isButton)
+                if extended {
+                    AccordionBody(peril: peril, description: description, extended: $extended)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+        .onTapGesture(count: 1) {
+            withAnimation {
+                extended.toggle()
+                UIAccessibility.post(notification: .layoutChanged, argument: nil)
+            }
+        }
     }
 }
 
-struct AccordionButtonStyle: SwiftUI.ButtonStyle {
-    var peril: Perils?
+struct AccordionHeader: View {
+    let peril: Perils?
     let title: String
-    let description: String
-
     @Binding var extended: Bool
-    @Environment(\.hFieldSize) var fieldSize
-
-    func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .center, spacing: 11) {
-            HStack(alignment: .top, spacing: 8) {
+    var body: some View {
+        hSection {
+            HStack(alignment: .top, spacing: .padding8) {
                 if let color = peril?.color {
                     Group {
                         if peril?.isDisabled ?? false {
@@ -72,16 +61,18 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
                                 .fill(Color(hexString: color))
                         }
                     }
-                    .frame(width: fieldSize == .small ? 20 : 24, height: fieldSize == .small ? 20 : 24)
-                    .padding(.horizontal, .padding4)
-                    .padding(.vertical, .padding2)
+                    .frame(width: 16, height: 16)
+                    .padding([.horizontal, .vertical], .padding4)
                 }
-                hText(title, style: fieldSize == .large ? .heading2 : .heading1)
+                hText(title, style: .body1)
                     .lineLimit(extended ? nil : 1)
-                    .foregroundColor(getTextColor)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(peril?.textColor)
+                    .accessibilityLabel("\(title)")
+                    .accessibilityValue(extended ? L10n.voiceoverExpanded : L10n.voiceoverCollapsed)
                 Spacer()
-                ZStack {
-                    Group {
+                Group {
+                    ZStack {
                         Image(
                             uiImage: hCoreUIAssets.minus.image
                         )
@@ -97,40 +88,53 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
                         .transition(.opacity.animation(.easeOut))
                         .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
                     }
-                    .foregroundColor(getTextColor)
                 }
+                .foregroundColor(peril?.textColor)
             }
+            .padding(.top, .padding16)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
 
-            if extended {
-                VStack(alignment: .leading, spacing: .padding12) {
-                    hText(description, style: peril != nil ? .label : .body1)
-                        .padding(.bottom, .padding12)
-                        .foregroundColor(getTextColor)
-                    if let perilCover = peril?.covered {
+struct AccordionBody: View {
+    let peril: Perils?
+    let description: String
+    @Binding var extended: Bool
+
+    var body: some View {
+        hSection {
+            VStack(alignment: .leading, spacing: .padding24) {
+                hText(description, style: peril != nil ? .label : .body1)
+                    .foregroundColor(peril?.textColor)
+                if let perilCover = peril?.covered, !perilCover.isEmpty {
+                    VStack(alignment: .leading, spacing: .padding12) {
                         ForEach(Array(perilCover.enumerated()), id: \.offset) { index, item in
                             HStack(alignment: .top, spacing: 8) {
-                                hText(String(format: "%02d", index + 1), style: .label)
-                                    .foregroundColor(hTextColor.Opaque.tertiary)
+                                if perilCover.count > 1 {
+                                    hText(String(format: "%02d", index + 1), style: .label)
+                                        .foregroundColor(hTextColor.Opaque.tertiary)
+                                }
                                 hText(item, style: .label)
+                                Spacer()
                             }
+                            .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, .padding32)
-                .padding(.bottom, .padding24)
             }
+            .padding(.horizontal, peril?.color == nil ? 0 : .padding32)
+            .padding(.bottom, .padding24)
         }
-        .padding(.horizontal, .padding16)
-        .padding(.top, fieldSize == .small ? 15 : .padding16)
-        .padding(.bottom, fieldSize == .small ? 17 : 18)
-        .contentShape(Rectangle())
-
+        .accessibilityElement(children: .combine)
     }
+}
 
+@MainActor
+extension Perils {
     @hColorBuilder
-    var getTextColor: some hColor {
-        if peril?.isDisabled ?? false {
+    var textColor: some hColor {
+        if isDisabled {
             hTextColor.Opaque.disabled
         } else {
             hTextColor.Opaque.primary
@@ -140,6 +144,16 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
 
 #Preview {
     hSection {
+        AccordionView(
+            peril: .init(
+                id: "id",
+                title: "title",
+                description:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent suscipit metus a porttitor pulvinar. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus ac tristique sem. Praesent sit amet nisi fermentum, dignissim est nec, tristique ante. Aliquam aliquet vestibulum nulla a congue.",
+                color: "#000000",
+                covered: []
+            )
+        )
         AccordionView(
             title: "Label",
             description:

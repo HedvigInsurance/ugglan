@@ -1,10 +1,8 @@
 import Combine
 import PresentableStore
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct MyInfoView: View {
     @StateObject var vm = MyInfoViewModel()
@@ -12,111 +10,72 @@ public struct MyInfoView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            hSection {
-                VStack(spacing: 4) {
-                    hFloatingTextField(
-                        masking: .init(type: .digits),
-                        value: $vm.phone,
-                        equals: $vm.type,
-                        focusValue: .phone,
-                        placeholder: L10n.phoneNumberRowTitle,
-                        error: $vm.phoneError
-                    )
-                    hFloatingTextField(
-                        masking: .init(type: .email),
-                        value: $vm.email,
-                        equals: $vm.type,
-                        focusValue: .email,
-                        placeholder: L10n.emailRowTitle,
-                        error: $vm.emailError
-                    )
-                }
-                .disabled(vm.isLoading)
-            }
-            .padding(.top, .padding8)
-        }
-        .hFormAttachToBottom({
-            hSection {
-                hButton.LargeButton(type: .primary) {
-                    Task {
-                        withAnimation {
-                            vm.isLoading = true
-                        }
-                        await vm.save()
-                        withAnimation {
-                            vm.isLoading = false
-                            vm.checkForChanges()
-                        }
-                    }
-                } content: {
-                    hText(L10n.generalSaveButton)
-                }
-                .hButtonIsLoading(vm.isLoading)
-            }
-            .sectionContainerStyle(.transparent)
-            .padding(.bottom, .padding8)
-            .opacity(vm.inEditMode ? 1 : 0)
-        })
-        .sectionContainerStyle(.transparent)
-        .introspect(.viewController, on: .iOS(.v13...)) { vc in
-            self.vm.vc = vc
-        }
-        .alert(isPresented: $vm.showAlert) {
-            cancelAlert
-        }
-        .navigationTitle(L10n.profileMyInfoRowTitle)
+        hForm {}
+            .hFormAttachToBottom {
+                hSection {
+                    VStack(spacing: .padding16) {
+                        VStack(spacing: .padding4) {
+                            infoCardView
+                            emailField
+                            phoneNumberField
 
+                            if let error = vm.error {
+                                hText(error, style: .label)
+                                    .foregroundColor(hSignalColor.Amber.text)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        buttonView
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+                .disabled(vm.viewState == .loading)
+            }
     }
 
-    @ToolbarContentBuilder
-    private var toolbars: some ToolbarContent {
-        Group {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(L10n.myInfoCancelButton) {
-                    vm.cancel()
-                }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .opacity(vm.inEditMode ? 1 : 0)
-                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-                .disabled(!vm.inEditMode)
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if vm.isLoading {
-                    ProgressView().foregroundColor(hTextColor.Opaque.primary)
-                        .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-
-                } else {
-                    Button(L10n.generalDoneButton) {
-                        Task {
-                            withAnimation {
-                                vm.isLoading = true
-                            }
-                            await vm.save()
-                            withAnimation {
-                                vm.isLoading = false
-                                vm.checkForChanges()
-                            }
-                        }
-                    }
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .opacity(vm.inEditMode ? 1 : 0)
-                    .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-                    .disabled(!vm.inEditMode)
-                }
-            }
+    @ViewBuilder
+    private var infoCardView: (some View)? {
+        if vm.showInfoCard {
+            InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
         }
     }
 
-    private var cancelAlert: SwiftUI.Alert {
-        return Alert(
-            title: Text(L10n.myInfoCancelAlertTitle),
-            message: Text(L10n.myInfoCancelAlertMessage),
-            primaryButton: .default(Text(L10n.myInfoCancelAlertButtonCancel)),
-            secondaryButton: .destructive(Text(L10n.myInfoCancelAlertButtonConfirm)) {
-                vm.vc?.navigationController?.popViewController(animated: true)
+    private var emailField: some View {
+        hFloatingTextField(
+            masking: .init(type: .digits),
+            value: $vm.currentPhoneInput,
+            equals: $vm.type,
+            focusValue: .phone,
+            placeholder: L10n.phoneNumberRowTitle,
+            error: $vm.phoneError
+        )
+    }
+
+    private var phoneNumberField: some View {
+        hFloatingTextField(
+            masking: .init(type: .email),
+            value: $vm.currentEmailInput,
+            equals: $vm.type,
+            focusValue: .email,
+            placeholder: L10n.emailRowTitle,
+            error: $vm.emailError
+        )
+    }
+
+    private var buttonView: some View {
+        hButton(
+            .large,
+            .primary,
+            content: .init(title: L10n.generalSaveButton),
+            {
+                Task {
+                    await vm.save()
+                }
             }
         )
+        .hButtonIsLoading(vm.viewState == .loading)
+        .disabled(vm.disabledSaveButton)
+        .padding(.bottom, .padding8)
     }
 }
 
@@ -125,59 +84,83 @@ public class MyInfoViewModel: ObservableObject {
     var profileService = ProfileService()
     @PresentableStore var store: ProfileStore
     @Published var type: MyInfoViewEditType?
-    @Published var phone: String = ""
+    @Published var currentPhoneInput: String = ""
     @Published var phoneError: String?
-    @Published var email: String = ""
+    @Published var currentEmailInput: String = ""
     @Published var emailError: String?
-    @Published var inEditMode: Bool = false
-    @Published var showAlert: Bool = false
-    @Published var isLoading: Bool = false
+    @Published var error: String?
+    @Published var viewState: ProcessingState = .success
+    @Published var disabledSaveButton: Bool = false
 
-    weak var vc: UIViewController?
     private var originalPhone: String
     private var originalEmail: String
     private var cancellables = Set<AnyCancellable>()
+    @Published var showInfoCard: Bool
 
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
+        showInfoCard = store.state.memberDetails?.isContactInfoUpdateNeeded ?? false
         originalPhone = store.state.memberDetails?.phone ?? ""
         originalEmail = store.state.memberDetails?.email ?? ""
-        phone = store.state.memberDetails?.phone ?? ""
-        email = store.state.memberDetails?.email ?? ""
-        $phone
+        currentPhoneInput = store.state.memberDetails?.phone ?? ""
+        currentEmailInput = store.state.memberDetails?.email ?? ""
+        $currentPhoneInput
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
-                self?.checkForChanges()
+                self?.isValid()
             }
             .store(in: &cancellables)
-        $email
+        $currentEmailInput
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
-                self?.checkForChanges()
+                self?.isValid()
+            }
+            .store(in: &cancellables)
+
+        store.stateSignal
+            .receive(on: RunLoop.main)
+            .map(\.memberDetails?.isContactInfoUpdateNeeded)
+            .removeDuplicates()
+            .sink { [weak self] state in
+                self?.showInfoCard = state ?? false
             }
             .store(in: &cancellables)
     }
 
-    func checkForChanges() {
+    func isValid() {
         withAnimation {
-            inEditMode = originalPhone != phone || originalEmail != email
+            disabledSaveButton = !hasValidPhoneNumber || !hasValidEmail
         }
+    }
+
+    private var hasValidPhoneNumber: Bool {
+        currentPhoneInput.isValidPhone && phoneError == nil
+    }
+
+    private var hasValidEmail: Bool {
+        currentEmailInput != "" && emailError == nil
     }
 
     @MainActor
     func save() async {
-        async let updatePhoneAsync: () = self.getPhoneFuture()
-        async let updateEmailAsync: () = self.getEmailFuture()
+        error = nil
+        withAnimation {
+            viewState = .loading
+        }
+        async let updateAsync: () = getFuture()
         do {
-            _ = try await [updatePhoneAsync, updateEmailAsync]
+            _ = try await [updateAsync]
+            withAnimation {
+                viewState = .success
+            }
             Toasts.shared.displayToastBar(
                 toast: .init(
                     type: .campaign,
-                    icon: hCoreUIAssets.edit.image,
+                    icon: hCoreUIAssets.checkmark.view,
                     text: L10n.profileMyInfoSaveSuccessToastBody
                 )
             )
-        } catch let error {
+        } catch {
             if let error = error as? MyInfoSaveError {
                 switch error {
                 case .emailEmpty, .emailMalformed:
@@ -188,53 +171,48 @@ public class MyInfoViewModel: ObservableObject {
                     withAnimation {
                         self.phoneError = error.localizedDescription
                     }
+                case let .error(message):
+                    withAnimation {
+                        self.error = message
+                    }
+                }
+                withAnimation {
+                    viewState = .error(errorMessage: error.localizedDescription)
                 }
             }
+            isValid()
         }
     }
 
-    private func getPhoneFuture() async throws {
-        if originalPhone != phone {
-            if phone.isEmpty {
-                throw MyInfoSaveError.phoneNumberEmpty
-            }
-            do {
-                let newPhone = try await profileService.update(phone: phone)
-                self.originalPhone = newPhone
-                self.store.send(.setMemberPhone(phone: newPhone))
-            } catch {
-                throw MyInfoSaveError.phoneNumberMalformed
-            }
-
+    private func getFuture() async throws {
+        if currentPhoneInput.isEmpty {
+            throw MyInfoSaveError.phoneNumberEmpty
+        } else if currentEmailInput.isEmpty {
+            throw MyInfoSaveError.emailEmpty
         }
-    }
 
-    private func getEmailFuture() async throws {
-        if originalEmail != email {
-            if email.isEmpty {
-                throw MyInfoSaveError.emailEmpty
-            }
-            if !Masking(type: .email).isValid(text: email) {
-                throw MyInfoSaveError.emailMalformed
-            }
-            do {
-                let newEmail = try await profileService.update(email: email)
-                self.originalEmail = newEmail
-                self.store.send(.setMemberEmail(email: newEmail))
-            } catch {
-                throw MyInfoSaveError.emailMalformed
-            }
-
+        if !Masking(type: .email).isValid(text: currentEmailInput) {
+            throw MyInfoSaveError.emailMalformed
         }
-    }
 
-    func cancel() {
-        showAlert = true
+        let updatedContactData = try await profileService.update(
+            email: currentEmailInput,
+            phone: currentPhoneInput
+        )
+
+        let newPhone = updatedContactData.phone
+        let newEmail = updatedContactData.email
+
+        originalPhone = newPhone
+        originalEmail = newEmail
+
+        store.send(.setMemberPhone(phone: newPhone))
+        store.send(.setMemberEmail(email: newEmail))
     }
 
     enum MyInfoViewEditType: hTextFieldFocusStateCompliant {
         static var last: MyInfoViewEditType {
-            return MyInfoViewEditType.email
+            MyInfoViewEditType.email
         }
 
         var next: MyInfoViewEditType? {
@@ -262,7 +240,8 @@ struct MyInfoView_Previews: PreviewProvider {
                     lastName: "",
                     phone: "",
                     email: "sladjann@gmail.com",
-                    hasTravelCertificate: true
+                    hasTravelCertificate: true,
+                    isContactInfoUpdateNeeded: true
                 )
             )
         )

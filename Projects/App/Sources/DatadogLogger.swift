@@ -2,18 +2,21 @@ import Apollo
 import DatadogInternal
 import DatadogLogs
 import DatadogRUM
+import Environment
+import Logger
 import SwiftUI
-import hGraphQL
 
-class DatadogLogger: hGraphQL.Logging {
+class DatadogLogger: Logging {
     private let datadogLogger: LoggerProtocol
 
     init(datadogLogger: LoggerProtocol) {
         self.datadogLogger = datadogLogger
     }
 
-    public func debug(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
-        datadogLogger.debug(message, error: error, attributes: attributes)
+    func debug(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+        if Environment.current != .production {
+            datadogLogger.debug(message, error: error, attributes: attributes)
+        }
     }
 
     /// Sends an INFO log message.
@@ -22,7 +25,7 @@ class DatadogLogger: hGraphQL.Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func info(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func info(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.info(message, error: error, attributes: attributes)
     }
 
@@ -32,7 +35,7 @@ class DatadogLogger: hGraphQL.Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func notice(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func notice(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.notice(message, error: error, attributes: attributes)
     }
 
@@ -42,7 +45,7 @@ class DatadogLogger: hGraphQL.Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func warn(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func warn(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.warn(message, error: error, attributes: attributes)
     }
 
@@ -52,7 +55,7 @@ class DatadogLogger: hGraphQL.Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func error(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func error(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.error(message, error: error, attributes: attributes)
     }
 
@@ -62,14 +65,14 @@ class DatadogLogger: hGraphQL.Logging {
     ///   - error: `Error` instance to be logged with its properties
     ///   - attributes: a dictionary of attributes to add for this message. If an attribute with
     /// the same key already exist in this logger, it will be overridden (just for this message).
-    public func critical(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
+    func critical(_ message: String, error: Error? = nil, attributes: [AttributeKey: AttributeValue]? = nil) {
         datadogLogger.critical(message, error: error, attributes: attributes)
     }
 
-    public func addUserAction(
+    func addUserAction(
         type: LoggingAction,
         name: String,
-        error: Error? = nil,
+        error _: Error? = nil,
         attributes: [AttributeKey: AttributeValue]? = nil
     ) {
         if let attributes {
@@ -79,10 +82,10 @@ class DatadogLogger: hGraphQL.Logging {
         }
     }
 
-    public func addError(
+    func addError(
         error: Error,
-        type: hGraphQL.ErrorSource,
-        attributes: [hGraphQL.AttributeKey: hGraphQL.AttributeValue]?
+        type: ErrorSource,
+        attributes: [AttributeKey: AttributeValue]?
     ) {
         if let attributes = attributes {
             RUMMonitor.shared().addError(error: error, source: type.asRUMErrorSource, attributes: attributes)
@@ -92,7 +95,7 @@ class DatadogLogger: hGraphQL.Logging {
     }
 }
 
-extension hGraphQL.ErrorSource {
+extension ErrorSource {
     var asRUMErrorSource: RUMErrorSource {
         switch self {
         case .network:
@@ -140,7 +143,6 @@ class InterceptingURLSessionClient: URLSessionClient {
         task: URLSessionTask,
         didFinishCollecting metrics: URLSessionTaskMetrics
     ) {
-
         URLSessionInterceptor.shared()?.task(task, didFinishCollecting: metrics)
         super.urlSession(session, task: task, didFinishCollecting: metrics)
     }

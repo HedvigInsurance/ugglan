@@ -6,23 +6,31 @@ public struct HeroAnimationWrapper<Content: View>: UIViewRepresentable {
     @Environment(\.colorScheme) var colorScheme
     private let id: String
     private let cornerRadius: CGFloat
-    public init(id: String, cornerRadius: CGFloat = .cornerRadiusL, content: @escaping () -> Content) {
+    private let enableTransition: Bool
+    public init(
+        id: String,
+        cornerRadius: CGFloat = .cornerRadiusL,
+        enableTransition: Bool = true,
+        content: @escaping () -> Content
+    ) {
         self.content = content
         self.id = id
+        self.enableTransition = enableTransition
         self.cornerRadius = cornerRadius
     }
 
-    public func makeUIView(context: Context) -> UIView {
+    public func makeUIView(context _: Context) -> UIView {
         let vc = UIHostingController(rootView: content())
         vc.view.backgroundColor = .clear
         vc.view.layer.cornerRadius = cornerRadius
         vc.view.clipsToBounds = true
+        vc.view.hero.isEnabled = enableTransition
         vc.view.hero.id = id
         vc.view.heroModifiers = [.spring(stiffness: 450, damping: 35)]
         return vc.view
     }
 
-    public func updateUIView(_ uiView: UIView, context: Context) {
+    public func updateUIView(_ uiView: UIView, context _: Context) {
         uiView.backgroundColor = hSurfaceColor.Opaque.primary.colorFor(.init(.init(colorScheme))!, .base).color
             .uiColor()
     }
@@ -30,7 +38,7 @@ public struct HeroAnimationWrapper<Content: View>: UIViewRepresentable {
 
 extension UIViewController {
     public func enableHero() {
-        self.hero.isEnabled = true
-        self.hero.modalAnimationType = .fade
+        hero.isEnabled = true
+        hero.modalAnimationType = .fade
     }
 }

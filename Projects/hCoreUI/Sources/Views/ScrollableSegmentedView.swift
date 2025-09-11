@@ -6,16 +6,20 @@ import hCore
 public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
+    let headerBottomPadding: CGFloat
 
     public init(
         vm: ScrollableSegmentedViewModel,
+        headerBottomPadding: CGFloat? = .padding16,
         contentFor: @escaping (_ id: String) -> Content
     ) {
         self.vm = vm
+        self.headerBottomPadding = headerBottomPadding ?? .padding16
         self.contentFor = contentFor
     }
+
     public var body: some View {
-        VStack(spacing: .padding16) {
+        VStack(spacing: headerBottomPadding) {
             headerControl
             scrollableContent
         }
@@ -42,6 +46,10 @@ public struct ScrollableSegmentedView<Content: View>: View {
                         HStack(spacing: .padding4) {
                             ForEach(vm.pageModels) { model in
                                 headerElement(for: model)
+                                    .accessibilityLabel(accessibilityLabel(model: model, vm: vm))
+                                    .accessibilityAction(.default) {
+                                        vm.scrollToNext()
+                                    }
                             }
                         }
                     }
@@ -59,9 +67,22 @@ public struct ScrollableSegmentedView<Content: View>: View {
         }
     }
 
+    private func accessibilityLabel(model: PageModel, vm: ScrollableSegmentedViewModel) -> String {
+        let currentPageModel = vm.pageModels.first(where: { $0.id == vm.currentId })
+        let selectedTabString =
+            L10n.voiceoverSegmentedcontrolSelectedTab(currentPageModel?.title ?? "") + "\n\n"
+            + L10n.voiceoverSegmentedcontrolSwitchTab
+
+        if currentPageModel?.id == model.id {
+            return model.title + "\n\n" + L10n.voiceoverSegmentedcontrolSwitchTab
+        }
+        return model.title + "\n\n" + selectedTabString
+    }
+
     var selectedPageHeaderBackground: some View {
         RoundedRectangle(cornerRadius: .cornerRadiusS)
-            .fill(hButtonColor.SecondaryAlt.resting)
+            .fill(SecondaryAlt().resting)
+            .asAnyView
             .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
             .offset(x: vm.selectedIndicatorOffset)
     }
@@ -152,7 +173,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                     let allOffsets = self.getPagesOffset()
                     let titlePositions = self.titlesPositions.values.sorted(by: { $0.origin.x < $1.origin.x })
                     let rects = titlePositions.compactMap { rect in
-                        return CGRect(
+                        CGRect(
                             x: rect.origin.x - titlePositions[0].origin.x,
                             y: rect.origin.y,
                             width: rect.width,
@@ -161,7 +182,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                     }
                     let sortedTitlePositions =
                         rects
-                        .compactMap({ $0.origin.x })
+                        .compactMap(\.origin.x)
                     let offset = value.x
                     let lowerBoundry = allOffsets.lastIndex(where: { $0 <= offset })
                     let upperBoundry = allOffsets.firstIndex(where: { $0 >= offset })
@@ -170,7 +191,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                         if lowerBoundry == upperBoundry {
                             Task { @MainActor in
                                 try? await Task.sleep(nanoseconds: 50_000_000)
-                                withAnimation(.easeInOut(duration: 0.2)) {
+                                withAnimation(.easeInOut(duration: 0.15)) {
                                     self.selectedIndicatorOffset = sortedTitlePositions[lowerBoundry]
                                 }
                             }
@@ -254,7 +275,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     }
 
     private func getPagesOffset() -> [CGFloat] {
-        return pageModels.enumerated().compactMap({ CGFloat($0.offset) * viewWidth + pageSpacing * CGFloat($0.offset) })
+        pageModels.enumerated().compactMap { CGFloat($0.offset) * viewWidth + pageSpacing * CGFloat($0.offset) }
     }
 
     @MainActor
@@ -262,6 +283,21 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         horizontalScrollView?
             .scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: withAnimation)
     }
+
+    @MainActor
+    func scrollToNext() {
+        let currentPageModelIndex = pageModels.firstIndex(where: { $0.id == currentId }) ?? 0
+        var nextIndex: Int {
+            if currentPageModelIndex >= pageModels.count - 1 {
+                return 0
+            } else {
+                return currentPageModelIndex + 1
+            }
+        }
+        let nextPageModelId = pageModels[nextIndex].id
+        setSelectedTab(with: nextPageModelId)
+    }
+
     public init(pageModels: [PageModel], currentId: String? = nil) {
         self.currentId = currentId ?? pageModels.first?.id ?? ""
         self.pageModels = pageModels
@@ -284,20 +320,45 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
             if #available(iOS 17.4, *) {
                 scrollView.stopScrollingAndZooming()
             }
-            let scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
+            var scrollTo: CGFloat = 0
+            var useAnimationEarlier = false
+            let offsets = getPagesOffset()
+            let maxIndex = pageModels.count - 1
+            if let currentIndex = pageModels.firstIndex(where: { $0.id == currentId }) {
+                if velocity.x > 1, currentIndex != maxIndex {
+                    scrollTo = offsets[min(currentIndex + 1, maxIndex)]
+                    useAnimationEarlier = true
+                } else if velocity.x < -1, currentIndex > 0 {
+                    scrollTo = offsets[max(currentIndex - 1, 0)]
+                    useAnimationEarlier = true
+                } else {
+                    scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
+                }
+            }
+            if useAnimationEarlier {
+                if let index = offsets.firstIndex(where: { $0 == scrollTo }) {
+                    let idToScrollTo = pageModels[index].id
+                    setSelectedTab(with: idToScrollTo)
+                }
+            }
             DispatchQueue.main.async { [weak scrollView] in
                 UIView.animate(
-                    withDuration: 0.3,
+                    withDuration: 0.2,
                     delay: 0,
-                    options: UIView.AnimationOptions.curveEaseOut,
+                    options: [
+                        UIView.AnimationOptions.curveEaseOut, UIView.AnimationOptions.allowUserInteraction,
+                        UIView.AnimationOptions.allowAnimatedContent,
+                    ],
                     animations: {
                         scrollView?.contentOffset.x = scrollTo
                     },
                     completion: { [weak self] _ in
-                        if let index = self?.getPagesOffset().firstIndex(where: { $0 == scrollTo }),
-                            let idToScrollTo = self?.pageModels[index].id
-                        {
-                            self?.setSelectedTab(with: idToScrollTo)
+                        if !useAnimationEarlier {
+                            if let index = offsets.firstIndex(where: { $0 == scrollTo }),
+                                let idToScrollTo = self?.pageModels[index].id
+                            {
+                                self?.setSelectedTab(with: idToScrollTo)
+                            }
                         }
                     }
                 )
@@ -305,7 +366,7 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
         }
     }
 
-    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    public func scrollViewWillBeginDragging(_: UIScrollView) {
         currentHeight = heights.values.max(by: { $1 > $0 }) ?? 0
     }
 }
@@ -329,7 +390,7 @@ extension View {
         if #available(iOS 16.0, *) {
             return self.scrollDisabled(true)
         } else {
-            return self.introspect(.scrollView, on: .iOS(.v13...)) { view in
+            return introspect(.scrollView, on: .iOS(.v13...)) { view in
                 view.isScrollEnabled = false
                 view.isUserInteractionEnabled = false
             }
@@ -351,7 +412,11 @@ extension View {
         ],
         currentId: "1"
     )
-    ScrollableSegmentedView(vm: vm) { id in
-        hText("id")
+    ScrollableSegmentedView(vm: vm) { _ in
+        VStack {
+            hText("id")
+            Spacer()
+            hText("id2")
+        }
     }
 }

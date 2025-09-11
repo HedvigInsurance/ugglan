@@ -5,7 +5,6 @@ import hCoreUI
 
 struct TerminationSurveyScreen: View {
     @ObservedObject var vm: SurveyScreenViewModel
-    @Namespace var animationNamespace
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
     var body: some View {
@@ -28,10 +27,8 @@ struct TerminationSurveyScreen: View {
         .hFormContentPosition(.bottom)
         .hFormAlwaysAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) {
+                hContinueButton {
                     continueClicked()
-                } content: {
-                    hText(L10n.generalContinueButton)
                 }
                 .disabled(!vm.continueEnabled)
                 .accessibilityHint(
@@ -48,39 +45,31 @@ struct TerminationSurveyScreen: View {
 
     private var content: some View {
         hSection {
-            VStack(spacing: 16) {
-                VStack(spacing: 4) {
-                    ForEach(vm.options) { option in
-                        ZStack {
-                            VStack(spacing: 4) {
-                                hRadioField(
-                                    id: option.id,
-                                    leftView: {
-                                        hText(option.title).asAnyView
-                                    },
-                                    selected: $vm.selected
-                                )
-                                .hFieldSize(.medium)
-                                .zIndex(1)
-                                Group {
-                                    if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
-                                        buildInfo(for: suggestion)
-                                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
-                                    }
-
-                                    if let feedBack = vm.allFeedBackViewModels[option.id],
-                                        option.id == vm.selectedOption?.id
-                                    {
-                                        TerminationFlowSurveyStepFeedBackView(
-                                            vm: feedBack
-                                        )
-                                    }
-                                }
-                                .frame(minHeight: 120)
-                            }
+            VStack(spacing: 4) {
+                ForEach(vm.options) { option in
+                    ZStack {
+                        VStack(spacing: 4) {
+                            hRadioField(
+                                id: option.id,
+                                itemModel: .init(title: option.title, subTitle: nil),
+                                leftView: nil,
+                                selected: $vm.selected
+                            )
+                            .hFieldSize(.medium)
+                            .zIndex(1)
                         }
-
                     }
+                }
+                if let suggestion = vm.selectedOption?.suggestion {
+                    suggestionView(for: suggestion)
+                }
+
+                if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
+                    optionId == vm.selectedOption?.id
+                {
+                    TerminationFlowSurveyStepFeedBackView(
+                        vm: feedBack
+                    )
                 }
             }
         }
@@ -88,10 +77,10 @@ struct TerminationSurveyScreen: View {
     }
 
     @ViewBuilder
-    func buildInfo(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
+    func suggestionView(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
         switch suggestion {
-        case .action(let action):
-            InfoCard(text: action.description, type: .campaign)
+        case let .action(action):
+            InfoCard(text: action.description, type: action.type.notificationType)
                 .buttons([
                     .init(
                         buttonTitle: action.buttonTitle,
@@ -101,8 +90,8 @@ struct TerminationSurveyScreen: View {
                     )
                 ])
                 .hButtonIsLoading(terminationFlowNavigationViewModel.redirectActionLoadingState == .loading)
-        case .redirect(let redirect):
-            InfoCard(text: redirect.description, type: .campaign)
+        case let .redirect(redirect):
+            InfoCard(text: redirect.description, type: redirect.type.notificationType)
                 .buttons([
                     .init(
                         buttonTitle: redirect.buttonTitle,
@@ -114,6 +103,8 @@ struct TerminationSurveyScreen: View {
                     )
                 ])
                 .hButtonIsLoading(false)
+        case let .suggestionInfo(info):
+            InfoCard(text: info.description, type: info.type.notificationType)
         }
     }
 
@@ -155,7 +146,6 @@ class SurveyScreenViewModel: ObservableObject {
     let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
-    @Published var text: String = "test"
     @Published var continueEnabled = false
 
     @Published var selected: String? {
@@ -174,7 +164,7 @@ class SurveyScreenViewModel: ObservableObject {
     }
 
     @Published var viewState: ProcessingState = .success
-    @Inject private var service: TerminateContractsClient
+    private let terminateContractsService = TerminateContractsService()
 
     init(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType) {
         self.options = options
@@ -204,17 +194,21 @@ class SurveyScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    public func submitSurvey(context: String, option: String, inputData: String?) async -> TerminateStepResponse {
+    func submitSurvey(context: String, option: String, inputData: String?) async -> TerminateStepResponse {
         withAnimation {
             viewState = .loading
         }
         do {
-            let data = try await service.sendSurvey(terminationContext: context, option: option, inputData: inputData)
+            let data = try await terminateContractsService.sendSurvey(
+                terminationContext: context,
+                option: option,
+                inputData: inputData
+            )
             withAnimation {
                 viewState = .success
             }
             return data
-        } catch let error {
+        } catch {
             withAnimation {
                 self.viewState = .error(
                     errorMessage: error.localizedDescription
@@ -228,14 +222,22 @@ class SurveyScreenViewModel: ObservableObject {
         let status: Bool = {
             guard selectedOption != nil else { return false }
             guard let feedBack = selectedFeedBackViewModel else { return true }
-            if feedBack.required && feedBack.text.count < 10 {
+            if feedBack.required, feedBack.text.count < 10 {
                 return false
             }
             return true
         }()
 
-        if selectedOption?.suggestion != nil {
-            continueEnabled = false
+        if let suggestion = selectedOption?.suggestion {
+            switch suggestion {
+            case let .action(action):
+                if action.action == .updateAddress {
+                    continueEnabled = false
+                }
+                continueEnabled = true
+            default:
+                continueEnabled = true
+            }
         } else {
             continueEnabled = status
         }
@@ -254,7 +256,8 @@ class SurveyScreenViewModel: ObservableObject {
                     id: "actionId",
                     action: .updateAddress,
                     description: "description",
-                    buttonTitle: "button title"
+                    buttonTitle: "button title",
+                    type: .offer
                 )
             ),
             feedBack: nil,
@@ -273,11 +276,14 @@ class SurveyScreenViewModel: ObservableObject {
         .init(
             id: "optionId3",
             title: "Option title 3",
-            suggestion: nil,
-            feedBack: .init(
-                id: "feedbackId",
-                isRequired: true
+            suggestion: .suggestionInfo(
+                info: .init(
+                    id: "id",
+                    description: "description",
+                    type: .info
+                )
             ),
+            feedBack: nil,
             subOptions: nil
         ),
         .init(
@@ -295,6 +301,7 @@ class SurveyScreenViewModel: ObservableObject {
     return NavigationView {
         TerminationSurveyScreen(vm: .init(options: options, subtitleType: .default))
             .navigationBarTitleDisplayMode(.inline)
+            .environmentObject(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: .init()))
     }
 }
 
@@ -304,8 +311,10 @@ struct TerminationFlowSurveyStepFeedBackView: View {
         hTextView(
             selectedValue: vm.text,
             placeholder: L10n.terminationSurveyFeedbackHint,
+            popupPlaceholder: L10n.terminationSurveyFeedbackPopoverHint,
             required: vm.required,
-            maxCharacters: 2000
+            maxCharacters: 2000,
+            enableTransition: false
         ) { [weak vm] text in
             guard let vm else { return }
             vm.error = vm.required && text.isEmpty ? L10n.terminationSurveyFeedbackInfo : nil
@@ -321,7 +330,7 @@ class TerminationFlowSurveyStepFeedBackViewModel: ObservableObject {
     @Published var error: String?
 
     init(feedback: TerminationFlowSurveyStepFeedback) {
-        self.text = ""
-        self.required = feedback.isRequired
+        text = ""
+        required = feedback.isRequired
     }
 }

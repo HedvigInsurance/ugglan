@@ -1,0 +1,72 @@
+query PaymentData {
+    currentMember {
+        referralInformation {
+            ...MemberReferralInformationCodeFragment
+        }
+        futureCharge {
+            ...MemberChargeFragment
+        }
+        ongoingCharges {
+            ...MemberChargeFragment
+        }
+    }
+}
+
+fragment MemberReferralInformationCodeFragment on MemberReferralInformation {
+    code
+}
+
+
+fragment MemberChargeFragment on MemberCharge{
+      chargeBreakdown {
+        displayTitle
+        displaySubtitle
+        gross {
+          ...MoneyFragment
+        }
+        net {
+          ...MoneyFragment
+        }
+        discounts {
+            ...MemberChargeBreakdownItemDiscountFragment
+        }
+
+        periods {
+          fromDate
+          toDate
+          amount {
+            ...MoneyFragment
+          }
+          isPreviouslyFailedCharge
+        }
+      }
+      date
+      discount {
+        ...MoneyFragment
+      }
+      referralDiscount {
+        ...MoneyFragment
+      }
+      gross {
+        ...MoneyFragment
+      }
+      id
+      net {
+        ...MoneyFragment
+      }
+      status
+      carriedAdjustment {
+        ...MoneyFragment
+      }
+      settlementAdjustment {
+        ...MoneyFragment
+      }
+}
+
+fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {
+    code
+	description
+    discount {
+        ...MoneyFragment
+    }
+}

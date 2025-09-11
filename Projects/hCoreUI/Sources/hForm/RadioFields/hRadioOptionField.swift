@@ -8,7 +8,7 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     let value: T
 
     public init(selectedValue: Binding<T?>, value: T) {
-        self._selectedValue = selectedValue
+        _selectedValue = selectedValue
         self.value = value
     }
 
@@ -21,6 +21,7 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
             }
         }
         .frame(width: 24, height: 24)
+        .accessibilityAddTraits(selectedValue == value ? .isSelected : [])
     }
 
     var squareComponent: some View {
@@ -42,7 +43,7 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
                             )
                         )
                     if selectedValue == value {
-                        Image(uiImage: hCoreUIAssets.checkmark.image)
+                        hCoreUIAssets.checkmark.view
                             .foregroundColor(hTextColor.Opaque.negative)
                     }
                 }
@@ -79,7 +80,11 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     @hColorBuilder
     static func getFillColor(isSelected: Bool, enabled: Bool) -> some hColor {
         if !enabled {
-            hFillColor.Translucent.disabled
+            if isSelected {
+                hFillColor.Translucent.disabled
+            } else {
+                hSurfaceColor.Opaque.primary
+            }
         } else if isSelected {
             hSignalColor.Green.element
         } else {

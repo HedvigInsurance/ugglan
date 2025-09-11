@@ -11,7 +11,7 @@ public enum ExternalDependencies: CaseIterable {
     case markdownkit
     case reveal
     case datadog
-    case authlib
+    case umbrella
     case tagkit
     case introspect
     case svgkit
@@ -19,6 +19,8 @@ public enum ExternalDependencies: CaseIterable {
     case argumentParser
     case hero
     case presentableStore
+    case environment
+    case logger
     public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
@@ -34,9 +36,9 @@ public enum ExternalDependencies: CaseIterable {
 
     public func swiftPackages() -> [Package] {
         switch self {
-        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
+        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.4"))]
         case .apollo:
-            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.17.0"))]
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.23.0"))]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -51,19 +53,19 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/bmoliveira/MarkdownKit",
-                    .upToNextMajor(from: "1.7.1")
+                    .upToNextMajor(from: "1.7.3")
                 )
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.16.0"))]
-        case .authlib:
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.25.0"))]
+        case .umbrella:
             return [
-                .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.4.120241009085400"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
             ]
         case .tagkit:
             return [
-                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.1.1"))
+                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.4.1"))
             ]
         case .introspect:
             return [
@@ -75,19 +77,27 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.5.1"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "2.2.0"))
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.17.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.23.0"))
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.5.0"))
+                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.6.1")))
             ]
         case .presentableStore:
             return [
                 .package(path: .relativeToRoot("LocalModules/PresentableStore"))
+            ]
+        case .environment:
+            return [
+                .package(path: .relativeToRoot("LocalModules/Environment"))
+            ]
+        case .logger:
+            return [
+                .package(path: .relativeToRoot("LocalModules/Logger"))
             ]
         }
     }
@@ -133,9 +143,9 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogRUM"),
                 .package(product: "DatadogTrace"),
             ]
-        case .authlib:
+        case .umbrella:
             return [
-                .package(product: "authlib")
+                .package(product: "HedvigShared")
             ]
         case .tagkit:
             return [
@@ -153,6 +163,10 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "ArgumentParser")]
         case .presentableStore:
             return [.package(product: "PresentableStore")]
+        case .environment:
+            return [.package(product: "Environment")]
+        case .logger:
+            return [.package(product: "Logger")]
         }
     }
 }
@@ -163,7 +177,6 @@ extension Project {
         externalDependencies: [ExternalDependencies],
         sdks: [String] = []
     ) -> Project {
-
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",

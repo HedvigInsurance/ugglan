@@ -26,13 +26,11 @@ public struct InfoCard: View {
 
     private var mainView: some View {
         HStack(alignment: .top, spacing: 0) {
-            VStack(spacing: .padding8) {
-                Image(uiImage: type.image)
-                    .resizable()
-                    .foregroundColor(type.imageColor)
-                    .frame(width: 20, height: 20)
-                    .accessibilityHidden(true)
-            }
+            type.image
+                .resizable()
+                .foregroundColor(type.imageColor)
+                .frame(width: 20, height: 20)
+                .accessibilityHidden(true)
             if let customContentView = customContentView {
                 customContentView
                     .padding(.leading, .padding8)
@@ -52,7 +50,7 @@ public struct InfoCard: View {
         .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
-        .accessibilityElement(children: buttonsConfig?.count ?? 0 > 1 ? .contain : .combine)
+        .accessibilityElement(children: buttonsConfig?.count ?? 0 != 1 ? .contain : .combine)
         .hButtonTakeFullWidth(true)
     }
 
@@ -64,48 +62,47 @@ public struct InfoCard: View {
                 .padding(.bottom, .padding4)
             if let buttonsConfig {
                 if buttonsConfig.count > 1 {
-                    HStack(spacing: 4) {
-                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                            if type == .neutral {
-                                hButton.SmallButton(type: .secondary) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                            } else {
-                                hButton.SmallButton(type: .secondaryAlt) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                                .hUseLightMode
-                            }
-                        }
+                    HStack(spacing: .padding4) {
+                        buttonsStackView(buttonsConfig)
                     }
                 } else {
-                    ForEach(buttonsConfig, id: \.buttonTitle) {
-                        config in
-                        Group {
-                            if type == .neutral {
-                                hButton.SmallButton(type: .secondary) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                            } else {
-                                hButton.SmallButton(type: .secondaryAlt) {
-                                    config.buttonAction()
-                                } content: {
-                                    hText(config.buttonTitle, style: .label)
-                                }
-                                .hUseLightMode
-                            }
-                        }
-                    }
+                    buttonsStackView(buttonsConfig)
                 }
             }
         }
         .padding(.leading, .padding8)
+    }
+
+    func buttonsStackView(_ buttonsConfig: [InfoCardButtonConfig]) -> some View {
+        ForEach(buttonsConfig, id: \.buttonTitle) { config in
+            if type == .neutral {
+                secondaryButton(config)
+            } else {
+                secondaryAltButton(config)
+            }
+        }
+    }
+
+    func secondaryButton(_ config: InfoCardButtonConfig) -> some View {
+        hButton(
+            .small,
+            .secondary,
+            content: .init(title: config.buttonTitle),
+            {
+                config.buttonAction()
+            }
+        )
+    }
+
+    func secondaryAltButton(_ config: InfoCardButtonConfig) -> some View {
+        hButton(
+            .small,
+            .secondaryAlt,
+            content: .init(title: config.buttonTitle),
+            {
+                config.buttonAction()
+            }
+        )
     }
 }
 
@@ -117,15 +114,11 @@ struct InfoCard_Previews: PreviewProvider {
                     .buttons([
                         .init(
                             buttonTitle: "Title",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         ),
                         .init(
                             buttonTitle: "Title 2",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         ),
                     ])
 
@@ -133,9 +126,7 @@ struct InfoCard_Previews: PreviewProvider {
                     .buttons([
                         .init(
                             buttonTitle: "Title",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         )
                     ])
 
@@ -146,16 +137,13 @@ struct InfoCard_Previews: PreviewProvider {
                 InfoCard(text: "", type: .error)
                     .hInfoCardCustomView {
                         Text("Testing custom texzt view")
-
                     }
 
                 InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
                     .buttons([
                         .init(
                             buttonTitle: "Title",
-                            buttonAction: {
-
-                            }
+                            buttonAction: {}
                         )
                     ])
             }
@@ -171,18 +159,18 @@ public enum InfoCardType {
     case disabled
 
     @MainActor
-    var image: UIImage {
+    var image: Image {
         switch self {
         case .info:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         case .attention:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .error:
-            return hCoreUIAssets.warningTriangleFilled.image
+            return hCoreUIAssets.warningTriangleFilled.view
         case .campaign:
-            return hCoreUIAssets.campaignSmall.image
+            return hCoreUIAssets.campaignSmall.view
         case .disabled:
-            return hCoreUIAssets.infoFilled.image
+            return hCoreUIAssets.infoFilled.view
         }
     }
 }
@@ -200,7 +188,7 @@ extension EnvironmentValues {
 
 extension InfoCard {
     public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
-        self.environment(\.hInfoCardButtonConfig, configs)
+        environment(\.hInfoCardButtonConfig, configs)
     }
 }
 
@@ -228,7 +216,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hInfoCardCustomView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hInfoCardCustomView, AnyView(content()))
+        environment(\.hInfoCardCustomView, AnyView(content()))
     }
 }
 
@@ -245,7 +233,7 @@ extension EnvironmentValues {
 
 extension View {
     public func hInfoCardLayoutStyle(_ style: InfoCardLayoutStyle) -> some View {
-        self.environment(\.hInfoCardLayoutStyle, style)
+        environment(\.hInfoCardLayoutStyle, style)
     }
 }
 

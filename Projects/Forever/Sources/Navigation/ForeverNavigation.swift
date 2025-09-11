@@ -1,33 +1,52 @@
+import Environment
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class ForeverNavigationViewModel: ObservableObject {
     @Published var isChangeCodePresented = false
     @Published var foreverData: ForeverData?
-    @Published var foreverVm = ForeverViewModel()
+    @Inject var foreverService: ForeverClient
+    @Published var viewState: ProcessingState = .loading
 
-    var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
+    func fetchForeverData() async throws {
+        if foreverData == nil {
+            withAnimation {
+                viewState = .loading
+            }
+        }
+        do {
+            let data = try await foreverService.getMemberReferralInformation()
+            foreverData = data
+            withAnimation {
+                viewState = .success
+            }
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+    }
 
-    func shareCode(code: String) {
+    func shareCode(code: String, modalPresentationWrapperVM: ModalPresentationSourceWrapperViewModel) {
         let discount = foreverData?.monthlyDiscountPerReferral.formattedAmount
         let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"
+            "\(Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"
         let message = L10n.referralSmsMessage(discount ?? "", url)
 
         let activityVC = UIActivityViewController(
             activityItems: [message as Any],
             applicationActivities: nil
         )
-        modalPresentationSourceWrapperViewModel.present(activity: activityVC)
+        modalPresentationWrapperVM.present(activity: activityVC)
     }
 }
 
 enum ForeverRouterActions {
     case success
 }
+
 extension ForeverRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
@@ -35,11 +54,11 @@ extension ForeverRouterActions: TrackingViewNameProtocol {
             return .init(describing: SuccessScreen.self)
         }
     }
-
 }
 
 public struct ForeverNavigation: View {
     @EnvironmentObject var router: Router
+    private var changeCodeRouter = Router()
     @StateObject var foreverNavigationVm = ForeverNavigationViewModel()
     let useOwnNavigation: Bool
 
@@ -61,28 +80,28 @@ public struct ForeverNavigation: View {
         }
         .detent(
             presented: $foreverNavigationVm.isChangeCodePresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) {
             ChangeCodeView(foreverNavigationVm: foreverNavigationVm)
                 .routerDestination(for: ForeverRouterActions.self, options: .hidesBackButton) { routerAction in
                     switch routerAction {
                     case .success:
-                        SuccessScreen(title: L10n.ReferralsChange.codeChanged)
-                            .onAppear { [weak router] in
+                        SuccessScreen(title: L10n.ReferralsChange.codeChanged, formPosition: .compact)
+                            .onAppear { [weak changeCodeRouter] in
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    router?.dismiss()
+                                    changeCodeRouter?.dismiss()
                                 }
                             }
                     }
                 }
                 .configureTitle(L10n.ReferralsChange.changeCode)
                 .embededInNavigation(
+                    router: changeCodeRouter,
                     options: [.navigationType(type: .large)],
                     tracking: ForeverNavigationDetentType.changeCode
                 )
         }
         .environmentObject(foreverNavigationVm)
-
     }
 }
 
@@ -98,11 +117,11 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
 
     case forever
     case changeCode
-
 }
 
 #Preview {
     ForeverNavigation(useOwnNavigation: true)
+        .environmentObject(Router())
 }
 
 extension View {

@@ -9,12 +9,10 @@ import hCoreUI
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
     @Published var isAskForPushNotificationsPresented = false
-
-    init() {}
-
-    struct FileUrlModel: Identifiable, Equatable {
-        public var id: String?
-        var url: URL
+    let router = Router()
+    let chatType: ChatType
+    init(chatType: ChatType) {
+        self.chatType = chatType
     }
 
     private var toastPublisher: AnyCancellable?
@@ -22,10 +20,10 @@ public class ChatNavigationViewModel: ObservableObject {
         let status = await UNUserNotificationCenter.current().notificationSettings()
         switch status.authorizationStatus {
         case .notDetermined:
-            self.isAskForPushNotificationsPresented = true
+            isAskForPushNotificationsPresented = true
         case .denied:
             func createToast() -> ToastBar {
-                return ToastBar(
+                ToastBar(
                     type: .info,
                     text: L10n.chatToastPushNotificationsTitle,
                     action: .init(
@@ -37,18 +35,25 @@ public class ChatNavigationViewModel: ObservableObject {
                     duration: 6
                 )
             }
-
             let toast = createToast()
             Toasts.shared.displayToastBar(toast: toast)
         default:
             break
         }
     }
+
+    func showClaimDetail(claimId: String) {
+        if case .conversationFromClaimWithId = chatType {
+            //came from claim details screen, do nothing
+        } else {
+            router.push(ChatRedirectViewType.claimDetailFor(claimId: claimId))
+        }
+    }
 }
 
 public enum ChatRedirectViewType: Hashable {
     case notification
-    case claimDetailForConversationId(id: String)
+    case claimDetailFor(claimId: String)
 }
 
 extension ChatRedirectViewType: TrackingViewNameProtocol {
@@ -56,51 +61,59 @@ extension ChatRedirectViewType: TrackingViewNameProtocol {
         switch self {
         case .notification:
             return "AskForPushNotifications"
-        case .claimDetailForConversationId:
+        case .claimDetailFor:
             return "ClaimDetailView"
         }
     }
-
 }
 
 public enum ChatNavigationViewName: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ChatScreen.self)
+        .init(describing: ChatScreen.self)
     }
 
     case chat
 }
 
 public struct ChatNavigation<Content: View>: View {
-    @StateObject var router = Router()
-    @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
+    @ObservedObject private var chatNavigationViewModel: ChatNavigationViewModel
 
-    let chatType: ChatType
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
 
     public init(
         chatType: ChatType,
         @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
     ) {
-        self.chatType = chatType
+        self.chatNavigationViewModel = .init(chatType: chatType)
         self.redirectView = redirectView
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large), tracking: ChatNavigationViewName.chat) {
+        RouterHost(
+            router: chatNavigationViewModel.router,
+            options: .navigationType(type: .large),
+            tracking: ChatNavigationViewName.chat
+        ) {
             Group {
-                switch chatType {
+                switch chatNavigationViewModel.chatType {
                 case let .conversationId(conversationId):
                     ChatScreen(
                         vm: .init(
-                            chatService: ConversationService(conversationId: conversationId),
-                            onTitleTap: {
-                                router.push(ChatRedirectViewType.claimDetailForConversationId(id: conversationId))
-                            }
+                            chatService: ConversationService(conversationId: conversationId)
+                        )
+                    )
+                case let .conversationFromClaimWithId(conversationId):
+                    ChatScreen(
+                        vm: .init(
+                            chatService: ConversationService(conversationId: conversationId)
                         )
                     )
                 case .newConversation:
-                    ChatScreen(vm: .init(chatService: NewConversationService()))
+                    ChatScreen(
+                        vm: .init(
+                            chatService: NewConversationService()
+                        )
+                    )
                 case .inbox:
                     InboxView()
                         .configureTitle(L10n.chatConversationInbox)
@@ -116,13 +129,13 @@ public struct ChatNavigation<Content: View>: View {
         .environmentObject(chatNavigationViewModel)
         .detent(
             item: $chatNavigationViewModel.isFilePresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { documentType in
             DocumentPreview(vm: .init(type: documentType))
         }
         .detent(
             presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) {
             redirectView(.notification) {
                 Task { @MainActor in
@@ -134,7 +147,7 @@ public struct ChatNavigation<Content: View>: View {
 }
 
 #Preview {
-    ChatNavigation(chatType: .newConversation) { type, onDone in
+    ChatNavigation(chatType: .newConversation) { _, _ in
         EmptyView()
     }
 }

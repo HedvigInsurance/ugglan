@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hGraphQL
 
 @MainActor
 public struct ApplicationState {
@@ -30,21 +29,6 @@ public struct ApplicationState {
     public static func setPreferredLocale(_ locale: Localization.Locale) {
         UserDefaults.standard.setValue([locale.lprojCode], forKey: "AppleLanguages")
         UserDefaults.standard.synchronize()
-        ApplicationState.setMarket(locale.market)
-    }
-
-    public static func setMarket(_ market: Localization.Locale.Market) {
-        UserDefaults.standard.set(market.rawValue, forKey: ApplicationState.marketKey)
-    }
-
-    public static func getMarket() -> Localization.Locale.Market? {
-        if let marketRawValue = UserDefaults.standard.value(forKey: marketKey) as? String,
-            let market = Localization.Locale.Market(rawValue: marketRawValue)
-        {
-            return market
-        }
-
-        return nil
     }
 
     private static var hasPreferredLocale: Bool {
@@ -62,23 +46,7 @@ public struct ApplicationState {
                 return preferredLocale
             }
         }
-
-        func preferredLocaleForMarket(_ market: Localization.Locale.Market) -> Localization.Locale? {
-            let availableLanguages = market.availableLocales.compactMap({ $0.lprojCode })
-            let bestMatchedLanguage = Bundle.preferredLocalizations(from: availableLanguages).first
-
-            if let bestMatchedLanguage = bestMatchedLanguage {
-                return Localization.Locale(
-                    rawValue: bestMatchedLanguage.replacingOccurrences(of: "-", with: "_")
-                )
-            }
-
-            return nil
-        }
-
-        if let market = getMarket(), let locale = preferredLocaleForMarket(market) { return locale }
-
-        let availableLanguages = Localization.Locale.allCases.map { $0.lprojCode }
+        let availableLanguages = Localization.Locale.allCases.map(\.lprojCode)
 
         let bestMatchedLanguage = Bundle.preferredLocalizations(from: availableLanguages).first
 

@@ -3,7 +3,6 @@ import Authentication
 import Foundation
 import SwiftUI
 import hCore
-import hGraphQL
 
 @MainActor
 struct Impersonate {
@@ -33,8 +32,6 @@ struct Impersonate {
         do {
             try await authenticationService.exchange(code: authorizationCode)
             ApplicationState.preserveState(.impersonation)
-        } catch _ {
-
-        }
+        } catch _ {}
     }
 }

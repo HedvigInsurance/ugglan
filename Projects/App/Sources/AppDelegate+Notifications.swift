@@ -12,21 +12,20 @@ import SwiftUI
 @preconcurrency import UserNotifications
 import hCore
 import hCoreUI
-import hGraphQL
 
 extension AppDelegate {
     func application(
-        _ application: UIApplication,
+        _: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
         Task {
             let client: NotificationClient = Dependencies.shared.resolve()
-            let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
+            let deviceTokenString = deviceToken.reduce("") { $0 + String(format: "%02X", $1) }
             try await client.register(for: deviceTokenString)
         }
     }
 
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    func application(_: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         log.info("Failed to register for remote notifications with error: \(error))")
     }
 
@@ -82,13 +81,13 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
     }
 
     func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification
+        _: UNUserNotificationCenter,
+        willPresent _: UNNotification
     ) async -> UNNotificationPresentationOptions {
         let shouldShowNotification: Bool = {
             if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
                 let listToCheck: [String] = [
-                    String(describing: HomeView<EmptyView>.self).components(separatedBy: "<").first ?? "",
+                    String(describing: HomeScreen.self),
                     .init(describing: ClaimDetailView.self),
                     .init(describing: InboxView.self),
                     .init(describing: ChatScreen.self),
@@ -101,7 +100,6 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
 
         return shouldShowNotification ? [.badge, .banner, .sound] : []
     }
-
 }
 
 enum PushNotificationType: String {
@@ -115,4 +113,9 @@ enum PushNotificationType: String {
     case CROSS_SELL
     case OPEN_CONTACT_INFO
     case CHANGE_TIER
+    case ADDON_TRAVEL
+    case CLAIM_CLOSED
+    case OPEN_CLAIM
+    case INSURANCE_EVIDENCE
+    case TRAVEL_CERTIFICATE
 }

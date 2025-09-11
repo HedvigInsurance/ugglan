@@ -1,6 +1,5 @@
 import Chat
 import Combine
-import Home
 import Kingfisher
 import Payment
 import Photos
@@ -8,7 +7,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct ClaimDetailView: View {
     @State var showImagePicker = false
@@ -19,9 +17,9 @@ public struct ClaimDetailView: View {
 
     public init(
         claim: ClaimModel?,
-        type: FetchClaimDetailsType
+        type: ClaimDetailsType
     ) {
-        self._vm = .init(wrappedValue: .init(claim: claim, type: type))
+        _vm = .init(wrappedValue: .init(claim: claim, type: type))
     }
 
     private var statusParagraph: String? {
@@ -30,51 +28,18 @@ public struct ClaimDetailView: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 if let claim = vm.claim {
-                    hSection {
-                        ClaimStatus(
-                            claim: claim,
-                            enableTap: false,
-                            extendedBottomView: {
-                                AnyView(infoAndContactSection)
-                            }()
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
+                    infoCardSection(text: claim.infoText)
+                    claimCardSection(claim: claim)
+                    infoAndContactSection
                     memberFreeTextSection
                     claimDetailsSection
-                        .padding(.vertical, .padding16)
                     uploadFilesSection
+                    documentSection(appealInstructionUrl: claim.appealInstructionsUrl)
                 }
             }
         }
-        .setHomeNavigationBars(
-            with: $vm.toolbarOptionType,
-            and: .init(describing: ClaimDetailView.self),
-            action: { type in
-                switch type {
-                case .newOffer:
-                    break
-                case .firstVet:
-                    break
-                case .chat:
-                    if case .conversation = vm.type {
-                        router.pop()
-                    } else {
-                        NotificationCenter.default.post(
-                            name: .openChat,
-                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-                        )
-                    }
-                case .chatNotification:
-                    NotificationCenter.default.post(
-                        name: .openChat,
-                        object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-                    )
-                }
-            }
-        )
         .sheet(isPresented: $showImagePicker) {
             ImagePicker { images in
                 vm.showAddFiles(with: images)
@@ -101,14 +66,13 @@ public struct ClaimDetailView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     vm.showAddFiles(with: [file])
                 }
-
             }
             .ignoresSafeArea()
         }
         .modally(item: $vm.showFilesView) { [weak vm] item in
             ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
                 let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimStore.send(.fetchClaims)
+                claimStore.send(.fetchActiveClaims)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     let nav = UIApplication.shared.getTopViewControllerNavigation()
                     nav?.setNavigationBarHidden(false, animated: true)
@@ -121,11 +85,10 @@ public struct ClaimDetailView: View {
             .withDismissButton()
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
             .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
-
         }
         .detent(
             item: $vm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }
@@ -140,20 +103,67 @@ public struct ClaimDetailView: View {
     }
 
     @ViewBuilder
+    private func infoCardSection(text: String?) -> some View {
+        if let text {
+            hSection {
+                InfoCard(text: text, type: .info)
+            }
+        }
+    }
+
+    private func claimCardSection(claim: ClaimModel) -> some View {
+        hSection {
+            ClaimStatusCard(
+                claim: claim,
+                enableTap: false
+            )
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
     private var infoAndContactSection: some View {
-        Divider()
-            .padding(.horizontal, -16)
-        HStack {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.ClaimStatus.title, style: .label)
-                    .foregroundColor(hTextColor.Opaque.primary)
+        hSection {
+            VStack(spacing: 0) {
                 if let statusParagraph {
-                    hText(statusParagraph, style: .label)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                    hRow {
+                        hText(statusParagraph, style: .body1)
+                    }
+                    hRowDivider()
+                        .hWithoutHorizontalPadding([.divider])
+                }
+
+                hRow {
+                    HStack {
+                        hText(L10n.ClaimStatusDetail.MessageView.body)
+                        Spacer()
+
+                        if vm.toolbarOptionType.contains(.chat) {
+                            hCoreUIAssets.inbox.view
+                        } else {
+                            hCoreUIAssets.inboxNotification.view
+                        }
+                    }
+                }
+                .withEmptyAccessory
+                .onTap {
+                    if vm.toolbarOptionType.contains(.chat) {
+                        if case .conversation = vm.type {
+                            router.pop()
+                        } else {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatType.conversationFromClaimWithId(id: vm.claim?.conversation?.id ?? "")
+                            )
+                        }
+                    } else {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.conversationFromClaimWithId(id: vm.claim?.conversation?.id ?? "")
+                        )
+                    }
                 }
             }
-            .multilineTextAlignment(.leading)
-            Spacer()
         }
     }
 
@@ -163,8 +173,7 @@ public struct ClaimDetailView: View {
             hRow {
                 ContactChatView(
                     store: vm.store,
-                    id: claim.id,
-                    status: claim.status.rawValue
+                    id: claim.id
                 )
             }
         }
@@ -178,10 +187,7 @@ public struct ClaimDetailView: View {
                     hText(inputText)
                 }
             }
-            .withHeader {
-                hText(L10n.ClaimStatusDetail.submittedMessage)
-                    .padding(.leading, 2)
-            }
+            .withHeader(title: L10n.ClaimStatusDetail.submittedMessage)
             .padding(.top, .padding16)
         }
     }
@@ -189,94 +195,50 @@ public struct ClaimDetailView: View {
     @ViewBuilder
     private var claimDetailsSection: some View {
         if let claim = vm.claim {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 hSection {
-                    VStack(spacing: 8) {
-                        claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: claim.claimType)
-                            .accessibilityHidden(claim.claimType == "")
-                        if let incidentDate = claim.incidentDate {
-                            claimDetailsRow(
-                                title: L10n.ClaimStatus.ClaimDetails.incidentDate,
-                                value: incidentDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                            )
-                        }
-                        if let submitted = claim.submittedAt {
-                            claimDetailsRow(
-                                title: L10n.ClaimStatus.ClaimDetails.submitted,
-                                value: submitted.localDateToIso8601Date?.displayDateDDMMMYYYYFormat ?? ""
-                            )
+                    VStack(spacing: .padding8) {
+                        ForEach(claim.displayItems) { item in
+                            claimDetailsRow(title: item.displayTitle, value: item.displayValue)
                         }
                     }
                 }
-                .withHeader {
-                    HStack {
-                        hText(L10n.ClaimStatus.ClaimDetails.title)
-                        Spacer()
-                        InfoViewHolder(
-                            title: L10n.ClaimStatus.ClaimDetails.title,
-                            description: L10n.ClaimStatus.ClaimDetails.infoText
-                        )
-                        .accessibilityAddTraits(.isButton)
-                        .accessibilityHint(L10n.ClaimStatus.ClaimDetails.title)
-                    }
-                }
+                .withHeader(
+                    title: L10n.ClaimStatus.ClaimDetails.title,
+                    infoButtonDescription: L10n.ClaimStatus.ClaimDetails.infoText
+                )
                 .hWithoutDivider
                 .sectionContainerStyle(.transparent)
-
-                termsAndConditions
             }
+            .padding(.vertical, .padding8)
         }
     }
 
     @ViewBuilder
     private func claimDetailsRow(title: String, value: String) -> some View {
-        HStack {
-            hText(title)
-                .foregroundColor(hTextColor.Opaque.secondary)
-            Spacer()
-            hText(value)
-                .foregroundColor(hTextColor.Opaque.secondary)
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    @ViewBuilder
-    private var termsAndConditions: some View {
-        if let termsAndConditionsDocument = vm.claim?.productVariant?.documents
-            .first(where: { $0.type == .termsAndConditions })
-        {
-            hSection {
-                hRow {
-                    hAttributedTextView(
-                        text: AttributedPDF().attributedPDFString(for: termsAndConditionsDocument.displayName)
-                    )
-                    .id("sds_\(String(describing: vm.claim?.productVariant?.displayName))")
-                }
-                .withCustomAccessory {
-                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
-                }
-                .onTap {
-                    vm.document = termsAndConditionsDocument
-                }
+        if value != "" {
+            HStack {
+                hText(title)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                Spacer()
+                hText(value)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
+            .accessibilityElement(children: .combine)
         }
     }
 
     @ViewBuilder
     private var uploadFilesSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: .padding8) {
             if vm.showUploadedFiles {
                 hSection {
                     if let player = vm.player {
                         TrackPlayerView(
                             audioPlayer: player
                         )
-                        .onReceive(player.objectWillChange.filter({ $0.playbackState == .finished })) { player in }
+                        .onReceive(player.objectWillChange.filter { $0.playbackState == .finished }) { _ in }
                     }
-                }
-                .withHeader {
-                    hText(L10n.ClaimStatusDetail.uploadedFiles)
-                        .padding(.leading, 2)
                 }
                 if let fetchError = vm.fetchFilesError {
                     hSection {
@@ -297,33 +259,65 @@ public struct ClaimDetailView: View {
                         )
                     }
                     .sectionContainerStyle(.transparent)
-                } else {
+                } else if !vm.fileGridViewModel.files.isEmpty {
                     hSection {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .sectionContainerStyle(.transparent)
+                    .padding(.top, .padding8)
                 }
-            }
 
-            if vm.canAddFiles {
-                hSection {
-                    VStack(spacing: 16) {
-                        hRow {
-                            hText(L10n.ClaimStatus.UploadedFiles.uploadText)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        }
-                        .verticalPadding(0)
-                        .fixedSize(horizontal: false, vertical: true)
-                        hButton.MediumButton(type: .primary) {
-                            showFilePickerAlert()
-                        } content: {
-                            hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
+                if vm.canAddFiles {
+                    hSection {
+                        VStack(spacing: .padding16) {
+                            hRow {
+                                hText(L10n.ClaimStatus.UploadedFiles.uploadText)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                            }
+                            .verticalPadding(0)
+                            .fixedSize(horizontal: false, vertical: true)
+                            hButton(
+                                .medium,
+                                .primary,
+                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
+                                {
+                                    showFilePickerAlert()
+                                }
+                            )
                         }
                     }
-                    .padding(.vertical, .padding32)
+                    .sectionContainerStyle(.transparent)
+                    .padding(.vertical, .padding16)
                 }
-                .sectionContainerStyle(.transparent)
+            }
+        }
+        .padding(.bottom, .padding16)
+    }
+
+    @ViewBuilder
+    private func documentSection(appealInstructionUrl: String?) -> some View {
+        let termsAndConditionsDocument = vm.claim?.productVariant?.documents
+            .first(where: { $0.type == .termsAndConditions })
+        var appealInstructionDocument: hPDFDocument? {
+            if let appealInstructionUrl = appealInstructionUrl {
+                return hPDFDocument(
+                    displayName: L10n.claimStatusAppealInstructionLinkText,
+                    url: appealInstructionUrl,
+                    type: .appealInstruction
+                )
+            }
+            return nil
+        }
+
+        let documents = [termsAndConditionsDocument, appealInstructionDocument].compactMap { $0 }
+
+        if !documents.isEmpty {
+            InsuranceTermView(
+                documents: documents,
+                withHeader: L10n.ClaimStatusDetail.Documents.title
+            ) { document in
+                vm.document = document
             }
         }
     }
@@ -341,7 +335,7 @@ public struct ClaimDetailView: View {
                         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                             return
                         }
-                        await UIApplication.shared.open(settingsUrl)
+                        Dependencies.urlOpener.open(settingsUrl)
                     case .authorized, .limited:
                         showImagePicker = true
                     @unknown default:
@@ -369,8 +363,9 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
-        let featureFlags = FeatureFlagsDemo()
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
+        Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
 
         let claim = ClaimModel(
             id: "claimId",
@@ -382,7 +377,6 @@ struct ClaimDetailView_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -394,13 +388,17 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            appealInstructionsUrl: "https://hedvig.com",
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true,
+            infoText: "If you have more receipts related to this claim, you can upload more on this page.",
+            displayItems: []
         )
         return ClaimDetailView(
             claim: claim,
-            type: .claim(id: claim.id)
+            type: .claim(id: "claimId")
         )
-        .environmentObject(HomeNavigationViewModel())
     }
 }
 
@@ -410,12 +408,13 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published public var document: hPDFDocument? = nil
     @Published private(set) var claim: ClaimModel? {
         didSet {
-            self.setupToolbarOptionType(for: claim)
+            setupToolbarOptionType(for: claim)
             if let url = URL(string: claim?.signedAudioURL) {
-                self.player = AudioPlayer(url: url)
+                player = AudioPlayer(url: url)
             }
         }
     }
+
     private(set) var player: AudioPlayer?
     private var claimDetailsService: FetchClaimDetailsService
     @Published var fetchFilesError: String?
@@ -425,39 +424,23 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
     let fileGridViewModel: FileGridViewModel
-    let type: FetchClaimDetailsType
+    let type: ClaimDetailsType
     private var cancellables = Set<AnyCancellable>()
     public init(
         claim: ClaimModel?,
-        type: FetchClaimDetailsType
+        type: ClaimDetailsType
     ) {
         self.claim = claim
-        self.claimDetailsService = .init(type: type)
+        claimDetailsService = .init(id: type.claimId)
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         self.type = type
-        let files = store.state.files[claim?.id ?? ""] ?? []
-        self.fileGridViewModel = .init(files: files, options: [])
+        let files = store.state.files[type.claimId] ?? []
+        fileGridViewModel = .init(files: files, options: [])
         Task {
             await fetchFiles()
         }
-        store.actionSignal
-            .filter { action in
-                if case .refreshFiles = action {
-                    return true
-                }
-                return false
-            }
-            .sink { _ in
-
-            } receiveValue: { [weak self] value in
-                Task { [weak self] in
-                    await self?.fetchFiles()
-                }
-            }
-            .store(in: &cancellables)
         fileGridViewModel.$files
             .sink { _ in
-
             } receiveValue: { [weak self] files in
                 self?.hasFiles = !files.isEmpty
             }
@@ -467,7 +450,7 @@ public class ClaimDetailViewModel: ObservableObject {
         if let claim {
             claimProcessingState = .success
             if let url = URL(string: claim.signedAudioURL) {
-                self.player = AudioPlayer(url: url)
+                player = AudioPlayer(url: url)
             }
         } else {
             fetchClaimDetails()
@@ -475,7 +458,7 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     private func handleClaimChat() {
-        self.setupToolbarOptionType(for: claim)
+        setupToolbarOptionType(for: claim)
         Timer.publish(every: 5, on: .main, in: .common).autoconnect()
             .sink { [weak self] _ in
                 Task {
@@ -483,13 +466,10 @@ public class ClaimDetailViewModel: ObservableObject {
                         if let claim = try await self?.claimDetailsService.get() {
                             self?.setupToolbarOptionType(for: claim)
                         }
-                    } catch {
-
-                    }
+                    } catch {}
                 }
             }
             .store(in: &cancellables)
-
     }
 
     private func setupToolbarOptionType(for claimModel: ClaimModel?) {
@@ -500,10 +480,9 @@ public class ClaimDetailViewModel: ObservableObject {
             return
         }
         let hasNewMessage = conversation.hasNewMessage
-        let timeStamp = conversation.newestMessage?.sentAt
         withAnimation {
             self.toolbarOptionType =
-                hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+                hasNewMessage ? [.chatNotification] : [.chat]
         }
     }
 
@@ -526,10 +505,10 @@ public class ClaimDetailViewModel: ObservableObject {
             fetchFilesError = nil
         }
         do {
-            let data = try await claimDetailsService.getFiles()
-            store.send(.setFilesForClaim(claimId: data.claimId, files: data.files))
+            let files = try await claimDetailsService.getFiles()
+            store.send(.setFilesForClaim(claimId: type.claimId, files: files))
             withAnimation { [weak self] in
-                self?.fileGridViewModel.files = data.files
+                self?.fileGridViewModel.files = files
             }
         } catch let ex {
             withAnimation { [weak self] in
@@ -547,11 +526,11 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     var showUploadedFiles: Bool {
-        return self.claim?.signedAudioURL != nil || !fileGridViewModel.files.isEmpty || canAddFiles
+        claim?.signedAudioURL != nil || !fileGridViewModel.files.isEmpty || canAddFiles
     }
 
     var canAddFiles: Bool {
-        return self.claim?.status != .closed && fetchFilesError == nil
+        claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
     }
 }
 

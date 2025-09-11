@@ -16,9 +16,9 @@ struct AddonSelectSubOptionScreen: View {
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
         if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
-            self._selectedQuote = State(initialValue: preSelectedQuote)
+            _selectedQuote = State(initialValue: preSelectedQuote)
         } else if let firstQuote = addonOffer.quotes.first {
-            self._selectedQuote = State(initialValue: firstQuote)
+            _selectedQuote = State(initialValue: firstQuote)
         }
     }
 
@@ -31,21 +31,8 @@ struct AddonSelectSubOptionScreen: View {
                             id: quote,
                             itemModel: nil,
                             leftView: {
-                                HStack {
-                                    hText(quote.displayName ?? "")
-                                    Spacer()
-                                    hPill(
-                                        text: L10n.addonFlowPriceLabel(
-                                            addonOffer
-                                                .getTotalPrice(selectedQuote: quote)?
-                                                .formattedAmount ?? ""
-                                        ),
-                                        color: .grey,
-                                        colorLevel: .one
-                                    )
-                                    .hFieldSize(.small)
-                                }
-                                .asAnyView
+                                leftView(for: quote)
+                                    .asAnyView
                             },
                             selected: $selectedQuote,
                             error: .constant(nil),
@@ -61,18 +48,19 @@ struct AddonSelectSubOptionScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) {
-                        changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
-                        router.dismiss()
-                    } content: {
-                        hText(L10n.addonFlowSelectButton)
-                    }
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.addonFlowSelectButton),
+                        {
+                            changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
+                            router.dismiss()
+                        }
+                    )
                     .accessibilityHint(L10n.voiceoverOptionSelected + (selectedQuote?.displayName ?? ""))
 
-                    hButton.LargeButton(type: .ghost) {
+                    hCancelButton {
                         router.dismiss()
-                    } content: {
-                        hText(L10n.generalCancelButton)
                     }
                 }
             }
@@ -80,29 +68,24 @@ struct AddonSelectSubOptionScreen: View {
             .padding(.top, 16)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(self)
-    }
-}
-
-extension AddonSelectSubOptionScreen: TitleView {
-    func getTitleView() -> UIView {
-        let view: UIView = UIHostingController(rootView: titleView).view
-        view.backgroundColor = .clear
-        view.isUserInteractionEnabled = true
-        return view
+        .configureTitleView(title: L10n.addonFlowSelectSuboptionTitle, subTitle: L10n.addonFlowSelectSuboptionSubtitle)
     }
 
-    @ViewBuilder
-    private var titleView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            hText(L10n.addonFlowSelectSuboptionTitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.primary)
-            hText(L10n.addonFlowSelectSuboptionSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Translucent.secondary)
+    private func leftView(for quote: AddonQuote) -> some View {
+        HStack {
+            hText(quote.displayName ?? "")
+            Spacer()
+            hPill(
+                text: L10n.addonFlowPriceLabel(
+                    addonOffer
+                        .getTotalPrice(selectedQuote: quote)?
+                        .formattedAmount ?? ""
+                ),
+                color: .grey,
+                colorLevel: .one
+            )
+            .hFieldSize(.small)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, .padding8)
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -111,6 +94,7 @@ extension AddonSelectSubOptionScreen: TitleView {
         displayName: "45 days",
         quoteId: "quoteId45",
         addonId: "addonId45",
+        addonSubtype: "addonId45",
         displayItems: [
             .init(displayTitle: "Coverage", displayValue: "45 days"),
             .init(
@@ -129,7 +113,11 @@ extension AddonSelectSubOptionScreen: TitleView {
             perils: [],
             product: "",
             termsVersion: ""
-        )
+        ),
+        documents: [
+            .init(displayName: "dodument1", url: "www.hedvig.com", type: .unknown)
+
+        ]
     )
 
     AddonSelectSubOptionScreen(
@@ -144,6 +132,7 @@ extension AddonSelectSubOptionScreen: TitleView {
                     displayName: "60 days",
                     quoteId: "quoteId60",
                     addonId: "addonId60",
+                    addonSubtype: "addonId60",
                     displayItems: [
                         .init(displayTitle: "Coverage", displayValue: "45 days"),
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
@@ -159,12 +148,13 @@ extension AddonSelectSubOptionScreen: TitleView {
                         perils: [],
                         product: "",
                         termsVersion: ""
-                    )
+                    ),
+                    documents: []
                 ),
             ]
         ),
         changeAddonNavigationVm: .init(
-            input: .init()
+            input: .init(addonSource: .insurances)
         )
     )
 }

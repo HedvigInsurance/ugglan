@@ -1,13 +1,13 @@
-import PresentableStore
+import Campaign
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct PaymentDetailsView: View {
     private let data: PaymentData
-    @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
+    @Inject var featureFlags: FeatureFlags
 
     init(data: PaymentData) {
         self.data = data
@@ -15,17 +15,17 @@ struct PaymentDetailsView: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: 16) {
-                contracts
-                paymentInfo
-                paymentInfoDetails
+            VStack(spacing: .padding16) {
+                contractsSection
+                referralSection
+                paymentDetailsSection
             }
             .padding(.vertical, .padding8)
         }
     }
 
-    private var contracts: some View {
-        VStack(spacing: 8) {
+    private var contractsSection: some View {
+        VStack(spacing: .padding8) {
             ForEach(data.contracts) { contract in
                 ContractDetails(expandedContracts: $expandedContracts, contract: contract)
             }
@@ -33,51 +33,49 @@ struct PaymentDetailsView: View {
     }
 
     @ViewBuilder
-    private var paymentInfo: some View {
-        if data.discounts.count > 0 {
-            hSection(getPaymentElements(), id: \.id) { row in
-                row.view
+    private var referralSection: some View {
+        if let referralDiscount = data.referralDiscount {
+            hSection {
+                DiscountDetailView(vm: .init(options: [.forPayment], discount: referralDiscount))
+                    .hWithoutHorizontalPadding([.row])
             }
-            .withHeader {
-                HStack {
-                    hText(L10n.paymentsDiscountsSectionTitle)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.paymentsDiscountInfoTitle,
-                        description: L10n.paymentsDiscountInfoDescription
-                    )
-                }
-                .padding(.bottom, -16)
-            }
-            .sectionContainerStyle(.transparent)
-            .dividerInsets(.all, 0)
+            .withHeader(
+                title: L10n.paymentsReferralsInfoTitle,
+                withoutBottomPadding: false
+            )
 
-        } else {
-            hSection(getPaymentElements(), id: \.id) { row in
-                row.view
-            }
             .sectionContainerStyle(.transparent)
-            .dividerInsets(.all, 0)
+            .hSectionHeaderWithDivider
+            .hWithoutHorizontalPadding([.row, .divider])
+            .padding(.top, .padding8)
         }
-
     }
-    private func getPaymentElements() -> [(id: String, view: AnyView)] {
+
+    @ViewBuilder
+    private var paymentDetailsSection: some View {
+        hSection(paymentViewItems, id: \.id) { view in
+            view.view
+        }
+        .withHeader(
+            title: L10n.PaymentDetails.NavigationBar.title,
+            infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription,
+            withoutBottomPadding: false
+        )
+        .sectionContainerStyle(.transparent)
+        .hSectionHeaderWithDivider
+        .hWithoutHorizontalPadding([.row, .divider])
+    }
+
+    private var paymentViewItems: [(id: String, view: AnyView)] {
         var list: [(id: String, view: AnyView)] = []
 
-        for discount in data.discounts {
-            let view = AnyView(PaymentDetailsDiscountView(vm: .init(options: [.forPayment], discount: discount)))
-            list.append(("\(discount.code)", view))
-
-        }
-
-        if let carriedAdjustment = data.payment.carriedAdjustment, carriedAdjustment.floatAmount > 0 {
-            list.append(("carriedAdjusment", AnyView(carriedAdjustmentView)))
-        }
-        if let settlementAdjustment = data.payment.settlementAdjustment, settlementAdjustment.floatAmount > 0 {
-            list.append(("settlementAdjustmentView", AnyView(settlementAdjustmentView)))
-        }
+        list.append(("carriedAdjustment", AnyView(carriedAdjustmentView)))
+        list.append(("settlementAdjustment", AnyView(settlementAdjustmentView)))
         list.append(("total", AnyView(total)))
         list.append(("paymentDue", AnyView(paymentDue)))
+        if let paymentDetails = data.paymentDetails {
+            list.append(("bankDetails", AnyView(bankDetails(paymentDetails: paymentDetails))))
+        }
         return list
     }
 
@@ -94,7 +92,6 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsCarriedAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding
         }
     }
 
@@ -111,7 +108,6 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsSettlementAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding
         }
     }
 
@@ -133,10 +129,13 @@ struct PaymentDetailsView: View {
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
-                hText(data.payment.net.formattedAmount)
+                ZStack {
+                    hText(data.payment.net.formattedAmount)
+                    hText(" ")
+                }
             }
         }
-        .hWithoutHorizontalPadding
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder var paymentDue: some View {
@@ -160,27 +159,13 @@ struct PaymentDetailsView: View {
                 }
             }
         }
-        .hWithoutHorizontalPadding
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
-    private var paymentInfoDetails: some View {
-        if let paymentDetails = data.paymentDetails {
-            hSection(getListForPaymentDetails(for: paymentDetails), id: \.id) { item in
-                item.view
-            }
-            .sectionContainerStyle(.transparent)
-        }
-    }
-
-    private func getListForPaymentDetails(
-        for paymentDetails: PaymentData.PaymentDetails
-    ) -> [(id: String, view: AnyView)] {
-        var list: [(id: String, view: AnyView)] = []
-        list.append(("header", AnyView(paymentDetailsHeaderView)))
-
-        for item in paymentDetails.getDisplayList {
-            let view = hRow {
+    private func bankDetails(paymentDetails: PaymentData.PaymentDetails) -> some View {
+        hSection(paymentDetails.getDisplayList, id: \.key) { item in
+            hRow {
                 HStack {
                     hText(item.key)
                     Spacer()
@@ -188,33 +173,16 @@ struct PaymentDetailsView: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .hWithoutHorizontalPadding
-            .dividerInsets(.all, 0)
-
-            list.append((item.key, AnyView(view)))
         }
-        return list
-    }
-
-    private var paymentDetailsHeaderView: some View {
-        hRow {
-            HStack {
-                hText(L10n.PaymentDetails.NavigationBar.title)
-                Spacer()
-                InfoViewHolder(
-                    title: L10n.paymentsPaymentDetailsInfoTitle,
-                    description: L10n.paymentsPaymentDetailsInfoDescription
-                )
-                .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.section, .row, .divider])
     }
 }
 
 struct PaymentDetails_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
         let data = PaymentData(
             id: "id",
             payment: .init(
@@ -230,7 +198,19 @@ struct PaymentDetails_Previews: PreviewProvider {
                     id: "id1",
                     title: "title",
                     subtitle: "subtitle",
-                    amount: .sek(200),
+                    netAmount: .sek(250),
+                    grossAmount: .sek(200),
+                    discounts: [
+                        .init(
+                            code: "TOGETHER",
+                            amount: .init(amount: "10", currency: "SEK"),
+                            title: "15% discount for 12 months",
+                            listOfAffectedInsurances: [],
+                            validUntil: nil,
+                            canBeDeleted: true,
+                            discountId: "id"
+                        )
+                    ],
                     periods: [
                         .init(
                             id: "1",
@@ -254,7 +234,19 @@ struct PaymentDetails_Previews: PreviewProvider {
                     id: "id2",
                     title: "title 2",
                     subtitle: "subtitle 2",
-                    amount: .sek(300),
+                    netAmount: .sek(350),
+                    grossAmount: .sek(300),
+                    discounts: [
+                        .init(
+                            code: "TOGETHER",
+                            amount: .init(amount: "10", currency: "SEK"),
+                            title: "15% discount for 12 months",
+                            listOfAffectedInsurances: [],
+                            validUntil: nil,
+                            canBeDeleted: true,
+                            discountId: "id"
+                        )
+                    ],
                     periods: [
                         .init(
                             id: "1",
@@ -275,41 +267,17 @@ struct PaymentDetails_Previews: PreviewProvider {
                     ]
                 ),
             ],
-            discounts: [
+            referralDiscount:
                 .init(
-                    id: "CODE",
-                    code: "CODE",
-                    amount: .sek(100),
-                    title: "Title",
-                    listOfAffectedInsurances: [
-                        .init(id: "1", displayName: "Car 15%")
-                    ],
-                    validUntil: "2023-11-20",
-                    canBeDeleted: false
-                ),
-                .init(
-                    id: "CODE2",
-                    code: "CODE2",
-                    amount: .sek(99),
-                    title: "Title1",
-                    listOfAffectedInsurances: [
-                        .init(id: "2", displayName: "House 15%")
-                    ],
-                    validUntil: "2023-11-22",
-                    canBeDeleted: false
-                ),
-                .init(
-                    id: "FRIENDS",
                     code: "MY CODE",
                     amount: .sek(30),
                     title: "3 friends invited",
                     listOfAffectedInsurances: [],
                     validUntil: nil,
-                    canBeDeleted: false
-
+                    canBeDeleted: false,
+                    discountId: "FRIENDS"
                 ),
-            ],
-            paymentDetails: nil,
+            paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
             addedToThePayment: nil
         )
         return PaymentDetailsView(data: data)

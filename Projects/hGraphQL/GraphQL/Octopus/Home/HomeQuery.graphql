@@ -1,0 +1,16 @@
+query Home {
+  currentMember {
+    id
+    activeContracts {
+        ...ContractFragment
+    }
+    pendingContracts {
+      externalInsuranceCancellationHandledByHedvig
+      exposureDisplayName
+      id
+    }
+    memberActions {
+        isContactInfoUpdateNeeded
+    }
+  }
+}

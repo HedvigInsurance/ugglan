@@ -5,12 +5,12 @@ import DatadogCrashReporting
 import DatadogLogs
 import DatadogRUM
 import DatadogTrace
+import Environment
 import PresentableStore
 import Profile
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 extension AppDelegate {
     func setupAnalyticsAndTracking() {
@@ -79,7 +79,7 @@ extension AppDelegate {
             )
         )
         CrashReporting.enable()
-        if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
+        if Environment.current == .staging || Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
         }
         logStartView = { key, name in
@@ -100,17 +100,15 @@ extension AppDelegate {
     }
 }
 
-public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
-    public init() {}
-
-    public func rumView(for viewController: UIViewController) -> RUMView? {
-        return nil
+struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
+    func rumView(for _: UIViewController) -> RUMView? {
+        nil
     }
 }
 
 extension View {
     func trackViewName(name: String? = nil) -> some View {
-        self.onAppear {
+        onAppear {
             RUMMonitor.shared()
                 .startView(key: .init(describing: self), name: name ?? .init(describing: self), attributes: [:])
         }

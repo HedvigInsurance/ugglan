@@ -1,13 +1,13 @@
 import Foundation
 
 @MainActor
-final public class KeychainHelper {
-
+public final class KeychainHelper {
     static let standard = KeychainHelper()
     private init() {}
     private let account: String = "hedvig"
 
     // MARK: - Public methods
+
     ///  Saves value in keychain
     /// - Parameters:
     ///   - item: Object of type `Codable` that needs to be entried to keychain
@@ -52,6 +52,7 @@ final public class KeychainHelper {
     }
 
     // MARK: - Private methods
+
     private func save(_ data: Data, key: String) {
         let query =
             [
@@ -80,7 +81,7 @@ final public class KeychainHelper {
             SecItemUpdate(query, attributesToUpdate)
         default:
             // Fire "security error -{OSStatus}" in terminal for details of the error
-            log.error("Failed to save token with OSStatus: \(status)", error: nil, attributes: nil)
+            graphQlLogger.error("Failed to save token with OSStatus: \(status)", error: nil, attributes: nil)
         }
     }
 
@@ -103,13 +104,13 @@ final public class KeychainHelper {
             return nil
         default:
             if let errMsg = SecCopyErrorMessageString(status, nil) as? String {
-                log.info(
+                graphQlLogger.info(
                     "Access token refresh missing token EXCEPTION",
                     error: NSError(domain: errMsg, code: 1000),
                     attributes: nil
                 )
             } else {
-                log.info("Access token refresh missing token EXCEPTION", error: nil, attributes: nil)
+                graphQlLogger.info("Access token refresh missing token EXCEPTION", error: nil, attributes: nil)
             }
             throw NSError(domain: NSOSStatusErrorDomain, code: Int(status))
         }

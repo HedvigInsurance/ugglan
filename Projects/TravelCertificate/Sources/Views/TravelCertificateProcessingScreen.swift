@@ -10,8 +10,8 @@ struct TravelCertificateProcessingScreen: View {
 
     var body: some View {
         ProcessingStateView(
-            loadingViewText: L10n.TravelCertificate.generating,
-            successViewTitle: L10n.TravelCertificate.travelCertificateReady,
+            loadingViewText: L10n.Certificates.generating,
+            successViewTitle: L10n.Certificates.emailSent,
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
             state: $vm.viewState
         )
@@ -39,26 +39,27 @@ struct TravelCertificateProcessingScreen: View {
 
     private var bottomSuccessView: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     ModalPresentationSourceWrapper(
                         content: {
-                            hButton.LargeButton(type: .primary) {
-                                Task { [weak vm] in
-                                    await vm?.presentShare()
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.Certificates.download),
+                                {
+                                    Task { [weak vm] in
+                                        await vm?.presentShare()
+                                    }
                                 }
-                            } content: {
-                                hText(L10n.TravelCertificate.download)
-                            }
+                            )
                         },
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )
                     .fixedSize(horizontal: false, vertical: true)
-                    hButton.LargeButton(type: .ghost) {
+                    hCloseButton {
                         router.dismiss()
-                    } content: {
-                        hText(L10n.generalCloseButton)
                     }
                 }
             }
@@ -137,9 +138,8 @@ class ProcessingViewModel: ObservableObject {
         } catch {}
     }
 
-    func present(activity: UIActivityViewController) {
+    func present(activity _: UIActivityViewController) {}
 
-    }
     @MainActor
     var fileName: String {
         "\("Travel Insurance Certificate") \(Date().localDateString)\(".pdf")"
@@ -159,14 +159,16 @@ struct SuccessScreen_Previews: PreviewProvider {
                 WhoIsTravelingViewModel(
                     specification: .init(
                         contractId: "contractId",
+                        displayName: "display name",
+                        exposureDisplayName: "exposure display name",
                         minStartDate: Date(),
                         maxStartDate: "2025-12-12".localDateToDate ?? Date(),
                         numberOfCoInsured: 2,
                         maxDuration: 2,
-                        street: "",
                         email: "",
                         fullName: ""
-                    )
+                    ),
+                    router: .init()
                 )
             )
     }

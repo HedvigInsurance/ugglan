@@ -21,9 +21,9 @@ public struct ListScreen: View {
 
     public var body: some View {
         hForm {
-            if vm.list.isEmpty && !vm.isLoading {
+            if vm.list.isEmpty, !vm.isLoading {
                 VStack(spacing: .padding16) {
-                    Image(uiImage: hCoreUIAssets.infoFilled.image)
+                    hCoreUIAssets.infoFilled.view
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColor.Blue.element)
@@ -47,8 +47,10 @@ public struct ListScreen: View {
                     .onTapGesture {
                         travelCertificateNavigationVm.isDocumentPresented = travelCertificate
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isButton)
                 }
-                .hSectionWithoutHorizontalPadding
+                .hWithoutHorizontalPadding([.section])
             }
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)
@@ -62,14 +64,12 @@ public struct ListScreen: View {
             }
         }
         .loading($vm.isLoading, $vm.error)
-        .applyInfoButton(withPlacement: infoButtonPlacement) {
-            InfoViewHolder(
-                title: L10n.TravelCertificate.Info.title,
-                description: L10n.TravelCertificate.Info.subtitle,
-                type: .navigation
-            )
-            .foregroundColor(hTextColor.Opaque.primary)
-        }
+        .applyInfoButton(
+            withPlacement: infoButtonPlacement,
+            action: {
+                travelCertificateNavigationVm.isInfoViewPresented = true
+            }
+        )
         .sectionContainerStyle(.transparent)
         .onAppear {
             Task {
@@ -90,22 +90,13 @@ public struct ListScreen: View {
 
     @ViewBuilder
     private var addonView: some View {
-        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+        if let banner = vm.addonBannerModel {
             AddonCardView(
                 openAddon: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let addonContracts = banner.contractIds.compactMap({
-                        contractStore.state.contractForId($0)
-                    })
-
-                    let addonConfigs: [AddonConfig] = addonContracts.map({
-                        .init(
-                            contractId: $0.id,
-                            exposureName: $0.exposureDisplayName,
-                            displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                        )
-                    })
+                    let addonConfigs = contractStore.getAddonConfigsFor(contractIds: banner.contractIds)
                     travelCertificateNavigationVm.isAddonPresented = .init(
+                        addonSource: .travelCertificates,
                         contractConfigs: addonConfigs
                     )
                 },
@@ -117,11 +108,14 @@ public struct ListScreen: View {
     @ViewBuilder
     private var createNewButton: some View {
         if vm.canCreateTravelInsurance {
-            hButton.LargeButton(type: .secondary) {
-                createNewPressed()
-            } content: {
-                hText(L10n.TravelCertificate.createNewCertificate)
-            }
+            hButton(
+                .large,
+                .secondary,
+                content: .init(title: L10n.TravelCertificate.createNewCertificate),
+                {
+                    createNewPressed()
+                }
+            )
             .hButtonIsLoading(vm.isCreateNewLoading)
         }
     }
@@ -134,9 +128,7 @@ public struct ListScreen: View {
             do {
                 let specifications = try await vm.service.getSpecifications()
                 travelCertificateNavigationVm.isStartDateScreenPresented = .init(specification: specifications)
-            } catch _ {
-
-            }
+            } catch _ {}
             withAnimation {
                 vm.isCreateNewLoading = false
             }
@@ -146,18 +138,24 @@ public struct ListScreen: View {
 
 extension View {
     @ViewBuilder
-    fileprivate func applyInfoButton<Content: View>(
+    fileprivate func applyInfoButton(
         withPlacement: ListToolBarPlacement,
-        @ViewBuilder content: @escaping () -> Content
+        action: @escaping () -> Void
     ) -> some View {
         switch withPlacement {
         case .leading:
-            self.setToolbarLeading {
-                content()
+            setToolbarLeading {
+                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
+                    action()
+                }
+                .accessibilityValue(L10n.Toast.readMore)
             }
         case .trailing:
-            self.setToolbarTrailing {
-                content()
+            setToolbarTrailing {
+                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
+                    action()
+                }
+                .accessibilityValue(L10n.Toast.readMore)
             }
         }
     }
@@ -176,7 +174,7 @@ class ListScreenViewModel: ObservableObject {
 
     init() {
         addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
-            [weak self] notification in
+            [weak self] _ in
             Task {
                 await self?.fetchTravelCertificateList()
             }
@@ -197,7 +195,7 @@ class ListScreenViewModel: ObservableObject {
             isLoading = true
         }
         do {
-            let (list, canCreateTravelInsurance, banner) = try await self.service.getList(source: .appUpsellUpgrade)
+            let (list, canCreateTravelInsurance, banner) = try await service.getList(source: .travelCertificates)
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance
@@ -211,6 +209,7 @@ class ListScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    ListScreen(infoButtonPlacement: .trailing)
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    return ListScreen(infoButtonPlacement: .trailing)
         .environmentObject(TravelCertificateNavigationViewModel())
 }

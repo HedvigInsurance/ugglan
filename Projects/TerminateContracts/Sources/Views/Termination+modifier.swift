@@ -32,5 +32,4 @@ struct TerminateInsurance: ViewModifier {
                 ChangeTierNavigation(input: item)
             }
     }
-
 }

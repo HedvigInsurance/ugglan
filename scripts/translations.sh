@@ -3,7 +3,7 @@ TMPDIR=/tmp
 function runLokalise() {
     DEST=$TMPDIR/$(uuidgen)
     mkdir $DEST
-    $TMPDIR/lokalise2 file download --project-id 743091915e9da969db9340.20943733 --token 4fe9c836530f3f946d86ce5cef36fb74ec437f56 --dest $DEST --format strings --unzip-to "./Projects/hCore/Resources" --placeholder-format ios --filter-langs en,da_DK,en_DK,en_NO,nb_NO,en_SE,sv_SE --escape-percent 1
+    $TMPDIR/lokalise2 file download --project-id 743091915e9da969db9340.20943733 --token 4fe9c836530f3f946d86ce5cef36fb74ec437f56 --dest $DEST --format strings --unzip-to "./Projects/hCore/Resources" --placeholder-format ios --filter-langs en,sv_SE --escape-percent 1 --async
 }
 
 if [[ -f $TMPDIR/lokalise2 ]]

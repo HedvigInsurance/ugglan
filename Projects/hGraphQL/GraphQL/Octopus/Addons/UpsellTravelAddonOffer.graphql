@@ -1,0 +1,48 @@
+mutation UpsellTravelAddonOffer($contractId: ID!) {
+  upsellTravelAddonOffer(contractId: $contractId) {
+    userError {
+      message
+    }
+    offer {
+      titleDisplayName
+      descriptionDisplayName
+      activationDate
+      currentAddon {
+        displayItems {
+            ...UpsellTravelAddonDisplayItemFragment
+        }
+        premium {
+            ...MoneyFragment
+        }
+      }
+      quotes {
+        ...UpsellTravelAddonQuoteFragment
+      }
+    }
+  }
+}
+
+fragment UpsellTravelAddonQuoteFragment on UpsellTravelAddonQuote {
+    quoteId
+    addonId
+    addonSubtype
+    displayName
+    displayItems {
+        ...UpsellTravelAddonDisplayItemFragment
+    }
+    premium {
+        ...MoneyFragment
+    }
+    addonVariant {
+        ...AddonVariantFragment
+    }
+	documents {
+	  displayName
+	  url
+	}
+}
+
+fragment UpsellTravelAddonDisplayItemFragment on UpsellTravelAddonDisplayItem {
+    displayTitle
+    displayValue
+}

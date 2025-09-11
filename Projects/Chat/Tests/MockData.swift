@@ -96,20 +96,21 @@ class MockConversationService: ChatServiceProtocol {
         self.sendMessage = sendMessage
     }
 
-    func getNewMessages() async throws -> Chat.ChatData {
+    func getNewMessages() async throws -> ChatData {
         events.append(.getNewMessages)
         let chatData = try await fetchNewMessages()
         return chatData
     }
 
-    func getPreviousMessages() async throws -> Chat.ChatData {
+    func getPreviousMessages() async throws -> ChatData {
         events.append(.getPreviousMessages)
         let chatData = try await fetchPreviousMessages()
         return chatData
     }
 
-    func send(message: Chat.Message) async throws -> Chat.Message {
+    func send(message: Message) async throws -> Message {
         events.append(.sendMessage)
-        return try await sendMessage(message)
+        let newMessage = Message(id: message.id, type: message.type, date: message.sentAt)
+        return try await sendMessage(newMessage)
     }
 }

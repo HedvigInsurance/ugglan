@@ -2,22 +2,19 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class ChangeTierNavigationViewModel: ObservableObject {
-    @Published public var isEditTierPresented = false
-    @Published public var isEditDeductiblePresented = false
+    @Published public var isEditTierPresented: EditTypeModel?
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: hPDFDocument?
     @Published public var isInfoViewPresented: InfoViewDataModel? = nil
-    @Published public var isConfirmTierPresented = false
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}
 
-    //NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
+    // NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
     var vm: ChangeTierViewModel!
 
     let changeTierContractsInput: ChangeTierContractsInput?
@@ -28,9 +25,9 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         onChangedTier: @escaping () -> Void
     ) {
         self.router = router ?? Router()
-        self.useOwnNavigation = router == nil
+        useOwnNavigation = router == nil
         self.vm = vm
-        self.changeTierContractsInput = nil
+        changeTierContractsInput = nil
         self.onChangedTier = onChangedTier
     }
 
@@ -39,7 +36,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         onChangedTier: @escaping () -> Void
     ) {
         if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
-            self.vm = .init(
+            vm = .init(
                 changeTierInput: .contractWithSource(
                     data: .init(source: changeTierContractsInput.source, contractId: first.contractId)
                 )
@@ -50,7 +47,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         }
         self.onChangedTier = onChangedTier
         router = Router()
-        self.useOwnNavigation = true
+        useOwnNavigation = true
     }
 
     public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
@@ -60,7 +57,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     }
 
     func missingQuotesGoBackPressed() {
-        if useOwnNavigation && changeTierContractsInput == nil {
+        if useOwnNavigation, changeTierContractsInput == nil {
             router.dismiss()
         } else {
             router.pop()
@@ -97,18 +94,21 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 public enum ChangeTierInput: Identifiable, Equatable {
     public var id: String {
         switch self {
-        case .contractWithSource(let data):
+        case let .contractWithSource(data):
             return data.contractId + data.source.asString
-        case .existingIntent(let intent, _):
-            return intent.displayName + intent.tiers.flatMap({ $0.quotes }).compactMap({ $0.id }).joined(separator: ",")
+        case let .existingIntent(intent, _):
+            return intent.displayName + intent.tiers.flatMap(\.quotes).compactMap(\.id).joined(separator: ",")
         }
     }
+
     public static func == (lhs: ChangeTierInput, rhs: ChangeTierInput) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
+
     case contractWithSource(data: ChangeTierInputData)
     case existingIntent(intent: ChangeTierIntentModel, onSelect: (((Tier, Quote)) -> Void)?)
 }
+
 public struct ChangeTierInputData: Equatable, Identifiable, Codable {
     public var id: String {
         contractId
@@ -122,8 +122,8 @@ public struct ChangeTierInputData: Equatable, Identifiable, Codable {
         self.contractId = contractId
     }
 
-    let source: ChangeTierSource
-    let contractId: String
+    public let source: ChangeTierSource
+    public let contractId: String
 }
 
 public struct ChangeTierContractsInput: Equatable, Identifiable {
@@ -133,7 +133,7 @@ public struct ChangeTierContractsInput: Equatable, Identifiable {
         source: ChangeTierSource,
         contracts: [ChangeTierContract]
     ) {
-        self.id = "\(Date().timeIntervalSince1970)"
+        id = "\(Date().timeIntervalSince1970)"
         self.source = source
         self.contracts = contracts
     }
@@ -160,7 +160,7 @@ public struct ChangeTierContract: Hashable {
 
 extension ChangeTierContract: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ChangeTierContract.self)
+        .init(describing: ChangeTierContract.self)
     }
 }
 
@@ -177,7 +177,7 @@ public struct ChangeTierNavigation: View {
         router: Router? = nil,
         onChangedTier: @escaping () -> Void = {}
     ) {
-        self.changeTierNavigationVm = .init(
+        changeTierNavigationVm = .init(
             router: router,
             vm: .init(changeTierInput: input),
             onChangedTier: onChangedTier
@@ -188,7 +188,7 @@ public struct ChangeTierNavigation: View {
         input: ChangeTierContractsInput,
         onChangedTier: @escaping () -> Void = {}
     ) {
-        self.changeTierNavigationVm = .init(
+        changeTierNavigationVm = .init(
             changeTierContractsInput: input,
             onChangedTier: onChangedTier
         )
@@ -210,27 +210,21 @@ public struct ChangeTierNavigation: View {
         }
         .environmentObject(changeTierNavigationVm)
         .detent(
-            presented: $changeTierNavigationVm.isEditTierPresented,
-            style: [.height]
-        ) {
-            EditTierScreen(vm: changeTierNavigationVm.vm)
-                .embededInNavigation(options: .navigationType(type: .large), tracking: ChangeTierTrackingType.editTier)
-                .environmentObject(changeTierNavigationVm)
-        }
-        .detent(
-            presented: $changeTierNavigationVm.isEditDeductiblePresented,
-            style: [.height]
-        ) {
-            EditDeductibleScreen(vm: changeTierNavigationVm.vm)
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: ChangeTierTrackingType.editDeductible
-                )
-                .environmentObject(changeTierNavigationVm)
+            item: $changeTierNavigationVm.isEditTierPresented
+        ) { model in
+            EditScreen(
+                vm: changeTierNavigationVm.vm,
+                type: model.type
+            )
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: ChangeTierTrackingType.edit(type: model.type)
+            )
+            .environmentObject(changeTierNavigationVm)
         }
         .detent(
             item: $changeTierNavigationVm.isInsurableLimitPresented,
-            style: [.height],
+
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
@@ -239,14 +233,9 @@ public struct ChangeTierNavigation: View {
             )
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
-
-            let currentTier = changeTierNavigationVm.vm.currentTier
-
             CompareTierScreen(
                 vm: .init(
-                    tiers: changeTierNavigationVm.vm.tiers,
-                    selectedTier: changeTierNavigationVm.vm.selectedTier,
-                    currentTier: currentTier
+                    tiers: changeTierNavigationVm.vm.tiers
                 )
             )
             .withDismissButton()
@@ -257,48 +246,47 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             item: $changeTierNavigationVm.document,
-            style: [.large]
+            transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }
         .detent(
             item: $changeTierNavigationVm.isInfoViewPresented,
-            style: [.height]
+            transitionType: .detent(style: [.height])
         ) { info in
             InfoView(
                 title: info.title ?? "",
                 description: info.description ?? ""
             )
         }
-        .detent(
-            presented: $changeTierNavigationVm.isConfirmTierPresented,
-            style: [.height],
-            options: .constant(.alwaysOpenOnTop),
-            content: {
-                ConfirmChangeTierScreen()
-                    .embededInNavigation(
-                        options: .navigationBarHidden,
-                        tracking: ChangeTierTrackingType.confirmTier
-                    )
-                    .environmentObject(changeTierNavigationVm)
-            }
-        )
     }
 
     private var wrapperHost: some View {
         Group {
             if let changeTierContracts = changeTierNavigationVm.changeTierContractsInput {
-                SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
-                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                if changeTierContracts.contracts.isEmpty {
+                    GenericErrorView(
+                        title: L10n.somethingWentWrong,
+                        description: L10n.General.defaultError,
+                        formPosition: .center
+                    )
+                    .withDismissButton()
+                } else {
+                    SelectInsuranceScreen(
+                        changeTierContractsInput: changeTierContracts,
+                        changeTierNavigationVm: changeTierNavigationVm
+                    )
+                    .routerDestination(for: ChangeTierContract.self) { _ in
                         getScreen
                     }
+                }
             } else {
                 getScreen
             }
         }
     }
-    var getScreen: some View {
 
+    var getScreen: some View {
         ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
             .withAlertDismiss()
             .routerDestination(for: ChangeTierRouterActions.self) { action in
@@ -327,23 +315,22 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
         switch self {
         case .changeTierLandingScreen:
             return .init(describing: ChangeTierLandingScreen.self)
-        case .editTier:
-            return .init(describing: EditTierScreen.self)
-        case .editDeductible:
-            return .init(describing: EditDeductibleScreen.self)
+        case .edit:
+            return .init(describing: EditScreen.self)
         case .compareTier:
             return .init(describing: CompareTierScreen.self)
-        case .confirmTier:
-            return .init(describing: ConfirmChangeTierScreen.self)
         case .info:
             return "Addon Info"
         }
     }
 
     case changeTierLandingScreen
-    case editTier
-    case editDeductible
+    case edit(type: EditTierType)
     case compareTier
-    case confirmTier
     case info
+}
+
+public struct EditTypeModel: Identifiable, Equatable {
+    public let id = UUID().uuidString
+    let type: EditTierType
 }

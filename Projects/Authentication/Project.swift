@@ -13,6 +13,5 @@ let project = Project.framework(
         "hCore",
         "hCoreUI",
     ],
-    sdks: [],
-    includesGraphQL: false
+    sdks: []
 )

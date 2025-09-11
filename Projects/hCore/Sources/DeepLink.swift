@@ -1,5 +1,5 @@
+import Environment
 import Foundation
-import hGraphQL
 
 @MainActor
 public enum DeepLink: String, Codable, CaseIterable {
@@ -9,9 +9,9 @@ public enum DeepLink: String, Codable, CaseIterable {
     case insurances
     case home
     case sasEuroBonus = "eurobonus"
-    case contract = "contract"
+    case contract
     case payments
-    case travelCertificate = "travelCertificate"
+    case travelCertificate
     case helpCenter = "help-center"
     case helpCenterTopic = "help-center/topic"
     case helpCenterQuestion = "help-center/question"
@@ -19,17 +19,28 @@ public enum DeepLink: String, Codable, CaseIterable {
     case changeTier = "change-tier"
     case travelAddon = "travel-addon"
     case terminateContract = "terminate-contract"
-    case conversation = "conversation"
-    case chat = "chat"
-    case inbox = "inbox"
+    case conversation
+    case chat
+    case inbox
     case contactInfo = "contact-info"
     case editCoInsured = "edit-coinsured"
+    case claimDetails = "claim-details"
+    case insuranceEvidence = "insurance-evidence"
+    case submitClaim = "submit-claim"
 
-    public func wholeText(displayText: String) -> String {
-        return L10n.generalGoTo(displayText.lowercased())
+    public func getDeeplinkTextFor(contractName: String?) -> String {
+        switch self {
+        case .terminateContract:
+            if let contractName {
+                return L10n.chatConversationTerminateContract(contractName)
+            }
+            return L10n.generalGoTo(importantText)
+        default:
+            return L10n.generalGoTo(contractName ?? importantText)
+        }
     }
 
-    public var importantText: String {
+    var importantText: String {
         switch self {
         case .forever:
             return L10n.tabReferralsTitle
@@ -73,12 +84,20 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.addonTravelDisplayName
         case .editCoInsured:
             return L10n.hcQuickActionsEditCoinsured
+        case .claimDetails:
+            return L10n.ClaimStatus.ClaimDetails.title
+        case .insuranceEvidence:
+            return L10n.InsuranceEvidence.documentTitle
+        case .submitClaim:
+            return L10n.embarkSubmitClaim
         }
     }
+
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
         guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }
-        let components = url.pathComponents.filter { $0 != "/" }.joined(separator: "/")
+        let components = url.pathComponents.filter { $0 != "/" }.filter { $0 != "deeplink" }.joined(separator: "/")
+
         guard let type = DeepLink(rawValue: components) else {
             return nil
         }
@@ -86,8 +105,8 @@ public enum DeepLink: String, Codable, CaseIterable {
     }
 
     public static func getUrl(from deeplink: DeepLink) -> URL? {
-        let paths = Environment.current.deepLinkUrls.compactMap({ $0.absoluteString + "/" + deeplink.rawValue })
-        let url = paths.compactMap({ URL.init(string: $0) }).last
+        let paths = Environment.current.deepLinkUrls.compactMap { $0.absoluteString + "/" + deeplink.rawValue }
+        let url = paths.compactMap { URL(string: $0) }.last
         guard let url else {
             return nil
         }
@@ -107,6 +126,7 @@ public enum DeepLink: String, Codable, CaseIterable {
 public enum DeeplinkProperty: String {
     case contractId
     case conversationId
+    case claimId
     case id
 }
 

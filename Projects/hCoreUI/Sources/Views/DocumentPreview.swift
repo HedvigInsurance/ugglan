@@ -15,6 +15,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
     @Published var error: String?
     @Published var contentHeight: CGFloat = 0
     @Published var offset: CGFloat = 0
+    @Published var opacity: Double = 0
 
     var contentSizeCancellable: AnyCancellable?
     public init(type: DocumentPreviewType) {
@@ -47,7 +48,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
         case let .url(url, _):
             let request = URLRequest(url: url, timeoutInterval: 5)
             webView.load(request)
-        case .data(let data, let mimeType):
+        case let .data(data, mimeType):
             webView.load(
                 data,
                 mimeType: mimeType.mime,
@@ -55,7 +56,6 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
                 baseURL: URL(fileURLWithPath: "")
             )
         }
-
     }
 
     public enum DocumentPreviewType: Equatable, Identifiable {
@@ -63,7 +63,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
             switch self {
             case let .url(url, _):
                 return url.absoluteString
-            case .data(let data, _):
+            case let .data(data, _):
                 return "\(data.count)"
             }
         }
@@ -72,14 +72,13 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
         case data(data: Data, mimeType: MimeType)
         var url: URL? {
             switch self {
-            case .url(let url, _):
+            case let .url(url, _):
                 return url
             case .data:
                 return nil
             }
         }
     }
-
 }
 
 public struct DocumentPreview: View {
@@ -89,7 +88,7 @@ public struct DocumentPreview: View {
     }
 
     public var body: some View {
-        GeometryReader { proxy in
+        GeometryReader { _ in
             ZStack {
                 BackgroundBlurView()
                     .ignoresSafeArea()
@@ -116,6 +115,7 @@ public struct DocumentPreview: View {
                                 }
                         )
                         .opacity(1 - Double(abs(vm.offset) / 1000))
+                        .opacity(vm.opacity)
                     if vm.isLoading {
                         DotsActivityIndicator(.standard)
                             .useDarkColor
@@ -147,24 +147,27 @@ public struct DocumentPreview: View {
         .embededInNavigation(options: [.navigationBarHidden], tracking: self)
     }
 }
+
 extension DocumentPreview: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: DocumentPreview.self)
+        .init(describing: DocumentPreview.self)
     }
-
 }
 
 extension DocumentPreviewModel: WKNavigationDelegate {
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_: WKWebView, didFinish _: WKNavigation!) {
         withAnimation {
             isLoading = false
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.contentSizeCancellable = nil
         }
+        withAnimation(.easeInOut(duration: 0.1)) {
+            self.opacity = 1
+        }
     }
 
-    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) {
+    public func webView(_: WKWebView, didFail _: WKNavigation!, withError _: any Error) {
         withAnimation {
             self.error = ""
             isLoading = false
@@ -172,9 +175,9 @@ extension DocumentPreviewModel: WKNavigationDelegate {
     }
 
     public func webView(
-        _ webView: WKWebView,
-        didFailProvisionalNavigation navigation: WKNavigation!,
-        withError error: any Error
+        _: WKWebView,
+        didFailProvisionalNavigation _: WKNavigation!,
+        withError _: any Error
     ) {
         withAnimation {
             self.error = ""
@@ -186,15 +189,15 @@ extension DocumentPreviewModel: WKNavigationDelegate {
 struct DocumentPreviewWebView: UIViewRepresentable {
     let vm: DocumentPreviewModel
     init(documentPreviewModel: DocumentPreviewModel) {
-        self.vm = documentPreviewModel
+        vm = documentPreviewModel
     }
 
-    func makeUIView(context: Context) -> WKWebView {
+    func makeUIView(context _: Context) -> WKWebView {
         vm.webView.scrollView.backgroundColor = .clear
         vm.contentSizeCancellable = vm.webView.scrollView.publisher(for: \.contentSize)
             .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
             .sink(receiveValue: { @MainActor [weak vm] value in
-                withAnimation {
+                withAnimation(.none) {
                     vm?.contentHeight = value.height
                 }
             })
@@ -209,11 +212,11 @@ struct DocumentPreviewWebView: UIViewRepresentable {
         return vm.webView
     }
 
-    func updateUIView(_ webView: WKWebView, context: Context) {}
+    func updateUIView(_: WKWebView, context _: Context) {}
 }
 
 extension AVPlayerViewController {
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         view.backgroundColor = .clear
     }
 }

@@ -3,7 +3,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
@@ -53,10 +52,8 @@ public struct PaymentsView: View {
                             paymentHistory
                         }
                     }
-
                 }
                 .sectionContainerStyle(.transparent)
-
             }
             .padding(.vertical, .padding8)
         }
@@ -85,9 +82,11 @@ public struct PaymentsView: View {
                 }
                 if let upcomingPayment = state.paymentData {
                     paymentView(for: upcomingPayment)
-                } else {
+                }
+
+                if state.ongoingPaymentData.isEmpty, state.paymentData == nil {
                     VStack(spacing: 16) {
-                        Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
+                        hCoreUIAssets.infoFilledSmall.view
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(hSignalColor.Blue.element)
@@ -115,10 +114,10 @@ public struct PaymentsView: View {
                         )
                         Spacer()
                         hText(paymentData.payment.net.formattedAmount)
-                        Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
+                        Image(uiImage: hCoreUIAssets.chevronRight.image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 16, height: 16)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                     .foregroundColor(.primary)
@@ -135,7 +134,7 @@ public struct PaymentsView: View {
 
     private var discounts: some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.campaign.image)
+            hCoreUIAssets.campaign.view
                 .foregroundColor(hSignalColor.Green.element)
             hText(L10n.paymentsDiscountsSectionTitle)
             Spacer()
@@ -144,14 +143,13 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.discounts)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
-
     }
 
     private var paymentHistory: some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.clock.image)
+            hCoreUIAssets.clock.view
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.paymentsPaymentHistoryButtonLabel)
             Spacer()
@@ -160,14 +158,14 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.history)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 
     @ViewBuilder
     private func connectedPaymentMethod(displayName: String, descriptor: String) -> some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.payments.image)
+            hCoreUIAssets.payments.view
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
@@ -178,7 +176,7 @@ public struct PaymentsView: View {
         .withCustomAccessory {
             hText(descriptor).foregroundColor(hTextColor.Opaque.secondary)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 
@@ -191,15 +189,18 @@ public struct PaymentsView: View {
         ) { statusData in
             if let statusData, !statusData.showConnectPayment {
                 hSection {
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         if statusData == .pending {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
-                        hButton.LargeButton(type: .secondary) {
-                            paymentNavigationVm.connectPaymentVm.set(for: nil)
-                        } content: {
-                            hText(statusData.connectButtonTitle)
-                        }
+                        hButton(
+                            .large,
+                            .secondary,
+                            content: .init(title: statusData.connectButtonTitle),
+                            {
+                                paymentNavigationVm.connectPaymentVm.set(for: nil)
+                            }
+                        )
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -236,6 +237,7 @@ struct PaymentsView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-        return PaymentsView()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return PaymentsView().environmentObject(PaymentsNavigationViewModel())
     }
 }

@@ -1,6 +1,5 @@
 import SwiftUI
 import hCore
-import hGraphQL
 
 public struct InsurableLimitsSectionView: View {
     var limits: [InsurableLimits]
@@ -24,14 +23,19 @@ public struct InsurableLimitsSectionView: View {
                     Spacer()
                     HStack(alignment: .top) {
                         Spacer()
-                        hText(limit.limit)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .multilineTextAlignment(.trailing)
-                        Image(uiImage: hCoreUIAssets.infoFilled.image)
+                        if let limit = limit.limit {
+                            ZStack {
+                                hText(limit)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .multilineTextAlignment(.trailing)
+                                hText(" ")
+                            }
+                        }
+                        hCoreUIAssets.infoFilled.view
                             .resizable()
                             .foregroundColor(hTextColor.Opaque.secondary)
-                            .frame(width: 16, height: 16)
+                            .frame(width: 20, height: 20)
                             .padding(.vertical, .padding4)
                             .onTapGesture {
                                 didTap(limit)
@@ -39,7 +43,6 @@ public struct InsurableLimitsSectionView: View {
                     }
                     .fixedSize(horizontal: false, vertical: true)
                 }
-
             }
             .onTap {
                 didTap(limit)
@@ -63,7 +66,6 @@ struct InsurableLimitsSectionView_Previews: PreviewProvider {
 
         return VStack {
             InsurableLimitsSectionView(limits: limits) { _ in
-
             }
             Spacer()
         }

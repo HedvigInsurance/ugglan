@@ -83,7 +83,8 @@ final class CompareTierVireModelTests: XCTestCase {
                 description: peril1.description,
                 colorCode: peril1.color,
                 cells: [
-                    .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first)
+                    .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first),
+                    .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first),
                 ]
             )
         ]
@@ -99,7 +100,18 @@ final class CompareTierVireModelTests: XCTestCase {
                 displayName: "",
                 displayNameTier: "Standard",
                 tierDescription: "tier description"
-            )
+            ),
+            .init(
+                termsVersion: "",
+                typeOfContract: "",
+                partner: "",
+                perils: [peril1],
+                insurableLimits: [],
+                documents: [],
+                displayName: "",
+                displayNameTier: "Max",
+                tierDescription: "tier description"
+            ),
         ]
 
         let comparisonData = ProductVariantComparison(rows: rows, variantColumns: columns)
@@ -108,10 +120,10 @@ final class CompareTierVireModelTests: XCTestCase {
             comparisonData
         })
 
-        self.sut = mockService
+        sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
-        self.vm = model
+        let model = CompareTierViewModel(tiers: tiers)
+        vm = model
         model.productVariantComparision()
 
         try await Task.sleep(nanoseconds: 30_000_000)
@@ -127,10 +139,10 @@ final class CompareTierVireModelTests: XCTestCase {
             throw ChangeTierError.somethingWentWrong
         })
 
-        self.sut = mockService
+        sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
-        self.vm = model
+        let model = CompareTierViewModel(tiers: tiers)
+        vm = model
         model.productVariantComparision()
 
         try await Task.sleep(nanoseconds: 30_000_000)

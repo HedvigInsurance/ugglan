@@ -7,7 +7,6 @@ public enum FeatureTarget {
     case tests
     case example
     case testing
-    case generateAssets
 }
 
 extension Project {
@@ -16,13 +15,9 @@ extension Project {
         targets: Set<FeatureTarget> = Set([.framework, .tests, .example, .testing]),
         projects: [String] = [],
         dependencies: [String] = ["CoreDependencies"],
-        sdks: [String] = [],
-        includesGraphQL: Bool = false
+        sdks: [String] = []
     ) -> Project {
-
-        let settings: [String: SettingValue] = {
-            ["SWIFT_VERSION": "6.0.2"]
-        }()
+        let settings: [String: SettingValue] = ["SWIFT_VERSION": "6.0.2"]
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
@@ -77,8 +72,8 @@ extension Project {
             .target(name: "\(name)")
             //            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
         ]
-        projects.forEach {
-            testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)")))
+        for item in projects {
+            testsDependencies.append(.project(target: item, path: .relativeToRoot("Projects/\(item)")))
         }
 
         if targets.contains(.testing) { testsDependencies.append(.target(name: "\(name)Testing")) }
@@ -92,14 +87,6 @@ extension Project {
                 .project(target: $0, path: .relativeToRoot("Dependencies/\($0)"))
             }
         )
-
-        let hGraphQLName = "hGraphQL"
-
-        if includesGraphQL, !projects.contains(hGraphQLName), name != hGraphQLName {
-            targetDependencies.append(
-                .project(target: hGraphQLName, path: .relativeToRoot("Projects/\(hGraphQLName)"))
-            )
-        }
 
         var projectTargets: [Target] = []
 
@@ -134,10 +121,6 @@ extension Project {
                     [
                         .target(name: "\(name)"),
                         .project(
-                            target: "TestingUtil",
-                            path: .relativeToRoot("Projects/TestingUtil")
-                        ),
-                        .project(
                             target: "DevDependencies",
                             path: .relativeToRoot("Dependencies/DevDependencies")
                         ),
@@ -162,10 +145,6 @@ extension Project {
                 dependencies: [
                     [
                         .target(name: "\(name)Example"),
-                        .project(
-                            target: "TestingUtil",
-                            path: .relativeToRoot("Projects/TestingUtil")
-                        ),
                         .project(
                             target: "CoreDependencies",
                             path: .relativeToRoot("Dependencies/CoreDependencies")
@@ -210,24 +189,9 @@ extension Project {
                 ]),
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
-                scripts: [
-                    .post(
-                        path: "../../scripts/post-build-action.sh",
-                        arguments: [],
-                        name: "Clean frameworks"
-                    )
-                ],
                 dependencies: [
                     [
                         .target(name: "\(name)"),
-                        .project(
-                            target: "ExampleUtil",
-                            path: .relativeToRoot("Projects/ExampleUtil")
-                        ),
-                        .project(
-                            target: "TestingUtil",
-                            path: .relativeToRoot("Projects/TestingUtil")
-                        ),
                         .project(
                             target: "DevDependencies",
                             path: .relativeToRoot("Dependencies/DevDependencies")
@@ -239,7 +203,9 @@ extension Project {
                 settings: .settings(
                     base: [
                         "PROVISIONING_PROFILE_SPECIFIER":
-                            "match Development com.hedvig.example.*"
+                            "match Development com.hedvig.example.*",
+                        "CODE_SIGN_STYLE": "automatic",
+
                     ],
                     configurations: appConfigurations
                 )
@@ -253,7 +219,7 @@ extension Project {
                 [
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "\(name)Tests"),
-                        isParallelizable: false
+                        parallelization: .enabled
                     )
                 ],
                 arguments: Arguments.arguments(
@@ -267,13 +233,12 @@ extension Project {
                 options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
             )
         }
-        let shouldDisableGeneratingAccessors = !targets.contains(.generateAssets)
         return Project(
             name: name,
             organizationName: "Hedvig",
             options: .options(
-                disableBundleAccessors: shouldDisableGeneratingAccessors,
-                disableSynthesizedResourceAccessors: shouldDisableGeneratingAccessors
+                disableBundleAccessors: true,
+                disableSynthesizedResourceAccessors: true
             ),
             packages: [],
             settings: .settings(configurations: projectConfigurations),
@@ -298,7 +263,7 @@ extension Project {
                     ) : nil,
             ]
             .compactMap { $0 },
-            additionalFiles: [includesGraphQL ? .folderReference(path: "GraphQL") : nil].compactMap { $0 }
+            additionalFiles: name == "hGraphQL" ? [.folderReference(path: "GraphQL")] : []
         )
     }
 }

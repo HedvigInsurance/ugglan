@@ -24,7 +24,7 @@ extension KeyboardReadable {
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
                 .map { _ in
-                    return nil
+                    nil
                 }
         )
         .eraseToAnyPublisher()
@@ -53,7 +53,7 @@ extension KeyboardReadableHeight {
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
                 .map { _ in
-                    return nil
+                    nil
                 },
 
             NotificationCenter.default

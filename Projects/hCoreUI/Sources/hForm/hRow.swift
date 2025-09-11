@@ -39,8 +39,8 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 public struct hRow<Content: View, Accessory: View>: View {
     @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
     @Environment(\.hWithoutDivider) var hWithoutDivider
-    @Environment(\.hWithoutHorizontalPadding) var withoutHorizontalPadding
-
+    @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
+    @Environment(\.hRowContentAlignment) var contentAlignment
     var content: Content
     var accessory: Accessory
     var horizontalPadding: CGFloat = 16
@@ -52,7 +52,7 @@ public struct hRow<Content: View, Accessory: View>: View {
         _ accessory: Accessory,
         @ViewBuilder _ builder: () -> Content
     ) {
-        self.content = builder()
+        content = builder()
         self.accessory = accessory
     }
 
@@ -85,17 +85,17 @@ public struct hRow<Content: View, Accessory: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading) {
-                HStack(alignment: .top) {
+                HStack(alignment: contentAlignment) {
                     content
                     accessory
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, withoutHorizontalPadding ? 0 : horizontalPadding)
+            .padding(.horizontal, hWithoutHorizontalPadding.contains(.row) ? 0 : horizontalPadding)
             .padding(.vertical, verticalPadding)
             .padding(.top, topPadding)
             .padding(.bottom, bottomPadding)
-            if (position == .middle || position == .top) && !hWithoutDivider {
+            if position == .middle || position == .top, !hWithoutDivider {
                 hRowDivider()
             }
         }
@@ -107,17 +107,16 @@ extension hRow where Accessory == EmptyView {
     public init(
         @ViewBuilder _ builder: () -> Content
     ) {
-        self.content = builder()
-        self.accessory = EmptyView()
+        content = builder()
+        accessory = EmptyView()
     }
 }
 
 public struct StandaloneChevronAccessory: View {
-
     public init() {}
 
     public var body: some View {
-        Image(uiImage: hCoreUIAssets.chevronRight.image)
+        hCoreUIAssets.chevronRight.view
             .foregroundColor(hFillColor.Opaque.primary)
     }
 }
@@ -142,7 +141,7 @@ public struct SelectedAccessory: View {
     public var body: some View {
         Spacer()
         if selected {
-            Image(uiImage: hCoreUIAssets.checkmark.image)
+            hCoreUIAssets.checkmark.view
         }
     }
 }
@@ -179,8 +178,25 @@ extension hRow {
     }
 }
 
+private struct EnvironmentHRowContentAlignment: EnvironmentKey {
+    static let defaultValue: VerticalAlignment = .top
+}
+
+extension EnvironmentValues {
+    var hRowContentAlignment: VerticalAlignment {
+        get { self[EnvironmentHRowContentAlignment.self] }
+        set { self[EnvironmentHRowContentAlignment.self] = newValue }
+    }
+}
+
+extension View {
+    public func hRowContentAlignment(_ alignment: VerticalAlignment) -> some View {
+        environment(\.hRowContentAlignment, alignment)
+    }
+}
+
 extension hRow {
-    func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
+    internal func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
         SwiftUI.Button(
             action: {
                 onTap()
@@ -195,17 +211,17 @@ extension hRow {
     }
 
     public func onTap(_ onTap: @escaping () -> Void) -> some View where Accessory == EmptyView {
-        self.withChevronAccessory.wrapInButton(onTap)
+        withChevronAccessory.wrapInButton(onTap)
     }
 
     public func onTap(_ onTap: @escaping () -> Void) -> some View {
-        self.wrapInButton(onTap)
+        wrapInButton(onTap)
     }
 
     /// Attaches onTap handler only if passed boolean is true
     @ViewBuilder public func onTap(if: Bool, _ onTap: @escaping () -> Void) -> some View {
         if `if` {
-            self.wrapInButton(onTap)
+            wrapInButton(onTap)
         } else {
             self
         }

@@ -7,14 +7,14 @@ import hCore
 struct MockData {
     @discardableResult
     static func createMockTerminateContractsService(
-        start: @escaping StartTermination = { contractId in
+        start: @escaping StartTermination = { _ in
             .init(
                 context: "context",
                 step: .setSuccessStep(model: .init(terminationDate: nil)),
                 progress: 0
             )
         },
-        sendDate: @escaping SendTerminationDate = { inputDateToString, context in
+        sendDate: @escaping SendTerminationDate = { _, context in
             .init(
                 context: context,
                 step: .setTerminationDateStep(
@@ -45,19 +45,23 @@ struct MockData {
                 progress: 0
             )
         },
-        surveySend: @escaping SendSurvey = { context, option, inputData in
+        surveySend: @escaping SendSurvey = { context, _, _ in
             .init(
                 context: context,
                 step: .setTerminationSurveyStep(model: .init(id: "id", options: [], subTitleType: .generic)),
                 progress: 0
             )
+        },
+        getNotification: @escaping GetNotificaiton = { _, _ in
+            nil
         }
     ) -> MockTerminateContractsService {
         let service = MockTerminateContractsService(
             start: start,
             sendDate: sendDate,
             confirmDelete: confirmDelete,
-            surveySend: surveySend
+            surveySend: surveySend,
+            getNotification: getNotification
         )
         Dependencies.shared.add(module: Module { () -> TerminateContractsClient in service })
         return service
@@ -72,7 +76,7 @@ typealias StartTermination = (String) async throws -> TerminateStepResponse
 typealias SendTerminationDate = (String, String) async throws -> TerminateStepResponse
 typealias SendConfirmDelete = (String, TerminationFlowDeletionNextModel?) async throws -> TerminateStepResponse
 typealias SendSurvey = (String, String, String?) async throws -> TerminateStepResponse
-
+typealias GetNotificaiton = (String, Date) async throws -> TerminationNotification?
 class MockTerminateContractsService: TerminateContractsClient {
     var events = [Event]()
 
@@ -80,24 +84,28 @@ class MockTerminateContractsService: TerminateContractsClient {
     var sendDate: SendTerminationDate
     var confirmDelete: SendConfirmDelete
     var surveySend: SendSurvey
+    var getNotification: GetNotificaiton
 
     enum Event {
         case startTermination
         case sendTerminationDate
         case sendConfirmDelete
         case sendSurvey
+        case getNotification
     }
 
     init(
         start: @escaping StartTermination,
         sendDate: @escaping SendTerminationDate,
         confirmDelete: @escaping SendConfirmDelete,
-        surveySend: @escaping SendSurvey
+        surveySend: @escaping SendSurvey,
+        getNotification: @escaping GetNotificaiton
     ) {
         self.start = start
         self.sendDate = sendDate
         self.confirmDelete = confirmDelete
         self.surveySend = surveySend
+        self.getNotification = getNotification
     }
 
     func startTermination(contractId: String) async throws -> TerminateStepResponse {
@@ -131,6 +139,12 @@ class MockTerminateContractsService: TerminateContractsClient {
     ) async throws -> TerminateStepResponse {
         events.append(.sendSurvey)
         let data = try await surveySend(terminationContext, option, inputData)
+        return data
+    }
+
+    func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
+        events.append(.getNotification)
+        let data = try await getNotification(contractId, date)
         return data
     }
 }

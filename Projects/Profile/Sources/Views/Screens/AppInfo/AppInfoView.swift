@@ -20,8 +20,7 @@ public struct AppInfoView: View {
             }
             .padding(.top, .padding8)
         }
-        .hWithoutHorizontalPadding
-        .hWithoutDividerPadding
+        .hWithoutHorizontalPadding([.row, .divider])
         .sectionContainerStyle(.transparent)
         .hFormAlwaysAttachToBottom {
             submitBugButton
@@ -75,7 +74,7 @@ public struct AppInfoView: View {
     }
 
     private var deviceId: some View {
-        return hRow {
+        hRow {
             hText(L10n.AppInfo.deviceIdLabel)
                 .foregroundColor(hTextColor.Opaque.primary)
         }
@@ -88,7 +87,6 @@ public struct AppInfoView: View {
                         .minimumScaleFactor(0.2)
                         .lineLimit(1)
                         .foregroundColor(hTextColor.Opaque.secondary)
-                        .frame(maxHeight: .infinity, alignment: .center)
                 }
             }
         }
@@ -98,17 +96,24 @@ public struct AppInfoView: View {
                 showToaster()
             }
         }
+        .hRowContentAlignment(.center)
     }
 
     private var submitBugButton: some View {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         let memberId = store.state.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
+        let deviceId = vm.deviceId ?? "N/A"
         return OpenEmailClientButton(
             options: EmailOptions(
                 recipient: "ios@hedvig.com",
                 subject: L10n.AppInfo.SubmitBug.prefilledLetterSubject,
-                body: L10n.AppInfo.SubmitBug.prefilledLetterBody(memberId, Bundle.main.appVersion, systemVersion)
+                body: L10n.AppInfo.SubmitBug.prefilledLetterBody(
+                    memberId,
+                    deviceId,
+                    Bundle.main.appVersion,
+                    systemVersion
+                )
             ),
             buttonText: L10n.AppInfo.SubmitBug.button,
             hasAcceptedAlert: $hasPressedSubmitBugOk,
@@ -134,7 +139,7 @@ public struct AppInfoView: View {
         Toasts.shared.displayToastBar(
             toast: .init(
                 type: .campaign,
-                icon: hCoreUIAssets.checkmark.image,
+                icon: hCoreUIAssets.checkmark.view,
                 text: L10n.General.copied
             )
         )
@@ -166,7 +171,8 @@ struct AppInfoView_Previews: PreviewProvider {
                             lastName: "LAST NAME",
                             phone: "PHNE",
                             email: "EMAIL",
-                            hasTravelCertificate: true
+                            hasTravelCertificate: true,
+                            isContactInfoUpdateNeeded: true
                         )
                     )
                 )
