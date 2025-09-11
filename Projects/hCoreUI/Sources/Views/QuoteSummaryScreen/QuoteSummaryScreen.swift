@@ -77,6 +77,12 @@ public struct QuoteSummaryScreen: View {
         ) {
             openConfirmChangesScreen
         }
+        .detent(
+            item: $vm.isShowDetailsPresented,
+            options: .constant([.alwaysOpenOnTop]),
+        ) { contract in
+            ContractOverviewScreen(contract: contract, vm: vm)
+        }
     }
 
     private var openConfirmChangesScreen: some View {
@@ -185,7 +191,7 @@ private struct ContractCardView: View {
                 title: nil,
                 subTitle: nil,
                 bottomComponent: {
-                    bottomComponent(for: contract, isExpanded: isExpanded)
+                    bottomComponent(for: contract)
                         .padding(.top, .padding16)
                 }
             )
@@ -198,8 +204,7 @@ private struct ContractCardView: View {
 
     @ViewBuilder
     private func bottomComponent(
-        for contract: QuoteSummaryViewModel.ContractInfo,
-        isExpanded: Bool
+        for contract: QuoteSummaryViewModel.ContractInfo
     ) -> some View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails && !vm.isAddon {
@@ -211,29 +216,20 @@ private struct ContractCardView: View {
                             .hButtonWithBorder
                     }
                 } else {
-                    addButton(for: contract, isExpanded: isExpanded)
-                }
-            }
-
-            if isExpanded {
-                VStack(spacing: 0) {
-                    detailsView(for: contract, isExpanded: isExpanded)
-                        .frame(height: isExpanded ? nil : 0, alignment: .top)
-                        .clipped()
-                        .accessibilityHidden(!isExpanded)
+                    addButton(for: contract)
                 }
             }
 
             if !contract.displayItemSection.discountDisplayItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
                     ForEach(contract.displayItemSection.discountDisplayItems, id: \.displayTitle) { disocuntItem in
-                        rowItem(for: disocuntItem, fontSize: .label)
+                        RowItem(displayItem: disocuntItem)
                     }
                 }
                 .accessibilityElement(children: .combine)
             }
 
-            if ((contract.shouldShowDetails && isExpanded) || !contract.displayItemSection.discountDisplayItems.isEmpty)
+            if (contract.shouldShowDetails || !contract.displayItemSection.discountDisplayItems.isEmpty)
                 && !contract.isAddon
             {
                 hRowDivider()
@@ -266,105 +262,18 @@ private struct ContractCardView: View {
             .medium,
             type,
             content: .init(
-                title: vm.expandedContracts.firstIndex(of: contract.id) != nil
-                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+                title: L10n.ClaimStatus.ClaimDetails.button
             ),
             {
                 withAnimation(.easeInOut(duration: 0.4)) {
-                    vm.toggleContract(contract)
-                    Task { [weak vm] in
-                        guard let vm else { return }
-                        try await Task.sleep(nanoseconds: 200_000_000)
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            if vm.expandedContracts.contains(contract.id) {
-                                proxy.scrollTo(contract.id, anchor: .top)
-                            }
-                        }
-                    }
+                    vm.isShowDetailsPresented = contract
                 }
             }
         )
         .hWithTransition(.scale)
     }
 
-    func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
-        VStack(spacing: .padding16) {
-            displayItemsView(for: contract)
-            insuranceLimitsView(for: contract)
-            documentsView(for: contract)
-            removeButton(for: contract, isExpanded: isExpanded)
-        }
-        .padding(
-            .bottom,
-            (isExpanded && !contract.isAddon && !contract.displayItemSection.discountDisplayItems.isEmpty)
-                ? .padding16 : 0
-        )
-    }
-
-    @ViewBuilder
-    func displayItemsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        if !contract.displayItemSection.displayItems.isEmpty {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.summaryScreenOverview)
-                    .accessibilityAddTraits(.isHeader)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.displayItemSection.displayItems, id: \.displayTitle) { item in
-                    rowItem(for: item)
-                }
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityRemoveTraits(.isHeader)
-        }
-    }
-
-    @ViewBuilder
-    func insuranceLimitsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        if !contract.insuranceLimits.isEmpty {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.summaryScreenCoverage)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityAddTraits(.isHeader)
-                ZStack {
-                    VStack {
-                        ForEach(contract.insuranceLimits, id: \.limit) { limit in
-                            let displayItem: QuoteDisplayItem = .init(
-                                title: limit.label,
-                                value: limit.limit ?? "",
-                                id: limit.id
-                            )
-                            rowItem(for: displayItem)
-                        }
-                    }
-                    hText(" ")
-                }
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityRemoveTraits(.isHeader)
-        }
-    }
-
-    @ViewBuilder
-    func documentsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        if !contract.documentSection.documents.isEmpty {
-            VStack(alignment: .leading, spacing: .padding4) {
-                hText(L10n.confirmationScreenDocumentTitle)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityAddTraits(.isHeader)
-                ForEach(contract.documentSection.documents, id: \.displayName) { document in
-                    documentItem(for: document)
-                        .accessibilityElement(children: .combine)
-                        .onTapGesture {
-                            contract.documentSection.onTap(document)
-                        }
-                        .accessibilityAction {
-                            contract.documentSection.onTap(document)
-                        }
-                }
-            }
-        }
-    }
-
-    private func addButton(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
+    private func addButton(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         hButton(
             .medium,
             .secondary,
@@ -391,49 +300,6 @@ private struct ContractCardView: View {
             }
             .hWithTransition(.scale)
         }
-    }
-
-    func rowItem(for displayItem: QuoteDisplayItem, fontSize: HFontTextStyle? = .body1) -> some View {
-        HStack(alignment: .top) {
-            hText(displayItem.displayTitle, style: fontSize ?? .body1)
-            Spacer()
-
-            if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
-                if #available(iOS 16.0, *) {
-                    hText(oldValue)
-                        .strikethrough()
-                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                } else {
-                    hText(oldValue)
-                        .foregroundColor(hTextColor.Opaque.tertiary)
-                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                }
-            }
-
-            hText(displayItem.displayValue, style: fontSize ?? .body1)
-                .multilineTextAlignment(.trailing)
-                .accessibilityLabel(
-                    displayItem.displayValueOld != nil && displayItem.displayValueOld != displayItem.displayValue
-                        ? L10n.voiceoverNewValue + displayItem.displayValue : displayItem.displayValue
-                )
-        }
-        .foregroundColor(hTextColor.Translucent.secondary)
-        .accessibilityElement(children: .combine)
-    }
-
-    func documentItem(for document: hPDFDocument) -> some View {
-        HStack {
-            hAttributedTextView(
-                text: AttributedPDF().attributedPDFString(for: document.displayName),
-                useSecondaryColor: true
-            )
-            .padding(.horizontal, -6)
-            Spacer()
-            hCoreUIAssets.arrowNorthEast.view
-                .resizable()
-                .frame(width: 24, height: 24)
-        }
-        .foregroundColor(hTextColor.Translucent.secondary)
     }
 }
 
