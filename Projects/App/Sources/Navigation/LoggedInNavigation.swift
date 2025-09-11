@@ -919,7 +919,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                     contracts: [
                         .init(
                             contractId: contractId,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayName
+                                ?? "",
                             contractExposureName: contract.exposureDisplayName
                         )
                     ]
@@ -931,7 +932,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 .map {
                     .init(
                         contractId: $0.id,
-                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                        contractDisplayName: $0.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
                         contractExposureName: $0.exposureDisplayName
                     )
                 }
@@ -957,7 +958,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     .init(
                         contractId: $0.id,
                         exposureName: $0.exposureDisplayName,
-                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                        displayName: $0.currentAgreement?.agreementVariant.productVariant.displayName ?? ""
                     )
                 }
                 isAddonPresented = .init(

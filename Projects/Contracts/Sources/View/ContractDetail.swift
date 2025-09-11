@@ -56,12 +56,13 @@ public struct ContractDetail: View {
                         ContractRow(
                             image: contract.pillowType?.bgImage,
                             terminationMessage: contract.terminationMessage,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayName
+                                ?? "",
                             contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                            activeFrom: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
                             activeInFuture: contract.activeInFuture,
                             masterInceptionDate: contract.masterInceptionDate,
-                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier
+                            tierDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayNameTier
                         )
                     }
                     ScrollableSegmentedView(

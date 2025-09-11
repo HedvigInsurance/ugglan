@@ -14,7 +14,10 @@ struct UpcomingChangesScreen: View {
         self.agreement = agreement
         self.date =
             agreement
-            .activeFrom ?? ""
+            .agreementDate?
+            .activeFrom?
+            .localDateToDate?
+            .displayDateDDMMMYYYYFormat ?? ""
     }
 
     var body: some View {
@@ -93,19 +96,21 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                     .init(title: "display item 1", value: "display item value 1"),
                     .init(title: "display item 2", value: "display item value 2"),
                 ],
-                productVariant:
-                    ProductVariant(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: "",
-                        perils: [],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "",
-                        displayNameTier: "Standard",
-                        tierDescription: "Vårt mellanpaket med hög ersättning."
-                    ),
-                addonVariant: []
+                agreementVariant: .init(
+                    productVariant:
+                        ProductVariant(
+                            termsVersion: "",
+                            typeOfContract: "",
+                            partner: "",
+                            perils: [],
+                            insurableLimits: [],
+                            documents: [],
+                            displayName: "",
+                            displayNameTier: "Standard",
+                            tierDescription: "Vårt mellanpaket med hög ersättning."
+                        ),
+                    addonVariant: []
+                )
             )
         )
     }

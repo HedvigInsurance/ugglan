@@ -221,7 +221,8 @@ struct ContractInformationView: View {
             hSection {
                 InfoCard(
                     text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
-                        upcomingChangedAgreement.activeFrom ?? ""
+                        upcomingChangedAgreement.agreementDate?.activeFrom?.localDateToDate?
+                            .displayDateDDMMMYYYYFormat ?? ""
                     ),
                     type: .info
                 )
