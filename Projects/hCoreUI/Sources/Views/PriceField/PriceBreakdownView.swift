@@ -41,6 +41,7 @@ struct PriceBreakdownView: View {
                 rowItem(for: item)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var priceField: some View {

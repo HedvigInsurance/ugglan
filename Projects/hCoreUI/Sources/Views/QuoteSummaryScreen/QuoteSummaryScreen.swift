@@ -230,6 +230,7 @@ private struct ContractCardView: View {
                         rowItem(for: disocuntItem, fontSize: .label)
                     }
                 }
+                .accessibilityElement(children: .combine)
             }
 
             if ((contract.shouldShowDetails && isExpanded) || !contract.displayItemSection.discountDisplayItems.isEmpty)
