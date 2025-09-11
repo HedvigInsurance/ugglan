@@ -32,6 +32,8 @@ struct ContractOverviewScreen: View {
         ) { item in
             RowItem(displayItem: item)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityRemoveTraits(.isHeader)
     }
     
     @ViewBuilder
@@ -49,6 +51,8 @@ struct ContractOverviewScreen: View {
         ) { item in
             RowItem(displayItem: item)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityRemoveTraits(.isHeader)
     }
     
     @ViewBuilder
@@ -58,7 +62,9 @@ struct ContractOverviewScreen: View {
             header: L10n.confirmationScreenDocumentTitle,
             list: documentItems
         ) { document in
-            DocumentRowItem(document: document)
+            DocumentRowItem(document: document, onTap: { document in
+                contract.documentSection.onTap(document)
+            })
         }
     }
 }

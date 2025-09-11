@@ -164,19 +164,12 @@ private struct ContractCardView: View {
     private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
         let isExpanded = vm.isAddon ? true : (index != nil)
-
-        if !contract.documentSection.documents.isEmpty {
-            contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
-                .hAccessibilityWithoutCombinedElements
-        } else {
-            contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
-        }
+        contractContent(for: contract, proxy: proxy)
     }
 
     func contractContent(
         for contract: QuoteSummaryViewModel.ContractInfo,
-        proxy: ScrollViewProxy,
-        isExpanded: Bool
+        proxy: ScrollViewProxy
     ) -> some View {
         hSection {
             StatusCard(

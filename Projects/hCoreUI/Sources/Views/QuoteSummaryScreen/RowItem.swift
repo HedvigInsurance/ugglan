@@ -14,7 +14,6 @@ struct RowItemSection<T: Identifiable, RowView: View>: View {
             .withHeader(title: header)
             .sectionContainerStyle(.transparent)
             .hWithoutHorizontalPadding([.row, .divider])
-            .accessibilityElement(children: .combine)
         }
     }
 }
@@ -63,6 +62,7 @@ struct RowItem: View {
 
 struct DocumentRowItem: View {
     let document: hPDFDocument
+    let onTap: (hPDFDocument) -> Void
 
     var body: some View {
         hRow {
@@ -79,5 +79,13 @@ struct DocumentRowItem: View {
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
+        .onTapGesture {
+            onTap(document)
+        }
+        .accessibilityAction {
+            onTap(document)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
     }
 }
