@@ -54,13 +54,14 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let displayName: String
         let exposureName: String
         public let premium: Premium?
-        let displayItemSection: DisplayItemsSection
+        let displayItems: [QuoteDisplayItem]
         let documentSection: DocumentSection
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
         let removeModel: RemoveModel?
         let isAddon: Bool
+        let priceBreakdownItems: [QuoteDisplayItem]
 
         public init(
             id: String,
@@ -68,25 +69,27 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             exposureName: String,
             premium: Premium?,
             documentSection: DocumentSection,
-            displayItemSection: DisplayItemsSection,
+            displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
             isAddon: Bool? = false,
             removeModel: RemoveModel? = nil,
+            priceBreakdownItems: [QuoteDisplayItem]
         ) {
             self.id = id
             self.displayName = displayName
             self.exposureName = exposureName
             self.premium = premium
             self.documentSection = documentSection
-            self.displayItemSection = displayItemSection
+            self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
             self.shouldShowDetails =
-                !(documentSection.documents.isEmpty && displayItemSection.displayItems.isEmpty
+                !(documentSection.documents.isEmpty && displayItems.isEmpty
                 && insuranceLimits.isEmpty)
             self.isAddon = isAddon ?? false
             self.removeModel = removeModel
+            self.priceBreakdownItems = priceBreakdownItems
         }
 
         public struct RemoveModel: Identifiable, Equatable {
@@ -118,16 +121,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             public init(documents: [hPDFDocument], onTap: @escaping (_: hPDFDocument) -> Void) {
                 self.documents = documents
                 self.onTap = onTap
-            }
-        }
-
-        public struct DisplayItemsSection {
-            public let displayItems: [QuoteDisplayItem]
-            public let discountDisplayItems: [QuoteDisplayItem]
-
-            public init(displayItems: [QuoteDisplayItem], discountDisplayItems: [QuoteDisplayItem]) {
-                self.displayItems = displayItems
-                self.discountDisplayItems = discountDisplayItems
             }
         }
     }

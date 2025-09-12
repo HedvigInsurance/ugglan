@@ -37,16 +37,14 @@ extension ChangeAddonViewModel {
                     changeAddonNavigationVm?.document = document
                 }
             ),
-            displayItemSection: .init(
-                displayItems: compareAddonDisplayItems(
-                    currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
-                    newDisplayItems: selectedQuote?.displayItems ?? []
-                ),
-                discountDisplayItems: []
+            displayItems: compareAddonDisplayItems(
+                currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
+                newDisplayItems: selectedQuote?.displayItems ?? []
             ),
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
+            priceBreakdownItems: []
         )
 
         let vm = QuoteSummaryViewModel(

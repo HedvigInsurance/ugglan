@@ -47,15 +47,13 @@ extension ChangeTierViewModel {
                         changeTierNavigationVm?.document = document
                     },
                 ),
-                displayItemSection: .init(
-                    displayItems: displayItems,
-                    discountDisplayItems: selectedQuote?.costBreakdown
-                        .map({ item in
-                            .init(title: item.title, value: item.value)
-                        }) ?? []
-                ),
+                displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
+                priceBreakdownItems: selectedQuote?.costBreakdown
+                    .map({ item in
+                        .init(title: item.title, value: item.value)
+                    }) ?? []
             )
         )
 

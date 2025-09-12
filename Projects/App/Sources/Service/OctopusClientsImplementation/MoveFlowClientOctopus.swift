@@ -205,7 +205,7 @@ extension MovingFlowQuote {
             displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
             addons: data.addons.map { AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) },
-            discountDisplayItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             })
         )
@@ -228,7 +228,7 @@ extension MovingFlowQuote {
             displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
             addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) }),
-            discountDisplayItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             })
         )
@@ -361,7 +361,7 @@ extension AddonDataModel {
             netPremium: .init(fragment: fragment.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
             startDate: fragment.startDate.localDateToDate ?? Date(),
-            discountDisplayItems: fragment.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: fragment.cost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             }),
             removeDialogInfo: {

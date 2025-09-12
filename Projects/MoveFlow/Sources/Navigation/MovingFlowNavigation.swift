@@ -82,15 +82,13 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                         self?.document = document
                     }
                 ),
-                displayItemSection: .init(
-                    displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
-                    ),
-                    discountDisplayItems: quote.discountDisplayItems.map {
-                        .init(title: $0.displayTitle, value: $0.displayValue)
-                    }
+                displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                 ),
                 insuranceLimits: quote.insurableLimits,
                 typeOfContract: quote.contractType,
+                priceBreakdownItems: quote.priceBreakdownItems.map {
+                    .init(title: $0.displayTitle, value: $0.displayValue)
+                }
             )
             contractInfos.append(contractQuote)
 
@@ -418,18 +416,16 @@ extension AddonDataModel {
                     ondocumentClicked(document)
                 }
             ),
-            displayItemSection: .init(
-                displayItems: displayItems.map {
-                    .init(title: $0.displayTitle, value: $0.displayValue)
-                },
-                discountDisplayItems: self.discountDisplayItems.map({
-                    .init(title: $0.displayTitle, value: $0.displayValue)
-                })
-            ),
+            displayItems: displayItems.map {
+                .init(title: $0.displayTitle, value: $0.displayValue)
+            },
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
             removeModel: removeModel,
+            priceBreakdownItems: self.priceBreakdownItems.map({
+                .init(title: $0.displayTitle, value: $0.displayValue)
+            })
         )
         return addonQuoteContractInfo
     }

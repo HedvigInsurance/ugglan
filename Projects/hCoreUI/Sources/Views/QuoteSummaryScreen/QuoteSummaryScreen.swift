@@ -224,16 +224,16 @@ private struct ContractCardView: View {
                 }
             }
 
-            if !contract.displayItemSection.discountDisplayItems.isEmpty && !vm.removedContracts.contains(contract.id) {
+            if !contract.priceBreakdownItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
-                    ForEach(contract.displayItemSection.discountDisplayItems, id: \.displayTitle) { disocuntItem in
+                    ForEach(contract.priceBreakdownItems, id: \.displayTitle) { disocuntItem in
                         rowItem(for: disocuntItem, fontSize: .label)
                     }
                 }
                 .accessibilityElement(children: .combine)
             }
 
-            if ((contract.shouldShowDetails && isExpanded) || !contract.displayItemSection.discountDisplayItems.isEmpty)
+            if ((contract.shouldShowDetails && isExpanded) || !contract.priceBreakdownItems.isEmpty)
                 && !contract.isAddon
             {
                 hRowDivider()
@@ -296,19 +296,19 @@ private struct ContractCardView: View {
         }
         .padding(
             .bottom,
-            (isExpanded && !contract.isAddon && !contract.displayItemSection.discountDisplayItems.isEmpty)
+            (isExpanded && !contract.isAddon && !contract.priceBreakdownItems.isEmpty)
                 ? .padding16 : 0
         )
     }
 
     @ViewBuilder
     func displayItemsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        if !contract.displayItemSection.displayItems.isEmpty {
+        if !contract.displayItems.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 hText(L10n.summaryScreenOverview)
                     .accessibilityAddTraits(.isHeader)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.displayItemSection.displayItems, id: \.displayTitle) { item in
+                ForEach(contract.displayItems, id: \.displayTitle) { item in
                     rowItem(for: item)
                 }
             }
@@ -517,16 +517,14 @@ private struct PriceSummarySection: View {
                     documents: [],
                     onTap: { document in }
                 ),
-                displayItemSection: .init(
-                    displayItems: [
-                        .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
-                        .init(title: "Documents", value: "documents"),
-                        .init(title: "FAQ", value: "mockFAQ"),
-                    ],
-                    discountDisplayItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
-                ),
+                displayItems: [
+                    .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
+                    .init(title: "Documents", value: "documents"),
+                    .init(title: "FAQ", value: "mockFAQ"),
+                ],
                 insuranceLimits: [],
                 typeOfContract: .seApartmentBrf,
+                priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
             ),
             .init(
                 id: "id2",
@@ -540,14 +538,11 @@ private struct PriceSummarySection: View {
                     documents: [],
                     onTap: { document in }
                 ),
-                displayItemSection: .init(
-                    displayItems: [
-                        .init(title: "Limits", value: "mockLimits"),
-                        .init(title: "Documents", value: "documents"),
-                        .init(title: "FAQ", value: "mockFAQ"),
-                    ],
-                    discountDisplayItems: []
-                ),
+                displayItems: [
+                    .init(title: "Limits", value: "mockLimits"),
+                    .init(title: "Documents", value: "documents"),
+                    .init(title: "FAQ", value: "mockFAQ"),
+                ],
                 insuranceLimits: [
                     .init(label: "label", limit: "limit", description: "description"),
                     .init(label: "label2", limit: "limit2", description: "description2"),
@@ -563,6 +558,7 @@ private struct PriceSummarySection: View {
                     confirmButtonTitle: "Remove Travel Insurance Plus",
                     cancelRemovalButtonTitle: "Keep current coverage"
                 ),
+                priceBreakdownItems: []
             ),
             .init(
                 id: "id3",
@@ -576,16 +572,14 @@ private struct PriceSummarySection: View {
                     documents: [],
                     onTap: { document in }
                 ),
-                displayItemSection: .init(
-                    displayItems: [],
-                    discountDisplayItems: []
-                ),
+                displayItems: [],
                 insuranceLimits: [
                     .init(label: "label", limit: "limit", description: "description"),
                     .init(label: "label2", limit: "limit2", description: "description2"),
                     .init(label: "label3", limit: "limit3", description: "description3"),
                 ],
                 typeOfContract: .seAccident,
+                priceBreakdownItems: []
             ),
             .init(
                 id: "id4",
@@ -599,15 +593,13 @@ private struct PriceSummarySection: View {
                     documents: [],
                     onTap: { document in }
                 ),
-                displayItemSection: .init(
-                    displayItems: [],
-                    discountDisplayItems: [
-                        .init(title: "15% bundle discount", value: "-30 kr/mo"),
-                        .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
-                    ]
-                ),
+                displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seAccident,
+                priceBreakdownItems: [
+                    .init(title: "15% bundle discount", value: "-30 kr/mo"),
+                    .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
+                ]
             ),
             .init(
                 id: "id5",
@@ -621,12 +613,10 @@ private struct PriceSummarySection: View {
                     documents: [],
                     onTap: { document in }
                 ),
-                displayItemSection: .init(
-                    displayItems: [],
-                    discountDisplayItems: []
-                ),
+                displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seDogStandard,
+                priceBreakdownItems: []
             ),
         ],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
