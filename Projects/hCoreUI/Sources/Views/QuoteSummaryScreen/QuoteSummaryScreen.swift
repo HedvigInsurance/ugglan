@@ -222,7 +222,6 @@ private struct ContractCardView: View {
                 .accessibilityElement(children: .combine)
             }
 
-
             if (contract.shouldShowDetails || !contract.priceBreakdownItems.isEmpty) {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
