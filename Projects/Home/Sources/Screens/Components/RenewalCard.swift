@@ -83,7 +83,7 @@ public struct RenewalCardView: View {
                                             renewalDate: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
                                             draftCertificateUrl: certificateURL
                                         ),
-                                        displayName: contract.upcomingChangedAgreement?.agreementVariant.productVariant
+                                        displayName: contract.upcomingChangedAgreement?.productVariant
                                             .displayName ?? ""
                                     )
                                 )
