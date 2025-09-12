@@ -4,7 +4,7 @@ import hCore
 struct ContractOverviewScreen: View {
     let contract: QuoteSummaryViewModel.ContractInfo
     @ObservedObject var vm: QuoteSummaryViewModel
-    
+
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
@@ -24,7 +24,7 @@ struct ContractOverviewScreen: View {
             tracking: self
         )
     }
-    
+
     @ViewBuilder
     private var overviewSection: some View {
         let displayItems = contract.displayItems
@@ -37,25 +37,26 @@ struct ContractOverviewScreen: View {
             .accessibilityRemoveTraits(.isHeader)
         }
     }
-    
+
     @ViewBuilder
     private var coverageSection: some View {
         let coverageItems = contract.insuranceLimits
         if !coverageItems.isEmpty {
             hSection(coverageItems) { item in
-                
-                RowItem(displayItem: .init(
-                    title: item.label,
-                    value: item.limit ?? "",
-                    id: item.id
-                ))
+                RowItem(
+                    displayItem: .init(
+                        title: item.label,
+                        value: item.limit ?? "",
+                        id: item.id
+                    )
+                )
             }
             .withHeader(title: L10n.summaryScreenCoverage)
             .accessibilityElement(children: .combine)
             .accessibilityRemoveTraits(.isHeader)
         }
     }
-    
+
     @ViewBuilder
     private var documentSection: some View {
         let documentItems = contract.documentSection.documents
@@ -75,13 +76,13 @@ struct ContractOverviewScreen: View {
 
 extension ContractOverviewScreen: TrackingViewNameProtocol {
     var nameForTracking: String {
-            return .init(describing: ContractOverviewScreen.self)
+        .init(describing: ContractOverviewScreen.self)
     }
 }
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    
+
     let vm = QuoteSummaryViewModel(
         contract: [],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
@@ -90,8 +91,9 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
         ),
         onConfirmClick: {}
     )
-    
-    return ContractOverviewScreen(contract:
+
+    return ContractOverviewScreen(
+        contract:
             .init(
                 id: "id1",
                 displayName: "Homeowner",
@@ -104,7 +106,7 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
                     documents: [
                         .init(displayName: "Insurance terms", url: "url", type: .generalTerms),
                         .init(displayName: "Pre sale information", url: "url", type: .generalTerms),
-                        .init(displayName: "Product facts", url: "url", type: .generalTerms)
+                        .init(displayName: "Product facts", url: "url", type: .generalTerms),
                     ],
                     onTap: { document in }
                 ),
@@ -115,7 +117,7 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
                 ],
                 insuranceLimits: [
                     .init(label: "Your belongings", description: "3 000 000 kr"),
-                    .init(label: "All-risk", description: "100 000 kr")
+                    .init(label: "All-risk", description: "100 000 kr"),
                 ],
                 typeOfContract: .seApartmentBrf,
                 priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
