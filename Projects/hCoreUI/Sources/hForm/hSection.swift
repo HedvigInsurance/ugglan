@@ -324,13 +324,6 @@ extension EnvironmentValues {
 }
 
 extension View {
-    public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
-        if attributes.contains(.all) {
-            return environment(\.hWithoutHorizontalPadding, [.section, .row, .divider])
-        }
-        return environment(\.hWithoutHorizontalPadding, attributes)
-    }
-
     public func hWithoutHorizontalPadding(_ attributes: HorizontalPadding) -> some View {
         if attributes == .all {
             return environment(\.hWithoutHorizontalPadding, [.section, .row, .divider])

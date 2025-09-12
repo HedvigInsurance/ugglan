@@ -15,9 +15,7 @@ struct ConfirmChangesView: View {
 
     var body: some View {
         VStack(spacing: .padding16) {
-            let showCostBreakdown =
-                intentViewModel.intent.newTotalCost.net != intentViewModel.intent.currentTotalCost.net
-            if showCostBreakdown {
+            if intentViewModel.showPriceBreakdown {
                 priceBreakdownView
             }
 

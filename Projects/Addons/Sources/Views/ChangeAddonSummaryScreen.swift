@@ -33,8 +33,8 @@ extension ChangeAddonViewModel {
             ),
             documentSection: .init(
                 documents: selectedQuote?.documents ?? [],
-                onTap: { document in
-                    changeAddonNavigationVm.document = document
+                onTap: { [weak changeAddonNavigationVm] document in
+                    changeAddonNavigationVm?.document = document
                 }
             ),
             displayItemSection: .init(

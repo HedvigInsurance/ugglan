@@ -39,6 +39,10 @@ public class IntentViewModel: ObservableObject {
         errorMessageForInput != nil
     }
 
+    public var showPriceBreakdown: Bool {
+        intent.newTotalCost.net != intent.currentTotalCost.net
+    }
+
     var contractId: String?
 
     @MainActor
