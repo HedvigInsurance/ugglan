@@ -32,17 +32,18 @@ struct InsuredPeopleScreen: View {
     private var bottomContent: some View {
         VStack(spacing: .padding8) {
             hSection {
-                if vm.showSavebutton {
-                    saveChangesButton
-                }
-
-                if vm.showConfirmChangesButton {
-                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
-                }
+                buttonView
                 CancelButton()
                     .disabled(intentViewModel.isLoading)
             }
             .sectionContainerStyle(.transparent)
+        }
+    }
+
+    @ViewBuilder
+    private var buttonView: some View {
+        if vm.showConfirmChangesButton {
+            ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
         }
     }
 
@@ -62,7 +63,7 @@ struct InsuredPeopleScreen: View {
             }
         )
         .hButtonIsLoading(intentViewModel.isLoading)
-        .disabled(!vm.shouldShowSaveChangesButton)
+        .disabled(!vm.enableSaveChangesButton)
     }
 
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
@@ -85,6 +86,7 @@ struct InsuredPeopleScreen: View {
                     date: coInsured.date
                 )
             }
+            .accessibilityValue(accessoryType(for: coInsured).accessibilityValue)
         }
     }
 
@@ -123,24 +125,26 @@ struct InsuredPeopleScreen: View {
         }
     }
 
+    func accessoryType(for coInsured: CoInsuredListType) -> CoInsuredFieldType {
+        if coInsured.coInsured.hasMissingData, type != .delete {
+            .empty
+        } else if coInsured.locallyAdded {
+            .localEdit
+        } else {
+            .delete
+        }
+    }
+
     @ViewBuilder
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
-        var accessoryType: CoInsuredFieldType {
-            if coInsured.coInsured.hasMissingData, type != .delete {
-                .empty
-            } else if coInsured.locallyAdded {
-                .localEdit
-            } else {
-                .delete
-            }
-        }
-        getAccesoryView(for: accessoryType, coInsured: coInsured.coInsured)
+        getAccesoryView(for: accessoryType(for: coInsured), coInsured: coInsured.coInsured)
     }
 
     private func getAccesoryView(for type: CoInsuredFieldType, coInsured: CoInsuredModel) -> some View {
         HStack {
             if let text = type.text {
                 hText(text)
+                    .accessibilityHidden(true)
             }
             if let icon = type.icon {
                 icon.view

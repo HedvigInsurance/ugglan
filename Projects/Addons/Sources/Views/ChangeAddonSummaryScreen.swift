@@ -27,12 +27,16 @@ extension ChangeAddonViewModel {
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
-            netPremium: selectedQuote?.price,
-            grossPremium: addonOffer?.currentAddon?.price,
-            documents: selectedQuote?.documents ?? [],
-            onDocumentTap: { document in
-                changeAddonNavigationVm.document = document
-            },
+            premium: .init(
+                gross: addonOffer?.currentAddon?.price,
+                net: selectedQuote?.price
+            ),
+            documentSection: .init(
+                documents: selectedQuote?.documents ?? [],
+                onTap: { [weak changeAddonNavigationVm] document in
+                    changeAddonNavigationVm?.document = document
+                }
+            ),
             displayItems: compareAddonDisplayItems(
                 currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
                 newDisplayItems: selectedQuote?.displayItems ?? []
@@ -40,7 +44,7 @@ extension ChangeAddonViewModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            discountDisplayItems: []
+            priceBreakdownItems: []
         )
 
         let vm = QuoteSummaryViewModel(
@@ -51,9 +55,9 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.grossPremium
+                    gross: self.addonOffer?.currentAddon?.price ?? contractInfo.premium?.gross
                         ?? .init(amount: "", currency: ""),
-                    totalNet: getTotalPrice(
+                    net: getTotalPrice(
                         currentPrice: addonOffer?.currentAddon?.price,
                         newPrice: selectedQuote?.price
                     )

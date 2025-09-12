@@ -15,9 +15,10 @@ struct MockData {
         submitIntent: @escaping SendIntent = { _, _ in
             .init(
                 activationDate: Date().localDateString,
-                currentPremium: .init(amount: "239", currency: "SEK"),
-                newPremium: .init(amount: "269", currency: "SEK"),
-                id: "id"
+                currentTotalCost: .init(monthlyGross: .sek(300), montlyNet: .sek(200)),
+                newTotalCost: .init(monthlyGross: .sek(299), montlyNet: .sek(199)),
+                id: "id",
+                newCostBreakdown: []
             )
         },
         fetchContracts: @escaping FetchContracts = {

@@ -26,7 +26,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
         removedAddons _: [String]
     ) async throws {}
 
-    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
-        .init(totalGross: .sek(1000), totalNet: .sek(900))
+    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium {
+        .init(gross: .sek(1000), net: .sek(900))
     }
 }

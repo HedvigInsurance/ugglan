@@ -108,9 +108,11 @@ struct ContractDetails: View {
                     }
                     hRow {
                         PriceField(
-                            newPremium: contract.netAmount,
-                            currentPremium: contract.grossAmount,
-                            title: L10n.paymentsSubtotal
+                            viewModel: .init(
+                                initialValue: contract.grossAmount,
+                                newValue: contract.netAmount,
+                                title: L10n.paymentsSubtotal
+                            )
                         )
                         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                         .hPriceFormatting(setTo: .month)

@@ -53,47 +53,43 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         public var id: String
         let displayName: String
         let exposureName: String
-        public let netPremium: MonetaryAmount?
-        public let grossPremium: MonetaryAmount?
+        public let premium: Premium?
         let displayItems: [QuoteDisplayItem]
-        let documents: [hPDFDocument]
-        let onDocumentTap: (_ document: hPDFDocument) -> Void
+        let documentSection: DocumentSection
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
         let removeModel: RemoveModel?
         let isAddon: Bool
-        let discountDisplayItems: [QuoteDisplayItem]
+        let priceBreakdownItems: [QuoteDisplayItem]
 
         public init(
             id: String,
             displayName: String,
             exposureName: String,
-            netPremium: MonetaryAmount?,
-            grossPremium: MonetaryAmount?,
-            documents: [hPDFDocument],
-            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
+            premium: Premium?,
+            documentSection: DocumentSection,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
             isAddon: Bool? = false,
             removeModel: RemoveModel? = nil,
-            discountDisplayItems: [QuoteDisplayItem]
+            priceBreakdownItems: [QuoteDisplayItem]
         ) {
             self.id = id
             self.displayName = displayName
             self.exposureName = exposureName
-            self.netPremium = netPremium
-            self.grossPremium = grossPremium
-            self.documents = documents
-            self.onDocumentTap = onDocumentTap
+            self.premium = premium
+            self.documentSection = documentSection
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
-            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.shouldShowDetails =
+                !(documentSection.documents.isEmpty && displayItems.isEmpty
+                && insuranceLimits.isEmpty)
             self.isAddon = isAddon ?? false
             self.removeModel = removeModel
-            self.discountDisplayItems = discountDisplayItems
+            self.priceBreakdownItems = priceBreakdownItems
         }
 
         public struct RemoveModel: Identifiable, Equatable {
@@ -117,6 +113,16 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
                 self.cancelRemovalButtonTitle = cancelRemovalButtonTitle
             }
         }
+
+        public struct DocumentSection {
+            public let documents: [hPDFDocument]
+            public let onTap: (_ document: hPDFDocument) -> Void
+
+            public init(documents: [hPDFDocument], onTap: @escaping (_: hPDFDocument) -> Void) {
+                self.documents = documents
+                self.onTap = onTap
+            }
+        }
     }
 
     public init(
@@ -124,7 +130,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         activationDate: Date?,
         isAddon: Bool? = false,
         summaryDataProvider: QuoteSummaryDataProvider,
-        onConfirmClick: (() -> Void)? = nil,
+        onConfirmClick: (() -> Void)? = nil
     ) {
         self.contracts = contract
         self.isAddon = isAddon ?? false
@@ -146,8 +152,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             do {
                 let data = try await summaryDataProvider.getTotal(includedAddonIds: includedAddonIds)
                 withAnimation {
-                    grossTotal = data.totalGross
-                    netTotal = data.totalNet
+                    grossTotal = data.gross ?? .sek(0)
+                    netTotal = data.net ?? .sek(0)
                 }
             } catch _ {
                 // we don't care about the error here, we just want to recalculate the totals

@@ -84,7 +84,9 @@ extension ContractsStack {
             .init(
                 id: "id",
                 currentAgreement: .init(
-                    premium: .init(amount: "234", currency: "SEK"),
+                    id: "agreementId",
+                    basePremium: .sek(234),
+                    itemCost: .init(gross: .sek(234), net: .sek(234), discounts: []),
                     displayItems: [],
                     productVariant: .init(
                         termsVersion: "",
