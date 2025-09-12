@@ -25,6 +25,9 @@ public struct PriceField: View {
             subTitleField
         }
         .accessibilityElement(children: .combine)
+        .accessibilityValue(
+            viewModel.infoButtonModel != nil ? L10n.voiceoverDoubleClickTo + L10n.voiceoverPriceBreakdown : ""
+        )
         .detent(
             item: $isInfoViewPresented
         ) { model in
@@ -47,6 +50,13 @@ public struct PriceField: View {
             hCoreUIAssets.infoFilled.view
                 .foregroundColor(hFillColor.Opaque.secondary)
                 .onTapGesture {
+                    isInfoViewPresented = infoViewModel
+                }
+                .accessibilityLabel(
+                    L10n.voiceoverMoreInfo
+                )
+                .accessibilityAddTraits(.isButton)
+                .accessibilityAction {
                     isInfoViewPresented = infoViewModel
                 }
         }
@@ -124,8 +134,7 @@ fileprivate struct PremiumText: View {
                     .foregroundColor(newPremiumColor)
             }
         }
-
-        .accessibilityValue(L10n.voiceoverCurrentPrice)
+        .accessibilityHidden(strikeThrough)
     }
 
     @hColorBuilder

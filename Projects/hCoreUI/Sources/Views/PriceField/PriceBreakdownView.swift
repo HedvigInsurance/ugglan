@@ -41,6 +41,7 @@ struct PriceBreakdownView: View {
                 rowItem(for: item)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var priceField: some View {
@@ -61,6 +62,7 @@ struct PriceBreakdownView: View {
             hText(item.value, style: .label)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
