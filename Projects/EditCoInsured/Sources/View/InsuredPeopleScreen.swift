@@ -87,6 +87,7 @@ struct InsuredPeopleScreen: View {
                     date: coInsured.date
                 )
             }
+            .accessibilityValue(accessoryType(for: coInsured).accessibilityValue)
         }
     }
 
@@ -125,24 +126,26 @@ struct InsuredPeopleScreen: View {
         }
     }
 
+    func accessoryType(for coInsured: CoInsuredListType) -> CoInsuredFieldType {
+        if coInsured.coInsured.hasMissingData, type != .delete {
+            .empty
+        } else if coInsured.locallyAdded {
+            .localEdit
+        } else {
+            .delete
+        }
+    }
+
     @ViewBuilder
     private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
-        var accessoryType: CoInsuredFieldType {
-            if coInsured.coInsured.hasMissingData, type != .delete {
-                .empty
-            } else if coInsured.locallyAdded {
-                .localEdit
-            } else {
-                .delete
-            }
-        }
-        getAccesoryView(for: accessoryType, coInsured: coInsured.coInsured)
+        getAccesoryView(for: accessoryType(for: coInsured), coInsured: coInsured.coInsured)
     }
 
     private func getAccesoryView(for type: CoInsuredFieldType, coInsured: CoInsuredModel) -> some View {
         HStack {
             if let text = type.text {
                 hText(text)
+                    .accessibilityHidden(true)
             }
             if let icon = type.icon {
                 icon.view

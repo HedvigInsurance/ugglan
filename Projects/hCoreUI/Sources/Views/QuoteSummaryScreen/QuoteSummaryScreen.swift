@@ -225,6 +225,7 @@ private struct ContractCardView: View {
                         rowItem(for: disocuntItem, fontSize: .label)
                     }
                 }
+                .accessibilityElement(children: .combine)
             }
 
             if (contract.shouldShowDetails && isExpanded) || !contract.displayItemSection.discountDisplayItems.isEmpty
@@ -405,6 +406,7 @@ private struct ContractCardView: View {
                 )
         }
         .foregroundColor(hTextColor.Translucent.secondary)
+        .accessibilityElement(children: .combine)
     }
 
     func documentItem(for document: hPDFDocument) -> some View {
