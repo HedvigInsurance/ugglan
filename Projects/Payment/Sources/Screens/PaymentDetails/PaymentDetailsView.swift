@@ -40,8 +40,10 @@ struct PaymentDetailsView: View {
                     .hWithoutHorizontalPadding([.row])
             }
             .withHeader(
-                title: L10n.paymentsReferralsInfoTitle,
-                withoutBottomPadding: false
+                title: L10n.ReferralsInfoSheet.headline,
+                infoButtonDescription: L10n.ReferralsInfoSheet.body(
+                    referralDiscount.discountPerReferral?.formattedAmount ?? "",
+                )
             )
 
             .sectionContainerStyle(.transparent)
@@ -205,6 +207,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                             code: "TOGETHER",
                             amount: .init(amount: "10", currency: "SEK"),
                             title: "15% discount for 12 months",
+                            discountPerReferral: .sek(10),
                             listOfAffectedInsurances: [],
                             validUntil: nil,
                             canBeDeleted: true,
@@ -241,6 +244,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                             code: "TOGETHER",
                             amount: .init(amount: "10", currency: "SEK"),
                             title: "15% discount for 12 months",
+                            discountPerReferral: .sek(10),
                             listOfAffectedInsurances: [],
                             validUntil: nil,
                             canBeDeleted: true,
@@ -272,6 +276,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                     code: "MY CODE",
                     amount: .sek(30),
                     title: "3 friends invited",
+                    discountPerReferral: .sek(10),
                     listOfAffectedInsurances: [],
                     validUntil: nil,
                     canBeDeleted: false,

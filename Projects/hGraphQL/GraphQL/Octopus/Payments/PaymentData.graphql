@@ -14,6 +14,9 @@ query PaymentData {
 
 fragment MemberReferralInformationCodeFragment on MemberReferralInformation {
     code
+    monthlyDiscountPerReferral {
+        ...MoneyFragment
+    }
 }
 
 
@@ -65,7 +68,7 @@ fragment MemberChargeFragment on MemberCharge{
 
 fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {
     code
-	description
+    description
     discount {
         ...MoneyFragment
     }
