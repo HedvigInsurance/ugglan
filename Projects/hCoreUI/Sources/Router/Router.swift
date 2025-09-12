@@ -9,6 +9,13 @@ public protocol TrackingViewNameProtocol {
 }
 
 @MainActor
+extension String: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        self
+    }
+}
+
+@MainActor
 public class Router: ObservableObject {
     var routes = [AnyHashable]()
     var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()

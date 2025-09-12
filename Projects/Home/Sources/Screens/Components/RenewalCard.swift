@@ -66,7 +66,7 @@ public struct RenewalCardView: View {
                     InfoCard(
                         text: L10n.contractCoinsuredUpdateInFuture(
                             contract.coInsured.count,
-                            contract.upcomingChangedAgreement?.agreementDate?.activeFrom?.localDateToDate?
+                            contract.upcomingChangedAgreement?.agreementDate.activeFrom?.localDateToDate?
                                 .displayDateDDMMMYYYYFormat
                                 ?? ""
                         ),
@@ -80,10 +80,10 @@ public struct RenewalCardView: View {
                                 openDocument(
                                     HomeContract(
                                         upcomingRenewal: .init(
-                                            renewalDate: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
+                                            renewalDate: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
                                             draftCertificateUrl: certificateURL
                                         ),
-                                        displayName: contract.upcomingChangedAgreement?.agreementVariant.productVariant
+                                        displayName: contract.upcomingChangedAgreement?.productVariant
                                             .displayName ?? ""
                                     )
                                 )

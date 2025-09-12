@@ -5,7 +5,7 @@ public protocol MoveFlowClient {
     func sendMoveIntent() async throws -> MoveConfigurationModel
     func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel
     func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws
-    func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost
+    func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium
 }
 
 public struct RequestMoveIntentInput {

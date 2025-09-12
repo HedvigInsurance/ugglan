@@ -1,12 +1,12 @@
-public struct Premium {
-    public var net: MonetaryAmount?
+public struct Premium: Sendable {
     public var gross: MonetaryAmount?
+    public var net: MonetaryAmount?
 
     public init(
-        net: MonetaryAmount?,
-        gross: MonetaryAmount?
+        gross: MonetaryAmount?,
+        net: MonetaryAmount?
     ) {
-        self.net = net
         self.gross = gross
+        self.net = net
     }
 }

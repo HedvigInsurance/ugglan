@@ -38,8 +38,8 @@ extension ChangeTierViewModel {
                 displayName: displayName ?? "",
                 exposureName: activationDate,
                 premium: .init(
-                    net: newTotalCost?.net,
-                    gross: newTotalCost?.gross
+                    gross: newTotalCost?.gross,
+                    net: newTotalCost?.net
                 ),
                 documentSection: .init(
                     documents: documents,
@@ -47,15 +47,13 @@ extension ChangeTierViewModel {
                         changeTierNavigationVm?.document = document
                     },
                 ),
-                displayItemSection: .init(
-                    displayItems: displayItems,
-                    discountDisplayItems: selectedQuote?.costBreakdown
-                        .map({ item in
-                            .init(title: item.title, value: item.value)
-                        }) ?? []
-                ),
+                displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
+                priceBreakdownItems: selectedQuote?.costBreakdown
+                    .map({ item in
+                        .init(title: item.title, value: item.value)
+                    }) ?? []
             )
         )
 
@@ -78,8 +76,8 @@ extension ChangeTierViewModel {
             activationDate: self.activationDate,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    totalGross: totalGross,
-                    totalNet: totalNet
+                    gross: totalGross,
+                    net: totalNet
                 )
             ),
             onConfirmClick: { [weak changeTierNavigationVm] in

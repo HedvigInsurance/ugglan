@@ -136,13 +136,13 @@ struct ContractTable: View {
                         ContractRow(
                             image: contract.pillowType?.bgImage,
                             terminationMessage: contract.terminationMessage,
-                            contractDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayName
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
                                 ?? "",
                             contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
+                            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
                             activeInFuture: contract.activeInFuture,
                             masterInceptionDate: contract.masterInceptionDate,
-                            tierDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayNameTier,
+                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
                             onClick: {
                                 router.push(contract)
                             }

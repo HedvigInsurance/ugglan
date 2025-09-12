@@ -251,41 +251,46 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     public init(
         id: String,
         certificateUrl: String?,
-        agreementDate: AgreementDate?,
+        agreementDate: AgreementDate,
         basePremium: MonetaryAmount,
         itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
-        agreementVariant: AgreementVariant,
+        productVariant: hCore.ProductVariant,
+        addonVariant: [AddonVariant]
     ) {
         self.id = id
         self.certificateUrl = certificateUrl
         self.agreementDate = agreementDate
         self.basePremium = basePremium
         self.displayItems = displayItems
-        self.agreementVariant = agreementVariant
+        self.productVariant = productVariant
+        self.addonVariant = addonVariant
         self.itemCost = itemCost
     }
     public let id: String
     public let certificateUrl: String?
-    public let agreementDate: AgreementDate?
+    public let agreementDate: AgreementDate
     public let basePremium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
-    public let agreementVariant: AgreementVariant
+    public let productVariant: hCore.ProductVariant
+    public let addonVariant: [AddonVariant]
     public let itemCost: ItemCost?
     public init(
         id: String,
         basePremium: MonetaryAmount,
         itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
-        agreementVariant: AgreementVariant
+        productVariant: hCore.ProductVariant,
+        addonVariant: [AddonVariant]
     ) {
         self.id = id
         self.basePremium = basePremium
         self.displayItems = displayItems
-        self.agreementVariant = agreementVariant
+        self.productVariant = productVariant
+        self.addonVariant = addonVariant
         self.itemCost = itemCost
         certificateUrl = nil
-        agreementDate = nil
+        agreementDate = .init(activeFrom: nil, activeTo: nil)
     }
 
     public struct AgreementDate: Codable, Hashable, Sendable {
@@ -295,16 +300,6 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
         public init(activeFrom: String?, activeTo: String?) {
             self.activeFrom = activeFrom
             self.activeTo = activeTo
-        }
-    }
-
-    public struct AgreementVariant: Codable, Hashable, Sendable {
-        public let productVariant: hCore.ProductVariant
-        public let addonVariant: [AddonVariant]
-
-        public init(productVariant: hCore.ProductVariant, addonVariant: [AddonVariant]) {
-            self.productVariant = productVariant
-            self.addonVariant = addonVariant
         }
     }
 }
@@ -372,13 +367,13 @@ extension InsuredPeopleConfig {
             id: contract.id,
             contractCoInsured: contract.coInsured,
             contractId: contract.id,
-            activeFrom: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
+            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
-            displayName: contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
+            displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
             preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
-            contractDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
+            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn,
@@ -391,11 +386,11 @@ extension Contract {
     public var asTerminationConfirmConfig: TerminationConfirmConfig {
         .init(
             contractId: id,
-            contractDisplayName: currentAgreement?.agreementVariant.productVariant.displayName ?? "",
+            contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
-            activeFrom: currentAgreement?.agreementDate?.activeFrom,
+            activeFrom: currentAgreement?.agreementDate.activeFrom,
             typeOfContract: TypeOfContract.resolve(
-                for: currentAgreement?.agreementVariant.productVariant.typeOfContract ?? ""
+                for: currentAgreement?.productVariant.typeOfContract ?? ""
             )
         )
     }

@@ -54,13 +54,14 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let displayName: String
         let exposureName: String
         public let premium: Premium?
-        let displayItemSection: DisplayItemsSection
+        let displayItems: [QuoteDisplayItem]
         let documentSection: DocumentSection
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
         let removeModel: RemoveModel?
         let isAddon: Bool
+        let priceBreakdownItems: [QuoteDisplayItem]
 
         public init(
             id: String,
@@ -68,25 +69,27 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             exposureName: String,
             premium: Premium?,
             documentSection: DocumentSection,
-            displayItemSection: DisplayItemsSection,
+            displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
             isAddon: Bool? = false,
             removeModel: RemoveModel? = nil,
+            priceBreakdownItems: [QuoteDisplayItem]
         ) {
             self.id = id
             self.displayName = displayName
             self.exposureName = exposureName
             self.premium = premium
             self.documentSection = documentSection
-            self.displayItemSection = displayItemSection
+            self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
             self.shouldShowDetails =
-                !(documentSection.documents.isEmpty && displayItemSection.displayItems.isEmpty
+                !(documentSection.documents.isEmpty && displayItems.isEmpty
                 && insuranceLimits.isEmpty)
             self.isAddon = isAddon ?? false
             self.removeModel = removeModel
+            self.priceBreakdownItems = priceBreakdownItems
         }
 
         public struct RemoveModel: Identifiable, Equatable {
@@ -120,16 +123,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
                 self.onTap = onTap
             }
         }
-
-        public struct DisplayItemsSection {
-            public let displayItems: [QuoteDisplayItem]
-            public let discountDisplayItems: [QuoteDisplayItem]
-
-            public init(displayItems: [QuoteDisplayItem], discountDisplayItems: [QuoteDisplayItem]) {
-                self.displayItems = displayItems
-                self.discountDisplayItems = discountDisplayItems
-            }
-        }
     }
 
     public init(
@@ -159,8 +152,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             do {
                 let data = try await summaryDataProvider.getTotal(includedAddonIds: includedAddonIds)
                 withAnimation {
-                    grossTotal = data.totalGross
-                    netTotal = data.totalNet
+                    grossTotal = data.gross ?? .sek(0)
+                    netTotal = data.net ?? .sek(0)
                 }
             } catch _ {
                 // we don't care about the error here, we just want to recalculate the totals

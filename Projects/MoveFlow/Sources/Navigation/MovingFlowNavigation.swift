@@ -71,8 +71,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
                 premium: .init(
-                    net: quote.netPremium,
-                    gross: quote.grossPremium
+                    gross: quote.grossPremium,
+                    net: quote.netPremium
                 ),
                 documentSection: .init(
                     documents: quote.documents.map {
@@ -82,15 +82,13 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                         self?.document = document
                     }
                 ),
-                displayItemSection: .init(
-                    displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
-                    ),
-                    discountDisplayItems: quote.discountDisplayItems.map {
-                        .init(title: $0.displayTitle, value: $0.displayValue)
-                    }
+                displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                 ),
                 insuranceLimits: quote.insurableLimits,
                 typeOfContract: quote.contractType,
+                priceBreakdownItems: quote.priceBreakdownItems.map {
+                    .init(title: $0.displayTitle, value: $0.displayValue)
+                }
             )
             contractInfos.append(contractQuote)
 
@@ -409,8 +407,8 @@ extension AddonDataModel {
             displayName: quoteInfo.title ?? "",
             exposureName: coverageDisplayName,
             premium: .init(
-                net: netPremium,
-                gross: grossPremium
+                gross: grossPremium,
+                net: netPremium
             ),
             documentSection: .init(
                 documents: addonVariant.documents,
@@ -418,18 +416,16 @@ extension AddonDataModel {
                     ondocumentClicked(document)
                 }
             ),
-            displayItemSection: .init(
-                displayItems: displayItems.map {
-                    .init(title: $0.displayTitle, value: $0.displayValue)
-                },
-                discountDisplayItems: self.discountDisplayItems.map({
-                    .init(title: $0.displayTitle, value: $0.displayValue)
-                })
-            ),
+            displayItems: displayItems.map {
+                .init(title: $0.displayTitle, value: $0.displayValue)
+            },
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
             removeModel: removeModel,
+            priceBreakdownItems: self.priceBreakdownItems.map({
+                .init(title: $0.displayTitle, value: $0.displayValue)
+            })
         )
         return addonQuoteContractInfo
     }

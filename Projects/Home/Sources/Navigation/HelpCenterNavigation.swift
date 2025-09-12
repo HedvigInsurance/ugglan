@@ -222,7 +222,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                 .map {
                     .init(
                         contractId: $0.id,
-                        contractDisplayName: $0.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
+                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
                         contractExposureName: $0.exposureDisplayName
                     )
                 }

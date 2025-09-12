@@ -168,13 +168,13 @@ extension CoInsuredModel {
     }
 }
 
-extension TotalCost {
+extension Premium {
     public init(
         fragment: OctopusGraphQL.TotalCostFragment
     ) {
         self.init(
-            monthlyGross: .init(fragment: fragment.monthlyGross.fragments.moneyFragment),
-            montlyNet: .init(fragment: fragment.monthlyNet.fragments.moneyFragment)
+            gross: .init(fragment: fragment.monthlyGross.fragments.moneyFragment),
+            net: .init(fragment: fragment.monthlyNet.fragments.moneyFragment)
         )
     }
 }
