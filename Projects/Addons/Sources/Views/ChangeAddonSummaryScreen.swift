@@ -28,25 +28,23 @@ extension ChangeAddonViewModel {
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             premium: .init(
-                net: selectedQuote?.price,
-                gross: addonOffer?.currentAddon?.price
+                gross: addonOffer?.currentAddon?.price,
+                net: selectedQuote?.price
             ),
             documentSection: .init(
                 documents: selectedQuote?.documents ?? [],
-                onTap: { document in
-                    changeAddonNavigationVm.document = document
+                onTap: { [weak changeAddonNavigationVm] document in
+                    changeAddonNavigationVm?.document = document
                 }
             ),
-            displayItemSection: .init(
-                displayItems: compareAddonDisplayItems(
-                    currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
-                    newDisplayItems: selectedQuote?.displayItems ?? []
-                ),
-                discountDisplayItems: []
+            displayItems: compareAddonDisplayItems(
+                currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
+                newDisplayItems: selectedQuote?.displayItems ?? []
             ),
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
+            priceBreakdownItems: []
         )
 
         let vm = QuoteSummaryViewModel(
@@ -57,9 +55,9 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.premium?.gross
+                    gross: self.addonOffer?.currentAddon?.price ?? contractInfo.premium?.gross
                         ?? .init(amount: "", currency: ""),
-                    totalNet: getTotalPrice(
+                    net: getTotalPrice(
                         currentPrice: addonOffer?.currentAddon?.price,
                         newPrice: selectedQuote?.price
                     )

@@ -163,7 +163,7 @@ extension URL {
         guard let queryItems = urlComponents.queryItems else { return nil }
         let contractIdString = queryItems.first(where: { $0.name == "contractId" })?.value
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        return contractStore.state.contractForId(contractIdString ?? "")?.currentAgreement?.agreementVariant
+        return contractStore.state.contractForId(contractIdString ?? "")?.currentAgreement?
             .productVariant.displayName
     }
 }

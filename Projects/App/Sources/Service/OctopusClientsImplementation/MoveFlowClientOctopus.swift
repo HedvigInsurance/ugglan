@@ -108,7 +108,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         }
     }
 
-    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
+    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium {
         let query = OctopusGraphQL.MoveIntentCostQuery(
             intentId: input.intentId,
             selectedAddonIds: input.selectedAddons,
@@ -118,7 +118,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let totalGross = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyGross.fragments.moneyFragment)
         let totalNet = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyNet.fragments.moneyFragment)
-        return .init(totalGross: totalGross, totalNet: totalNet)
+        return .init(gross: totalGross, net: totalNet)
     }
 }
 
@@ -205,7 +205,7 @@ extension MovingFlowQuote {
             displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
             addons: data.addons.map { AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) },
-            discountDisplayItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             })
         )
@@ -228,7 +228,7 @@ extension MovingFlowQuote {
             displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
             addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) }),
-            discountDisplayItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             })
         )
@@ -361,7 +361,7 @@ extension AddonDataModel {
             netPremium: .init(fragment: fragment.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
             startDate: fragment.startDate.localDateToDate ?? Date(),
-            discountDisplayItems: fragment.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: fragment.cost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             }),
             removeDialogInfo: {

@@ -90,8 +90,8 @@ private struct DismissAlertPopup: ViewModifier {
             } message: {
                 hText(message ?? "")
             }
-            .introspect(.viewController, on: .iOS(.v13...)) { vc in
-                vm.vc = vc
+            .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
+                vm?.vc = vc
             }
     }
 

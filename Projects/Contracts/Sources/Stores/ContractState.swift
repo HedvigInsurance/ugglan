@@ -73,7 +73,7 @@ extension ContractStore {
             .init(
                 contractId: $0.id,
                 exposureName: $0.exposureDisplayName,
-                displayName: $0.currentAgreement?.agreementVariant.productVariant.displayName ?? ""
+                displayName: $0.currentAgreement?.productVariant.displayName ?? ""
             )
         }
         return addonContractsConfig

@@ -25,7 +25,7 @@ struct ContractOverviewScreen: View {
     
     @ViewBuilder
     private var overviewSection: some View {
-        let displayItems = contract.displayItemSection.displayItems
+        let displayItems = contract.displayItems
         RowItemSection<QuoteDisplayItem, RowItem>(
             header: L10n.summaryScreenOverview,
             list: displayItems
@@ -82,7 +82,7 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
         contract: [],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
         summaryDataProvider: DirectQuoteSummaryDataProvider(
-            intentCost: .init(totalGross: .sek(999), totalNet: .sek(599))
+            intentCost: .init(gross: .sek(999), net: .sek(599))
         ),
         onConfirmClick: {}
     )
@@ -93,8 +93,8 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
                 premium: .init(
-                    net: .init(amount: 999, currency: "SEK"),
-                    gross: .init(amount: 599, currency: "SEK")
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(
                     documents: [
@@ -104,19 +104,17 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
                     ],
                     onTap: { document in }
                 ),
-                displayItemSection: .init(
-                    displayItems: [
-                        .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
-                        .init(title: "Documents", value: "documents"),
-                        .init(title: "FAQ", value: "mockFAQ"),
-                    ],
-                    discountDisplayItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
-                ),
+                displayItems: [
+                    .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
+                    .init(title: "Documents", value: "documents"),
+                    .init(title: "FAQ", value: "mockFAQ"),
+                ],
                 insuranceLimits: [
                     .init(label: "Your belongings", description: "3 000 000 kr"),
                     .init(label: "All-risk", description: "100 000 kr")
                 ],
                 typeOfContract: .seApartmentBrf,
+                priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
             ),
         vm: vm,
     )
