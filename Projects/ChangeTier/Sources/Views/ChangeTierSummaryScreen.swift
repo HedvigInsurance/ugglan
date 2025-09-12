@@ -38,8 +38,8 @@ extension ChangeTierViewModel {
                 displayName: displayName ?? "",
                 exposureName: activationDate,
                 premium: .init(
-                    net: newTotalCost?.net,
-                    gross: newTotalCost?.gross
+                    gross: newTotalCost?.gross,
+                    net: newTotalCost?.net
                 ),
                 documentSection: .init(
                     documents: documents,
@@ -78,8 +78,8 @@ extension ChangeTierViewModel {
             activationDate: self.activationDate,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    totalGross: totalGross,
-                    totalNet: totalNet
+                    gross: totalGross,
+                    net: totalNet
                 )
             ),
             onConfirmClick: { [weak changeTierNavigationVm] in

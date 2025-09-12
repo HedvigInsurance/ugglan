@@ -108,7 +108,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         }
     }
 
-    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
+    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium {
         let query = OctopusGraphQL.MoveIntentCostQuery(
             intentId: input.intentId,
             selectedAddonIds: input.selectedAddons,
@@ -118,7 +118,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let totalGross = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyGross.fragments.moneyFragment)
         let totalNet = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyNet.fragments.moneyFragment)
-        return .init(totalGross: totalGross, totalNet: totalNet)
+        return .init(gross: totalGross, net: totalNet)
     }
 }
 

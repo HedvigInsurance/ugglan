@@ -510,8 +510,8 @@ private struct PriceSummarySection: View {
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
                 premium: .init(
-                    net: .init(amount: 999, currency: "SEK"),
-                    gross: .init(amount: 599, currency: "SEK")
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(
                     documents: [],
@@ -533,8 +533,8 @@ private struct PriceSummarySection: View {
                 displayName: "Travel addon",
                 exposureName: "Bellmansgtan 19A",
                 premium: .init(
-                    net: .init(amount: 999, currency: "SEK"),
-                    gross: nil
+                    gross: nil,
+                    net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(
                     documents: [],
@@ -569,8 +569,8 @@ private struct PriceSummarySection: View {
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
                 premium: .init(
-                    net: .init(amount: 999, currency: "SEK"),
-                    gross: .init(amount: 599, currency: "SEK")
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(
                     documents: [],
@@ -592,8 +592,8 @@ private struct PriceSummarySection: View {
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
                 premium: .init(
-                    net: .init(amount: 999, currency: "SEK"),
-                    gross: .init(amount: 599, currency: "SEK")
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(
                     documents: [],
@@ -614,8 +614,8 @@ private struct PriceSummarySection: View {
                 displayName: "Dog",
                 exposureName: "Bellmansgtan 19A",
                 premium: .init(
-                    net: .init(amount: 999, currency: "SEK"),
-                    gross: .init(amount: 599, currency: "SEK")
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(
                     documents: [],
@@ -631,7 +631,7 @@ private struct PriceSummarySection: View {
         ],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
         summaryDataProvider: DirectQuoteSummaryDataProvider(
-            intentCost: .init(totalGross: .sek(999), totalNet: .sek(599))
+            intentCost: .init(gross: .sek(999), net: .sek(599))
         ),
         onConfirmClick: {}
     )

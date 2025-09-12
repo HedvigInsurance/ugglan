@@ -16,7 +16,7 @@ struct ConfirmChangesView: View {
     var body: some View {
         VStack(spacing: .padding16) {
             let showCostBreakdown =
-                intentViewModel.intent.newTotalCost.montlyNet != intentViewModel.intent.currentTotalCost.montlyNet
+                intentViewModel.intent.newTotalCost.net != intentViewModel.intent.currentTotalCost.net
             if showCostBreakdown {
                 priceBreakdownView
             }
@@ -43,19 +43,19 @@ struct ConfirmChangesView: View {
             viewModels: [
                 .init(
                     initialValue: nil,
-                    newValue: intentViewModel.intent.currentTotalCost.montlyNet,
+                    newValue: intentViewModel.intent.currentTotalCost.net ?? .sek(0),
                     title: L10n.pricePreviousPrice
                 ),
                 .init(
                     initialValue: nil,
-                    newValue: intentViewModel.intent.newTotalCost.montlyNet,
+                    newValue: intentViewModel.intent.newTotalCost.net ?? .sek(0),
                     title: L10n.priceNewPrice,
                     subTitle: L10n.summaryTotalPriceSubtitle(
                         intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
                     infoButtonModel: .init(
-                        initialValue: intentViewModel.intent.newTotalCost.monthlyGross,
-                        newValue: intentViewModel.intent.newTotalCost.montlyNet,
+                        initialValue: intentViewModel.intent.newTotalCost.gross,
+                        newValue: intentViewModel.intent.newTotalCost.net ?? .sek(0),
                         infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
                             .init(title: $0.displayTitle, value: $0.displayValue)
                         })

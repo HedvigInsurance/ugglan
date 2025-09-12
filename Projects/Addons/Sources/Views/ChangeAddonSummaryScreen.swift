@@ -28,8 +28,8 @@ extension ChangeAddonViewModel {
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             premium: .init(
-                net: selectedQuote?.price,
-                gross: addonOffer?.currentAddon?.price
+                gross: addonOffer?.currentAddon?.price,
+                net: selectedQuote?.price
             ),
             documentSection: .init(
                 documents: selectedQuote?.documents ?? [],
@@ -57,9 +57,9 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    totalGross: self.addonOffer?.currentAddon?.price ?? contractInfo.premium?.gross
+                    gross: self.addonOffer?.currentAddon?.price ?? contractInfo.premium?.gross
                         ?? .init(amount: "", currency: ""),
-                    totalNet: getTotalPrice(
+                    net: getTotalPrice(
                         currentPrice: addonOffer?.currentAddon?.price,
                         newPrice: selectedQuote?.price
                     )

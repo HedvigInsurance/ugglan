@@ -71,8 +71,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
                 premium: .init(
-                    net: quote.netPremium,
-                    gross: quote.grossPremium
+                    gross: quote.grossPremium,
+                    net: quote.netPremium
                 ),
                 documentSection: .init(
                     documents: quote.documents.map {
@@ -409,8 +409,8 @@ extension AddonDataModel {
             displayName: quoteInfo.title ?? "",
             exposureName: coverageDisplayName,
             premium: .init(
-                net: netPremium,
-                gross: grossPremium
+                gross: grossPremium,
+                net: netPremium
             ),
             documentSection: .init(
                 documents: addonVariant.documents,
