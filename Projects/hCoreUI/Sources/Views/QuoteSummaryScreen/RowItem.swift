@@ -1,23 +1,6 @@
 import SwiftUI
 import hCore
 
-struct RowItemSection<T: Identifiable, RowView: View>: View {
-    let header: String
-    let list: [T]
-    let rowBuilder: (T) -> RowView
-
-    var body: some View {
-        if !list.isEmpty {
-            hSection(list, id: \.id) { item in
-                rowBuilder(item)
-            }
-            .withHeader(title: header)
-            .sectionContainerStyle(.transparent)
-            .hWithoutHorizontalPadding([.row, .divider])
-        }
-    }
-}
-
 struct RowItem: View {
     let displayItem: QuoteDisplayItem
 

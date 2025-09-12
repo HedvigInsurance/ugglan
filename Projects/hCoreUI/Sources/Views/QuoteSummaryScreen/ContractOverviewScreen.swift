@@ -12,6 +12,8 @@ struct ContractOverviewScreen: View {
                 coverageSection
                 documentSection
             }
+            .sectionContainerStyle(.transparent)
+            .hWithoutHorizontalPadding([.row, .divider])
         }
         .hFormAttachToBottom {
             hCloseButton {
@@ -26,45 +28,47 @@ struct ContractOverviewScreen: View {
     @ViewBuilder
     private var overviewSection: some View {
         let displayItems = contract.displayItems
-        RowItemSection<QuoteDisplayItem, RowItem>(
-            header: L10n.summaryScreenOverview,
-            list: displayItems
-        ) { item in
-            RowItem(displayItem: item)
+        if !displayItems.isEmpty {
+            hSection(displayItems) { item in
+                RowItem(displayItem: item)
+            }
+            .withHeader(title: L10n.summaryScreenOverview)
+            .accessibilityElement(children: .combine)
+            .accessibilityRemoveTraits(.isHeader)
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityRemoveTraits(.isHeader)
     }
     
     @ViewBuilder
     private var coverageSection: some View {
         let coverageItems = contract.insuranceLimits
-        RowItemSection<QuoteDisplayItem, RowItem>(
-            header: L10n.summaryScreenCoverage,
-            list: coverageItems.map {
-                QuoteDisplayItem(
-                    title: $0.label,
-                    value: $0.limit ?? "",
-                    id: $0.id
-                )
+        if !coverageItems.isEmpty {
+            hSection(coverageItems) { item in
+                
+                RowItem(displayItem: .init(
+                    title: item.label,
+                    value: item.limit ?? "",
+                    id: item.id
+                ))
             }
-        ) { item in
-            RowItem(displayItem: item)
+            .withHeader(title: L10n.summaryScreenCoverage)
+            .accessibilityElement(children: .combine)
+            .accessibilityRemoveTraits(.isHeader)
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityRemoveTraits(.isHeader)
     }
     
     @ViewBuilder
     private var documentSection: some View {
         let documentItems = contract.documentSection.documents
-        RowItemSection<hPDFDocument, DocumentRowItem>(
-            header: L10n.confirmationScreenDocumentTitle,
-            list: documentItems
-        ) { document in
-            DocumentRowItem(document: document, onTap: { document in
-                contract.documentSection.onTap(document)
-            })
+        if !documentItems.isEmpty {
+            hSection(documentItems) { document in
+                DocumentRowItem(
+                    document: document,
+                    onTap: { document in
+                        contract.documentSection.onTap(document)
+                    }
+                )
+            }
+            .withHeader(title: L10n.confirmationScreenDocumentTitle)
         }
     }
 }
