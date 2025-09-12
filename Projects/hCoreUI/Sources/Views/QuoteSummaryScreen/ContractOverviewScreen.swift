@@ -23,6 +23,7 @@ struct ContractOverviewScreen: View {
         .embededInNavigation(
             tracking: self
         )
+        .hFormContentPosition(.compact)
     }
 
     @ViewBuilder
@@ -30,7 +31,7 @@ struct ContractOverviewScreen: View {
         let displayItems = contract.displayItems
         if !displayItems.isEmpty {
             hSection(displayItems) { item in
-                RowItem(displayItem: item)
+                QuoteDisplayItemView(displayItem: item)
             }
             .withHeader(title: L10n.summaryScreenOverview)
             .accessibilityElement(children: .combine)
@@ -43,7 +44,7 @@ struct ContractOverviewScreen: View {
         let coverageItems = contract.insuranceLimits
         if !coverageItems.isEmpty {
             hSection(coverageItems) { item in
-                RowItem(
+                QuoteDisplayItemView(
                     displayItem: .init(
                         title: item.label,
                         value: item.limit ?? "",
@@ -62,7 +63,7 @@ struct ContractOverviewScreen: View {
         let documentItems = contract.documentSection.documents
         if !documentItems.isEmpty {
             hSection(documentItems) { document in
-                DocumentRowItem(
+                DocumentRowItemView(
                     document: document,
                     onTap: { document in
                         contract.documentSection.onTap(document)

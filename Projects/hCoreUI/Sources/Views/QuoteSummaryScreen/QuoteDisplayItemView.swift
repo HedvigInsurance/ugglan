@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-struct RowItem: View {
+struct QuoteDisplayItemView: View {
     let displayItem: QuoteDisplayItem
 
     init(
@@ -43,7 +43,7 @@ struct RowItem: View {
     }
 }
 
-struct DocumentRowItem: View {
+struct DocumentRowItemView: View {
     let document: hPDFDocument
     let onTap: (hPDFDocument) -> Void
 

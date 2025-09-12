@@ -17,7 +17,7 @@ public struct QuoteSummaryScreen: View {
         ScrollViewReader { proxy in
             hForm {
                 VStack(spacing: .padding16) {
-                    ContractCardView(vm: vm, proxy: proxy)
+                    ContractCardView(vm: vm)
                         .background(
                             GeometryReader { proxy in
                                 Color.clear
@@ -149,7 +149,6 @@ public struct QuoteSummaryScreen: View {
 
 private struct ContractCardView: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-    let proxy: ScrollViewProxy
 
     var body: some View {
         VStack(spacing: 0) {
@@ -163,13 +162,11 @@ private struct ContractCardView: View {
     @ViewBuilder
     private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
-        let isExpanded = vm.isAddon ? true : (index != nil)
-        contractContent(for: contract, proxy: proxy)
+        contractContent(for: contract)
     }
 
     func contractContent(
-        for contract: QuoteSummaryViewModel.ContractInfo,
-        proxy: ScrollViewProxy
+        for contract: QuoteSummaryViewModel.ContractInfo
     ) -> some View {
         hSection {
             StatusCard(
@@ -216,7 +213,7 @@ private struct ContractCardView: View {
             if !contract.priceBreakdownItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
                     ForEach(contract.priceBreakdownItems, id: \.displayTitle) { disocuntItem in
-                        RowItem(displayItem: disocuntItem)
+                        QuoteDisplayItemView(displayItem: disocuntItem)
                     }
                 }
                 .accessibilityElement(children: .combine)
