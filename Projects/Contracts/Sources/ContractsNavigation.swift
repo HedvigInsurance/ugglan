@@ -190,7 +190,7 @@ extension TerminationConfirmConfig {
             contractId: contract.id,
             contractDisplayName: contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
             contractExposureName: contract.exposureDisplayName,
-            activeFrom: contract.currentAgreement?.agreementDate?.activeFrom,
+            activeFrom: contract.currentAgreement?.agreementDate.activeFrom,
             typeOfContract: TypeOfContract.resolve(
                 for: contract.currentAgreement?.agreementVariant.productVariant.typeOfContract ?? ""
             )

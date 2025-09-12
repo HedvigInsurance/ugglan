@@ -251,7 +251,7 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     public init(
         id: String,
         certificateUrl: String?,
-        agreementDate: AgreementDate?,
+        agreementDate: AgreementDate,
         basePremium: MonetaryAmount,
         itemCost: ItemCost?,
         displayItems: [AgreementDisplayItem],
@@ -267,7 +267,7 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     }
     public let id: String
     public let certificateUrl: String?
-    public let agreementDate: AgreementDate?
+    public let agreementDate: AgreementDate
     public let basePremium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let agreementVariant: AgreementVariant
@@ -285,7 +285,7 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
         self.agreementVariant = agreementVariant
         self.itemCost = itemCost
         certificateUrl = nil
-        agreementDate = nil
+        agreementDate = .init(activeFrom: nil, activeTo: nil)
     }
 
     public struct AgreementDate: Codable, Hashable, Sendable {
@@ -372,7 +372,7 @@ extension InsuredPeopleConfig {
             id: contract.id,
             contractCoInsured: contract.coInsured,
             contractId: contract.id,
-            activeFrom: contract.upcomingChangedAgreement?.agreementDate?.activeFrom,
+            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
             displayName: contract.currentAgreement?.agreementVariant.productVariant.displayName ?? "",
@@ -393,7 +393,7 @@ extension Contract {
             contractId: id,
             contractDisplayName: currentAgreement?.agreementVariant.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
-            activeFrom: currentAgreement?.agreementDate?.activeFrom,
+            activeFrom: currentAgreement?.agreementDate.activeFrom,
             typeOfContract: TypeOfContract.resolve(
                 for: currentAgreement?.agreementVariant.productVariant.typeOfContract ?? ""
             )
