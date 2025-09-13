@@ -11,6 +11,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published var removedContracts: [String] = []
     @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
     @Published var isConfirmChangesPresented: Bool = false
+    @Published var isShowDetailsPresented: QuoteSummaryViewModel.ContractInfo? = nil
 
     public var onConfirmClick: () -> Void
     let isAddon: Bool
@@ -49,7 +50,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         calculateTotal()
     }
 
-    public struct ContractInfo: Identifiable {
+    public struct ContractInfo: Identifiable, Equatable {
         public var id: String
         let displayName: String
         let exposureName: String
@@ -90,6 +91,11 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.isAddon = isAddon ?? false
             self.removeModel = removeModel
             self.priceBreakdownItems = priceBreakdownItems
+        }
+
+        public static func == (lhs: QuoteSummaryViewModel.ContractInfo, rhs: QuoteSummaryViewModel.ContractInfo) -> Bool
+        {
+            lhs.id == rhs.id
         }
 
         public struct RemoveModel: Identifiable, Equatable {
@@ -168,7 +174,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 }
 
 public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
-    public let id: String?
+    public let id: String
     let displayTitle: String
     let displayValue: String
     let displayValueOld: String?
@@ -182,7 +188,7 @@ public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
         self.displayValueOld = displayValueOld
-        self.id = id
+        self.id = id ?? UUID().uuidString
     }
 }
 

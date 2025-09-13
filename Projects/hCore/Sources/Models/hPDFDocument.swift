@@ -1,7 +1,8 @@
+import Foundation
 import hGraphQL
 
 public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable, Sendable {
-    public var id: String?
+    public var id = UUID().uuidString
     public var displayName: String
     public var url: String
     public var type: TypeOfDocument
