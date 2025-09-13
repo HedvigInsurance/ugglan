@@ -157,7 +157,7 @@ private struct ContractCardView: View {
     @ViewBuilder
     private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
-        let isExpanded = vm.isAddon ? true : (index != nil)
+        let isExpanded = (index != nil)
 
         if !contract.documentSection.documents.isEmpty {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
@@ -190,7 +190,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
-            .hCardBackgroundColor(vm.isAddon ? .default : .light)
+            .hCardBackgroundColor(.light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -202,14 +202,9 @@ private struct ContractCardView: View {
         isExpanded: Bool
     ) -> some View {
         VStack(spacing: .padding16) {
-            if contract.shouldShowDetails && !vm.isAddon {
+            if contract.shouldShowDetails {
                 if !vm.removedContracts.contains(contract.id) {
-                    if vm.isAddon {
-                        showDetailsButton(contract)
-                    } else {
-                        showDetailsButton(contract)
-                            .hButtonWithBorder
-                    }
+                    showDetailsButton(contract)
                 } else {
                     addButton(for: contract, isExpanded: isExpanded)
                 }
@@ -233,9 +228,7 @@ private struct ContractCardView: View {
                 .accessibilityElement(children: .combine)
             }
 
-            if ((contract.shouldShowDetails && isExpanded) || !contract.priceBreakdownItems.isEmpty)
-                && !contract.isAddon
-            {
+            if ((contract.shouldShowDetails && isExpanded) || !contract.priceBreakdownItems.isEmpty) {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
@@ -255,16 +248,9 @@ private struct ContractCardView: View {
 
     @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        let type: hButtonConfigurationType = {
-            if vm.isAddon {
-                return .secondary
-            } else {
-                return .ghost
-            }
-        }()
         hButton(
             .medium,
-            type,
+            .ghost,
             content: .init(
                 title: vm.expandedContracts.firstIndex(of: contract.id) != nil
                     ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
@@ -285,6 +271,7 @@ private struct ContractCardView: View {
             }
         )
         .hWithTransition(.scale)
+        .hButtonWithBorder
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -296,7 +283,7 @@ private struct ContractCardView: View {
         }
         .padding(
             .bottom,
-            (isExpanded && !contract.isAddon && !contract.priceBreakdownItems.isEmpty)
+            (isExpanded && !contract.priceBreakdownItems.isEmpty)
                 ? .padding16 : 0
         )
     }
@@ -478,7 +465,7 @@ private struct PriceSummarySection: View {
                         .large,
                         .primary,
                         content: .init(
-                            title: vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer
+                            title: L10n.changeAddressAcceptOffer
                         ),
                         { [weak vm] in
                             vm?.isConfirmChangesPresented = true
