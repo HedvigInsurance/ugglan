@@ -222,7 +222,7 @@ private struct ContractCardView: View {
             if !contract.priceBreakdownItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
                     ForEach(contract.priceBreakdownItems, id: \.displayTitle) { disocuntItem in
-                        rowItem(for: disocuntItem, fontSize: .label)
+                        rowItem(for: disocuntItem)
                     }
                 }
                 .accessibilityElement(children: .combine)
@@ -380,32 +380,47 @@ private struct ContractCardView: View {
         }
     }
 
-    func rowItem(for displayItem: QuoteDisplayItem, fontSize: HFontTextStyle? = .body1) -> some View {
+    func rowItem(for displayItem: QuoteDisplayItem) -> some View {
         HStack(alignment: .top) {
-            hText(displayItem.displayTitle, style: fontSize ?? .body1)
+            displayTitleView(for: displayItem)
             Spacer()
+            displayValueView(for: displayItem)
+        }
+        .foregroundColor(hTextColor.Opaque.secondary)
+        .accessibilityElement(children: .combine)
+    }
 
-            if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
-                if #available(iOS 16.0, *) {
-                    hText(oldValue)
-                        .strikethrough()
-                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                } else {
-                    hText(oldValue)
-                        .foregroundColor(hTextColor.Opaque.tertiary)
-                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                }
+    @ViewBuilder
+    private func displayTitleView(for displayItem: QuoteDisplayItem) -> some View {
+        if displayItem.displayValue == nil && displayItem.displayValueOld != nil, #available(iOS 16.0, *) {
+            hText(displayItem.displayTitle, style: .label)
+                .strikethrough(displayItem.displayValue == nil)
+        } else {
+            hText(displayItem.displayTitle, style: .label)
+        }
+    }
+
+    @ViewBuilder
+    private func displayValueView(for displayItem: QuoteDisplayItem) -> some View {
+        if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
+            if #available(iOS 16.0, *) {
+                hText(oldValue, style: .label)
+                    .strikethrough()
+                    .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
+            } else {
+                hText(oldValue, style: .label)
+                    .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
             }
+        }
 
-            hText(displayItem.displayValue, style: fontSize ?? .body1)
+        if let displayValue = displayItem.displayValue {
+            hText(displayValue, style: .label)
                 .multilineTextAlignment(.trailing)
                 .accessibilityLabel(
                     displayItem.displayValueOld != nil && displayItem.displayValueOld != displayItem.displayValue
-                        ? L10n.voiceoverNewValue + displayItem.displayValue : displayItem.displayValue
+                        ? L10n.voiceoverNewValue + displayValue : displayValue
                 )
         }
-        .foregroundColor(hTextColor.Translucent.secondary)
-        .accessibilityElement(children: .combine)
     }
 
     func documentItem(for document: hPDFDocument) -> some View {

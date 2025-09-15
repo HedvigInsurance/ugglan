@@ -170,7 +170,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
     public let id: String?
     let displayTitle: String
-    let displayValue: String
+    let displayValue: String?
     let displayValueOld: String?
 
     public init(
@@ -183,6 +183,16 @@ public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
         self.displayValue = displayValue
         self.displayValueOld = displayValueOld
         self.id = id
+    }
+
+    public init(
+        title displayTitle: String,
+        displayValueOld: String
+    ) {
+        self.displayTitle = displayTitle
+        self.displayValueOld = displayValueOld
+        self.displayValue = nil
+        self.id = nil
     }
 }
 
