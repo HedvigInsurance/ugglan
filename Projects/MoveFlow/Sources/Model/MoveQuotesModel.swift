@@ -33,7 +33,7 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     let displayItems: [DisplayItem]
     let exposureName: String?
     let addons: [AddonDataModel]
-    let discountDisplayItems: [DisplayItem]
+    let priceBreakdownItems: [DisplayItem]
 
     public init(
         grossPremium: MonetaryAmount,
@@ -48,7 +48,7 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         displayItems: [DisplayItem],
         exposureName: String?,
         addons: [AddonDataModel],
-        discountDisplayItems: [DisplayItem]
+        priceBreakdownItems: [DisplayItem]
     ) {
         self.grossPremium = grossPremium
         self.netPremium = netPremium
@@ -62,7 +62,7 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         self.displayItems = displayItems
         self.exposureName = exposureName
         self.addons = addons
-        self.discountDisplayItems = discountDisplayItems
+        self.priceBreakdownItems = priceBreakdownItems
     }
 }
 
@@ -98,7 +98,7 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
     let addonVariant: AddonVariant
     let startDate: Date
     let removeDialogInfo: RemoveDialogInfo?
-    let discountDisplayItems: [DisplayItem]
+    let priceBreakdownItems: [DisplayItem]
 
     public init(
         id: String,
@@ -109,7 +109,7 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
         netPremium: MonetaryAmount,
         addonVariant: AddonVariant,
         startDate: Date,
-        discountDisplayItems: [DisplayItem],
+        priceBreakdownItems: [DisplayItem],
         removeDialogInfo: RemoveDialogInfo?,
     ) {
         self.id = id
@@ -120,7 +120,7 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
         self.netPremium = netPremium
         self.addonVariant = addonVariant
         self.startDate = startDate
-        self.discountDisplayItems = discountDisplayItems
+        self.priceBreakdownItems = priceBreakdownItems
         self.removeDialogInfo = removeDialogInfo
     }
 }

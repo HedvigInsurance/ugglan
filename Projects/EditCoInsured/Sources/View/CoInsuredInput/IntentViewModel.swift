@@ -7,9 +7,10 @@ import hCoreUI
 public class IntentViewModel: ObservableObject {
     @Published var intent = Intent(
         activationDate: "",
-        currentPremium: MonetaryAmount(amount: 0, currency: ""),
-        newPremium: MonetaryAmount(amount: 0, currency: ""),
-        id: ""
+        currentTotalCost: .init(gross: .sek(0), net: .sek(0)),
+        newTotalCost: .init(gross: .sek(0), net: .sek(0)),
+        id: "",
+        newCostBreakdown: []
     )
     @Published var isLoading: Bool = false
     @Published var firstName = ""
@@ -36,6 +37,10 @@ public class IntentViewModel: ObservableObject {
 
     var showErrorViewForCoInsuredInput: Bool {
         errorMessageForInput != nil
+    }
+
+    public var showPriceBreakdown: Bool {
+        intent.newTotalCost.net != intent.currentTotalCost.net
     }
 
     var contractId: String?

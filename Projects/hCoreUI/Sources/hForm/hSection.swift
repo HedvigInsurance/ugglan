@@ -300,25 +300,32 @@ extension View {
     }
 }
 
-public enum HorizontalPadding: Sendable {
-    case section
-    case row
-    case divider
+public struct HorizontalPadding: OptionSet, Sendable {
+    public init(rawValue: UInt) {
+        self.rawValue = rawValue
+    }
+
+    public let rawValue: UInt
+    public static let none = HorizontalPadding(rawValue: 0 << 0)
+    public static let section = HorizontalPadding(rawValue: 1 << 0)
+    public static let row = HorizontalPadding(rawValue: 1 << 1)
+    public static let divider = HorizontalPadding(rawValue: 1 << 2)
+    public static let all: HorizontalPadding = [.section, .row, .divider]
 }
 
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
-    static let defaultValue: [HorizontalPadding] = []
+    static let defaultValue: HorizontalPadding = .none
 }
 
 extension EnvironmentValues {
-    public var hWithoutHorizontalPadding: [HorizontalPadding] {
+    public var hWithoutHorizontalPadding: HorizontalPadding {
         get { self[EnvironmentHWithoutHorizontalPadding.self] }
         set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
     }
 }
 
 extension View {
-    public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
+    public func hWithoutHorizontalPadding(_ attributes: HorizontalPadding) -> some View {
         environment(\.hWithoutHorizontalPadding, attributes)
     }
 }
@@ -451,28 +458,41 @@ public struct hSection<Header: View, Content: View>: View {
 
         public var body: some View {
             VStack(alignment: .leading, spacing: .padding16) {
-                HStack {
-                    if let extraView = extraView, extraView.alignment == .top {
-                        extraView.view
-                    }
-
-                    hText(title)
-                    if withInfoButton, let infoButtonDescription {
-                        Spacer()
-                        InfoViewHolder(
-                            title: title,
-                            description: infoButtonDescription
-                        )
-                        .accessibilityAddTraits(.isButton)
-                        .accessibilityHint(title)
-                    }
-                }
-
-                if let extraView = extraView, extraView.alignment == .bottom {
-                    extraView.view
-                }
+                headerView
+                bottomExtraView
             }
             .padding(.bottom, withoutBottomPadding ? -8 : .padding8)
+        }
+
+        private var headerView: some View {
+            HStack {
+                topExtraView
+
+                hText(title)
+                if withInfoButton, let infoButtonDescription {
+                    Spacer()
+                    InfoViewHolder(
+                        title: title,
+                        description: infoButtonDescription
+                    )
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint(title)
+                }
+            }
+        }
+
+        @ViewBuilder
+        private var topExtraView: some View {
+            if let extraView, extraView.alignment == .top {
+                extraView.view
+            }
+        }
+
+        @ViewBuilder
+        private var bottomExtraView: some View {
+            if let extraView, extraView.alignment == .bottom {
+                extraView.view
+            }
         }
     }
 }

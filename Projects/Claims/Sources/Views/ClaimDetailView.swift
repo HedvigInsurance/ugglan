@@ -9,10 +9,7 @@ import hCore
 import hCoreUI
 
 public struct ClaimDetailView: View {
-    @State var showImagePicker = false
-    @State var showFilePicker = false
-    @State var showCamera = false
-    @ObservedObject var vm: ClaimDetailViewModel
+    @StateObject var vm: ClaimDetailViewModel
     @EnvironmentObject var router: Router
 
     public init(
@@ -40,19 +37,19 @@ public struct ClaimDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showImagePicker) {
+        .sheet(isPresented: $vm.showImagePicker) {
             ImagePicker { images in
                 vm.showAddFiles(with: images)
             }
             .ignoresSafeArea()
         }
-        .sheet(isPresented: $showFilePicker) {
+        .sheet(isPresented: $vm.showFilePicker) {
             FileImporterView { files in
                 vm.showAddFiles(with: files)
             }
             .ignoresSafeArea()
         }
-        .sheet(isPresented: $showCamera) {
+        .sheet(isPresented: $vm.showCamera) {
             CameraPickerView { image in
                 guard let data = image.jpegData(compressionQuality: 0.9)
                 else { return }
@@ -146,10 +143,11 @@ public struct ClaimDetailView: View {
                     }
                 }
                 .withEmptyAccessory
-                .onTap {
+                .onTap { [weak vm, weak router] in
+                    guard let vm else { return }
                     if vm.toolbarOptionType.contains(.chat) {
                         if case .conversation = vm.type {
-                            router.pop()
+                            router?.pop()
                         } else {
                             NotificationCenter.default.post(
                                 name: .openChat,
@@ -163,18 +161,6 @@ public struct ClaimDetailView: View {
                         )
                     }
                 }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var chatSection: some View {
-        if let claim = vm.claim {
-            hRow {
-                ContactChatView(
-                    store: vm.store,
-                    id: claim.id
-                )
             }
         }
     }
@@ -198,8 +184,15 @@ public struct ClaimDetailView: View {
             VStack(spacing: .padding16) {
                 hSection {
                     VStack(spacing: .padding8) {
-                        ForEach(claim.displayItems) { item in
-                            claimDetailsRow(title: item.displayTitle, value: item.displayValue)
+                        ForEach(claim.displayItems.filter({ $0.displayValue != "" })) { item in
+                            HStack {
+                                hText(item.displayTitle)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                Spacer()
+                                hText(item.displayValue)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                            }
+                            .accessibilityElement(children: .combine)
                         }
                     }
                 }
@@ -211,20 +204,6 @@ public struct ClaimDetailView: View {
                 .sectionContainerStyle(.transparent)
             }
             .padding(.vertical, .padding8)
-        }
-    }
-
-    @ViewBuilder
-    private func claimDetailsRow(title: String, value: String) -> some View {
-        if value != "" {
-            HStack {
-                hText(title)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                Spacer()
-                hText(value)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-            .accessibilityElement(children: .combine)
         }
     }
 
@@ -281,8 +260,8 @@ public struct ClaimDetailView: View {
                                 .medium,
                                 .primary,
                                 content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
-                                {
-                                    showFilePickerAlert()
+                                { [weak vm] in
+                                    vm?.showFilePickerAlert()
                                 }
                             )
                         }
@@ -316,34 +295,8 @@ public struct ClaimDetailView: View {
             InsuranceTermView(
                 documents: documents,
                 withHeader: L10n.ClaimStatusDetail.Documents.title
-            ) { document in
-                vm.document = document
-            }
-        }
-    }
-
-    private func showFilePickerAlert() {
-        FilePicker.showAlert { selected in
-            Task { @MainActor in
-                switch selected {
-                case .camera:
-                    showCamera = true
-                case .imagePicker:
-                    let access = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
-                    switch access {
-                    case .notDetermined, .restricted, .denied:
-                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                            return
-                        }
-                        Dependencies.urlOpener.open(settingsUrl)
-                    case .authorized, .limited:
-                        showImagePicker = true
-                    @unknown default:
-                        showImagePicker = true
-                    }
-                case .filePicker:
-                    showFilePicker = true
-                }
+            ) { [weak vm] document in
+                vm?.document = document
             }
         }
     }
@@ -423,6 +376,11 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
+
+    @Published var showImagePicker = false
+    @Published var showFilePicker = false
+    @Published var showCamera = false
+
     let fileGridViewModel: FileGridViewModel
     let type: ClaimDetailsType
     private var cancellables = Set<AnyCancellable>()
@@ -531,6 +489,32 @@ public class ClaimDetailViewModel: ObservableObject {
 
     var canAddFiles: Bool {
         claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
+    }
+
+    fileprivate func showFilePickerAlert() {
+        FilePicker.showAlert { [weak self] selected in
+            Task { @MainActor in
+                switch selected {
+                case .camera:
+                    self?.showCamera = true
+                case .imagePicker:
+                    let access = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+                    switch access {
+                    case .notDetermined, .restricted, .denied:
+                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        Dependencies.urlOpener.open(settingsUrl)
+                    case .authorized, .limited:
+                        self?.showImagePicker = true
+                    @unknown default:
+                        self?.showImagePicker = true
+                    }
+                case .filePicker:
+                    self?.showFilePicker = true
+                }
+            }
+        }
     }
 }
 

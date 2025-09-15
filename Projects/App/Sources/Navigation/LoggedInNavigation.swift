@@ -919,7 +919,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                     contracts: [
                         .init(
                             contractId: contractId,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
+                                ?? "",
                             contractExposureName: contract.exposureDisplayName
                         )
                     ]

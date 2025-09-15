@@ -24,55 +24,51 @@ extension ChangeTierViewModel {
             selectedQuote?.displayItems.map { .init(title: $0.title, value: $0.value) } ?? []
         let activationDate = L10n.changeAddressActivationDate(activationDate?.displayDateDDMMMYYYYFormat ?? "")
         var contracts: [QuoteSummaryViewModel.ContractInfo] = []
+
+        //merge documents for in surance and addons
+        var documents = self.selectedQuote?.productVariant?.documents ?? []
+        selectedQuote?.addons
+            .forEach { addon in
+                documents.append(contentsOf: addon.addonVariant.documents)
+            }
+
         contracts.append(
             .init(
                 id: currentTier?.id ?? "",
                 displayName: displayName ?? "",
                 exposureName: activationDate,
-                netPremium: newPremium,
-                grossPremium: currentPremium,
-                documents: self.selectedQuote?.productVariant?.documents ?? [],
-                onDocumentTap: { [weak changeTierNavigationVm] document in
-                    changeTierNavigationVm?.document = document
-                },
+                premium: .init(
+                    gross: newTotalCost?.gross,
+                    net: newTotalCost?.net
+                ),
+                documentSection: .init(
+                    documents: documents,
+                    onTap: { [weak changeTierNavigationVm] document in
+                        changeTierNavigationVm?.document = document
+                    },
+                ),
                 displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
-                discountDisplayItems: []
+                priceBreakdownItems: selectedQuote?.costBreakdown
+                    .map({ item in
+                        .init(title: item.title, value: item.value)
+                    }) ?? []
             )
         )
-        for addon in selectedQuote?.addons ?? [] {
-            contracts.append(
-                .init(
-                    id: addon.addonId,
-                    displayName: addon.displayName,
-                    exposureName: activationDate,
-                    netPremium: addon.premium,
-                    grossPremium: addon.previousPremium,
-                    documents: addon.addonVariant.documents,
-                    onDocumentTap: { [weak changeTierNavigationVm] document in
-                        changeTierNavigationVm?.document = document
-                    },
-                    displayItems: addon.displayItems.compactMap { .init(title: $0.title, value: $0.value) },
-                    insuranceLimits: [],
-                    typeOfContract: nil,
-                    isAddon: true,
-                    discountDisplayItems: []
-                )
-            )
-        }
+
         let totalNet: MonetaryAmount = {
             let totalValue =
                 contracts
-                .reduce(0, { $0 + ($1.netPremium?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.netPremium?.currency ?? "")
+                .reduce(0, { $0 + ($1.premium?.net?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.premium?.net?.currency ?? "")
         }()
 
         let totalGross: MonetaryAmount = {
             let totalValue =
                 contracts
-                .reduce(0, { $0 + ($1.grossPremium?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.grossPremium?.currency ?? "")
+                .reduce(0, { $0 + ($1.premium?.gross?.value ?? 0) })
+            return .init(amount: totalValue, currency: contracts.first?.premium?.gross?.currency ?? "")
         }()
 
         let vm = QuoteSummaryViewModel(
@@ -80,8 +76,8 @@ extension ChangeTierViewModel {
             activationDate: self.activationDate,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    totalGross: totalGross,
-                    totalNet: totalNet
+                    gross: totalGross,
+                    net: totalNet
                 )
             ),
             onConfirmClick: { [weak changeTierNavigationVm] in

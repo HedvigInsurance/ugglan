@@ -159,7 +159,7 @@ private struct ContractCardView: View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
         let isExpanded = vm.isAddon ? true : (index != nil)
 
-        if !contract.documents.isEmpty {
+        if !contract.documentSection.documents.isEmpty {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
                 .hAccessibilityWithoutCombinedElements
         } else {
@@ -190,6 +190,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
+            .hCardBackgroundColor(vm.isAddon ? .default : .light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -203,7 +204,12 @@ private struct ContractCardView: View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails && !vm.isAddon {
                 if !vm.removedContracts.contains(contract.id) {
-                    showDetailsButton(contract)
+                    if vm.isAddon {
+                        showDetailsButton(contract)
+                    } else {
+                        showDetailsButton(contract)
+                            .hButtonWithBorder
+                    }
                 } else {
                     addButton(for: contract, isExpanded: isExpanded)
                 }
@@ -218,33 +224,47 @@ private struct ContractCardView: View {
                 }
             }
 
-            if !contract.discountDisplayItems.isEmpty && !vm.removedContracts.contains(contract.id) {
+            if !contract.priceBreakdownItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
-                    ForEach(contract.discountDisplayItems, id: \.displayTitle) { disocuntItem in
+                    ForEach(contract.priceBreakdownItems, id: \.displayTitle) { disocuntItem in
                         rowItem(for: disocuntItem, fontSize: .label)
                     }
                 }
+                .accessibilityElement(children: .combine)
             }
 
-            if ((contract.shouldShowDetails && isExpanded) || !contract.discountDisplayItems.isEmpty)
+            if ((contract.shouldShowDetails && isExpanded) || !contract.priceBreakdownItems.isEmpty)
                 && !contract.isAddon
             {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
-
-            PriceField(
-                newPremium: contract.netPremium,
-                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.grossPremium
-            )
-            .hWithStrikeThroughPrice(setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice)
+            if let netPremium = contract.premium?.net {
+                PriceField(
+                    viewModel: .init(
+                        initialValue: vm.removedContracts.contains(contract.id) ? nil : contract.premium?.gross,
+                        newValue: netPremium
+                    )
+                )
+                .hWithStrikeThroughPrice(
+                    setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice
+                )
+            }
         }
     }
 
+    @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+        let type: hButtonConfigurationType = {
+            if vm.isAddon {
+                return .secondary
+            } else {
+                return .ghost
+            }
+        }()
         hButton(
             .medium,
-            .secondary,
+            type,
             content: .init(
                 title: vm.expandedContracts.firstIndex(of: contract.id) != nil
                     ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
@@ -274,7 +294,11 @@ private struct ContractCardView: View {
             documentsView(for: contract)
             removeButton(for: contract, isExpanded: isExpanded)
         }
-        .padding(.bottom, (isExpanded && !contract.isAddon && !contract.discountDisplayItems.isEmpty) ? .padding16 : 0)
+        .padding(
+            .bottom,
+            (isExpanded && !contract.isAddon && !contract.priceBreakdownItems.isEmpty)
+                ? .padding16 : 0
+        )
     }
 
     @ViewBuilder
@@ -321,20 +345,19 @@ private struct ContractCardView: View {
 
     @ViewBuilder
     func documentsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        if !contract.documents.isEmpty {
+        if !contract.documentSection.documents.isEmpty {
             VStack(alignment: .leading, spacing: .padding4) {
                 hText(L10n.confirmationScreenDocumentTitle)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityAddTraits(.isHeader)
-                ForEach(contract.documents, id: \.displayName) { document in
+                ForEach(contract.documentSection.documents, id: \.displayName) { document in
                     documentItem(for: document)
-                        .background(hSurfaceColor.Opaque.primary)
                         .accessibilityElement(children: .combine)
                         .onTapGesture {
-                            contract.onDocumentTap(document)
+                            contract.documentSection.onTap(document)
                         }
                         .accessibilityAction {
-                            contract.onDocumentTap(document)
+                            contract.documentSection.onTap(document)
                         }
                 }
             }
@@ -395,6 +418,7 @@ private struct ContractCardView: View {
                 )
         }
         .foregroundColor(hTextColor.Translucent.secondary)
+        .accessibilityElement(children: .combine)
     }
 
     func documentItem(for document: hPDFDocument) -> some View {
@@ -415,7 +439,7 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-
+    @State private var isCancelAlertPresented = false
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
@@ -438,10 +462,14 @@ private struct PriceSummarySection: View {
                     .accessibilityElement(children: .combine)
                 } else {
                     PriceField(
-                        newPremium: newPremium,
-                        currentPremium: currentPremium,
-                        title: nil,
-                        subTitle: L10n.summaryTotalPriceSubtitle(vm.activationDate?.displayDateDDMMMYYYYFormat ?? "")
+                        viewModel: .init(
+                            initialValue: currentPremium,
+                            newValue: newPremium,
+                            title: nil,
+                            subTitle: L10n.summaryTotalPriceSubtitle(
+                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                            )
+                        )
                     )
                     .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                 }
@@ -456,10 +484,15 @@ private struct PriceSummarySection: View {
                             vm?.isConfirmChangesPresented = true
                         }
                     )
+
+                    hCancelButton {
+                        isCancelAlertPresented = true
+                    }
                 }
             }
         }
         .sectionContainerStyle(.transparent)
+        .withDismissAlert(isPresented: $isCancelAlertPresented)
     }
 }
 
@@ -476,10 +509,14 @@ private struct PriceSummarySection: View {
                 id: "id1",
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
-                netPremium: .init(amount: 999, currency: "SEK"),
-                grossPremium: .init(amount: 599, currency: "SEK"),
-                documents: documents,
-                onDocumentTap: { document in },
+                premium: .init(
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
+                ),
+                documentSection: .init(
+                    documents: [],
+                    onTap: { document in }
+                ),
                 displayItems: [
                     .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
                     .init(title: "Documents", value: "documents"),
@@ -487,16 +524,20 @@ private struct PriceSummarySection: View {
                 ],
                 insuranceLimits: [],
                 typeOfContract: .seApartmentBrf,
-                discountDisplayItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
+                priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
             ),
             .init(
                 id: "id2",
                 displayName: "Travel addon",
                 exposureName: "Bellmansgtan 19A",
-                netPremium: .init(amount: 999, currency: "SEK"),
-                grossPremium: nil,
-                documents: documents,
-                onDocumentTap: { document in },
+                premium: .init(
+                    gross: nil,
+                    net: .init(amount: 999, currency: "SEK")
+                ),
+                documentSection: .init(
+                    documents: [],
+                    onTap: { document in }
+                ),
                 displayItems: [
                     .init(title: "Limits", value: "mockLimits"),
                     .init(title: "Documents", value: "documents"),
@@ -517,16 +558,20 @@ private struct PriceSummarySection: View {
                     confirmButtonTitle: "Remove Travel Insurance Plus",
                     cancelRemovalButtonTitle: "Keep current coverage"
                 ),
-                discountDisplayItems: []
+                priceBreakdownItems: []
             ),
             .init(
                 id: "id3",
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
-                netPremium: .init(amount: 999, currency: "SEK"),
-                grossPremium: .init(amount: 599, currency: "SEK"),
-                documents: documents,
-                onDocumentTap: { document in },
+                premium: .init(
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
+                ),
+                documentSection: .init(
+                    documents: [],
+                    onTap: { document in }
+                ),
                 displayItems: [],
                 insuranceLimits: [
                     .init(label: "label", limit: "limit", description: "description"),
@@ -534,20 +579,24 @@ private struct PriceSummarySection: View {
                     .init(label: "label3", limit: "limit3", description: "description3"),
                 ],
                 typeOfContract: .seAccident,
-                discountDisplayItems: []
+                priceBreakdownItems: []
             ),
             .init(
                 id: "id4",
                 displayName: "Homeowner",
                 exposureName: "Bellmansgtan 19A",
-                netPremium: .init(amount: 999, currency: "SEK"),
-                grossPremium: .init(amount: 599, currency: "SEK"),
-                documents: [],
-                onDocumentTap: { document in },
+                premium: .init(
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
+                ),
+                documentSection: .init(
+                    documents: [],
+                    onTap: { document in }
+                ),
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seAccident,
-                discountDisplayItems: [
+                priceBreakdownItems: [
                     .init(title: "15% bundle discount", value: "-30 kr/mo"),
                     .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
                 ]
@@ -556,19 +605,23 @@ private struct PriceSummarySection: View {
                 id: "id5",
                 displayName: "Dog",
                 exposureName: "Bellmansgtan 19A",
-                netPremium: .init(amount: 999, currency: "SEK"),
-                grossPremium: .init(amount: 599, currency: "SEK"),
-                documents: [],
-                onDocumentTap: { document in },
+                premium: .init(
+                    gross: .init(amount: 599, currency: "SEK"),
+                    net: .init(amount: 999, currency: "SEK")
+                ),
+                documentSection: .init(
+                    documents: [],
+                    onTap: { document in }
+                ),
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seDogStandard,
-                discountDisplayItems: []
+                priceBreakdownItems: []
             ),
         ],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
         summaryDataProvider: DirectQuoteSummaryDataProvider(
-            intentCost: .init(totalGross: .sek(999), totalNet: .sek(599))
+            intentCost: .init(gross: .sek(999), net: .sek(599))
         ),
         onConfirmClick: {}
     )

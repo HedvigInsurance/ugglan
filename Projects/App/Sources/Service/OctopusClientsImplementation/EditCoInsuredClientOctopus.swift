@@ -80,9 +80,12 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
         return Intent(
             activationDate: intent.activationDate,
-            currentPremium: .init(fragment: intent.currentPremium.fragments.moneyFragment),
-            newPremium: .init(fragment: intent.newPremium.fragments.moneyFragment),
-            id: intent.id
+            currentTotalCost: .init(fragment: intent.currentTotalCost.fragments.totalCostFragment),
+            newTotalCost: .init(fragment: intent.newTotalCost.fragments.totalCostFragment),
+            id: intent.id,
+            newCostBreakdown: intent.newCostBreakdown.compactMap({
+                .init(fragment: $0.fragments.midtermChangePriceDetailItemFragment)
+            })
         )
     }
 
@@ -161,6 +164,28 @@ extension CoInsuredModel {
             needsMissingInfo: data.hasMissingInfo,
             activatesOn: data.activatesOn,
             terminatesOn: data.terminatesOn
+        )
+    }
+}
+
+extension Premium {
+    public init(
+        fragment: OctopusGraphQL.TotalCostFragment
+    ) {
+        self.init(
+            gross: .init(fragment: fragment.monthlyGross.fragments.moneyFragment),
+            net: .init(fragment: fragment.monthlyNet.fragments.moneyFragment)
+        )
+    }
+}
+
+extension MidtermChangePriceDetailItem {
+    public init(
+        fragment: OctopusGraphQL.MidtermChangePriceDetailItemFragment
+    ) {
+        self.init(
+            displayTitle: fragment.displayName,
+            displayValue: fragment.displayValue
         )
     }
 }

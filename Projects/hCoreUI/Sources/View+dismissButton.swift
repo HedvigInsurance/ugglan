@@ -27,7 +27,6 @@ private struct DismissButton: ViewModifier {
     let confirmButton: String
     let cancelButton: String
     @State var isPresented = false
-    @StateObject var vm = DismissButtonViewModel()
     func body(content: Content) -> some View {
         content
             .toolbar {
@@ -45,19 +44,59 @@ private struct DismissButton: ViewModifier {
                     .accessibilityAddTraits(.isButton)
                 }
             }
-            .introspect(.viewController, on: .iOS(.v13...)) { vc in
-                vm.vc = vc
-            }
-            .alert(isPresented: $isPresented) {
-                Alert(
-                    title: Text(title),
-                    message: { if let message { return Text(message) } else { return nil } }(),
-                    primaryButton: .default(Text(cancelButton)),
-                    secondaryButton: .destructive(Text(confirmButton)) { [weak vm] in
+            .withDismissAlert(isPresented: $isPresented)
+    }
+}
+
+extension View {
+    public func withDismissAlert(isPresented: Binding<Bool>) -> some View {
+        modifier(DismissAlertPopup(isPresented: isPresented))
+    }
+}
+
+private struct DismissAlertPopup: ViewModifier {
+    let title: String
+    let message: String?
+    let confirmButton: String
+    let cancelButton: String
+
+    @Binding var isPresented: Bool
+    @StateObject var vm = DismissButtonViewModel()
+
+    init(
+        title: String = L10n.General.areYouSure,
+        message: String? = L10n.General.progressWillBeLostAlert,
+        confirmButton: String = L10n.General.yes,
+        cancelButton: String = L10n.General.no,
+        isPresented: Binding<Bool>
+    ) {
+        self.title = title
+        self.message = message
+        self.confirmButton = confirmButton
+        self.cancelButton = cancelButton
+        self._isPresented = isPresented
+    }
+    func body(content: Content) -> some View {
+        content
+            .alert(title, isPresented: $isPresented) {
+                HStack {
+                    Button(cancelButton, role: .cancel) {
+                        dismiss()
+                    }
+                    Button(confirmButton, role: .destructive) { [weak vm] in
                         vm?.vc?.dismiss(animated: true)
                     }
-                )
+                }
+            } message: {
+                hText(message ?? "")
             }
+            .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
+                vm?.vc = vc
+            }
+    }
+
+    private func dismiss() {
+        isPresented = false
     }
 }
 
