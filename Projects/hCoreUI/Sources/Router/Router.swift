@@ -335,12 +335,14 @@ extension View {
     ) -> some View {
         if #available(iOS 26.0, *) {
             self.toolbar {
-                ToolbarItem(placement: .title) {
+                ToolbarItem(placement: .topBarLeading) {
                     titleView(title: title, subTitle: subTitle, titleColor: titleColor ?? .default)
+                        .fixedSize()
                         .onTapGesture {
                             onTitleTap?()
                         }
                 }
+                .sharedBackgroundVisibility(.hidden)
             }
         } else {
             introspect(.viewController, on: .iOS(.v13...)) { vc in
