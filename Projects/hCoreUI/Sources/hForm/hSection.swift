@@ -306,6 +306,7 @@ public struct HorizontalPadding: OptionSet, Sendable {
     }
 
     public let rawValue: UInt
+    public static let none = HorizontalPadding(rawValue: 0 << 0)
     public static let section = HorizontalPadding(rawValue: 1 << 0)
     public static let row = HorizontalPadding(rawValue: 1 << 1)
     public static let divider = HorizontalPadding(rawValue: 1 << 2)
@@ -313,26 +314,19 @@ public struct HorizontalPadding: OptionSet, Sendable {
 }
 
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
-    static let defaultValue: [HorizontalPadding] = []
+    static let defaultValue: HorizontalPadding = .none
 }
 
 extension EnvironmentValues {
-    public var hWithoutHorizontalPadding: [HorizontalPadding] {
+    public var hWithoutHorizontalPadding: HorizontalPadding {
         get { self[EnvironmentHWithoutHorizontalPadding.self] }
         set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
     }
 }
 
 extension View {
-    public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
-        environment(\.hWithoutHorizontalPadding, attributes)
-    }
-
     public func hWithoutHorizontalPadding(_ attributes: HorizontalPadding) -> some View {
-        if attributes == .all {
-            return environment(\.hWithoutHorizontalPadding, [.section, .row, .divider])
-        }
-        return environment(\.hWithoutHorizontalPadding, [attributes])
+        environment(\.hWithoutHorizontalPadding, attributes)
     }
 }
 
