@@ -27,13 +27,9 @@ extension ChangeAddonViewModel {
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
-            //            premium: .init(
-            //                gross: addonOffer?.currentAddon?.price,
-            //                net: selectedQuote?.
-            //            ),
             premium: .init(
-                gross: .sek(0),
-                net: .sek(0)
+                gross: addonOffer?.currentAddon?.price.gross,
+                net: addonOffer?.currentAddon?.price.net
             ),
             documentSection: .init(
                 documents: selectedQuote?.documents ?? [],
@@ -48,7 +44,7 @@ extension ChangeAddonViewModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            priceBreakdownItems: []
+            priceBreakdownItems: getBreakdownDisplayItems()
         )
 
         let vm = QuoteSummaryViewModel(

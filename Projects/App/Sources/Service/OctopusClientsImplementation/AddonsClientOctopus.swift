@@ -25,7 +25,7 @@ class AddonsClientOctopus: AddonsClient {
 
                 return .init(
                     displayName: "",
-                    displayNameLong: "",
+                    displayNameLong: currentAddon.displayNameLong,
                     quoteId: "quoteId",
                     addonId: "addonId",
                     addonSubtype: "addonSubtype",

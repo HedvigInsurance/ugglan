@@ -74,6 +74,20 @@ public class ChangeAddonViewModel: ObservableObject {
         )
     }
 
+    func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
+        let currentAddonBreakdownDisplayItems = QuoteDisplayItem(
+            title: addonOffer?.currentAddon?.displayNameLong ?? "",
+            value: addonOffer?.currentAddon?.price.net?.formattedAmountPerMonth ?? ""
+        )
+
+        let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
+            title: selectedQuote?.displayNameLong ?? "",
+            value: selectedQuote?.price.net?.formattedAmountPerMonth ?? ""
+        )
+
+        return [currentAddonBreakdownDisplayItems, selectedAddonBreakdownDisplayItems]
+    }
+
     func compareAddonDisplayItems(
         currentDisplayItems: [AddonDisplayItem],
         newDisplayItems: [AddonDisplayItem]
