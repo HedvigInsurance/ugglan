@@ -27,9 +27,13 @@ extension ChangeAddonViewModel {
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
+            //            premium: .init(
+            //                gross: addonOffer?.currentAddon?.price,
+            //                net: selectedQuote?.
+            //            ),
             premium: .init(
-                gross: addonOffer?.currentAddon?.price,
-                net: selectedQuote?.price
+                gross: .sek(0),
+                net: .sek(0)
             ),
             documentSection: .init(
                 documents: selectedQuote?.documents ?? [],
@@ -55,11 +59,10 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    gross: self.addonOffer?.currentAddon?.price ?? contractInfo.premium?.gross
-                        ?? .init(amount: "", currency: ""),
+                    gross: self.addonOffer?.currentAddon?.price.gross,
                     net: getTotalPrice(
-                        currentPrice: addonOffer?.currentAddon?.price,
-                        newPrice: selectedQuote?.price
+                        currentPrice: addonOffer?.currentAddon?.price.net,
+                        newPrice: selectedQuote?.price.net
                     )
                 )
             )

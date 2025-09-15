@@ -92,6 +92,7 @@ struct AddonSelectSubOptionScreen: View {
 #Preview {
     let currentAddon: AddonQuote = .init(
         displayName: "45 days",
+        displayNameLong: "Long display name",
         quoteId: "quoteId45",
         addonId: "addonId45",
         addonSubtype: "addonId45",
@@ -102,7 +103,7 @@ struct AddonSelectSubOptionScreen: View {
                 displayValue: "You+1"
             ),
         ],
-        price: .init(amount: "49", currency: "SEK"),
+        price: .init(gross: .sek(99), net: .sek(49)),
         addonVariant: .init(
             displayName: "display name",
             documents: [
@@ -129,6 +130,7 @@ struct AddonSelectSubOptionScreen: View {
                 currentAddon,
                 .init(
                     displayName: "60 days",
+                    displayNameLong: "display name long",
                     quoteId: "quoteId60",
                     addonId: "addonId60",
                     addonSubtype: "addonId60",
@@ -136,7 +138,7 @@ struct AddonSelectSubOptionScreen: View {
                         .init(displayTitle: "Coverage", displayValue: "45 days"),
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
                     ],
-                    price: .init(amount: "79", currency: "SEK"),
+                    price: .init(gross: .sek(139), net: .sek(79)),
                     addonVariant: .init(
                         displayName: "display name",
                         documents: [
