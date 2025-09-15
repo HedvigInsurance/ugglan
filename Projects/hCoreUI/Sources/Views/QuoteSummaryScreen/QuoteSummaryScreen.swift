@@ -222,7 +222,7 @@ private struct ContractCardView: View {
             if !contract.priceBreakdownItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
                     ForEach(contract.priceBreakdownItems, id: \.displayTitle) { disocuntItem in
-                        rowItem(for: disocuntItem)
+                        rowItem(for: disocuntItem, isNewItem: vm.isAddon ? true : false)
                     }
                 }
                 .accessibilityElement(children: .combine)
@@ -380,36 +380,40 @@ private struct ContractCardView: View {
         }
     }
 
-    func rowItem(for displayItem: QuoteDisplayItem) -> some View {
+    func rowItem(for displayItem: QuoteDisplayItem, isNewItem: Bool = false) -> some View {
         HStack(alignment: .top) {
-            displayTitleView(for: displayItem)
+            displayTitleView(for: displayItem, isNewItem: isNewItem)
             Spacer()
-            displayValueView(for: displayItem)
+            displayValueView(for: displayItem, isNewItem: isNewItem)
         }
         .foregroundColor(hTextColor.Opaque.secondary)
         .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
-    private func displayTitleView(for displayItem: QuoteDisplayItem) -> some View {
+    private func displayTitleView(for displayItem: QuoteDisplayItem, isNewItem: Bool) -> some View {
         if displayItem.displayValue == nil && displayItem.displayValueOld != nil, #available(iOS 16.0, *) {
             hText(displayItem.displayTitle, style: .label)
                 .strikethrough(displayItem.displayValue == nil)
+                .accessibilityLabel(L10n.voiceoverCurrentValue + displayItem.displayTitle)
         } else {
             hText(displayItem.displayTitle, style: .label)
+                .accessibilityLabel(
+                    isNewItem ? L10n.voiceoverNewValue + displayItem.displayTitle : displayItem.displayTitle
+                )
         }
     }
 
     @ViewBuilder
-    private func displayValueView(for displayItem: QuoteDisplayItem) -> some View {
+    private func displayValueView(for displayItem: QuoteDisplayItem, isNewItem: Bool) -> some View {
         if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
             if #available(iOS 16.0, *) {
                 hText(oldValue, style: .label)
                     .strikethrough()
-                    .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
+                    .accessibilityLabel(isNewItem ? oldValue : L10n.voiceoverCurrentValue + oldValue)
             } else {
                 hText(oldValue, style: .label)
-                    .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
+                    .accessibilityLabel(isNewItem ? oldValue : L10n.voiceoverCurrentValue + oldValue)
             }
         }
 
