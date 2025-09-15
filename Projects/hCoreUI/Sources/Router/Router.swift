@@ -320,9 +320,12 @@ private struct EmbededInNavigation: ViewModifier {
 extension View {
     @MainActor public func configureTitle(_ title: String) -> some View {
         introspect(.viewController, on: .iOS(.v13...)) { vc in
-            UIView.performWithoutAnimation { [weak vc] in
-                vc?.title = title
-            }
+            let fadeTextAnimation = CATransition()
+            fadeTextAnimation.duration = 0.2
+            fadeTextAnimation.type = .fade
+
+            vc.navigationController?.navigationBar.layer.add(fadeTextAnimation, forKey: "fadeText")
+            vc.navigationItem.title = title
         }
     }
 
