@@ -336,11 +336,12 @@ extension View {
         if #available(iOS 26.0, *) {
             self.toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    titleView(title: title, subTitle: subTitle, titleColor: titleColor ?? .default)
-                        .fixedSize()
-                        .onTapGesture {
-                            onTitleTap?()
-                        }
+                    Button {
+                        onTitleTap?()
+                    } label: {
+                        titleView(title: title, subTitle: subTitle, titleColor: titleColor ?? .default)
+                            .fixedSize()
+                    }
                 }
                 .sharedBackgroundVisibility(.hidden)
             }
