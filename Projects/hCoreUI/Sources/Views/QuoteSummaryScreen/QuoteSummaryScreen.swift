@@ -398,9 +398,6 @@ private struct ContractCardView: View {
                 .accessibilityLabel(L10n.voiceoverCurrentValue + displayItem.displayTitle)
         } else {
             hText(displayItem.displayTitle, style: .label)
-                .accessibilityLabel(
-                    L10n.voiceoverNewValue + displayItem.displayTitle
-                )
         }
     }
 
@@ -410,10 +407,8 @@ private struct ContractCardView: View {
         if displayItem.crossDisplayTitle, #available(iOS 16.0, *) {
             hText(displayValue, style: .label)
                 .strikethrough()
-                .accessibilityLabel(displayValue)
         } else {
             hText(displayValue, style: .label)
-                .accessibilityLabel(displayValue)
         }
     }
 
