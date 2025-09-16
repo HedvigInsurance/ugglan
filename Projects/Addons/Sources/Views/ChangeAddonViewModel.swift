@@ -78,7 +78,8 @@ public class ChangeAddonViewModel: ObservableObject {
         if let currentAddon = addonOffer?.currentAddon {
             let currentAddonBreakdownDisplayItems = QuoteDisplayItem(
                 title: addonOffer?.currentAddon?.displayNameLong ?? "",
-                displayValueOld: addonOffer?.currentAddon?.itemCost.premium.net?.formattedAmountPerMonth ?? ""
+                value: addonOffer?.currentAddon?.itemCost.premium.net?.formattedAmountPerMonth ?? "",
+                crossDisplayTitle: true
             )
 
             let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
@@ -105,13 +106,6 @@ public class ChangeAddonViewModel: ObservableObject {
         newDisplayItems: [AddonDisplayItem]
     ) -> [QuoteDisplayItem] {
         let displayItems: [QuoteDisplayItem] = newDisplayItems.map { item in
-            if let matchingDisplayItem = currentDisplayItems.first(where: { $0.displayTitle == item.displayTitle }) {
-                return .init(
-                    title: item.displayTitle,
-                    value: item.displayValue,
-                    displayValueOld: matchingDisplayItem.displayValue
-                )
-            }
             return .init(title: item.displayTitle, value: item.displayValue)
         }
         return displayItems
