@@ -111,17 +111,16 @@ public class ChangeAddonViewModel: ObservableObject {
         return displayItems
     }
 
-    func getTotalPrice(currentPrice: MonetaryAmount?, newPrice: MonetaryAmount?) -> MonetaryAmount {
-        let diffValue: Float = {
-            if let currentPrice, let newPrice {
-                return newPrice.value - currentPrice.value
-            } else {
-                return 0
-            }
-        }()
+    func getTotalPrice() -> MonetaryAmount {
+        guard let selectedQuoteNet = selectedQuote?.itemCost.premium.net else {
+            return .init(amount: 0, currency: "SEK")
+        }
 
-        let totalPrice = (currentPrice != nil) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
-        return totalPrice ?? .init(amount: 0, currency: "SEK")
+        if let currentAddonNet = addonOffer?.currentAddon?.itemCost.premium.net {
+            let amount = selectedQuoteNet.floatAmount - currentAddonNet.floatAmount
+            return .init(amount: amount, currency: selectedQuoteNet.currency)
+        }
+        return selectedQuoteNet
     }
 
     func getPremium() -> Premium? {

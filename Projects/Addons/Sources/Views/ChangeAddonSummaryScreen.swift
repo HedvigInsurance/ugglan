@@ -52,11 +52,8 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    gross: self.addonOffer?.currentAddon?.itemCost.premium.gross,
-                    net: getTotalPrice(
-                        currentPrice: addonOffer?.currentAddon?.itemCost.premium.net,
-                        newPrice: selectedQuote?.itemCost.premium.net
-                    )
+                    gross: nil,
+                    net: getTotalPrice()
                 )
             )
         ) { [weak self, weak changeAddonNavigationVm] in

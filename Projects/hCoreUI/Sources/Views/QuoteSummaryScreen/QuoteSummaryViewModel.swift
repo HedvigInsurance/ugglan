@@ -168,7 +168,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 }
 
 public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
-    public let id: String?  // remove
+    public let id: String?
     let displayTitle: String
     let displayValue: String
     let crossDisplayTitle: Bool
