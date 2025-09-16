@@ -1,6 +1,6 @@
 import hGraphQL
 
-public struct Premium: Equatable, Hashable, Sendable {
+public struct Premium: Equatable, Hashable, Codable, Sendable {
     public var gross: MonetaryAmount?
     public var net: MonetaryAmount?
 

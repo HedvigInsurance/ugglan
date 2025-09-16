@@ -103,7 +103,10 @@ struct AddonSelectSubOptionScreen: View {
                 displayValue: "You+1"
             ),
         ],
-        price: .init(gross: .sek(99), net: .sek(49)),
+        itemCost: .init(
+            premium: .init(gross: .sek(99), net: .sek(49)),
+            discounts: []
+        ),
         addonVariant: .init(
             displayName: "display name",
             documents: [
@@ -138,7 +141,10 @@ struct AddonSelectSubOptionScreen: View {
                         .init(displayTitle: "Coverage", displayValue: "45 days"),
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
                     ],
-                    price: .init(gross: .sek(139), net: .sek(79)),
+                    itemCost: .init(
+                        premium: .init(gross: .sek(139), net: .sek(79)),
+                        discounts: []
+                    ),
                     addonVariant: .init(
                         displayName: "display name",
                         documents: [
@@ -150,7 +156,7 @@ struct AddonSelectSubOptionScreen: View {
                         product: "",
                         termsVersion: ""
                     ),
-                    documents: []
+                    documents: [],
                 ),
             ]
         ),

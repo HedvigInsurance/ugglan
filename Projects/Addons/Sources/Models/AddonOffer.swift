@@ -60,9 +60,9 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
 
     func getTotalPrice(selectedQuote: AddonQuote?) -> MonetaryAmount? {
         guard let selectedQuote else { return nil }
-        guard let currentAddon else { return selectedQuote.price.net }
-        guard let currentAddonPrice = currentAddon.price.net,
-            let newPrice = selectedQuote.price.net
+        guard let currentAddon else { return selectedQuote.itemCost.premium.net }
+        guard let currentAddonPrice = currentAddon.itemCost.premium.net,
+            let newPrice = selectedQuote.itemCost.premium.net
         else { return nil }
         let diffPrice = newPrice.value - currentAddonPrice.value
         return MonetaryAmount(amount: diffPrice.asString, currency: newPrice.currency)
@@ -80,7 +80,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     let addonId: String
     let addonSubtype: String
     let displayItems: [AddonDisplayItem]
-    let price: Premium
+    let itemCost: ItemCost
     let addonVariant: AddonVariant?
     let documents: [hPDFDocument]
 
@@ -91,7 +91,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
         addonId: String,
         addonSubtype: String,
         displayItems: [AddonDisplayItem],
-        price: Premium,
+        itemCost: ItemCost,
         addonVariant: AddonVariant?,
         documents: [hPDFDocument]
     ) {
@@ -101,7 +101,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
         self.addonId = addonId
         self.addonSubtype = addonSubtype
         self.displayItems = displayItems
-        self.price = price
+        self.itemCost = itemCost
         self.addonVariant = addonVariant
         self.documents = documents
     }

@@ -14,9 +14,12 @@ public class AddonsClientDemo: AddonsClient {
                 .init(displayTitle: "Coverage", displayValue: "45 days"),
                 .init(displayTitle: "Insured people", displayValue: "You+1"),
             ],
-            price: .init(gross: .sek(69), net: .sek(49)),
+            itemCost: .init(
+                premium: .init(gross: .sek(69), net: .sek(49)),
+                discounts: []
+            ),
             addonVariant: nil,
-            documents: []
+            documents: [],
         )
 
         let addons: AddonOffer = .init(
@@ -36,7 +39,10 @@ public class AddonsClientDemo: AddonsClient {
                         .init(displayTitle: "Coverage", displayValue: "60 days"),
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
                     ],
-                    price: .init(gross: .sek(79), net: .sek(59)),
+                    itemCost: .init(
+                        premium: .init(gross: .sek(79), net: .sek(59)),
+                        discounts: []
+                    ),
                     addonVariant: .init(
                         displayName: "",
                         documents: [],
@@ -44,7 +50,7 @@ public class AddonsClientDemo: AddonsClient {
                         product: "",
                         termsVersion: ""
                     ),
-                    documents: []
+                    documents: [],
                 ),
             ]
         )

@@ -75,17 +75,29 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
-        let currentAddonBreakdownDisplayItems = QuoteDisplayItem(
-            title: addonOffer?.currentAddon?.displayNameLong ?? "",
-            displayValueOld: addonOffer?.currentAddon?.price.net?.formattedAmountPerMonth ?? ""
-        )
+        if let currentAddon = addonOffer?.currentAddon {
+            let currentAddonBreakdownDisplayItems = QuoteDisplayItem(
+                title: addonOffer?.currentAddon?.displayNameLong ?? "",
+                displayValueOld: addonOffer?.currentAddon?.itemCost.premium.net?.formattedAmountPerMonth ?? ""
+            )
 
-        let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
-            title: selectedQuote?.displayNameLong ?? "",
-            value: selectedQuote?.price.net?.formattedAmountPerMonth ?? ""
-        )
+            let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
+                title: selectedQuote?.displayNameLong ?? "",
+                value: selectedQuote?.itemCost.premium.net?.formattedAmountPerMonth ?? ""
+            )
 
-        return [currentAddonBreakdownDisplayItems, selectedAddonBreakdownDisplayItems]
+            return [currentAddonBreakdownDisplayItems, selectedAddonBreakdownDisplayItems]
+        } else {
+            let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
+                title: selectedQuote?.displayNameLong ?? "",
+                value: selectedQuote?.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
+            )
+
+            let discountItems: [QuoteDisplayItem] =
+                selectedQuote?.itemCost.discounts.map({ .init(title: $0.displayName, value: $0.displayValue) }) ?? []
+
+            return [selectedAddonBreakdownDisplayItems] + discountItems
+        }
     }
 
     func compareAddonDisplayItems(
@@ -116,5 +128,16 @@ public class ChangeAddonViewModel: ObservableObject {
 
         let totalPrice = (currentPrice != nil) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
         return totalPrice ?? .init(amount: 0, currency: "SEK")
+    }
+
+    func getPremium() -> Premium? {
+        if addonOffer?.currentAddon != nil {
+            return Premium(
+                gross: nil,
+                net: selectedQuote?.itemCost.premium.net
+            )
+        } else {
+            return selectedQuote?.itemCost.premium
+        }
     }
 }

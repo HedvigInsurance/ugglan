@@ -27,10 +27,7 @@ extension ChangeAddonViewModel {
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
-            premium: .init(
-                gross: addonOffer?.currentAddon?.price.gross,
-                net: addonOffer?.currentAddon?.price.net
-            ),
+            premium: getPremium(),
             documentSection: .init(
                 documents: selectedQuote?.documents ?? [],
                 onTap: { [weak changeAddonNavigationVm] document in
@@ -55,10 +52,10 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    gross: self.addonOffer?.currentAddon?.price.gross,
+                    gross: self.addonOffer?.currentAddon?.itemCost.premium.gross,
                     net: getTotalPrice(
-                        currentPrice: addonOffer?.currentAddon?.price.net,
-                        newPrice: selectedQuote?.price.net
+                        currentPrice: addonOffer?.currentAddon?.itemCost.premium.net,
+                        newPrice: selectedQuote?.itemCost.premium.net
                     )
                 )
             )

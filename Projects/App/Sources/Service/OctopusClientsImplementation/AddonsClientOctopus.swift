@@ -32,9 +32,12 @@ class AddonsClientOctopus: AddonsClient {
                     displayItems: currentAddon.displayItems.map {
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
                     },
-                    price: .init(gross: nil, net: .init(fragment: currentAddon.netPremium.fragments.moneyFragment)),
+                    itemCost: .init(
+                        premium: .init(gross: nil, net: .init(fragment: currentAddon.netPremium.fragments.moneyFragment)),
+                        discounts: []
+                    ),
                     addonVariant: nil,
-                    documents: []
+                    documents: [],
                 )
             }()
             let addonData = AddonOffer(
@@ -93,9 +96,9 @@ extension AddonQuote {
             addonId: fragment.addonId,
             addonSubtype: fragment.addonSubtype,
             displayItems: displayItems,
-            price: .init(fragment: fragment.itemCost.fragments.itemCostFragment),
+            itemCost: .init(fragment: fragment.itemCost.fragments.itemCostFragment),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
-            documents: documents
+            documents: documents,
         )
     }
 }
