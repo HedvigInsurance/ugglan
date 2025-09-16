@@ -15,14 +15,9 @@ struct ConfirmChangesView: View {
 
     var body: some View {
         VStack(spacing: .padding16) {
-            PriceField(
-                newPremium: intentViewModel.intent.newPremium,
-                currentPremium: intentViewModel.intent.currentPremium,
-                subTitle: L10n.contractAddCoinsuredStartsFrom(
-                    intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                )
-            )
-            .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+            if intentViewModel.showPriceBreakdown {
+                priceBreakdownView
+            }
 
             hButton(
                 .large,
@@ -40,4 +35,37 @@ struct ConfirmChangesView: View {
             .hButtonIsLoading(intentViewModel.isLoading)
         }
     }
+
+    private var priceBreakdownView: some View {
+        PriceFieldMultipleRows(
+            viewModels: [
+                .init(
+                    initialValue: nil,
+                    newValue: intentViewModel.intent.currentTotalCost.net ?? .sek(0),
+                    title: L10n.pricePreviousPrice
+                ),
+                .init(
+                    initialValue: nil,
+                    newValue: intentViewModel.intent.newTotalCost.net ?? .sek(0),
+                    title: L10n.priceNewPrice,
+                    subTitle: L10n.summaryTotalPriceSubtitle(
+                        intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    infoButtonModel: .init(
+                        initialValue: intentViewModel.intent.newTotalCost.gross,
+                        newValue: intentViewModel.intent.newTotalCost.net ?? .sek(0),
+                        infoButtonDisplayItems: intentViewModel.intent.newCostBreakdown.compactMap({
+                            .init(title: $0.displayTitle, value: $0.displayValue)
+                        })
+                    )
+                ),
+            ]
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+    }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ConfirmChangesView(editCoInsuredNavigation: .init(config: .init()))
 }

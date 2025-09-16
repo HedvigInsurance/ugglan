@@ -1,0 +1,261 @@
+import SwiftUI
+import hCore
+
+public struct PriceField: View {
+    let viewModel: PriceFieldModel
+    @State var isInfoViewPresented: PriceFieldModel.PriceFieldInfoModel?
+
+    @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
+    @SwiftUI.Environment(\.hPriceFormatting) var formatting
+
+    public init(
+        viewModel: PriceFieldModel
+    ) {
+        self.viewModel = viewModel
+    }
+
+    public var body: some View {
+        VStack(spacing: .padding2) {
+            HStack(alignment: .top) {
+                titleField
+
+                Spacer()
+                priceField
+            }
+            subTitleField
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityValue(
+            viewModel.infoButtonModel != nil ? L10n.voiceoverDoubleClickTo + L10n.voiceoverPriceBreakdown : ""
+        )
+        .detent(
+            item: $isInfoViewPresented
+        ) { model in
+            PriceBreakdownView(model: model)
+        }
+    }
+
+    @ViewBuilder
+    private var titleField: some View {
+        HStack(spacing: .padding4) {
+            hText(viewModel.title ?? L10n.tierFlowTotal)
+                .foregroundColor(getTotalColor())
+            infoButton
+        }
+    }
+
+    @ViewBuilder
+    private var infoButton: some View {
+        if let infoViewModel = viewModel.infoButtonModel, infoViewModel.infoButtonDisplayItems.count > 0 {
+            hCoreUIAssets.infoFilled.view
+                .foregroundColor(hFillColor.Opaque.secondary)
+                .onTapGesture {
+                    isInfoViewPresented = infoViewModel
+                }
+                .accessibilityLabel(
+                    L10n.voiceoverMoreInfo
+                )
+                .accessibilityAddTraits(.isButton)
+                .accessibilityAction {
+                    isInfoViewPresented = infoViewModel
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var subTitleField: some View {
+        if let subTitle = viewModel.subTitle {
+            hText(subTitle, style: .label)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var priceField: some View {
+        if viewModel.shouldShowPreviousPriceLabel(
+            strikeThroughPrice: strikeThroughPrice
+        ) {
+            PremiumText(
+                text: currentPremiumText,
+                strikeThrough: strikeThroughPrice == .crossOldPrice,
+                usePrimary: false
+            )
+        }
+
+        VStack(alignment: .trailing, spacing: 0) {
+            PremiumText(
+                text: newPremiumText,
+                strikeThrough: strikeThroughPrice == .crossNewPrice,
+                usePrimary: true
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func subTitleField(text: String) -> some View {
+        hText(text, style: .label)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .foregroundColor(hTextColor.Opaque.secondary)
+    }
+
+    private var currentPremiumText: String {
+        viewModel.initialValue?.priceFormat(formatting) ?? ""
+    }
+
+    private var newPremiumText: String {
+        viewModel.newValue.priceFormat(formatting)
+    }
+
+    @hColorBuilder
+    private func getTotalColor() -> some hColor {
+        switch strikeThroughPrice {
+        case .crossNewPrice:
+            hTextColor.Translucent.secondary
+        case .crossOldPrice, .none:
+            hTextColor.Opaque.primary
+        }
+    }
+}
+
+fileprivate struct PremiumText: View {
+    let text: String
+    let strikeThrough: Bool
+    let usePrimary: Bool
+
+    public var body: some View {
+        Group {
+            if #available(iOS 16.0, *), strikeThrough {
+                hText(text)
+                    .strikethrough()
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            } else {
+                hText(text)
+                    .foregroundColor(newPremiumColor)
+            }
+        }
+        .accessibilityHidden(strikeThrough)
+    }
+
+    @hColorBuilder
+    private var newPremiumColor: some hColor {
+        if usePrimary {
+            hTextColor.Opaque.primary
+        } else {
+            hTextColor.Opaque.secondary
+        }
+    }
+}
+
+// MARK: Envionment Keys
+private struct EnvironmentHWithStrikeThroughPrice: EnvironmentKey {
+    static let defaultValue: StrikeThroughPriceType = .none
+}
+
+public enum StrikeThroughPriceType: Sendable {
+    case none
+    case crossOldPrice
+    case crossNewPrice
+}
+
+extension EnvironmentValues {
+    public var hWithStrikeThroughPrice: StrikeThroughPriceType {
+        get { self[EnvironmentHWithStrikeThroughPrice.self] }
+        set { self[EnvironmentHWithStrikeThroughPrice.self] = newValue }
+    }
+}
+
+extension View {
+    public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
+        environment(\.hWithStrikeThroughPrice, setTo)
+    }
+}
+
+private struct EnvironmentHPriceFormatting: EnvironmentKey {
+    static let defaultValue: PriceFormatting = .perMonth
+}
+
+public enum PriceFormatting: Sendable {
+    case perMonth
+    case month
+}
+
+extension EnvironmentValues {
+    public var hPriceFormatting: PriceFormatting {
+        get { self[EnvironmentHPriceFormatting.self] }
+        set { self[EnvironmentHPriceFormatting.self] = newValue }
+    }
+}
+
+extension View {
+    public func hPriceFormatting(setTo: PriceFormatting) -> some View {
+        environment(\.hPriceFormatting, setTo)
+    }
+}
+
+extension MonetaryAmount {
+    public func priceFormat(_ format: PriceFormatting) -> String {
+        switch format {
+        case .perMonth:
+            return formattedAmountPerMonth
+        case .month:
+            return formattedAmount
+        }
+    }
+}
+
+//MARK: Previews
+#Preview {
+    hSection {
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK")
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossNewPrice)
+
+        PriceField(
+            viewModel: .init(
+                initialValue: .init(amount: "139", currency: "SEK"),
+                newValue: .init(amount: "99", currency: "SEK"),
+                subTitle: "sub title"
+            )
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+        PriceFieldMultipleRows(
+            viewModels: [
+                .init(
+                    initialValue: nil,
+                    newValue: .init(amount: "99", currency: "SEK")
+                ),
+                .init(
+                    initialValue: .init(amount: "139", currency: "SEK"),
+                    newValue: .init(amount: "115", currency: "SEK"),
+                    subTitle: "Changes activates on 16 nov 2025",
+                    infoButtonModel: .init(
+                        initialValue: .init(amount: "139", currency: "SEK"),
+                        newValue: .init(amount: "115", currency: "SEK"),
+                        infoButtonDisplayItems: [.init(title: "title", value: "value")]
+                    )
+
+                ),
+            ]
+        )
+    }
+    .hWithoutHorizontalPadding(.all)
+}

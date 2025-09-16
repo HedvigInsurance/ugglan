@@ -53,7 +53,8 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.document,
-            transitionType: .detent(style: [.large])
+            transitionType: .detent(style: [.large]),
+            options: .constant(.alwaysOpenOnTop)
         ) { document in
             redirect(.pdf(document: document))
         }
@@ -107,10 +108,9 @@ public struct ContractsNavigation<Content: View>: View {
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             transitionType: .detent(style: [.height])
-        ) { insuranceUpdate in
+        ) { agreement in
             UpcomingChangesScreen(
-                updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
-                upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
+                agreement: agreement
             )
             .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
             .embededInNavigation(
@@ -145,7 +145,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
     @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
-    @Published public var insuranceUpdate: Contract?
+    @Published public var insuranceUpdate: Agreement?
     @Published public var isChangeAddressPresented = false
     @Published public var changeTierInput: ChangeTierInput?
     @Published public var isAddonPresented: ChangeAddonInput?
@@ -190,8 +190,10 @@ extension TerminationConfirmConfig {
             contractId: contract.id,
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             contractExposureName: contract.exposureDisplayName,
-            activeFrom: contract.currentAgreement?.activeFrom,
-            typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement?.productVariant.typeOfContract ?? "")
+            activeFrom: contract.currentAgreement?.agreementDate.activeFrom,
+            typeOfContract: TypeOfContract.resolve(
+                for: contract.currentAgreement?.productVariant.typeOfContract ?? ""
+            )
         )
     }
 }

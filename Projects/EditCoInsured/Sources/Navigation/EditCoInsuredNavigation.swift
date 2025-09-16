@@ -15,7 +15,6 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var selectCoInsured: SelectCoInsured?
     @Published var showProgressScreenWithSuccess = false
     @Published var showProgressScreenWithoutSuccess = false
-
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
     let coInsuredViewModel = InsuredPeopleScreenViewModel()

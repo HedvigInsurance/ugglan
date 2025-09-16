@@ -9,6 +9,13 @@ public protocol TrackingViewNameProtocol {
 }
 
 @MainActor
+extension String: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        self
+    }
+}
+
+@MainActor
 public class Router: ObservableObject {
     var routes = [AnyHashable]()
     var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()
@@ -313,25 +320,43 @@ private struct EmbededInNavigation: ViewModifier {
 extension View {
     @MainActor public func configureTitle(_ title: String) -> some View {
         introspect(.viewController, on: .iOS(.v13...)) { vc in
-            UIView.performWithoutAnimation { [weak vc] in
-                vc?.title = title
-            }
+            let fadeTextAnimation = CATransition()
+            fadeTextAnimation.duration = 0.2
+            fadeTextAnimation.type = .fade
+
+            vc.navigationController?.navigationBar.layer.add(fadeTextAnimation, forKey: "fadeText")
+            vc.navigationItem.title = title
         }
     }
 
+    @ViewBuilder
     @MainActor public func configureTitleView(
         title: String,
         subTitle: String? = nil,
         titleColor: TitleColor? = nil,
         onTitleTap: (() -> Void)? = nil
     ) -> some View {
-        introspect(.viewController, on: .iOS(.v13...)) { vc in
-            vc.navigationItem.titleView = getTitleUIView(
-                title: title,
-                subTitle: subTitle,
-                titleColor: titleColor ?? .default,
-                onTitleTap: onTitleTap
-            )
+        if #available(iOS 26.0, *) {
+            self.toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        onTitleTap?()
+                    } label: {
+                        titleView(title: title, subTitle: subTitle, titleColor: titleColor ?? .default)
+                            .fixedSize()
+                    }
+                }
+                .sharedBackgroundVisibility(.hidden)
+            }
+        } else {
+            introspect(.viewController, on: .iOS(.v13...)) { vc in
+                vc.navigationItem.titleView = getTitleUIView(
+                    title: title,
+                    subTitle: subTitle,
+                    titleColor: titleColor ?? .default,
+                    onTitleTap: onTitleTap
+                )
+            }
         }
     }
 

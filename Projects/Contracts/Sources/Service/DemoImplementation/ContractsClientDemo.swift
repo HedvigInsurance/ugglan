@@ -35,10 +35,14 @@ public class FetchContractsClientDemo: FetchContractsClient {
             tierDescription: "Vårt mellanpaket med hög ersättning."
         )
         let agreement = Agreement(
+            id: UUID().uuidString,
             certificateUrl: nil,
-            activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
-            activeTo: nil,
-            premium: .sek(200),
+            agreementDate: .init(
+                activeFrom: Date().addingTimeInterval(.days(numberOfDays: -1)).localDateString,
+                activeTo: nil
+            ),
+            basePremium: .sek(200),
+            itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
             displayItems: [
                 .init(title: "Apartment type", value: "Rental"),
                 .init(title: "Street", value: "Stopvägen 59"),

@@ -56,9 +56,10 @@ public struct ContractDetail: View {
                         ContractRow(
                             image: contract.pillowType?.bgImage,
                             terminationMessage: contract.terminationMessage,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
+                                ?? "",
                             contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
                             activeInFuture: contract.activeInFuture,
                             masterInceptionDate: contract.masterInceptionDate,
                             tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier

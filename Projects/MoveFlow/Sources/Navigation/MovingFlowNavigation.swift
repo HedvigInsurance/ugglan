@@ -70,19 +70,23 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
-                netPremium: quote.netPremium,
-                grossPremium: quote.grossPremium,
-                documents: quote.documents.map {
-                    .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-                },
-                onDocumentTap: { [weak self] document in
-                    self?.document = document
-                },
+                premium: .init(
+                    gross: quote.grossPremium,
+                    net: quote.netPremium
+                ),
+                documentSection: .init(
+                    documents: quote.documents.map {
+                        .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+                    },
+                    onTap: { [weak self] document in
+                        self?.document = document
+                    }
+                ),
                 displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                 ),
                 insuranceLimits: quote.insurableLimits,
                 typeOfContract: quote.contractType,
-                discountDisplayItems: quote.discountDisplayItems.map {
+                priceBreakdownItems: quote.priceBreakdownItems.map {
                     .init(title: $0.displayTitle, value: $0.displayValue)
                 }
             )
@@ -402,12 +406,16 @@ extension AddonDataModel {
             id: id,
             displayName: quoteInfo.title ?? "",
             exposureName: coverageDisplayName,
-            netPremium: netPremium,
-            grossPremium: grossPremium,
-            documents: addonVariant.documents,
-            onDocumentTap: { document in
-                ondocumentClicked(document)
-            },
+            premium: .init(
+                gross: grossPremium,
+                net: netPremium
+            ),
+            documentSection: .init(
+                documents: addonVariant.documents,
+                onTap: { document in
+                    ondocumentClicked(document)
+                }
+            ),
             displayItems: displayItems.map {
                 .init(title: $0.displayTitle, value: $0.displayValue)
             },
@@ -415,7 +423,7 @@ extension AddonDataModel {
             typeOfContract: nil,
             isAddon: true,
             removeModel: removeModel,
-            discountDisplayItems: self.discountDisplayItems.map({
+            priceBreakdownItems: self.priceBreakdownItems.map({
                 .init(title: $0.displayTitle, value: $0.displayValue)
             })
         )
