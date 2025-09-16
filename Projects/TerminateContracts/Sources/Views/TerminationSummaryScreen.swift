@@ -23,22 +23,11 @@ struct TerminationSummaryScreen: View {
                 )
             )
             .hFormAttachToBottom {
-                let withAddonView = !terminationNavigationVm.extraCoverage.isEmpty
-
                 VStack(spacing: .padding16) {
-                    infoCard
-                    hSection {
-                        StatusCard(
-                            onSelected: {},
-                            mainContent: mainContent,
-                            bottomComponent: !withAddonView
-                                ? nil
-                                : {
-                                    addonContent
-                                }
-                        )
-                        .hCardWithoutSpacing
-                        .hCardWithDivider
+                    VStack(spacing: .padding4) {
+                        insuranceDetailsView
+                        terminationDateView
+                        infoCard
                     }
 
                     hSection {
@@ -118,12 +107,44 @@ struct TerminationSummaryScreen: View {
             hSection {
                 InfoCard(text: notification.message, type: type)
             }
+            .accessibilitySortPriority(1)
+        }
+    }
+
+    private var insuranceDetailsView: some View {
+        let withAddonView = !terminationNavigationVm.extraCoverage.isEmpty
+        return hSection {
+            StatusCard(
+                onSelected: {},
+                mainContent: mainContent,
+                bottomComponent: !withAddonView
+                    ? nil
+                    : {
+                        addonContent
+                    }
+            )
+            .hCardWithoutSpacing
+            .hCardWithDivider
+        }
+    }
+
+    @ViewBuilder
+    private var terminationDateView: some View {
+        if let date = terminationNavigationVm.terminationDateStepModel?.date {
+            hSection {
+                hFloatingField(
+                    value: date.displayDateDDMMMYYYYFormat,
+                    placeholder: L10n.terminationFlowDateFieldText
+                ) {}
+            }
         }
     }
 }
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     let navigationModel = TerminationFlowNavigationViewModel(
         configs: [
             .init(
@@ -142,6 +163,46 @@ struct TerminationSummaryScreen: View {
         maxDate: "",
         minDate: "",
         extraCoverageItem: []
+    )
+    navigationModel.terminationDateStepModel?.date = Date()
+    navigationModel.notification = .init(
+        message: "This is a message for the user to see in the notification.",
+        type: .info
+    )
+
+    navigationModel.extraCoverage = [
+        .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
+        .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
+    ]
+    return TerminationSummaryScreen()
+        .environmentObject(
+            navigationModel
+        )
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+    let navigationModel = TerminationFlowNavigationViewModel(
+        configs: [
+            .init(
+                contractId: "",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            )
+        ],
+        terminateInsuranceViewModel: .init()
+    )
+    navigationModel.config = navigationModel.configs.first!
+    navigationModel.terminationDeleteStepModel = .init(
+        id: "id",
+        extraCoverageItem: [
+            .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
+            .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
+        ]
     )
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
