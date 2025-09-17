@@ -168,7 +168,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 }
 
 public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
-    public let id: String?
+    public let id: String
     let displayTitle: String
     let displayValue: String
     let crossDisplayTitle: Bool
@@ -182,7 +182,7 @@ public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
         self.crossDisplayTitle = crossDisplayTitle
-        self.id = id
+        self.id = id ?? UUID().uuidString
     }
 }
 
