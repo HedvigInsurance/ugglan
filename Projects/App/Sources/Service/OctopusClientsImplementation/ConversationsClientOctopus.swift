@@ -140,7 +140,7 @@ extension OctopusGraphQL.MessageFragment {
         .init(
             id: id,
             type: messageType,
-            sender: sender == .hedvig ? .hedvig : .member,
+            sender: sender == .member ? .member : .hedvig,
             date: sentAt.localDateToIso8601Date ?? Date()
         )
     }
