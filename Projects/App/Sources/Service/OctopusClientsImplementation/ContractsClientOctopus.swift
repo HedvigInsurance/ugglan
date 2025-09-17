@@ -42,9 +42,9 @@ class FetchContractsClientOctopus: FetchContractsClient {
         productVariantFragment: OctopusGraphQL.ProductVariantFragment,
         basePremium: OctopusGraphQL.MoneyFragment,
         costFragment: OctopusGraphQL.ItemCostFragment,
-        addonCostDiscounts: [ItemCost.ItemCostDiscount]
+        addonCostDiscounts: [ItemDiscount]
     ) -> ItemCost {
-        var discounts = [ItemCost.ItemCostDiscount]()
+        var discounts = [ItemDiscount]()
 
         //add insurance disocunt
         discounts.append(
@@ -68,8 +68,10 @@ class FetchContractsClientOctopus: FetchContractsClient {
         )
 
         return .init(
-            gross: .init(fragment: costFragment.monthlyGross.fragments.moneyFragment),
-            net: .init(fragment: costFragment.monthlyNet.fragments.moneyFragment),
+            premium: .init(
+                gross: .init(fragment: costFragment.monthlyGross.fragments.moneyFragment),
+                net: .init(fragment: costFragment.monthlyNet.fragments.moneyFragment)
+            ),
             discounts: discounts
         )
     }
@@ -77,7 +79,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
     private func getAddonDiscount(
         addonVariant: OctopusGraphQL.AddonVariantFragment,
         amount: OctopusGraphQL.MoneyFragment
-    ) -> ItemCost.ItemCostDiscount {
+    ) -> ItemDiscount {
         .init(
             displayName: addonVariant.displayName,
             displayValue: MonetaryAmount(fragment: amount)
