@@ -68,16 +68,6 @@ extension Project {
             ),
         ]
 
-        var testsDependencies: [TargetDependency] = [
-            .target(name: "\(name)")
-            //            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
-        ]
-        for item in projects {
-            testsDependencies.append(.project(target: item, path: .relativeToRoot("Projects/\(item)")))
-        }
-
-        if targets.contains(.testing) { testsDependencies.append(.target(name: "\(name)Testing")) }
-
         var targetDependencies: [TargetDependency] = projects.map {
             .project(target: $0, path: .relativeToRoot("Projects/\($0)"))
         }
@@ -149,11 +139,7 @@ extension Project {
                             target: "CoreDependencies",
                             path: .relativeToRoot("Dependencies/CoreDependencies")
                         ),
-                        .project(
-                            target: "TestDependencies",
-                            path: .relativeToRoot("Dependencies/TestDependencies")
-                        ),
-                    ], testsDependencies,
+                    ]
                 ]
                 .flatMap { $0 },
                 settings: .settings(base: [:], configurations: testsConfigurations)
