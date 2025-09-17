@@ -156,7 +156,7 @@ struct AddonSelectSubOptionScreen: View {
                         product: "",
                         termsVersion: ""
                     ),
-                    documents: [],
+                    documents: []
                 ),
             ]
         ),

@@ -19,7 +19,7 @@ public class AddonsClientDemo: AddonsClient {
                 discounts: []
             ),
             addonVariant: nil,
-            documents: [],
+            documents: []
         )
 
         let addons: AddonOffer = .init(
@@ -50,7 +50,7 @@ public class AddonsClientDemo: AddonsClient {
                         product: "",
                         termsVersion: ""
                     ),
-                    documents: [],
+                    documents: []
                 ),
             ]
         )

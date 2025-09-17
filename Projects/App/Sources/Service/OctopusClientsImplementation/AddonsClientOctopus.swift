@@ -37,7 +37,7 @@ class AddonsClientOctopus: AddonsClient {
                         discounts: []
                     ),
                     addonVariant: nil,
-                    documents: [],
+                    documents: []
                 )
             }()
             let addonData = AddonOffer(
