@@ -33,7 +33,10 @@ class AddonsClientOctopus: AddonsClient {
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
                     },
                     itemCost: .init(
-                        premium: .init(gross: nil, net: .init(fragment: currentAddon.netPremium.fragments.moneyFragment)),
+                        premium: .init(
+                            gross: nil,
+                            net: .init(fragment: currentAddon.netPremium.fragments.moneyFragment)
+                        ),
                         discounts: []
                     ),
                     addonVariant: nil,
