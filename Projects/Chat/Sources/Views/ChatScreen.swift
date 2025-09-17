@@ -161,6 +161,9 @@ struct ChatScreenModifier: ViewModifier {
             .dismissKeyboard()
             .findScrollView { sv in
                 sv.delegate = chatScrollViewDelegate
+                if #available(iOS 26.0, *) {
+                    sv.topEdgeEffect.isHidden = true
+                }
             }
             .task {
                 messageVm.chatNavigationVm = chatNavigationVm

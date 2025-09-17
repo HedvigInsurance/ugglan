@@ -10,12 +10,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-extension String: @retroactive TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        self
-    }
-}
-
 public struct ChatConversation: Equatable, Identifiable, Sendable {
     public var id: String?
     public var chatType: ChatType

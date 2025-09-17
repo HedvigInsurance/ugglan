@@ -515,13 +515,17 @@ public enum Detent: Equatable {
             let additionalNavigationHeight =
                 additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
 
-            let additionalViewHeight =
+            var additionalViewHeight =
                 viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
+            if navigationController?.isKind(of: hNavigationController.self) == true && hasNavigationBar {
+                additionalViewHeight += navigationController?.navigationBar.frame.origin.y ?? 0
+            }
             var totalHeight: CGFloat =
                 scrollView.contentSize.height
                 + (hasNavigationBar ? navigationBarHeight : 0)
                 + additionalNavigationHeight
                 + additionalViewHeight
+
             if keyboardHeight > 0 {
                 let keyWindow = UIApplication.shared.connectedScenes
                     .filter { $0.activationState == .foregroundActive }
