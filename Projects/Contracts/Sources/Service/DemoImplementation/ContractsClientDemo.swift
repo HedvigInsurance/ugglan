@@ -42,7 +42,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
                 activeTo: nil
             ),
             basePremium: .sek(200),
-            itemCost: .init(gross: .sek(200), net: .sek(200), discounts: []),
+            itemCost: .init(premium: .init(gross: .sek(200), net: .sek(200)), discounts: []),
             displayItems: [
                 .init(title: "Apartment type", value: "Rental"),
                 .init(title: "Street", value: "Stopvägen 59"),
