@@ -15,6 +15,7 @@ struct ContractOverviewScreen: View {
             .sectionContainerStyle(.transparent)
             .hWithoutHorizontalPadding([.row, .divider])
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hCloseButton {
                 vm.isShowDetailsPresented = nil
@@ -23,7 +24,6 @@ struct ContractOverviewScreen: View {
         .embededInNavigation(
             tracking: self
         )
-        .hFormContentPosition(.compact)
     }
 
     @ViewBuilder
@@ -43,7 +43,7 @@ struct ContractOverviewScreen: View {
     private var coverageSection: some View {
         let coverageItems = contract.insuranceLimits
         if !coverageItems.isEmpty {
-            hSection(coverageItems) { item in
+            hSection(coverageItems, id: \.id) { item in
                 QuoteDisplayItemView(
                     displayItem: .init(
                         title: item.label,

@@ -17,27 +17,34 @@ struct DiscountsView: View {
                 discountsView
                 foreverView
             }
+            .hWithoutHorizontalPadding([.row, .divider])
+            .hSectionHeaderWithDivider
             .padding(.vertical, .padding16)
         }
         .sectionContainerStyle(.transparent)
     }
 
     private var discountsView: some View {
-        hSection(data.discounts) { discount in
-            DiscountDetailView(
-                vm: .init(
-                    options: [.showExpire],
-                    discount: discount
+        ForEach(data.discountsData, id: \.id) { discountData in
+            hSection(discountData.discount) { discount in
+                DiscountDetailView(
+                    vm: .init(
+                        options: [.showExpire],
+                        discount: discount
+                    )
                 )
-            )
+                .hWithoutDivider
+                hRowDivider()
+            }
+            .withHeader(title: discountData.insurance.displayName)
         }
-        .hWithoutHorizontalPadding([.section])
     }
 
     @ViewBuilder
     private var foreverView: some View {
+        let numberOfReferrals = data.referralsData.referrals.count { !$0.invitedYou }
         hSection(data.referralsData.referrals, id: \.id) { referral in
-            getRefferalView(referral, nbOfReferrals: data.referralsData.referrals.count(where: { !$0.invitedYou }))
+            getReferralView(referral, nbOfReferrals: numberOfReferrals)
         }
         .withHeader(
             title: L10n.ReferralsInfoSheet.headline,
@@ -46,7 +53,6 @@ struct DiscountsView: View {
                     .formattedAmount ?? ""
             )
         )
-        .hSectionHeaderWithDivider
         .hWithoutHorizontalPadding([.row, .divider])
 
         hSection {
@@ -68,7 +74,7 @@ struct DiscountsView: View {
         }
     }
 
-    private func getRefferalView(_ referral: Referral, nbOfReferrals: Int) -> some View {
+    private func getReferralView(_ referral: Referral, nbOfReferrals: Int) -> some View {
         DiscountDetailView(
             isReferral: true,
             vm: .init(
@@ -86,39 +92,52 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
 
         return DiscountsView(
             data: .init(
-                discounts: [
+                discountsData: [
                     .init(
-                        code: "code",
-                        amount: .sek(100),
-                        title: nil,
-                        listOfAffectedInsurances: [
-                            .init(id: "id1", displayName: "name")
-                        ],
-                        validUntil: "2023-11-10",
-                        canBeDeleted: true,
-                        discountId: "id"
+                        insurance: .init(id: "insuranceId", displayName: "Dog Premium ∙ Fido"),
+                        discount: [
+                            .init(
+                                code: "FURRY",
+                                amount: .sek(199),
+                                title: "50% discount for 6 months",
+                                discountPerReferral: .sek(10),
+                                validUntil: "2026-03-31",
+                                canBeDeleted: true,
+                                discountId: "id"
+                            ),
+                            .init(
+                                code: "BUNDLE",
+                                amount: .sek(24),
+                                title: "15% bundle discount",
+                                discountPerReferral: .sek(10),
+                                validUntil: nil,
+                                canBeDeleted: true,
+                                discountId: "id1"
+                            ),
+                        ]
                     ),
                     .init(
-                        code: "code 2",
-                        amount: .sek(100),
-                        title: "title 2",
-                        listOfAffectedInsurances: [
-                            .init(id: "id21", displayName: "name 2")
-                        ],
-                        validUntil: "2023-11-03",
-                        canBeDeleted: false,
-                        discountId: "id2"
-                    ),
-                    .init(
-                        code: "code 3",
-                        amount: .sek(100),
-                        title: "",
-                        listOfAffectedInsurances: [
-                            .init(id: "id31", displayName: "name 3")
-                        ],
-                        validUntil: "2025-11-03",
-                        canBeDeleted: false,
-                        discountId: "id3"
+                        insurance: .init(id: "id31", displayName: "House Standard ∙ Villagatan 25"),
+                        discount: [
+                            .init(
+                                code: "TOGETHER",
+                                amount: .sek(24),
+                                title: "15% discount for 12 months",
+                                discountPerReferral: .sek(10),
+                                validUntil: "2025-07-31",
+                                canBeDeleted: false,
+                                discountId: "id3"
+                            ),
+                            .init(
+                                code: "BUNDLE",
+                                amount: .sek(24),
+                                title: "15% bundle discount",
+                                discountPerReferral: .sek(10),
+                                validUntil: nil,
+                                canBeDeleted: false,
+                                discountId: "id31"
+                            ),
+                        ]
                     ),
 
                 ],
@@ -183,7 +202,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 
         return DiscountsView(
             data: .init(
-                discounts: [],
+                discountsData: [],
                 referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
             )
         )

@@ -28,21 +28,8 @@ struct ContractDetails: View {
                     }
                     Spacer()
 
-                    HStack(spacing: .padding8) {
-                        if contract.grossAmount != contract.netAmount {
-                            if #available(iOS 16.0, *) {
-                                hText(contract.grossAmount.formattedAmount)
-                                    .strikethrough()
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            } else {
-                                hText(contract.grossAmount.formattedAmount)
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            }
-                        }
-
-                        hText(contract.netAmount.formattedAmount)
-                    }
-                    .layoutPriority(1)
+                    hText(contract.netAmount.formattedAmount)
+                        .layoutPriority(1)
 
                     hCoreUIAssets.chevronDown.view
                         .resizable()
@@ -114,7 +101,7 @@ struct ContractDetails: View {
                                 title: L10n.paymentsSubtotal
                             )
                         )
-                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                        .hWithStrikeThroughPrice(setTo: .none)
                         .hPriceFormatting(setTo: .month)
                     }
                 }
@@ -153,6 +140,7 @@ struct ContractDetails: View {
                         code: "TOGETHER",
                         amount: .init(amount: "10", currency: "SEK"),
                         title: "15% discount for 12 months",
+                        discountPerReferral: .sek(10),
                         listOfAffectedInsurances: [],
                         validUntil: nil,
                         canBeDeleted: true,

@@ -45,9 +45,9 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
-		cost {
-			...ItemCostFragment
-		}
+        cost {
+            ...ItemCostFragment
+        }
       }
        homeQuotes {
         deductible {
@@ -72,9 +72,9 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
-		cost {
-			...ItemCostFragment
-		}
+        cost {
+            ...ItemCostFragment
+        }
       }
 }
 
@@ -85,13 +85,13 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     displayItems {
         ...MoveQuoteDisplayItemFragment
     }
-	startDate
-	addonVariant {
+    startDate
+    addonVariant {
         ...AddonVariantFragment
     }
-	cost {
-		...ItemCostFragment
-	}
+    cost {
+        ...ItemCostFragment
+    }
 }
 
 fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
@@ -101,20 +101,20 @@ fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
 }
 
 fragment ItemCostFragment on ItemCost {
-	monthlyGross {
-		...MoneyFragment
-	}
-	monthlyNet {
-		...MoneyFragment
-	}
-	discounts {
-		...ItemDiscountFragment
-	}
+    monthlyGross {
+        ...MoneyFragment
+    }
+    monthlyNet {
+        ...MoneyFragment
+    }
+    discounts {
+        ...ItemDiscountFragment
+    }
 }
 
 fragment ItemDiscountFragment on ItemDiscount {
-	displayName
-	displayValue
-	explanation
-	campaignCode
+    displayName
+    displayValue
+    explanation
+    campaignCode
 }

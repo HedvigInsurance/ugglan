@@ -13,33 +13,37 @@ struct QuoteDisplayItemView: View {
     var body: some View {
         hRow {
             HStack(alignment: .top) {
-                hText(displayItem.displayTitle, style: .label)
+                displayTitleView
                 Spacer()
-
-                if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
-                    if #available(iOS 16.0, *) {
-                        hText(oldValue)
-                            .strikethrough()
-                            .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                    } else {
-                        hText(oldValue)
-                            .foregroundColor(hTextColor.Opaque.tertiary)
-                            .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                    }
-                }
-
-                hText(displayItem.displayValue, style: .label)
-                    .multilineTextAlignment(.trailing)
-                    .accessibilityLabel(
-                        displayItem.displayValueOld != nil && displayItem.displayValueOld != displayItem.displayValue
-                            ? L10n.voiceoverNewValue + displayItem.displayValue : displayItem.displayValue
-                    )
+                displayValueView
             }
         }
         .verticalPadding(.padding4)
-        .foregroundColor(hTextColor.Translucent.secondary)
+        .foregroundColor(hTextColor.Opaque.secondary)
         .hWithoutDivider
         .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var displayTitleView: some View {
+        if displayItem.crossDisplayTitle, #available(iOS 16.0, *) {
+            hText(displayItem.displayTitle, style: .label)
+                .strikethrough()
+                .accessibilityLabel(L10n.voiceoverCurrentValue + displayItem.displayTitle)
+        } else {
+            hText(displayItem.displayTitle, style: .label)
+        }
+    }
+
+    @ViewBuilder
+    private var displayValueView: some View {
+        let displayValue = displayItem.displayValue
+        if displayItem.crossDisplayTitle, #available(iOS 16.0, *) {
+            hText(displayValue, style: .label)
+                .strikethrough()
+        } else {
+            hText(displayValue, style: .label)
+        }
     }
 }
 
@@ -60,7 +64,7 @@ struct DocumentRowItemView: View {
                     .resizable()
                     .frame(width: 24, height: 24)
             }
-            .foregroundColor(hTextColor.Translucent.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
         }
         .onTapGesture {
             onTap(document)
