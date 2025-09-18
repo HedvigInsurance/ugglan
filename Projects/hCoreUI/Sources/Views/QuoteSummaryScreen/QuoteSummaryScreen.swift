@@ -157,7 +157,7 @@ private struct ContractCardView: View {
     @ViewBuilder
     private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
-        let isExpanded = vm.isAddon ? true : (index != nil)
+        let isExpanded = (index != nil)
 
         if !contract.documentSection.documents.isEmpty {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
@@ -190,7 +190,7 @@ private struct ContractCardView: View {
                 }
             )
             .hCardWithoutSpacing
-            .hCardBackgroundColor(vm.isAddon ? .default : .light)
+            .hCardBackgroundColor(.light)
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
@@ -202,14 +202,9 @@ private struct ContractCardView: View {
         isExpanded: Bool
     ) -> some View {
         VStack(spacing: .padding16) {
-            if contract.shouldShowDetails && !vm.isAddon {
+            if contract.shouldShowDetails {
                 if !vm.removedContracts.contains(contract.id) {
-                    if vm.isAddon {
-                        showDetailsButton(contract)
-                    } else {
-                        showDetailsButton(contract)
-                            .hButtonWithBorder
-                    }
+                    showDetailsButton(contract)
                 } else {
                     addButton(for: contract, isExpanded: isExpanded)
                 }
@@ -227,15 +222,13 @@ private struct ContractCardView: View {
             if !contract.priceBreakdownItems.isEmpty && !vm.removedContracts.contains(contract.id) {
                 VStack(spacing: .padding8) {
                     ForEach(contract.priceBreakdownItems, id: \.displayTitle) { disocuntItem in
-                        rowItem(for: disocuntItem, fontSize: .label)
+                        rowItem(for: disocuntItem)
                     }
                 }
                 .accessibilityElement(children: .combine)
             }
 
-            if ((contract.shouldShowDetails && isExpanded) || !contract.priceBreakdownItems.isEmpty)
-                && !contract.isAddon
-            {
+            if ((contract.shouldShowDetails && isExpanded) || !contract.priceBreakdownItems.isEmpty) {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
@@ -255,16 +248,9 @@ private struct ContractCardView: View {
 
     @ViewBuilder
     private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        let type: hButtonConfigurationType = {
-            if vm.isAddon {
-                return .secondary
-            } else {
-                return .ghost
-            }
-        }()
         hButton(
             .medium,
-            type,
+            .ghost,
             content: .init(
                 title: vm.expandedContracts.firstIndex(of: contract.id) != nil
                     ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
@@ -285,6 +271,7 @@ private struct ContractCardView: View {
             }
         )
         .hWithTransition(.scale)
+        .hButtonWithBorder
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
@@ -296,7 +283,7 @@ private struct ContractCardView: View {
         }
         .padding(
             .bottom,
-            (isExpanded && !contract.isAddon && !contract.priceBreakdownItems.isEmpty)
+            (isExpanded && !contract.priceBreakdownItems.isEmpty)
                 ? .padding16 : 0
         )
     }
@@ -393,32 +380,36 @@ private struct ContractCardView: View {
         }
     }
 
-    func rowItem(for displayItem: QuoteDisplayItem, fontSize: HFontTextStyle? = .body1) -> some View {
+    func rowItem(for displayItem: QuoteDisplayItem) -> some View {
         HStack(alignment: .top) {
-            hText(displayItem.displayTitle, style: fontSize ?? .body1)
+            displayTitleView(for: displayItem)
             Spacer()
-
-            if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
-                if #available(iOS 16.0, *) {
-                    hText(oldValue)
-                        .strikethrough()
-                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                } else {
-                    hText(oldValue)
-                        .foregroundColor(hTextColor.Opaque.tertiary)
-                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
-                }
-            }
-
-            hText(displayItem.displayValue, style: fontSize ?? .body1)
-                .multilineTextAlignment(.trailing)
-                .accessibilityLabel(
-                    displayItem.displayValueOld != nil && displayItem.displayValueOld != displayItem.displayValue
-                        ? L10n.voiceoverNewValue + displayItem.displayValue : displayItem.displayValue
-                )
+            displayValueView(for: displayItem)
         }
-        .foregroundColor(hTextColor.Translucent.secondary)
+        .foregroundColor(hTextColor.Opaque.secondary)
         .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func displayTitleView(for displayItem: QuoteDisplayItem) -> some View {
+        if displayItem.crossDisplayTitle, #available(iOS 16.0, *) {
+            hText(displayItem.displayTitle, style: .label)
+                .strikethrough()
+                .accessibilityLabel(L10n.voiceoverCurrentValue + displayItem.displayTitle)
+        } else {
+            hText(displayItem.displayTitle, style: .label)
+        }
+    }
+
+    @ViewBuilder
+    private func displayValueView(for displayItem: QuoteDisplayItem) -> some View {
+        let displayValue = displayItem.displayValue
+        if displayItem.crossDisplayTitle, #available(iOS 16.0, *) {
+            hText(displayValue, style: .label)
+                .strikethrough()
+        } else {
+            hText(displayValue, style: .label)
+        }
     }
 
     func documentItem(for document: hPDFDocument) -> some View {
@@ -478,7 +469,7 @@ private struct PriceSummarySection: View {
                         .large,
                         .primary,
                         content: .init(
-                            title: vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer
+                            title: L10n.changeAddressAcceptOffer
                         ),
                         { [weak vm] in
                             vm?.isConfirmChangesPresented = true

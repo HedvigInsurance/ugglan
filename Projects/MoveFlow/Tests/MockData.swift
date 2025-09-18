@@ -60,7 +60,7 @@ class MockMoveFlowService: MoveFlowClient {
         case sendMoveIntent
         case requestMoveIntent
         case confirmMoveIntent
-        case getMoveIntentCost
+        case fetchMoveIntentCost
     }
 
     init(
@@ -97,7 +97,7 @@ class MockMoveFlowService: MoveFlowClient {
     }
 
     func getMoveIntentCost(input: MoveFlow.GetMoveIntentCostInput) async throws -> Premium {
-        events.append(.getMoveIntentCost)
+        events.append(.fetchMoveIntentCost)
         return try await self.getMoveIntentCost(input)
     }
 }

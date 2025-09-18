@@ -11,7 +11,8 @@ mutation UpsellTravelAddonOffer($contractId: ID!) {
         displayItems {
             ...UpsellTravelAddonDisplayItemFragment
         }
-        premium {
+        displayNameLong
+        netPremium {
             ...MoneyFragment
         }
       }
@@ -27,11 +28,12 @@ fragment UpsellTravelAddonQuoteFragment on UpsellTravelAddonQuote {
     addonId
     addonSubtype
     displayName
+    displayNameLong
     displayItems {
         ...UpsellTravelAddonDisplayItemFragment
     }
-    premium {
-        ...MoneyFragment
+    itemCost {
+        ...ItemCostFragment
     }
     addonVariant {
         ...AddonVariantFragment

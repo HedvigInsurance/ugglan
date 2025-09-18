@@ -168,21 +168,21 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 }
 
 public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
-    public let id: String?
+    public let id: String
     let displayTitle: String
     let displayValue: String
-    let displayValueOld: String?
+    let crossDisplayTitle: Bool
 
     public init(
         title displayTitle: String,
         value displayValue: String,
-        displayValueOld: String? = nil,
-        id: String? = nil
+        crossDisplayTitle: Bool = false,
+        id: String? = nil,
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
-        self.displayValueOld = displayValueOld
-        self.id = id
+        self.crossDisplayTitle = crossDisplayTitle
+        self.id = id ?? UUID().uuidString
     }
 }
 
