@@ -142,7 +142,6 @@ struct ContractDetails: View {
                         title: "15% discount for 12 months",
                         discountPerReferral: .sek(10),
                         validUntil: nil,
-                        canBeDeleted: true,
                         discountId: "id"
                     )
                 ],

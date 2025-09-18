@@ -20,22 +20,22 @@ extension PaymentDiscountsData {
         with data: OctopusGraphQL.DiscountsQuery.Data,
         amountFromPaymentData: MonetaryAmount?
     ) {
-        //        let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter { $0.type == .voucher }
-        //            .compactMap { .init(with: $0, amountFromPaymentData: amountFromPaymentData) }
+        //                let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter { $0.type == .voucher }
+        //                    .compactMap { .init(with: $0, amountFromPaymentData: amountFromPaymentData) }
         //
-        //        let insuranceToDiscounts = discounts.reduce(into: [String: DiscountsDataForInsurance]()) { result, discount in
-        //            discount.listOfAffectedInsurances?
-        //                .forEach { insurance in
-        //                    if result[insurance.id] != nil {
-        //                        result[insurance.id]?.discount.append(discount)
-        //                    } else {
-        //                        result[insurance.id] = DiscountsDataForInsurance(
-        //                            insurance: insurance,
-        //                            discount: [discount]
-        //                        )
-        //                    }
+        //                let insuranceToDiscounts = discounts.reduce(into: [String: DiscountsDataForInsurance]()) { result, discount in
+        //                    discount.listOfAffectedInsurances?
+        //                        .forEach { insurance in
+        //                            if result[insurance.id] != nil {
+        //                                result[insurance.id]?.discount.append(discount)
+        //                            } else {
+        //                                result[insurance.id] = DiscountsDataForInsurance(
+        //                                    insurance: insurance,
+        //                                    discount: [discount]
+        //                                )
+        //                            }
+        //                        }
         //                }
-        //        }
         self.init(
             discountsData: [],
             referralsData: .init(with: data.currentMember.referralInformation)
@@ -45,27 +45,26 @@ extension PaymentDiscountsData {
 
 @MainActor
 extension Discount {
-    //    init(
-    //        with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign,
-    //        amountFromPaymentData: MonetaryAmount?
-    //    ) {
-    //        self.init(
-    //            code: data.code,
-    //            amount: amountFromPaymentData,
-    //            title: data.description,
-    //            listOfAffectedInsurances: data.onlyApplicableToContracts?
-    //                .compactMap {
-    //                    .init(
-    //                        id: $0.id,
-    //                        displayName: $0.getDisplayName
-    //                    )
-    //                } ?? [],
-    //            validUntil: data.expiresAt,
-    //            canBeDeleted: true,
-    //            discountId: data.id
-    //        )
-    //    }
-    //
+    //        init(
+    //            with data: OctopusGraphQL.ItemDiscountFragment,
+    //            amountFromPaymentData: MonetaryAmount?
+    //        ) {
+    //            self.init(
+    //                code: data.code,
+    //                amount: amountFromPaymentData,
+    //                title: data.description,
+    //                listOfAffectedInsurances: data.onlyApplicableToContracts?
+    //                    .compactMap {
+    //                        .init(
+    //                            id: $0.id,
+    //                            displayName: $0.getDisplayName
+    //                        )
+    //                    } ?? [],
+    //                validUntil: data.expiresAt,
+    //                canBeDeleted: true,
+    //                discountId: data.id
+    //            )
+    //        }
     public init(
         with moneyFragment: OctopusGraphQL.MoneyFragment,
         discountDto discount: ReedeemedCampaingDTO?,
@@ -77,7 +76,6 @@ extension Discount {
             title: discount?.description ?? "",
             discountPerReferral: discountPerReferral,
             validUntil: nil,
-            canBeDeleted: false,
             discountId: UUID().uuidString
         )
     }
@@ -163,13 +161,3 @@ extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
         }
     }
 }
-//
-//extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
-//    fileprivate var getDisplayName: String {
-//        [
-//            currentAgreement.productVariant.displayNameShort ?? currentAgreement.productVariant.displayName,
-//            exposureDisplayNameShort,
-//        ]
-//        .displayName
-//    }
-//}

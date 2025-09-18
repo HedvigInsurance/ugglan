@@ -27,7 +27,6 @@ final class StoreDiscountsTests: XCTestCase {
                 title: "title",
                 listOfAffectedInsurances: [],
                 validUntil: nil,
-                canBeDeleted: true,
                 discountId: "id"
             )
         ]

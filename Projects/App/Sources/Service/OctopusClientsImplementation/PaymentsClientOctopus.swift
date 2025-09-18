@@ -381,7 +381,6 @@ extension Discount {
             amount: .init(fragment: data.discount.fragments.moneyFragment),
             title: data.description,
             validUntil: nil,
-            canBeDeleted: true,
             discountId: ""
         )
     }

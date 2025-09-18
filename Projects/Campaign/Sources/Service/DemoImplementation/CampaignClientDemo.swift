@@ -15,7 +15,6 @@ public class hCampaignClientDemo: hCampaignClient {
                             title: "15% off for 1 year",
                             discountPerReferral: .sek(10),
                             validUntil: "2023-12-10",
-                            canBeDeleted: true,
                             discountId: "CODE"
                         ),
                         .init(
@@ -24,7 +23,6 @@ public class hCampaignClientDemo: hCampaignClient {
                             title: "15% off for 1 year",
                             discountPerReferral: .sek(10),
                             validUntil: "2023-11-03",
-                            canBeDeleted: false,
                             discountId: "CODE 2"
                         ),
                     ]

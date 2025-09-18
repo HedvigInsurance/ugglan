@@ -109,7 +109,6 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             title: "Very long name that needs to go into 2 rows so we can test it",
             discountPerReferral: .sek(10),
             validUntil: "2026-03-06",
-            canBeDeleted: false,
             discountId: "1"
         )
 
@@ -119,7 +118,6 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             title: "Very long name that needs to go into 2 rows",
             discountPerReferral: .sek(10),
             validUntil: "2023-12-06",
-            canBeDeleted: false,
             discountId: "1"
         )
         return VStack {

@@ -31,7 +31,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let discountPerReferral: MonetaryAmount?
     let title: String?
     let validUntil: ServerBasedDate?
-    let canBeDeleted: Bool
     let discountId: String
 
     public init(
@@ -40,7 +39,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         title: String?,
         discountPerReferral: MonetaryAmount? = nil,
         validUntil: ServerBasedDate?,
-        canBeDeleted: Bool,
         discountId: String
     ) {
         id = UUID().uuidString
@@ -49,7 +47,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.discountPerReferral = discountPerReferral
         self.title = title
         self.validUntil = validUntil
-        self.canBeDeleted = canBeDeleted
         self.discountId = discountId
     }
 
@@ -65,7 +62,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.title = referral.description
         self.discountPerReferral = discountPerReferral
         self.validUntil = nil
-        self.canBeDeleted = true
         self.discountId = referral.id
     }
 

@@ -30,7 +30,6 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             title: "title",
             listOfAffectedInsurances: [],
             validUntil: nil,
-            canBeDeleted: true,
             discountId: "id"
         )
 
@@ -50,7 +49,6 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             title: "title",
             listOfAffectedInsurances: [],
             validUntil: nil,
-            canBeDeleted: true,
             discountId: "id"
         )
 
@@ -73,7 +71,6 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
                 title: "title",
                 listOfAffectedInsurances: [],
                 validUntil: nonValidServerBasedDate,
-                canBeDeleted: true,
                 discountId: "id"
             )
 

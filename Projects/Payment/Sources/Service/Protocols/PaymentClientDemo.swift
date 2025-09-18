@@ -30,7 +30,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 amount: .init(amount: "10", currency: "SEK"),
                                 title: "15% discount for 12 months",
                                 validUntil: nil,
-                                canBeDeleted: true,
                                 discountId: "id"
                             )
                         ],
@@ -57,7 +56,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 amount: .init(amount: "10", currency: "SEK"),
                                 title: "15% discount for 12 months",
                                 validUntil: nil,
-                                canBeDeleted: true,
                                 discountId: "id"
                             )
                         ],
@@ -101,7 +99,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     amount: .init(amount: "10", currency: "SEK"),
                                     title: "15% discount for 12 months",
                                     validUntil: nil,
-                                    canBeDeleted: true,
                                     discountId: "id"
                                 )
                             ],
@@ -128,7 +125,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     amount: .init(amount: "10", currency: "SEK"),
                                     title: "15% discount for 12 months",
                                     validUntil: nil,
-                                    canBeDeleted: true,
                                     discountId: "id"
                                 )
                             ],
