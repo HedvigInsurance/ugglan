@@ -70,10 +70,11 @@ final class DeleteAccountViewModelTests: XCTestCase {
                 .init(
                     id: "contractId",
                     currentAgreement: .init(
+                        id: "id",
                         certificateUrl: nil,
-                        activeFrom: nil,
-                        activeTo: nil,
-                        premium: .init(amount: "220", currency: "SEK"),
+                        agreementDate: .init(activeFrom: nil, activeTo: nil),
+                        basePremium: .init(amount: "220", currency: "SEK"),
+                        itemCost: nil,
                         displayItems: [],
                         productVariant: .init(
                             termsVersion: "",

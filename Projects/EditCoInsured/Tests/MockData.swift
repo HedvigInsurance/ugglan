@@ -15,8 +15,8 @@ struct MockData {
         submitIntent: @escaping SendIntent = { _, _ in
             .init(
                 activationDate: Date().localDateString,
-                currentTotalCost: .init(monthlyGross: .sek(300), montlyNet: .sek(200)),
-                newTotalCost: .init(monthlyGross: .sek(299), montlyNet: .sek(199)),
+                currentTotalCost: .init(gross: .sek(300), net: .sek(200)),
+                newTotalCost: .init(gross: .sek(299), net: .sek(199)),
                 id: "id",
                 newCostBreakdown: []
             )

@@ -12,7 +12,6 @@ struct MockData {
                 displayName: "display name",
                 activationDate: Date(),
                 tiers: [],
-                currentPremium: .init(amount: "449", currency: "SEK"),
                 currentTier: nil,
                 currentQuote: nil,
                 selectedTier: nil,
