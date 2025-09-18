@@ -34,7 +34,8 @@ struct MockData {
         let service = MockMoveFlowService(
             submitMoveIntent: submitMoveIntent,
             moveIntentRequest: moveIntentRequest,
-            moveIntentConfirm: moveIntentConfirm
+            moveIntentConfirm: moveIntentConfirm,
+            getMoveIntentCost: getMoveIntentCost
         )
         Dependencies.shared.add(module: Module { () -> MoveFlowClient in service })
         return service
@@ -96,7 +97,7 @@ class MockMoveFlowService: MoveFlowClient {
     }
 
     func getMoveIntentCost(input: MoveFlow.GetMoveIntentCostInput) async throws -> Premium {
-        events.append(.getMoveIntentCost)
+        events.append(.fetchMoveIntentCost)
         return try await self.getMoveIntentCost(input)
     }
 }
