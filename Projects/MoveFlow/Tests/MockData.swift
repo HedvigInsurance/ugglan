@@ -66,7 +66,7 @@ class MockMoveFlowService: MoveFlowClient {
         submitMoveIntent: @escaping SubmitMoveIntent,
         moveIntentRequest: @escaping MoveIntentRequest,
         moveIntentConfirm: @escaping MoveIntentConfirm,
-        getMoveIntentCost: GetMoveIntentCost
+        getMoveIntentCost: @escaping GetMoveIntentCost
     ) {
         self.submitMoveIntent = submitMoveIntent
         self.moveIntentRequest = moveIntentRequest
