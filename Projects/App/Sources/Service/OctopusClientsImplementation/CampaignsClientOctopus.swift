@@ -37,7 +37,7 @@ extension PaymentDiscountsData {
                 contract.currentAgreement.productVariant.displayNameShort ?? "", contract.exposureDisplayNameShort,
             ]
             .displayName
-            PaymentDiscountsData.appendContradDiscount(
+            PaymentDiscountsData.appendContractDiscount(
                 id: contract.id,
                 displayName: displayName,
                 info: contract.discountsDetails.discountsInfo,
@@ -49,7 +49,7 @@ extension PaymentDiscountsData {
             contract in
             let displayName = [contract.productVariant.displayNameShort ?? "", contract.exposureDisplayNameShort]
                 .displayName
-            PaymentDiscountsData.appendContradDiscount(
+            PaymentDiscountsData.appendContractDiscount(
                 id: contract.id,
                 displayName: displayName,
                 info: contract.discountsDetails.discountsInfo,
@@ -60,7 +60,7 @@ extension PaymentDiscountsData {
         return contractsDiscounts
     }
 
-    static private func appendContradDiscount(
+    static private func appendContractDiscount(
         id: String,
         displayName: String,
         info: String?,
