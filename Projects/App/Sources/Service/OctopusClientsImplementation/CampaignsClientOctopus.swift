@@ -86,27 +86,12 @@ extension Discount {
     init(
         with data: OctopusGraphQL.ContractDiscountDetailsItemFragment
     ) {
-        let status: DiscountStatus = {
-            switch data.discountStatus {
-            case .case(let status):
-                switch status {
-                case .active:
-                    return .active
-                case .pending:
-                    return .pending
-                case .terminated:
-                    return .terminated
-                }
-            case .unknown:
-                return .active
-            }
-        }()
         self.init(
             code: data.campaignCode,
             displayValue: data.statusDescription,
             description: data.description,
             discountId: data.campaignCode,
-            type: .discount(status: status)
+            type: .discount(status: data.discountStatus.asDiscountStatus)
         )
     }
     public init(
@@ -120,6 +105,24 @@ extension Discount {
             discountId: discount?.code ?? "",
             type: .paymentsDiscount
         )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ContractDiscountStatus> {
+    fileprivate var asDiscountStatus: DiscountStatus {
+        switch self {
+        case .case(let status):
+            switch status {
+            case .active:
+                return .active
+            case .pending:
+                return .pending
+            case .terminated:
+                return .terminated
+            }
+        case .unknown:
+            return .active
+        }
     }
 }
 
