@@ -1,13 +1,25 @@
 query Discounts {
   currentMember {
 	activeContracts {
+		id
+		exposureDisplayNameShort
 		discountsDetails {
 			...ContractDiscountDetailsFragment
 		}
+		currentAgreement {
+		  productVariant {
+			displayNameShort
+		  }
+		}
 	}
 	pendingContracts {
+		id
+		exposureDisplayNameShort
 		discountsDetails {
 			...ContractDiscountDetailsFragment
+		}
+		productVariant {
+		  displayNameShort
 		}
 	}
     referralInformation {
@@ -37,9 +49,13 @@ fragment MemberReferralFragment2 on MemberReferral {
 fragment ContractDiscountDetailsFragment on ContractDiscountDetails {
 	discountsInfo
 	discounts {
+	  ...ContractDiscountDetailsItemFragment
+	}
+}
+
+fragment ContractDiscountDetailsItemFragment on ContractDiscountItem {
 	  campaignCode
 	  description
 	  discountStatus
 	  statusDescription
-	}
 }

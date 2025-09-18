@@ -20,24 +20,38 @@ extension PaymentDiscountsData {
         with data: OctopusGraphQL.DiscountsQuery.Data,
         amountFromPaymentData: MonetaryAmount?
     ) {
-        //                let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter { $0.type == .voucher }
-        //                    .compactMap { .init(with: $0, amountFromPaymentData: amountFromPaymentData) }
-        //
-        //                let insuranceToDiscounts = discounts.reduce(into: [String: DiscountsDataForInsurance]()) { result, discount in
-        //                    discount.listOfAffectedInsurances?
-        //                        .forEach { insurance in
-        //                            if result[insurance.id] != nil {
-        //                                result[insurance.id]?.discount.append(discount)
-        //                            } else {
-        //                                result[insurance.id] = DiscountsDataForInsurance(
-        //                                    insurance: insurance,
-        //                                    discount: [discount]
-        //                                )
-        //                            }
-        //                        }
-        //                }
+        var discountData = [DiscountsDataForInsurance]()
+        let activeContractsDiscountData: [DiscountsDataForInsurance?] = data.currentMember.activeContracts.map {
+            contract in
+            let discounts = contract.discountsDetails.discounts
+                .map { $0.fragments.contractDiscountDetailsItemFragment }
+                .map { item in
+                    Discount.init(with: item)
+                }
+            if discounts.isEmpty { return nil }
+            let displayName =
+                (contract.currentAgreement.productVariant.displayNameShort ?? "") + " • "
+                + contract.exposureDisplayNameShort
+            return DiscountsDataForInsurance.init(id: contract.id, displayName: displayName, discount: discounts)
+        }
+        discountData.append(contentsOf: activeContractsDiscountData.compactMap { $0 })
+        let pendingContractsDiscountData: [DiscountsDataForInsurance?] = data.currentMember.pendingContracts.map {
+            contract in
+            let discounts = contract.discountsDetails.discounts
+                .map { $0.fragments.contractDiscountDetailsItemFragment }
+                .map { item in
+                    Discount.init(with: item)
+                }
+            if discounts.isEmpty { return nil }
+            let displayName =
+                (contract.productVariant.displayNameShort ?? "") + " • " + contract.exposureDisplayNameShort
+
+            return DiscountsDataForInsurance.init(id: contract.id, displayName: displayName, discount: discounts)
+        }
+        discountData.append(contentsOf: pendingContractsDiscountData.compactMap { $0 })
+
         self.init(
-            discountsData: [],
+            discountsData: discountData,
             referralsData: .init(with: data.currentMember.referralInformation)
         )
     }
@@ -45,38 +59,57 @@ extension PaymentDiscountsData {
 
 @MainActor
 extension Discount {
-    //        init(
-    //            with data: OctopusGraphQL.ItemDiscountFragment,
-    //            amountFromPaymentData: MonetaryAmount?
-    //        ) {
-    //            self.init(
-    //                code: data.code,
-    //                amount: amountFromPaymentData,
-    //                title: data.description,
-    //                listOfAffectedInsurances: data.onlyApplicableToContracts?
-    //                    .compactMap {
-    //                        .init(
-    //                            id: $0.id,
-    //                            displayName: $0.getDisplayName
-    //                        )
-    //                    } ?? [],
-    //                validUntil: data.expiresAt,
-    //                canBeDeleted: true,
-    //                discountId: data.id
-    //            )
-    //        }
+    init(
+        with data: OctopusGraphQL.ContractDiscountDetailsItemFragment
+    ) {
+        let status: DiscountStatus = {
+            switch data.discountStatus {
+            case .case(let status):
+                switch status {
+                case .active:
+                    return .ACTIVE
+                case .pending:
+                    return .PENDING
+                case .terminated:
+                    return .TERMINATED
+                }
+            case .unknown:
+                return .ACTIVE
+            }
+        }()
+        self.init(
+            code: data.campaignCode,
+            displayValue: data.statusDescription,
+            description: data.description,
+            discountId: data.campaignCode,
+            type: .discount(status: status)
+        )
+        //        self.init(
+        //            code: data.code,
+        //            amount: amountFromPaymentData,
+        //            title: data.description,
+        //            listOfAffectedInsurances: data.onlyApplicableToContracts?
+        //                .compactMap {
+        //                    .init(
+        //                        id: $0.id,
+        //                        displayName: $0.getDisplayName
+        //                    )
+        //                } ?? [],
+        //            validUntil: data.expiresAt,
+        //            canBeDeleted: true,
+        //            discountId: data.id
+        //        )
+    }
     public init(
         with moneyFragment: OctopusGraphQL.MoneyFragment,
-        discountDto discount: ReedeemedCampaingDTO?,
-        discountPerReferral: MonetaryAmount?
+        discountDto discount: ReedeemedCampaingDTO?
     ) {
         self.init(
             code: discount?.code ?? "",
-            amount: .init(fragment: moneyFragment),
-            title: discount?.description ?? "",
-            discountPerReferral: discountPerReferral,
-            validUntil: nil,
-            discountId: UUID().uuidString
+            displayValue: MonetaryAmount(fragment: moneyFragment).formattedAmount,
+            description: discount?.description,
+            discountId: discount?.code ?? "",
+            type: .paymentsDiscount
         )
     }
 }

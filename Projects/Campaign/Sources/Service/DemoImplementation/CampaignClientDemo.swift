@@ -11,20 +11,11 @@ public class hCampaignClientDemo: hCampaignClient {
                     discount: [
                         .init(
                             code: "CODE",
-                            amount: .sek(30),
-                            title: "15% off for 1 year",
-                            discountPerReferral: .sek(10),
-                            validUntil: "2023-12-10",
-                            discountId: "CODE"
-                        ),
-                        .init(
-                            code: "CODE 2",
-                            amount: .sek(30),
-                            title: "15% off for 1 year",
-                            discountPerReferral: .sek(10),
-                            validUntil: "2023-11-03",
-                            discountId: "CODE 2"
-                        ),
+                            displayValue: "-30 kr/mo",
+                            description: "15% off for 1 year",
+                            discountId: "CODE",
+                            type: .discount(status: .TERMINATED)
+                        )
                     ]
                 )
 

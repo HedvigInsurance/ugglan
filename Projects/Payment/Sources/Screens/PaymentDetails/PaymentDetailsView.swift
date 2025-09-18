@@ -42,7 +42,7 @@ struct PaymentDetailsView: View {
             .withHeader(
                 title: L10n.ReferralsInfoSheet.headline,
                 infoButtonDescription: L10n.ReferralsInfoSheet.body(
-                    referralDiscount.discountPerReferral?.formattedAmount ?? "",
+                    data.amountPerReferral.formattedAmount,
                 )
             )
 
@@ -205,11 +205,10 @@ struct PaymentDetails_Previews: PreviewProvider {
                     discounts: [
                         .init(
                             code: "TOGETHER",
-                            amount: .init(amount: "10", currency: "SEK"),
-                            title: "15% discount for 12 months",
-                            discountPerReferral: .sek(10),
-                            validUntil: nil,
-                            discountId: "id"
+                            displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                            description: "15% discount for 12 months",
+                            discountId: "TOGETHER",
+                            type: .discount(status: .ACTIVE)
                         )
                     ],
                     periods: [
@@ -240,11 +239,10 @@ struct PaymentDetails_Previews: PreviewProvider {
                     discounts: [
                         .init(
                             code: "TOGETHER",
-                            amount: .init(amount: "10", currency: "SEK"),
-                            title: "15% discount for 12 months",
-                            discountPerReferral: .sek(10),
-                            validUntil: nil,
-                            discountId: "id"
+                            displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                            description: "15% discount for 12 months",
+                            discountId: "TOGETHER",
+                            type: .discount(status: .ACTIVE)
                         )
                     ],
                     periods: [
@@ -270,12 +268,12 @@ struct PaymentDetails_Previews: PreviewProvider {
             referralDiscount:
                 .init(
                     code: "MY CODE",
-                    amount: .sek(30),
-                    title: "3 friends invited",
-                    discountPerReferral: .sek(10),
-                    validUntil: nil,
-                    discountId: "FRIENDS"
+                    displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                    description: "3 friends invited",
+                    discountId: "TOGETHER",
+                    type: .referral
                 ),
+            amountPerReferral: .sek(10),
             paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
             addedToThePayment: nil
         )

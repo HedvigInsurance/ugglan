@@ -99,19 +99,17 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         discount: [
                             .init(
                                 code: "FURRY",
-                                amount: .sek(199),
-                                title: "50% discount for 6 months",
-                                discountPerReferral: .sek(10),
-                                validUntil: "2026-03-31",
-                                discountId: "id"
+                                displayValue: MonetaryAmount.sek(199).formattedAmountPerMonth,
+                                description: "50% discount for 6 months",
+                                discountId: "id",
+                                type: .discount(status: .ACTIVE)
                             ),
                             .init(
                                 code: "BUNDLE",
-                                amount: .sek(24),
-                                title: "15% bundle discount",
-                                discountPerReferral: .sek(10),
-                                validUntil: nil,
-                                discountId: "id1"
+                                displayValue: MonetaryAmount.sek(24).formattedAmountPerMonth,
+                                description: "15% bundle discount",
+                                discountId: "id1",
+                                type: .discount(status: .ACTIVE)
                             ),
                         ]
                     ),
@@ -121,19 +119,17 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         discount: [
                             .init(
                                 code: "TOGETHER",
-                                amount: .sek(24),
-                                title: "15% discount for 12 months",
-                                discountPerReferral: .sek(10),
-                                validUntil: "2025-07-31",
-                                discountId: "id3"
+                                displayValue: MonetaryAmount.sek(24).formattedAmountPerMonth,
+                                description: "15% discount for 12 months",
+                                discountId: "id3",
+                                type: .discount(status: .TERMINATED)
                             ),
                             .init(
                                 code: "BUNDLE",
-                                amount: .sek(24),
-                                title: "15% bundle discount",
-                                discountPerReferral: .sek(10),
-                                validUntil: nil,
-                                discountId: "id31"
+                                displayValue: MonetaryAmount.sek(24).formattedAmountPerMonth,
+                                description: "15% bundle discount",
+                                discountId: "id4",
+                                type: .discount(status: .ACTIVE)
                             ),
                         ]
                     ),

@@ -25,59 +25,55 @@ public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendab
 }
 
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
+    public static func == (lhs: Discount, rhs: Discount) -> Bool {
+        lhs.id == rhs.id
+    }
     public let id: String
     public let code: String
-    public let amount: MonetaryAmount?
-    public let discountPerReferral: MonetaryAmount?
-    let title: String?
-    let validUntil: ServerBasedDate?
+    public let displayValue: String
+    public let description: String?
+    public let type: DiscountType
     let discountId: String
 
     public init(
         code: String,
-        amount: MonetaryAmount?,
-        title: String?,
-        discountPerReferral: MonetaryAmount? = nil,
-        validUntil: ServerBasedDate?,
-        discountId: String
+        displayValue: String,
+        description: String?,
+        discountId: String,
+        type: DiscountType
     ) {
-        id = UUID().uuidString
+        self.id = UUID().uuidString
         self.code = code
-        self.amount = amount
-        self.discountPerReferral = discountPerReferral
-        self.title = title
-        self.validUntil = validUntil
+        self.displayValue = displayValue
         self.discountId = discountId
+        self.description = description
+        self.type = type
     }
 
     @MainActor
     public init(
         referral: Referral,
         nbOfReferrals: Int,
-        discountPerReferral: MonetaryAmount? = nil,
     ) {
         self.id = UUID().uuidString
         self.code = referral.code ?? referral.name
-        self.amount = referral.activeDiscount
-        self.title = referral.description
-        self.discountPerReferral = discountPerReferral
-        self.validUntil = nil
+        self.displayValue = referral.activeDiscount?.formattedNegativeAmountPerMonth ?? ""
+        self.description = referral.description
         self.discountId = referral.id
+        self.type = .referral
     }
+}
 
-    @MainActor
-    var isValid: Bool {
-        if let validUntil = validUntil?.localDateToDate {
-            let components = Calendar.current.dateComponents(
-                [.day],
-                from: Date(),
-                to: validUntil
-            )
-            let isValid = components.day ?? 0 >= 0
-            return isValid
-        }
-        return true
-    }
+public enum DiscountType: Sendable, Codable, Hashable {
+    case discount(status: DiscountStatus)
+    case referral
+    case paymentsDiscount
+}
+
+public enum DiscountStatus: String, Sendable, Codable, Hashable {
+    case ACTIVE
+    case PENDING
+    case TERMINATED
 }
 
 public struct ReferralsData: Equatable, Codable, Sendable {

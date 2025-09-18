@@ -27,10 +27,10 @@ public class hPaymentClientDemo: hPaymentClient {
                         discounts: [
                             .init(
                                 code: "TOGETHER",
-                                amount: .init(amount: "10", currency: "SEK"),
-                                title: "15% discount for 12 months",
-                                validUntil: nil,
-                                discountId: "id"
+                                displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                                description: "15% discount for 12 months",
+                                discountId: "TOGETHER",
+                                type: .discount(status: .ACTIVE)
                             )
                         ],
                         periods: [
@@ -53,10 +53,10 @@ public class hPaymentClientDemo: hPaymentClient {
                         discounts: [
                             .init(
                                 code: "TOGETHER",
-                                amount: .init(amount: "10", currency: "SEK"),
-                                title: "15% discount for 12 months",
-                                validUntil: nil,
-                                discountId: "id"
+                                displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                                description: "15% discount for 12 months",
+                                discountId: "TOGETHER",
+                                type: .discount(status: .ACTIVE)
                             )
                         ],
                         periods: [
@@ -72,6 +72,7 @@ public class hPaymentClientDemo: hPaymentClient {
                     ),
                 ],
                 referralDiscount: nil,
+                amountPerReferral: .sek(10),
                 paymentDetails: .init(paymentMethod: "Autogiro", account: "****124124", bank: "Handelsbanken"),
                 addedToThePayment: nil
             ),
@@ -96,10 +97,10 @@ public class hPaymentClientDemo: hPaymentClient {
                             discounts: [
                                 .init(
                                     code: "TOGETHER",
-                                    amount: .init(amount: "10", currency: "SEK"),
-                                    title: "15% discount for 12 months",
-                                    validUntil: nil,
-                                    discountId: "id"
+                                    displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                                    description: "15% discount for 12 months",
+                                    discountId: "TOGETHER",
+                                    type: .discount(status: .ACTIVE)
                                 )
                             ],
                             periods: [
@@ -122,10 +123,10 @@ public class hPaymentClientDemo: hPaymentClient {
                             discounts: [
                                 .init(
                                     code: "TOGETHER",
-                                    amount: .init(amount: "10", currency: "SEK"),
-                                    title: "15% discount for 12 months",
-                                    validUntil: nil,
-                                    discountId: "id"
+                                    displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                                    description: "15% discount for 12 months",
+                                    discountId: "TOGETHER",
+                                    type: .discount(status: .ACTIVE)
                                 )
                             ],
                             periods: [
@@ -141,6 +142,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         ),
                     ],
                     referralDiscount: nil,
+                    amountPerReferral: .sek(10),
                     paymentDetails: nil,
                     addedToThePayment: nil
                 )
@@ -176,6 +178,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         status: .success,
                         contracts: [],
                         referralDiscount: nil,
+                        amountPerReferral: .sek(10),
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
@@ -200,6 +203,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         status: .addedtoFuture(date: "2023-12-12"),
                         contracts: [],
                         referralDiscount: nil,
+                        amountPerReferral: .sek(10),
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )

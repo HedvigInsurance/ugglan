@@ -31,30 +31,12 @@ public struct DiscountDetailView: View {
                             .fill(hSurfaceColor.Translucent.primary)
                     )
                     Spacer()
-                    if let amount = vm.discount.amount {
-                        let formattedAmount =
-                            vm.options.contains(.forPayment)
-                            ? amount.formattedNegativeAmount : amount.formattedNegativeAmountPerMonth
-                        hText(formattedAmount)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                    } else if isReferral, let amount = vm.discount.amount {
-                        hText(amount.formattedNegativeAmountPerMonth)
-                    } else if vm.options.contains(.forPayment), let amount = vm.discount.amount {
-                        hText(amount.formattedNegativeAmount)
-                    }
+                    hText(vm.discount.displayValue, style: displayValueStyle)
+                        .foregroundColor(getStatusColor)
                 }
                 HStack(alignment: .top) {
-                    if let title = vm.discount.title {
+                    if let title = vm.discount.description {
                         hText(title, style: .label)
-                    }
-                    Spacer()
-                    if let validUntil = vm.discount.validUntil {
-                        if vm.shouldShowExpire {
-                            hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .label)
-                                .foregroundColor(hSignalColor.Red.element)
-                        } else {
-                            hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
-                        }
                     }
                 }
             }
@@ -68,6 +50,25 @@ public struct DiscountDetailView: View {
             hTextColor.Opaque.secondary
         } else {
             hTextColor.Opaque.primary
+        }
+    }
+    @hColorBuilder
+    private var getStatusColor: some hColor {
+        if vm.shouldShowExpire {
+            hSignalColor.Red.text
+        } else {
+            hTextColor.Opaque.secondary
+        }
+    }
+
+    private var displayValueStyle: HFontTextStyle {
+        switch vm.discount.type {
+        case .discount:
+            return .label
+        case .referral:
+            return .body1
+        case .paymentsDiscount:
+            return .body1
         }
     }
 }
@@ -94,7 +95,14 @@ public class PaymentDetailsDiscountViewModel: ObservableObject {
     }
 
     var shouldShowExpire: Bool {
-        options.contains(.showExpire) && !discount.isValid
+        switch discount.type {
+        case .discount(let status):
+            return status == .TERMINATED
+        case .referral:
+            return false
+        case .paymentsDiscount:
+            return false
+        }
     }
 }
 
@@ -102,23 +110,19 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-
         let discount1: Discount = .init(
             code: "231223",
-            amount: .sek(100),
-            title: "Very long name that needs to go into 2 rows so we can test it",
-            discountPerReferral: .sek(10),
-            validUntil: "2026-03-06",
-            discountId: "1"
+            displayValue: "",
+            description: "Very long name that needs to go into 2 rows so we can test it",
+            discountId: "1",
+            type: .paymentsDiscount
         )
-
         let discount2: Discount = .init(
-            code: "231223",
-            amount: .sek(100),
-            title: "Very long name that needs to go into 2 rows",
-            discountPerReferral: .sek(10),
-            validUntil: "2023-12-06",
-            discountId: "1"
+            code: "2312231",
+            displayValue: "",
+            description: "Very long name that needs to go into 2 rows",
+            discountId: "1",
+            type: .paymentsDiscount
         )
         return VStack {
             DiscountDetailView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
