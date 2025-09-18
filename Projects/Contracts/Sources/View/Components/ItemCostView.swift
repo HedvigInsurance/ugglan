@@ -18,7 +18,7 @@ struct ItemCostView: View {
         HStack(spacing: .padding2) {
             hText(L10n.detailsTableInsurancePremium)
             Spacer()
-            hText(itemCost.net.priceFormat(.perMonth))
+            hText(itemCost.premium.net?.priceFormat(.perMonth) ?? "")
                 .foregroundColor(hTextColor.Opaque.secondary)
             hCoreUIAssets.infoFilled.view
                 .foregroundColor(hFillColor.Opaque.secondary)
@@ -37,8 +37,8 @@ struct ItemCostView: View {
 
     private func infoButtonTapAction() {
         detentPriceBreakdownModel = .init(
-            initialValue: itemCost.gross,
-            newValue: itemCost.net,
+            initialValue: itemCost.premium.gross,
+            newValue: itemCost.premium.net ?? .sek(0),
             infoButtonDisplayItems: itemCost.discounts.map { item in
                 .init(title: item.displayName, value: item.displayValue)
             }
