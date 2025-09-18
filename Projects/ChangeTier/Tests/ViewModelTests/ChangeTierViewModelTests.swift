@@ -34,7 +34,8 @@ final class ChangeTierViewModelTests: XCTestCase {
                     quoteAmount: nil,
                     quotePercentage: nil,
                     subTitle: nil,
-                    basePremium: .init(amount: "229", currency: "SEK"),
+                    currentTotalCost: .init(gross: .sek(229), net: .sek(229)),
+                    newTotalCost: .init(gross: .sek(229), net: .sek(229)),
                     displayItems: [],
                     productVariant: .init(
                         termsVersion: "",
@@ -47,7 +48,8 @@ final class ChangeTierViewModelTests: XCTestCase {
                         displayNameTier: nil,
                         tierDescription: nil
                     ),
-                    addons: []
+                    addons: [],
+                    costBreakdown: []
                 )
             ],
             exposureName: "exposureName"
@@ -73,7 +75,6 @@ final class ChangeTierViewModelTests: XCTestCase {
             displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
-            currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: currentTier,
             currentQuote: nil,
             selectedTier: nil,
@@ -141,7 +142,6 @@ final class ChangeTierViewModelTests: XCTestCase {
             displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
-            currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: currentTier,
             currentQuote: nil,
             selectedTier: nil,
@@ -208,7 +208,6 @@ final class ChangeTierViewModelTests: XCTestCase {
             displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
-            currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: nil,
             currentQuote: nil,
             selectedTier: nil,
