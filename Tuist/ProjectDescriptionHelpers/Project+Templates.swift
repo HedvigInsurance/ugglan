@@ -107,16 +107,8 @@ extension Project {
                 deploymentTargets: .iOS("15.0"),
                 infoPlist: .default,
                 sources: "Testing/**/*.swift",
-                dependencies: [
-                    [
-                        .target(name: "\(name)"),
-                        .project(
-                            target: "DevDependencies",
-                            path: .relativeToRoot("Dependencies/DevDependencies")
-                        ),
-                    ], targetDependencies,
-                ]
-                .flatMap { $0 },
+                dependencies: []
+                    .flatMap { $0 },
                 settings: .settings(base: [:], configurations: frameworkConfigurations)
             )
 
@@ -176,13 +168,7 @@ extension Project {
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
                 dependencies: [
-                    [
-                        .target(name: "\(name)"),
-                        .project(
-                            target: "DevDependencies",
-                            path: .relativeToRoot("Dependencies/DevDependencies")
-                        ),
-                    ], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [],
+                    [], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [],
                     targetDependencies,
                 ]
                 .flatMap { $0 },
