@@ -253,6 +253,7 @@ public class ChatScreenViewModel: ObservableObject {
     private var pollTimerCancellable: AnyCancellable?
     var hideBannerCancellable: AnyCancellable?
     private var openDeepLinkObserver: NSObjectProtocol?
+    private var applicationStateCancellable: [AnyCancellable] = []
 
     public init(
         chatService: ChatServiceProtocol
@@ -308,6 +309,20 @@ public class ChatScreenViewModel: ObservableObject {
                 }
             }
         }
+
+        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .sink { [weak self] _ in
+                Task {
+                    await self?.startFetchingNewMessages()
+                }
+            }
+            .store(in: &applicationStateCancellable)
+
+        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+            .sink { [weak self] _ in
+                self?.pollTimerCancellable?.cancel()
+            }
+            .store(in: &applicationStateCancellable)
     }
 
     deinit {
