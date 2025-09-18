@@ -48,4 +48,4 @@ STRIP_INSTALLED_PRODUCT = NO
 SWIFT_OPTIMIZATION_LEVEL = -Onone
 
 // Use a faster hashing algorithm for signing and disable Developer ID timestamping
-OTHER_CODE_SIGN_FLAGS = --digest-algorithm=sha1 --timestamp=none
+OTHER_CODE_SIGN_FLAGS = --timestamp=none
