@@ -20,7 +20,9 @@ final class ContractsTests: XCTestCase {
                 .init(
                     id: "id",
                     currentAgreement: .init(
-                        premium: .init(amount: "234", currency: "SEK"),
+                        id: "id",
+                        basePremium: .sek(234),
+                        itemCost: .init(gross: .sek(234), net: .sek(234), discounts: []),
                         displayItems: [],
                         productVariant: .init(
                             termsVersion: "",
