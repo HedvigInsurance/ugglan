@@ -208,7 +208,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                             displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                             description: "15% discount for 12 months",
                             discountId: "TOGETHER",
-                            type: .discount(status: .ACTIVE)
+                            type: .discount(status: .active)
                         )
                     ],
                     periods: [
@@ -242,7 +242,7 @@ struct PaymentDetails_Previews: PreviewProvider {
                             displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                             description: "15% discount for 12 months",
                             discountId: "TOGETHER",
-                            type: .discount(status: .ACTIVE)
+                            type: .discount(status: .active)
                         )
                     ],
                     periods: [

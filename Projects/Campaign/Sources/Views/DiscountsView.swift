@@ -26,15 +26,22 @@ struct DiscountsView: View {
 
     private var discountsView: some View {
         ForEach(data.discountsData, id: \.id) { discountData in
-            hSection(discountData.discount) { discount in
+            hSection(discountData.discounts) { discount in
                 DiscountDetailView(
                     vm: .init(
                         options: [.showExpire],
                         discount: discount
                     )
                 )
-                .hWithoutDivider
-                hRowDivider()
+                if discount == discountData.discounts.last {
+                    Group {
+                        if let info = discountData.info {
+                            InfoCard(text: info, type: .info)
+                        } else {
+                            hRowDivider()
+                        }
+                    }
+                }
             }
             .withHeader(title: discountData.displayName)
         }
@@ -96,40 +103,42 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                     .init(
                         id: "id1",
                         displayName: "Dog Premium ∙ Fido",
-                        discount: [
+                        info: "Your insurance info",
+                        discounts: [
                             .init(
                                 code: "FURRY",
-                                displayValue: MonetaryAmount.sek(199).formattedAmountPerMonth,
+                                displayValue: "Active",
                                 description: "50% discount for 6 months",
                                 discountId: "id",
-                                type: .discount(status: .ACTIVE)
+                                type: .discount(status: .active)
                             ),
                             .init(
                                 code: "BUNDLE",
-                                displayValue: MonetaryAmount.sek(24).formattedAmountPerMonth,
+                                displayValue: "Active",
                                 description: "15% bundle discount",
                                 discountId: "id1",
-                                type: .discount(status: .ACTIVE)
+                                type: .discount(status: .active)
                             ),
                         ]
                     ),
                     .init(
                         id: "id2",
                         displayName: "House Standard ∙ Villagatan 25",
-                        discount: [
+                        info: nil,
+                        discounts: [
                             .init(
                                 code: "TOGETHER",
-                                displayValue: MonetaryAmount.sek(24).formattedAmountPerMonth,
+                                displayValue: "Expired 31 aug 2025",
                                 description: "15% discount for 12 months",
                                 discountId: "id3",
-                                type: .discount(status: .TERMINATED)
+                                type: .discount(status: .terminated)
                             ),
                             .init(
                                 code: "BUNDLE",
-                                displayValue: MonetaryAmount.sek(24).formattedAmountPerMonth,
+                                displayValue: "Pending",
                                 description: "15% bundle discount",
                                 discountId: "id4",
-                                type: .discount(status: .ACTIVE)
+                                type: .discount(status: .pending)
                             ),
                         ]
                     ),

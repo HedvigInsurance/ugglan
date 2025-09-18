@@ -55,7 +55,7 @@ public struct DiscountDetailView: View {
     @hColorBuilder
     private var getStatusColor: some hColor {
         if vm.shouldShowExpire {
-            hSignalColor.Red.text
+            hSignalColor.Red.element
         } else {
             hTextColor.Opaque.secondary
         }
@@ -97,7 +97,7 @@ public class PaymentDetailsDiscountViewModel: ObservableObject {
     var shouldShowExpire: Bool {
         switch discount.type {
         case .discount(let status):
-            return status == .TERMINATED
+            return status == .terminated
         case .referral:
             return false
         case .paymentsDiscount:

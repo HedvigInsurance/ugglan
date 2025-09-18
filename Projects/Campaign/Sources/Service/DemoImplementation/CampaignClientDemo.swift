@@ -7,14 +7,15 @@ public class hCampaignClientDemo: hCampaignClient {
             discountsData: [
                 .init(
                     id: "id",
-                    displayName: "display name",
-                    discount: [
+                    displayName: "Insurance",
+                    info: nil,
+                    discounts: [
                         .init(
                             code: "CODE",
                             displayValue: "-30 kr/mo",
                             description: "15% off for 1 year",
                             discountId: "CODE",
-                            type: .discount(status: .TERMINATED)
+                            type: .discount(status: .terminated)
                         )
                     ]
                 )

@@ -23,16 +23,22 @@ final class StoreDiscountsTests: XCTestCase {
         let discounts: [Discount] = [
             .init(
                 code: "code",
-                amount: .init(amount: "30", currency: "SEK"),
-                title: "title",
-                listOfAffectedInsurances: [],
-                validUntil: nil,
-                discountId: "id"
+                displayValue: MonetaryAmount.sek(30).formattedAmountPerMonth,
+                description: "title",
+                discountId: "code",
+                type: .discount(status: .terminated)
             )
         ]
 
         let discountsData: PaymentDiscountsData = .init(
-            discounts: discounts,
+            discountsData: [
+                DiscountsDataForInsurance.init(
+                    id: "contractId",
+                    displayName: "displayName",
+                    info: nil,
+                    discounts: discounts
+                )
+            ],
             referralsData: .init(
                 code: "code1",
                 discountPerMember: .init(amount: "10", currency: "SEK"),

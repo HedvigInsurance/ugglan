@@ -26,11 +26,10 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
 
         let discount: Discount = .init(
             code: "code",
-            amount: .init(amount: "20", currency: "SEK"),
-            title: "title",
-            listOfAffectedInsurances: [],
-            validUntil: nil,
-            discountId: "id"
+            displayValue: MonetaryAmount.sek(20).formattedAmountPerMonth,
+            description: "title",
+            discountId: "code",
+            type: .discount(status: .active)
         )
 
         let mockService = MockCampaignData.createMockCampaignService()
@@ -45,11 +44,10 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [.forPayment, .showExpire]
         let discount: Discount = .init(
             code: "code",
-            amount: .init(amount: "20", currency: "SEK"),
-            title: "title",
-            listOfAffectedInsurances: [],
-            validUntil: nil,
-            discountId: "id"
+            displayValue: MonetaryAmount.sek(20).formattedAmountPerMonth,
+            description: "title",
+            discountId: "code",
+            type: .discount(status: .active)
         )
 
         let mockService = MockCampaignData.createMockCampaignService()
@@ -62,23 +60,19 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
 
     func testPaymentDetailsDiscountViewModelExpireTrueSuccess() async throws {
         let options: PaymentDetailsDiscountViewModel.PaymentDetailsDiscountOptions = [.forPayment, .showExpire]
-        if let date = "2024-07-07".localDateToDate {
-            let nonValidServerBasedDate = date.localDateString
 
-            let discount: Discount = .init(
-                code: "code",
-                amount: .init(amount: "20", currency: "SEK"),
-                title: "title",
-                listOfAffectedInsurances: [],
-                validUntil: nonValidServerBasedDate,
-                discountId: "id"
-            )
+        let discount: Discount = .init(
+            code: "code",
+            displayValue: MonetaryAmount.sek(20).formattedAmountPerMonth,
+            description: "title",
+            discountId: "code",
+            type: .discount(status: .terminated)
+        )
 
-            let mockService = MockCampaignData.createMockCampaignService()
-            sut = mockService
-            let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
+        let mockService = MockCampaignData.createMockCampaignService()
+        sut = mockService
+        let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
-            assert(model.shouldShowExpire == true)
-        }
+        assert(model.shouldShowExpire == true)
     }
 }

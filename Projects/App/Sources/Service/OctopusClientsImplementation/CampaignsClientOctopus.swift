@@ -20,40 +20,64 @@ extension PaymentDiscountsData {
         with data: OctopusGraphQL.DiscountsQuery.Data,
         amountFromPaymentData: MonetaryAmount?
     ) {
-        var discountData = [DiscountsDataForInsurance]()
-        let activeContractsDiscountData: [DiscountsDataForInsurance?] = data.currentMember.activeContracts.map {
-            contract in
-            let discounts = contract.discountsDetails.discounts
-                .map { $0.fragments.contractDiscountDetailsItemFragment }
-                .map { item in
-                    Discount.init(with: item)
-                }
-            if discounts.isEmpty { return nil }
-            let displayName =
-                (contract.currentAgreement.productVariant.displayNameShort ?? "") + " • "
-                + contract.exposureDisplayNameShort
-            return DiscountsDataForInsurance.init(id: contract.id, displayName: displayName, discount: discounts)
-        }
-        discountData.append(contentsOf: activeContractsDiscountData.compactMap { $0 })
-        let pendingContractsDiscountData: [DiscountsDataForInsurance?] = data.currentMember.pendingContracts.map {
-            contract in
-            let discounts = contract.discountsDetails.discounts
-                .map { $0.fragments.contractDiscountDetailsItemFragment }
-                .map { item in
-                    Discount.init(with: item)
-                }
-            if discounts.isEmpty { return nil }
-            let displayName =
-                (contract.productVariant.displayNameShort ?? "") + " • " + contract.exposureDisplayNameShort
-
-            return DiscountsDataForInsurance.init(id: contract.id, displayName: displayName, discount: discounts)
-        }
-        discountData.append(contentsOf: pendingContractsDiscountData.compactMap { $0 })
-
+        let discountData = PaymentDiscountsData.getContractsDiscounts(from: data)
         self.init(
             discountsData: discountData,
             referralsData: .init(with: data.currentMember.referralInformation)
         )
+    }
+
+    private static func getContractsDiscounts(
+        from data: OctopusGraphQL.DiscountsQuery.Data
+    ) -> [DiscountsDataForInsurance] {
+        var contractsDiscounts = [DiscountsDataForInsurance]()
+        data.currentMember.activeContracts.forEach {
+            contract in
+            let displayName = [
+                contract.currentAgreement.productVariant.displayNameShort ?? "", contract.exposureDisplayNameShort,
+            ]
+            .displayName
+            PaymentDiscountsData.appendContradDiscount(
+                id: contract.id,
+                displayName: displayName,
+                info: contract.discountsDetails.discountsInfo,
+                from: contract.discountsDetails.discounts.map { $0.fragments.contractDiscountDetailsItemFragment },
+                to: &contractsDiscounts
+            )
+        }
+        data.currentMember.pendingContracts.forEach {
+            contract in
+            let displayName = [contract.productVariant.displayNameShort ?? "", contract.exposureDisplayNameShort]
+                .displayName
+            PaymentDiscountsData.appendContradDiscount(
+                id: contract.id,
+                displayName: displayName,
+                info: contract.discountsDetails.discountsInfo,
+                from: contract.discountsDetails.discounts.map { $0.fragments.contractDiscountDetailsItemFragment },
+                to: &contractsDiscounts
+            )
+        }
+        return contractsDiscounts
+    }
+
+    static private func appendContradDiscount(
+        id: String,
+        displayName: String,
+        info: String?,
+        from discountsData: [OctopusGraphQL.ContractDiscountDetailsItemFragment],
+        to list: inout [DiscountsDataForInsurance]
+    ) {
+        if discountsData.isEmpty { return }
+        let discounts = discountsData.map { item in
+            Discount.init(with: item)
+        }
+        let insuranceDiscounts = DiscountsDataForInsurance.init(
+            id: id,
+            displayName: displayName,
+            info: info,
+            discounts: discounts
+        )
+        list.append(insuranceDiscounts)
     }
 }
 
@@ -67,14 +91,14 @@ extension Discount {
             case .case(let status):
                 switch status {
                 case .active:
-                    return .ACTIVE
+                    return .active
                 case .pending:
-                    return .PENDING
+                    return .pending
                 case .terminated:
-                    return .TERMINATED
+                    return .terminated
                 }
             case .unknown:
-                return .ACTIVE
+                return .active
             }
         }()
         self.init(
@@ -84,21 +108,6 @@ extension Discount {
             discountId: data.campaignCode,
             type: .discount(status: status)
         )
-        //        self.init(
-        //            code: data.code,
-        //            amount: amountFromPaymentData,
-        //            title: data.description,
-        //            listOfAffectedInsurances: data.onlyApplicableToContracts?
-        //                .compactMap {
-        //                    .init(
-        //                        id: $0.id,
-        //                        displayName: $0.getDisplayName
-        //                    )
-        //                } ?? [],
-        //            validUntil: data.expiresAt,
-        //            canBeDeleted: true,
-        //            discountId: data.id
-        //        )
     }
     public init(
         with moneyFragment: OctopusGraphQL.MoneyFragment,

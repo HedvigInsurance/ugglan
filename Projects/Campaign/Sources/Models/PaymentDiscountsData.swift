@@ -15,12 +15,19 @@ public struct PaymentDiscountsData: Codable, Equatable, Sendable {
 public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
     public let id: String
     let displayName: String
-    public var discount: [Discount]
+    let info: String?
+    public var discounts: [Discount]
 
-    public init(id: String, displayName: String, discount: [Discount]) {
+    public init(
+        id: String,
+        displayName: String,
+        info: String?,
+        discounts: [Discount]
+    ) {
         self.id = id
         self.displayName = displayName
-        self.discount = discount
+        self.info = info
+        self.discounts = discounts
     }
 }
 
@@ -71,9 +78,9 @@ public enum DiscountType: Sendable, Codable, Hashable {
 }
 
 public enum DiscountStatus: String, Sendable, Codable, Hashable {
-    case ACTIVE
-    case PENDING
-    case TERMINATED
+    case active
+    case pending
+    case terminated
 }
 
 public struct ReferralsData: Equatable, Codable, Sendable {
