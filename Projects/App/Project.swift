@@ -114,10 +114,6 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Campaign", path: .relativeToRoot("Projects/Campaign")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
-        .project(
-            target: "ResourceBundledDependencies",
-            path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
-        ),
     ],
     sdkFrameworks,
 ]

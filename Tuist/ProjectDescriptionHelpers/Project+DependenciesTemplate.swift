@@ -21,12 +21,11 @@ public enum ExternalDependencies: CaseIterable {
     case presentableStore
     case environment
     case logger
-    public var isResourceBundledDependency: Bool { false }
 
     public var isAppDependency: Bool { self == .datadog }
 
     public var isCoreDependency: Bool {
-        !isResourceBundledDependency && !isAppDependency
+        !isAppDependency
             && self != .apolloIosCodegen
     }
 
