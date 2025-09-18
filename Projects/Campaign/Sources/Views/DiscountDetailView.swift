@@ -108,10 +108,6 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             amount: .sek(100),
             title: "Very long name that needs to go into 2 rows so we can test it",
             discountPerReferral: .sek(10),
-            listOfAffectedInsurances: [
-                .init(id: "id 11", displayName: "DISPLAY NAME"),
-                .init(id: "id 12", displayName: "DISPLAY NAME 2"),
-            ],
             validUntil: "2026-03-06",
             canBeDeleted: false,
             discountId: "1"
@@ -122,10 +118,6 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             amount: .sek(100),
             title: "Very long name that needs to go into 2 rows",
             discountPerReferral: .sek(10),
-            listOfAffectedInsurances: [
-                .init(id: "id 11", displayName: "DISPLAY NAME"),
-                .init(id: "id 12", displayName: "DISPLAY NAME 2"),
-            ],
             validUntil: "2023-12-06",
             canBeDeleted: false,
             discountId: "1"

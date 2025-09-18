@@ -29,7 +29,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 code: "TOGETHER",
                                 amount: .init(amount: "10", currency: "SEK"),
                                 title: "15% discount for 12 months",
-                                listOfAffectedInsurances: [],
                                 validUntil: nil,
                                 canBeDeleted: true,
                                 discountId: "id"
@@ -57,7 +56,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 code: "TOGETHER",
                                 amount: .init(amount: "10", currency: "SEK"),
                                 title: "15% discount for 12 months",
-                                listOfAffectedInsurances: [],
                                 validUntil: nil,
                                 canBeDeleted: true,
                                 discountId: "id"
@@ -102,7 +100,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     code: "TOGETHER",
                                     amount: .init(amount: "10", currency: "SEK"),
                                     title: "15% discount for 12 months",
-                                    listOfAffectedInsurances: [],
                                     validUntil: nil,
                                     canBeDeleted: true,
                                     discountId: "id"
@@ -130,7 +127,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     code: "TOGETHER",
                                     amount: .init(amount: "10", currency: "SEK"),
                                     title: "15% discount for 12 months",
-                                    listOfAffectedInsurances: [],
                                     validUntil: nil,
                                     canBeDeleted: true,
                                     discountId: "id"

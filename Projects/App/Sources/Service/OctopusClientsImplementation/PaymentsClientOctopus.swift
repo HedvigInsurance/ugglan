@@ -380,7 +380,6 @@ extension Discount {
             code: data.code,
             amount: .init(fragment: data.discount.fragments.moneyFragment),
             title: data.description,
-            listOfAffectedInsurances: [],
             validUntil: nil,
             canBeDeleted: true,
             discountId: ""

@@ -36,7 +36,7 @@ struct DiscountsView: View {
                 .hWithoutDivider
                 hRowDivider()
             }
-            .withHeader(title: discountData.insurance.displayName)
+            .withHeader(title: discountData.displayName)
         }
     }
 
@@ -94,7 +94,8 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
             data: .init(
                 discountsData: [
                     .init(
-                        insurance: .init(id: "insuranceId", displayName: "Dog Premium ∙ Fido"),
+                        id: "id1",
+                        displayName: "Dog Premium ∙ Fido",
                         discount: [
                             .init(
                                 code: "FURRY",
@@ -117,7 +118,8 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         ]
                     ),
                     .init(
-                        insurance: .init(id: "id31", displayName: "House Standard ∙ Villagatan 25"),
+                        id: "id2",
+                        displayName: "House Standard ∙ Villagatan 25",
                         discount: [
                             .init(
                                 code: "TOGETHER",

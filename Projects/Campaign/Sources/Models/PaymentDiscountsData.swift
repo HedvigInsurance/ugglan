@@ -12,13 +12,24 @@ public struct PaymentDiscountsData: Codable, Equatable, Sendable {
     }
 }
 
+public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
+    public let id: String
+    let displayName: String
+    public var discount: [Discount]
+
+    public init(id: String, displayName: String, discount: [Discount]) {
+        self.id = id
+        self.displayName = displayName
+        self.discount = discount
+    }
+}
+
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let code: String
     public let amount: MonetaryAmount?
     public let discountPerReferral: MonetaryAmount?
     let title: String?
-    public let listOfAffectedInsurances: [AffectedInsurance]?
     let validUntil: ServerBasedDate?
     let canBeDeleted: Bool
     let discountId: String
@@ -28,7 +39,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         amount: MonetaryAmount?,
         title: String?,
         discountPerReferral: MonetaryAmount? = nil,
-        listOfAffectedInsurances: [AffectedInsurance]? = nil,
         validUntil: ServerBasedDate?,
         canBeDeleted: Bool,
         discountId: String
@@ -38,7 +48,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.amount = amount
         self.discountPerReferral = discountPerReferral
         self.title = title
-        self.listOfAffectedInsurances = listOfAffectedInsurances
         self.validUntil = validUntil
         self.canBeDeleted = canBeDeleted
         self.discountId = discountId
@@ -55,7 +64,6 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.amount = referral.activeDiscount
         self.title = referral.description
         self.discountPerReferral = discountPerReferral
-        self.listOfAffectedInsurances = []
         self.validUntil = nil
         self.canBeDeleted = true
         self.discountId = referral.id
@@ -179,30 +187,5 @@ extension Referral {
         case .unknown:
             return ""
         }
-    }
-}
-
-public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id: String
-    let displayName: String
-
-    public init(
-        id: String,
-        displayName: String
-    ) {
-        self.id = id
-        self.displayName = displayName
-    }
-}
-
-public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
-    public let id: String
-    let insurance: AffectedInsurance
-    public var discount: [Discount]
-
-    public init(insurance: AffectedInsurance, discount: [Discount]) {
-        self.insurance = insurance
-        self.id = insurance.id
-        self.discount = discount
     }
 }

@@ -6,7 +6,8 @@ public class hCampaignClientDemo: hCampaignClient {
         return .init(
             discountsData: [
                 .init(
-                    insurance: .init(id: "1", displayName: "Car Insurance * ABH 234"),
+                    id: "id",
+                    displayName: "display name",
                     discount: [
                         .init(
                             code: "CODE",

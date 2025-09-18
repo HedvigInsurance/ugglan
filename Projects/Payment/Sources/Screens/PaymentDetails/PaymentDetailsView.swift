@@ -208,7 +208,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                             amount: .init(amount: "10", currency: "SEK"),
                             title: "15% discount for 12 months",
                             discountPerReferral: .sek(10),
-                            listOfAffectedInsurances: [],
                             validUntil: nil,
                             canBeDeleted: true,
                             discountId: "id"
@@ -245,7 +244,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                             amount: .init(amount: "10", currency: "SEK"),
                             title: "15% discount for 12 months",
                             discountPerReferral: .sek(10),
-                            listOfAffectedInsurances: [],
                             validUntil: nil,
                             canBeDeleted: true,
                             discountId: "id"
@@ -277,7 +275,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                     amount: .sek(30),
                     title: "3 friends invited",
                     discountPerReferral: .sek(10),
-                    listOfAffectedInsurances: [],
                     validUntil: nil,
                     canBeDeleted: false,
                     discountId: "FRIENDS"

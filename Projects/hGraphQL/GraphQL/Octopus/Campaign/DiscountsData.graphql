@@ -1,17 +1,26 @@
 query Discounts {
   currentMember {
-    ...ReedemCampaignsFragment
+	activeContracts {
+		discountsDetails {
+			...ContractDiscountDetailsFragment
+		}
+	}
+	pendingContracts {
+		discountsDetails {
+			...ContractDiscountDetailsFragment
+		}
+	}
     referralInformation {
-      code
-      monthlyDiscountPerReferral {
-        ...MoneyFragment
-      }
-      referrals {
-        ...MemberReferralFragment2
-      }
-      referredBy {
-        ...MemberReferralFragment2
-      }
+		code
+		monthlyDiscountPerReferral {
+			...MoneyFragment
+		}
+		referrals {
+			...MemberReferralFragment2
+		}
+		referredBy {
+			...MemberReferralFragment2
+		}
     }
   }
 }
@@ -25,23 +34,12 @@ fragment MemberReferralFragment2 on MemberReferral {
         }
 }
 
-fragment ReedemCampaignsFragment on Member {
-    redeemedCampaigns {
-        code
-        description
-        type
-        id
-        expiresAt
-        onlyApplicableToContracts {
-            exposureDisplayName
-            exposureDisplayNameShort
-            currentAgreement {
-                productVariant {
-                    displayNameShort
-                    displayName
-                }
-            }
-            id
-        }
-    }
+fragment ContractDiscountDetailsFragment on ContractDiscountDetails {
+	discountsInfo
+	discounts {
+	  campaignCode
+	  description
+	  discountStatus
+	  statusDescription
+	}
 }
