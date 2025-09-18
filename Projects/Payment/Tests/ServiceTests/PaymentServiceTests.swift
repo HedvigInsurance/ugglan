@@ -49,7 +49,7 @@ final class PaymentServiceTests: XCTestCase {
                     status: .pending,
                     contracts: [],
                     referralDiscount: nil,
-                    amountPerReferral: .sek(20),
+                    amountPerReferral: .sek(10),
                     paymentDetails: nil,
                     addedToThePayment: nil
                 )

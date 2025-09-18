@@ -38,7 +38,7 @@ struct MockPaymentData {
                         status: .pending,
                         contracts: [],
                         referralDiscount: nil,
-                        amountPerReferral: .sek(20),
+                        amountPerReferral: .sek(25),
                         paymentDetails: nil,
                         addedToThePayment: nil
                     )
