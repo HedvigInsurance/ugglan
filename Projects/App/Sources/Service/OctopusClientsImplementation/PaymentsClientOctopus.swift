@@ -64,10 +64,22 @@ class hPaymentClientOctopus: hPaymentClient {
             cachePolicy: .fetchIgnoringCacheCompletely
         )
 
+        let amountPerReferral = MonetaryAmount(
+            fragment: data.currentMember.referralInformation.monthlyDiscountPerReferral.fragments
+                .moneyFragment
+        )
         let paymentDetails = PaymentData.PaymentDetails(with: paymentDetailsData)
-        let upcomingPayment = PaymentData(with: data, paymentDetails: paymentDetails)
+        let upcomingPayment = PaymentData(
+            with: data,
+            paymentDetails: paymentDetails,
+            amountPerReferral: amountPerReferral
+        )
         let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap {
-            .init(with: $0.fragments.memberChargeFragment, paymentDataQueryCurrentMember: data.currentMember)
+            .init(
+                with: $0.fragments.memberChargeFragment,
+                paymentDataQueryCurrentMember: data.currentMember,
+                amountPerReferral: amountPerReferral
+            )
         }
         return (upcomingPayment, ongoingPayments)
     }
@@ -99,7 +111,8 @@ extension PaymentData {
     // used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
-        paymentDetails: PaymentDetails?
+        paymentDetails: PaymentDetails?,
+        amountPerReferral: MonetaryAmount
     ) {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
@@ -110,15 +123,12 @@ extension PaymentData {
                     .asReedeemedCampaing()
                 return Discount.init(
                     with: referalDiscount,
-                    discountDto: referralDescription,
-                    discountPerReferral: .init(
-                        fragment: data.currentMember.referralInformation.monthlyDiscountPerReferral.fragments
-                            .moneyFragment
-                    )
+                    discountDto: referralDescription
                 )
             }
             return nil
         }()
+
         self.init(
             id: data.currentMember.futureCharge?.id ?? "",
             payment: .init(with: chargeFragment),
@@ -127,6 +137,7 @@ extension PaymentData {
                 .init(with: $0)
             },
             referralDiscount: referralDiscount,
+            amountPerReferral: amountPerReferral,
             paymentDetails: paymentDetails,
             addedToThePayment: []
         )
@@ -136,13 +147,14 @@ extension PaymentData {
     init(
         with data: OctopusGraphQL.MemberChargeFragment,
         paymentDataQueryCurrentMember: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember,
+        amountPerReferral: MonetaryAmount
     ) {
         let referralDiscount: Discount? = {
             if let referalDiscount = data.referralDiscount?.fragments.moneyFragment {
                 let referralDescription = paymentDataQueryCurrentMember.referralInformation.fragments
                     .memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount(with: referalDiscount, discountDto: referralDescription, discountPerReferral: nil)
+                return Discount(with: referalDiscount, discountDto: referralDescription)
             }
             return nil
         }()
@@ -154,6 +166,7 @@ extension PaymentData {
                 .init(with: $0)
             },
             referralDiscount: referralDiscount,
+            amountPerReferral: amountPerReferral,
             paymentDetails: nil,
             addedToThePayment: []
         )
@@ -319,12 +332,15 @@ extension PaymentData {
         referralInfo: OctopusGraphQL.PaymentHistoryDataQuery.Data.CurrentMember.ReferralInformation,
         nextPayment: PaymentData? = nil
     ) {
+        let amountPerReferral = MonetaryAmount(
+            fragment: referralInfo.monthlyDiscountPerReferral.fragments.moneyFragment
+        )
         let chargeFragment = data
         let referralDiscount: Discount? = {
             if let referalDiscount = chargeFragment.referralDiscount?.fragments.moneyFragment {
                 let referralDescription = referralInfo.fragments.memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
-                return Discount(with: referalDiscount, discountDto: referralDescription, discountPerReferral: nil)
+                return Discount(with: referalDiscount, discountDto: referralDescription)
             }
             return nil
         }()
@@ -334,6 +350,7 @@ extension PaymentData {
             status: PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment),
             contracts: chargeFragment.chargeBreakdown.compactMap { .init(with: $0) },
             referralDiscount: referralDiscount,
+            amountPerReferral: amountPerReferral,
             paymentDetails: nil,
             addedToThePayment: {
                 if let nextPayment {
@@ -378,12 +395,10 @@ extension Discount {
     ) {
         self.init(
             code: data.code,
-            amount: .init(fragment: data.discount.fragments.moneyFragment),
-            title: data.description,
-            listOfAffectedInsurances: [],
-            validUntil: nil,
-            canBeDeleted: true,
-            discountId: ""
+            displayValue: MonetaryAmount(fragment: data.discount.fragments.moneyFragment).formattedNegativeAmount,
+            description: data.description,
+            discountId: data.code,
+            type: .paymentsDiscount
         )
     }
 }

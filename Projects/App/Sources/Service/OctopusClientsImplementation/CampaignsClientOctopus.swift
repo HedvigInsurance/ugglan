@@ -20,67 +20,109 @@ extension PaymentDiscountsData {
         with data: OctopusGraphQL.DiscountsQuery.Data,
         amountFromPaymentData: MonetaryAmount?
     ) {
-        let discounts: [Discount] = data.currentMember.redeemedCampaigns.filter { $0.type == .voucher }
-            .compactMap { .init(with: $0, amountFromPaymentData: amountFromPaymentData) }
-
-        let insuranceToDiscounts = discounts.reduce(into: [String: DiscountsDataForInsurance]()) { result, discount in
-            discount.listOfAffectedInsurances?
-                .forEach { insurance in
-                    if result[insurance.id] != nil {
-                        result[insurance.id]?.discount.append(discount)
-                    } else {
-                        result[insurance.id] = DiscountsDataForInsurance(
-                            insurance: insurance,
-                            discount: [discount]
-                        )
-                    }
-                }
-        }
+        let discountData = PaymentDiscountsData.getContractsDiscounts(from: data)
         self.init(
-            discountsData: Array(insuranceToDiscounts.values),
+            discountsData: discountData,
             referralsData: .init(with: data.currentMember.referralInformation)
         )
+    }
+
+    private static func getContractsDiscounts(
+        from data: OctopusGraphQL.DiscountsQuery.Data
+    ) -> [DiscountsDataForInsurance] {
+        var contractsDiscounts = [DiscountsDataForInsurance]()
+        data.currentMember.activeContracts.forEach {
+            contract in
+            let displayName = [
+                contract.currentAgreement.productVariant.displayNameShort ?? "", contract.exposureDisplayNameShort,
+            ]
+            .displayName
+            PaymentDiscountsData.appendContractDiscount(
+                id: contract.id,
+                displayName: displayName,
+                info: contract.discountsDetails.discountsInfo,
+                from: contract.discountsDetails.discounts.map { $0.fragments.contractDiscountDetailsItemFragment },
+                to: &contractsDiscounts
+            )
+        }
+        data.currentMember.pendingContracts.forEach {
+            contract in
+            let displayName = [contract.productVariant.displayNameShort ?? "", contract.exposureDisplayNameShort]
+                .displayName
+            PaymentDiscountsData.appendContractDiscount(
+                id: contract.id,
+                displayName: displayName,
+                info: contract.discountsDetails.discountsInfo,
+                from: contract.discountsDetails.discounts.map { $0.fragments.contractDiscountDetailsItemFragment },
+                to: &contractsDiscounts
+            )
+        }
+        return contractsDiscounts
+    }
+
+    static private func appendContractDiscount(
+        id: String,
+        displayName: String,
+        info: String?,
+        from discountsData: [OctopusGraphQL.ContractDiscountDetailsItemFragment],
+        to list: inout [DiscountsDataForInsurance]
+    ) {
+        if discountsData.isEmpty { return }
+        let discounts = discountsData.map { item in
+            Discount.init(with: item)
+        }
+        let insuranceDiscounts = DiscountsDataForInsurance.init(
+            id: id,
+            displayName: displayName,
+            info: info,
+            discounts: discounts
+        )
+        list.append(insuranceDiscounts)
     }
 }
 
 @MainActor
 extension Discount {
     init(
-        with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign,
-        amountFromPaymentData: MonetaryAmount?
+        with data: OctopusGraphQL.ContractDiscountDetailsItemFragment
     ) {
         self.init(
-            code: data.code,
-            amount: amountFromPaymentData,
-            title: data.description,
-            listOfAffectedInsurances: data.onlyApplicableToContracts?
-                .compactMap {
-                    .init(
-                        id: $0.id,
-                        displayName: $0.getDisplayName
-                    )
-                } ?? [],
-            validUntil: data.expiresAt,
-            canBeDeleted: true,
-            discountId: data.id
+            code: data.campaignCode,
+            displayValue: data.statusDescription,
+            description: data.description,
+            discountId: data.campaignCode,
+            type: .discount(status: data.discountStatus.asDiscountStatus)
         )
     }
-
     public init(
         with moneyFragment: OctopusGraphQL.MoneyFragment,
-        discountDto discount: ReedeemedCampaingDTO?,
-        discountPerReferral: MonetaryAmount?
+        discountDto discount: ReedeemedCampaingDTO?
     ) {
         self.init(
             code: discount?.code ?? "",
-            amount: .init(fragment: moneyFragment),
-            title: discount?.description ?? "",
-            discountPerReferral: discountPerReferral,
-            listOfAffectedInsurances: [],
-            validUntil: nil,
-            canBeDeleted: false,
-            discountId: UUID().uuidString
+            displayValue: MonetaryAmount(fragment: moneyFragment).formattedAmount,
+            description: discount?.description,
+            discountId: discount?.code ?? "",
+            type: .paymentsDiscount
         )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ContractDiscountStatus> {
+    fileprivate var asDiscountStatus: DiscountStatus {
+        switch self {
+        case .case(let status):
+            switch status {
+            case .active:
+                return .active
+            case .pending:
+                return .pending
+            case .terminated:
+                return .terminated
+            }
+        case .unknown:
+            return .active
+        }
     }
 }
 
@@ -162,15 +204,5 @@ extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
         case .unknown:
             return .unknown
         }
-    }
-}
-
-extension OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign.OnlyApplicableToContract {
-    fileprivate var getDisplayName: String {
-        [
-            currentAgreement.productVariant.displayNameShort ?? currentAgreement.productVariant.displayName,
-            exposureDisplayNameShort,
-        ]
-        .displayName
     }
 }

@@ -12,68 +12,75 @@ public struct PaymentDiscountsData: Codable, Equatable, Sendable {
     }
 }
 
+public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
+    public let id: String
+    let displayName: String
+    let info: String?
+    public var discounts: [Discount]
+
+    public init(
+        id: String,
+        displayName: String,
+        info: String?,
+        discounts: [Discount]
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.info = info
+        self.discounts = discounts
+    }
+}
+
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
+    public static func == (lhs: Discount, rhs: Discount) -> Bool {
+        lhs.id == rhs.id
+    }
     public let id: String
     public let code: String
-    public let amount: MonetaryAmount?
-    public let discountPerReferral: MonetaryAmount?
-    let title: String?
-    public let listOfAffectedInsurances: [AffectedInsurance]?
-    let validUntil: ServerBasedDate?
-    let canBeDeleted: Bool
+    public let displayValue: String
+    public let description: String?
+    public let type: DiscountType
     let discountId: String
 
     public init(
         code: String,
-        amount: MonetaryAmount?,
-        title: String?,
-        discountPerReferral: MonetaryAmount? = nil,
-        listOfAffectedInsurances: [AffectedInsurance]? = nil,
-        validUntil: ServerBasedDate?,
-        canBeDeleted: Bool,
-        discountId: String
+        displayValue: String,
+        description: String?,
+        discountId: String,
+        type: DiscountType
     ) {
-        id = UUID().uuidString
+        self.id = UUID().uuidString
         self.code = code
-        self.amount = amount
-        self.discountPerReferral = discountPerReferral
-        self.title = title
-        self.listOfAffectedInsurances = listOfAffectedInsurances
-        self.validUntil = validUntil
-        self.canBeDeleted = canBeDeleted
+        self.displayValue = displayValue
         self.discountId = discountId
+        self.description = description
+        self.type = type
     }
 
     @MainActor
     public init(
         referral: Referral,
         nbOfReferrals: Int,
-        discountPerReferral: MonetaryAmount? = nil,
     ) {
         self.id = UUID().uuidString
         self.code = referral.code ?? referral.name
-        self.amount = referral.activeDiscount
-        self.title = referral.description
-        self.discountPerReferral = discountPerReferral
-        self.listOfAffectedInsurances = []
-        self.validUntil = nil
-        self.canBeDeleted = true
+        self.displayValue = referral.activeDiscount?.formattedNegativeAmountPerMonth ?? ""
+        self.description = referral.description
         self.discountId = referral.id
+        self.type = .referral
     }
+}
 
-    @MainActor
-    var isValid: Bool {
-        if let validUntil = validUntil?.localDateToDate {
-            let components = Calendar.current.dateComponents(
-                [.day],
-                from: Date(),
-                to: validUntil
-            )
-            let isValid = components.day ?? 0 >= 0
-            return isValid
-        }
-        return true
-    }
+public enum DiscountType: Sendable, Codable, Hashable {
+    case discount(status: DiscountStatus)
+    case referral
+    case paymentsDiscount
+}
+
+public enum DiscountStatus: String, Sendable, Codable, Hashable {
+    case active
+    case pending
+    case terminated
 }
 
 public struct ReferralsData: Equatable, Codable, Sendable {
@@ -179,30 +186,5 @@ extension Referral {
         case .unknown:
             return ""
         }
-    }
-}
-
-public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id: String
-    let displayName: String
-
-    public init(
-        id: String,
-        displayName: String
-    ) {
-        self.id = id
-        self.displayName = displayName
-    }
-}
-
-public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
-    public let id: String
-    let insurance: AffectedInsurance
-    public var discount: [Discount]
-
-    public init(insurance: AffectedInsurance, discount: [Discount]) {
-        self.insurance = insurance
-        self.id = insurance.id
-        self.discount = discount
     }
 }

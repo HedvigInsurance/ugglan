@@ -26,17 +26,24 @@ struct DiscountsView: View {
 
     private var discountsView: some View {
         ForEach(data.discountsData, id: \.id) { discountData in
-            hSection(discountData.discount) { discount in
+            hSection(discountData.discounts) { discount in
                 DiscountDetailView(
                     vm: .init(
                         options: [.showExpire],
                         discount: discount
                     )
                 )
-                .hWithoutDivider
-                hRowDivider()
+                if discount == discountData.discounts.last {
+                    Group {
+                        if let info = discountData.info {
+                            InfoCard(text: info, type: .info)
+                        } else {
+                            hRowDivider()
+                        }
+                    }
+                }
             }
-            .withHeader(title: discountData.insurance.displayName)
+            .withHeader(title: discountData.displayName)
         }
     }
 
@@ -94,48 +101,44 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
             data: .init(
                 discountsData: [
                     .init(
-                        insurance: .init(id: "insuranceId", displayName: "Dog Premium ∙ Fido"),
-                        discount: [
+                        id: "id1",
+                        displayName: "Dog Premium ∙ Fido",
+                        info: "Your insurance info",
+                        discounts: [
                             .init(
                                 code: "FURRY",
-                                amount: .sek(199),
-                                title: "50% discount for 6 months",
-                                discountPerReferral: .sek(10),
-                                validUntil: "2026-03-31",
-                                canBeDeleted: true,
-                                discountId: "id"
+                                displayValue: "Active",
+                                description: "50% discount for 6 months",
+                                discountId: "id",
+                                type: .discount(status: .active)
                             ),
                             .init(
                                 code: "BUNDLE",
-                                amount: .sek(24),
-                                title: "15% bundle discount",
-                                discountPerReferral: .sek(10),
-                                validUntil: nil,
-                                canBeDeleted: true,
-                                discountId: "id1"
+                                displayValue: "Active",
+                                description: "15% bundle discount",
+                                discountId: "id1",
+                                type: .discount(status: .active)
                             ),
                         ]
                     ),
                     .init(
-                        insurance: .init(id: "id31", displayName: "House Standard ∙ Villagatan 25"),
-                        discount: [
+                        id: "id2",
+                        displayName: "House Standard ∙ Villagatan 25",
+                        info: nil,
+                        discounts: [
                             .init(
                                 code: "TOGETHER",
-                                amount: .sek(24),
-                                title: "15% discount for 12 months",
-                                discountPerReferral: .sek(10),
-                                validUntil: "2025-07-31",
-                                canBeDeleted: false,
-                                discountId: "id3"
+                                displayValue: "Expired 31 aug 2025",
+                                description: "15% discount for 12 months",
+                                discountId: "id3",
+                                type: .discount(status: .terminated)
                             ),
                             .init(
                                 code: "BUNDLE",
-                                amount: .sek(24),
-                                title: "15% bundle discount",
-                                discountPerReferral: .sek(10),
-                                validUntil: nil,
-                                canBeDeleted: false,
-                                discountId: "id31"
+                                displayValue: "Pending",
+                                description: "15% bundle discount",
+                                discountId: "id4",
+                                type: .discount(status: .pending)
                             ),
                         ]
                     ),
