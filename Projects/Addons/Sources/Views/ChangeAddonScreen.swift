@@ -99,7 +99,6 @@ struct ChangeAddonScreen: View {
                     changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
                 }
                 .padding(.top, .padding16)
-                //            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary]) /* TODO: CHECK DARK THEME DESIGN */
                 .hWithoutHorizontalPadding([.section])
                 .accessibilityHidden(false)
             }
