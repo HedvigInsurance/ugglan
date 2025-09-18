@@ -13,7 +13,12 @@ extension View {
 @available(iOS 16, *)
 struct DismissKeyboardModifier: ViewModifier {
     func body(content: Content) -> some View {
-        content
-            .scrollDismissesKeyboard(.interactively)
+        if #available(iOS 26, *) {
+            content
+                .scrollDismissesKeyboard(.interactively)
+        } else {
+            content
+                .scrollDismissesKeyboard(.immediately)
+        }
     }
 }
