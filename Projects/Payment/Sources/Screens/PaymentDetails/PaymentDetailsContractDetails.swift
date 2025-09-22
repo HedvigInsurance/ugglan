@@ -18,14 +18,8 @@ struct ContractDetails: View {
         hRow {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top, spacing: .padding8) {
-                    if expandedContracts.contains(contract.id) {
-                        hText(contract.title)
-                            .multilineTextAlignment(.leading)
-                    } else {
-                        hText(contract.title)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(1)
-                    }
+                    hText(contract.title)
+                        .multilineTextAlignment(.leading)
                     Spacer()
 
                     hText(contract.netAmount.formattedAmount)
@@ -44,7 +38,7 @@ struct ContractDetails: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
-            .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
+            .fixedSize(horizontal: false, vertical: true)
         }
         .withEmptyAccessory
         .onTap {
