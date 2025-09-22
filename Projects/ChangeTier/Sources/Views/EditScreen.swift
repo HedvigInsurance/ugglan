@@ -1,3 +1,4 @@
+import Addons
 import SwiftUI
 import hCore
 import hCoreUI
@@ -25,14 +26,21 @@ struct EditScreen: View {
             } else {
                 quotes = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
             }
-        } else {
+        } else if type == .tier {
             _selectedItem = State(initialValue: vm.selectedTier?.name ?? vm.tiers.first?.name)
+            quotes = []
+        } else {
+            _selectedItem = State(initialValue: vm.selectedAddon?.displayName ?? vm.currentAddon?.displayName ?? "")
             quotes = []
         }
     }
 
+    private var listToDisplayAddons: [AddonQuote] {
+        vm.relatedAddons.sorted(by: { $0.itemCost.premium.net?.value ?? 0 > $1.itemCost.premium.net?.value ?? 0 })
+    }
+
     private var listToDisplayDeductible: [Quote] {
-        quotes.sorted(by: { $0.newTotalCost.net.value > $1.newTotalCost.net.value })
+        quotes.sorted(by: { $0.newTotalCost.net?.value ?? 0 > $1.newTotalCost.net?.value ?? 0 })
     }
 
     private var listToDisplayTiers: [Tier] {
@@ -53,8 +61,8 @@ struct EditScreen: View {
             bottomView
         }
         .configureTitleView(
-            title: type == .deductible ? L10n.tierFlowSelectDeductibleTitle : L10n.tierFlowSelectCoverageTitle,
-            subTitle: type == .deductible ? L10n.tierFlowSelectDeductibleSubtitle : L10n.tierFlowSelectCoverageSubtitle
+            title: type.title,
+            subTitle: type.subTitle
         )
     }
 
@@ -72,11 +80,22 @@ struct EditScreen: View {
                     )
                     .hFieldLeftAttachedView
                 }
-            } else {
+            } else if type == .tier {
                 ForEach(listToDisplayTiers, id: \.self) { tier in
                     hRadioField(
                         id: tier.name,
                         leftView: { leftViewForTier(tier) },
+                        selected: $selectedItem,
+                        error: nil,
+                        useAnimation: true
+                    )
+                    .hFieldLeftAttachedView
+                }
+            } else {
+                ForEach(listToDisplayAddons, id: \.self) { addon in
+                    hRadioField(
+                        id: addon.displayName ?? "",
+                        leftView: { leftViewForAddon(addon) },
                         selected: $selectedItem,
                         error: nil,
                         useAnimation: true
@@ -90,7 +109,7 @@ struct EditScreen: View {
     private func leftViewForQuote(_ quote: Quote) -> AnyView {
         leftView(
             title: quote.displayTitle,
-            premium: quote.newTotalCost.net.formattedAmountPerMonth,
+            premium: quote.newTotalCost.net?.formattedAmountPerMonth,
             subTitle: quote.subTitle
         )
     }
@@ -100,6 +119,14 @@ struct EditScreen: View {
             title: tier.quotes.first?.productVariant?.displayNameTier ?? tier.name,
             premium: tier.getPremiumLabel(),
             subTitle: tier.quotes.first?.productVariant?.tierDescription
+        )
+    }
+
+    private func leftViewForAddon(_ addon: AddonQuote) -> AnyView {
+        leftView(
+            title: addon.displayName ?? "",
+            premium: addon.itemCost.premium.net?.formattedAmountPerMonth,
+            subTitle: nil
         )
     }
 
@@ -138,9 +165,14 @@ struct EditScreen: View {
                         }
                     )
                     .accessibilityHint(selectedQuoteAccessibilityHint)
-                } else {
+                } else if type == .tier {
                     hContinueButton {
                         confirmTier()
+                    }
+                    .accessibilityHint(selectedTierAccessibilityHint)
+                } else {
+                    hContinueButton {
+                        confirmAddon()
                     }
                     .accessibilityHint(selectedTierAccessibilityHint)
                 }
@@ -173,6 +205,11 @@ struct EditScreen: View {
         changeTierNavigationVm.isEditTierPresented = nil
     }
 
+    private func confirmAddon() {
+        vm.setAddon(for: selectedItem ?? "")
+        changeTierNavigationVm.isEditTierPresented = nil
+    }
+
     private func cancelEditTier() {
         changeTierNavigationVm.isEditTierPresented = nil
     }
@@ -181,6 +218,23 @@ struct EditScreen: View {
 enum EditTierType {
     case tier
     case deductible
+    case addon
+
+    var title: String {
+        switch self {
+        case .tier: return L10n.tierFlowSelectCoverageTitle
+        case .deductible: return L10n.tierFlowSelectDeductibleTitle
+        case .addon: return "Travel protection"
+        }
+    }
+
+    var subTitle: String {
+        switch self {
+        case .tier: return L10n.tierFlowSelectCoverageSubtitle
+        case .deductible: return L10n.tierFlowSelectDeductibleSubtitle
+        case .addon: return "Choose your coverage"
+        }
+    }
 }
 
 #Preview {

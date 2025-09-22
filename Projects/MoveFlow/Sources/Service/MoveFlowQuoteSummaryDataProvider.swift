@@ -11,7 +11,7 @@ class MoveFlowQuoteSummaryDataProvider: QuoteSummaryDataProvider {
         self.selectedHomeQuoteId = selectedHomeQuoteId
     }
 
-    func getTotal(includedAddonIds: [String]) async throws -> Premium {
+    func getTotal(includedAddonIds: [String]) async throws -> IntentCost {
         try await client.getMoveIntentCost(
             input: .init(
                 intentId: intentId,

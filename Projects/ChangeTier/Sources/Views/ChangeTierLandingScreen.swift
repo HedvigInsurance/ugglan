@@ -83,6 +83,7 @@ public struct ChangeTierLandingScreen: View {
 
             VStack(spacing: .padding4) {
                 editTierView
+                addonView
                 if vm.showDeductibleField {
                     deductibleView
                 }
@@ -102,7 +103,7 @@ public struct ChangeTierLandingScreen: View {
 
     private func getPriceSubtitle() -> String? {
         if let currentPremium = vm.currentTotalCost, vm.newTotalCost != currentPremium {
-            let formattedAmount = currentPremium.net.priceFormat(PriceFormatting.perMonth)
+            let formattedAmount = currentPremium.net?.priceFormat(PriceFormatting.perMonth) ?? ""
             return L10n.tierFlowPreviousPrice(formattedAmount)
         }
         return nil
@@ -136,6 +137,19 @@ public struct ChangeTierLandingScreen: View {
                     ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
             ) {
                 changeTierNavigationVm.isEditTierPresented = .init(type: .tier)
+            }
+            .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
+        }
+    }
+
+    @ViewBuilder
+    private var addonView: some View {
+        if let selectedAddon = vm.selectedAddon {
+            DropdownView(
+                value: selectedAddon.displayName ?? "",
+                placeHolder: "Travel protection"
+            ) {
+                changeTierNavigationVm.isEditTierPresented = .init(type: .addon)
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }

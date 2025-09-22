@@ -340,6 +340,7 @@ public struct MovingFlowNavigation: View {
             if let requestVm {
                 movingFlowNavigationVm.moveQuotesModel = requestVm
             }
+
             router.push(MovingFlowRouterActions.confirm)
         }
         return ChangeTierNavigation(input: model, router: router)

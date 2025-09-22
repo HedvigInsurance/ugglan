@@ -52,8 +52,11 @@ extension ChangeAddonViewModel {
             isAddon: true,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    gross: nil,
-                    net: getTotalPrice()
+                    totalCost: .init(
+                        gross: nil,
+                        net: getTotalPrice()
+                    ),
+                    quoteCosts: []
                 )
             )
         ) { [weak self, weak changeAddonNavigationVm] in

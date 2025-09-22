@@ -1,3 +1,4 @@
+import Addons
 import ChangeTier
 import Foundation
 import MoveFlow
@@ -108,7 +109,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         }
     }
 
-    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium {
+    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
         let query = OctopusGraphQL.MoveIntentCostQuery(
             intentId: input.intentId,
             selectedAddonIds: input.selectedAddons,
@@ -118,7 +119,15 @@ class MoveFlowClientOctopus: MoveFlowClient {
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let totalGross = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyGross.fragments.moneyFragment)
         let totalNet = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyNet.fragments.moneyFragment)
-        return .init(gross: totalGross, net: totalNet)
+
+        let quoteCosts: [QuoteCost] = data.moveIntentCost.quoteCosts.map({
+            .init(id: $0.quoteId, cost: .init(fragment: $0.cost.fragments.itemCostFragment))
+        })
+
+        return .init(
+            totalCost: .init(gross: totalGross, net: totalNet),
+            quoteCosts: quoteCosts
+        )
     }
 }
 
@@ -327,6 +336,7 @@ extension ChangeTierIntentModel {
             }
             return (nil, nil)
         }()
+
         let intentModel: ChangeTierIntentModel = .init(
             displayName: currentTierAndQuote.deductible?.productVariant?.displayName ?? tiers.first?.quotes
                 .first?
@@ -339,7 +349,21 @@ extension ChangeTierIntentModel {
             selectedTier: currentTierAndQuote.tier,
             selectedQuote: currentTierAndQuote.deductible,
             canEditTier: true,
-            typeOfContract: TypeOfContract.resolve(for: data.first?.productVariant.typeOfContract ?? "")
+            typeOfContract: TypeOfContract.resolve(for: data.first?.productVariant.typeOfContract ?? ""),
+            relatedAddons: data.first?.addons
+                .map({
+                    AddonQuote(
+                        displayName: $0.coverageDisplayName,
+                        displayNameLong: "",
+                        quoteId: "",
+                        addonId: $0.addonId,
+                        addonSubtype: "",
+                        displayItems: [],
+                        itemCost: .init(fragment: $0.cost.fragments.itemCostFragment),
+                        addonVariant: nil,
+                        documents: []
+                    )
+                }) ?? []
         )
         return intentModel
     }

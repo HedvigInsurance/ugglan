@@ -2,16 +2,16 @@ import hCore
 
 @MainActor
 public protocol QuoteSummaryDataProvider {
-    func getTotal(includedAddonIds: [String]) async throws -> Premium
+    func getTotal(includedAddonIds: [String]) async throws -> IntentCost
 }
 
 public class DirectQuoteSummaryDataProvider: QuoteSummaryDataProvider {
-    let intentCost: Premium
+    let intentCost: IntentCost
 
-    public init(intentCost: Premium) {
+    public init(intentCost: IntentCost) {
         self.intentCost = intentCost
     }
-    public func getTotal(includedAddonIds: [String]) async throws -> Premium {
+    public func getTotal(includedAddonIds: [String]) async throws -> IntentCost {
         intentCost
     }
 }

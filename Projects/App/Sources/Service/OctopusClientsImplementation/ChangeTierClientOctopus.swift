@@ -58,7 +58,8 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 selectedQuote: nil,
                 canEditTier: currentContract.supportsChangeTier,
                 typeOfContract:
-                    TypeOfContract.resolve(for: agreementToChange.productVariant.typeOfContract)
+                    TypeOfContract.resolve(for: agreementToChange.productVariant.typeOfContract),
+                relatedAddons: []
             )
             if intentModel.tiers.isEmpty {
                 throw ChangeTierError.emptyList
@@ -156,12 +157,12 @@ class ChangeTierClientOctopus: ChangeTierClient {
         currentContract: OctopusGraphQL.ContractQuery.Data.Contract,
         intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
     ) -> Tier {
-        let totalCost: Quote.TotalCost = {
+        let totalCost: Premium = {
             if let firstQuoteTotalCost = intent.quotes.first?.currentTotalCost.fragments.totalCostFragment.asTotalCost()
             {
                 return firstQuoteTotalCost
             }
-            return Quote.TotalCost(
+            return Premium(
                 gross: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment),
                 net: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment)
             )
@@ -202,13 +203,13 @@ class ChangeTierClientOctopus: ChangeTierClient {
         currentTier: Tier
     ) -> Quote? {
         let deductible = agreementToChange.deductible
-        let totalCost: Quote.TotalCost = {
+        let totalCost: Premium = {
             if let firstTierQuote = currentTier.quotes.first {
                 return firstTierQuote.currentTotalCost
             }
             let currentTotalGrossCost = MonetaryAmount(fragment: agreementToChange.basePremium.fragments.moneyFragment)
             let currentTotalNetCost = MonetaryAmount(fragment: agreementToChange.basePremium.fragments.moneyFragment)
-            return Quote.TotalCost(gross: currentTotalGrossCost, net: currentTotalNetCost)
+            return Premium(gross: currentTotalGrossCost, net: currentTotalNetCost)
         }()
 
         let currentDeductible: Quote? = {
@@ -284,8 +285,8 @@ extension Quote.Addon {
 }
 
 extension OctopusGraphQL.TotalCostFragment {
-    func asTotalCost() -> Quote.TotalCost {
-        Quote.TotalCost(
+    func asTotalCost() -> Premium {
+        Premium(
             gross: .init(fragment: self.monthlyGross.fragments.moneyFragment),
             net: .init(fragment: self.monthlyNet.fragments.moneyFragment)
         )

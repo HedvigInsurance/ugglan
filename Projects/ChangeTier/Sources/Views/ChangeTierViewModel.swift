@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import SwiftUI
 import hCore
@@ -5,6 +6,7 @@ import hCoreUI
 
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
+    let dataProvider: QuoteSummaryDataProvider
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var missingQuotes = false
@@ -15,15 +17,20 @@ public class ChangeTierViewModel: ObservableObject {
     var activationDate: Date?
     var typeOfContract: TypeOfContract?
 
-    @Published var currentTotalCost: Quote.TotalCost?
+    @Published var currentTotalCost: Premium?
     var currentTier: Tier?
-    private var currentQuote: Quote?
-    var newTotalCost: Quote.TotalCost?
+    var currentQuote: Quote?
+    var newTotalCost: Premium?
+
+    var currentAddon: AddonQuote?
+    private(set) var relatedAddons: [AddonQuote] = []
+
     @Published var canEditTier: Bool = false
     @Published var canEditDeductible: Bool = false
 
     @Published var selectedTier: Tier?
     @Published var selectedQuote: Quote?
+    @Published var selectedAddon: AddonQuote?
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
@@ -42,9 +49,11 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     public init(
-        changeTierInput: ChangeTierInput
+        changeTierInput: ChangeTierInput,
+        dataProvider: QuoteSummaryDataProvider
     ) {
         self.changeTierInput = changeTierInput
+        self.dataProvider = dataProvider
         fetchTiers()
     }
 
@@ -75,6 +84,20 @@ public class ChangeTierViewModel: ObservableObject {
         }
     }
 
+    @MainActor
+    func setAddon(for addonId: String) async {
+        if let addon = relatedAddons.first(where: { $0.displayName == addonId }) {
+            selectedAddon = addon
+
+            do {
+                let data = try await dataProvider.getTotal(includedAddonIds: [addon.id])
+                withAnimation {
+                    newTotalCost = data.quoteCosts.first(where: { $0.id == addon.id })?.cost.premium
+                }
+            } catch _ {}
+        }
+    }
+
     func fetchTiers() {
         withAnimation {
             self.missingQuotes = false
@@ -100,6 +123,22 @@ public class ChangeTierViewModel: ObservableObject {
     private func updateCurrentTiers(_ data: ChangeTierIntentModel) {
         self.currentTier = data.currentTier
         self.currentQuote = data.currentQuote
+        self.currentAddon = data.relatedAddons.first
+        self.selectedAddon = currentAddon
+        if let currentAddon = currentAddon {
+            let removeAddon: AddonQuote = .init(
+                displayName: "No extra travel protection",
+                displayNameLong: "",
+                quoteId: "id",
+                addonId: "addonId",
+                addonSubtype: "",
+                displayItems: [],
+                itemCost: .init(premium: .init(gross: .sek(0), net: .sek(0)), discounts: []),
+                addonVariant: nil,
+                documents: []
+            )
+            self.relatedAddons = [currentAddon, removeAddon]
+        }
 
         if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
             self.tiers = [currentTier] + data.tiers

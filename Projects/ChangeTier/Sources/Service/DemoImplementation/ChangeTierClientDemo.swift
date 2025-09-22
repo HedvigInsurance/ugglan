@@ -271,7 +271,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
             selectedTier: selectedTier,
             selectedQuote: nil,
             canEditTier: true,
-            typeOfContract: .seApartmentBrf
+            typeOfContract: .seApartmentBrf,
+            relatedAddons: []
         )
     }
 

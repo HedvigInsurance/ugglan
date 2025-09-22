@@ -158,8 +158,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             do {
                 let data = try await summaryDataProvider.getTotal(includedAddonIds: includedAddonIds)
                 withAnimation {
-                    grossTotal = data.gross ?? .sek(0)
-                    netTotal = data.net ?? .sek(0)
+                    grossTotal = data.totalCost.gross ?? .sek(0)
+                    netTotal = data.totalCost.net ?? .sek(0)
                 }
             } catch _ {
                 // we don't care about the error here, we just want to recalculate the totals

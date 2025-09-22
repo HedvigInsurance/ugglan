@@ -88,7 +88,10 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
         contract: [],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
         summaryDataProvider: DirectQuoteSummaryDataProvider(
-            intentCost: .init(gross: .sek(999), net: .sek(599))
+            intentCost: .init(
+                totalCost: .init(gross: .sek(999), net: .sek(599)),
+                quoteCosts: []
+            )
         ),
         onConfirmClick: {}
     )

@@ -48,8 +48,11 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
             isAddon: false,
             summaryDataProvider: DirectQuoteSummaryDataProvider(
                 intentCost: .init(
-                    gross: .sek(399),
-                    net: .sek(399)
+                    totalCost: .init(
+                        gross: .sek(399),
+                        net: .sek(399)
+                    ),
+                    quoteCosts: []
                 )
             )
         ) {}

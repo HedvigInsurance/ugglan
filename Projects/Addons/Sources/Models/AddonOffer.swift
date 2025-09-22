@@ -38,10 +38,10 @@ public struct AddonBannerModel: Sendable, Equatable, Codable, Hashable {
 
 public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
     public let id = UUID()
-    let title: String
+    public let title: String
     let description: String?
     let activationDate: Date?
-    let currentAddon: AddonQuote?
+    public let currentAddon: AddonQuote?
     let quotes: [AddonQuote]
 
     public init(
@@ -69,18 +69,18 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
     }
 }
 
-public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
+public struct AddonQuote: Identifiable, Equatable, Hashable, Codable, Sendable {
     public var id: String {
         addonId
     }
 
-    let displayName: String?
+    public let displayName: String?
     let displayNameLong: String
     let quoteId: String
     let addonId: String
     let addonSubtype: String
     let displayItems: [AddonDisplayItem]
-    let itemCost: ItemCost
+    public let itemCost: ItemCost
     let addonVariant: AddonVariant?
     let documents: [hPDFDocument]
 
@@ -107,7 +107,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     }
 }
 
-public struct AddonDisplayItem: Equatable, Hashable, Sendable {
+public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
     let displayTitle: String
     let displayValue: String
 
