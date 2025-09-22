@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -e
 set -x
+export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+export HOMEBREW_NO_ENV_FILTERING=1
+export HOMEBREW_FORCE_BREWED_CURL=1
+export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
+export HOMEBREW_DEVELOPER=1
 
 brew tap tuist/tuist
 brew install --formula tuist@4.50.2
