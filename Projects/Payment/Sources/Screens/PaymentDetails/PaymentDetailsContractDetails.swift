@@ -138,13 +138,10 @@ struct ContractDetails: View {
                 discounts: [
                     .init(
                         code: "TOGETHER",
-                        amount: .init(amount: "10", currency: "SEK"),
-                        title: "15% discount for 12 months",
-                        discountPerReferral: .sek(10),
-                        listOfAffectedInsurances: [],
-                        validUntil: nil,
-                        canBeDeleted: true,
-                        discountId: "id"
+                        displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                        description: "15% discount for 12 months",
+                        discountId: "TOGETHER",
+                        type: .discount(status: .active)
                     )
                 ],
                 periods: [
