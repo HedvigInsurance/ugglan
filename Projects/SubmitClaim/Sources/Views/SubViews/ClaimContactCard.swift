@@ -35,7 +35,7 @@ struct ClaimContactCard: View {
                 if let description = model.description {
                     hText(description)
                         .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.Opaque.tertiary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .padding(.horizontal, .padding16)
