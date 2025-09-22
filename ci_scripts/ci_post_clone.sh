@@ -2,7 +2,6 @@
 set -e
 set -x
 
-xcode-select -s /Applications/Xcode.app/Contents/Developer
 brew tap tuist/tuist
 brew install --formula tuist@4.50.2
 
