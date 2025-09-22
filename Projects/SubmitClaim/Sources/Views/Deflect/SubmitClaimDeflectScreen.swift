@@ -108,13 +108,15 @@ public struct SubmitClaimDeflectScreen: View {
                 imageUrl: nil,
                 url: nil,
                 phoneNumber: nil,
-                title: nil,
-                description: nil,
+                title: "partner title",
+                description: "partner description",
                 info: nil,
                 buttonText: nil,
                 preferredImageHeight: nil
             )
         ]
     )
+
     return SubmitClaimDeflectScreen(model: model, openChat: {})
+        .preferredColorScheme(.dark)
 }

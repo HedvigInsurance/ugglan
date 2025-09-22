@@ -34,7 +34,8 @@ final class CompareTierVireModelTests: XCTestCase {
                     quoteAmount: nil,
                     quotePercentage: nil,
                     subTitle: nil,
-                    basePremium: .init(amount: "229", currency: "SEK"),
+                    currentTotalCost: .init(gross: .sek(229), net: .sek(229)),
+                    newTotalCost: .init(gross: .sek(229), net: .sek(229)),
                     displayItems: [],
                     productVariant: .init(
                         termsVersion: "",
@@ -47,7 +48,8 @@ final class CompareTierVireModelTests: XCTestCase {
                         displayNameTier: nil,
                         tierDescription: nil
                     ),
-                    addons: []
+                    addons: [],
+                    costBreakdown: []
                 )
             ],
             exposureName: "exposureName"
