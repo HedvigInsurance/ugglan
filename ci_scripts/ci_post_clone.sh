@@ -2,6 +2,7 @@
 set -e
 set -x
 
+xcode-select --install
 brew tap tuist/tuist
 brew install --formula tuist@4.50.2
 
