@@ -16,7 +16,7 @@ if [ "${DATADOG_API_KEY+x}" ]; then
   echo "===== Installing Yarn using Homebrew ====="
   brew install yarn
 fi
-
+mise use -g tuist
 scripts/post-checkout.sh
 
 
