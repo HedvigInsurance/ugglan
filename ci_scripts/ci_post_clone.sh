@@ -3,7 +3,7 @@ set -e
 set -x
 
 curl https://mise.run | sh
-export PATH="$HOME/.local/bin/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 mise --version
 mise install tuist@4.50.2
 
