@@ -346,7 +346,8 @@ extension View {
                             .fixedSize()
                     }
                 }
-                .sharedBackgroundVisibility(.hidden)
+                //TODO: READD after iOS 26
+                //                .sharedBackgroundVisibility(.hidden)
             }
         } else {
             introspect(.viewController, on: .iOS(.v13...)) { vc in

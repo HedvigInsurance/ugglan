@@ -169,26 +169,28 @@ public struct DefaultStyling {
 
     public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if #unavailable(iOS 26.0) {
-            appearance.configureWithTransparentBackground()
-            DefaultStyling.applyCommonNavigationBarStyling(appearance)
-            appearance.backgroundColor = .clear
-            appearance.shadowImage = UIColor.clear.asImage()
-            appearance.backgroundImage = nil
-        }
+        //TODO: READD after iOS 26
+        //        if #unavailable(iOS 26.0) {
+        appearance.configureWithTransparentBackground()
+        DefaultStyling.applyCommonNavigationBarStyling(appearance)
+        appearance.backgroundColor = .clear
+        appearance.shadowImage = UIColor.clear.asImage()
+        appearance.backgroundImage = nil
+        //        }
         applyCommonNavigationBarStyling(appearance)
         return appearance
     }
 
     public static func standardNavigationBarAppearance(style: UIUserInterfaceStyle) -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if #unavailable(iOS 26.0) {
-            appearance.configureWithTransparentBackground()
-            appearance.backgroundColor = .clear
-            appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
-            appearance.backgroundImage = nil
-            appearance.backgroundEffect = UIBlurEffect(style: style == .dark ? .dark : .light)
-        }
+        //TODO: READD after iOS 26
+        //        if #unavailable(iOS 26.0) {
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
+        appearance.backgroundImage = nil
+        appearance.backgroundEffect = UIBlurEffect(style: style == .dark ? .dark : .light)
+        //        }
         applyCommonNavigationBarStyling(appearance)
 
         return appearance
@@ -196,12 +198,13 @@ public struct DefaultStyling {
 
     public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if #unavailable(iOS 26.0) {
-            appearance.configureWithTransparentBackground()
-            appearance.backgroundColor = UIColor.clear
-            appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
-            appearance.backgroundEffect = UIBlurEffect(style: .light)
-        }
+        //TODO: READD after iOS 26
+        //        if #unavailable(iOS 26.0) {
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.clear
+        appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
+        appearance.backgroundEffect = UIBlurEffect(style: .light)
+        //        }
         applyCommonNavigationBarStyling(appearance)
         return appearance
     }
