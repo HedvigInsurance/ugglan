@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
 set -e
 set -x
-export HOMEBREW_NO_AUTO_UPDATE=1
-export HOMEBREW_NO_INSTALL_CLEANUP=1
-export HOMEBREW_NO_ENV_FILTERING=1
-export HOMEBREW_FORCE_BREWED_CURL=1
-export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
-export HOMEBREW_DEVELOPER=1
-sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-brew tap tuist/tuist
-brew install --formula tuist@4.50.2
+HOMEBREW_NO_INSTALL_FROM_API=1 brew install --ignore-dependencies tuist@4.50.2
+
 
 cd $CI_PRIMARY_REPOSITORY_PATH;
 
