@@ -107,7 +107,7 @@ public struct PaymentsView: View {
         hSection {
             hRow {
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .center, spacing: 8) {
+                    HStack(alignment: .top, spacing: 8) {
                         hText(
                             paymentData.status == .upcoming
                                 ? L10n.paymentsUpcomingPayment : L10n.paymentsProcessingPayment
