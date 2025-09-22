@@ -8,5 +8,11 @@ query MoveIntentCost($intentId: ID!, $selectedAddonIds: [ID!]!, $selectedHomeQuo
           ...MoneyFragment
       }
     }
+    quoteCosts {
+        cost {
+            ...ItemCostFragment
+        }
+        quoteId
+    }
   }
 }
