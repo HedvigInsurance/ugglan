@@ -2,6 +2,10 @@
 set -e
 set -x
 
+curl https://mise.jdx.dev/install.sh | sh
+echo "eval \"\$(/Users/local/.local/bin/mise activate --shims zsh)\"" >> "/Users/local/.zshrc"
+echo "version:"
+mise --version
 mise install tuist@4.50.2
 
 cd $CI_PRIMARY_REPOSITORY_PATH;
