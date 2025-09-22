@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -e
 set -x
-HOMEBREW_NO_INSTALL_FROM_API=1 brew install --ignore-dependencies tuist@4.50.2
-
+curl -Ls https://install.tuist.io | bash
 
 cd $CI_PRIMARY_REPOSITORY_PATH;
 
