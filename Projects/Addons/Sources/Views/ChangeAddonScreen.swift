@@ -98,7 +98,9 @@ struct ChangeAddonScreen: View {
                 ) {
                     changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
                 }
+                .disabled(changeAddonVm.disableDropDown)
                 .padding(.top, .padding16)
+                .hBackgroundOption(option: [.locked])
                 .hWithoutHorizontalPadding([.section])
                 .accessibilityHidden(false)
             }
