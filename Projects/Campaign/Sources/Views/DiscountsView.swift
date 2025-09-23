@@ -17,6 +17,7 @@ struct DiscountsView: View {
                 discountsView
                 foreverView
             }
+            .fixedSize(horizontal: false, vertical: true)
             .hWithoutHorizontalPadding([.row, .divider])
             .hSectionHeaderWithDivider
             .padding(.vertical, .padding16)
@@ -28,10 +29,8 @@ struct DiscountsView: View {
         ForEach(data.discountsData, id: \.id) { discountData in
             hSection(discountData.discounts) { discount in
                 DiscountDetailView(
-                    vm: .init(
-                        options: [.showExpire],
-                        discount: discount
-                    )
+                    discount: discount,
+                    options: [.showExpire]
                 )
                 if discount == discountData.discounts.last {
                     Group {
@@ -83,11 +82,8 @@ struct DiscountsView: View {
 
     private func getReferralView(_ referral: Referral, nbOfReferrals: Int) -> some View {
         DiscountDetailView(
-            isReferral: true,
-            vm: .init(
-                options: [.showExpire],
-                discount: .init(referral: referral, nbOfReferrals: nbOfReferrals)
-            )
+            discount: .init(referral: referral, nbOfReferrals: nbOfReferrals),
+            options: [.showExpire]
         )
     }
 }
