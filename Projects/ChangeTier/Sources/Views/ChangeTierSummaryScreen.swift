@@ -98,12 +98,15 @@ extension ChangeTierViewModel {
     let changeTierInput: ChangeTierInput = .contractWithSource(
         data: .init(source: .betterCoverage, contractId: "contractId")
     )
-    let changeTierVm = ChangeTierViewModel(changeTierInput: changeTierInput, dataProvider: DirectQuoteSummaryDataProvider(
-        intentCost: .init(
-            totalCost: .init(gross: .sek(999), net: .sek(599)),
-            quoteCosts: []
+    let changeTierVm = ChangeTierViewModel(
+        changeTierInput: changeTierInput,
+        dataProvider: DirectQuoteSummaryDataProvider(
+            intentCost: .init(
+                totalCost: .init(gross: .sek(999), net: .sek(599)),
+                quoteCosts: []
+            )
         )
-    ))
+    )
     return ChangeTierSummaryScreen(
         changeTierVm: changeTierVm,
         changeTierNavigationVm: .init(router: Router(), vm: changeTierVm) {}
