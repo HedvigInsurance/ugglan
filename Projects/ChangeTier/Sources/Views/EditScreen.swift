@@ -74,9 +74,13 @@ struct EditScreen: View {
                 )
                 .hFieldLeftAttachedView
                 hRadioField(
-                    id: "no value",
+                    id: L10n.tierFlowAddonNoCoverageLabel,
                     leftView: {
-                        leftView(title: "remove", premium: "0", subTitle: nil)
+                        leftView(
+                            title: L10n.tierFlowAddonNoCoverageLabel,
+                            premium: MonetaryAmount(amount: "0", currency: "sek").formattedAmountPerMonth,
+                            subTitle: nil
+                        )
                     },
                     selected: $selectedItem,
                     error: nil,
@@ -211,7 +215,7 @@ enum EditTierType: Equatable {
         switch self {
         case .tiers: return L10n.tierFlowSelectCoverageSubtitle
         case .deductible: return L10n.tierFlowSelectDeductibleSubtitle
-        case .addon: return "Choose your coverage"
+        case .addon: return L10n.tierFlowSelectAddonSubtitle
         }
     }
 }

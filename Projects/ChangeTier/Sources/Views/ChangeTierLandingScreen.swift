@@ -150,8 +150,9 @@ public struct ChangeTierLandingScreen: View {
     private var addonView: some View {
         ForEach(vm.addonQuotes) { quote in
             DropdownView(
-                value: vm.excludedAddonTypes.contains(quote.addonSubtype) ? "NO" : quote.displayName ?? "",
-                placeHolder: quote.displayName ?? ""
+                value: vm.excludedAddonTypes.contains(quote.addonSubtype)
+                    ? L10n.tierFlowAddonNoCoverageLabel : quote.displayName ?? "",
+                placeHolder: L10n.tierFlowAddonLabel
             ) {
                 changeTierNavigationVm.isEditTierPresented = .init(
                     selectedItem: quote.displayName,
