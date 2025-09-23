@@ -121,7 +121,7 @@ public class ChangeTierViewModel: ObservableObject {
                             newTotalCost = data.premium
                         }
                     } catch let ex {
-                        let ssss = ex
+                        _ = ex
                     }
                 }
             } else {

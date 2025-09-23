@@ -110,7 +110,7 @@ struct EditScreen: View {
     private func leftViewForAddon(_ addon: AddonQuote) -> AnyView {
         leftView(
             title: addon.displayName ?? "",
-            premium: addon.itemCost.premium.net?.formattedAmountPerMonth,
+            premium: addon.itemCost.premium.gross?.formattedAmountPerMonth,
             subTitle: nil
         )
     }
