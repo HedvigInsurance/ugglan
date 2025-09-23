@@ -155,7 +155,7 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: L10n.tierFlowAddonLabel
             ) {
                 changeTierNavigationVm.isEditTierPresented = .init(
-                    selectedItem: quote.displayName,
+                    selectedItem: vm.selectedAddon?.displayName ?? quote.displayName,
                     type: .addon(addon: quote)
                 )
             }

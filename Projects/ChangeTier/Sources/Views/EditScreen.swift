@@ -184,12 +184,12 @@ struct EditScreen: View {
 
     private func confirm() {
         switch type {
-        case .tiers(let tiers):
+        case .tiers:
             vm.setTier(for: selectedItem ?? "")
-        case .deductible(let quotes):
+        case .deductible:
             vm.setDeductible(for: selectedItem ?? "")
         case .addon(let addon):
-            vm.setAddonStatus(for: addon.addonSubtype, enabled: selectedItem == addon.displayName)
+            vm.setAddonStatus(for: addon, enabled: selectedItem == addon.displayName)
         }
         changeTierNavigationVm.isEditTierPresented = nil
     }

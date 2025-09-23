@@ -97,12 +97,25 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     @MainActor
-    func setAddonStatus(for addonSubtype: String, enabled: Bool) {
+    func setAddonStatus(for addon: AddonQuote, enabled: Bool) {
+        let addonSubtype = addon.addonSubtype
         if self.excludedAddonTypes.contains(addonSubtype) && enabled {
             self.excludedAddonTypes.removeAll(where: { $0 == addonSubtype })
+            self.selectedAddon = addon
             calculateTotal()
         } else if !self.excludedAddonTypes.contains(addonSubtype) && !enabled {
             self.excludedAddonTypes.append(addonSubtype)
+            self.selectedAddon = .init(
+                displayName: L10n.tierFlowAddonNoCoverageLabel,
+                displayNameLong: "",
+                quoteId: L10n.tierFlowAddonNoCoverageLabel,
+                addonId: L10n.tierFlowAddonNoCoverageLabel,
+                addonSubtype: addonSubtype,
+                displayItems: [],
+                itemCost: .init(premium: .init(gross: .sek(0), net: nil), discounts: []),
+                addonVariant: nil,
+                documents: []
+            )
             calculateTotal()
         }
     }
