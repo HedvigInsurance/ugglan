@@ -55,11 +55,7 @@ struct ChangeTierProcessingView_Previews: PreviewProvider {
         Localization.Locale.currentLocale.send(.sv_SE)
         return ChangeTierProcessingView(
             vm: .init(
-                changeTierInput: .contractWithSource(data: .init(source: .betterPrice, contractId: "contractId")),
-                dataProvider: DirectQuoteSummaryDataProvider(
-                    premium: .init(gross: .sek(100), net: .sek(90)),
-                    displayItems: []
-                )
+                changeTierInput: .contractWithSource(data: .init(source: .betterPrice, contractId: "contractId"))
             )
         )
     }

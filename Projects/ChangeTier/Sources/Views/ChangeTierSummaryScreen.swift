@@ -94,11 +94,7 @@ extension ChangeTierViewModel {
         data: .init(source: .betterCoverage, contractId: "contractId")
     )
     let changeTierVm = ChangeTierViewModel(
-        changeTierInput: changeTierInput,
-        dataProvider: DirectQuoteSummaryDataProvider(
-            premium: .init(gross: .sek(999), net: .sek(599)),
-            displayItems: []
-        )
+        changeTierInput: changeTierInput
     )
     return ChangeTierSummaryScreen(
         changeTierVm: changeTierVm,

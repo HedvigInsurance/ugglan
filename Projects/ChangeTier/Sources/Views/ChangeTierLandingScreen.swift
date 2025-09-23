@@ -136,7 +136,11 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: vm.selectedTier != nil
                     ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
             ) {
-                changeTierNavigationVm.isEditTierPresented = .init(type: .tier)
+                let selectedItem = vm.selectedTier?.name ?? vm.tiers.first?.name
+                changeTierNavigationVm.isEditTierPresented = .init(
+                    selectedItem: selectedItem,
+                    type: .tiers(tiers: vm.tiers.sorted(by: { $0.level < $1.level }))
+                )
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
@@ -144,12 +148,15 @@ public struct ChangeTierLandingScreen: View {
 
     @ViewBuilder
     private var addonView: some View {
-        if let selectedAddon = vm.selectedAddon {
+        ForEach(vm.addonQuotes) { quote in
             DropdownView(
-                value: selectedAddon.displayName ?? "",
-                placeHolder: "Travel protection"
+                value: vm.excludedAddonTypes.contains(quote.addonSubtype) ? "NO" : quote.displayName ?? "",
+                placeHolder: quote.displayName ?? ""
             ) {
-                changeTierNavigationVm.isEditTierPresented = .init(type: .addon)
+                changeTierNavigationVm.isEditTierPresented = .init(
+                    selectedItem: quote.displayName,
+                    type: .addon(addon: quote)
+                )
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
@@ -176,7 +183,19 @@ public struct ChangeTierLandingScreen: View {
                 placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
             ) {
-                changeTierNavigationVm.isEditTierPresented = .init(type: .deductible)
+                let quotes = {
+                    if !(vm.selectedTier?.quotes.isEmpty ?? true) {
+                        return vm.selectedTier?.quotes ?? []
+                    } else {
+                        return vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
+                    }
+                }()
+                changeTierNavigationVm.isEditTierPresented = .init(
+                    selectedItem: vm.selectedQuote?.id ?? vm.selectedTier?.quotes.first?.id,
+                    type: .deductible(
+                        quotes: quotes.sorted(by: { $0.newTotalCost.net?.value ?? 0 > $1.newTotalCost.net?.value ?? 0 })
+                    )
+                )
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
@@ -223,11 +242,7 @@ public struct ChangeTierLandingScreen: View {
     let inputData = ChangeTierInputData(source: .betterCoverage, contractId: "")
     return ChangeTierLandingScreen(
         vm: .init(
-            changeTierInput: ChangeTierInput.contractWithSource(data: inputData),
-            dataProvider: DirectQuoteSummaryDataProvider(
-                premium: .init(gross: .sek(100), net: .sek(90)),
-                displayItems: []
-            )
+            changeTierInput: ChangeTierInput.contractWithSource(data: inputData)
         )
     )
     .environmentObject(

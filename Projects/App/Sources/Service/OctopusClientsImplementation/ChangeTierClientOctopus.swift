@@ -59,7 +59,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 canEditTier: currentContract.supportsChangeTier,
                 typeOfContract:
                     TypeOfContract.resolve(for: agreementToChange.productVariant.typeOfContract),
-                relatedAddons: []
+                relatedAddons: [:]
             )
             if intentModel.tiers.isEmpty {
                 throw ChangeTierError.emptyList

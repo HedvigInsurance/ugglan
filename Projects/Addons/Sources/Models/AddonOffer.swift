@@ -78,7 +78,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Codable, Sendable {
     let displayNameLong: String
     let quoteId: String
     let addonId: String
-    let addonSubtype: String
+    public let addonSubtype: String
     let displayItems: [AddonDisplayItem]
     public let itemCost: ItemCost
     let addonVariant: AddonVariant?
