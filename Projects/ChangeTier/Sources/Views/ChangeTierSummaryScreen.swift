@@ -74,14 +74,9 @@ extension ChangeTierViewModel {
         let vm = QuoteSummaryViewModel(
             contract: contracts,
             activationDate: self.activationDate,
-            summaryDataProvider: DirectQuoteSummaryDataProvider(
-                intentCost: .init(
-                    totalCost: .init(
-                        gross: totalGross,
-                        net: totalNet
-                    ),
-                    quoteCosts: []
-                )
+            premium: .init(
+                gross: totalGross,
+                net: totalNet
             ),
             onConfirmClick: { [weak changeTierNavigationVm] in
                 changeTierNavigationVm?.vm.commitTier()
@@ -101,10 +96,8 @@ extension ChangeTierViewModel {
     let changeTierVm = ChangeTierViewModel(
         changeTierInput: changeTierInput,
         dataProvider: DirectQuoteSummaryDataProvider(
-            intentCost: .init(
-                totalCost: .init(gross: .sek(999), net: .sek(599)),
-                quoteCosts: []
-            )
+            premium: .init(gross: .sek(999), net: .sek(599)),
+            displayItems: []
         )
     )
     return ChangeTierSummaryScreen(

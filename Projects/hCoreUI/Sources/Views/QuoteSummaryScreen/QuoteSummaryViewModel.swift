@@ -5,50 +5,13 @@ import hCore
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]
     @Published public var activationDate: Date?
-    @Published var netTotal: MonetaryAmount = .init(amount: "", currency: "")
-    @Published var grossTotal: MonetaryAmount = .init(amount: "", currency: "")
-    @Published var expandedContracts: [String] = []
-    @Published var removedContracts: [String] = []
-    @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
+    @Published var premium: Premium
     @Published var isConfirmChangesPresented: Bool = false
     @Published var isShowDetailsPresented: QuoteSummaryViewModel.ContractInfo? = nil
 
     public var onConfirmClick: () -> Void
     let isAddon: Bool
     let showNoticeCard: Bool
-
-    let summaryDataProvider: QuoteSummaryDataProvider
-
-    func toggleContract(_ contract: ContractInfo) {
-        if expandedContracts.contains(contract.id) {
-            collapseContract(contract)
-        } else {
-            expandContract(contract)
-        }
-    }
-
-    public func getRemovedContractsIds() -> [String] {
-        removedContracts
-    }
-
-    private func expandContract(_ contract: ContractInfo) {
-        expandedContracts.append(contract.id)
-    }
-
-    private func collapseContract(_ contract: ContractInfo) {
-        expandedContracts.removeAll(where: { $0 == contract.id })
-    }
-
-    func removeContract(_ contractId: String) {
-        expandedContracts.removeAll(where: { $0 == contractId })
-        removedContracts.append(contractId)
-        calculateTotal()
-    }
-
-    func addContract(_ contract: ContractInfo) {
-        removedContracts.removeAll(where: { $0 == contract.id })
-        calculateTotal()
-    }
 
     public struct ContractInfo: Identifiable, Equatable {
         public var id: String
@@ -60,7 +23,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
-        let removeModel: RemoveModel?
         let isAddon: Bool
         let priceBreakdownItems: [QuoteDisplayItem]
 
@@ -74,7 +36,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
             isAddon: Bool? = false,
-            removeModel: RemoveModel? = nil,
             priceBreakdownItems: [QuoteDisplayItem]
         ) {
             self.id = id
@@ -89,35 +50,12 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
                 !(documentSection.documents.isEmpty && displayItems.isEmpty
                 && insuranceLimits.isEmpty)
             self.isAddon = isAddon ?? false
-            self.removeModel = removeModel
             self.priceBreakdownItems = priceBreakdownItems
         }
 
         public static func == (lhs: QuoteSummaryViewModel.ContractInfo, rhs: QuoteSummaryViewModel.ContractInfo) -> Bool
         {
             lhs.id == rhs.id
-        }
-
-        public struct RemoveModel: Identifiable, Equatable {
-            public var id: String
-            let title: String
-            let description: String
-            let confirmButtonTitle: String
-            let cancelRemovalButtonTitle: String
-
-            public init(
-                id: String,
-                title: String,
-                description: String,
-                confirmButtonTitle: String,
-                cancelRemovalButtonTitle: String
-            ) {
-                self.id = id
-                self.title = title
-                self.description = description
-                self.confirmButtonTitle = confirmButtonTitle
-                self.cancelRemovalButtonTitle = cancelRemovalButtonTitle
-            }
         }
 
         public struct DocumentSection {
@@ -134,42 +72,16 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public init(
         contract: [ContractInfo],
         activationDate: Date?,
+        premium: Premium,
         isAddon: Bool? = false,
-        summaryDataProvider: QuoteSummaryDataProvider,
         onConfirmClick: (() -> Void)? = nil
     ) {
         self.contracts = contract
         self.isAddon = isAddon ?? false
         self.activationDate = activationDate
         self.onConfirmClick = onConfirmClick ?? {}
+        self.premium = premium
         self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
-        self.summaryDataProvider = summaryDataProvider
-        calculateTotal()
-    }
-    private var calculateTotalTask: Task<(), any Error>?
-    private func calculateTotal() {
-        calculateTotalTask?.cancel()
-        calculateTotalTask = Task { [weak self] in
-            guard let self = self else { return }
-            let includedAddonIds = self.contracts
-                .filter(\.isAddon)
-                .filter { !removedContracts.contains($0.id) }
-                .map(\.id)
-            do {
-                let data = try await summaryDataProvider.getTotal(includedAddonIds: includedAddonIds)
-                withAnimation {
-                    grossTotal = data.totalCost.gross ?? .sek(0)
-                    netTotal = data.totalCost.net ?? .sek(0)
-                }
-            } catch _ {
-                // we don't care about the error here, we just want to recalculate the totals
-                self.calculateTotal()
-            }
-        }
-    }
-
-    deinit {
-        calculateTotalTask?.cancel()
     }
 }
 

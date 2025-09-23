@@ -56,7 +56,10 @@ struct ChangeTierProcessingView_Previews: PreviewProvider {
         return ChangeTierProcessingView(
             vm: .init(
                 changeTierInput: .contractWithSource(data: .init(source: .betterPrice, contractId: "contractId")),
-                dataProvider: <#any QuoteSummaryDataProvider#>
+                dataProvider: DirectQuoteSummaryDataProvider(
+                    premium: .init(gross: .sek(100), net: .sek(90)),
+                    displayItems: []
+                )
             )
         )
     }

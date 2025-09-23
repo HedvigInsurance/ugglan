@@ -49,16 +49,11 @@ extension ChangeAddonViewModel {
                 contractInfo
             ],
             activationDate: self.addonOffer?.activationDate,
-            isAddon: true,
-            summaryDataProvider: DirectQuoteSummaryDataProvider(
-                intentCost: .init(
-                    totalCost: .init(
-                        gross: nil,
-                        net: getTotalPrice()
-                    ),
-                    quoteCosts: []
-                )
-            )
+            premium: .init(
+                gross: nil,
+                net: getTotalPrice()
+            ),
+            isAddon: true
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true
             Task {

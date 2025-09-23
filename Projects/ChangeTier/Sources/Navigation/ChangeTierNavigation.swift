@@ -39,6 +39,10 @@ public class ChangeTierNavigationViewModel: ObservableObject {
             vm = .init(
                 changeTierInput: .contractWithSource(
                     data: .init(source: changeTierContractsInput.source, contractId: first.contractId)
+                ),
+                dataProvider: DirectQuoteSummaryDataProvider(
+                    premium: .init(gross: .sek(100), net: .sek(90)),
+                    displayItems: []
                 )
             )
             self.changeTierContractsInput = nil
@@ -179,7 +183,13 @@ public struct ChangeTierNavigation: View {
     ) {
         changeTierNavigationVm = .init(
             router: router,
-            vm: .init(changeTierInput: input),
+            vm: .init(
+                changeTierInput: input,
+                dataProvider: DirectQuoteSummaryDataProvider(
+                    premium: .init(gross: .sek(100), net: .sek(90)),
+                    displayItems: []
+                )
+            ),
             onChangedTier: onChangedTier
         )
     }

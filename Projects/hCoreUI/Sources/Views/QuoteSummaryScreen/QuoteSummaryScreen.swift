@@ -53,25 +53,6 @@ public struct QuoteSummaryScreen: View {
             }
         )
         .detent(
-            item: $vm.removeModel,
-            transitionType: .detent(style: [.height])
-        ) { removeModel in
-            InfoView(
-                title: removeModel.title,
-                description: removeModel.description,
-                closeButtonTitle: removeModel.cancelRemovalButtonTitle,
-                extraButton: ExtraButtonModel(
-                    text: removeModel.confirmButtonTitle,
-                    style: .primary
-                ) { [weak vm] in
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        vm?.removeModel = nil
-                        vm?.removeContract(removeModel.id)
-                    }
-                }
-            )
-        }
-        .detent(
             presented: $vm.isConfirmChangesPresented,
             options: .constant([.alwaysOpenOnTop])
         ) {
@@ -173,9 +154,9 @@ private struct ContractCardView: View {
                 mainContent:
                     ContractInformation(
                         displayName: contract.displayName,
-                        exposureName: vm.removedContracts.contains(contract.id) ? nil : contract.exposureName,
+                        exposureName: contract.exposureName,
                         pillowImage: contract.typeOfContract?.pillowType.bgImage,
-                        status: vm.removedContracts.contains(contract.id) ? L10n.contractStatusTerminated : nil
+                        status: nil
                     ),
                 title: nil,
                 subTitle: nil,
@@ -197,14 +178,10 @@ private struct ContractCardView: View {
     ) -> some View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails {
-                if !vm.removedContracts.contains(contract.id) {
-                    showDetailsButton(contract)
-                } else {
-                    addButton(for: contract)
-                }
+                showDetailsButton(contract)
             }
 
-            if !contract.priceBreakdownItems.isEmpty && !vm.removedContracts.contains(contract.id) {
+            if !contract.priceBreakdownItems.isEmpty {
                 VStack(spacing: .padding4) {
                     ForEach(contract.priceBreakdownItems, id: \.displayTitle) { disocuntItem in
                         QuoteDisplayItemView(displayItem: disocuntItem)
@@ -221,12 +198,12 @@ private struct ContractCardView: View {
             if let netPremium = contract.premium?.net {
                 PriceField(
                     viewModel: .init(
-                        initialValue: vm.removedContracts.contains(contract.id) ? nil : contract.premium?.gross,
+                        initialValue: contract.premium?.gross,
                         newValue: netPremium
                     )
                 )
                 .hWithStrikeThroughPrice(
-                    setTo: vm.removedContracts.contains(contract.id) ? .crossNewPrice : .crossOldPrice
+                    setTo: .crossOldPrice
                 )
             }
         }
@@ -249,35 +226,6 @@ private struct ContractCardView: View {
         .hWithTransition(.scale)
         .hButtonWithBorder
     }
-
-    private func addButton(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        hButton(
-            .medium,
-            .secondary,
-            content: .init(title: L10n.addonAddCoverage)
-        ) { [weak vm] in
-            withAnimation(.easeInOut(duration: 0.4)) {
-                vm?.addContract(contract)
-            }
-        }
-        .hWithTransition(.scale)
-    }
-
-    @ViewBuilder
-    private func removeButton(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
-        if let removeModel = contract.removeModel, !vm.removedContracts.contains(contract.id) && isExpanded {
-            hButton(
-                .medium,
-                .secondary,
-                content: .init(title: L10n.General.remove)
-            ) { [weak vm] in
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    vm?.removeModel = removeModel
-                }
-            }
-            .hWithTransition(.scale)
-        }
-    }
 }
 
 private struct PriceSummarySection: View {
@@ -286,35 +234,36 @@ private struct PriceSummarySection: View {
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
-                let newPremium = vm.netTotal
-                let currentPremium = vm.grossTotal
-                if vm.isAddon {
-                    HStack {
-                        hText(L10n.tierFlowTotal)
-                        Spacer()
-                        VStack(alignment: .trailing, spacing: 0) {
-                            if newPremium.value >= 0 {
-                                hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
-                            } else {
-                                hText(newPremium.formattedAmountPerMonth)
+                let currentPremium = vm.premium.gross
+                if let newPremium = vm.premium.net {
+                    if vm.isAddon {
+                        HStack {
+                            hText(L10n.tierFlowTotal)
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 0) {
+                                if newPremium.value >= 0 {
+                                    hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
+                                } else {
+                                    hText(newPremium.formattedAmountPerMonth)
+                                }
+                                hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
                             }
-                            hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
-                                .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                    }
-                    .accessibilityElement(children: .combine)
-                } else {
-                    PriceField(
-                        viewModel: .init(
-                            initialValue: currentPremium,
-                            newValue: newPremium,
-                            title: nil,
-                            subTitle: L10n.summaryTotalPriceSubtitle(
-                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                        .accessibilityElement(children: .combine)
+                    } else {
+                        PriceField(
+                            viewModel: .init(
+                                initialValue: currentPremium,
+                                newValue: newPremium,
+                                title: nil,
+                                subTitle: L10n.summaryTotalPriceSubtitle(
+                                    vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                                )
                             )
                         )
-                    )
-                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                    }
                 }
                 VStack(spacing: .padding8) {
                     hButton(
@@ -393,14 +342,6 @@ private struct PriceSummarySection: View {
                 ],
                 typeOfContract: nil,
                 isAddon: true,
-                removeModel: .init(
-                    id: "id2",
-                    title: "Remove Travel Insurance Plus",
-                    description:
-                        "By removing this extended coverage, your insurance will no longer include extra protection while traveling.",
-                    confirmButtonTitle: "Remove Travel Insurance Plus",
-                    cancelRemovalButtonTitle: "Keep current coverage"
-                ),
                 priceBreakdownItems: []
             ),
             .init(
@@ -463,12 +404,7 @@ private struct PriceSummarySection: View {
             ),
         ],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
-        summaryDataProvider: DirectQuoteSummaryDataProvider(
-            intentCost: .init(
-                totalCost: .init(gross: .sek(999), net: .sek(599)),
-                quoteCosts: []
-            )
-        ),
+        premium: .init(gross: .sek(999), net: .sek(599)),
         onConfirmClick: {}
     )
 

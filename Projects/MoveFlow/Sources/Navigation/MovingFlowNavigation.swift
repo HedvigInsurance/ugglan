@@ -104,9 +104,9 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
             activationDate: movingFlowQuotes.first?.startDate,
-            summaryDataProvider: MoveFlowQuoteSummaryDataProvider(
-                intentId: self.moveConfigurationModel?.id ?? "",
-                selectedHomeQuoteId: self.selectedHomeQuote?.id ?? ""
+            premium: .init(
+                gross: .sek(444),
+                net: .sek(1000)
             )
         )
         vm.onConfirmClick = { [weak self, weak router, weak vm] in
@@ -118,7 +118,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 await movingFlowConfirmViewModel.confirmMoveIntent(
                     intentId: self.moveConfigurationModel?.id ?? "",
                     currentHomeQuoteId: self.selectedHomeQuote?.id ?? "",
-                    removedAddons: vm.getRemovedContractsIds()
+                    removedAddons: movingFlowConfirmViewModel.removedAddonIds
                 )
             }
             router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
@@ -391,18 +391,6 @@ extension AddonDataModel {
     func asContractInfo(
         ondocumentClicked: @escaping (hPDFDocument) -> Void
     ) -> QuoteSummaryViewModel.ContractInfo {
-        let removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = {
-            if let removeDialogInfo = self.removeDialogInfo {
-                return .init(
-                    id: self.id,
-                    title: removeDialogInfo.title,
-                    description: removeDialogInfo.description,
-                    confirmButtonTitle: removeDialogInfo.confirmButtonTitle,
-                    cancelRemovalButtonTitle: removeDialogInfo.cancelButtonTitle
-                )
-            }
-            return nil
-        }()
         let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
             id: id,
             displayName: quoteInfo.title ?? "",
@@ -423,7 +411,6 @@ extension AddonDataModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            removeModel: removeModel,
             priceBreakdownItems: self.priceBreakdownItems.map({
                 .init(title: $0.displayTitle, value: $0.displayValue)
             })

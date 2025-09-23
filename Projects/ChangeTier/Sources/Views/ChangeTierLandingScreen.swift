@@ -221,11 +221,19 @@ public struct ChangeTierLandingScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     let inputData = ChangeTierInputData(source: .betterCoverage, contractId: "")
-    return ChangeTierLandingScreen(vm: .init(changeTierInput: ChangeTierInput.contractWithSource(data: inputData)))
-        .environmentObject(
-            ChangeTierNavigationViewModel(
-                changeTierContractsInput: .init(source: .betterCoverage, contracts: []),
-                onChangedTier: {}
+    return ChangeTierLandingScreen(
+        vm: .init(
+            changeTierInput: ChangeTierInput.contractWithSource(data: inputData),
+            dataProvider: DirectQuoteSummaryDataProvider(
+                premium: .init(gross: .sek(100), net: .sek(90)),
+                displayItems: []
             )
         )
+    )
+    .environmentObject(
+        ChangeTierNavigationViewModel(
+            changeTierContractsInput: .init(source: .betterCoverage, contracts: []),
+            onChangedTier: {}
+        )
+    )
 }

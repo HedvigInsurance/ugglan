@@ -34,6 +34,10 @@ struct SelectInsuranceScreen: View {
                                 source: changeTierContractsInput.source,
                                 contractId: selectedContract.contractId
                             )
+                        ),
+                        dataProvider: DirectQuoteSummaryDataProvider(
+                            premium: .init(gross: .sek(1000), net: .sek(1000)),
+                            displayItems: []
                         )
                     )
                     changeTierNavigationVm.router.push(selectedContract)

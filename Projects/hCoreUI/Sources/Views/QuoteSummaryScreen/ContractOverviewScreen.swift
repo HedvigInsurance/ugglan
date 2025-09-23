@@ -87,12 +87,7 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
     let vm = QuoteSummaryViewModel(
         contract: [],
         activationDate: "2025-08-24".localDateToDate ?? Date(),
-        summaryDataProvider: DirectQuoteSummaryDataProvider(
-            intentCost: .init(
-                totalCost: .init(gross: .sek(999), net: .sek(599)),
-                quoteCosts: []
-            )
-        ),
+        premium: .init(gross: .sek(999), net: .sek(599)),
         onConfirmClick: {}
     )
 

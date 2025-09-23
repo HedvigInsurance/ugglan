@@ -6,7 +6,7 @@ import hCoreUI
 
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
-    let dataProvider: QuoteSummaryDataProvider
+    let dataProvider: ChangeTierQuoteDataProvider
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var missingQuotes = false
@@ -50,7 +50,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     public init(
         changeTierInput: ChangeTierInput,
-        dataProvider: QuoteSummaryDataProvider
+        dataProvider: ChangeTierQuoteDataProvider
     ) {
         self.changeTierInput = changeTierInput
         self.dataProvider = dataProvider
@@ -90,9 +90,9 @@ public class ChangeTierViewModel: ObservableObject {
             selectedAddon = addon
 
             do {
-                let data = try await dataProvider.getTotal(includedAddonIds: [addon.id])
+                let data = try await dataProvider.getTotal(selectedQuoteId: "", includedAddonIds: [addon.id])
                 withAnimation {
-                    newTotalCost = data.quoteCosts.first(where: { $0.id == addon.id })?.cost.premium
+                    newTotalCost = data.premium
                 }
             } catch _ {}
         }

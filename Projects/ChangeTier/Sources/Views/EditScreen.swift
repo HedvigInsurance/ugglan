@@ -206,8 +206,10 @@ struct EditScreen: View {
     }
 
     private func confirmAddon() {
-        vm.setAddon(for: selectedItem ?? "")
-        changeTierNavigationVm.isEditTierPresented = nil
+        Task {
+            await vm.setAddon(for: selectedItem ?? "")
+            changeTierNavigationVm.isEditTierPresented = nil
+        }
     }
 
     private func cancelEditTier() {
@@ -242,7 +244,13 @@ enum EditTierType {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
     return EditScreen(
-        vm: .init(changeTierInput: input),
+        vm: .init(
+            changeTierInput: input,
+            dataProvider: DirectQuoteSummaryDataProvider(
+                premium: .init(gross: .sek(1000), net: .sek(1000)),
+                displayItems: []
+            )
+        ),
         type: .deductible
     )
 }
@@ -251,7 +259,13 @@ enum EditTierType {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
     return EditScreen(
-        vm: .init(changeTierInput: input),
+        vm: .init(
+            changeTierInput: input,
+            dataProvider: DirectQuoteSummaryDataProvider(
+                premium: .init(gross: .sek(1000), net: .sek(1000)),
+                displayItems: []
+            )
+        ),
         type: .tier
     )
 }
