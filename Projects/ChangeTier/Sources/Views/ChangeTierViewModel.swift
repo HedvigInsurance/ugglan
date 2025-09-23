@@ -6,7 +6,7 @@ import hCoreUI
 
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
-    let dataProvider: ChangeTierQuoteDataProvider
+    let dataProvider: ChangeTierQuoteDataProvider?
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var missingQuotes = false
@@ -18,19 +18,31 @@ public class ChangeTierViewModel: ObservableObject {
     var typeOfContract: TypeOfContract?
 
     @Published var currentTotalCost: Premium?
+    @Published var newTotalCost: Premium?
+
     var currentTier: Tier?
     var currentQuote: Quote?
-    var newTotalCost: Premium?
-
     var currentAddon: AddonQuote?
-    private(set) var relatedAddons: [AddonQuote] = []
 
+    // quoteId has multiple AddonQuotes - there will be only one of each type
+    private var relatedAddons: [String: [AddonQuote]] = [:]
+    var addonQuotes: [AddonQuote] = []
     @Published var canEditTier: Bool = false
     @Published var canEditDeductible: Bool = false
 
     @Published var selectedTier: Tier?
-    @Published var selectedQuote: Quote?
+    @Published var selectedQuote: Quote? {
+        didSet {
+            if let selectedQuote {
+                self.addonQuotes = relatedAddons[selectedQuote.id] ?? []
+            } else {
+                self.addonQuotes = []
+            }
+        }
+    }
     @Published var selectedAddon: AddonQuote?
+
+    @Published var excludedAddonTypes: [String] = []
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
@@ -50,7 +62,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     public init(
         changeTierInput: ChangeTierInput,
-        dataProvider: ChangeTierQuoteDataProvider
+        dataProvider: ChangeTierQuoteDataProvider? = nil
     ) {
         self.changeTierInput = changeTierInput
         self.dataProvider = dataProvider
@@ -73,28 +85,48 @@ public class ChangeTierViewModel: ObservableObject {
             selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
             .displayName ?? displayName
         selectedTier = newSelectedTier
-        newTotalCost = selectedQuote?.newTotalCost
+        calculateTotal()
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
         if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
             selectedQuote = deductible
-            newTotalCost = deductible.newTotalCost
+            calculateTotal()
         }
     }
 
     @MainActor
-    func setAddon(for addonId: String) async {
-        if let addon = relatedAddons.first(where: { $0.displayName == addonId }) {
-            selectedAddon = addon
+    func setAddonStatus(for addonSubtype: String, enabled: Bool) {
+        if self.excludedAddonTypes.contains(addonSubtype) && enabled {
+            self.excludedAddonTypes.removeAll(where: { $0 == addonSubtype })
+            calculateTotal()
+        } else if !self.excludedAddonTypes.contains(addonSubtype) && !enabled {
+            self.excludedAddonTypes.append(addonSubtype)
+            calculateTotal()
+        }
+    }
 
-            do {
-                let data = try await dataProvider.getTotal(selectedQuoteId: "", includedAddonIds: [addon.id])
-                withAnimation {
-                    newTotalCost = data.premium
+    private func calculateTotal() {
+        if let quote = selectedQuote {
+            let addonIds = addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) }).map { $0.id }
+            if let dataProvider {
+                Task {
+                    do {
+                        let data = try await dataProvider.getTotal(
+                            selectedQuoteId: quote.id,
+                            includedAddonIds: addonIds
+                        )
+                        withAnimation {
+                            newTotalCost = data.premium
+                        }
+                    } catch let ex {
+                        let ssss = ex
+                    }
                 }
-            } catch _ {}
+            } else {
+                newTotalCost = quote.newTotalCost
+            }
         }
     }
 
@@ -123,22 +155,7 @@ public class ChangeTierViewModel: ObservableObject {
     private func updateCurrentTiers(_ data: ChangeTierIntentModel) {
         self.currentTier = data.currentTier
         self.currentQuote = data.currentQuote
-        self.currentAddon = data.relatedAddons.first
-        self.selectedAddon = currentAddon
-        if let currentAddon = currentAddon {
-            let removeAddon: AddonQuote = .init(
-                displayName: "No extra travel protection",
-                displayNameLong: "",
-                quoteId: "id",
-                addonId: "addonId",
-                addonSubtype: "",
-                displayItems: [],
-                itemCost: .init(premium: .init(gross: .sek(0), net: .sek(0)), discounts: []),
-                addonVariant: nil,
-                documents: []
-            )
-            self.relatedAddons = [currentAddon, removeAddon]
-        }
+        self.relatedAddons = data.relatedAddons
 
         if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
             self.tiers = [currentTier] + data.tiers
@@ -186,8 +203,7 @@ public class ChangeTierViewModel: ObservableObject {
         } else {
             self.canEditDeductible = true
         }
-
-        self.newTotalCost = selectedQuote?.newTotalCost
+        calculateTotal()
     }
 
     private func handleError(_ exception: Error) {

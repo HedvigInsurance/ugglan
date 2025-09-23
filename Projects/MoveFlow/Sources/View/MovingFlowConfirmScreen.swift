@@ -15,7 +15,6 @@ struct MovingFlowConfirmScreen: View {
 public class MovingFlowConfirmViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
-    var removedAddonIds: [String] = []
     @MainActor
     func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async {
         withAnimation {

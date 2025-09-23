@@ -45,9 +45,12 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
-        cost {
+        totalCost {
             ...ItemCostFragment
         }
+		premium {
+			...MoneyFragment
+		}
       }
        homeQuotes {
         deductible {
@@ -72,9 +75,12 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
-        cost {
+        totalCost {
             ...ItemCostFragment
         }
+		premium {
+			...MoneyFragment
+		}
       }
 }
 
@@ -89,9 +95,9 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     addonVariant {
         ...AddonVariantFragment
     }
-    cost {
-        ...ItemCostFragment
-    }
+	premium {
+		...MoneyFragment
+	}
 }
 
 fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {

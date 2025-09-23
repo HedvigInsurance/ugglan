@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class MovingFlowNavigationViewModel: ObservableObject {
+public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDataProvider {
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
     var errorTitle: String?
@@ -18,9 +18,11 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published var selectedHomeQuote: MovingFlowQuote?
     @Published var selectedHomeAddress: MoveAddress?
     @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
-
+    var totalPremium: Premium?
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
     var quoteSummaryViewModel: QuoteSummaryViewModel?
+    var removedAddonIds: [String] = []
+
     fileprivate var initialTrackingType: MovingFlowDetentType?
     init() {
         initializeData()
@@ -66,18 +68,29 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         var contractInfos: [QuoteSummaryViewModel.ContractInfo] = []
         movingFlowConfirmViewModel = .init()
         for quote in movingFlowQuotes {
+            var documents: [hPDFDocument] = quote.documents.map {
+                .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+            }
+            var displayItems: [QuoteDisplayItem] = []
+            displayItems.append(.init(title: quote.displayName, value: quote.baseGrossPremium.formattedAmountPerMonth))
+            for addon in quote.addons {
+                if !removedAddonIds.contains(addon.id) {
+                    documents.append(contentsOf: addon.addonVariant.documents)
+                    displayItems.append(
+                        .init(title: addon.addonVariant.displayName, value: addon.grossPremium.formattedAmountPerMonth)
+                    )
+                }
+            }
+            displayItems.append(
+                contentsOf: quote.priceBreakdownItems.map { .init(title: $0.displayTitle, value: $0.displayValue) }
+            )
             let contractQuote = QuoteSummaryViewModel.ContractInfo(
                 id: quote.id,
                 displayName: quote.displayName,
                 exposureName: quote.exposureName ?? "",
-                premium: .init(
-                    gross: quote.grossPremium,
-                    net: quote.netPremium
-                ),
+                premium: quote.totalPremium,
                 documentSection: .init(
-                    documents: quote.documents.map {
-                        .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-                    },
+                    documents: documents,
                     onTap: { [weak self] document in
                         self?.document = document
                     }
@@ -86,39 +99,25 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 ),
                 insuranceLimits: quote.insurableLimits,
                 typeOfContract: quote.contractType,
-                priceBreakdownItems: quote.priceBreakdownItems.map {
-                    .init(title: $0.displayTitle, value: $0.displayValue)
-                }
+                priceBreakdownItems: displayItems
             )
             contractInfos.append(contractQuote)
-
-            for addonQuote in quote.addons {
-                let addonQuoteContractInfo = addonQuote.asContractInfo {
-                    [weak self] document in
-                    self?.document = document
-                }
-                contractInfos.append(addonQuoteContractInfo)
-            }
         }
 
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
             activationDate: movingFlowQuotes.first?.startDate,
-            premium: .init(
-                gross: .sek(444),
-                net: .sek(1000)
-            )
+            premium: totalPremium ?? .init(gross: nil, net: nil)
         )
-        vm.onConfirmClick = { [weak self, weak router, weak vm] in
+        vm.onConfirmClick = { [weak self, weak router] in
             Task {
                 guard let self = self,
-                    let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel,
-                    let vm
+                    let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel
                 else { return }
                 await movingFlowConfirmViewModel.confirmMoveIntent(
                     intentId: self.moveConfigurationModel?.id ?? "",
                     currentHomeQuoteId: self.selectedHomeQuote?.id ?? "",
-                    removedAddons: movingFlowConfirmViewModel.removedAddonIds
+                    removedAddons: self.removedAddonIds
                 )
             }
             router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
@@ -136,6 +135,43 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     var movingDate: String {
         (selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate)?.displayDateDDMMMYYYYFormat ?? ""
+    }
+
+    public func getTotal(
+        selectedQuoteId: String,
+        includedAddonIds: [String]
+    ) async throws -> (premium: hCore.Premium, displayItems: [hCoreUI.QuoteDisplayItem]) {
+        removedAddonIds =
+            moveQuotesModel?.homeQuotes.first(where: { $0.id == selectedQuoteId })?.addons
+            .filter({ !includedAddonIds.contains($0.id) }).map { $0.id } ?? []
+        let data = try await service.getMoveIntentCost(
+            input: .init(
+                intentId: moveConfigurationModel?.id ?? "",
+                selectedHomeQuoteId: selectedQuoteId,
+                selectedAddons: includedAddonIds
+            )
+        )
+        let quote = data.quoteCosts.first(where: { $0.id == selectedQuoteId })!
+        totalPremium = data.totalCost
+        moveQuotesModel?.homeQuotes.enumerated()
+            .forEach { (index, quote) in
+                if let cost = data.quoteCosts.first(where: { $0.id == quote.id })?.cost {
+                    moveQuotesModel?.homeQuotes[index].totalPremium = cost.premium
+                    moveQuotesModel?.homeQuotes[index].priceBreakdownItems = cost.discounts.map({
+                        .init(displaySubtitle: nil, displayTitle: $0.displayName, displayValue: $0.displayValue)
+                    })
+                }
+            }
+        moveQuotesModel?.mtaQuotes.enumerated()
+            .forEach { (index, quote) in
+                if let cost = data.quoteCosts.first(where: { $0.id == quote.id })?.cost {
+                    moveQuotesModel?.mtaQuotes[index].totalPremium = cost.premium
+                    moveQuotesModel?.mtaQuotes[index].priceBreakdownItems = cost.discounts.map({
+                        .init(displaySubtitle: nil, displayTitle: $0.displayName, displayValue: $0.displayValue)
+                    })
+                }
+            }
+        return (quote.cost.premium, quote.cost.discounts.map({ .init(title: $0.displayName, value: $0.displayValue) }))
     }
 }
 
@@ -343,7 +379,11 @@ public struct MovingFlowNavigation: View {
 
             router.push(MovingFlowRouterActions.confirm)
         }
-        return ChangeTierNavigation(input: model, router: router)
+        return ChangeTierNavigation(
+            input: model,
+            dataProvider: movingFlowNavigationVm,
+            router: router
+        )
     }
 
     func openTypeOfBuildingPicker(
@@ -397,7 +437,7 @@ extension AddonDataModel {
             exposureName: coverageDisplayName,
             premium: .init(
                 gross: grossPremium,
-                net: netPremium
+                net: nil
             ),
             documentSection: .init(
                 documents: addonVariant.documents,
@@ -411,9 +451,7 @@ extension AddonDataModel {
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
-            priceBreakdownItems: self.priceBreakdownItems.map({
-                .init(title: $0.displayTitle, value: $0.displayValue)
-            })
+            priceBreakdownItems: []
         )
         return addonQuoteContractInfo
     }

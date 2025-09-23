@@ -39,10 +39,6 @@ public class ChangeTierNavigationViewModel: ObservableObject {
             vm = .init(
                 changeTierInput: .contractWithSource(
                     data: .init(source: changeTierContractsInput.source, contractId: first.contractId)
-                ),
-                dataProvider: DirectQuoteSummaryDataProvider(
-                    premium: .init(gross: .sek(100), net: .sek(90)),
-                    displayItems: []
                 )
             )
             self.changeTierContractsInput = nil
@@ -178,6 +174,7 @@ public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     public init(
         input: ChangeTierInput,
+        dataProvider: ChangeTierQuoteDataProvider? = nil,
         router: Router? = nil,
         onChangedTier: @escaping () -> Void = {}
     ) {
@@ -185,10 +182,7 @@ public struct ChangeTierNavigation: View {
             router: router,
             vm: .init(
                 changeTierInput: input,
-                dataProvider: DirectQuoteSummaryDataProvider(
-                    premium: .init(gross: .sek(100), net: .sek(90)),
-                    displayItems: []
-                )
+                dataProvider: dataProvider
             ),
             onChangedTier: onChangedTier
         )
@@ -223,6 +217,7 @@ public struct ChangeTierNavigation: View {
             item: $changeTierNavigationVm.isEditTierPresented
         ) { model in
             EditScreen(
+                selectedItem: model.selectedItem,
                 vm: changeTierNavigationVm.vm,
                 type: model.type
             )
@@ -342,5 +337,6 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
 
 public struct EditTypeModel: Identifiable, Equatable {
     public let id = UUID().uuidString
+    let selectedItem: String?
     let type: EditTierType
 }

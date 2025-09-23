@@ -50,7 +50,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let selectedQuote: Quote?
     let canEditTier: Bool
     let typeOfContract: TypeOfContract
-    let relatedAddons: [AddonQuote]
+    let relatedAddons: [String: [AddonQuote]]
 
     public init(
         displayName: String,
@@ -62,7 +62,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         selectedQuote: Quote?,
         canEditTier: Bool,
         typeOfContract: TypeOfContract,
-        relatedAddons: [AddonQuote]
+        relatedAddons: [String: [AddonQuote]]
     ) {
         self.displayName = displayName
         self.activationDate = activationDate
