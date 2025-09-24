@@ -7,7 +7,7 @@ import hCoreUI
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
     let dataProvider: ChangeTierQuoteDataProvider?
-    var dataProviderViewState: ProcessingState = .success
+    @Published var dataProviderViewState: ProcessingState = .success
 
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
@@ -136,7 +136,7 @@ public class ChangeTierViewModel: ObservableObject {
         }
     }
 
-    private func calculateTotal() {
+    func calculateTotal() {
         if let quote = selectedQuote {
             let addonIds = addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) }).map { $0.id }
             if let dataProvider {
@@ -158,7 +158,11 @@ public class ChangeTierViewModel: ObservableObject {
                             self?.displayItemList = displayItems
                         }
                     } catch let ex {
-                        self?.dataProviderViewState = .error(errorMessage: ex.localizedDescription)
+                        withAnimation {
+                            self?.dataProviderViewState = .error(errorMessage: ex.localizedDescription)
+                            self?.newTotalCost = nil
+                            self?.displayItemList = []
+                        }
                     }
                 }
             } else {

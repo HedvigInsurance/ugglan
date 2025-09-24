@@ -19,6 +19,12 @@ public struct ChangeTierLandingScreen: View {
                 [weak changeTierNavigationVm] in
                 changeTierNavigationVm?.missingQuotesGoBackPressed()
             }
+        } else if vm.dataProviderViewState.isError {
+            GenericErrorView(
+                description: L10n.General.defaultError,
+                formPosition: .center
+            )
+            .hStateViewButtonConfig(dataLoaderErrorButtons)
         } else {
             ProcessingStateView(
                 loadingViewText: L10n.tierFlowProcessing,
@@ -37,6 +43,22 @@ public struct ChangeTierLandingScreen: View {
             actionButton: .init(
                 buttonAction: { [weak vm] in
                     vm?.fetchTiers()
+                }
+            ),
+            dismissButton:
+                .init(
+                    buttonAction: { [weak changeTierNavigationVm] in
+                        changeTierNavigationVm?.router.dismiss()
+                    }
+                )
+        )
+    }
+
+    private var dataLoaderErrorButtons: StateViewButtonConfig {
+        .init(
+            actionButton: .init(
+                buttonAction: { [weak vm] in
+                    vm?.calculateTotal()
                 }
             ),
             dismissButton:
