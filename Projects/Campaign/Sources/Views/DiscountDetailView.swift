@@ -38,6 +38,7 @@ public struct DiscountDetailView: View {
                             RoundedRectangle(cornerRadius: .padding8)
                                 .fill(hSurfaceColor.Translucent.primary)
                         )
+                        .accessibilityLabel(L10n.voiceoverBundleDiscountTag(discount.code))
                         .layoutPriority(1)
                     Spacer(minLength: .padding8)
                     hText(discount.displayValue, style: displayValueStyle)
@@ -53,6 +54,7 @@ public struct DiscountDetailView: View {
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 
     @hColorBuilder
