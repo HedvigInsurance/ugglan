@@ -8,4 +8,11 @@ import hCore
 protocol AnalyticsClient {
     func fetchAndSetUserId() async throws
     func setWith(userId: String)
+    func setDeviceInfo(model: MemberLogDeviceModel) async
+}
+
+struct MemberLogDeviceModel: Encodable {
+    let os: String,
+        let brand: String,
+        let model: String
 }

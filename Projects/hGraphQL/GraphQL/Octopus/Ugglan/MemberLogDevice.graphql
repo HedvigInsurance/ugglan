@@ -1,0 +1,5 @@
+mutation MemberLogDevice($input: MemberLogDeviceInput!) {
+  memberLogDevice(input: $input) {
+	message
+  }
+}
