@@ -153,7 +153,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 Dependencies.shared.add(module: Module { () -> DateService in dateService })
             }
 
-        ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.value.acceptLanguageHeader
         AskForRating().registerSession()
     }
@@ -162,6 +161,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        ApolloClient.bundle = Bundle.main
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
         application.accessibilityLanguage = Localization.Locale.currentLocale.value.accessibilityLanguageCode
         window.rootViewController = UIViewController()
