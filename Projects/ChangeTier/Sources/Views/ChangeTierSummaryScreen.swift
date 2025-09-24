@@ -74,11 +74,9 @@ extension ChangeTierViewModel {
         let vm = QuoteSummaryViewModel(
             contract: contracts,
             activationDate: self.activationDate,
-            summaryDataProvider: DirectQuoteSummaryDataProvider(
-                intentCost: .init(
-                    gross: totalGross,
-                    net: totalNet
-                )
+            premium: .init(
+                gross: totalGross,
+                net: totalNet
             ),
             onConfirmClick: { [weak changeTierNavigationVm] in
                 changeTierNavigationVm?.vm.commitTier()
@@ -95,7 +93,9 @@ extension ChangeTierViewModel {
     let changeTierInput: ChangeTierInput = .contractWithSource(
         data: .init(source: .betterCoverage, contractId: "contractId")
     )
-    let changeTierVm = ChangeTierViewModel(changeTierInput: changeTierInput)
+    let changeTierVm = ChangeTierViewModel(
+        changeTierInput: changeTierInput
+    )
     return ChangeTierSummaryScreen(
         changeTierVm: changeTierVm,
         changeTierNavigationVm: .init(router: Router(), vm: changeTierVm) {}

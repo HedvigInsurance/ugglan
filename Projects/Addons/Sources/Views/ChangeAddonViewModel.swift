@@ -22,6 +22,10 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
+    var disableDropDown: Bool {
+        addonOffer?.quotes.count ?? 0 <= 1
+    }
+
     func getAddons() async {
         withAnimation {
             self.fetchAddonsViewState = .loading

@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import SwiftUI
 import hCore
@@ -5,6 +6,9 @@ import hCoreUI
 
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
+    let dataProvider: ChangeTierQuoteDataProvider?
+    @Published var dataProviderViewState: ProcessingState = .success
+
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var missingQuotes = false
@@ -15,16 +19,41 @@ public class ChangeTierViewModel: ObservableObject {
     var activationDate: Date?
     var typeOfContract: TypeOfContract?
 
-    @Published var currentTotalCost: Quote.TotalCost?
+    @Published var currentTotalCost: Premium?
+    @Published var newTotalCost: Premium?
+    @Published var displayItemList: [QuoteDisplayItem] = []
+
     var currentTier: Tier?
-    private var currentQuote: Quote?
-    var newTotalCost: Quote.TotalCost?
+    var currentQuote: Quote?
+    var currentAddon: AddonQuote?
+
+    // quoteId has multiple AddonQuotes - there will be only one of each type
+    private var relatedAddons: [String: [AddonQuote]] = [:]
+    var addonQuotes: [AddonQuote] = []
     @Published var canEditTier: Bool = false
     @Published var canEditDeductible: Bool = false
 
     @Published var selectedTier: Tier?
-    @Published var selectedQuote: Quote?
+    @Published var selectedQuote: Quote? {
+        didSet {
+            if let selectedQuote {
+                addonQuotes = relatedAddons[selectedQuote.id] ?? []
+            } else {
+                withAnimation {
+                    addonQuotes = []
+                    displayItemList = []
+                    newTotalCost = nil
+                }
+            }
+        }
+    }
+    @Published var selectedAddon: AddonQuote?
 
+    @Published var excludedAddonTypes: [String] = []
+
+    var shouldShowOldPrice: Bool {
+        dataProvider != nil
+    }
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
         let selectedDeductibleIsSameAsCurrent = showDeductibleField ? currentQuote == selectedQuote : true
@@ -32,7 +61,9 @@ public class ChangeTierViewModel: ObservableObject {
         let isTierValid = selectedTier != nil
         let hasSelectedValues = isTierValid && isDeductibleValid
 
-        let isValid = hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+        let isValid =
+            hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+            && dataProviderViewState == .success
         return isValid
     }
 
@@ -42,9 +73,11 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     public init(
-        changeTierInput: ChangeTierInput
+        changeTierInput: ChangeTierInput,
+        dataProvider: ChangeTierQuoteDataProvider? = nil
     ) {
         self.changeTierInput = changeTierInput
+        self.dataProvider = dataProvider
         fetchTiers()
     }
 
@@ -56,7 +89,13 @@ public class ChangeTierViewModel: ObservableObject {
                 selectedQuote = newSelectedTier?.quotes.first
                 canEditDeductible = false
             } else {
-                selectedQuote = nil
+                //try to set deductible from the selected quote displayTitle from newly selected tier
+                if let selectedQuoteDisplayTitle = selectedQuote?.displayTitle {
+                    selectedQuote = newSelectedTier?.quotes
+                        .first(where: { $0.displayTitle == selectedQuoteDisplayTitle })
+                } else {
+                    selectedQuote = nil
+                }
                 canEditDeductible = true
             }
         }
@@ -64,15 +103,102 @@ public class ChangeTierViewModel: ObservableObject {
             selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
             .displayName ?? displayName
         selectedTier = newSelectedTier
-        newTotalCost = selectedQuote?.newTotalCost
+        calculateTotal()
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
         if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
             selectedQuote = deductible
-            newTotalCost = deductible.newTotalCost
+            calculateTotal()
         }
+    }
+
+    @MainActor
+    func setAddonStatus(for addon: AddonQuote, enabled: Bool) {
+        let addonSubtype = addon.addonSubtype
+        if self.excludedAddonTypes.contains(addonSubtype) && enabled {
+            self.excludedAddonTypes.removeAll(where: { $0 == addonSubtype })
+            self.selectedAddon = addon
+            calculateTotal()
+        } else if !self.excludedAddonTypes.contains(addonSubtype) && !enabled {
+            self.excludedAddonTypes.append(addonSubtype)
+            self.selectedAddon = .init(
+                displayName: L10n.tierFlowAddonNoCoverageLabel,
+                displayNameLong: "",
+                quoteId: L10n.tierFlowAddonNoCoverageLabel,
+                addonId: L10n.tierFlowAddonNoCoverageLabel,
+                addonSubtype: addonSubtype,
+                displayItems: [],
+                itemCost: .init(premium: .init(gross: .sek(0), net: nil), discounts: []),
+                addonVariant: nil,
+                documents: []
+            )
+            calculateTotal()
+        }
+    }
+
+    func calculateTotal() {
+        if let quote = selectedQuote {
+            let addonIds = addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) }).map { $0.id }
+            if let dataProvider {
+                Task { [weak self] in
+                    do {
+                        withAnimation {
+                            self?.dataProviderViewState = .loading
+                        }
+                        let data = try await dataProvider.getTotal(
+                            selectedQuoteId: quote.id,
+                            includedAddonIds: addonIds
+                        )
+
+                        let displayItems =
+                            self?.displayItems(from: data.premium, additionalDisplayItems: data.displayItems) ?? []
+                        withAnimation {
+                            self?.dataProviderViewState = .success
+                            self?.newTotalCost = data.premium
+                            self?.displayItemList = displayItems
+                        }
+                    } catch let ex {
+                        withAnimation {
+                            self?.dataProviderViewState = .error(errorMessage: ex.localizedDescription)
+                            self?.newTotalCost = nil
+                            self?.displayItemList = []
+                        }
+                    }
+                }
+            } else {
+                newTotalCost = quote.newTotalCost
+            }
+        }
+    }
+
+    private func displayItems(
+        from premium: hCore.Premium,
+        additionalDisplayItems: [QuoteDisplayItem]
+    ) -> [QuoteDisplayItem] {
+        var displayItemsList = [QuoteDisplayItem]()
+        //append current quote name + price
+        displayItemsList.append(
+            .init(
+                title: self.displayName ?? "",
+                value: premium.gross?.formattedAmountPerMonth ?? ""
+            )
+        )
+
+        //append current quote addons + prices
+        let addonsItems = addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) })
+            .map { quote in
+                QuoteDisplayItem(
+                    title: quote.addonSubtype,
+                    value: quote.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
+                )
+            }
+        displayItemsList.append(contentsOf: addonsItems)
+
+        //append rest of the items from the data provider (discounts)
+        displayItemsList.append(contentsOf: additionalDisplayItems)
+        return displayItemsList
     }
 
     func fetchTiers() {
@@ -100,6 +226,7 @@ public class ChangeTierViewModel: ObservableObject {
     private func updateCurrentTiers(_ data: ChangeTierIntentModel) {
         self.currentTier = data.currentTier
         self.currentQuote = data.currentQuote
+        self.relatedAddons = data.relatedAddons
 
         if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
             self.tiers = [currentTier] + data.tiers
@@ -147,8 +274,7 @@ public class ChangeTierViewModel: ObservableObject {
         } else {
             self.canEditDeductible = true
         }
-
-        self.newTotalCost = selectedQuote?.newTotalCost
+        calculateTotal()
     }
 
     private func handleError(_ exception: Error) {
