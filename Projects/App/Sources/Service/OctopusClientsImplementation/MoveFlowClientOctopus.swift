@@ -320,12 +320,12 @@ extension ChangeTierIntentModel {
                         quotePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
                         currentTotalCost: .init(
-                            gross: .init(fragment: quote.totalCost.monthlyGross.fragments.moneyFragment),
-                            net: .init(fragment: quote.totalCost.monthlyNet.fragments.moneyFragment)
+                            gross: .init(fragment: quote.premium.fragments.moneyFragment),
+                            net: .init(fragment: quote.premium.fragments.moneyFragment)
                         ),
                         newTotalCost: .init(
-                            gross: .init(fragment: quote.totalCost.monthlyGross.fragments.moneyFragment),
-                            net: .init(fragment: quote.totalCost.monthlyNet.fragments.moneyFragment)
+                            gross: .init(fragment: quote.premium.fragments.moneyFragment),
+                            net: .init(fragment: quote.premium.fragments.moneyFragment)
                         ),
                         displayItems: [],
                         productVariant: ProductVariant(

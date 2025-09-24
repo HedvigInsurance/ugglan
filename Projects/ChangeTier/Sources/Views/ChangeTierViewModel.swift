@@ -19,6 +19,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     @Published var currentTotalCost: Premium?
     @Published var newTotalCost: Premium?
+    @Published var displayItemList: [QuoteDisplayItem] = []
 
     var currentTier: Tier?
     var currentQuote: Quote?
@@ -34,9 +35,13 @@ public class ChangeTierViewModel: ObservableObject {
     @Published var selectedQuote: Quote? {
         didSet {
             if let selectedQuote {
-                self.addonQuotes = relatedAddons[selectedQuote.id] ?? []
+                addonQuotes = relatedAddons[selectedQuote.id] ?? []
             } else {
-                self.addonQuotes = []
+                withAnimation {
+                    addonQuotes = []
+                    displayItemList = []
+                    newTotalCost = nil
+                }
             }
         }
     }
@@ -44,6 +49,9 @@ public class ChangeTierViewModel: ObservableObject {
 
     @Published var excludedAddonTypes: [String] = []
 
+    var shouldShowOldPrice: Bool {
+        dataProvider != nil
+    }
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
         let selectedDeductibleIsSameAsCurrent = showDeductibleField ? currentQuote == selectedQuote : true
@@ -77,7 +85,12 @@ public class ChangeTierViewModel: ObservableObject {
                 selectedQuote = newSelectedTier?.quotes.first
                 canEditDeductible = false
             } else {
-                selectedQuote = nil
+                if let selectedQuoteDisplayTitle = selectedQuote?.displayTitle {
+                    selectedQuote = newSelectedTier?.quotes
+                        .first(where: { $0.displayTitle == selectedQuoteDisplayTitle })
+                } else {
+                    selectedQuote = nil
+                }
                 canEditDeductible = true
             }
         }
@@ -132,6 +145,24 @@ public class ChangeTierViewModel: ObservableObject {
                         )
                         withAnimation {
                             newTotalCost = data.premium
+                            var newList = [QuoteDisplayItem]()
+                            newList.append(
+                                .init(
+                                    title: displayName ?? "",
+                                    value: selectedQuote?.newTotalCost.gross?.formattedAmountPerMonth ?? ""
+                                )
+                            )
+                            newList.append(
+                                contentsOf: addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) })
+                                    .map { quote in
+                                        QuoteDisplayItem(
+                                            title: quote.addonSubtype,
+                                            value: quote.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
+                                        )
+                                    }
+                            )
+                            newList.append(contentsOf: data.displayItems)
+                            displayItemList = newList
                         }
                     } catch let ex {
                         _ = ex

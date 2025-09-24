@@ -104,7 +104,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
             return quotes.first?.newTotalCost.net?.formattedAmountPerMonth
         } else {
             if let smallestPremium = quotes.map({ $0.newTotalCost.net ?? .sek(0) })
-                .sorted(by: { $0.amount < $1.amount })
+                .sorted(by: { $0.floatAmount < $1.floatAmount })
                 .first?
                 .formattedAmount
             {

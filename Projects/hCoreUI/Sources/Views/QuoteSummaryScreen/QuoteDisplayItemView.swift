@@ -1,16 +1,16 @@
 import SwiftUI
 import hCore
 
-struct QuoteDisplayItemView: View {
+public struct QuoteDisplayItemView: View {
     let displayItem: QuoteDisplayItem
 
-    init(
+    public init(
         displayItem: QuoteDisplayItem
     ) {
         self.displayItem = displayItem
     }
 
-    var body: some View {
+    public var body: some View {
         hRow {
             HStack(alignment: .top) {
                 displayTitleView

@@ -89,14 +89,28 @@ public struct ChangeTierLandingScreen: View {
                 }
             }
             .hFieldSize(.small)
-            hRow {
-                PriceField(
-                    viewModel: .init(
-                        initialValue: nil,
-                        newValue: vm.newTotalCost?.net ?? .sek(0),
-                        subTitle: getPriceSubtitle()
+            if !vm.displayItemList.isEmpty {
+                VStack(spacing: .padding4) {
+                    ForEach(vm.displayItemList, id: \.displayTitle) { disocuntItem in
+                        QuoteDisplayItemView(displayItem: disocuntItem)
+                    }
+                }
+                .padding(.top, .padding16)
+                .accessibilityElement(children: .combine)
+            }
+            if vm.newTotalCost != nil {
+                hRow {
+                    PriceField(
+                        viewModel: .init(
+                            initialValue: vm.shouldShowOldPrice ? vm.newTotalCost?.gross : nil,
+                            newValue: vm.newTotalCost?.net ?? .sek(0),
+                            subTitle: getPriceSubtitle()
+                        )
                     )
-                )
+                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                }
+            } else {
+                Spacing(height: Float(.padding16))
             }
         }
     }
