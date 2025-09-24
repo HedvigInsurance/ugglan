@@ -65,7 +65,7 @@ struct AnalyticsClientOctopus: AnalyticsClient {
     func setDeviceInfo(model: MemberLogDeviceModel) async {
         let mutation = OctopusGraphQL.MemberLogDeviceMutation(input: model.asGraphQLInput)
         do {
-            try await octopus.client.perform(mutation: mutation)
+            _ = try await octopus.client.perform(mutation: mutation)
         } catch _ {
             //if fails retry in 1s or return if task is cancelledApolloClient.bundle = Bundle.main
             try? await Task.sleep(nanoseconds: 1_000_000_000)
