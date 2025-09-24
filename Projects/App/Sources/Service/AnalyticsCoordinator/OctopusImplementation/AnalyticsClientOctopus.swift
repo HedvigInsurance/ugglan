@@ -17,7 +17,6 @@ class AnalyticsService {
                 os: UIDevice.current.systemName,
                 brand: "Apple",
                 model: UIDevice.modelName
-
             )
             log.info("AnalyticsService: setDeviceInfo \(memberLogDeviceModel.asString)", error: nil, attributes: nil)
             await self?.client.setDeviceInfo(model: memberLogDeviceModel)
