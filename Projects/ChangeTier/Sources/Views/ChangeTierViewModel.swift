@@ -61,7 +61,9 @@ public class ChangeTierViewModel: ObservableObject {
         let isTierValid = selectedTier != nil
         let hasSelectedValues = isTierValid && isDeductibleValid
 
-        let isValid = hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+        let isValid =
+            hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+            && dataProviderViewState == .success
         return isValid
     }
 
