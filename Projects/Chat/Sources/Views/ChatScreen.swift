@@ -58,7 +58,7 @@ public struct ChatScreen: View {
     @ViewBuilder
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: .padding8) {
                 let messages = messageVm.messages
                 ForEach(messages) { message in
                     messageView(for: message, conversationStatus: conversationVm.conversationStatus)
@@ -83,21 +83,44 @@ public struct ChatScreen: View {
     }
 
     private func messageView(for message: Message, conversationStatus: ConversationStatus) -> some View {
-        HStack(alignment: .center, spacing: 0) {
-            if message.sender == .member {
-                Spacer()
-            }
-            VStack(alignment: message.sender.alignment.horizontal, spacing: .padding4) {
-                MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
+        VStack(spacing: .padding16) {
+            HStack(alignment: .center, spacing: 0) {
+                if message.sender == .member {
+                    Spacer()
+                }
+                VStack(alignment: message.sender.alignment.horizontal, spacing: .padding4) {
+                    MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
 
-                messageTimeStamp(message: message)
-                    .accessibilityHidden(true)
+                    messageTimeStamp(message: message)
+                        .accessibilityHidden(true)
+                }
+                if message.sender == .hedvig {
+                    Spacer()
+                }
             }
-            if message.sender == .hedvig {
-                Spacer()
+            .id(message.id)
+
+            /* TODO: COMPLETE WHEN WE HAVE BE IMPLEMENTATION - SHOULD BE SHOWN FOR FIRST AUTOMATED MESSAGE ONLY */
+            if message.sender == .automation {
+                automationBanner
             }
         }
-        .id(message.id)
+    }
+
+    private var automationBanner: some View {
+        InfoCard(
+            title: L10n.automatedMessageInfoCardTitle,
+            text: L10n.automatedMessageInfoCardText,
+            type: .neutral
+        )
+        .buttons([
+            .init(
+                buttonTitle: L10n.automatedMessageInfoCardButton,
+                buttonAction: {
+                    chatNavigationVm.isAutomationMessagePresented = true
+                }
+            )
+        ])
     }
 
     private func messageTimeStamp(message: Message) -> some View {
@@ -259,7 +282,7 @@ extension MessageSender {
     var alignment: Alignment {
         switch self {
         case .member: return .trailing
-        case .hedvig: return .leading
+        case .hedvig, .automation: return .leading
         }
     }
 }
