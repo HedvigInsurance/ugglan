@@ -17,27 +17,40 @@ struct DiscountsView: View {
                 discountsView
                 foreverView
             }
+            .fixedSize(horizontal: false, vertical: true)
+            .hWithoutHorizontalPadding([.row, .divider])
+            .hSectionHeaderWithDivider
             .padding(.vertical, .padding16)
         }
         .sectionContainerStyle(.transparent)
     }
 
     private var discountsView: some View {
-        hSection(data.discounts) { discount in
-            DiscountDetailView(
-                vm: .init(
-                    options: [.showExpire],
-                    discount: discount
+        ForEach(data.discountsData, id: \.id) { discountData in
+            hSection(discountData.discounts) { discount in
+                DiscountDetailView(
+                    discount: discount,
+                    options: [.showExpire]
                 )
-            )
+                if discount == discountData.discounts.last {
+                    Group {
+                        if let info = discountData.info {
+                            InfoCard(text: info, type: .info)
+                        } else {
+                            hRowDivider()
+                        }
+                    }
+                }
+            }
+            .withHeader(title: discountData.displayName)
         }
-        .hWithoutHorizontalPadding([.section])
     }
 
     @ViewBuilder
     private var foreverView: some View {
+        let numberOfReferrals = data.referralsData.referrals.count { !$0.invitedYou }
         hSection(data.referralsData.referrals, id: \.id) { referral in
-            getRefferalView(referral, nbOfReferrals: data.referralsData.referrals.count(where: { !$0.invitedYou }))
+            getReferralView(referral, nbOfReferrals: numberOfReferrals)
         }
         .withHeader(
             title: L10n.ReferralsInfoSheet.headline,
@@ -46,7 +59,6 @@ struct DiscountsView: View {
                     .formattedAmount ?? ""
             )
         )
-        .hSectionHeaderWithDivider
         .hWithoutHorizontalPadding([.row, .divider])
 
         hSection {
@@ -68,13 +80,10 @@ struct DiscountsView: View {
         }
     }
 
-    private func getRefferalView(_ referral: Referral, nbOfReferrals: Int) -> some View {
+    private func getReferralView(_ referral: Referral, nbOfReferrals: Int) -> some View {
         DiscountDetailView(
-            isReferral: true,
-            vm: .init(
-                options: [.showExpire],
-                discount: .init(referral: referral, nbOfReferrals: nbOfReferrals)
-            )
+            discount: .init(referral: referral, nbOfReferrals: nbOfReferrals),
+            options: [.showExpire]
         )
     }
 }
@@ -86,39 +95,48 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
 
         return DiscountsView(
             data: .init(
-                discounts: [
+                discountsData: [
                     .init(
-                        code: "code",
-                        amount: .sek(100),
-                        title: nil,
-                        listOfAffectedInsurances: [
-                            .init(id: "id1", displayName: "name")
-                        ],
-                        validUntil: "2023-11-10",
-                        canBeDeleted: true,
-                        discountId: "id"
+                        id: "id1",
+                        displayName: "Dog Premium ∙ Fido",
+                        info: "Your insurance info",
+                        discounts: [
+                            .init(
+                                code: "FURRY",
+                                displayValue: "Active",
+                                description: "50% discount for 6 months",
+                                discountId: "id",
+                                type: .discount(status: .active)
+                            ),
+                            .init(
+                                code: "BUNDLE",
+                                displayValue: "Active",
+                                description: "15% bundle discount",
+                                discountId: "id1",
+                                type: .discount(status: .active)
+                            ),
+                        ]
                     ),
                     .init(
-                        code: "code 2",
-                        amount: .sek(100),
-                        title: "title 2",
-                        listOfAffectedInsurances: [
-                            .init(id: "id21", displayName: "name 2")
-                        ],
-                        validUntil: "2023-11-03",
-                        canBeDeleted: false,
-                        discountId: "id2"
-                    ),
-                    .init(
-                        code: "code 3",
-                        amount: .sek(100),
-                        title: "",
-                        listOfAffectedInsurances: [
-                            .init(id: "id31", displayName: "name 3")
-                        ],
-                        validUntil: "2025-11-03",
-                        canBeDeleted: false,
-                        discountId: "id3"
+                        id: "id2",
+                        displayName: "House Standard ∙ Villagatan 25",
+                        info: nil,
+                        discounts: [
+                            .init(
+                                code: "TOGETHER",
+                                displayValue: "Expired 31 aug 2025",
+                                description: "15% discount for 12 months",
+                                discountId: "id3",
+                                type: .discount(status: .terminated)
+                            ),
+                            .init(
+                                code: "BUNDLE",
+                                displayValue: "Pending",
+                                description: "15% bundle discount",
+                                discountId: "id4",
+                                type: .discount(status: .pending)
+                            ),
+                        ]
                     ),
 
                 ],
@@ -183,7 +201,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 
         return DiscountsView(
             data: .init(
-                discounts: [],
+                discountsData: [],
                 referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
             )
         )

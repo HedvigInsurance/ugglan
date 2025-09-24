@@ -5,7 +5,7 @@ import hCoreUI
 
 @MainActor
 extension PaymentData {
-    var getTitle: String {
+    var title: String {
         switch status {
         case .upcoming, .failedForPrevious:
             return L10n.paymentsUpcomingPayment

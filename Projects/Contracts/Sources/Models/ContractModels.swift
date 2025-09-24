@@ -334,28 +334,6 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public let url: String
 }
 
-public struct ItemCost: Codable, Hashable, Sendable {
-    let gross: MonetaryAmount
-    let net: MonetaryAmount
-    let discounts: [ItemCostDiscount]
-
-    public init(gross: MonetaryAmount, net: MonetaryAmount, discounts: [ItemCostDiscount]) {
-        self.gross = gross
-        self.net = net
-        self.discounts = discounts
-    }
-
-    public struct ItemCostDiscount: Codable, Hashable, Sendable {
-        let displayName: String
-        let displayValue: String
-
-        public init(displayName: String, displayValue: String) {
-            self.displayName = displayName
-            self.displayValue = displayValue
-        }
-    }
-}
-
 @MainActor
 extension InsuredPeopleConfig {
     public init(
