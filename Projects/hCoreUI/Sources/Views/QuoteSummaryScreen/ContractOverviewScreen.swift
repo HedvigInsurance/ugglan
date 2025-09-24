@@ -3,8 +3,7 @@ import hCore
 
 struct ContractOverviewScreen: View {
     let contract: QuoteSummaryViewModel.ContractInfo
-    @ObservedObject var vm: QuoteSummaryViewModel
-
+    @State private var router = Router()
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
@@ -18,10 +17,11 @@ struct ContractOverviewScreen: View {
         .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hCloseButton {
-                vm.isShowDetailsPresented = nil
+                router.dismiss()
             }
         }
         .embededInNavigation(
+            router: router,
             tracking: self
         )
     }
@@ -83,14 +83,6 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-
-    let vm = QuoteSummaryViewModel(
-        contract: [],
-        activationDate: "2025-08-24".localDateToDate ?? Date(),
-        premium: .init(gross: .sek(999), net: .sek(599)),
-        onConfirmClick: {}
-    )
-
     return ContractOverviewScreen(
         contract:
             .init(
@@ -120,7 +112,6 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
                 ],
                 typeOfContract: .seApartmentBrf,
                 priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
-            ),
-        vm: vm,
+            )
     )
 }

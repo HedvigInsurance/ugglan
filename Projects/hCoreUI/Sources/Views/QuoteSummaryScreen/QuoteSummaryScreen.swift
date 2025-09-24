@@ -62,7 +62,7 @@ public struct QuoteSummaryScreen: View {
             item: $vm.isShowDetailsPresented,
             options: .constant([.alwaysOpenOnTop]),
         ) { contract in
-            ContractOverviewScreen(contract: contract, vm: vm)
+            ContractOverviewScreen(contract: contract)
         }
     }
 
@@ -218,9 +218,7 @@ private struct ContractCardView: View {
                 title: L10n.ClaimStatus.ClaimDetails.button
             ),
             {
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    vm.isShowDetailsPresented = contract
-                }
+                vm.isShowDetailsPresented = contract
             }
         )
         .hWithTransition(.scale)
