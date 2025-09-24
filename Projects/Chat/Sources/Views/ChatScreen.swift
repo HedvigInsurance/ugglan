@@ -100,9 +100,10 @@ public struct ChatScreen: View {
             }
             .id(message.id)
 
-            /* TODO: COMPLETE WHEN WE HAVE BE IMPLEMENTATION - SHOULD BE SHOWN FOR FIRST AUTOMATED MESSAGE ONLY */
+            /* TODO: COMPLETE WHEN WE HAVE BE IMPLEMENTATION - SHOULD BE SHOWN FOR FIRST AUTOMATED MESSAGE ONLY & ESCALATION ONLY WHEN ESCALATED */
             if message.sender == .automation {
                 automationBanner
+                escalationBanner
             }
         }
     }
@@ -121,6 +122,14 @@ public struct ChatScreen: View {
                 }
             )
         ])
+    }
+
+    private var escalationBanner: some View {
+        InfoCard(
+            title: L10n.automatedMessageEscalationBannerTitle,
+            text: L10n.automatedMessageEscalationBannerText,
+            type: .purple
+        )
     }
 
     private func messageTimeStamp(message: Message) -> some View {
