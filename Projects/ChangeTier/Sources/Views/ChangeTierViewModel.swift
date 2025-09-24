@@ -7,6 +7,8 @@ import hCoreUI
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
     let dataProvider: ChangeTierQuoteDataProvider?
+    var dataProviderViewState: ProcessingState = .success
+
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var missingQuotes = false
@@ -85,6 +87,7 @@ public class ChangeTierViewModel: ObservableObject {
                 selectedQuote = newSelectedTier?.quotes.first
                 canEditDeductible = false
             } else {
+                //try to set deductible from the selected quote displayTitle from newly selected tier
                 if let selectedQuoteDisplayTitle = selectedQuote?.displayTitle {
                     selectedQuote = newSelectedTier?.quotes
                         .first(where: { $0.displayTitle == selectedQuoteDisplayTitle })
@@ -137,41 +140,59 @@ public class ChangeTierViewModel: ObservableObject {
         if let quote = selectedQuote {
             let addonIds = addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) }).map { $0.id }
             if let dataProvider {
-                Task {
+                Task { [weak self] in
                     do {
+                        withAnimation {
+                            self?.dataProviderViewState = .loading
+                        }
                         let data = try await dataProvider.getTotal(
                             selectedQuoteId: quote.id,
                             includedAddonIds: addonIds
                         )
+
+                        let displayItems =
+                            self?.displayItems(from: data.premium, additionalDisplayItems: data.displayItems) ?? []
                         withAnimation {
-                            newTotalCost = data.premium
-                            var newList = [QuoteDisplayItem]()
-                            newList.append(
-                                .init(
-                                    title: displayName ?? "",
-                                    value: selectedQuote?.newTotalCost.gross?.formattedAmountPerMonth ?? ""
-                                )
-                            )
-                            newList.append(
-                                contentsOf: addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) })
-                                    .map { quote in
-                                        QuoteDisplayItem(
-                                            title: quote.addonSubtype,
-                                            value: quote.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
-                                        )
-                                    }
-                            )
-                            newList.append(contentsOf: data.displayItems)
-                            displayItemList = newList
+                            self?.dataProviderViewState = .success
+                            self?.newTotalCost = data.premium
+                            self?.displayItemList = displayItems
                         }
                     } catch let ex {
-                        _ = ex
+                        self?.dataProviderViewState = .error(errorMessage: ex.localizedDescription)
                     }
                 }
             } else {
                 newTotalCost = quote.newTotalCost
             }
         }
+    }
+
+    private func displayItems(
+        from premium: hCore.Premium,
+        additionalDisplayItems: [QuoteDisplayItem]
+    ) -> [QuoteDisplayItem] {
+        var displayItemsList = [QuoteDisplayItem]()
+        //append current quote name + price
+        displayItemsList.append(
+            .init(
+                title: self.displayName ?? "",
+                value: premium.gross?.formattedAmountPerMonth ?? ""
+            )
+        )
+
+        //append current quote addons + prices
+        let addonsItems = addonQuotes.filter({ !excludedAddonTypes.contains($0.addonSubtype) })
+            .map { quote in
+                QuoteDisplayItem(
+                    title: quote.addonSubtype,
+                    value: quote.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
+                )
+            }
+        displayItemsList.append(contentsOf: addonsItems)
+
+        //append rest of the items from the data provider (discounts)
+        displayItemsList.append(contentsOf: additionalDisplayItems)
+        return displayItemsList
     }
 
     func fetchTiers() {

@@ -144,6 +144,15 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
         removedAddonIds =
             moveQuotesModel?.homeQuotes.first(where: { $0.id == selectedQuoteId })?.addons
             .filter({ !includedAddonIds.contains($0.id) }).map { $0.id } ?? []
+        let existingQuote = (moveQuotesModel?.homeQuotes.first(where: { $0.id == selectedQuoteId }))!
+        if includedAddonIds.count == existingQuote.addons.count {
+            return (
+                premium: existingQuote.totalPremium,
+                displayItems: existingQuote.priceBreakdownItems.map({
+                    .init(title: $0.displayTitle, value: $0.displayValue)
+                })
+            )
+        }
         let data = try await service.getMoveIntentCost(
             input: .init(
                 intentId: moveConfigurationModel?.id ?? "",
