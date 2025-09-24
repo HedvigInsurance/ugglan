@@ -109,8 +109,8 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
             activationDate: movingFlowQuotes.first?.startDate,
             premium: totalPremium ?? .init(gross: nil, net: nil)
         )
-        vm.onConfirmClick = { [weak self, weak router] in
-            Task {
+        vm.onConfirmClick = { [weak router] in
+            Task { [weak self] in
                 guard let self = self,
                     let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel
                 else { return }
@@ -367,17 +367,18 @@ public struct MovingFlowNavigation: View {
     }
 
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
-        let model = ChangeTierInput.existingIntent(intent: model) { _, quote in
-            let requestVm = movingFlowNavigationVm.moveQuotesModel
+        let model = ChangeTierInput.existingIntent(intent: model) {
+            [weak movingFlowNavigationVm, weak router] _, quote in
+            let requestVm = movingFlowNavigationVm?.moveQuotesModel
             let id = quote.id
             if let currentHomeQuote = requestVm?.homeQuotes.first(where: { $0.id == id }) {
-                movingFlowNavigationVm.selectedHomeQuote = currentHomeQuote
+                movingFlowNavigationVm?.selectedHomeQuote = currentHomeQuote
             }
             if let requestVm {
-                movingFlowNavigationVm.moveQuotesModel = requestVm
+                movingFlowNavigationVm?.moveQuotesModel = requestVm
             }
 
-            router.push(MovingFlowRouterActions.confirm)
+            router?.push(MovingFlowRouterActions.confirm)
         }
         return ChangeTierNavigation(
             input: model,
