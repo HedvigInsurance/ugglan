@@ -114,6 +114,9 @@ public struct ChatScreen: View {
                 hText(L10n.chatFailedToSend)
                 hText(" ∙ \(message.timeStampString)")
             } else {
+                if message.sender == .automation {
+                    hText("\(L10n.chatSenderAutomation) ∙ ")
+                }
                 hText(message.timeStampString)
             }
         }
@@ -161,7 +164,7 @@ struct ChatScreenModifier: ViewModifier {
             .dismissKeyboard()
             .findScrollView { sv in
                 sv.delegate = chatScrollViewDelegate
-                //TODO: READD after iOS 26
+                //TODO: REDO after iOS 26
                 //                if #available(iOS 26.0, *) {
                 //                    sv.topEdgeEffect.isHidden = true
                 //                }
@@ -259,7 +262,7 @@ extension MessageSender {
     var alignment: Alignment {
         switch self {
         case .member: return .trailing
-        case .hedvig: return .leading
+        case .hedvig, .automation: return .leading
         }
     }
 }

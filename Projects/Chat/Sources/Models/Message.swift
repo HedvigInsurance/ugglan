@@ -79,6 +79,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
 public enum MessageSender: Codable, Hashable, Sendable {
     case member
     case hedvig
+    case automation
 }
 
 enum MessageStatus: Codable, Hashable, Sendable {
@@ -131,6 +132,7 @@ extension Message {
             switch sender {
             case .member: return L10n.chatSenderMember
             case .hedvig: return L10n.chatSenderHedvig
+            case .automation: return L10n.chatSenderAutomation
             }
         }()
         let message: String = {
