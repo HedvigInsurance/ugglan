@@ -128,7 +128,7 @@ public struct ChatScreen: View {
         InfoCard(
             title: L10n.automatedMessageEscalationBannerTitle,
             text: L10n.automatedMessageEscalationBannerText,
-            type: .purple
+            type: .escalation
         )
     }
 
