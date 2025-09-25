@@ -264,7 +264,11 @@ let project = Project(
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "AppTests"),
                         parallelization: .enabled
-                    )
+                    ),
+                    TestableTarget.testableTarget(
+                        target: TargetReference(stringLiteral: "AppUITests"),
+                        parallelization: .enabled
+                    ),
                 ],
                 arguments: Arguments.arguments(
                     environmentVariables: [
