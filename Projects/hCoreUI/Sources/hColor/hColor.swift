@@ -867,6 +867,19 @@ public struct hSignalColor {
 }
 
 @MainActor
+public struct hPerilColor {
+    @MainActor
+    public struct Purple {
+        public static var fillThree: some hColor {
+            hColorScheme(
+                light: hPurpleColor.purple700,
+                dark: hPurpleColor.purple700
+            )
+        }
+    }
+}
+
+@MainActor
 public struct hHighlightColor {
     @MainActor
     public struct Pink {

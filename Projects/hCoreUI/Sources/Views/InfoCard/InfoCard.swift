@@ -2,6 +2,7 @@ import SwiftUI
 import hCore
 
 public struct InfoCard: View {
+    let title: String?
     let text: String
     let type: NotificationType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
@@ -9,9 +10,11 @@ public struct InfoCard: View {
     @Environment(\.sizeCategory) var sizeCategory
 
     public init(
+        title: String? = nil,
         text: String,
         type: NotificationType
     ) {
+        self.title = title
         self.text = text
         self.type = type
     }
@@ -56,6 +59,10 @@ public struct InfoCard: View {
 
     private var buttonsView: some View {
         VStack(alignment: .leading) {
+            if let title {
+                hText(title, style: .label)
+                    .foregroundColor(hTextColor.Translucent.primary)
+            }
             hText(text, style: .label)
                 .foregroundColor(type.textColor)
                 .multilineTextAlignment(.leading)
@@ -146,6 +153,8 @@ struct InfoCard_Previews: PreviewProvider {
                             buttonAction: {}
                         )
                     ])
+
+                InfoCard(title: "Title", text: "text", type: .info)
             }
         }
     }
