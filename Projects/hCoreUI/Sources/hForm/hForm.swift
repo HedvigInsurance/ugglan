@@ -52,7 +52,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 endPoint: .bottom
                             )
                         case .default:
-                            hBackgroundColor.primary
+                            if contentPosition == .compact {
+                                Color.clear
+                            } else {
+                                hBackgroundColor.primary
+                            }
                         }
                     }
                     .ignoresSafeArea()
@@ -80,7 +84,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .frame(maxHeight: .infinity)
                     .background {
                         GeometryReader { geometry in
-                            hBackgroundColor.primary
+                            //                            hBackgroundColor.primary
+                            Color.clear
                                 .onAppear {
                                     vm.scrollViewHeight = geometry.size.height
                                 }

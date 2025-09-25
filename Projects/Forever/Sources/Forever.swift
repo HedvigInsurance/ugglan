@@ -111,9 +111,7 @@ struct ForeverViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .toolbar {
-                ToolbarItem(
-                    placement: .topBarTrailing
-                ) {
+                ToolbarItem(placement: .confirmationAction) {
                     if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
                         InfoViewHolder(
                             title: L10n.ReferralsInfoSheet.headline,
@@ -121,8 +119,24 @@ struct ForeverViewModifier: ViewModifier {
                             type: .navigation
                         )
                         .foregroundColor(hTextColor.Opaque.primary)
+                        .tint(Color.blue.opacity(0.1))
+                        .buttonStyle(.borderedProminent)
                     }
                 }
+                //
+                //                ToolbarItem(
+                //                    placement: .topBarTrailing
+                //                ) {
+                //                    if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
+                //                        InfoViewHolder(
+                //                            title: L10n.ReferralsInfoSheet.headline,
+                //                            description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
+                //                            type: .navigation
+                //                        )
+                //                        .foregroundColor(hTextColor.Opaque.primary)
+                //                        .tint(hSignalColor.Red.element)
+                //                    }
+                //                }
             }
             .onPullToRefresh {
                 Task { @MainActor in

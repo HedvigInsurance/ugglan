@@ -162,6 +162,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         ApolloClient.bundle = Bundle.main
+        isLiquidGlassEnabled =
+            !(Bundle.main.object(forInfoDictionaryKey: "UIDesignRequiresCompatibility") as? Bool ?? true)
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
         application.accessibilityLanguage = Localization.Locale.currentLocale.value.accessibilityLanguageCode
         window.rootViewController = UIViewController()
