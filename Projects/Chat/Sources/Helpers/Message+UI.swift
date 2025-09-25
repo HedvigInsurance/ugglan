@@ -10,7 +10,7 @@ extension Message {
             hSignalColor.Red.highlight
         } else {
             switch sender {
-            case .hedvig:
+            case .hedvig, .automation:
                 hSurfaceColor.Opaque.primary
             case .member:
                 if conversationStatus == .open {
@@ -25,7 +25,7 @@ extension Message {
     @hColorBuilder
     var textColor: some hColor {
         switch sender {
-        case .hedvig:
+        case .hedvig, .automation:
             hTextColor.Opaque.primary
         case .member:
             hTextColor.Opaque.primary.colorFor(.light, .elevated)

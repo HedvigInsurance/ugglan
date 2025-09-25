@@ -12,7 +12,7 @@ extension Message {
             dateFormatter.dateFormat = "HH:mm"
             return dateFormatter.string(from: date)
         } else {
-            dateFormatter.dateFormat = "EEEE HH:mm"
+            dateFormatter.dateFormat = "EEEE ∙ HH:mm"
             return dateFormatter.string(from: date)
         }
     }
