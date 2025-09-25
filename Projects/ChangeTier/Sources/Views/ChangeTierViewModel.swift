@@ -153,7 +153,7 @@ public class ChangeTierViewModel: ObservableObject {
                         )
 
                         let displayItems =
-                            self?.displayItems(from: data.premium, additionalDisplayItems: data.displayItems) ?? []
+                            self?.displayItems(additionalDisplayItems: data.displayItems) ?? []
                         withAnimation {
                             self?.dataProviderViewState = .success
                             self?.newTotalCost = data.premium
@@ -174,7 +174,6 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     private func displayItems(
-        from premium: hCore.Premium,
         additionalDisplayItems: [QuoteDisplayItem]
     ) -> [QuoteDisplayItem] {
         var displayItemsList = [QuoteDisplayItem]()
@@ -182,7 +181,7 @@ public class ChangeTierViewModel: ObservableObject {
         displayItemsList.append(
             .init(
                 title: self.displayName ?? "",
-                value: premium.gross?.formattedAmountPerMonth ?? ""
+                value: selectedQuote?.newTotalCost.gross?.formattedAmountPerMonth ?? ""
             )
         )
 
