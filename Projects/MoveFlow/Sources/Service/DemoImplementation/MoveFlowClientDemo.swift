@@ -1,5 +1,6 @@
 import Foundation
 import hCore
+import hCoreUI
 
 @MainActor
 public class MoveFlowClientDemo: MoveFlowClient {
@@ -26,7 +27,20 @@ public class MoveFlowClientDemo: MoveFlowClient {
         removedAddons _: [String]
     ) async throws {}
 
-    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium {
-        .init(gross: .sek(1000), net: .sek(900))
+    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
+        .init(
+            totalCost: .init(gross: .sek(1000), net: .sek(900)),
+            quoteCosts: [
+                QuoteCost(
+                    id: "id1",
+                    cost: .init(
+                        premium: .init(gross: .sek(1000), net: .sek(900)),
+                        discounts: [
+                            .init(displayName: "display name", displayValue: "display value")
+                        ]
+                    )
+                )
+            ]
+        )
     }
 }

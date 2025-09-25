@@ -1,3 +1,4 @@
+import Addons
 import ChangeTier
 import Foundation
 import MoveFlow
@@ -108,7 +109,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         }
     }
 
-    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium {
+    public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
         let query = OctopusGraphQL.MoveIntentCostQuery(
             intentId: input.intentId,
             selectedAddonIds: input.selectedAddons,
@@ -118,7 +119,15 @@ class MoveFlowClientOctopus: MoveFlowClient {
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let totalGross = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyGross.fragments.moneyFragment)
         let totalNet = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyNet.fragments.moneyFragment)
-        return .init(gross: totalGross, net: totalNet)
+
+        let quoteCosts: [QuoteCost] = data.moveIntentCost.quoteCosts.map({
+            .init(id: $0.quoteId, cost: .init(fragment: $0.cost.fragments.itemCostFragment))
+        })
+
+        return .init(
+            totalCost: .init(gross: totalGross, net: totalNet),
+            quoteCosts: quoteCosts
+        )
     }
 }
 
@@ -191,8 +200,8 @@ extension MovingFlowQuote {
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         self.init(
-            grossPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyGross.fragments.moneyFragment),
-            netPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
+            totalPremium: .init(fragment: data.totalCost.fragments.itemCostFragment),
+            baseGrossPremium: .init(fragment: data.premium.fragments.moneyFragment),
             startDate: data.startDate.localDateToDate ?? Date(),
             displayName: productVariantFragment.displayName,
             insurableLimits: productVariantFragment.insurableLimits.compactMap {
@@ -205,7 +214,7 @@ extension MovingFlowQuote {
             displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
             addons: data.addons.map { AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) },
-            priceBreakdownItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: data.totalCost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             })
         )
@@ -214,8 +223,8 @@ extension MovingFlowQuote {
     init(from data: OctopusGraphQL.QuoteFragment.HomeQuote) {
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
         self.init(
-            grossPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyGross.fragments.moneyFragment),
-            netPremium: .init(fragment: data.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
+            totalPremium: .init(fragment: data.totalCost.fragments.itemCostFragment),
+            baseGrossPremium: .init(fragment: data.premium.fragments.moneyFragment),
             startDate: data.startDate.localDateToDate ?? Date(),
             displayName: productVariantFragment.displayName,
             insurableLimits: productVariantFragment.insurableLimits.compactMap {
@@ -228,7 +237,7 @@ extension MovingFlowQuote {
             displayItems: data.displayItems.map { .init($0.fragments.moveQuoteDisplayItemFragment) },
             exposureName: data.exposureName,
             addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) }),
-            priceBreakdownItems: data.cost.fragments.itemCostFragment.discounts.compactMap({
+            priceBreakdownItems: data.totalCost.fragments.itemCostFragment.discounts.compactMap({
                 DisplayItem.init($0.fragments.itemDiscountFragment)
             })
         )
@@ -282,21 +291,41 @@ extension ChangeTierIntentModel {
             return result
         }
 
+        var addonQuotes: [String: [AddonQuote]] = [:]
         let tiers = groupedQuotes.compactMap { _, quotes in
             if let firstQuote = quotes.first {
                 let quotes = quotes.compactMap { quote in
-                    Quote(
+                    addonQuotes[quote.id] = quote.addons.compactMap({ addonQuote in
+                        AddonQuote(
+                            displayName: addonQuote.coverageDisplayName,
+                            displayNameLong: "",
+                            quoteId: "",
+                            addonId: addonQuote.addonId,
+                            addonSubtype: addonQuote.addonVariant.displayName,
+                            displayItems: [],
+                            itemCost: .init(
+                                premium: .init(
+                                    gross: .init(fragment: addonQuote.premium.fragments.moneyFragment),
+                                    net: nil
+                                ),
+                                discounts: []
+                            ),
+                            addonVariant: nil,
+                            documents: []
+                        )
+                    })
+                    return Quote(
                         id: quote.id,
                         quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
                         quotePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
                         currentTotalCost: .init(
-                            gross: .init(fragment: quote.cost.monthlyGross.fragments.moneyFragment),
-                            net: .init(fragment: quote.cost.monthlyNet.fragments.moneyFragment)
+                            gross: .init(fragment: quote.premium.fragments.moneyFragment),
+                            net: .init(fragment: quote.premium.fragments.moneyFragment)
                         ),
                         newTotalCost: .init(
-                            gross: .init(fragment: quote.cost.monthlyGross.fragments.moneyFragment),
-                            net: .init(fragment: quote.cost.monthlyNet.fragments.moneyFragment)
+                            gross: .init(fragment: quote.premium.fragments.moneyFragment),
+                            net: .init(fragment: quote.premium.fragments.moneyFragment)
                         ),
                         displayItems: [],
                         productVariant: ProductVariant(
@@ -327,6 +356,7 @@ extension ChangeTierIntentModel {
             }
             return (nil, nil)
         }()
+
         let intentModel: ChangeTierIntentModel = .init(
             displayName: currentTierAndQuote.deductible?.productVariant?.displayName ?? tiers.first?.quotes
                 .first?
@@ -339,7 +369,8 @@ extension ChangeTierIntentModel {
             selectedTier: currentTierAndQuote.tier,
             selectedQuote: currentTierAndQuote.deductible,
             canEditTier: true,
-            typeOfContract: TypeOfContract.resolve(for: data.first?.productVariant.typeOfContract ?? "")
+            typeOfContract: TypeOfContract.resolve(for: data.first?.productVariant.typeOfContract ?? ""),
+            relatedAddons: addonQuotes
         )
         return intentModel
     }
@@ -356,25 +387,10 @@ extension AddonDataModel {
             },
             coverageDisplayName: fragment.coverageDisplayName,
             grossPremium: .init(
-                fragment: fragment.cost.fragments.itemCostFragment.monthlyGross.fragments.moneyFragment
+                fragment: fragment.premium.fragments.moneyFragment
             ),
-            netPremium: .init(fragment: fragment.cost.fragments.itemCostFragment.monthlyNet.fragments.moneyFragment),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
-            startDate: fragment.startDate.localDateToDate ?? Date(),
-            priceBreakdownItems: fragment.cost.fragments.itemCostFragment.discounts.compactMap({
-                DisplayItem.init($0.fragments.itemDiscountFragment)
-            }),
-            removeDialogInfo: {
-                if Dependencies.featureFlags().isAddonsRemovalFromMovingFlowEnabled {
-                    return .init(
-                        title: L10n.addonRemoveTitle(fragment.displayName),
-                        description: L10n.addonRemoveDescription,
-                        confirmButtonTitle: L10n.addonRemoveConfirmButton(fragment.displayName),
-                        cancelButtonTitle: L10n.addonRemoveCancelButton
-                    )
-                }
-                return nil
-            }()
+            startDate: fragment.startDate.localDateToDate ?? Date()
         )
     }
 }

@@ -19,6 +19,12 @@ public struct ChangeTierLandingScreen: View {
                 [weak changeTierNavigationVm] in
                 changeTierNavigationVm?.missingQuotesGoBackPressed()
             }
+        } else if vm.dataProviderViewState.isError {
+            GenericErrorView(
+                description: L10n.General.defaultError,
+                formPosition: .center
+            )
+            .hStateViewButtonConfig(dataLoaderErrorButtons)
         } else {
             ProcessingStateView(
                 loadingViewText: L10n.tierFlowProcessing,
@@ -35,14 +41,30 @@ public struct ChangeTierLandingScreen: View {
     private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
-                buttonAction: {
-                    vm.fetchTiers()
+                buttonAction: { [weak vm] in
+                    vm?.fetchTiers()
                 }
             ),
             dismissButton:
                 .init(
-                    buttonAction: {
-                        changeTierNavigationVm.router.dismiss()
+                    buttonAction: { [weak changeTierNavigationVm] in
+                        changeTierNavigationVm?.router.dismiss()
+                    }
+                )
+        )
+    }
+
+    private var dataLoaderErrorButtons: StateViewButtonConfig {
+        .init(
+            actionButton: .init(
+                buttonAction: { [weak vm] in
+                    vm?.calculateTotal()
+                }
+            ),
+            dismissButton:
+                .init(
+                    buttonAction: { [weak changeTierNavigationVm] in
+                        changeTierNavigationVm?.router.dismiss()
                     }
                 )
         )
@@ -83,26 +105,41 @@ public struct ChangeTierLandingScreen: View {
 
             VStack(spacing: .padding4) {
                 editTierView
+                addonView
                 if vm.showDeductibleField {
                     deductibleView
                 }
             }
             .hFieldSize(.small)
-            hRow {
-                PriceField(
-                    viewModel: .init(
-                        initialValue: nil,
-                        newValue: vm.newTotalCost?.net ?? .sek(0),
-                        subTitle: getPriceSubtitle()
+            if !vm.displayItemList.isEmpty {
+                VStack(spacing: .padding4) {
+                    ForEach(vm.displayItemList, id: \.displayTitle) { disocuntItem in
+                        QuoteDisplayItemView(displayItem: disocuntItem)
+                    }
+                }
+                .padding(.top, .padding16)
+                .accessibilityElement(children: .combine)
+            }
+            if vm.newTotalCost != nil {
+                hRow {
+                    PriceField(
+                        viewModel: .init(
+                            initialValue: vm.shouldShowOldPrice ? vm.newTotalCost?.gross : nil,
+                            newValue: vm.newTotalCost?.net ?? .sek(0),
+                            subTitle: getPriceSubtitle()
+                        )
                     )
-                )
+                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                }
+            } else {
+                Spacing(height: Float(.padding16))
             }
         }
     }
 
     private func getPriceSubtitle() -> String? {
         if let currentPremium = vm.currentTotalCost, vm.newTotalCost != currentPremium {
-            let formattedAmount = currentPremium.net.priceFormat(PriceFormatting.perMonth)
+            let formattedAmount = currentPremium.net?.priceFormat(PriceFormatting.perMonth) ?? ""
             return L10n.tierFlowPreviousPrice(formattedAmount)
         }
         return nil
@@ -134,8 +171,29 @@ public struct ChangeTierLandingScreen: View {
                 value: vm.selectedTier?.name ?? "",
                 placeHolder: vm.selectedTier != nil
                     ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
+            ) { [weak vm, weak changeTierNavigationVm] in
+                let selectedItem = vm?.selectedTier?.name ?? vm?.tiers.first?.name
+                changeTierNavigationVm?.isEditTierPresented = .init(
+                    selectedItem: selectedItem,
+                    type: .tiers(tiers: vm?.tiers.sorted(by: { $0.level < $1.level }) ?? [])
+                )
+            }
+            .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
+        }
+    }
+
+    @ViewBuilder
+    private var addonView: some View {
+        ForEach(vm.addonQuotes) { [weak vm, weak changeTierNavigationVm] quote in
+            DropdownView(
+                value: vm?.excludedAddonTypes.contains(quote.addonSubtype) ?? false
+                    ? L10n.tierFlowAddonNoCoverageLabel : (quote.displayName ?? ""),
+                placeHolder: L10n.tierFlowAddonLabel
             ) {
-                changeTierNavigationVm.isEditTierPresented = .init(type: .tier)
+                changeTierNavigationVm?.isEditTierPresented = .init(
+                    selectedItem: vm?.selectedAddon?.displayName ?? quote.displayName,
+                    type: .addon(addon: quote)
+                )
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
@@ -161,8 +219,20 @@ public struct ChangeTierLandingScreen: View {
                 value: vm.selectedQuote?.displayTitle ?? "",
                 placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
-            ) {
-                changeTierNavigationVm.isEditTierPresented = .init(type: .deductible)
+            ) { [weak vm, weak changeTierNavigationVm] in
+                let quotes = {
+                    if !(vm?.selectedTier?.quotes.isEmpty ?? true) {
+                        return vm?.selectedTier?.quotes ?? []
+                    } else {
+                        return vm?.tiers.first(where: { $0.name == vm?.selectedTier?.name })?.quotes ?? []
+                    }
+                }()
+                changeTierNavigationVm?.isEditTierPresented = .init(
+                    selectedItem: vm?.selectedQuote?.id ?? vm?.selectedTier?.quotes.first?.id,
+                    type: .deductible(
+                        quotes: quotes.sorted(by: { $0.newTotalCost.net?.value ?? 0 > $1.newTotalCost.net?.value ?? 0 })
+                    )
+                )
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
@@ -207,11 +277,15 @@ public struct ChangeTierLandingScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     let inputData = ChangeTierInputData(source: .betterCoverage, contractId: "")
-    return ChangeTierLandingScreen(vm: .init(changeTierInput: ChangeTierInput.contractWithSource(data: inputData)))
-        .environmentObject(
-            ChangeTierNavigationViewModel(
-                changeTierContractsInput: .init(source: .betterCoverage, contracts: []),
-                onChangedTier: {}
-            )
+    return ChangeTierLandingScreen(
+        vm: .init(
+            changeTierInput: ChangeTierInput.contractWithSource(data: inputData)
         )
+    )
+    .environmentObject(
+        ChangeTierNavigationViewModel(
+            changeTierContractsInput: .init(source: .betterCoverage, contracts: []),
+            onChangedTier: {}
+        )
+    )
 }

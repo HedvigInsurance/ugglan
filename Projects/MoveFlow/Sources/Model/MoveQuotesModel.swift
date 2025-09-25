@@ -4,8 +4,8 @@ import hCore
 import hCoreUI
 
 public struct MoveQuotesModel: Sendable {
-    let homeQuotes: [MovingFlowQuote]
-    let mtaQuotes: [MovingFlowQuote]
+    var homeQuotes: [MovingFlowQuote]
+    var mtaQuotes: [MovingFlowQuote]
     let changeTierModel: ChangeTierIntentModel?
 
     public init(
@@ -20,9 +20,8 @@ public struct MoveQuotesModel: Sendable {
 }
 
 public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
-    typealias KeyValue = (key: String, value: String)
-    let grossPremium: MonetaryAmount
-    let netPremium: MonetaryAmount
+    var totalPremium: Premium
+    var baseGrossPremium: MonetaryAmount
     let startDate: Date
     let displayName: String
     let insurableLimits: [InsurableLimits]
@@ -33,11 +32,11 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     let displayItems: [DisplayItem]
     let exposureName: String?
     let addons: [AddonDataModel]
-    let priceBreakdownItems: [DisplayItem]
+    var priceBreakdownItems: [DisplayItem]
 
     public init(
-        grossPremium: MonetaryAmount,
-        netPremium: MonetaryAmount,
+        totalPremium: Premium,
+        baseGrossPremium: MonetaryAmount,
         startDate: Date,
         displayName: String,
         insurableLimits: [InsurableLimits],
@@ -50,8 +49,8 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         addons: [AddonDataModel],
         priceBreakdownItems: [DisplayItem]
     ) {
-        self.grossPremium = grossPremium
-        self.netPremium = netPremium
+        self.totalPremium = totalPremium
+        self.baseGrossPremium = baseGrossPremium
         self.startDate = startDate
         self.displayName = displayName
         self.insurableLimits = insurableLimits
@@ -94,11 +93,8 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
     let displayItems: [DisplayItem]
     let coverageDisplayName: String
     let grossPremium: MonetaryAmount
-    let netPremium: MonetaryAmount
     let addonVariant: AddonVariant
     let startDate: Date
-    let removeDialogInfo: RemoveDialogInfo?
-    let priceBreakdownItems: [DisplayItem]
 
     public init(
         id: String,
@@ -106,35 +102,15 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
         displayItems: [DisplayItem],
         coverageDisplayName: String,
         grossPremium: MonetaryAmount,
-        netPremium: MonetaryAmount,
         addonVariant: AddonVariant,
         startDate: Date,
-        priceBreakdownItems: [DisplayItem],
-        removeDialogInfo: RemoveDialogInfo?,
     ) {
         self.id = id
         self.quoteInfo = quoteInfo
         self.displayItems = displayItems
         self.coverageDisplayName = coverageDisplayName
         self.grossPremium = grossPremium
-        self.netPremium = netPremium
         self.addonVariant = addonVariant
         self.startDate = startDate
-        self.priceBreakdownItems = priceBreakdownItems
-        self.removeDialogInfo = removeDialogInfo
-    }
-}
-
-public struct RemoveDialogInfo: Codable, Equatable, Hashable, Sendable {
-    let title: String
-    let description: String
-    let confirmButtonTitle: String
-    let cancelButtonTitle: String
-
-    public init(title: String, description: String, confirmButtonTitle: String, cancelButtonTitle: String) {
-        self.title = title
-        self.description = description
-        self.confirmButtonTitle = confirmButtonTitle
-        self.cancelButtonTitle = cancelButtonTitle
     }
 }

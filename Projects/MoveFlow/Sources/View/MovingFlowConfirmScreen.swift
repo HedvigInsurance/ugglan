@@ -15,7 +15,6 @@ struct MovingFlowConfirmScreen: View {
 public class MovingFlowConfirmViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
-
     @MainActor
     func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async {
         withAnimation {
@@ -45,13 +44,11 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         let model = QuoteSummaryViewModel(
             contract: [],
             activationDate: Date(),
-            isAddon: false,
-            summaryDataProvider: DirectQuoteSummaryDataProvider(
-                intentCost: .init(
-                    gross: .sek(399),
-                    net: .sek(399)
-                )
-            )
+            premium: .init(
+                gross: .sek(399),
+                net: .sek(399)
+            ),
+            isAddon: false
         ) {}
         Localization.Locale.currentLocale.send(.en_SE)
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
