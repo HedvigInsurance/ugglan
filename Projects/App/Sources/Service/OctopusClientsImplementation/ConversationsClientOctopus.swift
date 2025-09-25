@@ -140,7 +140,7 @@ extension OctopusGraphQL.MessageFragment {
         .init(
             id: id,
             type: messageType,
-            sender: sender == .member ? .member : .hedvig,
+            sender: sender.asMessageSender,
             date: sentAt.localDateToIso8601Date ?? Date()
         )
     }
@@ -219,6 +219,24 @@ extension OctopusGraphQL.MessageFragment {
         var allowed = CharacterSet.urlFragmentAllowed
         allowed.remove(charactersIn: "_")  // force `_` to be encoded
         return urlString.addingPercentEncoding(withAllowedCharacters: allowed) ?? urlString
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ChatMessageSender> {
+    fileprivate var asMessageSender: MessageSender {
+        switch self {
+        case .case(let sender):
+            switch sender {
+            case .member:
+                return .member
+            case .hedvig:
+                return .hedvig
+            case .automation:
+                return .automation
+            }
+        case .unknown(let string):
+            return .hedvig
+        }
     }
 }
 
