@@ -94,7 +94,7 @@ public struct ChatScreen: View {
                     messageTimeStamp(message: message)
                         .accessibilityHidden(true)
                 }
-                if message.sender == .hedvig {
+                if message.sender == .hedvig || message.sender == .automation {
                     Spacer()
                 }
             }
