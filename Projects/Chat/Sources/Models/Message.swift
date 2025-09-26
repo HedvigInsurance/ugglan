@@ -47,7 +47,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         status = .sent
     }
 
-    public init(id: String, type: MessageType, sender: MessageSender, date: Date, disclaimer: MessageDisclaimer) {
+    public init(id: String, type: MessageType, sender: MessageSender, date: Date, disclaimer: MessageDisclaimer?) {
         self.id = id
         self.sender = sender
         self.type = type

@@ -142,8 +142,15 @@ extension OctopusGraphQL.MessageFragment {
             type: messageType,
             sender: sender.asMessageSender,
             date: sentAt.localDateToIso8601Date ?? Date(),
-            disclaimer: .init(optionalFragment: disclaimer?.fragments.chatMessageDisclaimerFragment)
+            disclaimer: getDisclaimer
         )
+    }
+
+    private var getDisclaimer: MessageDisclaimer? {
+        if let disclaimer {
+            return .init(fragment: disclaimer.fragments.chatMessageDisclaimerFragment)
+        }
+        return nil
     }
 
     private var messageType: MessageType {
@@ -269,14 +276,14 @@ extension Conversation {
 
 extension MessageDisclaimer {
     init(
-        optionalFragment fragment: OctopusGraphQL.ChatMessageDisclaimerFragment?,
+        fragment: OctopusGraphQL.ChatMessageDisclaimerFragment,
     ) {
         self.init(
-            description: fragment?.description,
-            detailsDescription: fragment?.detailsDescription,
-            detailsTitle: fragment?.detailsTitle,
-            title: fragment?.title,
-            type: fragment?.type == .escalation ? .escalation : .information
+            description: fragment.description,
+            detailsDescription: fragment.detailsDescription,
+            detailsTitle: fragment.detailsTitle,
+            title: fragment.title,
+            type: fragment.type == .escalation ? .escalation : .information
         )
     }
 }
