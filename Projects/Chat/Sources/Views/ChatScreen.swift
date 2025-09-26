@@ -161,10 +161,9 @@ struct ChatScreenModifier: ViewModifier {
             .dismissKeyboard()
             .findScrollView { sv in
                 sv.delegate = chatScrollViewDelegate
-                //TODO: READD after iOS 26
-                //                if #available(iOS 26.0, *) {
-                //                    sv.topEdgeEffect.isHidden = true
-                //                }
+                if #available(iOS 26.0, *), isLiquidGlassEnabled {
+                    sv.topEdgeEffect.isHidden = true
+                }
             }
             .task {
                 messageVm.chatNavigationVm = chatNavigationVm

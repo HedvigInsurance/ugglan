@@ -109,37 +109,81 @@ struct ForeverViewModifier: ViewModifier {
     @Binding var totalHeight: CGFloat
 
     func body(content: Content) -> some View {
-        content
-            .toolbar {
-                ToolbarItem(
-                    placement: .topBarTrailing
-                ) {
-                    if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
-                        InfoViewHolder(
-                            title: L10n.ReferralsInfoSheet.headline,
-                            description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
-                            type: .navigation
-                        )
-                        .foregroundColor(hTextColor.Opaque.primary)
+        Group {
+            if #available(iOS 16.0, *) {
+                content
+                    .toolbar {
+                        toolbarContent
                     }
+            } else {
+                content
+                    .toolbar {
+                        ToolbarItem(
+                            placement: .topBarTrailing
+                        ) {
+                            if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
+                                InfoViewHolder(
+                                    title: L10n.ReferralsInfoSheet.headline,
+                                    description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
+                                    type: .navigation
+                                )
+                                .foregroundColor(hTextColor.Opaque.primary)
+                                .tint(hSignalColor.Red.element)
+                            }
+                        }
+                    }
+            }
+        }
+
+        .onPullToRefresh {
+            Task { @MainActor in
+                try await foreverNavigationVm.fetchForeverData()
+            }
+        }
+        .background(
+            GeometryReader(content: { proxy in
+                Color.clear
+                    .onAppear {
+                        totalHeight = proxy.size.height
+                    }
+                    .onChange(of: proxy.size) { size in
+                        totalHeight = size.height
+                    }
+            })
+        )
+    }
+
+    @available(iOS 16.0, *)
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        if isLiquidGlassEnabled {
+            ToolbarItem(placement: .confirmationAction) {
+                if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
+                    InfoViewHolder(
+                        title: L10n.ReferralsInfoSheet.headline,
+                        description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
+                        type: .navigation
+                    )
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .tint(Color.blue.opacity(0.1))
+                    .buttonStyle(.borderedProminent)
                 }
             }
-            .onPullToRefresh {
-                Task { @MainActor in
-                    try await foreverNavigationVm.fetchForeverData()
+        } else {
+            ToolbarItem(
+                placement: .topBarTrailing
+            ) {
+                if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
+                    InfoViewHolder(
+                        title: L10n.ReferralsInfoSheet.headline,
+                        description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
+                        type: .navigation
+                    )
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .tint(hSignalColor.Red.element)
                 }
             }
-            .background(
-                GeometryReader(content: { proxy in
-                    Color.clear
-                        .onAppear {
-                            totalHeight = proxy.size.height
-                        }
-                        .onChange(of: proxy.size) { size in
-                            totalHeight = size.height
-                        }
-                })
-            )
+        }
     }
 }
 

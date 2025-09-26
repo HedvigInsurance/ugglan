@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import UIKit
+import hCore
 
 @MainActor
 public protocol TrackingViewNameProtocol {
@@ -155,6 +156,9 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             rootView: initialView().environmentObject(router),
             contentName: tracking?.nameForTracking ?? "\(Screen.self)"
         )
+        if isLiquidGlassEnabled {
+            controller.view.backgroundColor = .clear
+        }
         navigation.setViewControllers(
             [controller],
             animated: false
@@ -336,7 +340,7 @@ extension View {
         titleColor: TitleColor? = nil,
         onTitleTap: (() -> Void)? = nil
     ) -> some View {
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, *), isLiquidGlassEnabled {
             self.toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -346,8 +350,7 @@ extension View {
                             .fixedSize()
                     }
                 }
-                //TODO: READD after iOS 26
-                //                .sharedBackgroundVisibility(.hidden)
+                .sharedBackgroundVisibility(.hidden)
             }
         } else {
             introspect(.viewController, on: .iOS(.v13...)) { vc in

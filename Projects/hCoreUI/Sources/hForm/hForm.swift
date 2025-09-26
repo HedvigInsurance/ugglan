@@ -1,6 +1,7 @@
 import Combine
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
+import hCore
 
 public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
@@ -52,7 +53,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 endPoint: .bottom
                             )
                         case .default:
-                            hBackgroundColor.primary
+                            if contentPosition == .compact, isLiquidGlassEnabled {
+                                Color.clear
+                            } else {
+                                hBackgroundColor.primary
+                            }
                         }
                     }
                     .ignoresSafeArea()
@@ -80,7 +85,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .frame(maxHeight: .infinity)
                     .background {
                         GeometryReader { geometry in
-                            hBackgroundColor.primary
+                            //                            hBackgroundColor.primary
+                            Color.clear
                                 .onAppear {
                                     vm.scrollViewHeight = geometry.size.height
                                 }
