@@ -10,6 +10,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
     let sender: MessageSender
     public let sentAt: Date
     public let type: MessageType
+    public let disclaimer: MessageDisclaimer?
     var status: MessageStatus
 
     init(
@@ -17,12 +18,14 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         sender: MessageSender,
         sentAt: Date,
         type: MessageType,
+        disclaimer: MessageDisclaimer?,
         status: MessageStatus
     ) {
         self.id = id
         self.sender = sender
         self.sentAt = sentAt
         self.type = type
+        self.disclaimer = disclaimer
         self.status = status
     }
 
@@ -31,6 +34,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         sender = .member
         self.type = type
         sentAt = Date()
+        self.disclaimer = nil
         status = .draft
     }
 
@@ -39,14 +43,16 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         sender = .member
         self.type = type
         sentAt = date
+        self.disclaimer = nil
         status = .sent
     }
 
-    public init(id: String, type: MessageType, sender: MessageSender, date: Date) {
+    public init(id: String, type: MessageType, sender: MessageSender, date: Date, disclaimer: MessageDisclaimer) {
         self.id = id
         self.sender = sender
         self.type = type
         sentAt = date
+        self.disclaimer = disclaimer
         status = sender == .hedvig ? .received : .sent
     }
 
@@ -56,6 +62,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         self.type = type
         sentAt = date
         self.status = status
+        self.disclaimer = nil
     }
 
     func asFailed(with error: String) -> Message {
@@ -63,7 +70,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
     }
 
     func copyWith(type: MessageType) -> Message {
-        Message(id: id, sender: sender, sentAt: sentAt, type: type, status: status)
+        Message(id: id, sender: sender, sentAt: sentAt, type: type, disclaimer: disclaimer, status: status)
     }
 
     var trimmedText: String {
@@ -118,6 +125,33 @@ public struct ActionMessage: Codable, Hashable, Sendable {
         self.text = text
         self.buttonTitle = buttonTitle
     }
+}
+
+public struct MessageDisclaimer: Codable, Hashable, Sendable {
+    let description: String?
+    let detailsDescription: String?
+    let detailsTitle: String?
+    let title: String?
+    let type: ChatMessageDisclaimerType
+
+    public init(
+        description: String?,
+        detailsDescription: String?,
+        detailsTitle: String?,
+        title: String?,
+        type: ChatMessageDisclaimerType
+    ) {
+        self.description = description
+        self.detailsDescription = detailsDescription
+        self.detailsTitle = detailsTitle
+        self.title = title
+        self.type = type
+    }
+}
+
+public enum ChatMessageDisclaimerType: Codable, Sendable {
+    case information
+    case escalation
 }
 
 extension Sequence where Iterator.Element == Message {
