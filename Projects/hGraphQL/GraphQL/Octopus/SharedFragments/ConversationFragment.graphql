@@ -28,11 +28,11 @@ fragment MessageFragment on ChatMessage {
 }
 
 fragment ChatMessageDisclaimerFragment on ChatMessageDisclaimer {
-description
-detailsDescription
-detailsTitle
-String
-chatMessageDisclaimerType
+    description
+    detailsDescription
+    detailsTitle
+    title
+    type
 }
 
 fragment ChatMessageActionFragment on ChatMessageAction {
