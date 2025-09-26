@@ -184,6 +184,13 @@ extension URL {
                     buttonTitle: "Go to conversation"
                 )
             ),
+            disclaimer: .init(
+                description: "description",
+                detailsDescription: "details",
+                detailsTitle: "details title",
+                title: "title",
+                type: .information
+            ),
             status: .failed(error: "error")
         ),
         conversationStatus: .open,

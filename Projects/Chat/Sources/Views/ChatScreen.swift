@@ -100,34 +100,39 @@ public struct ChatScreen: View {
             }
             .id(message.id)
 
-            /* TODO: COMPLETE WHEN WE HAVE BE IMPLEMENTATION - SHOULD BE SHOWN FOR FIRST AUTOMATED MESSAGE ONLY & ESCALATION ONLY WHEN ESCALATED */
-            if message.sender == .automation {
-                automationBanner
-                escalationBanner
+            if message.sender == .automation, let disclaimer = message.disclaimer {
+                if disclaimer.type == .information {
+                    automationBanner(disclaimer: disclaimer)
+                } else {
+                    escalationBanner(disclaimer: disclaimer)
+                }
             }
         }
     }
 
-    private var automationBanner: some View {
+    private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
         InfoCard(
-            title: L10n.automatedMessageInfoCardTitle,
-            text: L10n.automatedMessageInfoCardText,
+            title: disclaimer.title ?? L10n.automatedMessageInfoCardTitle,
+            text: disclaimer.description ?? L10n.automatedMessageInfoCardText,
             type: .neutral
         )
         .buttons([
             .init(
                 buttonTitle: L10n.automatedMessageInfoCardButton,
                 buttonAction: {
-                    chatNavigationVm.isAutomationMessagePresented = true
+                    chatNavigationVm.isAutomationMessagePresented = .init(
+                        title: disclaimer.detailsTitle,
+                        description: disclaimer.detailsDescription
+                    )
                 }
             )
         ])
     }
 
-    private var escalationBanner: some View {
+    private func escalationBanner(disclaimer: MessageDisclaimer) -> some View {
         InfoCard(
-            title: L10n.automatedMessageEscalationBannerTitle,
-            text: L10n.automatedMessageEscalationBannerText,
+            title: disclaimer.title ?? L10n.automatedMessageEscalationBannerTitle,
+            text: disclaimer.description ?? L10n.automatedMessageEscalationBannerText,
             type: .escalation
         )
     }
