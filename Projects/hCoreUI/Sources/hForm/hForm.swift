@@ -85,7 +85,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .frame(maxHeight: .infinity)
                     .background {
                         GeometryReader { geometry in
-                            //                            hBackgroundColor.primary
                             Color.clear
                                 .onAppear {
                                     vm.scrollViewHeight = geometry.size.height
