@@ -162,6 +162,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         ApolloClient.bundle = Bundle.main
+        setLiquidGlassStatus()
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
         application.accessibilityLanguage = Localization.Locale.currentLocale.value.accessibilityLanguageCode
         window.rootViewController = UIViewController()
@@ -171,6 +172,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = self
         observeNotificationsSettings()
         return true
+    }
+
+    private func setLiquidGlassStatus() {
+        isLiquidGlassEnabled = {
+            if #available(iOS 26.0, *) {
+                return !(Bundle.main.object(forInfoDictionaryKey: "UIDesignRequiresCompatibility") as? Bool ?? true)
+            } else {
+                return false
+            }
+        }()
     }
 
     func initialSetup() async {
