@@ -91,15 +91,15 @@ public struct ExtraButtonModel {
 }
 
 public struct InfoView: View {
-    let title: String
-    let description: String
+    let title: String?
+    let description: String?
     let closeButtonTitle: String
     let extraButton: ExtraButtonModel?
     @StateObject private var vm = InfoViewModel()
 
     public init(
-        title: String,
-        description: String,
+        title: String?,
+        description: String?,
         closeButtonTitle: String = L10n.generalCloseButton,
         extraButton: ExtraButtonModel? = nil
     ) {
@@ -113,10 +113,14 @@ public struct InfoView: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: .padding8) {
-                    hText(title)
-                    hText(description)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if let title {
+                        hText(title)
+                    }
+                    if let description {
+                        hText(description)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
                 .padding(.horizontal, .padding8)
                 .padding(.top, .padding32)

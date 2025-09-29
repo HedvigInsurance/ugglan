@@ -106,18 +106,15 @@ public struct ChatScreen: View {
         }
     }
 
-    @ViewBuilder
     private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
-        if let title = disclaimer.title, let description = disclaimer.description {
-            InfoCard(
-                title: title,
-                text: description,
-                type: disclaimer.type == .information ? .neutral : .escalation
-            )
-            .buttons(
-                buttons(for: disclaimer)
-            )
-        }
+        InfoCard(
+            title: disclaimer.title,
+            text: disclaimer.description,
+            type: disclaimer.type == .information ? .neutral : .escalation
+        )
+        .buttons(
+            buttons(for: disclaimer)
+        )
     }
 
     private func buttons(for disclaimer: MessageDisclaimer) -> [InfoCardButtonConfig] {

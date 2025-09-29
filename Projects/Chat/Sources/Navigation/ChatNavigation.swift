@@ -148,12 +148,10 @@ public struct ChatNavigation<Content: View>: View {
             item: $chatNavigationViewModel.isAutomationMessagePresented,
             transitionType: .detent(style: [.height])
         ) { model in
-            if let title = model.title, let description = model.description {
-                InfoView(
-                    title: title,
-                    description: description
-                )
-            }
+            InfoView(
+                title: model.title,
+                description: model.description
+            )
         }
     }
 }
