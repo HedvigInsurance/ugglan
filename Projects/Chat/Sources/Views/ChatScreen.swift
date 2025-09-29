@@ -108,14 +108,14 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
-        if let detailsTitle = disclaimer.detailsTitle, let detailsDescription = disclaimer.detailsDescription {
+        if let detailsDescription = disclaimer.detailsDescription {
             automationInfoCard(disclaimer: disclaimer)
                 .buttons([
                     .init(
                         buttonTitle: L10n.automatedMessageInfoCardButton,
-                        buttonAction: {
-                            chatNavigationVm.isAutomationMessagePresented = .init(
-                                title: detailsTitle,
+                        buttonAction: { [weak chatNavigationVm] in
+                            chatNavigationVm?.isAutomationMessagePresented = .init(
+                                title: disclaimer.detailsTitle,
                                 description: detailsDescription
                             )
                         }
