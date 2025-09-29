@@ -108,34 +108,33 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
-        if let infoCard = automationInfoCard(disclaimer: disclaimer),
-            let detailsDescription = disclaimer.detailsDescription
-        {
-            infoCard
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.automatedMessageInfoCardButton,
-                        buttonAction: { [weak chatNavigationVm] in
-                            chatNavigationVm?.isAutomationMessagePresented = .init(
-                                title: disclaimer.detailsTitle,
-                                description: detailsDescription
-                            )
-                        }
-                    )
-                ])
-        } else {
-            automationInfoCard(disclaimer: disclaimer)
-        }
-    }
-
-    @ViewBuilder
-    private func automationInfoCard(disclaimer: MessageDisclaimer) -> InfoCard? {
         if let title = disclaimer.title, let description = disclaimer.description {
             InfoCard(
                 title: title,
                 text: description,
                 type: disclaimer.type == .information ? .neutral : .escalation
             )
+            .buttons(
+                buttons(for: disclaimer)
+            )
+        }
+    }
+
+    private func buttons(for disclaimer: MessageDisclaimer) -> [InfoCardButtonConfig] {
+        if let detailsDescription = disclaimer.detailsDescription {
+            return [
+                .init(
+                    buttonTitle: L10n.automatedMessageInfoCardButton,
+                    buttonAction: { [weak chatNavigationVm] in
+                        chatNavigationVm?.isAutomationMessagePresented = .init(
+                            title: disclaimer.detailsTitle,
+                            description: detailsDescription
+                        )
+                    }
+                )
+            ]
+        } else {
+            return []
         }
     }
 
