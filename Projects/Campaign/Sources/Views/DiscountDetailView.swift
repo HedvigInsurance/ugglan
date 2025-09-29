@@ -4,140 +4,117 @@ import hCore
 import hCoreUI
 
 public struct DiscountDetailView: View {
-    @ObservedObject var vm: PaymentDetailsDiscountViewModel
     @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
-    let isReferral: Bool
-
+    let isExpired: Bool
+    let options: PaymentDetailsDiscountOptions
+    let discount: Discount
     public init(
-        isReferral: Bool? = false,
-        vm: PaymentDetailsDiscountViewModel
+        discount: Discount,
+        options: PaymentDetailsDiscountOptions,
     ) {
-        self.isReferral = isReferral ?? false
-        self.vm = vm
+        self.discount = discount
+        self.options = options
+        self.isExpired = {
+            switch discount.type {
+            case .discount(let status):
+                return status == .terminated
+            case .referral:
+                return false
+            case .paymentsDiscount:
+                return false
+            }
+        }()
     }
 
     public var body: some View {
         hRow {
             VStack(alignment: .leading, spacing: .padding4) {
-                HStack(alignment: .top) {
-                    HStack(spacing: .padding8) {
-                        hText(vm.discount.code.uppercased(), style: .label)
-                            .foregroundColor(getCodeTextColor)
-                            .padding(.vertical, .padding4)
-                    }
-                    .padding(.horizontal, .padding8)
-                    .background(
-                        RoundedRectangle(cornerRadius: .padding8)
-                            .fill(hSurfaceColor.Translucent.primary)
-                    )
-                    Spacer()
-                    if let validUntil = vm.discount.validUntil {
-                        if vm.shouldShowExpire {
-                            hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .label)
-                                .foregroundColor(hSignalColor.Red.element)
-                        } else {
-                            hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
-                        }
-                    } else if isReferral, let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmountPerMonth)
-                    } else if vm.options.contains(.forPayment), let discount = vm.discount.amount {
-                        hText(discount.formattedNegativeAmount)
-                    }
+                HStack(alignment: .top, spacing: 0) {
+                    hText(discount.code.uppercased(), style: .label)
+                        .foregroundColor(getCodeTextColor)
+                        .padding(.vertical, .padding4)
+                        .padding(.horizontal, .padding8)
+                        .background(
+                            RoundedRectangle(cornerRadius: .padding8)
+                                .fill(hSurfaceColor.Translucent.primary)
+                        )
+                        .accessibilityLabel(L10n.voiceoverBundleDiscountTag(discount.code))
+                        .layoutPriority(1)
+                    Spacer(minLength: .padding8)
+                    hText(discount.displayValue, style: displayValueStyle)
+                        .foregroundColor(getStatusColor)
+                        .multilineTextAlignment(.trailing)
+                        .frame(minWidth: 50)
                 }
-                VStack(alignment: .leading, spacing: 0) {
-                    if let title = vm.discount.title {
+                HStack(alignment: .top) {
+                    if let title = discount.description {
                         hText(title, style: .label)
-                    }
-                    if !vm.discount.listOfAffectedInsurances.isEmpty {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                hText(affectedInsurance.displayName, style: .label)
-                            }
-                        }
-                    }
-                    if vm.options.contains(.forPayment) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                hText(affectedInsurance.displayName, style: .label)
-                            }
-                        }
                     }
                 }
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 
     @hColorBuilder
     private var getCodeTextColor: some hColor {
-        if vm.shouldShowExpire {
+        if isExpired {
             hTextColor.Opaque.secondary
         } else {
             hTextColor.Opaque.primary
         }
     }
+    @hColorBuilder
+    private var getStatusColor: some hColor {
+        if isExpired {
+            hSignalColor.Red.element
+        } else {
+            hTextColor.Opaque.secondary
+        }
+    }
+
+    private var displayValueStyle: HFontTextStyle {
+        switch discount.type {
+        case .discount:
+            return .label
+        case .referral:
+            return .body1
+        case .paymentsDiscount:
+            return .body1
+        }
+    }
 }
 
-@MainActor
-public class PaymentDetailsDiscountViewModel: ObservableObject {
-    let options: PaymentDetailsDiscountOptions
-    let discount: Discount
-    @PresentableStore private var store: CampaignStore
-
-    public init(options: PaymentDetailsDiscountOptions, discount: Discount) {
-        self.options = options
-        self.discount = discount
+public struct PaymentDetailsDiscountOptions: OptionSet, Sendable {
+    public init(rawValue: UInt) {
+        self.rawValue = rawValue
     }
 
-    public struct PaymentDetailsDiscountOptions: OptionSet, Sendable {
-        public init(rawValue: UInt) {
-            self.rawValue = rawValue
-        }
-
-        public let rawValue: UInt
-        static let showExpire = PaymentDetailsDiscountOptions(rawValue: 1 << 0)
-        public static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 1)
-    }
-
-    var shouldShowExpire: Bool {
-        options.contains(.showExpire) && !discount.isValid
-    }
+    public let rawValue: UInt
+    static let showExpire = PaymentDetailsDiscountOptions(rawValue: 1 << 0)
+    public static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 1)
 }
 
 struct PaymentDetailsDiscount_Previews: PreviewProvider {
     static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-
         let discount1: Discount = .init(
             code: "231223",
-            amount: .sek(100),
-            title: "Very long name that needs to go into 2 rows so we can test it",
-            listOfAffectedInsurances: [
-                .init(id: "id 11", displayName: "DISPLAY NAME"),
-                .init(id: "id 12", displayName: "DISPLAY NAME 2"),
-            ],
-            validUntil: "2026-03-06",
-            canBeDeleted: false,
-            discountId: "1"
+            displayValue: "Display value that goes into more lines, it should be fine",
+            description: "Very long name that needs to go into 2 rows so we can test it",
+            discountId: "1",
+            type: .paymentsDiscount
         )
-
         let discount2: Discount = .init(
-            code: "231223",
-            amount: .sek(100),
-            title: "Very long name that needs to go into 2 rows",
-            listOfAffectedInsurances: [
-                .init(id: "id 11", displayName: "DISPLAY NAME"),
-                .init(id: "id 12", displayName: "DISPLAY NAME 2"),
-            ],
-            validUntil: "2023-12-06",
-            canBeDeleted: false,
-            discountId: "1"
+            code: "2312231",
+            displayValue: "",
+            description: "Very long name that needs to go into 2 rows",
+            discountId: "1",
+            type: .paymentsDiscount
         )
         return VStack {
-            DiscountDetailView(vm: .init(options: [.showExpire, .forPayment], discount: discount1))
-            DiscountDetailView(vm: .init(options: [.showExpire], discount: discount2))
+            DiscountDetailView(discount: discount1, options: [.showExpire, .forPayment])
+            DiscountDetailView(discount: discount2, options: [.showExpire])
         }
-        .environmentObject(Router())
     }
 }

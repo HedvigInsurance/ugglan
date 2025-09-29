@@ -27,9 +27,15 @@ public struct DropdownView: View {
                 }
             )
             .hFieldTrailingView {
-                hCoreUIAssets.chevronDown.view
-                    .foregroundColor(imageColor)
-                    .frame(width: 24, height: 24)
+                Group {
+                    if backgroundOption.contains(.locked) && !isEnabled {
+                        hCoreUIAssets.lock.view
+                    } else {
+                        hCoreUIAssets.chevronDown.view
+                    }
+                }
+                .foregroundColor(imageColor)
+                .frame(width: 24, height: 24)
             }
         }
         .hAnimateField(false)

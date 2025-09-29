@@ -140,9 +140,17 @@ extension OctopusGraphQL.MessageFragment {
         .init(
             id: id,
             type: messageType,
-            sender: sender == .member ? .member : .hedvig,
-            date: sentAt.localDateToIso8601Date ?? Date()
+            sender: sender.asMessageSender,
+            date: sentAt.localDateToIso8601Date ?? Date(),
+            disclaimer: getDisclaimer
         )
+    }
+
+    private var getDisclaimer: MessageDisclaimer? {
+        if let disclaimer {
+            return .init(fragment: disclaimer.fragments.chatMessageDisclaimerFragment)
+        }
+        return nil
     }
 
     private var messageType: MessageType {
@@ -222,6 +230,24 @@ extension OctopusGraphQL.MessageFragment {
     }
 }
 
+extension GraphQLEnum<OctopusGraphQL.ChatMessageSender> {
+    fileprivate var asMessageSender: MessageSender {
+        switch self {
+        case .case(let sender):
+            switch sender {
+            case .member:
+                return .member
+            case .hedvig:
+                return .hedvig
+            case .automation:
+                return .automation
+            }
+        case .unknown(let string):
+            return .hedvig
+        }
+    }
+}
+
 extension Conversation {
     public init(
         fragment: OctopusGraphQL.ConversationFragment,
@@ -244,6 +270,20 @@ extension Conversation {
             hasClaim: fragment.claim != nil,
             claimType: fragment.claim?.claimType,
             unreadMessageCount: fragment.unreadMessageCount
+        )
+    }
+}
+
+extension MessageDisclaimer {
+    init(
+        fragment: OctopusGraphQL.ChatMessageDisclaimerFragment,
+    ) {
+        self.init(
+            description: fragment.description,
+            detailsDescription: fragment.detailsDescription,
+            detailsTitle: fragment.detailsTitle,
+            title: fragment.title,
+            type: fragment.type == .escalation ? .escalation : .information
         )
     }
 }

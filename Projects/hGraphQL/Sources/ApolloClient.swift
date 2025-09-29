@@ -30,14 +30,19 @@ extension ApolloClient {
     public static var cache = InMemoryNormalizedCache()
 
     public static func headers() async -> [String: String] {
+        var defaultHeaders = [
+            "Accept-Language": acceptLanguageHeader,
+            "hedvig-language": acceptLanguageHeader,
+            "User-Agent": userAgent,
+            "Hedvig-App-Version": "ios;\(appVersion)",
+            "hedvig-device-id": await getDeviceIdentifier(),
+            "Hedvig-TimeZone": TimeZone.current.identifier,
+        ]
         if let token = try? await ApolloClient.retreiveToken() {
-            return [
-                "Authorization": "Bearer " + token.accessToken,
-                "Accept-Language": acceptLanguageHeader,
-                "User-Agent": userAgent,
-            ]
+            defaultHeaders.merge(["Authorization": "Bearer " + token.accessToken]) { (current, new) in new }
+            return defaultHeaders
         }
-        return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
+        return defaultHeaders
     }
 
     public static func getDeviceIdentifier() async -> String {
@@ -59,15 +64,18 @@ extension ApolloClient {
     internal static func createOctopusClient() async -> hOctopus {
         let environment = Environment.current
 
-        _ = await headers()
-
         let store = ApolloStore(cache: ApolloClient.cache)
+        let headers = await headers()
 
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
-            acceptLanguageHeader: { acceptLanguageHeader },
-            userAgent: userAgent,
-            deviceIdentifier: await getDeviceIdentifier()
+            dynamicHeaders: {
+                [
+                    "Accept-Language": acceptLanguageHeader,
+                    "hedvig-language": acceptLanguageHeader,
+                ]
+            },
+            headers: headers
         )
 
         let requestChainTransport = RequestChainNetworkTransport(

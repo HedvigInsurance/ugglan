@@ -3,72 +3,84 @@ import hCore
 import hCoreUI
 
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
-    let discounts: [Discount]
+    let discountsData: [DiscountsDataForInsurance]
     let referralsData: ReferralsData
 
-    public init(discounts: [Discount], referralsData: ReferralsData) {
-        self.discounts = discounts
+    public init(discountsData: [DiscountsDataForInsurance], referralsData: ReferralsData) {
+        self.discountsData = discountsData
         self.referralsData = referralsData
     }
 }
 
+public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
+    public let id: String
+    let displayName: String
+    let info: String?
+    public var discounts: [Discount]
+
+    public init(
+        id: String,
+        displayName: String,
+        info: String?,
+        discounts: [Discount]
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.info = info
+        self.discounts = discounts
+    }
+}
+
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
+    public static func == (lhs: Discount, rhs: Discount) -> Bool {
+        lhs.id == rhs.id
+    }
     public let id: String
     public let code: String
-    public let amount: MonetaryAmount?
-    let title: String?
-    let listOfAffectedInsurances: [AffectedInsurance]
-    let validUntil: ServerBasedDate?
-    let canBeDeleted: Bool
+    public let displayValue: String
+    public let description: String?
+    public let type: DiscountType
     let discountId: String
 
     public init(
         code: String,
-        amount: MonetaryAmount?,
-        title: String?,
-        listOfAffectedInsurances: [AffectedInsurance],
-        validUntil: ServerBasedDate?,
-        canBeDeleted: Bool,
-        discountId: String
+        displayValue: String,
+        description: String?,
+        discountId: String,
+        type: DiscountType
     ) {
-        id = UUID().uuidString
+        self.id = UUID().uuidString
         self.code = code
-        self.amount = amount
-        self.title = title
-        self.listOfAffectedInsurances = listOfAffectedInsurances
-        self.validUntil = validUntil
-        self.canBeDeleted = canBeDeleted
+        self.displayValue = displayValue
         self.discountId = discountId
+        self.description = description
+        self.type = type
     }
 
     @MainActor
     public init(
         referral: Referral,
-        nbOfReferrals _: Int
+        nbOfReferrals: Int,
     ) {
-        id = UUID().uuidString
-        code = referral.code ?? referral.name
-        amount = referral.activeDiscount
-        title = referral.description
-        listOfAffectedInsurances = []
-        validUntil = nil
-        canBeDeleted = true
-        discountId = referral.id
+        self.id = UUID().uuidString
+        self.code = referral.code ?? referral.name
+        self.displayValue = referral.activeDiscount?.formattedNegativeAmountPerMonth ?? ""
+        self.description = referral.description
+        self.discountId = referral.id
+        self.type = .referral
     }
+}
 
-    @MainActor
-    var isValid: Bool {
-        if let validUntil = validUntil?.localDateToDate {
-            let components = Calendar.current.dateComponents(
-                [.day],
-                from: Date(),
-                to: validUntil
-            )
-            let isValid = components.day ?? 0 >= 0
-            return isValid
-        }
-        return true
-    }
+public enum DiscountType: Sendable, Codable, Hashable {
+    case discount(status: DiscountStatus)
+    case referral
+    case paymentsDiscount
+}
+
+public enum DiscountStatus: String, Sendable, Codable, Hashable {
+    case active
+    case pending
+    case terminated
 }
 
 public struct ReferralsData: Equatable, Codable, Sendable {
@@ -174,18 +186,5 @@ extension Referral {
         case .unknown:
             return ""
         }
-    }
-}
-
-public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sendable {
-    public let id: String
-    let displayName: String
-
-    public init(
-        id: String,
-        displayName: String
-    ) {
-        self.id = id
-        self.displayName = displayName
     }
 }

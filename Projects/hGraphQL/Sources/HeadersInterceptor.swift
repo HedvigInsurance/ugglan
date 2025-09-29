@@ -9,17 +9,11 @@ public enum AuthError: Error {
 
 class HeadersInterceptor: @preconcurrency ApolloInterceptor {
     var id: String
-    let acceptLanguageHeader: String
-    let userAgent: String
-    let deviceIdentifier: String
+    let headers: [String: String]
     init(
-        acceptLanguageHeader: String,
-        userAgent: String,
-        deviceIdentifier: String
+        headers: [String: String] = [:],
     ) {
-        self.acceptLanguageHeader = acceptLanguageHeader
-        self.userAgent = userAgent
-        self.deviceIdentifier = deviceIdentifier
+        self.headers = headers
         id = UUID().uuidString
     }
 
@@ -33,19 +27,12 @@ class HeadersInterceptor: @preconcurrency ApolloInterceptor {
         Task {
             do {
                 try await TokenRefresher.shared.refreshIfNeeded()
-                var httpAdditionalHeaders = [
-                    "Accept-Language": acceptLanguageHeader,
-                    "hedvig-language": acceptLanguageHeader,
-                    "User-Agent": userAgent,
-                    "hedvig-device-id": deviceIdentifier,
-                    "Hedvig-TimeZone": TimeZone.current.identifier,
-                ]
+
+                headers.forEach { key, value in request.addHeader(name: key, value: value) }
                 let token = try await ApolloClient.retreiveToken()
                 if let token = token {
-                    httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
+                    request.addHeader(name: "Authorization", value: "Bearer " + token.accessToken)
                 }
-
-                httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
                 chain.proceedAsync(
                     request: request,
                     response: response,

@@ -45,8 +45,11 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
-		cost {
-			...ItemCostFragment
+        totalCost {
+            ...ItemCostFragment
+        }
+		premium {
+			...MoneyFragment
 		}
       }
        homeQuotes {
@@ -72,8 +75,11 @@ fragment QuoteFragment on MoveIntent {
         addons {
             ...MoveAddonQuoteFragment
         }
-		cost {
-			...ItemCostFragment
+        totalCost {
+            ...ItemCostFragment
+        }
+		premium {
+			...MoneyFragment
 		}
       }
 }
@@ -85,12 +91,12 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
     displayItems {
         ...MoveQuoteDisplayItemFragment
     }
-	startDate
-	addonVariant {
+    startDate
+    addonVariant {
         ...AddonVariantFragment
     }
-	cost {
-		...ItemCostFragment
+	premium {
+		...MoneyFragment
 	}
 }
 
@@ -101,20 +107,20 @@ fragment MoveQuoteDisplayItemFragment on MoveQuoteDisplayItem {
 }
 
 fragment ItemCostFragment on ItemCost {
-	monthlyGross {
-		...MoneyFragment
-	}
-	monthlyNet {
-		...MoneyFragment
-	}
-	discounts {
-		...ItemDiscountFragment
-	}
+    monthlyGross {
+        ...MoneyFragment
+    }
+    monthlyNet {
+        ...MoneyFragment
+    }
+    discounts {
+        ...ItemDiscountFragment
+    }
 }
 
 fragment ItemDiscountFragment on ItemDiscount {
-	displayName
-	displayValue
-	explanation
-	campaignCode
+    displayName
+    displayValue
+    explanation
+    campaignCode
 }

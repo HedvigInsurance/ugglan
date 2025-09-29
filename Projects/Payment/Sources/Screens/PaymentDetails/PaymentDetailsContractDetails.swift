@@ -18,31 +18,12 @@ struct ContractDetails: View {
         hRow {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top, spacing: .padding8) {
-                    if expandedContracts.contains(contract.id) {
-                        hText(contract.title)
-                            .multilineTextAlignment(.leading)
-                    } else {
-                        hText(contract.title)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(1)
-                    }
+                    hText(contract.title)
+                        .multilineTextAlignment(.leading)
                     Spacer()
 
-                    HStack(spacing: .padding8) {
-                        if contract.grossAmount != contract.netAmount {
-                            if #available(iOS 16.0, *) {
-                                hText(contract.grossAmount.formattedAmount)
-                                    .strikethrough()
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            } else {
-                                hText(contract.grossAmount.formattedAmount)
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            }
-                        }
-
-                        hText(contract.netAmount.formattedAmount)
-                    }
-                    .layoutPriority(1)
+                    hText(contract.netAmount.formattedAmount)
+                        .layoutPriority(1)
 
                     hCoreUIAssets.chevronDown.view
                         .resizable()
@@ -57,7 +38,7 @@ struct ContractDetails: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
-            .lineLimit(expandedContracts.contains(contract.id) ? nil : 1)
+            .fixedSize(horizontal: false, vertical: true)
         }
         .withEmptyAccessory
         .onTap {
@@ -103,7 +84,7 @@ struct ContractDetails: View {
                 if contract.periods.count - 1 == offset {
                     if !contract.discounts.isEmpty {
                         ForEach(contract.discounts) { discount in
-                            DiscountDetailView(vm: .init(options: [.forPayment], discount: discount))
+                            DiscountDetailView(discount: discount, options: [.forPayment])
                         }
                     }
                     hRow {
@@ -114,7 +95,7 @@ struct ContractDetails: View {
                                 title: L10n.paymentsSubtotal
                             )
                         )
-                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                        .hWithStrikeThroughPrice(setTo: .none)
                         .hPriceFormatting(setTo: .month)
                     }
                 }
@@ -151,12 +132,10 @@ struct ContractDetails: View {
                 discounts: [
                     .init(
                         code: "TOGETHER",
-                        amount: .init(amount: "10", currency: "SEK"),
-                        title: "15% discount for 12 months",
-                        listOfAffectedInsurances: [],
-                        validUntil: nil,
-                        canBeDeleted: true,
-                        discountId: "id"
+                        displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                        description: "15% discount for 12 months",
+                        discountId: "TOGETHER",
+                        type: .discount(status: .active)
                     )
                 ],
                 periods: [
