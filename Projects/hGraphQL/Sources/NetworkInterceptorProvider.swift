@@ -9,29 +9,25 @@ import Foundation
 
 @MainActor
 class NetworkInterceptorProvider: DefaultInterceptorProvider {
-    nonisolated(unsafe) var acceptLanguageHeader: () -> String
-    let userAgent: String
-    let deviceIdentifier: String
-
+    nonisolated(unsafe) var dynamicHeaders: () -> [String: String]
+    let headers: [String: String]
     init(
         store: ApolloStore,
-        acceptLanguageHeader: @escaping () -> String,
-        userAgent: String,
-        deviceIdentifier: String
+        dynamicHeaders: @escaping () -> [String: String],
+        headers: [String: String]
     ) {
-        self.acceptLanguageHeader = acceptLanguageHeader
-        self.userAgent = userAgent
-        self.deviceIdentifier = deviceIdentifier
+        self.dynamicHeaders = dynamicHeaders
+        self.headers = headers
         super.init(client: urlSessionClientProvider(), store: store)
     }
 
     override func interceptors<Operation: GraphQLOperation>(for operation: Operation) -> [ApolloInterceptor] {
         var interceptors = super.interceptors(for: operation)
+        var headers = headers
+        headers.merge(dynamicHeaders()) { (current, new) in new }
         interceptors.insert(
             HeadersInterceptor(
-                acceptLanguageHeader: acceptLanguageHeader(),
-                userAgent: userAgent,
-                deviceIdentifier: deviceIdentifier
+                headers: headers
             ),
             at: 0
         )

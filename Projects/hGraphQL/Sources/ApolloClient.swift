@@ -34,7 +34,11 @@ extension ApolloClient {
             return [
                 "Authorization": "Bearer " + token.accessToken,
                 "Accept-Language": acceptLanguageHeader,
+                "hedvig-language": acceptLanguageHeader,
                 "User-Agent": userAgent,
+                "Hedvig-App-Version": "ios;\(appVersion)",
+                "hedvig-device-id": await getDeviceIdentifier(),
+                "Hedvig-TimeZone": TimeZone.current.identifier,
             ]
         }
         return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
@@ -59,15 +63,18 @@ extension ApolloClient {
     internal static func createOctopusClient() async -> hOctopus {
         let environment = Environment.current
 
-        _ = await headers()
-
         let store = ApolloStore(cache: ApolloClient.cache)
+        let headers = await headers()
 
         let networkInterceptorProvider = NetworkInterceptorProvider(
             store: store,
-            acceptLanguageHeader: { acceptLanguageHeader },
-            userAgent: userAgent,
-            deviceIdentifier: await getDeviceIdentifier()
+            dynamicHeaders: {
+                [
+                    "Accept-Language": acceptLanguageHeader,
+                    "hedvig-language": acceptLanguageHeader,
+                ]
+            },
+            headers: headers
         )
 
         let requestChainTransport = RequestChainNetworkTransport(
