@@ -101,40 +101,36 @@ public struct ChatScreen: View {
             .id(message.id)
 
             if let disclaimer = message.disclaimer {
-                switch disclaimer.type {
-                case .information:
-                    automationBanner(disclaimer: disclaimer)
-                case .escalation:
-                    escalationBanner(disclaimer: disclaimer)
-                }
+                automationBanner(disclaimer: disclaimer)
             }
         }
     }
 
+    @ViewBuilder
     private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
+        if let detailsTitle = disclaimer.detailsTitle, let detailsDescription = disclaimer.detailsDescription {
+            automationInfoCard(disclaimer: disclaimer)
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.automatedMessageInfoCardButton,
+                        buttonAction: {
+                            chatNavigationVm.isAutomationMessagePresented = .init(
+                                title: detailsTitle,
+                                description: detailsDescription
+                            )
+                        }
+                    )
+                ])
+        } else {
+            automationInfoCard(disclaimer: disclaimer)
+        }
+    }
+
+    private func automationInfoCard(disclaimer: MessageDisclaimer) -> InfoCard {
         InfoCard(
             title: disclaimer.title ?? L10n.automatedMessageInfoCardTitle,
             text: disclaimer.description ?? L10n.automatedMessageInfoCardText,
-            type: .neutral
-        )
-        .buttons([
-            .init(
-                buttonTitle: L10n.automatedMessageInfoCardButton,
-                buttonAction: {
-                    chatNavigationVm.isAutomationMessagePresented = .init(
-                        title: disclaimer.detailsTitle,
-                        description: disclaimer.detailsDescription
-                    )
-                }
-            )
-        ])
-    }
-
-    private func escalationBanner(disclaimer: MessageDisclaimer) -> some View {
-        InfoCard(
-            title: disclaimer.title ?? L10n.automatedMessageEscalationBannerTitle,
-            text: disclaimer.description ?? L10n.automatedMessageEscalationBannerText,
-            type: .escalation
+            type: disclaimer.type == .information ? .neutral : .escalation
         )
     }
 
