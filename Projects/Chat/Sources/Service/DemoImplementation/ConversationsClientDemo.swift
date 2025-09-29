@@ -31,7 +31,14 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
                 id: "id2",
                 type: .text(text: "Hi, how may I help you?"),
                 sender: .hedvig,
-                date: date.addingTimeInterval(-60 * 60 * 21 * 2)
+                date: date.addingTimeInterval(-60 * 60 * 21 * 2),
+                disclaimer: .init(
+                    description: "description",
+                    detailsDescription: "details",
+                    detailsTitle: "details title",
+                    title: "title",
+                    type: .information
+                )
             ),
         ]
     }

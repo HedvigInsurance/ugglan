@@ -3,7 +3,7 @@ import hCore
 
 public struct InfoCard: View {
     let title: String?
-    let text: String
+    let text: String?
     let type: NotificationType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
     @Environment(\.hInfoCardCustomView) var customContentView
@@ -11,7 +11,7 @@ public struct InfoCard: View {
 
     public init(
         title: String? = nil,
-        text: String,
+        text: String?,
         type: NotificationType
     ) {
         self.title = title
@@ -63,10 +63,12 @@ public struct InfoCard: View {
                 hText(title, style: .label)
                     .foregroundColor(hTextColor.Translucent.primary)
             }
-            hText(text, style: .label)
-                .foregroundColor(type.textColor)
-                .multilineTextAlignment(.leading)
-                .padding(.bottom, .padding4)
+            if let text {
+                hText(text, style: .label)
+                    .foregroundColor(type.textColor)
+                    .multilineTextAlignment(.leading)
+                    .padding(.bottom, .padding4)
+            }
             if let buttonsConfig {
                 if buttonsConfig.count > 1 {
                     HStack(spacing: .padding4) {

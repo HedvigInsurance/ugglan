@@ -58,7 +58,7 @@ public struct ChatScreen: View {
     @ViewBuilder
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
-            LazyVStack(spacing: .padding8) {
+            LazyVStack(spacing: .padding16) {
                 let messages = messageVm.messages
                 ForEach(messages) { message in
                     messageView(for: message, conversationStatus: conversationVm.conversationStatus)
@@ -72,7 +72,7 @@ public struct ChatScreen: View {
                         }
                 }
             }
-            .padding([.horizontal, .bottom], .padding16)
+            .padding([.horizontal, .vertical], .padding16)
             .padding(.top, conversationVm.banner != nil ? .padding8 : 0)
             .onChange(of: messageVm.scrollToMessage?.id) { id in
                 withAnimation {
@@ -100,36 +100,39 @@ public struct ChatScreen: View {
             }
             .id(message.id)
 
-            /* TODO: COMPLETE WHEN WE HAVE BE IMPLEMENTATION - SHOULD BE SHOWN FOR FIRST AUTOMATED MESSAGE ONLY & ESCALATION ONLY WHEN ESCALATED */
-            if message.sender == .automation {
-                automationBanner
-                escalationBanner
+            if let disclaimer = message.disclaimer {
+                automationBanner(disclaimer: disclaimer)
             }
         }
     }
 
-    private var automationBanner: some View {
+    private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
         InfoCard(
-            title: L10n.automatedMessageInfoCardTitle,
-            text: L10n.automatedMessageInfoCardText,
-            type: .neutral
+            title: disclaimer.title,
+            text: disclaimer.description,
+            type: disclaimer.type == .information ? .neutral : .escalation
         )
-        .buttons([
-            .init(
-                buttonTitle: L10n.automatedMessageInfoCardButton,
-                buttonAction: {
-                    chatNavigationVm.isAutomationMessagePresented = true
-                }
-            )
-        ])
+        .buttons(
+            buttons(for: disclaimer)
+        )
     }
 
-    private var escalationBanner: some View {
-        InfoCard(
-            title: L10n.automatedMessageEscalationBannerTitle,
-            text: L10n.automatedMessageEscalationBannerText,
-            type: .escalation
-        )
+    private func buttons(for disclaimer: MessageDisclaimer) -> [InfoCardButtonConfig] {
+        if let detailsDescription = disclaimer.detailsDescription {
+            return [
+                .init(
+                    buttonTitle: L10n.automatedMessageInfoCardButton,
+                    buttonAction: { [weak chatNavigationVm] in
+                        chatNavigationVm?.isAutomationMessagePresented = .init(
+                            title: disclaimer.detailsTitle,
+                            description: detailsDescription
+                        )
+                    }
+                )
+            ]
+        } else {
+            return []
+        }
     }
 
     private func messageTimeStamp(message: Message) -> some View {
@@ -154,7 +157,6 @@ public struct ChatScreen: View {
         }
         .hTextStyle(.label)
         .foregroundColor(hTextColor.Opaque.secondary)
-        .padding(.bottom, 3)
     }
 
     @ViewBuilder
