@@ -58,7 +58,7 @@ public struct ChatScreen: View {
     @ViewBuilder
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
-            LazyVStack(spacing: .padding8) {
+            LazyVStack(spacing: .padding16) {
                 let messages = messageVm.messages
                 ForEach(messages) { message in
                     messageView(for: message, conversationStatus: conversationVm.conversationStatus)
@@ -72,7 +72,7 @@ public struct ChatScreen: View {
                         }
                 }
             }
-            .padding([.horizontal, .bottom], .padding16)
+            .padding([.horizontal, .vertical], .padding16)
             .padding(.top, conversationVm.banner != nil ? .padding8 : 0)
             .onChange(of: messageVm.scrollToMessage?.id) { id in
                 withAnimation {
@@ -157,7 +157,6 @@ public struct ChatScreen: View {
         }
         .hTextStyle(.label)
         .foregroundColor(hTextColor.Opaque.secondary)
-        .padding(.bottom, 3)
     }
 
     @ViewBuilder
