@@ -108,8 +108,10 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
-        if let detailsDescription = disclaimer.detailsDescription {
-            automationInfoCard(disclaimer: disclaimer)
+        if let infoCard = automationInfoCard(disclaimer: disclaimer),
+            let detailsDescription = disclaimer.detailsDescription
+        {
+            infoCard
                 .buttons([
                     .init(
                         buttonTitle: L10n.automatedMessageInfoCardButton,
@@ -126,12 +128,15 @@ public struct ChatScreen: View {
         }
     }
 
-    private func automationInfoCard(disclaimer: MessageDisclaimer) -> InfoCard {
-        InfoCard(
-            title: disclaimer.title ?? L10n.automatedMessageInfoCardTitle,
-            text: disclaimer.description ?? L10n.automatedMessageInfoCardText,
-            type: disclaimer.type == .information ? .neutral : .escalation
-        )
+    @ViewBuilder
+    private func automationInfoCard(disclaimer: MessageDisclaimer) -> InfoCard? {
+        if let title = disclaimer.title, let description = disclaimer.description {
+            InfoCard(
+                title: title,
+                text: description,
+                type: disclaimer.type == .information ? .neutral : .escalation
+            )
+        }
     }
 
     private func messageTimeStamp(message: Message) -> some View {
