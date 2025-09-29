@@ -9,6 +9,7 @@ import hCoreUI
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
     @Published var isAskForPushNotificationsPresented = false
+    @Published var isAutomationMessagePresented: InfoViewDataModel?
     let router = Router()
     let chatType: ChatType
     init(chatType: ChatType) {
@@ -142,6 +143,15 @@ public struct ChatNavigation<Content: View>: View {
                     chatNavigationViewModel.isAskForPushNotificationsPresented = false
                 }
             }
+        }
+        .detent(
+            item: $chatNavigationViewModel.isAutomationMessagePresented,
+            transitionType: .detent(style: [.height])
+        ) { model in
+            InfoView(
+                title: model.title,
+                description: model.description
+            )
         }
     }
 }

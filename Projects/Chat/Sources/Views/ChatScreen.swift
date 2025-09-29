@@ -58,7 +58,7 @@ public struct ChatScreen: View {
     @ViewBuilder
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: .padding16) {
                 let messages = messageVm.messages
                 ForEach(messages) { message in
                     messageView(for: message, conversationStatus: conversationVm.conversationStatus)
@@ -72,8 +72,7 @@ public struct ChatScreen: View {
                         }
                 }
             }
-            .padding([.horizontal, .bottom], .padding16)
-            .padding(.top, conversationVm.banner != nil ? .padding8 : 0)
+            .padding([.horizontal, .vertical], .padding16)
             .onChange(of: messageVm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
@@ -83,21 +82,56 @@ public struct ChatScreen: View {
     }
 
     private func messageView(for message: Message, conversationStatus: ConversationStatus) -> some View {
-        HStack(alignment: .center, spacing: 0) {
-            if message.sender == .member {
-                Spacer()
-            }
-            VStack(alignment: message.sender.alignment.horizontal, spacing: .padding4) {
-                MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
+        VStack(spacing: .padding16) {
+            HStack(alignment: .center, spacing: 0) {
+                if message.sender == .member {
+                    Spacer()
+                }
+                VStack(alignment: message.sender.alignment.horizontal, spacing: .padding4) {
+                    MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
 
-                messageTimeStamp(message: message)
-                    .accessibilityHidden(true)
+                    messageTimeStamp(message: message)
+                        .accessibilityHidden(true)
+                }
+                if message.sender == .hedvig || message.sender == .automation {
+                    Spacer()
+                }
             }
-            if message.sender == .hedvig {
-                Spacer()
+            .id(message.id)
+
+            if let disclaimer = message.disclaimer {
+                automationBanner(disclaimer: disclaimer)
             }
         }
-        .id(message.id)
+    }
+
+    private func automationBanner(disclaimer: MessageDisclaimer) -> some View {
+        InfoCard(
+            title: disclaimer.title,
+            text: disclaimer.description,
+            type: disclaimer.type == .information ? .neutral : .escalation
+        )
+        .buttons(
+            buttons(for: disclaimer)
+        )
+    }
+
+    private func buttons(for disclaimer: MessageDisclaimer) -> [InfoCardButtonConfig] {
+        if let detailsDescription = disclaimer.detailsDescription {
+            return [
+                .init(
+                    buttonTitle: L10n.automatedMessageInfoCardButton,
+                    buttonAction: { [weak chatNavigationVm] in
+                        chatNavigationVm?.isAutomationMessagePresented = .init(
+                            title: disclaimer.detailsTitle,
+                            description: detailsDescription
+                        )
+                    }
+                )
+            ]
+        } else {
+            return []
+        }
     }
 
     private func messageTimeStamp(message: Message) -> some View {
@@ -114,12 +148,14 @@ public struct ChatScreen: View {
                 hText(L10n.chatFailedToSend)
                 hText(" ∙ \(message.timeStampString)")
             } else {
+                if message.sender == .automation {
+                    hText("\(L10n.chatSenderAutomation) ∙ ")
+                }
                 hText(message.timeStampString)
             }
         }
         .hTextStyle(.label)
         .foregroundColor(hTextColor.Opaque.secondary)
-        .padding(.bottom, 3)
     }
 
     @ViewBuilder
@@ -161,7 +197,7 @@ struct ChatScreenModifier: ViewModifier {
             .dismissKeyboard()
             .findScrollView { sv in
                 sv.delegate = chatScrollViewDelegate
-                //TODO: READD after iOS 26
+                //TODO: REDO after iOS 26
                 //                if #available(iOS 26.0, *) {
                 //                    sv.topEdgeEffect.isHidden = true
                 //                }
@@ -259,7 +295,7 @@ extension MessageSender {
     var alignment: Alignment {
         switch self {
         case .member: return .trailing
-        case .hedvig: return .leading
+        case .hedvig, .automation: return .leading
         }
     }
 }
