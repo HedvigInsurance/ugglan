@@ -98,7 +98,7 @@ class MainNavigationViewModel: ObservableObject {
             loggedInVm.hasLaunchFinished.send(hasLaunchFinished)
         }
     }
-
+    private var analyticsService = AnalyticsService()
     @Published var showLaunchScreen = true
     lazy var notLoggedInVm = NotLoggedViewModel()
     var loggedInVm = LoggedInNavigationViewModel()
@@ -121,7 +121,7 @@ class MainNavigationViewModel: ObservableObject {
                     await profileStore.sendAsync(.updateLanguage)
                     await checkForFeatureFlags()
                     Task {
-                        try? await AnalyticsService().fetchAndSetUserId()
+                        try? await analyticsService.fetchAndSetUserId()
                     }
                     withAnimation {
                         hasLaunchFinished = true
@@ -132,6 +132,7 @@ class MainNavigationViewModel: ObservableObject {
                     notLoggedInVm = .init()
                     loggedInVm = .init()
                     appDelegate.logout()
+                    analyticsService = AnalyticsService()
                 default:
                     break
                 }
