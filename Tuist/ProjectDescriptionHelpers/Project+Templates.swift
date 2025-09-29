@@ -70,7 +70,6 @@ extension Project {
 
         var testsDependencies: [TargetDependency] = [
             .target(name: "\(name)")
-            //            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
         ]
         for item in projects {
             testsDependencies.append(.project(target: item, path: .relativeToRoot("Projects/\(item)")))

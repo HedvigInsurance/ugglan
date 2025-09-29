@@ -190,6 +190,28 @@ let project = Project(
             settings: .settings(configurations: testsConfigurations)
         ),
         Target.target(
+            name: "AppUITests",
+            destinations: .iOS,
+            product: .uiTests,
+            bundleId: "com.hedvig.AppUITests",
+            deploymentTargets: .iOS("15.0"),
+            infoPlist: .default,
+            sources: ["Tests/UITests/**"],
+            resources: [],
+            scripts: [],
+            dependencies: [
+                [
+                    .target(name: "Ugglan"),
+                    .project(
+                        target: "TestDependencies",
+                        path: .relativeToRoot("Dependencies/TestDependencies")
+                    ),
+                ]
+            ]
+            .flatMap { $0 },
+            settings: .settings(configurations: testsConfigurations)
+        ),
+        Target.target(
             name: "Hedvig",
             destinations: .iOS,
             product: .app,
@@ -239,11 +261,14 @@ let project = Project(
             ),
             testAction: .targets(
                 [
-                    //                    TestableTarget.test
                     TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "AppTests"),
                         parallelization: .enabled
-                    )
+                    ),
+                    TestableTarget.testableTarget(
+                        target: TargetReference(stringLiteral: "AppUITests"),
+                        parallelization: .enabled
+                    ),
                 ],
                 arguments: Arguments.arguments(
                     environmentVariables: [
