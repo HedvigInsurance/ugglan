@@ -53,7 +53,15 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         self.type = type
         sentAt = date
         self.disclaimer = disclaimer
-        status = sender == .hedvig ? .received : .sent
+
+        switch sender {
+        case .member:
+            status = .sent
+        case .hedvig:
+            status = .received
+        case .automation:
+            status = .received
+        }
     }
 
     private init(id: String, type: MessageType, date: Date, status: MessageStatus) {

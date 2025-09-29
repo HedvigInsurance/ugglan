@@ -100,10 +100,11 @@ public struct ChatScreen: View {
             }
             .id(message.id)
 
-            if message.sender == .automation, let disclaimer = message.disclaimer {
-                if disclaimer.type == .information {
+            if let disclaimer = message.disclaimer {
+                switch disclaimer.type {
+                case .information:
                     automationBanner(disclaimer: disclaimer)
-                } else {
+                case .escalation:
                     escalationBanner(disclaimer: disclaimer)
                 }
             }
