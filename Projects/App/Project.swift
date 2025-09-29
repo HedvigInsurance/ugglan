@@ -168,28 +168,6 @@ let project = Project(
             settings: .settings(configurations: ugglanConfigurations)
         ),
         Target.target(
-            name: "AppTests",
-            destinations: .iOS,
-            product: .unitTests,
-            bundleId: "com.hedvig.AppTests",
-            deploymentTargets: .iOS("15.0"),
-            infoPlist: .default,
-            sources: ["Tests/**"],
-            resources: [],
-            scripts: [],
-            dependencies: [
-                [
-                    .target(name: "Ugglan"),
-                    .project(
-                        target: "TestDependencies",
-                        path: .relativeToRoot("Dependencies/TestDependencies")
-                    ),
-                ]
-            ]
-            .flatMap { $0 },
-            settings: .settings(configurations: testsConfigurations)
-        ),
-        Target.target(
             name: "AppUITests",
             destinations: .iOS,
             product: .uiTests,
