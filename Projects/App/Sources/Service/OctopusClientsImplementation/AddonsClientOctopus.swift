@@ -22,15 +22,23 @@ class AddonsClientOctopus: AddonsClient {
 
             let currentAddon: AddonQuote? = {
                 guard let currentAddon = addonOffer.currentAddon else { return nil }
+
                 return .init(
                     displayName: "",
+                    displayNameLong: currentAddon.displayNameLong,
                     quoteId: "quoteId",
                     addonId: "addonId",
                     addonSubtype: "addonSubtype",
                     displayItems: currentAddon.displayItems.map {
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
                     },
-                    price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
+                    itemCost: .init(
+                        premium: .init(
+                            gross: nil,
+                            net: .init(fragment: currentAddon.netPremium.fragments.moneyFragment)
+                        ),
+                        discounts: []
+                    ),
                     addonVariant: nil,
                     documents: []
                 )
@@ -86,13 +94,14 @@ extension AddonQuote {
         }
         self.init(
             displayName: fragment.displayName,
+            displayNameLong: fragment.displayNameLong,
             quoteId: fragment.quoteId,
             addonId: fragment.addonId,
             addonSubtype: fragment.addonSubtype,
             displayItems: displayItems,
-            price: .init(fragment: fragment.premium.fragments.moneyFragment),
+            itemCost: .init(fragment: fragment.itemCost.fragments.itemCostFragment),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
-            documents: documents
+            documents: documents,
         )
     }
 }

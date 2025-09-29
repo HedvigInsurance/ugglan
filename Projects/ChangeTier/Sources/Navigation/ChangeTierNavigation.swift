@@ -171,16 +171,22 @@ public enum ChangeTierSource: Codable {
 }
 
 public struct ChangeTierNavigation: View {
-    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @StateObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     public init(
         input: ChangeTierInput,
+        dataProvider: ChangeTierQuoteDataProvider? = nil,
         router: Router? = nil,
         onChangedTier: @escaping () -> Void = {}
     ) {
-        changeTierNavigationVm = .init(
-            router: router,
-            vm: .init(changeTierInput: input),
-            onChangedTier: onChangedTier
+        _changeTierNavigationVm = StateObject(
+            wrappedValue: .init(
+                router: router,
+                vm: .init(
+                    changeTierInput: input,
+                    dataProvider: dataProvider
+                ),
+                onChangedTier: onChangedTier
+            )
         )
     }
 
@@ -188,9 +194,11 @@ public struct ChangeTierNavigation: View {
         input: ChangeTierContractsInput,
         onChangedTier: @escaping () -> Void = {}
     ) {
-        changeTierNavigationVm = .init(
-            changeTierContractsInput: input,
-            onChangedTier: onChangedTier
+        _changeTierNavigationVm = StateObject(
+            wrappedValue: .init(
+                changeTierContractsInput: input,
+                onChangedTier: onChangedTier
+            )
         )
     }
 
@@ -213,6 +221,7 @@ public struct ChangeTierNavigation: View {
             item: $changeTierNavigationVm.isEditTierPresented
         ) { model in
             EditScreen(
+                selectedItem: model.selectedItem,
                 vm: changeTierNavigationVm.vm,
                 type: model.type
             )
@@ -289,22 +298,31 @@ public struct ChangeTierNavigation: View {
     var getScreen: some View {
         ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
             .withAlertDismiss()
-            .routerDestination(for: ChangeTierRouterActions.self) { action in
-                switch action {
-                case .summary:
-                    ChangeTierSummaryScreen(
-                        changeTierVm: changeTierNavigationVm.vm,
-                        changeTierNavigationVm: changeTierNavigationVm
-                    )
-                    .configureTitle(L10n.offerUpdateSummaryTitle)
-                    .withAlertDismiss()
+            .routerDestination(for: ChangeTierRouterActions.self) { [weak changeTierNavigationVm] action in
+                if let changeTierNavigationVm {
+                    switch action {
+                    case .summary:
+                        ChangeTierSummaryScreen(
+                            changeTierVm: changeTierNavigationVm.vm,
+                            changeTierNavigationVm: changeTierNavigationVm
+                        )
+                        .configureTitle(L10n.offerUpdateSummaryTitle)
+                        .withAlertDismiss()
+                    }
+                } else {
+                    EmptyView()
                 }
             }
             .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                [weak changeTierNavigationVm]
                 action in
-                switch action {
-                case .commitTier:
-                    ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
+                if let changeTierNavigationVm {
+                    switch action {
+                    case .commitTier:
+                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
+                    }
+                } else {
+                    EmptyView()
                 }
             }
     }
@@ -332,5 +350,6 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
 
 public struct EditTypeModel: Identifiable, Equatable {
     public let id = UUID().uuidString
+    let selectedItem: String?
     let type: EditTierType
 }

@@ -1,11 +1,12 @@
 import hCore
+import hCoreUI
 
 @MainActor
 public protocol MoveFlowClient {
     func sendMoveIntent() async throws -> MoveConfigurationModel
     func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel
     func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws
-    func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> Premium
+    func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost
 }
 
 public struct RequestMoveIntentInput {

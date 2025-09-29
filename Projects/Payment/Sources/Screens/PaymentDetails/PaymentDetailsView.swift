@@ -36,12 +36,14 @@ struct PaymentDetailsView: View {
     private var referralSection: some View {
         if let referralDiscount = data.referralDiscount {
             hSection {
-                DiscountDetailView(vm: .init(options: [.forPayment], discount: referralDiscount))
+                DiscountDetailView(discount: referralDiscount, options: [.forPayment])
                     .hWithoutHorizontalPadding([.row])
             }
             .withHeader(
-                title: L10n.paymentsReferralsInfoTitle,
-                withoutBottomPadding: false
+                title: L10n.ReferralsInfoSheet.headline,
+                infoButtonDescription: L10n.ReferralsInfoSheet.body(
+                    data.amountPerReferral.formattedAmount,
+                )
             )
 
             .sectionContainerStyle(.transparent)
@@ -203,12 +205,10 @@ struct PaymentDetails_Previews: PreviewProvider {
                     discounts: [
                         .init(
                             code: "TOGETHER",
-                            amount: .init(amount: "10", currency: "SEK"),
-                            title: "15% discount for 12 months",
-                            listOfAffectedInsurances: [],
-                            validUntil: nil,
-                            canBeDeleted: true,
-                            discountId: "id"
+                            displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                            description: "15% discount for 12 months",
+                            discountId: "TOGETHER",
+                            type: .discount(status: .active)
                         )
                     ],
                     periods: [
@@ -239,12 +239,10 @@ struct PaymentDetails_Previews: PreviewProvider {
                     discounts: [
                         .init(
                             code: "TOGETHER",
-                            amount: .init(amount: "10", currency: "SEK"),
-                            title: "15% discount for 12 months",
-                            listOfAffectedInsurances: [],
-                            validUntil: nil,
-                            canBeDeleted: true,
-                            discountId: "id"
+                            displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                            description: "15% discount for 12 months",
+                            discountId: "TOGETHER",
+                            type: .discount(status: .active)
                         )
                     ],
                     periods: [
@@ -270,13 +268,12 @@ struct PaymentDetails_Previews: PreviewProvider {
             referralDiscount:
                 .init(
                     code: "MY CODE",
-                    amount: .sek(30),
-                    title: "3 friends invited",
-                    listOfAffectedInsurances: [],
-                    validUntil: nil,
-                    canBeDeleted: false,
-                    discountId: "FRIENDS"
+                    displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                    description: "3 friends invited",
+                    discountId: "TOGETHER",
+                    type: .referral
                 ),
+            amountPerReferral: .sek(10),
             paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
             addedToThePayment: nil
         )

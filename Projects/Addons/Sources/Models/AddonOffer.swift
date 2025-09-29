@@ -38,10 +38,10 @@ public struct AddonBannerModel: Sendable, Equatable, Codable, Hashable {
 
 public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
     public let id = UUID()
-    let title: String
+    public let title: String
     let description: String?
     let activationDate: Date?
-    let currentAddon: AddonQuote?
+    public let currentAddon: AddonQuote?
     let quotes: [AddonQuote]
 
     public init(
@@ -60,51 +60,54 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
 
     func getTotalPrice(selectedQuote: AddonQuote?) -> MonetaryAmount? {
         guard let selectedQuote else { return nil }
-        guard let currentAddon else { return selectedQuote.price }
-        guard let currentAddonPrice = currentAddon.price,
-            let newPrice = selectedQuote.price
+        guard let currentAddon else { return selectedQuote.itemCost.premium.net }
+        guard let currentAddonPrice = currentAddon.itemCost.premium.net,
+            let newPrice = selectedQuote.itemCost.premium.net
         else { return nil }
         let diffPrice = newPrice.value - currentAddonPrice.value
         return MonetaryAmount(amount: diffPrice.asString, currency: newPrice.currency)
     }
 }
 
-public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
+public struct AddonQuote: Identifiable, Equatable, Hashable, Codable, Sendable {
     public var id: String {
         addonId
     }
 
-    let displayName: String?
+    public let displayName: String?
+    let displayNameLong: String
     let quoteId: String
     let addonId: String
-    let addonSubtype: String
+    public let addonSubtype: String
     let displayItems: [AddonDisplayItem]
-    let price: MonetaryAmount?
+    public let itemCost: ItemCost
     let addonVariant: AddonVariant?
     let documents: [hPDFDocument]
 
     public init(
         displayName: String?,
+        displayNameLong: String,
         quoteId: String,
         addonId: String,
         addonSubtype: String,
         displayItems: [AddonDisplayItem],
-        price: MonetaryAmount?,
+        itemCost: ItemCost,
         addonVariant: AddonVariant?,
         documents: [hPDFDocument]
     ) {
         self.displayName = displayName
+        self.displayNameLong = displayNameLong
         self.quoteId = quoteId
         self.addonId = addonId
         self.addonSubtype = addonSubtype
         self.displayItems = displayItems
-        self.price = price
+        self.itemCost = itemCost
         self.addonVariant = addonVariant
         self.documents = documents
     }
 }
 
-public struct AddonDisplayItem: Equatable, Hashable, Sendable {
+public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
     let displayTitle: String
     let displayValue: String
 

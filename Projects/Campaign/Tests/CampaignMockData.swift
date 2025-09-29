@@ -7,7 +7,7 @@ struct MockCampaignData {
     static func createMockCampaignService(
         fetchPaymentDiscountsData: @escaping FetchPaymentDiscountsData = {
             .init(
-                discounts: [],
+                discountsData: [],
                 referralsData: .init(
                     code: "code",
                     discountPerMember: .init(amount: "10", currency: "SEK"),

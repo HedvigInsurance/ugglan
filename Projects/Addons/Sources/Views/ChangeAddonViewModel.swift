@@ -22,6 +22,10 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
+    var disableDropDown: Bool {
+        addonOffer?.quotes.count ?? 0 <= 1
+    }
+
     func getAddons() async {
         withAnimation {
             self.fetchAddonsViewState = .loading
@@ -74,33 +78,63 @@ public class ChangeAddonViewModel: ObservableObject {
         )
     }
 
+    func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
+        if let currentAddon = addonOffer?.currentAddon {
+            let currentAddonBreakdownDisplayItems = QuoteDisplayItem(
+                title: addonOffer?.currentAddon?.displayNameLong ?? "",
+                value: addonOffer?.currentAddon?.itemCost.premium.net?.formattedAmountPerMonth ?? "",
+                crossDisplayTitle: true
+            )
+
+            let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
+                title: selectedQuote?.displayNameLong ?? "",
+                value: selectedQuote?.itemCost.premium.net?.formattedAmountPerMonth ?? ""
+            )
+
+            return [currentAddonBreakdownDisplayItems, selectedAddonBreakdownDisplayItems]
+        } else {
+            let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
+                title: selectedQuote?.displayNameLong ?? "",
+                value: selectedQuote?.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
+            )
+
+            let discountItems: [QuoteDisplayItem] =
+                selectedQuote?.itemCost.discounts.map({ .init(title: $0.displayName, value: $0.displayValue) }) ?? []
+
+            return [selectedAddonBreakdownDisplayItems] + discountItems
+        }
+    }
+
     func compareAddonDisplayItems(
         currentDisplayItems: [AddonDisplayItem],
         newDisplayItems: [AddonDisplayItem]
     ) -> [QuoteDisplayItem] {
         let displayItems: [QuoteDisplayItem] = newDisplayItems.map { item in
-            if let matchingDisplayItem = currentDisplayItems.first(where: { $0.displayTitle == item.displayTitle }) {
-                return .init(
-                    title: item.displayTitle,
-                    value: item.displayValue,
-                    displayValueOld: matchingDisplayItem.displayValue
-                )
-            }
             return .init(title: item.displayTitle, value: item.displayValue)
         }
         return displayItems
     }
 
-    func getTotalPrice(currentPrice: MonetaryAmount?, newPrice: MonetaryAmount?) -> MonetaryAmount {
-        let diffValue: Float = {
-            if let currentPrice, let newPrice {
-                return newPrice.value - currentPrice.value
-            } else {
-                return 0
-            }
-        }()
+    func getTotalPrice() -> MonetaryAmount {
+        guard let selectedQuoteNet = selectedQuote?.itemCost.premium.net else {
+            return .init(amount: 0, currency: "SEK")
+        }
 
-        let totalPrice = (currentPrice != nil) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
-        return totalPrice ?? .init(amount: 0, currency: "SEK")
+        if let currentAddonNet = addonOffer?.currentAddon?.itemCost.premium.net {
+            let amount = selectedQuoteNet.floatAmount - currentAddonNet.floatAmount
+            return .init(amount: amount, currency: selectedQuoteNet.currency)
+        }
+        return selectedQuoteNet
+    }
+
+    func getPremium() -> Premium? {
+        if addonOffer?.currentAddon != nil {
+            return Premium(
+                gross: nil,
+                net: selectedQuote?.itemCost.premium.net
+            )
+        } else {
+            return selectedQuote?.itemCost.premium
+        }
     }
 }
