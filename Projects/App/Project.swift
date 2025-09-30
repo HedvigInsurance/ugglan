@@ -168,6 +168,28 @@ let project = Project(
             settings: .settings(configurations: ugglanConfigurations)
         ),
         Target.target(
+            name: "AppTests",
+            destinations: .iOS,
+            product: .unitTests,
+            bundleId: "com.hedvig.AppTests",
+            deploymentTargets: .iOS("15.0"),
+            infoPlist: .default,
+            sources: ["Tests/**"],
+            resources: [],
+            scripts: [],
+            dependencies: [
+                [
+                    .target(name: "Ugglan"),
+                    .project(
+                        target: "TestDependencies",
+                        path: .relativeToRoot("Dependencies/TestDependencies")
+                    ),
+                ]
+            ]
+            .flatMap { $0 },
+            settings: .settings(configurations: testsConfigurations)
+        ),
+        Target.target(
             name: "AppUITests",
             destinations: .iOS,
             product: .uiTests,
@@ -247,6 +269,34 @@ let project = Project(
                         target: TargetReference(stringLiteral: "AppUITests"),
                         parallelization: .enabled
                     ),
+                ],
+                arguments: Arguments.arguments(
+                    environmentVariables: [
+                        "SNAPSHOT_ARTIFACTS": EnvironmentVariable.environmentVariable(
+                            value: "/tmp/__SnapshotFailures__",
+                            isEnabled: true
+                        )
+                    ],
+                    launchArguments: [
+                        .launchArgument(name: "-UIPreferredContentSizeCategoryName", isEnabled: true),
+                        .launchArgument(name: "-UICTContentSizeCategoryM", isEnabled: true),
+                    ]
+                )
+            ),
+            runAction: .runAction(executable: "Ugglan")
+        ),
+        Scheme.scheme(
+            name: "UITests",
+            shared: true,
+            buildAction: BuildAction.buildAction(
+                targets: ["Ugglan"]
+            ),
+            testAction: .targets(
+                [
+                    TestableTarget.testableTarget(
+                        target: TargetReference(stringLiteral: "AppUITests"),
+                        parallelization: .enabled
+                    )
                 ],
                 arguments: Arguments.arguments(
                     environmentVariables: [
