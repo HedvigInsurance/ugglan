@@ -61,7 +61,7 @@ public struct InfoCard: View {
         VStack(alignment: .leading) {
             if let title {
                 hText(title, style: .label)
-                    .foregroundColor(hTextColor.Translucent.primary)
+                    .foregroundColor(hTextColor.Translucent.primary.colorFor(.light, .base))
             }
             if let text {
                 hText(text, style: .label)
@@ -157,6 +157,7 @@ struct InfoCard_Previews: PreviewProvider {
                     ])
 
                 InfoCard(title: "Title", text: "text", type: .info)
+                InfoCard(title: "Title", text: "text", type: .escalation)
             }
         }
     }

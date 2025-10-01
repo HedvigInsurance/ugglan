@@ -41,7 +41,7 @@ public enum NotificationType {
         case .neutral:
             hTextColor.Opaque.secondary
         case .escalation:
-            hTextColor.Translucent.secondary
+            hTextColor.Translucent.secondary.colorFor(.light, .base)
         }
     }
 
