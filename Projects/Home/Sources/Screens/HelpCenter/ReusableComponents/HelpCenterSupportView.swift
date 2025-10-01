@@ -47,6 +47,7 @@ struct SupportView: View {
             }
             .padding(.horizontal, .padding32)
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var buttonView: some View {
@@ -85,5 +86,7 @@ struct SupportView: View {
 }
 
 #Preview {
-    SupportView(router: Router())
+    let locale: Localization.Locale = .sv_SE
+    Localization.Locale.currentLocale = .init(locale)
+    return SupportView(router: Router())
 }
