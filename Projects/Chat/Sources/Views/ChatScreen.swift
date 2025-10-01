@@ -100,7 +100,15 @@ public struct ChatScreen: View {
             .id(message.id)
 
             if let disclaimer = message.disclaimer {
-                automationBanner(disclaimer: disclaimer)
+                switch disclaimer.type {
+                case .information:
+                    automationBanner(disclaimer: disclaimer)
+                case .escalation:
+                    automationBanner(disclaimer: disclaimer)
+                        .overlay {
+                            GradientAnimatedBorder()
+                        }
+                }
             }
         }
     }
@@ -115,6 +123,12 @@ public struct ChatScreen: View {
             buttons(for: disclaimer)
         )
     }
+
+    let gradient = LinearGradient(
+        colors: [.green, .yellow],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
 
     private func buttons(for disclaimer: MessageDisclaimer) -> [InfoCardButtonConfig] {
         if let detailsDescription = disclaimer.detailsDescription {
