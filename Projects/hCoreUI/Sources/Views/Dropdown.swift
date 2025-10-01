@@ -43,7 +43,7 @@ public struct DropdownView: View {
 
     @hColorBuilder
     var imageColor: some hColor {
-        if isEnabled, !backgroundOption.contains(.locked) {
+        if isEnabled {
             hFillColor.Opaque.primary
         } else {
             hFillColor.Opaque.disabled
