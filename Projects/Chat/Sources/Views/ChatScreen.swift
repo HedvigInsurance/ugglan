@@ -124,12 +124,6 @@ public struct ChatScreen: View {
         )
     }
 
-    let gradient = LinearGradient(
-        colors: [.green, .yellow],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
     private func buttons(for disclaimer: MessageDisclaimer) -> [InfoCardButtonConfig] {
         if let detailsDescription = disclaimer.detailsDescription {
             return [
