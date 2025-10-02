@@ -100,6 +100,10 @@ struct NotificationStyle: ViewModifier {
                         RoundedRectangle(cornerRadius: .cornerRadiusL)
                             .strokeBorder(hBorderColor.primary, lineWidth: 1)
                     )
+            case .escalation:
+                content
+                    .background(backgroundColor)
+                    .withGradientBorder(shape: RoundedRectangle(cornerRadius: .cornerRadiusL))
             default:
                 content
                     .background(backgroundColor)

@@ -100,15 +100,7 @@ public struct ChatScreen: View {
             .id(message.id)
 
             if let disclaimer = message.disclaimer {
-                switch disclaimer.type {
-                case .information:
-                    automationBanner(disclaimer: disclaimer)
-                case .escalation:
-                    automationBanner(disclaimer: disclaimer)
-                        .overlay {
-                            GradientAnimatedBorder()
-                        }
-                }
+                automationBanner(disclaimer: disclaimer)
             }
         }
     }

@@ -1,27 +1,37 @@
 import SwiftUI
-import hCoreUI
 
-public struct GradientAnimatedBorder: View {
+extension View {
+    public func withGradientBorder<S: Shape>(shape: S) -> some View {
+        self.modifier(GradientShapeBorderViewModifier(shape: shape))
+    }
+}
+
+private struct GradientShapeBorderViewModifier<S: Shape>: ViewModifier {
     @State private var angle: Angle = .degrees(0)
     private let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
+    let shape: S
 
-    public init() {}
+    init(
+        shape: S
+    ) {
+        self.shape = shape
+    }
 
-    public var body: some View {
-        RoundedRectangle(
-            cornerRadius: .padding16,
-            style: .continuous
-        )
-        .stroke(
-            gradient,
-            lineWidth: 2
-        )
-        .onReceive(timer) { _ in
-            animateGradient()
-        }
-        .onAppear {
-            animateGradient()
-        }
+    func body(content: Content) -> some View {
+        content
+            .clipShape(shape)
+            .overlay {
+                shape.stroke(
+                    gradient,
+                    lineWidth: 2
+                )
+            }
+            .onReceive(timer) { _ in
+                animateGradient()
+            }
+            .onAppear {
+                animateGradient()
+            }
     }
 
     private var gradient: AngularGradient {
@@ -49,12 +59,11 @@ public struct GradientAnimatedBorder: View {
 }
 
 #Preview {
-    ZStack {
+    hForm {
         hText("TEST 2")
-    }
-    .padding(30)
-    .background(Color.white)
-    .overlay {
-        GradientAnimatedBorder()
+            .padding(30)
+            .background(Color.red)
+            .withGradientBorder(shape: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        Spacer()
     }
 }
