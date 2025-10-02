@@ -61,7 +61,7 @@ public struct InfoCard: View {
         VStack(alignment: .leading) {
             if let title {
                 hText(title, style: .label)
-                    .foregroundColor(hTextColor.Translucent.primary.colorFor(.light, .base))
+                    .foregroundColor(type.titleColor)
             }
             if let text {
                 hText(text, style: .label)
@@ -118,72 +118,51 @@ public struct InfoCard: View {
 struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
         hSection {
-            VStack {
-                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
-                    .buttons([
-                        .init(
-                            buttonTitle: "Title",
-                            buttonAction: {}
-                        ),
-                        .init(
-                            buttonTitle: "Title 2",
-                            buttonAction: {}
-                        ),
-                    ])
+            ScrollView {
+                VStack {
+                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .info)
+                        .buttons([
+                            .init(
+                                buttonTitle: "Title",
+                                buttonAction: {}
+                            ),
+                            .init(
+                                buttonTitle: "Title 2",
+                                buttonAction: {}
+                            ),
+                        ])
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
-                    .buttons([
-                        .init(
-                            buttonTitle: "Title",
-                            buttonAction: {}
-                        )
-                    ])
+                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .info)
+                        .buttons([
+                            .init(
+                                buttonTitle: "Title",
+                                buttonAction: {}
+                            )
+                        ])
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .attention)
+                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .attention)
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .campaign)
-                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .error)
-                InfoCard(text: "", type: .error)
-                    .hInfoCardCustomView {
-                        Text("Testing custom texzt view")
-                    }
+                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .campaign)
+                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .error)
+                    InfoCard(title: "TEST", text: "", type: .error)
+                        .hInfoCardCustomView {
+                            Text("Testing custom texzt view")
+                        }
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
-                    .buttons([
-                        .init(
-                            buttonTitle: "Title",
-                            buttonAction: {}
-                        )
-                    ])
+                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
+                        .buttons([
+                            .init(
+                                buttonTitle: "Title",
+                                buttonAction: {}
+                            )
+                        ])
 
-                InfoCard(title: "Title", text: "text", type: .info)
-                InfoCard(title: "Title", text: "text", type: .escalation)
+                    InfoCard(title: "Title", text: "text", type: .info)
+                    InfoCard(title: "Title", text: "text", type: .escalation)
+                }
             }
         }
-    }
-}
-
-public enum InfoCardType {
-    case info
-    case attention
-    case error
-    case campaign
-    case disabled
-
-    @MainActor
-    var image: Image {
-        switch self {
-        case .info:
-            return hCoreUIAssets.infoFilled.view
-        case .attention:
-            return hCoreUIAssets.warningTriangleFilled.view
-        case .error:
-            return hCoreUIAssets.warningTriangleFilled.view
-        case .campaign:
-            return hCoreUIAssets.campaignSmall.view
-        case .disabled:
-            return hCoreUIAssets.infoFilled.view
-        }
+        .preferredColorScheme(.dark)
     }
 }
 

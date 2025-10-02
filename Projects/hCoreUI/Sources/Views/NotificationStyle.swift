@@ -28,6 +28,16 @@ public enum NotificationType {
     }
 
     @hColorBuilder
+    public var titleColor: some hColor {
+        switch self {
+        case .neutral:
+            hTextColor.Translucent.primary
+        default:
+            hTextColor.Translucent.primary.colorFor(.light, .base)
+        }
+    }
+
+    @hColorBuilder
     public var textColor: some hColor {
         switch self {
         case .info:
