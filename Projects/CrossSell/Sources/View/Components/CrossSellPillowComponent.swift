@@ -37,6 +37,7 @@ struct CrossSellPillowComponent: View {
             .multilineTextAlignment(.center)
         }
         .accessibilityElement(children: .combine)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
