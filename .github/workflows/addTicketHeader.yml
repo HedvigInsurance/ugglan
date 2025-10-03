@@ -1,0 +1,50 @@
+name: Prepend Ticket Header to PR
+
+# Trigger on pull request creation or edit
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  add-ticket-header:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Ticket Header to PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prTitle = context.payload.pull_request.title;
+            const prNumber = context.payload.pull_request.number;
+            const prBody = context.payload.pull_request.body || "";
+
+            // Match Notion ticket ID (APP-XXX)
+            const ticketMatch = prTitle.match(/APP-\d+/);
+            if (ticketMatch) {
+              const ticketId = ticketMatch[0];
+
+              // Check if PR body already contains the ticket header
+              if (!prBody.includes(`## ${ticketId}:`)) {
+
+                // Optional: add your accessibility checklist
+                const accessibilityChecklist = `
+- Automated accessibility tests pass
+- VoiceOver verified on critical flows
+- Tap targets and labels verified
+`;
+
+                const newBody = `## ${ticketId}:\n\n${prBody}\n${accessibilityChecklist}`;
+
+                await github.rest.pulls.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  body: newBody
+                });
+
+                console.log(`Prepended ticket header ${ticketId} and accessibility checklist to PR #${prNumber}`);
+              } else {
+                console.log(`PR already contains ticket header`);
+              }
+            } else {
+              console.log("No ticket ID found in PR title");
+            }
