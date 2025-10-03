@@ -71,12 +71,15 @@ extension UIApplication {
             if let presentedVc = vc.presentedViewController {
                 return getTopVisibleVc(from: presentedVc)
             }
-            if let tabBar = (vc as? UITabBarController) ?? (vc.children.first as? UITabBarController),
+            if let tabBar = (vc as? UITabBarController) ?? vc.children.first(where: {
+                $0.isKind(of: UITabBarController.self)
+            }) as? UITabBarController,
                 let selectedVc = tabBar.selectedViewController
             {
                 return getTopVisibleVc(from: selectedVc)
             } else if let navigation = (vc as? UINavigationController)
-                ?? (vc.children.first as? UINavigationController), let last = navigation.viewControllers.last
+                ?? (vc.children.first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController),
+                let last = navigation.viewControllers.last
             {
                 return getTopVisibleVc(from: last)
             } else {
