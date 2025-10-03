@@ -31,6 +31,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     let buttonDescription: String
     let leftImage: URL?
     let rightImage: URL?
+    let discountPercent: Int?
     let numberOfEligibleContracts: Int
 
     public init(
@@ -43,6 +44,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         discountText: String? = nil,
         imageUrl: URL?,
         buttonDescription: String,
+        discountPercent: Int? = nil,
         leftImage: URL? = nil,
         rightImage: URL? = nil,
         numberOfEligibleContracts: Int = 0
@@ -59,5 +61,6 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         self.leftImage = leftImage
         self.rightImage = rightImage
         self.numberOfEligibleContracts = numberOfEligibleContracts
+        self.discountPercent = discountPercent
     }
 }
