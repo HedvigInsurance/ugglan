@@ -21,6 +21,7 @@ query CrossSell($source: CrossSellSource!) {
 				}
 			  }
 			  numberOfEligibleContracts
+			  discountPercent
 		  }
 	  }
 	}
