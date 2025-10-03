@@ -1,0 +1,38 @@
+name: Update PR Ticket Header
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  update-pr-header:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Replace PR template header with ticket ID
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prTitle = context.payload.pull_request.title;
+            const prNumber = context.payload.pull_request.number;
+            const prBody = context.payload.pull_request.body || "";
+
+            // Extract ticket ID from PR title (GEN-4316, APP-123, etc.)
+            const ticketMatch = prTitle.match(/[A-Z]+-\d+/);
+            if (ticketMatch) {
+              const ticketId = ticketMatch[0];
+
+              // Replace ## [APP-XXX] in PR body with ## [GEN-4316]
+              const updatedBody = prBody.replace(/## \[APP-XXX\]/, `## [${ticketId}]`);
+
+              // Update PR body
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                body: updatedBody
+              });
+
+              console.log(`Replaced ## [APP-XXX] with ## [${ticketId}] in PR #${prNumber}`);
+            } else {
+              console.log("No ticket ID found in PR title");
+            }
