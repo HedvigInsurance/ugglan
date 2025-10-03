@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct CrossSellDiscountProgressView: View {
@@ -39,9 +40,9 @@ struct CrossSellDiscountProgressView: View {
     private func getTitleLabel(for column: Int) -> some View {
         let text: String = {
             switch column {
-            case 1: return "1 insurance"
-            case 2: return "2 insurances"
-            default: return "3 or more"
+            case 1: return L10n.bundleDiscountProgressSegmentTitleOneInsurance
+            case 2: return L10n.bundleDiscountProgressSegmentTitleTwoInsurances
+            default: return L10n.bundleDiscountProgressSegmentTitleThreeOrMore
             }
         }()
         return hText(text, style: .label)
@@ -50,7 +51,7 @@ struct CrossSellDiscountProgressView: View {
     private func getSubtitleLabel(for column: Int) -> some View {
         let text: String = {
             switch column {
-            case 1: return "No discount"
+            case 1: return L10n.bundleDiscountProgressSegmentSubtitleNoDiscount
             case 2: return "15% discount"
             default: return "15% discount"
             }
