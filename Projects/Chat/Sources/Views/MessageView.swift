@@ -104,9 +104,9 @@ struct MessageView: View {
             displayString = message.trimmedText
         case let .file(file):
             displayString = file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile
-        case let .deepLink(url):
+        case .deepLink:
             displayString = L10n.chatSentALink
-        case let .otherLink(url):
+        case .otherLink:
             displayString = L10n.chatSentALink
         default:
             break

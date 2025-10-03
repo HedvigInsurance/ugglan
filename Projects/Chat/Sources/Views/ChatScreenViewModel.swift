@@ -31,6 +31,20 @@ public class ChatMessageViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var isFetchingPreviousMessages = false
 
+    func showHedvigTimeStamp(message: Message) -> Bool {
+        let hasAutomatedMessages = messages.first(where: { $0.sender == .automation }) != nil
+        return message.sender == .hedvig && hasAutomatedMessages && isFirstHedvigMessage(currentMessageId: message.id)
+    }
+
+    private func isFirstHedvigMessage(currentMessageId: String) -> Bool {
+        guard let currentMessageIndex = messages.firstIndex(where: { $0.id == currentMessageId }),
+            currentMessageIndex != 0
+        else { return false }
+        let previousMessage = messages[currentMessageIndex + 1]
+
+        return previousMessage.sender != .hedvig
+    }
+
     public init(
         chatService: ChatServiceProtocol
     ) {
