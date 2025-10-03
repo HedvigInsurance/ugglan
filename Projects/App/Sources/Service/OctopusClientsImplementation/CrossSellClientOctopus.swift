@@ -75,9 +75,10 @@ extension CrossSell {
             discountText: data.discountText,
             imageUrl: URL(string: crossSellFragment.pillowImageLarge.src),
             buttonDescription: data.buttonDescription,
+            discountPercent: data.discountPercent,
             leftImage: URL(string: data.backgroundPillowImages?.leftImage.src),
             rightImage: URL(string: data.backgroundPillowImages?.rightImage.src),
-            numberOfEligibleContracts: data.numberOfEligibleContracts,
+            numberOfEligibleContracts: data.numberOfEligibleContracts
         )
     }
 }
