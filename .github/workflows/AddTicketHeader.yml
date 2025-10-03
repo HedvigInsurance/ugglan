@@ -1,14 +1,14 @@
-name: Prepend Ticket Header to PR
+name: Update PR Ticket Header
 
 on:
   pull_request:
     types: [opened, edited]
 
 jobs:
-  add-ticket-header:
+  update-pr-header:
     runs-on: ubuntu-latest
     steps:
-      - name: Replace PR ticket header
+      - name: Replace PR template header with ticket ID
         uses: actions/github-script@v6
         with:
           script: |
@@ -16,27 +16,23 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const prBody = context.payload.pull_request.body || "";
 
-            // Match ticket ID in PR title (APP-XXX)
-            const ticketMatch = prTitle.match(/APP-\d+/);
+            // Extract ticket ID from PR title (GEN-4316, APP-123, etc.)
+            const ticketMatch = prTitle.match(/[A-Z]+-\d+/);
             if (ticketMatch) {
               const ticketId = ticketMatch[0];
 
-              // Replace existing [APP-XXX] or ## [APP-XXX] in PR body
-              const updatedBody = prBody.replace(/## \[APP-\d+\]/, `## ${ticketId}:`);
+              // Replace ## [APP-XXX] in PR body with ## [GEN-4316]
+              const updatedBody = prBody.replace(/## \[APP-XXX\]/, `## [${ticketId}]`);
 
-              // Append accessibility checklist
-              const accessibilityChecklist = "\n- Automated accessibility tests pass\n- VoiceOver verified on critical flows\n- Tap targets and labels verified\n";
-
-              const newBody = `${updatedBody}${accessibilityChecklist}`;
-
+              // Update PR body
               await github.rest.pulls.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: prNumber,
-                body: newBody
+                body: updatedBody
               });
 
-              console.log(`Replaced PR header with ${ticketId} and added accessibility checklist`);
+              console.log(`Replaced ## [APP-XXX] with ## [${ticketId}] in PR #${prNumber}`);
             } else {
               console.log("No ticket ID found in PR title");
             }
