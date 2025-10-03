@@ -1,42 +1,32 @@
-name: Prepend Ticket Header to PR
+- name: Replace PR ticket header
+  uses: actions/github-script@v6
+  with:
+    script: |
+      const prTitle = context.payload.pull_request.title;
+      const prNumber = context.payload.pull_request.number;
+      const prBody = context.payload.pull_request.body || "";
 
-on:
-  pull_request:
-    types: [opened, edited]
+      // Match ticket ID in PR title (APP-XXX)
+      const ticketMatch = prTitle.match(/APP-\d+/);
+      if (ticketMatch) {
+        const ticketId = ticketMatch[0];
 
-jobs:
-  add-ticket-header:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Replace PR ticket header
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const prTitle = context.payload.pull_request.title;
-            const prNumber = context.payload.pull_request.number;
-            const prBody = context.payload.pull_request.body || "";
+        // Replace existing [APP-XXX] or ## [APP-XXX] in PR body
+        const updatedBody = prBody.replace(/## \[APP-\d+\]/, `## ${ticketId}:`);
 
-            // Match ticket ID in PR title (APP-XXX)
-            const ticketMatch = prTitle.match(/APP-\d+/);
-            if (ticketMatch) {
-              const ticketId = ticketMatch[0];
+        // Append accessibility checklist
+        const accessibilityChecklist = "\n- Automated accessibility tests pass\n- VoiceOver verified on critical flows\n- Tap targets and labels verified\n";
 
-              // Replace existing [APP-XXX] or ## APP-XXX: in PR body
-              const updatedBody = prBody.replace(/\[APP-XXX\]|##\s?APP-\d+:?/, `## ${ticketId}:`);
+        const newBody = `${updatedBody}${accessibilityChecklist}`;
 
-              // Append accessibility checklist
-              const accessibilityChecklist = "\n- Automated accessibility tests pass\n- VoiceOver verified on critical flows\n- Tap targets and labels verified\n";
+        await github.rest.pulls.update({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          pull_number: prNumber,
+          body: newBody
+        });
 
-              const newBody = `${updatedBody}${accessibilityChecklist}`;
-
-              await github.rest.pulls.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
-                body: newBody
-              });
-
-              console.log(`Replaced PR header with ${ticketId} and added accessibility checklist`);
-            } else {
-              console.log("No ticket ID found in PR title");
-            }
+        console.log(`Replaced PR header with ${ticketId} and added accessibility checklist`);
+      } else {
+        console.log("No ticket ID found in PR title");
+      }
