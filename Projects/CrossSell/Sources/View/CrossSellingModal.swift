@@ -23,7 +23,7 @@ public struct CrossSellingModal: View {
                     if let recommended = crossSells.recommended {
                         CrossSellPillowComponent(crossSell: recommended)
                         VStack(spacing: .padding16) {
-                            CrossSellDiscountProgressView(numberOfInsurances: recommended.numberOfEligibleContracts)
+                            CrossSellDiscountProgressComponent(crossSell: recommended)
                             CrossSellButtonComponent(crossSell: recommended)
                         }
                     }

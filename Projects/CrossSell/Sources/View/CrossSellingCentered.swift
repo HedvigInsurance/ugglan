@@ -18,7 +18,7 @@ public struct CrossSellingCentered: View {
                 CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
                 VStack(spacing: .padding16) {
-                    CrossSellDiscountProgressView(numberOfInsurances: crossSell.numberOfEligibleContracts)
+                    CrossSellDiscountProgressComponent(crossSell: crossSell)
                     CrossSellButtonComponent(crossSell: crossSell)
                 }
             }
