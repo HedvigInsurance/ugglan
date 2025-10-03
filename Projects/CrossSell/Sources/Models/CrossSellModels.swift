@@ -20,15 +20,18 @@ public struct CrossSells: Codable, Equatable, Hashable, Sendable, Identifiable {
 }
 
 public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
-    public var id: String
-    public var title: String
-    public var description: String
-    public var webActionURL: String?
-    public var imageUrl: URL?
-    public var bannerText: String?
-    public var buttonText: String?
-    public var discountText: String?
-    public var buttonDescription: String
+    public let id: String
+    let title: String
+    let description: String
+    let webActionURL: String?
+    let imageUrl: URL?
+    let bannerText: String?
+    let buttonText: String?
+    let discountText: String?
+    let buttonDescription: String
+    let leftImage: URL?
+    let rightImage: URL?
+    let numberOfEligibleContracts: Int
 
     public init(
         id: String,
@@ -39,7 +42,10 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         buttonText: String? = nil,
         discountText: String? = nil,
         imageUrl: URL?,
-        buttonDescription: String
+        buttonDescription: String,
+        leftImage: URL? = nil,
+        rightImage: URL? = nil,
+        numberOfEligibleContracts: Int = 0
     ) {
         self.id = id
         self.title = title
@@ -50,5 +56,8 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         self.buttonText = buttonText
         self.discountText = discountText
         self.buttonDescription = buttonDescription
+        self.leftImage = leftImage
+        self.rightImage = rightImage
+        self.numberOfEligibleContracts = numberOfEligibleContracts
     }
 }
