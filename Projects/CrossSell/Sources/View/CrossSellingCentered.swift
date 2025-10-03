@@ -17,7 +17,10 @@ public struct CrossSellingCentered: View {
             VStack(spacing: .padding48) {
                 CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
-                CrossSellButtonComponent(crossSell: crossSell)
+                VStack(spacing: .padding16) {
+                    CrossSellDiscountProgressView(numberOfInsurances: crossSell.numberOfEligibleContracts)
+                    CrossSellButtonComponent(crossSell: crossSell)
+                }
             }
             .padding(.bottom, .padding16)
         }
@@ -34,7 +37,8 @@ struct CrossSellingCentered_Previews: PreviewProvider {
                 title: "Accident Insurance",
                 description: "Help when you need it the most",
                 imageUrl: nil,
-                buttonDescription: "buttonDescription"
+                buttonDescription: "buttonDescription",
+                numberOfEligibleContracts: 1
             )
         )
     }
