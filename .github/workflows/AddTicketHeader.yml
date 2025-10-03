@@ -1,6 +1,5 @@
 name: Prepend Ticket Header to PR
 
-# Trigger on pull request creation or edit
 on:
   pull_request:
     types: [opened, edited]
@@ -22,15 +21,10 @@ jobs:
             if (ticketMatch) {
               const ticketId = ticketMatch[0];
 
-              // Check if PR body already contains the ticket header
               if (!prBody.includes(`## ${ticketId}:`)) {
 
-                // Optional: add your accessibility checklist
-                const accessibilityChecklist = `
-- Automated accessibility tests pass
-- VoiceOver verified on critical flows
-- Tap targets and labels verified
-`;
+                // Accessibility checklist as single string
+                const accessibilityChecklist = "- Automated accessibility tests pass\n- VoiceOver verified on critical flows\n- Tap targets and labels verified\n";
 
                 const newBody = `## ${ticketId}:\n\n${prBody}\n${accessibilityChecklist}`;
 
