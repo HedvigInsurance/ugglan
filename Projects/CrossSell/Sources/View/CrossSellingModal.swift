@@ -22,7 +22,10 @@ public struct CrossSellingModal: View {
                 VStack(spacing: .padding48) {
                     if let recommended = crossSells.recommended {
                         CrossSellPillowComponent(crossSell: recommended)
-                        CrossSellButtonComponent(crossSell: recommended)
+                        VStack(spacing: .padding16) {
+                            CrossSellDiscountProgressComponent(crossSell: recommended)
+                            CrossSellButtonComponent(crossSell: recommended)
+                        }
                     }
                     CrosssSellStackComponent(crossSells: crossSells.others, withHeader: crossSells.recommended != nil)
                 }
