@@ -138,7 +138,9 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let content = getContent()
 
                 let vc = hHostingController(rootView: content)
-
+                if isLiquidGlassEnabled {
+                    vc.view.backgroundColor = .clear
+                }
                 var shouldUseBlur: Bool {
                     if case let .detent(style) = transitionType {
                         return style.contains(.height)
@@ -216,7 +218,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 wantsGrabber: options.contains(.withoutGrabber) ? false : true,
                 viewController: vc
             )
-
             vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
         case .center:
