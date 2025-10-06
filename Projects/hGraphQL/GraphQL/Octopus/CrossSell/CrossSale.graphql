@@ -1,20 +1,30 @@
 query CrossSell($source: CrossSellSource!) {
   currentMember {
-    crossSell(source: $source) {
-      otherCrossSells {
-	...CrossSellFragment
-      }
-      recommendedCrossSell {
-	bannerText
-        buttonText
-        crossSell {
-          ...CrossSellFragment
-        }
-        discountText
-	buttonDescription
-      }
-    }
-  }
+	  crossSell(source: $source) {
+		  otherCrossSells {
+			  ...CrossSellFragment
+		  }
+		  recommendedCrossSell {
+			  bannerText
+			  buttonText
+			  crossSell {
+				  ...CrossSellFragment
+			  }
+			  discountText
+			  buttonDescription
+			  backgroundPillowImages {
+				leftImage {
+					...StoryblokImageAssetFragment
+				}
+				rightImage {
+					...StoryblokImageAssetFragment
+				}
+			  }
+			  numberOfEligibleContracts
+			  discountPercent
+		  }
+	  }
+	}
 }
 
 query CrossSells {
@@ -31,9 +41,13 @@ fragment CrossSellFragment on CrossSell {
     storeUrl
     title
     pillowImageSmall {
-        src
+        ...StoryblokImageAssetFragment
     }
     pillowImageLarge {
-        src
+        ...StoryblokImageAssetFragment
     }
+}
+
+fragment StoryblokImageAssetFragment on StoryblokImageAsset {
+	src
 }
