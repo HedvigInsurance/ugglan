@@ -28,13 +28,16 @@ public class ChatMessageViewModel: ObservableObject {
 
     @Published var scrollToMessage: Message?
     @Published var lastDeliveredMessage: Message?
-    @Published var messages: [Message] = []
-    @Published var isFetchingPreviousMessages = false
-
-    func showHedvigTimeStamp(message: Message) -> Bool {
-        let hasAutomatedMessages = messages.first(where: { $0.sender == .automation }) != nil
-        return message.sender == .hedvig && hasAutomatedMessages && isFirstHedvigMessage(currentMessageId: message.id)
+    @Published var messages: [Message] = [] {
+        didSet {
+            if hasAutomation {
+                firstHedvigMessageAfterAutomation = messages.last(where: { $0.sender == .hedvig })
+            }
+        }
     }
+    @Published var isFetchingPreviousMessages = false
+    private var hasAutomation: Bool = false
+    private(set) var firstHedvigMessageAfterAutomation: Message?
 
     private func isFirstHedvigMessage(currentMessageId: String) -> Bool {
         guard let currentMessageIndex = messages.firstIndex(where: { $0.id == currentMessageId }),
@@ -59,6 +62,10 @@ public class ChatMessageViewModel: ObservableObject {
                 isFetchingPreviousMessages = true
                 let chatData = try await chatService.getPreviousMessages()
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+
+                if newMessages.contains(where: { $0.sender == .automation }) {
+                    hasAutomation = true
+                }
 
                 withAnimation {
                     self.messages.append(contentsOf: newMessages)
@@ -93,6 +100,10 @@ public class ChatMessageViewModel: ObservableObject {
                 let chatData = try await chatService.getNewMessages()
                 conversationVm.conversationId = chatData.conversationId
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+                if newMessages.contains(where: { $0.sender == .automation }) {
+                    hasAutomation = true
+                }
+
                 withAnimation {
                     self.messages.append(contentsOf: newMessages)
 
