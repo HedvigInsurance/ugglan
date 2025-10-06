@@ -63,7 +63,7 @@ struct CrossSellDiscountProgressComponent: View {
             case 1:
                 return L10n.bundleDiscountProgressSegmentSubtitleNoDiscount
             default:
-                return L10n.bundleDiscountProgressSegmentSubtitleCurrentAppliedDiscount("\(discountPercent)")
+                return L10n.bundleDiscountProgressSegmentSubtitleCurrentAppliedDiscount("\(discountPercent)%")
             }
         }()
         return hText(text, style: .label)
