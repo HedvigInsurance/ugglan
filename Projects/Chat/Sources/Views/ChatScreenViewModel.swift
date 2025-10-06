@@ -39,15 +39,6 @@ public class ChatMessageViewModel: ObservableObject {
     private var hasAutomation: Bool = false
     private(set) var firstHedvigMessageAfterAutomation: Message?
 
-    private func isFirstHedvigMessage(currentMessageId: String) -> Bool {
-        guard let currentMessageIndex = messages.firstIndex(where: { $0.id == currentMessageId }),
-            currentMessageIndex != 0
-        else { return false }
-        let previousMessage = messages[currentMessageIndex + 1]
-
-        return previousMessage.sender != .hedvig
-    }
-
     public init(
         chatService: ChatServiceProtocol
     ) {
