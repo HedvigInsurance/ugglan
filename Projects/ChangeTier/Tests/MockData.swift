@@ -17,7 +17,8 @@ struct MockData {
                 selectedTier: nil,
                 selectedQuote: nil,
                 canEditTier: true,
-                typeOfContract: .seHouse
+                typeOfContract: .seHouse,
+                relatedAddons: [:]
             )
         },
         commitTier: @escaping CommitTier = { _ in },

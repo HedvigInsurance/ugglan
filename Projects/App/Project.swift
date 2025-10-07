@@ -286,6 +286,34 @@ let project = Project(
             runAction: .runAction(executable: "Ugglan")
         ),
         Scheme.scheme(
+            name: "UITests",
+            shared: true,
+            buildAction: BuildAction.buildAction(
+                targets: ["Ugglan"]
+            ),
+            testAction: .targets(
+                [
+                    TestableTarget.testableTarget(
+                        target: TargetReference(stringLiteral: "AppUITests"),
+                        parallelization: .enabled
+                    )
+                ],
+                arguments: Arguments.arguments(
+                    environmentVariables: [
+                        "SNAPSHOT_ARTIFACTS": EnvironmentVariable.environmentVariable(
+                            value: "/tmp/__SnapshotFailures__",
+                            isEnabled: true
+                        )
+                    ],
+                    launchArguments: [
+                        .launchArgument(name: "-UIPreferredContentSizeCategoryName", isEnabled: true),
+                        .launchArgument(name: "-UICTContentSizeCategoryM", isEnabled: true),
+                    ]
+                )
+            ),
+            runAction: .runAction(executable: "Ugglan")
+        ),
+        Scheme.scheme(
             name: "Hedvig",
             shared: true,
             buildAction: BuildAction.buildAction(
