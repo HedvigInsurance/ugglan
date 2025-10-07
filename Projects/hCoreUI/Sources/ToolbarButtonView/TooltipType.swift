@@ -15,16 +15,28 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     private static var animateOffer = true
 
     @MainActor
-    var image: UIImage {
+    var image: Image {
         switch self {
         case .newOffer, .newOfferNotification:
-            return hCoreUIAssets.campaignQuickNav.image
+            if isLiquidGlassEnabled {
+                return hCoreUIAssets.campaign.view
+            } else {
+                return hCoreUIAssets.campaignQuickNav.view
+            }
         case .firstVet:
-            return hCoreUIAssets.firstVetQuickNav.image
+            if isLiquidGlassEnabled {
+                return hCoreUIAssets.firstVet.view
+            } else {
+                return hCoreUIAssets.firstVetQuickNav.view
+            }
         case .chat, .chatNotification:
-            return hCoreUIAssets.inbox.image
+            if isLiquidGlassEnabled {
+                return hCoreUIAssets.envelope.view
+            } else {
+                return hCoreUIAssets.inbox.view
+            }
         case .travelCertificate, .insuranceEvidence:
-            return hCoreUIAssets.infoOutlined.image
+            return hCoreUIAssets.infoOutlined.view
         }
     }
 
@@ -188,12 +200,53 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         }
     }
 
+    @MainActor
     var imageSize: CGFloat {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return 24
-        default:
+        case .newOffer, .newOfferNotification, .firstVet, .chat, .chatNotification:
+            if isLiquidGlassEnabled {
+                return 20
+            }
             return 40
+        }
+    }
+
+    @MainActor
+    var offsetForToolTip: CGFloat {
+        switch self {
+        case .travelCertificate, .insuranceEvidence:
+            return 24
+        case .newOffer, .newOfferNotification, .firstVet, .chat, .chatNotification:
+            return 40
+        }
+    }
+
+    @MainActor
+    @hColorBuilder
+    var imageTintColor: some hColor {
+        switch self {
+        case .newOffer, .newOfferNotification:
+            hSignalColor.Green.element
+        case .firstVet, .chat, .chatNotification:
+            hFillColor.Opaque.white
+        default:
+            hFillColor.Opaque.primary
+        }
+    }
+
+    @MainActor
+    var navBarItemBackgroundColor: UIColor? {
+        switch self {
+        case .travelCertificate, .insuranceEvidence:
+            return hFillColor.Opaque.primary.colorFor(.dark, .base).color.uiColor()
+        case .newOfferNotification, .newOffer:
+            return hSignalColor.Green.fill.colorFor(.dark, .base).color.uiColor()
+        case .firstVet:
+            return hSignalColor.Blue.element.colorFor(.dark, .base).color.uiColor()
+        case .chat, .chatNotification:
+            return hSignalColor.Grey.element.colorFor(.dark, .base).color.uiColor()
         }
     }
 
