@@ -163,10 +163,6 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         let viewToPlace = hostingVc.view!
         viewToPlace.backgroundColor = .clear
         let uiBarButtonItem = UIBarButtonItem(customView: viewToPlace)
-        if #available(iOS 26.0, *), isLiquidGlassEnabled {
-            uiBarButtonItem.style = .prominent
-            uiBarButtonItem.tintColor = hSignalColor.Red.element.opacity(0.05).colorFor(.dark, .base).color.uiColor()
-        }
         if placement == .leading {
             vc.navigationItem.leftBarButtonItem = uiBarButtonItem
         } else {

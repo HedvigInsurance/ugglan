@@ -128,7 +128,6 @@ struct ForeverViewModifier: ViewModifier {
                                     type: .navigation
                                 )
                                 .foregroundColor(hTextColor.Opaque.primary)
-                                .tint(hSignalColor.Red.element)
                             }
                         }
                     }
@@ -165,8 +164,6 @@ struct ForeverViewModifier: ViewModifier {
                         type: .navigation
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
-                    .tint(Color.blue.opacity(0.1))
-                    .buttonStyle(.borderedProminent)
                 }
             }
         } else {
@@ -180,7 +177,6 @@ struct ForeverViewModifier: ViewModifier {
                         type: .navigation
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
-                    .tint(hSignalColor.Red.element)
                 }
             }
         }
