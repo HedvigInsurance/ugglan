@@ -26,7 +26,7 @@ struct CrossSellDiscountProgressComponent: View {
                                 if (column == numberOfInsurances + 1) {
                                     GeometryReader { geo in
                                         Rectangle()
-                                            .fill(hSignalColor.Green.element.opacity(0.5))
+                                            .fill(hSignalColor.Green.element)
                                             .offset(x: animationProgress * geo.size.width - geo.size.width)
                                     }
                                 }
