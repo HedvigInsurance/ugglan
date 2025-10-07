@@ -85,13 +85,19 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .frame(maxHeight: .infinity)
                     .background {
                         GeometryReader { geometry in
-                            Color.clear
-                                .onAppear {
-                                    vm.scrollViewHeight = geometry.size.height
+                            Group {
+                                if contentPosition == .compact, isLiquidGlassEnabled {
+                                    Color.clear
+                                } else {
+                                    hBackgroundColor.primary
                                 }
-                                .onChange(of: geometry.size) { value in
-                                    vm.scrollViewHeight = value.height
-                                }
+                            }
+                            .onAppear {
+                                vm.scrollViewHeight = geometry.size.height
+                            }
+                            .onChange(of: geometry.size) { value in
+                                vm.scrollViewHeight = value.height
+                            }
                         }
                     }
             }
