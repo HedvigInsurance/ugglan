@@ -28,6 +28,16 @@ public enum NotificationType {
     }
 
     @hColorBuilder
+    public var titleColor: some hColor {
+        switch self {
+        case .neutral:
+            hTextColor.Translucent.primary
+        default:
+            hTextColor.Translucent.primary.colorFor(.light, .base)
+        }
+    }
+
+    @hColorBuilder
     public var textColor: some hColor {
         switch self {
         case .info:
@@ -41,7 +51,7 @@ public enum NotificationType {
         case .neutral:
             hTextColor.Opaque.secondary
         case .escalation:
-            hTextColor.Translucent.secondary
+            hTextColor.Translucent.secondary.colorFor(.light, .base)
         }
     }
 
@@ -100,6 +110,10 @@ struct NotificationStyle: ViewModifier {
                         RoundedRectangle(cornerRadius: .cornerRadiusL)
                             .strokeBorder(hBorderColor.primary, lineWidth: 1)
                     )
+            case .escalation:
+                content
+                    .background(backgroundColor)
+                    .withGradientBorder(shape: RoundedRectangle(cornerRadius: .cornerRadiusL))
             default:
                 content
                     .background(backgroundColor)

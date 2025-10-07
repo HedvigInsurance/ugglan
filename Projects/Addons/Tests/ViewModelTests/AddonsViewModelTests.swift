@@ -18,11 +18,12 @@ final class AddonsViewModelTests: XCTestCase {
     func testFetchAddonSuccess() async throws {
         let selectedQuote = AddonQuote(
             displayName: "option title",
+            displayNameLong: "option title long",
             quoteId: "quoteId1",
             addonId: "addonId1",
             addonSubtype: "addonSubtype1",
             displayItems: [],
-            price: .init(amount: "49", currency: "SEK"),
+            itemCost: .init(premium: .init(gross: .sek(49), net: .sek(49)), discounts: []),
             addonVariant: .init(
                 displayName: "displayItem",
                 documents: [],
@@ -42,11 +43,12 @@ final class AddonsViewModelTests: XCTestCase {
                 selectedQuote,
                 .init(
                     displayName: "option title",
+                    displayNameLong: "option title long",
                     quoteId: "quoteId2",
                     addonId: "addonId2",
                     addonSubtype: "addonSubtype1",
                     displayItems: [],
-                    price: .init(amount: "79", currency: "SEK"),
+                    itemCost: .init(premium: .init(gross: .sek(79), net: .sek(79)), discounts: []),
                     addonVariant: .init(
                         displayName: "displayItem",
                         documents: [],

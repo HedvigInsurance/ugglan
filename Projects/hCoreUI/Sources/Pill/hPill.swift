@@ -18,15 +18,19 @@ public struct hPill: View {
     @Environment(\.sizeCategory) var sizeCategory
 
     public var body: some View {
-        hText(text, style: fieldSize == .large ? .body1 : .label)
-            .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
-            .foregroundColor(color.pillTextColor(level: colorLevel))
-            .modifier(
-                PillModifier(
-                    color: color,
-                    colorLevel: colorLevel
+        if !ProcessInfo.processInfo.arguments.contains("-UITestExcludeHPill") {
+            hText(text, style: fieldSize == .large ? .body1 : .label)
+                .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
+                .foregroundColor(color.pillTextColor(level: colorLevel))
+                .modifier(
+                    PillModifier(
+                        color: color,
+                        colorLevel: colorLevel
+                    )
                 )
-            )
+        } else {
+            EmptyView()
+        }
     }
 
     struct PillModifier: ViewModifier {

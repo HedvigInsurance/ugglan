@@ -80,7 +80,8 @@ final class ChangeTierViewModelTests: XCTestCase {
             selectedTier: nil,
             selectedQuote: nil,
             canEditTier: true,
-            typeOfContract: .seHouse
+            typeOfContract: .seHouse,
+            relatedAddons: [:]
         )
 
         let mockService = MockData.createMockChangeTier(fetchTier: { _ in
@@ -147,7 +148,8 @@ final class ChangeTierViewModelTests: XCTestCase {
             selectedTier: nil,
             selectedQuote: nil,
             canEditTier: true,
-            typeOfContract: .seHouse
+            typeOfContract: .seHouse,
+            relatedAddons: [:]
         )
 
         let mockService = MockData.createMockChangeTier(fetchTier: { _ in
@@ -213,7 +215,8 @@ final class ChangeTierViewModelTests: XCTestCase {
             selectedTier: nil,
             selectedQuote: nil,
             canEditTier: true,
-            typeOfContract: .seHouse
+            typeOfContract: .seHouse,
+            relatedAddons: [:]
         )
 
         let mockService = MockData.createMockChangeTier(fetchTier: { _ in

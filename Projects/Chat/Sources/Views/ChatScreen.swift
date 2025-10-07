@@ -150,6 +150,8 @@ public struct ChatScreen: View {
             } else {
                 if message.sender == .automation {
                     hText("\(L10n.chatSenderAutomation) ∙ ")
+                } else if message == messageVm.firstHedvigMessageAfterAutomation {
+                    hText("\(L10n.chatSenderHedvig) ∙ ")
                 }
                 hText(message.timeStampString)
             }
