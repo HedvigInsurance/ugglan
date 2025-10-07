@@ -127,18 +127,17 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
             if let presentationController = presentationController as? BlurredSheetPresenationController {
                 presentationController.detents = [
                     .custom(resolver: { _ in
-                        0
+                        300
                     })
                 ]
             }
         }
-
         Detent.set(
             [
                 .custom(
                     "zero",
                     { _, _ in
-                        0
+                        300
                     }
                 )
             ],
@@ -146,7 +145,6 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
             viewController: viewController,
             unanimated: false
         )
-
         Task { @MainActor [weak presentationController] in
             for _ in 0...2 {
                 try? await Task.sleep(nanoseconds: 50_000_000)
@@ -739,7 +737,6 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
         if #available(iOS 17.0, *) {
             prefersPageSizing = false
         }

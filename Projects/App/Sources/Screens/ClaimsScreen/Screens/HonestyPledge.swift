@@ -86,7 +86,7 @@ struct SlideToConfirm: View {
         .frame(maxWidth: .infinity)
         .background(
             GeometryReader { proxy in
-                hSurfaceColor.Opaque.secondary
+                hSurfaceColor.Translucent.secondary
                     .onAppear {
                         width = proxy.size.width
                     }
