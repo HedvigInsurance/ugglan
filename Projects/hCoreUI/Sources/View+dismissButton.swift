@@ -37,7 +37,8 @@ private struct DismissButton: ViewModifier {
                         isPresented = true
                     } label: {
                         hCoreUIAssets.close.view
-                            .frame(minWidth: 44, minHeight: 44)
+                            .resizable()
+                            .frame(minWidth: 24, minHeight: 24)
                     }
                     .foregroundColor(hTextColor.Opaque.primary)
                     .accessibilityLabel(L10n.a11YClose)
@@ -130,9 +131,8 @@ private struct CloseButtonModifier: ViewModifier {
                     vm.vc?.dismiss(animated: true)
                 } label: {
                     hCoreUIAssets.close.view
-                        .closeButtonOffset(y: CGFloat(-reducedTopSpacing))
+                        .frame(minWidth: 24, minHeight: 44)
                         .foregroundColor(hFillColor.Opaque.primary)
-                        .frame(minWidth: 44, minHeight: 44)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
                 .accessibilityLabel(L10n.a11YClose)
@@ -147,7 +147,7 @@ private struct CloseButtonModifier: ViewModifier {
 extension View {
     @ViewBuilder
     func closeButtonOffset(y: CGFloat) -> some View {
-        if #available(iOS 26, *) {
+        if isLiquidGlassEnabled {
             self
         } else {
             offset(y: y)
