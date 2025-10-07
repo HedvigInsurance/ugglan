@@ -27,7 +27,10 @@ struct CrossSellDiscountProgressComponent: View {
                                     GeometryReader { geo in
                                         Rectangle()
                                             .fill(hSignalColor.Green.element)
-                                            .offset(x: animationProgress * geo.size.width - geo.size.width)
+                                            .mask(alignment: .leading) {
+                                                Rectangle()
+                                                    .frame(width: geo.size.width * animationProgress)
+                                            }
                                     }
                                 }
                             }
@@ -41,6 +44,8 @@ struct CrossSellDiscountProgressComponent: View {
                         }
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityHint(L10n.a11YNumberOfEligibleInsurances(numberOfInsurances))
             }
             .sectionContainerStyle(.transparent)
             .onAppear {
