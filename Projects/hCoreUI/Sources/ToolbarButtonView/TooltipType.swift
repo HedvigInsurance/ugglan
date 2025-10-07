@@ -244,7 +244,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         case .newOfferNotification, .newOffer:
             return hSignalColor.Green.fill.colorFor(.dark, .base).color.uiColor()
         case .firstVet:
-            return hSignalColor.Blue.element.colorFor(.dark, .base).color.uiColor()
+            return hSignalColor.Blue.firstVet.colorFor(.dark, .base).color.uiColor()
         case .chat, .chatNotification:
             return hSignalColor.Grey.element.colorFor(.dark, .base).color.uiColor()
         }

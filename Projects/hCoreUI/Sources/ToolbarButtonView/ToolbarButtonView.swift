@@ -149,10 +149,10 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
 
     private func setNavigation(_ vc: UIViewController? = nil) {
         if let leading, let vc = vc, showLeading {
-            setNavigationBarItem(for: leading, vc: vc)
+            setNavigationBarItem(for: leading, vc: vc, placement: .leading)
         }
         if let trailing, let vc = vc, showTrailing {
-            setNavigationBarItem(for: trailing, vc: vc)
+            setNavigationBarItem(for: trailing, vc: vc, placement: .trailing)
         } else {
             if let vc = navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
                 setNavigationBarItemsUsingTypes(for: vc)
@@ -193,7 +193,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         }
     }
 
-    private func setNavigationBarItem(for view: any View, vc: UIViewController) {
+    private func setNavigationBarItem(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
         let hostingVc = UIHostingController(rootView: view.asAnyView)
         let viewToPlace = hostingVc.view!
         viewToPlace.backgroundColor = .clear
