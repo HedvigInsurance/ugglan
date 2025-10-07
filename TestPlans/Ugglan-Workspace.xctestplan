@@ -1,0 +1,167 @@
+{
+  "configurations" : [
+    {
+      "id" : "88A88F0D-6D0C-4761-9329-0003CB235AD5",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Projects\/Addons\/Addons.xcodeproj",
+      "identifier" : "CC1B33E1EE325508CD2D1F7A",
+      "name" : "Addons"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Addons\/Addons.xcodeproj",
+        "identifier" : "BE6175AE64BC1D92433761F6",
+        "name" : "AddonsTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Authentication\/Authentication.xcodeproj",
+        "identifier" : "9DDC634AE1E38C7FBA93CCA8",
+        "name" : "AuthenticationTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Campaign\/Campaign.xcodeproj",
+        "identifier" : "A3AA5766F086DA1A21FACB86",
+        "name" : "CampaignTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/ChangeTier\/ChangeTier.xcodeproj",
+        "identifier" : "EA07CA1A2F0064D5EA9EA1EA",
+        "name" : "ChangeTierTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Chat\/Chat.xcodeproj",
+        "identifier" : "29A5754732A963CB16195C61",
+        "name" : "ChatTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Claims\/Claims.xcodeproj",
+        "identifier" : "673556FAD307B16C7BF7064E",
+        "name" : "ClaimsTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Contracts\/Contracts.xcodeproj",
+        "identifier" : "A00B240D748555188FBD7B39",
+        "name" : "ContractsTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/CrossSell\/CrossSell.xcodeproj",
+        "identifier" : "87C2F53EAD410157F44D6124",
+        "name" : "CrossSellTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/EditCoInsured\/EditCoInsured.xcodeproj",
+        "identifier" : "DE8E7CE548426605C4CA20D8",
+        "name" : "EditCoInsuredTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Forever\/Forever.xcodeproj",
+        "identifier" : "ADD55BBD1606E71BB15F8CCF",
+        "name" : "ForeverTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Home\/Home.xcodeproj",
+        "identifier" : "AF31213DA71B06E9B09EA3F0",
+        "name" : "HomeTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/InsuranceEvidence\/InsuranceEvidence.xcodeproj",
+        "identifier" : "291E8ED15D14559C8D1B3EC7",
+        "name" : "InsuranceEvidenceTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/MoveFlow\/MoveFlow.xcodeproj",
+        "identifier" : "16033B536D7AACD73A965389",
+        "name" : "MoveFlowTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Payment\/Payment.xcodeproj",
+        "identifier" : "963F8AF78FF4A53AC7A856E5",
+        "name" : "PaymentTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/Profile\/Profile.xcodeproj",
+        "identifier" : "68EACFC189B2CF16BE7CDC81",
+        "name" : "ProfileTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/SubmitClaim\/SubmitClaim.xcodeproj",
+        "identifier" : "F87F88364F5F8B4F3379260A",
+        "name" : "SubmitClaimTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/TerminateContracts\/TerminateContracts.xcodeproj",
+        "identifier" : "C7138964FC51BA607DBF5296",
+        "name" : "TerminateContractsTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Projects\/TravelCertificate\/TravelCertificate.xcodeproj",
+        "identifier" : "B9797DE4B058AA14ECAD39C7",
+        "name" : "TravelCertificateTests"
+      }
+    }
+  ],
+  "version" : 1
+}
