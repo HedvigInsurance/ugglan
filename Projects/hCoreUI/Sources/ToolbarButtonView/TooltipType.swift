@@ -205,12 +205,16 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return 24
-        case .newOffer, .newOfferNotification, .firstVet, .chat, .chatNotification:
+        case .newOffer, .newOfferNotification:
             if isLiquidGlassEnabled {
                 return 20
             }
-            return 40
+        case .firstVet, .chat, .chatNotification:
+            if isLiquidGlassEnabled {
+                return 17
+            }
         }
+        return 40
     }
 
     @MainActor
