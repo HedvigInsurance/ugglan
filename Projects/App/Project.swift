@@ -174,7 +174,7 @@ let project = Project(
             bundleId: "com.hedvig.AppTests",
             deploymentTargets: .iOS("15.0"),
             infoPlist: .default,
-            sources: ["Tests/**"],
+            sources: .sourceFilesList(globs: [.glob("Tests/**", excluding: ["Tests/UITests/**"])]),
             resources: [],
             scripts: [],
             dependencies: [
@@ -196,7 +196,7 @@ let project = Project(
             bundleId: "com.hedvig.AppUITests",
             deploymentTargets: .iOS("15.0"),
             infoPlist: .default,
-            sources: ["Tests/UITests/**"],
+            sources: .sourceFilesList(globs: [.glob("Tests/UITests/**")]),
             resources: [],
             scripts: [],
             dependencies: [
