@@ -108,7 +108,9 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
                     presenting: presenting,
                     useBlur: options.contains(.useBlur)
                 )
-                presentationController.preferredCornerRadius = .cornerRadiusXL
+                if !isLiquidGlassEnabled {
+                    presentationController.preferredCornerRadius = .cornerRadiusXL
+                }
                 return presentationController
             } else {
                 let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
@@ -737,11 +739,14 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+
+        if #available(iOS 17.0, *) {
+            prefersPageSizing = false
+        }
         effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial)) : nil
         effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16
         self.presentedViewController.view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
         effectView?.addGestureRecognizer(tap)
         effectView?.isUserInteractionEnabled = true

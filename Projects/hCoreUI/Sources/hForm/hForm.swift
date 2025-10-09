@@ -1,6 +1,7 @@
 import Combine
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
+import hCore
 
 public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
@@ -52,7 +53,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 endPoint: .bottom
                             )
                         case .default:
-                            hBackgroundColor.primary
+                            if contentPosition == .compact, isLiquidGlassEnabled {
+                                Color.clear
+                            } else {
+                                hBackgroundColor.primary
+                            }
                         }
                     }
                     .ignoresSafeArea()
@@ -80,13 +85,19 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .frame(maxHeight: .infinity)
                     .background {
                         GeometryReader { geometry in
-                            hBackgroundColor.primary
-                                .onAppear {
-                                    vm.scrollViewHeight = geometry.size.height
+                            Group {
+                                if contentPosition == .compact, isLiquidGlassEnabled {
+                                    Color.clear
+                                } else {
+                                    hBackgroundColor.primary
                                 }
-                                .onChange(of: geometry.size) { value in
-                                    vm.scrollViewHeight = value.height
-                                }
+                            }
+                            .onAppear {
+                                vm.scrollViewHeight = geometry.size.height
+                            }
+                            .onChange(of: geometry.size) { value in
+                                vm.scrollViewHeight = value.height
+                            }
                         }
                     }
             }
