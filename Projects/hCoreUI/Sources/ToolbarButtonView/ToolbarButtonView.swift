@@ -162,10 +162,11 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         let hostingVc = UIHostingController(rootView: view.asAnyView)
         let viewToPlace = hostingVc.view!
         viewToPlace.backgroundColor = .clear
+        let uiBarButtonItem = UIBarButtonItem(customView: viewToPlace)
         if placement == .leading {
-            vc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+            vc.navigationItem.leftBarButtonItem = uiBarButtonItem
         } else {
-            vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+            vc.navigationItem.rightBarButtonItem = uiBarButtonItem
         }
     }
 }
