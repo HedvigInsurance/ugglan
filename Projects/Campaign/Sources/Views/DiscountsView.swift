@@ -36,8 +36,6 @@ struct DiscountsView: View {
                     Group {
                         if let info = discountData.info {
                             InfoCard(text: info, type: .info)
-                        } else {
-                            hRowDivider()
                         }
                     }
                 }
