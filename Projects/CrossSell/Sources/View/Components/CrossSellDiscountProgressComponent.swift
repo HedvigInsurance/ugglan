@@ -80,7 +80,7 @@ private struct AnimatedProgressView: View {
             if pulse {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
                     .fill(hSignalColor.Green.element.opacity(animationProgress))
-                    .scaleEffect(x: 1, y: 1 + animationProgress / 6)
+                    .scaleEffect(x: 1, y: 1 + animationProgress / 4)
             } else {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
                     .fill(hSignalColor.Green.element)
