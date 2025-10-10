@@ -21,22 +21,13 @@ struct CrossSellDiscountProgressComponent: View {
                     ForEach(1..<4) { column in
                         VStack(spacing: 4) {
                             ZStack {
-                                Rectangle()
-                                    .fill(getBarColor(for: column <= numberOfInsurances))
-                                if (column == numberOfInsurances + 1) {
-                                    GeometryReader { geo in
-                                        Rectangle()
-                                            .fill(hSignalColor.Green.element)
-                                            .mask(alignment: .leading) {
-                                                Rectangle()
-                                                    .frame(width: geo.size.width * animationProgress)
-                                            }
-                                    }
+                                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                                    .fill(hSurfaceColor.Opaque.secondary)
+                                if (column <= numberOfInsurances + 1) {
+                                    AnimatedProgressView(orderOfExecution: column, pulse: column > numberOfInsurances)
                                 }
                             }
                             .frame(height: 8)
-                            .cornerRadius(.cornerRadiusS)
-
                             VStack(spacing: 0) {
                                 getTitleLabel(for: column)
                                 getSubtitleLabel(for: column, discountPercent: discountPercent)
@@ -48,18 +39,6 @@ struct CrossSellDiscountProgressComponent: View {
                 .accessibilityHint(L10n.a11YNumberOfEligibleInsurances(numberOfInsurances))
             }
             .sectionContainerStyle(.transparent)
-            .onAppear {
-                animatePotentialDiscount()
-            }
-        }
-    }
-
-    @hColorBuilder
-    private func getBarColor(for filled: Bool) -> some hColor {
-        if filled {
-            hSignalColor.Green.element
-        } else {
-            hSurfaceColor.Opaque.secondary
         }
     }
 
@@ -89,16 +68,42 @@ struct CrossSellDiscountProgressComponent: View {
         return hText(text, style: .label)
             .foregroundColor(hTextColor.Opaque.secondary)
     }
+}
 
-    private func animatePotentialDiscount() {
-        if #available(iOS 17.0, *) {
-            Task {
-                try? await Task.sleep(nanoseconds: UInt64(500_000_000))
-                for _ in 0..<3 {
-                    withAnimation(.spring(duration: 1.5)) {
-                        animationProgress = 1
+@MainActor
+private struct AnimatedProgressView: View {
+    @State private var animationProgress: CGFloat = 0
+    let orderOfExecution: Int
+    let pulse: Bool
+    var body: some View {
+        GeometryReader { geo in
+            if pulse {
+                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                    .fill(hSignalColor.Green.element.opacity(animationProgress))
+                    .scaleEffect(x: 1, y: 1 + animationProgress / 6)
+            } else {
+                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                    .fill(hSignalColor.Green.element.opacity(animationProgress))
+                    .mask(alignment: .leading) {
+                        Rectangle()
+                            .frame(width: geo.size.width * animationProgress)
                     }
-                    try? await Task.sleep(nanoseconds: UInt64(2_000_000_000))
+            }
+        }
+        .onAppear {
+            animate()
+        }
+    }
+
+    private func animate() {
+        Task {
+            try? await Task.sleep(nanoseconds: UInt64(orderOfExecution * 1_000_000_000))
+            withAnimation(.linear(duration: 1)) {
+                animationProgress = 1
+            }
+            if pulse {
+                try? await Task.sleep(nanoseconds: UInt64(1_000_000_000))
+                withAnimation(.linear(duration: 1)) {
                     animationProgress = 0
                 }
             }
@@ -162,11 +167,18 @@ struct CrossSellDiscountProgressComponent: View {
             discountPercent: 15,
             numberOfEligibleContracts: 5
         )
-        CrossSellDiscountProgressComponent(crossSell: crossSell0)
-        CrossSellDiscountProgressComponent(crossSell: crossSell1)
-        CrossSellDiscountProgressComponent(crossSell: crossSell2)
-        CrossSellDiscountProgressComponent(crossSell: crossSell3)
-        CrossSellDiscountProgressComponent(crossSell: crossSell4)
-        CrossSellDiscountProgressComponent(crossSell: crossSell5)
+        //        CrossSellDiscountProgressComponent(crossSell: crossSell0)
+        VStack(alignment: .leading) {
+            hText("1 eligable insurance")
+            CrossSellDiscountProgressComponent(crossSell: crossSell1)
+            hText("2 eligable insurance")
+            CrossSellDiscountProgressComponent(crossSell: crossSell2)
+            hText("3 eligable insurance")
+            CrossSellDiscountProgressComponent(crossSell: crossSell3)
+            hText("4 eligable insurance")
+            CrossSellDiscountProgressComponent(crossSell: crossSell4)
+            hText("5 eligable insurance")
+            CrossSellDiscountProgressComponent(crossSell: crossSell5)
+        }
     }
 }
