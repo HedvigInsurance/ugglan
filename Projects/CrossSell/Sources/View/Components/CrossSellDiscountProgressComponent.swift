@@ -102,7 +102,7 @@ private struct AnimatedProgressView: View {
                 animationProgress = 1
             }
             if pulse {
-                try? await Task.sleep(nanoseconds: UInt64(1_000_000_000))
+                try? await Task.sleep(nanoseconds: UInt64(750_000_000))
                 withAnimation(.linear(duration: 1)) {
                     animationProgress = 0
                 }
