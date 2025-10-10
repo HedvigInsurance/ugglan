@@ -83,7 +83,7 @@ private struct AnimatedProgressView: View {
                     .scaleEffect(x: 1, y: 1 + animationProgress / 6)
             } else {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
-                    .fill(hSignalColor.Green.element.opacity(animationProgress))
+                    .fill(hSignalColor.Green.element)
                     .mask(alignment: .leading) {
                         Rectangle()
                             .frame(width: geo.size.width * animationProgress)
