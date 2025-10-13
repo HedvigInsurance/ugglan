@@ -124,27 +124,31 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
         }()
 
         if #available(iOS 16.0, *) {
-            if let presentationController = presentationController as? BlurredSheetPresenationController {
+            if let presentationController = presentationController as? UISheetPresentationController {
                 presentationController.detents = [
-                    .custom(resolver: { _ in
-                        300
-                    })
+                    .custom(
+                        identifier: UISheetPresentationController.Detent.Identifier.init("zero"),
+                        resolver: { context in
+                            0
+                        }
+                    )
                 ]
             }
+        } else {
+            Detent.set(
+                [
+                    .custom(
+                        "zero",
+                        { _, _ in
+                            0
+                        }
+                    )
+                ],
+                on: presentationController,
+                viewController: viewController,
+                unanimated: false
+            )
         }
-        Detent.set(
-            [
-                .custom(
-                    "zero",
-                    { _, _ in
-                        300
-                    }
-                )
-            ],
-            on: presentationController,
-            viewController: viewController,
-            unanimated: false
-        )
         Task { @MainActor [weak presentationController] in
             for _ in 0...2 {
                 try? await Task.sleep(nanoseconds: 50_000_000)
@@ -751,6 +755,17 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
 
     @objc private func didTapBackground() {
         presentedViewController.dismiss(animated: true)
+    }
+
+    public override func containerViewDidLayoutSubviews() {
+        super.containerViewDidLayoutSubviews()
+        guard let containerView, let presentedView else { return }
+        let containerViewWidth = containerView.frame.width
+        let presentedViewOffset = presentedView.frame.origin.x
+        let presentedViewWidth = presentedView.frame.width
+        if presentedViewOffset == 0, containerViewWidth != presentedViewWidth {
+            presentedView.frame.size.width = containerViewWidth
+        }
     }
 
     override public func presentationTransitionWillBegin() {
