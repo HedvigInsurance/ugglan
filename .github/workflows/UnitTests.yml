@@ -1,0 +1,40 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.0.1'
+
+      - name: Install Dependencies
+        run: |
+          brew install tuist
+          gem install xcpretty
+
+      - name: Run setup script
+        run: |
+          chmod +x ./scripts/post-checkout.sh
+          ./scripts/post-checkout.sh
+      
+      - name: Run tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace Ugglan.xcworkspace \
+            -scheme Ugglan-Workspace \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -derivedDataPath 'derivedData' \
+            -enableCodeCoverage YES \
+            'OTHER_TEST_FLAGS=$(inherited) -headless -UITestsAlwaysAllowNotifications YES' | xcpretty
