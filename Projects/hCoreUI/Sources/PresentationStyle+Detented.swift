@@ -133,6 +133,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
                         }
                     )
                 ]
+                presentationController.largestUndimmedDetentIdentifier = presentationController.detents.last?.identifier
             }
         } else {
             Detent.set(
@@ -598,6 +599,9 @@ public enum Detent: Equatable {
                             }
                         }
                     } ?? [.medium()]
+
+                weakViewController?.sheetPresentationController?.largestUndimmedDetentIdentifier =
+                    weakViewController?.sheetPresentationController?.detents.last?.identifier
                 if let lastDetentIndex = lastDetentIndex {
                     setDetentIndex(on: presentationController, index: lastDetentIndex)
                 }
