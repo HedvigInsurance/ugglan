@@ -85,7 +85,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.6.2")))
+                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.6.1")))
             ]
         case .presentableStore:
             return [
