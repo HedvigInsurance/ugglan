@@ -52,7 +52,7 @@ struct CustomCodegenScript: AsyncParsableCommand {
     func cleanDerivedData() async {
         for sourceUrl in findAllGraphQLFolders() {
             let url = sourceUrl.path
-            try? ApolloFileManager.default.deleteDirectory(atPath: url)
+            try? await ApolloFileManager.default.deleteDirectory(atPath: url)
         }
     }
 
@@ -69,15 +69,15 @@ struct CustomCodegenScript: AsyncParsableCommand {
             baseFolderUrl
             .appendingPathComponent(endpoint.name.capitalized)
 
-        try! ApolloFileManager.default.deleteDirectory(atPath: folderUrl.path)
-        try! ApolloFileManager.default.createDirectoryIfNeeded(atPath: baseFolderUrl.path)
-        try! ApolloFileManager.default.createDirectoryIfNeeded(atPath: folderUrl.path)
+        try! await ApolloFileManager.default.deleteDirectory(atPath: folderUrl.path)
+        try! await ApolloFileManager.default.createDirectoryIfNeeded(atPath: baseFolderUrl.path)
+        try! await ApolloFileManager.default.createDirectoryIfNeeded(atPath: folderUrl.path)
 
         var operationSearchPaths = [String]()
         let content = try! FileManager.default.contentsOfDirectory(at: sourceUrl, includingPropertiesForKeys: nil)
         operationSearchPaths.append(sourceUrl.appendingPathComponent("*.graphql").path)
         for item in content {
-            if ApolloFileManager.default.doesDirectoryExist(atPath: item.path) {
+            if await ApolloFileManager.default.doesDirectoryExist(atPath: item.path) {
                 operationSearchPaths.append(item.appendingPathComponent("*.graphql").path)
             }
         }
