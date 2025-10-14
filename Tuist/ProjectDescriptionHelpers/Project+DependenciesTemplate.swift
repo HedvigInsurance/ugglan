@@ -38,7 +38,7 @@ public enum ExternalDependencies: CaseIterable {
         switch self {
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.4"))]
         case .apollo:
-            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.23.0"))]
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.25.0"))]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -81,7 +81,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.23.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .exact("1.25.0"))
             ]
         case .argumentParser:
             return [
