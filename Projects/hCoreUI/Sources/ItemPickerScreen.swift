@@ -154,6 +154,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 getCell(for: item.object)
                     .id(item.object)
             }
+            .sectionContainerStyle(.translucent)
             .disabled(isLoading)
         }
     }

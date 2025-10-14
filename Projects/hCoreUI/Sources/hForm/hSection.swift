@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import hCore
 
 @resultBuilder
 public struct RowViewBuilder {
@@ -214,6 +215,7 @@ public enum ShadowType {
 public enum hSectionContainerStyle {
     case transparent
     case opaque
+    case translucent
     case black
 }
 
@@ -262,6 +264,15 @@ struct hSectionContainerStyleModifier: ViewModifier {
         switch containerStyle {
         case .transparent:
             content
+        case .translucent:
+            Group {
+                if isLiquidGlassEnabled {
+                    content.background(hSurfaceColor.Translucent.secondary)
+                } else {
+                    content.background(hSurfaceColor.Opaque.primary)
+                }
+            }
+            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
         case .opaque:
             content.background(
                 hSurfaceColor.Opaque.primary
