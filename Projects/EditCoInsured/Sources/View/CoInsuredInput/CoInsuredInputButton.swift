@@ -31,6 +31,7 @@ public struct CoInsuredInputButton: View {
                             await performIntent(for: .delete)
                         }
                     )
+                    .colorScheme(.dark)
                 } else {
                     CoInsuredActionButton(
                         style: .primary,
