@@ -69,7 +69,7 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: additionalHeight ?? subview.frame.origin.y,
-                    width: frame.width + 4,
+                    width: frame.width + 12,
                     height: subview.frame.size.height
                 )
             }
@@ -124,7 +124,7 @@ class LargeNavBar: UINavigationBar {
                     subview.frame = CGRect(
                         x: 0,
                         y: -12,
-                        width: frame.width,
+                        width: frame.width + 12,
                         height: hNavigationControllerWithLargerNavBar.navigationBarHeight - 44
                     )
                 }
@@ -149,7 +149,7 @@ public struct DefaultStyling {
 
         let backImageInsets: UIEdgeInsets = {
             if isLiquidGlassEnabled {
-                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
+                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             } else {
                 UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
             }
