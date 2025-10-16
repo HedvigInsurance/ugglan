@@ -148,7 +148,7 @@ public struct DefaultStyling {
         ]
 
         let backImageInsets: UIEdgeInsets = {
-            if #available(iOS 26.0, *) {
+            if isLiquidGlassEnabled {
                 UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
             } else {
                 UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
