@@ -35,7 +35,7 @@ enum CoInsuredFieldType {
         case .delete:
             return nil
         case .localEdit:
-            return L10n.Claims.Edit.Screen.title
+            return L10n.General.edit
         }
     }
 
