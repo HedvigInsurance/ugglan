@@ -49,17 +49,4 @@ enum ProfileRowType {
             return hCoreUIAssets.clock.view
         }
     }
-
-    var imageSize: CGFloat {
-        switch self {
-        case .myInfo, .appInfo, .settings, .travelCertificate, .certificates, .insuranceEvidence, .claimHistory:
-            return 40
-        case let .eurobonus(hasEnteredNumber):
-            return hasEnteredNumber ? 25 : 40
-        }
-    }
-
-    var paddings: CGFloat {
-        (40 - imageSize) / 2
-    }
 }
