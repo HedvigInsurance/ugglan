@@ -39,9 +39,7 @@ public struct SubmitClaimSummaryScreen: View {
                 .padding(.top, .padding16)
                 .sectionContainerStyle(.transparent)
 
-                hSection {
-                    hRowDivider()
-                }
+                hRowDivider()
                 memberFreeTextSection
                 uploadedFilesView
             }
