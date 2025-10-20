@@ -14,10 +14,13 @@ struct ChatInputView: View {
         VStack(spacing: 0) {
             Rectangle().fill(hBorderColor.primary).frame(height: 1)
             VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .bottom) {
+                HStack {
                     addFilesButton
+                        .frame(maxHeight: .infinity)
                     inputField
+                        .frame(maxHeight: .infinity)
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .padding([.horizontal, .top], .padding8)
 
                 if vm.showBottomMenu {
@@ -34,13 +37,15 @@ struct ChatInputView: View {
             }
         } label: {
             hCoreUIAssets.plus.view
-                .resizable().frame(width: 24, height: 24)
+                .resizable()
+                .frame(width: 24, height: 24)
+                .frame(maxHeight: .infinity)
                 .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
                 .foregroundColor(hTextColor.Opaque.primary)
-                .padding(.padding8)
-                .background(hSurfaceColor.Opaque.primary)
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+                .padding(.horizontal, .padding10)
         }
+        .background(hSurfaceColor.Opaque.primary)
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
         .accessibilityValue(
             vm.showBottomMenu ? L10n.generalCloseButton : L10n.ClaimStatus.UploadedFiles.uploadButton
         )
