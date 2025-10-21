@@ -167,8 +167,9 @@ private struct AnimatedProgressView: View {
             discountPercent: 15,
             numberOfEligibleContracts: 5
         )
-        //        CrossSellDiscountProgressComponent(crossSell: crossSell0)
         VStack(alignment: .leading) {
+            hText("0 eligable insurance")
+            CrossSellDiscountProgressComponent(crossSell: crossSell0)
             hText("1 eligable insurance")
             CrossSellDiscountProgressComponent(crossSell: crossSell1)
             hText("2 eligable insurance")

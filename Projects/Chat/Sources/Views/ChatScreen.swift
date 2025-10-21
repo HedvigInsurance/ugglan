@@ -265,7 +265,6 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
                 "_sheet", "Interaction",
             ]
             let sheetInteraction = presentationController.value(forKey: key.joined()) as? NSObject
-            print("SET FOR \(vc!) to \(to) - \(sheetInteraction!)")
             sheetInteraction?.setValue(to, forKey: "enabled")
         }
     }

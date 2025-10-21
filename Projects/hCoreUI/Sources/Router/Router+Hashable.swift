@@ -29,7 +29,6 @@ private struct RouterDestinationModifier<D, C>: ViewModifier where D: Hashable, 
                 router?.builders["\(D.self)"] = .init(
                     builder: { item in
                         let view = destination(item as! D)
-                        print("DESTINATION IS \(view.self)")
                         return AnyView(view)
                     },
                     contentName: "\(C.self)",

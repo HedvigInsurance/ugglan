@@ -84,7 +84,6 @@ public struct PasteView: UIViewRepresentable {
         view.addGestureRecognizer(context.coordinator.longPressGesture)
         context.coordinator.longGestureDidBeginPublisher
             .sink { _ in
-                print("Long tap begin")
                 let menu = UIMenuController.shared
                 guard !menu.isMenuVisible else { return }
                 view.becomeFirstResponder()

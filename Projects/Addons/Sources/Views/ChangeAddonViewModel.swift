@@ -81,8 +81,8 @@ public class ChangeAddonViewModel: ObservableObject {
     func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
         if let currentAddon = addonOffer?.currentAddon {
             let currentAddonBreakdownDisplayItems = QuoteDisplayItem(
-                title: addonOffer?.currentAddon?.displayNameLong ?? "",
-                value: addonOffer?.currentAddon?.itemCost.premium.net?.formattedAmountPerMonth ?? "",
+                title: currentAddon.displayNameLong,
+                value: currentAddon.itemCost.premium.net?.formattedAmountPerMonth ?? "",
                 crossDisplayTitle: true
             )
 

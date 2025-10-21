@@ -242,7 +242,7 @@ extension GraphQLEnum<OctopusGraphQL.ChatMessageSender> {
             case .automation:
                 return .automation
             }
-        case .unknown(let string):
+        case .unknown:
             return .hedvig
         }
     }
