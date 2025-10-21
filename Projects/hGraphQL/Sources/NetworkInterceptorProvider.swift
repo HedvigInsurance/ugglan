@@ -2,11 +2,11 @@
 @preconcurrency import ApolloAPI
 import Foundation
 
-/// use to override the URLSessionClient used by apollo
-@MainActor public var urlSessionClientProvider: () -> URLSessionTaskDelegate? = {
+/// use to override the URLSessionClient's task delegate used by apollo
+@MainActor public var urlSessionTaskDeleage: () -> URLSessionTaskDelegate? = {
     nil
 }
-//URLSessionClient
+
 struct NetworkInterceptorProvider: InterceptorProvider {
     nonisolated(unsafe) var dynamicHeaders: () -> [String: String]
     let headers: [String: String]

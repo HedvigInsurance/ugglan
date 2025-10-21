@@ -27,16 +27,16 @@ extension ApolloClient {
         do {
             let response = try await fetch(query: query, cachePolicy: .networkOnly, requestConfiguration: .init(requestTimeout: 30, writeResultsToCache: false))
             if let errors = response.errors {
-//                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: err), for: <#T##any GraphQLOperation#>)
-//                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: errors), for: query)
+                self.logGraphQLException(errors: errors, for: query)
                 throw GraphQLError.graphQLError(errors: errors)
             } else if let data = response.data {
                 return data
             }
+            throw GraphQLError.graphQLError(errors: [])
         } catch let error{
-            throw  GraphQLError.otherError(error: error)
+            logGraphQLException(errors: [error], for: query)
+            throw GraphQLError.otherError(error: error)
         }
-        throw GraphQLError.graphQLError(errors: [])
     }
 
     public func performMutation<Mutation: GraphQLMutation>(
@@ -46,8 +46,7 @@ extension ApolloClient {
         do {
             let response = try await self.perform(mutation: mutation, requestConfiguration: .init(requestTimeout: 10, writeResultsToCache: false))
             if let errors = response.errors {
-                //                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: err), for: <#T##any GraphQLOperation#>)
-                //                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: errors), for: query)
+                self.logGraphQLException(errors: errors, for: mutation)
                 throw GraphQLError.graphQLError(errors: errors)
             } else if let data = response.data {
                 return data
@@ -55,32 +54,29 @@ extension ApolloClient {
                 return nil
             }
         } catch let error {
+            logGraphQLException(errors: [error], for: mutation)
             throw GraphQLError.otherError(error: error)
         }
     }
 
-    private func logGraphQLException(error: Error, for operation: any GraphQLOperation) {
-        if let error = error as? AuthError {
-            switch error {
-            case .refreshTokenExpired:
-                break
-            case .refreshFailed:
-                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
-            case .networkIssue:
+    private func logGraphQLException(errors: [Swift.Error], for operation: any GraphQLOperation) {
+        for error in errors {
+            if let error = error as? AuthError {
+                switch error {
+                case .refreshTokenExpired:
+                    break
+                case .refreshFailed:
+                    graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
+                case .networkIssue:
+                    graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
+                }
+            } else if let error = error as? Error {
                 graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
+            } else if let error = error as? Apollo.GraphQLError {
+                graphQlLogger.error("graphQL error \(error)", error: error, attributes: [:])
+            } else {
+                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
             }
-//        } else if let error = error as? ApolloURLSession.URLSessionClientError {
-//            switch error {
-//            case .networkError:
-//                graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
-//            default:
-//                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
-//            }
-        } else if let error = error as? GraphQLError {
-            graphQlLogger.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
-            graphQlLogger.error("graphQL error \(error.logDescription)", error: error, attributes: [:])
-        } else {
-            graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
         }
     }
 }

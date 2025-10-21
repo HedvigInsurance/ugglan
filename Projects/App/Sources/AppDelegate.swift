@@ -137,7 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupSession() async {
-        urlSessionClientProvider = {
+        urlSessionTaskDeleage = {
             InterceptingURLSessionClient()
         }
         await DI.initNetworkClients()

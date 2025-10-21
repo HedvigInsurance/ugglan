@@ -80,7 +80,7 @@ extension ApolloClient {
         let requestChainTransport = RequestChainNetworkTransport(
             urlSession: URLSession(
                 configuration: .default,
-                delegate: urlSessionClientProvider(),
+                delegate: urlSessionTaskDeleage(),
                 delegateQueue: nil
             ),
             interceptorProvider: networkInterceptorProvider,
