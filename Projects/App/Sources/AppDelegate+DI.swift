@@ -79,7 +79,7 @@ enum DI {
             let hCampaignsService = hCampaignsClientOctopus()
             let networkClientUrlSession = URLSession(
                 configuration: .default,
-                delegate: urlSessionClientProvider(),
+                delegate: urlSessionTaskDeleage(),
                 delegateQueue: nil
             )
             let networkClient = NetworkClient(sessionClient: networkClientUrlSession)
