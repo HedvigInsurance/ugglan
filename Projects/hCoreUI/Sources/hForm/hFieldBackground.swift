@@ -214,7 +214,7 @@ struct hFieldLabel: View {
         } else if isEnabled || backgroundOption.contains(.withoutDisabled) {
             hTextColor.Translucent.secondary
         } else if backgroundOption.contains(.locked) {
-            hTextColor.Translucent.disabled
+            hTextColor.Translucent.secondary
         } else if shouldMoveLabel, !isEnabled {
             hTextColor.Translucent.secondary
         } else {
