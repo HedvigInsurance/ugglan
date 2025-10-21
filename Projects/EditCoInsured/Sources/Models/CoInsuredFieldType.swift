@@ -10,7 +10,7 @@ enum CoInsuredFieldType {
     var icon: ImageAsset? {
         switch self {
         case .empty:
-            return hCoreUIAssets.plusSmall
+            return hCoreUIAssets.plus
         case .delete:
             return hCoreUIAssets.closeSmall
         case .localEdit:
