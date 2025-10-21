@@ -239,7 +239,7 @@ extension GraphQLMutation {
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
         do {
-            let data = try await octopus.client.performMutation(mutation: self)!
+            let data = try await octopus.client.mutation(mutation: self)!
             let claimId = data.getClaimId()
             let context = data.getContext()
             let nextStepId = data.getNextStepId()

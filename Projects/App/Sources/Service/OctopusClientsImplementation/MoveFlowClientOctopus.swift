@@ -11,7 +11,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
 
     func sendMoveIntent() async throws -> MoveConfigurationModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
-        let data = try await octopus.client.performMutation(mutation: mutation)
+        let data = try await octopus.client.mutation(mutation: mutation)
 
         if let moveIntentFragment = data?.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
             return MoveConfigurationModel(from: moveIntentFragment)
@@ -45,7 +45,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
             input: moveIntentRequestInput
         )
 
-        let data = try await octopus.client.performMutation(mutation: mutation)
+        let data = try await octopus.client.mutation(mutation: mutation)
         if let moveIntentFragment = data?.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
             return MoveQuotesModel(from: moveIntentFragment)
         } else if let userError = data?.moveIntentRequest.userError?.message {
@@ -63,7 +63,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         let delayTask = Task {
             try await Task.sleep(nanoseconds: 3_000_000_000)
         }
-        let data = try await octopus.client.performMutation(mutation: mutation)
+        let data = try await octopus.client.mutation(mutation: mutation)
 
         try await delayTask.value
 
@@ -116,7 +116,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
             selectedHomeQuoteId: input.selectedHomeQuoteId
         )
 
-        let data = try await octopus.client.fetchQuery(query: query)
+        let data = try await octopus.client.fetch(query: query)
         let totalGross = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyGross.fragments.moneyFragment)
         let totalNet = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyNet.fragments.moneyFragment)
 

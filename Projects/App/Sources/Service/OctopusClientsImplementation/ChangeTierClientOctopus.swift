@@ -22,10 +22,10 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 source: .case(source)
             )
             let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)
-            let createIntentResponse = try await octopus.client.performMutation(mutation: mutation)
+            let createIntentResponse = try await octopus.client.mutation(mutation: mutation)
             let contractsQuery = OctopusGraphQL.ContractQuery(contractId: input.contractId)
 
-            let contractResponse = try await octopus.client.fetchQuery(
+            let contractResponse = try await octopus.client.fetch(
                 query: contractsQuery
             )
 
@@ -81,7 +81,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
             let delayTask = Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
             }
-            let data = try await octopus.client.performMutation(mutation: mutation)
+            let data = try await octopus.client.mutation(mutation: mutation)
 
             try await delayTask.value
 
@@ -234,7 +234,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
     func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
         do {
             let productVariantQuery = OctopusGraphQL.ProductVariantComparisonQuery(termsVersions: termsVersion)
-            let productVariantData = try await octopus.client.fetchQuery(
+            let productVariantData = try await octopus.client.fetch(
                 query: productVariantQuery
             )
 

@@ -65,7 +65,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         )
 
         let query = OctopusGraphQL.TerminationFlowNotificationQuery(input: input)
-        let data = try await octopus.client.fetchQuery(query: query)
+        let data = try await octopus.client.fetch(query: query)
 
         guard let terminationFlowNotification = data.currentMember.terminationFlowNotification else { return nil }
 
@@ -118,7 +118,7 @@ extension GraphQLMutation {
         Self.ResponseFormat == SingleResponseFormat
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
-        let data = try await octopus.client.performMutation(mutation: self)!
+        let data = try await octopus.client.mutation(mutation: self)!
         let context = data.getContext()
         let progress = data.getProgress()
         let stepWithNewProgress = data[keyPath: keyPath].into(with: progress)

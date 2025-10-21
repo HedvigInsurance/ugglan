@@ -12,7 +12,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
             try await Task.sleep(nanoseconds: 3_000_000_000)
         }
         let clientTask = Task { @MainActor in
-            let data = try await octopus.client.performMutation(mutation: mutation)
+            let data = try await octopus.client.mutation(mutation: mutation)
             if let error = data?.midtermChangeIntentCommit.userError {
                 return error.message
             }
@@ -28,7 +28,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
         let query = OctopusGraphQL.PersonalInformationQuery(input: SSNInput)
         do {
-            let data = try await octopus.client.fetchQuery(
+            let data = try await octopus.client.fetch(
                 query: query
             )
             guard let data = data.personalInformation else {
@@ -69,7 +69,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
             contractId: contractId,
             input: coinsuredInput
         )
-        let data = try await octopus.client.performMutation(mutation: mutation)?.midtermChangeIntentCreate
+        let data = try await octopus.client.mutation(mutation: mutation)?.midtermChangeIntentCreate
         if let userError = data?.userError {
             throw EditCoInsuredError.serviceError(message: userError.message ?? L10n.General.errorBody)
         }
@@ -89,7 +89,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
 
     func fetchContracts() async throws -> [Contract] {
         let query = OctopusGraphQL.ContractsQuery()
-        let data = try await octopus.client.fetchQuery(
+        let data = try await octopus.client.fetch(
             query: query
         )
         return data.currentMember.activeContracts.compactMap { activeContract in

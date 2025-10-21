@@ -9,7 +9,7 @@ class hCampaignsClientOctopus: hCampaignClient {
 
     func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
         let query = OctopusGraphQL.DiscountsQuery()
-        let data = try await octopus.client.fetchQuery(query: query)
+        let data = try await octopus.client.fetch(query: query)
         return PaymentDiscountsData(with: data, amountFromPaymentData: nil)
     }
 }

@@ -20,7 +20,7 @@ public enum GraphQLError: Error {
 
 @MainActor
 extension ApolloClient {
-    public func fetchQuery<Query: GraphQLQuery>(
+    public func fetch<Query: GraphQLQuery>(
         query: Query,
         cachePolicy: CachePolicy.Query.SingleResponse = .networkOnly
     ) async throws -> Query.Data where Query.ResponseFormat == SingleResponseFormat {
@@ -39,9 +39,8 @@ extension ApolloClient {
         }
     }
 
-    public func performMutation<Mutation: GraphQLMutation>(
-        mutation: Mutation,
-        queue: DispatchQueue = DispatchQueue.main
+    public func mutation<Mutation: GraphQLMutation>(
+        mutation: Mutation
     ) async throws -> Mutation.Data? where Mutation.ResponseFormat == SingleResponseFormat {
         do {
             let response = try await self.perform(mutation: mutation, requestConfiguration: .init(requestTimeout: 10, writeResultsToCache: false))

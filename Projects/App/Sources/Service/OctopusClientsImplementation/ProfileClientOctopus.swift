@@ -10,7 +10,7 @@ class ProfileClientOctopus: ProfileClient {
         hasTravelInsurances: Bool
     ) {
         let data = try await octopus.client
-            .fetchQuery(
+            .fetch(
                 query: OctopusGraphQL.ProfileQuery()
             )
 
@@ -38,7 +38,7 @@ class ProfileClientOctopus: ProfileClient {
     func getMemberDetails() async throws -> MemberDetails {
         let query = OctopusGraphQL.MemberDetailsQuery()
         let data = try await octopus.client
-            .fetchQuery(
+            .fetch(
                 query: query
             )
 
@@ -52,7 +52,7 @@ class ProfileClientOctopus: ProfileClient {
         let locale = Localization.Locale.currentLocale.value
         let mutation = OctopusGraphQL.MemberUpdateLanguageMutation(input: .init(ietfLanguageTag: locale.lprojCode))
         do {
-            _ = try await octopus.client.performMutation(
+            _ = try await octopus.client.mutation(
                 mutation: mutation
             )
         } catch {
@@ -62,13 +62,13 @@ class ProfileClientOctopus: ProfileClient {
     }
 
     func postDeleteRequest() async throws {
-        _ = try await octopus.client.performMutation(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
+        _ = try await octopus.client.mutation(mutation: OctopusGraphQL.MemberDeletionRequestMutation())
     }
 
     func update(email: String, phone: String) async throws -> (email: String, phone: String) {
         let input = OctopusGraphQL.MemberUpdateContactInfoInput(phoneNumber: phone, email: email)
         let mutation = OctopusGraphQL.MemberUpdateContactInfoMutation(input: input)
-        let data = try await octopus.client.performMutation(mutation: mutation)
+        let data = try await octopus.client.mutation(mutation: mutation)
 
         if let userError = data?.memberUpdateContactInfo.userError?.message {
             throw ProfileError.error(message: userError)
@@ -86,7 +86,7 @@ class ProfileClientOctopus: ProfileClient {
     func update(eurobonus: String) async throws -> PartnerData {
         let input = OctopusGraphQL.MemberUpdateEurobonusNumberInput(eurobonusNumber: eurobonus)
         let mutation = OctopusGraphQL.UpdateEurobonusNumberMutation(input: input)
-        let data = try await octopus.client.performMutation(mutation: mutation)
+        let data = try await octopus.client.mutation(mutation: mutation)
         if let graphQLError = data?.memberUpdateEurobonusNumber.userError?.message, !graphQLError.isEmpty {
             throw ChangeEuroBonusError.error(message: graphQLError)
         }
@@ -102,7 +102,7 @@ class ProfileClientOctopus: ProfileClient {
         let mutation = OctopusGraphQL.MemberUpdateSubscriptionPreferenceMutation(
             subscribe: GraphQLNullable(booleanLiteral: subscribed)
         )
-        let data = try await octopus.client.performMutation(mutation: mutation)
+        let data = try await octopus.client.mutation(mutation: mutation)
         if data?.memberUpdateSubscriptionPreference?.message != nil {
             throw ProfileError.error(message: L10n.General.errorBody)
         }

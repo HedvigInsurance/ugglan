@@ -11,7 +11,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
     func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         let query = OctopusGraphQL.TravelCertificateQuery()
         do {
-            let data = try await octopus.client.fetchQuery(query: query)
+            let data = try await octopus.client.fetch(query: query)
             let email = data.currentMember.email
             let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
             let activeContracts = data.currentMember.activeContracts
@@ -42,7 +42,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let delayTask = Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
             }
-            let data = try await octopus.client.performMutation(mutation: mutation)
+            let data = try await octopus.client.mutation(mutation: mutation)
             try await delayTask.value
 
             if let url = URL(string: data?.travelCertificateCreate.signedUrl) {
@@ -61,7 +61,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
     ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
         do {
-            let data = try await octopus.client.fetchQuery(
+            let data = try await octopus.client.fetch(
                 query: query
             )
             let listData = data.currentMember.travelCertificates.compactMap {
@@ -71,7 +71,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
                 .filter(\.supportsTravelCertificate).isEmpty
 
             let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source.getSource))
-            let bannerResponse = try await octopus.client.fetchQuery(
+            let bannerResponse = try await octopus.client.fetch(
                 query: query
             )
             let bannerData = bannerResponse.currentMember.upsellTravelAddonBanner

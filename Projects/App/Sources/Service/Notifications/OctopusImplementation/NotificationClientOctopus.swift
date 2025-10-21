@@ -16,7 +16,7 @@ class NotificationClientOctopus: NotificationClient {
 
     func register(for token: String) async throws {
         let data = try await octopus.client
-            .performMutation(mutation: OctopusGraphQL.MemberDeviceRegisterMutation(token: token))
+            .mutation(mutation: OctopusGraphQL.MemberDeviceRegisterMutation(token: token))
         if let data = data?.memberDeviceRegister {
             log.info("Did register CustomerIO push token for user")
         } else {
