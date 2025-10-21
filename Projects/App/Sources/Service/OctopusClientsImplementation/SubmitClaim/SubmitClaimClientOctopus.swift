@@ -234,11 +234,12 @@ extension GraphQLMutation {
     where
         ClaimStep.To == SubmitClaimStep, Self.Data: ClaimStepContext,
         Self.Data: ClaimStepProgress, Self.Data: ClaimId,
-        Self.Data: NextStepId
+        Self.Data: NextStepId,
+        Self.ResponseFormat == SingleResponseFormat
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
         do {
-            let data = try await octopus.client.perform(mutation: self)
+            let data = try await octopus.client.performMutation(mutation: self)!
             let claimId = data.getClaimId()
             let context = data.getContext()
             let nextStepId = data.getNextStepId()

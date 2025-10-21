@@ -11,11 +11,11 @@ class MoveFlowClientOctopus: MoveFlowClient {
 
     func sendMoveIntent() async throws -> MoveConfigurationModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
-        let data = try await octopus.client.perform(mutation: mutation)
+        let data = try await octopus.client.performMutation(mutation: mutation)
 
-        if let moveIntentFragment = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
+        if let moveIntentFragment = data?.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
             return MoveConfigurationModel(from: moveIntentFragment)
-        } else if let userError = data.moveIntentCreate.userError?.message {
+        } else if let userError = data?.moveIntentCreate.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
@@ -29,8 +29,8 @@ class MoveFlowClientOctopus: MoveFlowClient {
             ),
             moveFromAddressId: input.selectedAddressId,
             movingDate: input.addressInputModel.accessDate?.localDateString ?? "",
-            numberCoInsured: input.addressInputModel.nbOfCoInsured,
-            squareMeters: Int(input.addressInputModel.squareArea) ?? 0,
+            numberCoInsured: Int32(input.addressInputModel.nbOfCoInsured),
+            squareMeters: Int32(input.addressInputModel.squareArea) ?? 0,
             apartment: GraphQLNullable(optionalValue: apartmentInput(addressInputModel: input.addressInputModel)),
             house: GraphQLNullable(
                 optionalValue: houseInput(
@@ -45,10 +45,10 @@ class MoveFlowClientOctopus: MoveFlowClient {
             input: moveIntentRequestInput
         )
 
-        let data = try await octopus.client.perform(mutation: mutation)
-        if let moveIntentFragment = data.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
+        let data = try await octopus.client.performMutation(mutation: mutation)
+        if let moveIntentFragment = data?.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
             return MoveQuotesModel(from: moveIntentFragment)
-        } else if let userError = data.moveIntentRequest.userError?.message {
+        } else if let userError = data?.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
@@ -63,11 +63,11 @@ class MoveFlowClientOctopus: MoveFlowClient {
         let delayTask = Task {
             try await Task.sleep(nanoseconds: 3_000_000_000)
         }
-        let data = try await octopus.client.perform(mutation: mutation)
+        let data = try await octopus.client.performMutation(mutation: mutation)
 
         try await delayTask.value
 
-        if let userError = data.moveIntentCommit.userError {
+        if let userError = data?.moveIntentCommit.userError {
             throw MovingFlowError.serverError(message: userError.message ?? "")
         }
     }
@@ -94,13 +94,13 @@ class MoveFlowClientOctopus: MoveFlowClient {
         case .house:
             guard let houseInformationInputModel = houseInformationInputModel else { return nil }
             return OctopusGraphQL.MoveToHouseInput(
-                ancillaryArea: Int(houseInformationInputModel.ancillaryArea) ?? 0,
-                yearOfConstruction: Int(houseInformationInputModel.yearOfConstruction) ?? 0,
-                numberOfBathrooms: houseInformationInputModel.bathrooms,
+                ancillaryArea: Int32(houseInformationInputModel.ancillaryArea) ?? 0,
+                yearOfConstruction: Int32(houseInformationInputModel.yearOfConstruction) ?? 0,
+                numberOfBathrooms: Int32(houseInformationInputModel.bathrooms),
                 isSubleted: houseInformationInputModel.isSubleted,
                 extraBuildings: houseInformationInputModel.extraBuildings.map {
                     OctopusGraphQL.MoveExtraBuildingInput(
-                        area: $0.livingArea,
+                        area: Int32($0.livingArea),
                         type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
                         hasWaterConnected: $0.connectedToWater
                     )
@@ -116,7 +116,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
             selectedHomeQuoteId: input.selectedHomeQuoteId
         )
 
-        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let data = try await octopus.client.fetchQuery(query: query)
         let totalGross = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyGross.fragments.moneyFragment)
         let totalNet = MonetaryAmount(fragment: data.moveIntentCost.totalCost.monthlyNet.fragments.moneyFragment)
 

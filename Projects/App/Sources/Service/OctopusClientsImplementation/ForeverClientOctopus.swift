@@ -8,7 +8,7 @@ class ForeverClientOctopus: ForeverClient {
 
     func getMemberReferralInformation() async throws -> ForeverData {
         let query = OctopusGraphQL.MemberReferralInformationQuery()
-        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let data = try await octopus.client.fetchQuery(query: query)
             .currentMember
 
         let referrals: [Referral] = data.referralInformation.referrals.map { referral in
@@ -41,8 +41,8 @@ class ForeverClientOctopus: ForeverClient {
 
     func changeCode(code: String) async throws {
         let mutation = OctopusGraphQL.MemberReferralInformationCodeUpdateMutation(code: code)
-        let response = try await octopus.client.perform(mutation: mutation)
-        if let errorMessage = response.memberReferralInformationCodeUpdate.userError?.message {
+        let response = try await octopus.client.performMutation(mutation: mutation)
+        if let errorMessage = response?.memberReferralInformationCodeUpdate.userError?.message {
             throw ForeverChangeCodeError.errorMessage(message: errorMessage)
         }
     }

@@ -14,68 +14,48 @@ extension hGraphQL.GraphQLError {
 }
 
 public enum GraphQLError: Error {
-    case graphQLError(errors: [Error])
+    case graphQLError(errors: [Apollo.GraphQLError])
     case otherError(error: Error)
 }
 
 @MainActor
 extension ApolloClient {
-    public func fetch<Query: GraphQLQuery>(
+    public func fetchQuery<Query: GraphQLQuery>(
         query: Query,
-        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
-        queue: DispatchQueue = DispatchQueue.main
-    ) async throws -> Query.Data {
-        try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<Query.Data, Error>) in
-            self.fetch(
-                query: query,
-                cachePolicy: cachePolicy,
-                contextIdentifier: nil,
-                queue: queue
-            ) { [weak self] result in
-                switch result {
-                case let .success(result):
-                    if let errors = result.errors {
-                        self?.logGraphQLException(error: GraphQLError.graphQLError(errors: errors), for: query)
-                        inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
-                    } else if let data = result.data {
-                        Task { @MainActor in
-                            inCont.resume(returning: data)
-                        }
-                    }
-                case let .failure(error):
-                    self?.logGraphQLException(error: error, for: query)
-                    inCont.resume(throwing: GraphQLError.otherError(error: error))
-                }
+        cachePolicy: CachePolicy.Query.SingleResponse = .networkOnly
+    ) async throws -> Query.Data where Query.ResponseFormat == SingleResponseFormat {
+        do {
+            let response = try await fetch(query: query, cachePolicy: .networkOnly, requestConfiguration: .init(requestTimeout: 30, writeResultsToCache: false))
+            if let errors = response.errors {
+//                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: err), for: <#T##any GraphQLOperation#>)
+//                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: errors), for: query)
+                throw GraphQLError.graphQLError(errors: errors)
+            } else if let data = response.data {
+                return data
             }
+        } catch let error{
+            throw  GraphQLError.otherError(error: error)
         }
+        throw GraphQLError.graphQLError(errors: [])
     }
 
-    public func perform<Mutation: GraphQLMutation>(
+    public func performMutation<Mutation: GraphQLMutation>(
         mutation: Mutation,
         queue: DispatchQueue = DispatchQueue.main
-    ) async throws -> Mutation.Data {
-        try await withCheckedThrowingContinuation {
-            (inCont: CheckedContinuation<Mutation.Data, Error>) in
-            self.perform(
-                mutation: mutation,
-                queue: queue
-            ) { [weak self] result in
-                switch result {
-                case let .success(result):
-                    if let errors = result.errors {
-                        self?.logGraphQLException(error: GraphQLError.graphQLError(errors: errors), for: mutation)
-                        inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
-                    } else if let data = result.data {
-                        Task { @MainActor in
-                            inCont.resume(returning: data)
-                        }
-                    }
-                case let .failure(error):
-                    self?.logGraphQLException(error: error, for: mutation)
-                    inCont.resume(throwing: GraphQLError.otherError(error: error))
-                }
+    ) async throws -> Mutation.Data? where Mutation.ResponseFormat == SingleResponseFormat {
+        do {
+            let response = try await self.perform(mutation: mutation, requestConfiguration: .init(requestTimeout: 10, writeResultsToCache: false))
+            if let errors = response.errors {
+                //                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: err), for: <#T##any GraphQLOperation#>)
+                //                self.logGraphQLException(error: GraphQLError2.graphQLError(errors: errors), for: query)
+                throw GraphQLError.graphQLError(errors: errors)
+            } else if let data = response.data {
+                return data
+            } else {
+                return nil
             }
+        } catch let error {
+            throw GraphQLError.otherError(error: error)
         }
     }
 
@@ -89,13 +69,13 @@ extension ApolloClient {
             case .networkIssue:
                 graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
             }
-        } else if let error = error as? URLSessionClient.URLSessionClientError {
-            switch error {
-            case .networkError:
-                graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
-            default:
-                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
-            }
+//        } else if let error = error as? ApolloURLSession.URLSessionClientError {
+//            switch error {
+//            case .networkError:
+//                graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
+//            default:
+//                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
+//            }
         } else if let error = error as? GraphQLError {
             graphQlLogger.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
             graphQlLogger.error("graphQL error \(error.logDescription)", error: error, attributes: [:])

@@ -22,19 +22,18 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 source: .case(source)
             )
             let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)
-            let createIntentResponse = try await octopus.client.perform(mutation: mutation)
+            let createIntentResponse = try await octopus.client.performMutation(mutation: mutation)
             let contractsQuery = OctopusGraphQL.ContractQuery(contractId: input.contractId)
 
-            let contractResponse = try await octopus.client.fetch(
-                query: contractsQuery,
-                cachePolicy: .fetchIgnoringCacheCompletely
+            let contractResponse = try await octopus.client.fetchQuery(
+                query: contractsQuery
             )
 
-            if let error = createIntentResponse.changeTierDeductibleCreateIntent.userError, let message = error.message
+            if let error = createIntentResponse?.changeTierDeductibleCreateIntent.userError, let message = error.message
             {
                 throw ChangeTierError.errorMessage(message: message)
             }
-            guard let intent = createIntentResponse.changeTierDeductibleCreateIntent.intent else {
+            guard let intent = createIntentResponse?.changeTierDeductibleCreateIntent.intent else {
                 throw ChangeTierError.somethingWentWrong
             }
             let currentContract = contractResponse.contract
@@ -82,11 +81,11 @@ class ChangeTierClientOctopus: ChangeTierClient {
             let delayTask = Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
             }
-            let data = try await octopus.client.perform(mutation: mutation)
+            let data = try await octopus.client.performMutation(mutation: mutation)
 
             try await delayTask.value
 
-            if let userError = data.changeTierDeductibleCommitIntent.userError?.message {
+            if let userError = data?.changeTierDeductibleCommitIntent.userError?.message {
                 throw ChangeTierError.errorMessage(message: userError)
             }
         } catch {
@@ -235,9 +234,8 @@ class ChangeTierClientOctopus: ChangeTierClient {
     func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
         do {
             let productVariantQuery = OctopusGraphQL.ProductVariantComparisonQuery(termsVersions: termsVersion)
-            let productVariantData = try await octopus.client.fetch(
-                query: productVariantQuery,
-                cachePolicy: .fetchIgnoringCacheCompletely
+            let productVariantData = try await octopus.client.fetchQuery(
+                query: productVariantQuery
             )
 
             let productVariantRows: [ProductVariantComparison.ProductVariantComparisonRow] =

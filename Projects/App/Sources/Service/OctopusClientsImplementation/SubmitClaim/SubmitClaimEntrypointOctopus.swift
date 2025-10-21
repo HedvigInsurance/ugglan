@@ -6,9 +6,8 @@ class FetchEntrypointsClientOctopus: hFetchEntrypointsClient {
     @Inject private var octopus: hOctopus
 
     func get() async throws -> [ClaimEntryPointGroupResponseModel] {
-        let data = try await octopus.client.fetch(
-            query: OctopusGraphQL.EntrypointGroupsQuery(type: GraphQLEnum<OctopusGraphQL.EntrypointType>(.claim)),
-            cachePolicy: .fetchIgnoringCacheCompletely
+        let data = try await octopus.client.fetchQuery(
+            query: OctopusGraphQL.EntrypointGroupsQuery(type: GraphQLEnum<OctopusGraphQL.EntrypointType>(.claim))
         )
         let entrypointModel = data.entrypointGroups.map { data in
             ClaimEntryPointGroupResponseModel(with: data.fragments.entrypointGroupFragment)

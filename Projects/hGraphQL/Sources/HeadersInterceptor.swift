@@ -7,46 +7,22 @@ public enum AuthError: Error {
     case networkIssue
 }
 
-class HeadersInterceptor: @preconcurrency ApolloInterceptor {
-    var id: String
+struct HeadersInterceptor: HTTPInterceptor {
     let headers: [String: String]
     init(
         headers: [String: String] = [:],
     ) {
         self.headers = headers
-        id = UUID().uuidString
     }
 
-    @MainActor
-    func interceptAsync<Operation: GraphQLOperation>(
-        chain: RequestChain,
-        request: HTTPRequest<Operation>,
-        response: HTTPResponse<Operation>?,
-        completion: @escaping (Result<GraphQLResult<Operation.Data>, Error>) -> Void
-    ) {
-        Task {
-            do {
-                try await TokenRefresher.shared.refreshIfNeeded()
-
-                headers.forEach { key, value in request.addHeader(name: key, value: value) }
-                let token = try await ApolloClient.retreiveToken()
-                if let token = token {
-                    request.addHeader(name: "Authorization", value: "Bearer " + token.accessToken)
-                }
-                chain.proceedAsync(
-                    request: request,
-                    response: response,
-                    interceptor: self,
-                    completion: completion
-                )
-            } catch {
-                chain.handleErrorAsync(
-                    error,
-                    request: request,
-                    response: response,
-                    completion: completion
-                )
-            }
+    func intercept(request: URLRequest, next: (URLRequest) async throws -> HTTPResponse) async throws -> HTTPResponse {
+        try await TokenRefresher.shared.refreshIfNeeded()
+        var newRequest = request
+        headers.forEach { key, value in newRequest.setValue(value, forHTTPHeaderField: key) }
+        let token = try await ApolloClient.retreiveToken()
+        if let token = token {
+            newRequest.setValue("Bearer " + token.accessToken, forHTTPHeaderField: "Authorization")
         }
+        return try await next(newRequest)
     }
 }

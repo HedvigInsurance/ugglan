@@ -9,7 +9,7 @@ class ConversationsClientOctopus: ConversationsClient {
 
     func getConversations() async throws -> [Conversation] {
         let query = hGraphQL.OctopusGraphQL.ConversationsQuery()
-        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let data = try await octopus.client.fetchQuery(query: query)
         let conversationsFragment = data.currentMember.conversations.compactMap(\.fragments.conversationFragment)
         var conversations = conversationsFragment.compactMap { $0.asConversation(type: .service) }
 
@@ -36,7 +36,7 @@ class ConversationsClientOctopus: ConversationsClient {
     func createConversation(with id: UUID) async throws -> Conversation {
         let input = OctopusGraphQL.ConversationStartInput(id: id.uuidString)
         let mutation = hGraphQL.OctopusGraphQL.ConversationStartMutation(input: input)
-        let data = try await octopus.client.perform(mutation: mutation)
+        let data = try await octopus.client.performMutation(mutation: mutation)!
         let conversationsFragment = data.conversationStart.fragments.conversationFragment
 
         return .init(fragment: conversationsFragment, type: .service)
@@ -70,7 +70,7 @@ class ConversationClientOctopus: ConversationClient {
             fileUploadToken: .init(optionalValue: fileToken)
         )
         let mutation = hGraphQL.OctopusGraphQL.ConversationSendMessageMutation(input: input)
-        let data = try await octopus.client.perform(mutation: mutation)
+        let data = try await octopus.client.performMutation(mutation: mutation)!
         if let message = data.conversationSendMessage.message?.fragments.messageFragment {
             return message.asMessage()
         } else if let errorMessage = data.conversationSendMessage.userError?.message {
@@ -91,7 +91,7 @@ class ConversationClientOctopus: ConversationClient {
         )
 
         guard
-            let conversation = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+            let conversation = try await octopus.client.fetchQuery(query: query)
                 .conversation
         else {
             throw ConversationsError.missingConversation

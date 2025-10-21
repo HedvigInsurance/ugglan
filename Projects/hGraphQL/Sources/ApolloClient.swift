@@ -68,7 +68,6 @@ extension ApolloClient {
         let headers = await headers()
 
         let networkInterceptorProvider = NetworkInterceptorProvider(
-            store: store,
             dynamicHeaders: {
                 [
                     "Accept-Language": acceptLanguageHeader,
@@ -79,14 +78,15 @@ extension ApolloClient {
         )
 
         let requestChainTransport = RequestChainNetworkTransport(
+            urlSession: URLSession(
+                configuration: .default,
+                delegate: urlSessionClientProvider(),
+                delegateQueue: nil
+            ),
             interceptorProvider: networkInterceptorProvider,
+            store: store,
             endpointURL: environment.octopusEndpointURL
         )
-
-        let clientName = "iOS:\(bundle?.bundleIdentifier ?? "")"
-
-        requestChainTransport.clientName = clientName
-        requestChainTransport.clientVersion = appVersion
 
         let client = ApolloClient(networkTransport: requestChainTransport, store: store)
 

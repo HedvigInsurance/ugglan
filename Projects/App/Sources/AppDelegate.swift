@@ -137,11 +137,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupSession() async {
-        await DI.initNetworkClients()
-        DI.initAndRegisterClient()
         urlSessionClientProvider = {
             InterceptingURLSessionClient()
         }
+        await DI.initNetworkClients()
+        DI.initAndRegisterClient()
+
         setupAnalyticsAndTracking()
 
         localizationObserverTask = Localization.Locale.currentLocale
