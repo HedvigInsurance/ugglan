@@ -89,7 +89,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
 
     func headerElement(for model: PageModel) -> some View {
         hText(model.title, style: .label)
-            .padding(.vertical, 3)
+            .padding(.vertical, 6.5)
             .foregroundColor(hTextColor.Opaque.primary)
             .frame(maxWidth: .infinity)
             .onTapGesture {
