@@ -1,6 +1,6 @@
-query CrossSell($source: CrossSellSource!) {
+query CrossSell($input: CrossSellInput!) {
   currentMember {
-	  crossSell(source: $source) {
+	  crossSellV2(input: $input) {
 		  otherCrossSells {
 			  ...CrossSellFragment
 		  }
@@ -25,14 +25,6 @@ query CrossSell($source: CrossSellSource!) {
 		  }
 	  }
 	}
-}
-
-query CrossSells {
-  currentMember {
-    crossSells {
-	...CrossSellFragment
-    }
-  }
 }
 
 fragment CrossSellFragment on CrossSell {
