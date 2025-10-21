@@ -140,29 +140,15 @@ struct EditScreen: View {
     private var bottomView: some View {
         hSection {
             VStack(spacing: .padding8) {
-                Group {
-                    switch type {
-                    case .tiers:
-                        hContinueButton {
-                            confirm()
-                        }
-                    case .deductible:
-                        hButton(
-                            .large,
-                            .primary,
-                            content: .init(title: L10n.generalConfirm),
-                            {
-                                confirm()
-                            }
-                        )
-                    case .addon:
-                        hContinueButton {
-                            confirm()
-                        }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.generalConfirm),
+                    {
+                        confirm()
                     }
-                }
+                )
                 .accessibilityHint(hint)
-
                 hCancelButton {
                     dismissEdit()
                 }
