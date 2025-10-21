@@ -92,7 +92,8 @@ public class FeatureFlags: ObservableObject {
         featureDataCancellable = client.featureData
             .receive(on: RunLoop.main)
             .removeDuplicates()
-            .sink { data in
+            .sink { [weak self] data in
+                guard let self = self else { return }
                 Task {
                     log.info(
                         "Feature flag set",

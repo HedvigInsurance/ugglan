@@ -4,7 +4,7 @@ import hCore
 
 public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
     public static let NAME = "trustlyOpenURLScheme"
-    var webView: WKWebView
+    weak var webView: WKWebView?
 
     public init(webView: WKWebView) { self.webView = webView }
 
@@ -20,7 +20,7 @@ public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
             }
             let template = "%@(%@,\"%@\");"
             let js = String(format: template, callback, String(canOpenApplicationUrl), urlscheme)
-            webView.evaluateJavaScript(js, completionHandler: nil)
+            webView?.evaluateJavaScript(js, completionHandler: nil)
         }
     }
 

@@ -58,6 +58,7 @@ struct TooltipView: View {
     @State private var isTooltipVisible: Bool = false
     @State private var xOffset: CGFloat = 0
     @State private var yOffset: CGFloat = 0
+    @State private var autoHideTask: Task<Void, Never>?
     @StateObject private var toolTipManager = ToolTipManager.shared
 
     // MARK: - Init
@@ -99,6 +100,9 @@ struct TooltipView: View {
                 .opacity(0)
         }
         .onAppear(perform: showTooltipWithDelay)
+        .onDisappear {
+            autoHideTask?.cancel()
+        }
     }
 
     // MARK: - Tooltip Triangle
@@ -149,8 +153,9 @@ struct TooltipView: View {
     }
 
     private func startAutoHideTimer() {
-        Task {
-            try await Task.sleep(nanoseconds: 4_000_000_000)
+        autoHideTask = Task {
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            guard !Task.isCancelled else { return }
             if #available(iOS 17.0, *) {
                 withAnimation(.defaultSpring) {
                     isTooltipVisible = false
