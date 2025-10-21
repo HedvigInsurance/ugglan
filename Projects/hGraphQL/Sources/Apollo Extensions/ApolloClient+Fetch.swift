@@ -25,7 +25,11 @@ extension ApolloClient {
         cachePolicy: CachePolicy.Query.SingleResponse = .networkOnly
     ) async throws -> Query.Data where Query.ResponseFormat == SingleResponseFormat {
         do {
-            let response = try await fetch(query: query, cachePolicy: .networkOnly, requestConfiguration: .init(requestTimeout: 30, writeResultsToCache: false))
+            let response = try await fetch(
+                query: query,
+                cachePolicy: .networkOnly,
+                requestConfiguration: .init(requestTimeout: 30, writeResultsToCache: false)
+            )
             if let errors = response.errors {
                 self.logGraphQLException(errors: errors, for: query)
                 throw GraphQLError.graphQLError(errors: errors)
@@ -33,7 +37,7 @@ extension ApolloClient {
                 return data
             }
             throw GraphQLError.graphQLError(errors: [])
-        } catch let error{
+        } catch let error {
             logGraphQLException(errors: [error], for: query)
             throw GraphQLError.otherError(error: error)
         }
@@ -43,7 +47,10 @@ extension ApolloClient {
         mutation: Mutation
     ) async throws -> Mutation.Data? where Mutation.ResponseFormat == SingleResponseFormat {
         do {
-            let response = try await self.perform(mutation: mutation, requestConfiguration: .init(requestTimeout: 10, writeResultsToCache: false))
+            let response = try await self.perform(
+                mutation: mutation,
+                requestConfiguration: .init(requestTimeout: 10, writeResultsToCache: false)
+            )
             if let errors = response.errors {
                 self.logGraphQLException(errors: errors, for: mutation)
                 throw GraphQLError.graphQLError(errors: errors)
