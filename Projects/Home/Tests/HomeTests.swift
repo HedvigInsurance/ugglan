@@ -151,7 +151,6 @@ final class HomeTests: XCTestCase {
                 return messageState
             }
         )
-        print("ITERATION \(iteration)")
         let store = HomeStore()
         let storeInitialLatestConversationTimeStamp = store.state.latestConversationTimeStamp
         store.send(.fetchMemberState)

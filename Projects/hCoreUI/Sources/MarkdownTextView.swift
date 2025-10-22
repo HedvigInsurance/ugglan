@@ -85,6 +85,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIView, context _: Context) {
         if let textView = uiView.subviews.first as? CustomTextView {
+            textView.colorScheme = colorScheme
             textView.setContent(from: config.text)
             textView.calculateHeight()
             if let accessibilityLabel {
@@ -137,7 +138,7 @@ class CustomTextView: UITextView, UITextViewDelegate {
         }
     }
 
-    private func configureTextView() {
+    func configureTextView() {
         backgroundColor = .clear
         isEditable = false
         isUserInteractionEnabled = true

@@ -225,7 +225,6 @@ public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowNavigationVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
     private let onMoved: () -> Void
-    @State var cancellable: AnyCancellable?
 
     public init(
         onMoved: @escaping () -> Void

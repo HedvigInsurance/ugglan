@@ -7,12 +7,9 @@ struct CancelButton: View {
     @EnvironmentObject private var router: Router
 
     var body: some View {
-        hSection {
-            hCancelButton {
-                editCoInsuredNavigation.editCoInsuredConfig = nil
-                router.dismiss()
-            }
+        hCancelButton {
+            editCoInsuredNavigation.editCoInsuredConfig = nil
+            router.dismiss()
         }
-        .sectionContainerStyle(.transparent)
     }
 }

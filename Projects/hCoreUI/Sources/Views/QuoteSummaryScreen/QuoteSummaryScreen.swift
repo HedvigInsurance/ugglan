@@ -325,7 +325,7 @@ private struct PriceSummarySection: View {
                     net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(
-                    documents: [],
+                    documents: documents,
                     onTap: { document in }
                 ),
                 displayItems: [

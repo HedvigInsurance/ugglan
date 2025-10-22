@@ -30,14 +30,14 @@ struct InsuredPeopleScreen: View {
     }
 
     private var bottomContent: some View {
-        VStack(spacing: .padding8) {
-            hSection {
+        hSection {
+            VStack(spacing: .padding8) {
                 buttonView
                 CancelButton()
                     .disabled(intentViewModel.isLoading)
             }
-            .sectionContainerStyle(.transparent)
         }
+        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder

@@ -3,7 +3,7 @@ import UIKit
 import WebKit
 
 class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
-    let presentingViewController: UIViewController
+    weak var presentingViewController: UIViewController?
 
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else { return }
@@ -20,7 +20,7 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
             )
             let action = UIAlertAction(title: L10n.trustlyMissingBankIdAppAlertAction, style: .default)
             alert.addAction(action)
-            presentingViewController.present(alert, animated: true)
+            presentingViewController?.present(alert, animated: true)
         }
     }
 

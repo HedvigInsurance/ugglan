@@ -8,7 +8,6 @@ public struct SVGImageProcessor: ImageProcessor {
     public func process(item: ImageProcessItem, options _: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
         switch item {
         case let .image(image):
-            print("already an image")
             return image
         case let .data(data):
             let imsvg = SVGKImage(data: data)

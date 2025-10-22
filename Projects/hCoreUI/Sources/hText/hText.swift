@@ -203,17 +203,6 @@ struct hFloatingTextFieldd_Previews: PreviewProvider {
         VStack {
             SwiftUI.TextField("Placeholder", text: $value)
                 .modifier(hFontModifier(style: .body2))
-                .background {
-                    GeometryReader { proxy in
-                        Color.red
-                            .onAppear {
-                                print("TOTAL HEIGHT IS \(proxy.size.height)")
-                            }
-                            .onChange(of: proxy.size) { size in
-                                print("TOTAL HEIGHT IS \(size.height)")
-                            }
-                    }
-                }
         }
         .hFieldSize(.large)
     }

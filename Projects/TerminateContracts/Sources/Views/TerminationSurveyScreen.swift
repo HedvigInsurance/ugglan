@@ -230,11 +230,8 @@ class SurveyScreenViewModel: ObservableObject {
 
         if let suggestion = selectedOption?.suggestion {
             switch suggestion {
-            case let .action(action):
-                if action.action == .updateAddress {
-                    continueEnabled = false
-                }
-                continueEnabled = true
+            case .action:
+                continueEnabled = false
             default:
                 continueEnabled = true
             }

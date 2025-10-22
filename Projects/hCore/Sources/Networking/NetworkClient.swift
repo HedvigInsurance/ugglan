@@ -4,9 +4,8 @@ import SwiftUI
 @MainActor
 public final class NetworkClient {
     public let sessionClient: URLSession
-    public init() {
-        let config = URLSessionConfiguration.default
-        sessionClient = URLSession(configuration: config)
+    public init(sessionClient: URLSession) {
+        self.sessionClient = sessionClient
     }
 
     public func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) async throws -> T?
