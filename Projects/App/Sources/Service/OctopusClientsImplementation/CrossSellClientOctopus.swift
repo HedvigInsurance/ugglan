@@ -13,7 +13,7 @@ class CrossSellClientOctopus: CrossSellClient {
             experiments: []
         )
         let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)
-        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let crossSells = try await octopus.client.fetch(query: query)
         return crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
         }
@@ -34,7 +34,7 @@ class CrossSellClientOctopus: CrossSellClient {
         )
 
         let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)
-        let crossSells = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let crossSells = try await octopus.client.fetch(query: query)
         let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
         }
@@ -50,7 +50,7 @@ class CrossSellClientOctopus: CrossSellClient {
 
     func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         let query = OctopusGraphQL.UpsellTravelAddonBannerCrossSellQuery(flow: .case(source.getSource))
-        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let data = try await octopus.client.fetch(query: query)
         let bannerData = data.currentMember.upsellTravelAddonBanner
 
         if let bannerData, !bannerData.contractIds.isEmpty {

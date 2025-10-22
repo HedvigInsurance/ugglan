@@ -12,7 +12,7 @@ class HomeClientOctopus: HomeClient {
         let data =
             try await octopus
             .client
-            .fetch(query: OctopusGraphQL.ImportantMessagesQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
+            .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
         let messages = data.currentMember.importantMessages.map { data in
             let link: ImportantMessage.LinkInfo? = {
                 if let linkInfo = data.linkInfo, let url = URL(string: linkInfo.url) {
@@ -29,7 +29,7 @@ class HomeClientOctopus: HomeClient {
         let data =
             try await octopus
             .client
-            .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
+            .fetch(query: OctopusGraphQL.HomeQuery())
 
         let memberId = data.currentMember.id
         let isContactInfoUpdateNeeded = data.currentMember.memberActions?.isContactInfoUpdateNeeded ?? false
@@ -48,8 +48,7 @@ class HomeClientOctopus: HomeClient {
     func getQuickActions() async throws -> [QuickAction] {
         let data = try await octopus.client
             .fetch(
-                query: OctopusGraphQL.MemberActionsQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
+                query: OctopusGraphQL.MemberActionsQuery()
             )
 
         var quickActions = [QuickAction]()
@@ -112,8 +111,7 @@ class HomeClientOctopus: HomeClient {
 
     func getMessagesState() async throws -> MessageState {
         let data = try await octopus.client.fetch(
-            query: OctopusGraphQL.ConversationsTimeStampQuery(),
-            cachePolicy: .fetchIgnoringCacheCompletely
+            query: OctopusGraphQL.ConversationsTimeStampQuery()
         )
 
         var conversationsTimestamps = data.currentMember.conversations.map {
@@ -142,7 +140,7 @@ class HomeClientOctopus: HomeClient {
 
     func getFAQ() async throws -> HelpCenterFAQModel {
         let query = OctopusGraphQL.MemberFAQQuery()
-        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let data = try await octopus.client.fetch(query: query)
         return data.asHelpCenterModel
     }
 }

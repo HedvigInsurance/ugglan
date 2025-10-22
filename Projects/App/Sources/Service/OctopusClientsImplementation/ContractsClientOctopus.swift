@@ -13,7 +13,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
         let query = OctopusGraphQL.ContractBundleQuery(
             options: .some(OctopusGraphQL.DisplayItemOptions(hidePrice: true))
         )
-        let contractsData = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let contractsData = try await octopus.client.fetch(query: query)
         return .init(
             activeContracts: handleActiveContracts(data: contractsData),
             pendingContracts: handlePendingContracts(data: contractsData),
@@ -23,7 +23,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
 
     func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(flow: .case(source.getSource))
-        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let data = try await octopus.client.fetch(query: query)
         let bannerData = data.currentMember.upsellTravelAddonBanner
 
         if let bannerData, !bannerData.contractIds.isEmpty {

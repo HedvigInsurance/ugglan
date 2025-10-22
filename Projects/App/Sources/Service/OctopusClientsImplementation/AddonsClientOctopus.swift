@@ -9,14 +9,14 @@ class AddonsClientOctopus: AddonsClient {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
 
-            let addonOfferData = try await octopus.client.perform(mutation: mutation)
-            let response = addonOfferData.upsellTravelAddonOffer
+            let addonOfferData = try await octopus.client.mutation(mutation: mutation)
+            let response = addonOfferData?.upsellTravelAddonOffer
 
-            if let error = response.userError, let message = error.message {
+            if let error = response?.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
             }
 
-            guard let addonOffer = response.offer else {
+            guard let addonOffer = response?.offer else {
                 throw AddonsError.somethingWentWrong
             }
 
@@ -68,9 +68,9 @@ class AddonsClientOctopus: AddonsClient {
             let delayTask = Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
             }
-            let response = try await octopus.client.perform(mutation: mutation)
+            let response = try await octopus.client.mutation(mutation: mutation)
             try await delayTask.value
-            if let error = response.upsellTravelAddonActivate.userError, let message = error.message {
+            if let error = response?.upsellTravelAddonActivate.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
             }
         } catch let exception {

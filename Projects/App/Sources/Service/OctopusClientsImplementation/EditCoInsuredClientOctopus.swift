@@ -12,8 +12,8 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
             try await Task.sleep(nanoseconds: 3_000_000_000)
         }
         let clientTask = Task { @MainActor in
-            let data = try await octopus.client.perform(mutation: mutation)
-            if let error = data.midtermChangeIntentCommit.userError {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let error = data?.midtermChangeIntentCommit.userError {
                 return error.message
             }
             return nil
@@ -29,8 +29,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         let query = OctopusGraphQL.PersonalInformationQuery(input: SSNInput)
         do {
             let data = try await octopus.client.fetch(
-                query: query,
-                cachePolicy: .fetchIgnoringCacheCompletely
+                query: query
             )
             guard let data = data.personalInformation else {
                 throw EditCoInsuredError.missingSSN
@@ -70,12 +69,11 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
             contractId: contractId,
             input: coinsuredInput
         )
-        let data = try await octopus.client.perform(mutation: mutation).midtermChangeIntentCreate
-
-        if let userError = data.userError {
+        let data = try await octopus.client.mutation(mutation: mutation)?.midtermChangeIntentCreate
+        if let userError = data?.userError {
             throw EditCoInsuredError.serviceError(message: userError.message ?? L10n.General.errorBody)
         }
-        guard let intent = data.intent else {
+        guard let intent = data?.intent else {
             throw EditCoInsuredError.serviceError(message: L10n.General.errorBody)
         }
         return Intent(
@@ -92,8 +90,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
     func fetchContracts() async throws -> [Contract] {
         let query = OctopusGraphQL.ContractsQuery()
         let data = try await octopus.client.fetch(
-            query: query,
-            cachePolicy: .fetchIgnoringCacheCompletely
+            query: query
         )
         return data.currentMember.activeContracts.compactMap { activeContract in
             Contract(

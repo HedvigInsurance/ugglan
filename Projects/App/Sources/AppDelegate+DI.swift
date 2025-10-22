@@ -77,7 +77,12 @@ enum DI {
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
-            let networkClient = NetworkClient()
+            let networkClientUrlSession = URLSession(
+                configuration: .default,
+                delegate: urlSessionTaskDeleage(),
+                delegateQueue: nil
+            )
+            let networkClient = NetworkClient(sessionClient: networkClientUrlSession)
             let moveFlowService = MoveFlowClientOctopus()
             let foreverService = ForeverClientOctopus()
             let profileService = ProfileClientOctopus()

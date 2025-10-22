@@ -9,8 +9,7 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
     func getActiveClaims() async throws -> [ClaimModel] {
         if Dependencies.featureFlags().isClaimHistoryEnabled {
             let activeClaimsData = try await octopus.client.fetch(
-                query: OctopusGraphQL.ActiveClaimsQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
+                query: OctopusGraphQL.ActiveClaimsQuery()
             )
             let activeClaims = activeClaimsData.currentMember.claimsActive.map {
                 ClaimModel(claim: $0.fragments.claimFragment)
@@ -18,8 +17,7 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
             return activeClaims
         } else {
             let data = try await octopus.client.fetch(
-                query: OctopusGraphQL.ClaimsQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
+                query: OctopusGraphQL.ClaimsQuery()
             )
             let claims = data.currentMember.claims.map { ClaimModel(claim: $0.fragments.claimFragment) }
             return claims
@@ -28,8 +26,7 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
 
     func getHistoryClaims() async throws -> [ClaimModel] {
         let historyClaimsData = try await octopus.client.fetch(
-            query: OctopusGraphQL.HistoryClaimsQuery(),
-            cachePolicy: .fetchIgnoringCacheCompletely
+            query: OctopusGraphQL.HistoryClaimsQuery()
         )
         let claimsHistory = historyClaimsData.currentMember.claimsHistory.map {
             ClaimModel(claim: $0.fragments.claimFragment)

@@ -59,7 +59,7 @@ extension AppDelegate {
 
         URLSessionInstrumentation.enable(
             with: .init(
-                delegateClass: URLSessionClient.self
+                delegateClass: InterceptingURLSessionClient.self
             )
         )
 
