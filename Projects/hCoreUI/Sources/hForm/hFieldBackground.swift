@@ -22,10 +22,10 @@ struct hFieldBackgroundModifier: ViewModifier {
             if error != nil {
                 hSignalColor.Amber.fill
             } else {
-                hSurfaceColor.Opaque.secondary
+                hSurfaceColor.Translucent.secondary
             }
         } else {
-            hSurfaceColor.Opaque.primary
+            hSurfaceColor.Translucent.primary
         }
     }
 }
