@@ -8,23 +8,38 @@ class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
 
     func getCrossSell() async throws -> [CrossSell] {
-        let query = OctopusGraphQL.CrossSellsQuery()
+        let crossSellsInput = OctopusGraphQL.CrossSellInput(
+            userFlow: GraphQLEnum<OctopusGraphQL.UserFlow>.case(.insurances),
+            experiments: []
+        )
+        let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)
         let crossSells = try await octopus.client.fetch(query: query)
-        return crossSells.currentMember.crossSells.compactMap {
+        return crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
         }
     }
 
     func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
-        let query = OctopusGraphQL.CrossSellQuery(
-            source: GraphQLEnum<OctopusGraphQL.CrossSellSource>(source.asGraphQLSource)
+        let flowSource: GraphQLNullable<GraphQLEnum<OctopusGraphQL.FlowSource>> = {
+            if let flowSource = source.asGraphQLFlowSource {
+                return .some(GraphQLEnum<OctopusGraphQL.FlowSource>(flowSource))
+            }
+            return
+                .null
+        }()
+        let crossSellsInput = OctopusGraphQL.CrossSellInput(
+            userFlow: GraphQLEnum<OctopusGraphQL.UserFlow>.case(source.asGraphQLUserFlow),
+            flowSource: flowSource,
+            experiments: []
         )
+
+        let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)
         let crossSells = try await octopus.client.fetch(query: query)
-        let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSell.otherCrossSells.compactMap {
+        let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
         }
         let recommendedCrossSell: CrossSell? = {
-            if let crossSellFragment = crossSells.currentMember.crossSell.recommendedCrossSell {
+            if let crossSellFragment = crossSells.currentMember.crossSellV2.recommendedCrossSell {
                 return CrossSell(crossSellFragment)
             }
             return nil
@@ -63,7 +78,7 @@ extension CrossSell {
         )
     }
 
-    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSell.RecommendedCrossSell) {
+    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSellV2.RecommendedCrossSell) {
         let crossSellFragment = data.crossSell.fragments.crossSellFragment
         self.init(
             id: crossSellFragment.id,
@@ -84,13 +99,23 @@ extension CrossSell {
 }
 
 extension CrossSellSource {
-    fileprivate var asGraphQLSource: OctopusGraphQL.CrossSellSource {
+    fileprivate var asGraphQLUserFlow: OctopusGraphQL.UserFlow {
         switch self {
-        case .home: return .home
+        case .home: return .homeXSell
+        case .closedClaim: return .smartXSell
+        case .changeTier: return .smartXSell
+        case .addon: return .smartXSell
+        case .movingFlow: return .smartXSell
+        }
+    }
+
+    fileprivate var asGraphQLFlowSource: OctopusGraphQL.FlowSource? {
+        switch self {
+        case .home: return nil
         case .closedClaim: return .closedClaim
         case .changeTier: return .changeTier
         case .addon: return .addon
-        case .movingFlow: return .movingFlow
+        case .movingFlow: return .moving
         }
     }
 }
