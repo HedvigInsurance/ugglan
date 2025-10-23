@@ -63,9 +63,9 @@ struct TerminationDeflectAutoDecomScreen: View {
             hButton(
                 .large,
                 .ghost,
-                content: .init(title: L10n.CrossSell.Info.faqChatButton)
+                content: .init(title: L10n.terminationButton)
             ) {
-                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                //TODO: Add action
             }
         }
     }
