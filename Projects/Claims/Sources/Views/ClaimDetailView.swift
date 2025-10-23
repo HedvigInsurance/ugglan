@@ -125,6 +125,7 @@ public struct ClaimDetailView: View {
                 if let statusParagraph {
                     hRow {
                         hText(statusParagraph, style: .body1)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     hRowDivider()
                         .hWithoutHorizontalPadding([.divider])

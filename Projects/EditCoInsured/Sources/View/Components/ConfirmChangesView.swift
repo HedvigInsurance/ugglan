@@ -14,7 +14,7 @@ struct ConfirmChangesView: View {
     }
 
     var body: some View {
-        VStack(spacing: .padding16) {
+        VStack(spacing: 0) {
             if intentViewModel.showPriceBreakdown {
                 priceBreakdownView
             }
