@@ -18,6 +18,10 @@ public protocol TerminateContractsClient {
         inputData: String?
     ) async throws -> TerminateStepResponse
 
+    func sendContinueAfterDecom(
+        terminationContext: String
+    ) async throws -> TerminateStepResponse
+
     func getNotification(
         contractId: String,
         date: Date

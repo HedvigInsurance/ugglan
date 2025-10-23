@@ -4,9 +4,15 @@ import hCoreUI
 
 struct TerminationDeflectAutoDecomScreen: View {
     @EnvironmentObject var router: Router
+    @ObservedObject var vm: TerminationDeflectAutoDecomViewModel
     let model: TerminationFlowDeflectAutoDecomModel
-    init(model: TerminationFlowDeflectAutoDecomModel) {
+    init(
+        model: TerminationFlowDeflectAutoDecomModel,
+        navigation: TerminationFlowNavigationViewModel
+
+    ) {
         self.model = model
+        self.vm = .init(navigationVM: navigation)
     }
 
     var body: some View {
@@ -44,6 +50,17 @@ struct TerminationDeflectAutoDecomScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
+        .trackErrorState(for: $vm.state)
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: .init(
+                    buttonTitle: L10n.generalRetry,
+                    buttonAction: { [weak vm] in
+                        vm?.state = .success
+                    }
+                )
+            )
+        )
     }
 
     private var infoView: some View {
@@ -59,14 +76,16 @@ struct TerminationDeflectAutoDecomScreen: View {
             ) { [weak router] in
                 router?.dismiss()
             }
+            .disabled(vm.state == .loading)
 
             hButton(
                 .large,
                 .ghost,
                 content: .init(title: L10n.terminationButton)
-            ) {
-                //TODO: Add action
+            ) { [weak vm] in
+                vm?.continueWithTermination()
             }
+            .hButtonIsLoading(vm.state == .loading)
         }
     }
 
@@ -82,9 +101,38 @@ struct TerminationDeflectAutoDecomScreen: View {
     }
 }
 
-struct TerminationDeflectAutoDecomScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        TerminationDeflectAutoDecomScreen(model: .init())
-            .environmentObject(Router())
+#Preview {
+    TerminationDeflectAutoDecomScreen(model: .init(), navigation: .init(configs: [], terminateInsuranceViewModel: nil))
+        .environmentObject(Router())
+}
+
+@MainActor
+class TerminationDeflectAutoDecomViewModel: ObservableObject {
+    @Published var state: ProcessingState = .success
+    private let terminateContractsService = TerminateContractsService()
+    weak var navigationVM: TerminationFlowNavigationViewModel?
+    init(navigationVM: TerminationFlowNavigationViewModel) {
+        self.navigationVM = navigationVM
+    }
+
+    func continueWithTermination() {
+        if let context = navigationVM?.currentContext {
+            Task { [weak navigationVM] in
+                withAnimation {
+                    state = .loading
+                }
+                do {
+                    let step = try await terminateContractsService.sendContinueAfterDecom(terminationContext: context)
+                    navigationVM?.navigate(data: step, fromSelectInsurance: false)
+                    withAnimation {
+                        state = .success
+                    }
+                } catch let exp {
+                    withAnimation {
+                        state = .error(errorMessage: exp.localizedDescription)
+                    }
+                }
+            }
+        }
     }
 }

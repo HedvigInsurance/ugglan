@@ -173,7 +173,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     private let terminateContractsService = TerminateContractsService()
 
-    @Published var currentContext: String?
+    @Published private(set) var currentContext: String?
     @Published var progress: Float? = 0
     var previousProgress: Float?
     @Published var hasSelectInsuranceStep: Bool = false
@@ -527,7 +527,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openDeflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel) -> some View {
-        TerminationDeflectAutoDecomScreen(model: model)
+        TerminationDeflectAutoDecomScreen(model: model, navigation: vm)
             .withDismissButton()
     }
 
