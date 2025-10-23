@@ -8,7 +8,10 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
 
     func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
-            input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
+            input: OctopusGraphQL.FlowTerminationStartInput(
+                contractId: contractId,
+                supportedSteps: GraphQLNullable(optionalValue: supportedSteps())
+            ),
             context: nil
         )
         return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
@@ -71,6 +74,17 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
 
         return .init(with: terminationFlowNotification.fragments.flowTerminationNotificationFragment)
     }
+
+    func supportedSteps() -> [OctopusGraphQL.ID] {
+        [
+            OctopusGraphQL.Objects.FlowTerminationDateStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationFailedStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationSurveyStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationSuccessStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationDeletionStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationCarDeflectAutoCancelStep.typename,
+        ]
+    }
 }
 
 extension TerminationNotification {
@@ -101,6 +115,10 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
             return (step: .setSuccessStep(model: .init(terminationDate: step.terminationDate)), nil)
         } else if let step = asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
             return (step: .setTerminationSurveyStep(model: .init(with: step)), progress)
+        } else if let step = asFlowTerminationCarDeflectAutoCancelStep?.fragments
+            .flowTerminationCarDeflectAutoCancelStepStep
+        {
+            return (step: .setDeflectAutoCancel(model: .init(with: step)), progress)
         } else {
             return (step: .openTerminationUpdateAppScreen, nil)
         }
@@ -228,6 +246,12 @@ extension TerminationFlowSurveyStepModel {
             options: options,
             subTitleType: .default
         )
+    }
+}
+
+extension TerminationFlowDeflectAutoCancelModel {
+    init(with data: OctopusGraphQL.FlowTerminationCarDeflectAutoCancelStepStep) {
+        self.init(message: data.message)
     }
 }
 
