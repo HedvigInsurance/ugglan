@@ -82,8 +82,10 @@ struct TerminationDeflectAutoDecomScreen: View {
                 .large,
                 .ghost,
                 content: .init(title: L10n.terminationButton)
-            ) { [weak vm] in
-                vm?.continueWithTermination()
+            ) {
+                Task { [weak vm] in
+                    await vm?.continueWithTermination()
+                }
             }
             .hButtonIsLoading(vm.state == .loading)
         }
@@ -115,22 +117,20 @@ class TerminationDeflectAutoDecomViewModel: ObservableObject {
         self.navigationVM = navigationVM
     }
 
-    func continueWithTermination() {
+    func continueWithTermination() async {
         if let context = navigationVM?.currentContext {
-            Task { [weak navigationVM] in
+            withAnimation {
+                state = .loading
+            }
+            do {
+                let step = try await terminateContractsService.sendContinueAfterDecom(terminationContext: context)
+                navigationVM?.navigate(data: step, fromSelectInsurance: false)
                 withAnimation {
-                    state = .loading
+                    state = .success
                 }
-                do {
-                    let step = try await terminateContractsService.sendContinueAfterDecom(terminationContext: context)
-                    navigationVM?.navigate(data: step, fromSelectInsurance: false)
-                    withAnimation {
-                        state = .success
-                    }
-                } catch let exp {
-                    withAnimation {
-                        state = .error(errorMessage: exp.localizedDescription)
-                    }
+            } catch let exp {
+                withAnimation {
+                    state = .error(errorMessage: exp.localizedDescription)
                 }
             }
         }
