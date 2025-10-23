@@ -54,14 +54,22 @@ struct MockData {
         },
         getNotification: @escaping GetNotificaiton = { _, _ in
             nil
-        }
+        },
+        sendContinueOnDecom: @escaping SendContinueOnDecom = { context in
+            .init(
+                context: context,
+                step: .setTerminationSurveyStep(model: .init(id: "id", options: [], subTitleType: .generic)),
+                progress: 0
+            )
+        },
     ) -> MockTerminateContractsService {
         let service = MockTerminateContractsService(
             start: start,
             sendDate: sendDate,
             confirmDelete: confirmDelete,
             surveySend: surveySend,
-            getNotification: getNotification
+            getNotification: getNotification,
+            sendContinueOnDecom: sendContinueOnDecom
         )
         Dependencies.shared.add(module: Module { () -> TerminateContractsClient in service })
         return service
@@ -76,7 +84,9 @@ typealias StartTermination = (String) async throws -> TerminateStepResponse
 typealias SendTerminationDate = (String, String) async throws -> TerminateStepResponse
 typealias SendConfirmDelete = (String, TerminationFlowDeletionNextModel?) async throws -> TerminateStepResponse
 typealias SendSurvey = (String, String, String?) async throws -> TerminateStepResponse
+typealias SendContinueOnDecom = (String) async throws -> TerminateStepResponse
 typealias GetNotificaiton = (String, Date) async throws -> TerminationNotification?
+
 class MockTerminateContractsService: TerminateContractsClient {
     var events = [Event]()
 
@@ -85,12 +95,14 @@ class MockTerminateContractsService: TerminateContractsClient {
     var confirmDelete: SendConfirmDelete
     var surveySend: SendSurvey
     var getNotification: GetNotificaiton
+    var sendContinueOnDecom: SendContinueOnDecom
 
     enum Event {
         case startTermination
         case sendTerminationDate
         case sendConfirmDelete
         case sendSurvey
+        case sendContinueAfterDecom
         case getNotification
     }
 
@@ -99,13 +111,15 @@ class MockTerminateContractsService: TerminateContractsClient {
         sendDate: @escaping SendTerminationDate,
         confirmDelete: @escaping SendConfirmDelete,
         surveySend: @escaping SendSurvey,
-        getNotification: @escaping GetNotificaiton
+        getNotification: @escaping GetNotificaiton,
+        sendContinueOnDecom: @escaping SendContinueOnDecom
     ) {
         self.start = start
         self.sendDate = sendDate
         self.confirmDelete = confirmDelete
         self.surveySend = surveySend
         self.getNotification = getNotification
+        self.sendContinueOnDecom = sendContinueOnDecom
     }
 
     func startTermination(contractId: String) async throws -> TerminateStepResponse {
@@ -145,6 +159,12 @@ class MockTerminateContractsService: TerminateContractsClient {
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         events.append(.getNotification)
         let data = try await getNotification(contractId, date)
+        return data
+    }
+
+    func sendContinueAfterDecom(terminationContext: String) async throws -> TerminateContracts.TerminateStepResponse {
+        events.append(.sendContinueAfterDecom)
+        let data = try await sendContinueOnDecom(terminationContext)
         return data
     }
 }
