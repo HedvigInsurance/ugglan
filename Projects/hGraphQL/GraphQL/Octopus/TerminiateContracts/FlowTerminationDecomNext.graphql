@@ -1,0 +1,7 @@
+mutation FlowTerminationCarAutoDecomNext($input: FlowTerminationCarAutoDecomInput!, $context: FlowContext!) {
+  flowTerminationCarAutoDecomNext(input: $input, context: $context) {
+	  id
+	  ...FlowTerminationFragment
+	  context
+  }
+}
