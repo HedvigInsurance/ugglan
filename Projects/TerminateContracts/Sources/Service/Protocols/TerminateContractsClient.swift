@@ -39,6 +39,7 @@ public struct TerminateStepResponse: Equatable, Sendable {
 public enum TerminationContractStep: Equatable, Sendable {
     case setTerminationDateStep(model: TerminationFlowDateNextStepModel)
     case setTerminationDeletion(model: TerminationFlowDeletionNextModel)
+    case setDeflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel)
     case setSuccessStep(model: TerminationFlowSuccessNextModel)
     case setFailedStep(model: TerminationFlowFailedNextModel)
     case setTerminationSurveyStep(model: TerminationFlowSurveyStepModel)
