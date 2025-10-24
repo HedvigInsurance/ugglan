@@ -1,5 +1,4 @@
 import SwiftUI
-import hCore
 import hCoreUI
 
 struct ShakeEffect: GeometryEffect {

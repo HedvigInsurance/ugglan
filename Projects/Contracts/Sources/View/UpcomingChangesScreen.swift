@@ -84,32 +84,30 @@ struct UpcomingChangesScreen: View {
     }
 }
 
-struct UpcomingChangesScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale = .init(.en_SE)
-        return UpcomingChangesScreen(
-            agreement: .init(
-                id: UUID().uuidString,
-                basePremium: .sek(200),
-                itemCost: .init(premium: .init(gross: .sek(200), net: .sek(200)), discounts: []),
-                displayItems: [
-                    .init(title: "display item 1", value: "display item value 1"),
-                    .init(title: "display item 2", value: "display item value 2"),
-                ],
-                productVariant:
-                    ProductVariant(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: "",
-                        perils: [],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "",
-                        displayNameTier: "Standard",
-                        tierDescription: "Vårt mellanpaket med hög ersättning."
-                    ),
-                addonVariant: []
-            )
+#Preview {
+    Localization.Locale.currentLocale = .init(.en_SE)
+    return UpcomingChangesScreen(
+        agreement: .init(
+            id: UUID().uuidString,
+            basePremium: .sek(200),
+            itemCost: .init(premium: .init(gross: .sek(200), net: .sek(200)), discounts: []),
+            displayItems: [
+                .init(title: "display item 1", value: "display item value 1"),
+                .init(title: "display item 2", value: "display item value 2"),
+            ],
+            productVariant:
+                ProductVariant(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: "",
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "",
+                    displayNameTier: "Standard",
+                    tierDescription: "Vårt mellanpaket med hög ersättning."
+                ),
+            addonVariant: []
         )
-    }
+    )
 }

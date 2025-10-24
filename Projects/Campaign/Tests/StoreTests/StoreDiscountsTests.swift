@@ -25,7 +25,6 @@ final class StoreDiscountsTests: XCTestCase {
                 code: "code",
                 displayValue: MonetaryAmount.sek(30).formattedAmountPerMonth,
                 description: "title",
-                discountId: "code",
                 type: .discount(status: .terminated)
             )
         ]
@@ -42,9 +41,8 @@ final class StoreDiscountsTests: XCTestCase {
             referralsData: .init(
                 code: "code1",
                 discountPerMember: .init(amount: "10", currency: "SEK"),
-                discount: .init(amount: "10", currency: "SEK"),
                 referrals: [
-                    .init(id: "referralId", name: "name", code: nil, description: "desciption", status: .active)
+                    .init(id: "referralId", name: "name", code: nil, description: "desciption")
                 ]
             )
         )

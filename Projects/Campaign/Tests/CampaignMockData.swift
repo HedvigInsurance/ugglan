@@ -11,7 +11,6 @@ struct MockCampaignData {
                 referralsData: .init(
                     code: "code",
                     discountPerMember: .init(amount: "10", currency: "SEK"),
-                    discount: .init(amount: "10", currency: "SEK"),
                     referrals: []
                 )
             )

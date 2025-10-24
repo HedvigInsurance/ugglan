@@ -136,29 +136,27 @@ struct ClaimStatusBar: View {
     }
 }
 
-struct ClaimStatusBar_Previews: PreviewProvider {
-    static var previews: some View {
-        hForm {
-            hSection {
-                VStack {
-                    HStack {
-                        ClaimStatusBar(status: .submitted, outcome: .none)
-                    }
-                    //                    HStack {
-                    //                        ClaimStatusBar(status: .beingHandled, outcome: .none)
-                    //                    }
-                    //                    HStack {
-                    //                        ClaimStatusBar(status: .closed, outcome: .paid)
-                    //                    }
-                    //                    HStack {
-                    //                        ClaimStatusBar(status: .closed, outcome: .notCovered)
-                    //                    }
-                    //                    HStack {
-                    //                        ClaimStatusBar(status: .closed, outcome: .notCompensated)
-                    //                    }
+#Preview {
+    hForm {
+        hSection {
+            VStack {
+                HStack {
+                    ClaimStatusBar(status: .submitted, outcome: .none)
+                }
+                HStack {
+                    ClaimStatusBar(status: .beingHandled, outcome: .none)
+                }
+                HStack {
+                    ClaimStatusBar(status: .closed, outcome: .paid)
+                }
+                HStack {
+                    ClaimStatusBar(status: .closed, outcome: .notCovered)
+                }
+                HStack {
+                    ClaimStatusBar(status: .closed, outcome: .notCompensated)
                 }
             }
-            .sectionContainerStyle(.transparent)
         }
+        .sectionContainerStyle(.transparent)
     }
 }

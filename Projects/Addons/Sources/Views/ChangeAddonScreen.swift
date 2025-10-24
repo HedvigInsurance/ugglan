@@ -5,7 +5,6 @@ import hCoreUI
 struct ChangeAddonScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var changeAddonVm: ChangeAddonViewModel
-    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     init(
         changeAddonVm: ChangeAddonViewModel

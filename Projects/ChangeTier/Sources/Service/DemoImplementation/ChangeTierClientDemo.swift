@@ -6,9 +6,9 @@ public class ChangeTierClientDemo: ChangeTierClient {
 
     public func getTier(input _: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let displayItems: [Quote.DisplayItem] = [
-            .init(title: "Activation date", subTitle: nil, value: "24 sep 2024"),
-            .init(title: "Coverage level", subTitle: nil, value: "Standard"),
-            .init(title: "Deductible", subTitle: nil, value: "1750 kr"),
+            .init(title: "Activation date", value: "24 sep 2024"),
+            .init(title: "Coverage level", value: "Standard"),
+            .init(title: "Deductible", value: "1750 kr"),
         ]
 
         let quotes: [Quote] = [

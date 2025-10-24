@@ -90,7 +90,6 @@ extension Discount {
             code: data.campaignCode,
             displayValue: data.statusDescription,
             description: data.description,
-            discountId: data.campaignCode,
             type: .discount(status: data.discountStatus.asDiscountStatus)
         )
     }
@@ -102,7 +101,6 @@ extension Discount {
             code: discount?.code ?? "",
             displayValue: MonetaryAmount(fragment: moneyFragment).formattedAmount,
             description: discount?.description,
-            discountId: discount?.code ?? "",
             type: .paymentsDiscount
         )
     }
@@ -162,14 +160,12 @@ extension ReferralsData {
                 activeDiscount: MonetaryAmount(
                     amount: Float(amount),
                     currency: data.monthlyDiscountPerReferral.fragments.moneyFragment.currencyCode.rawValue
-                ),
-                status: .active
+                )
             )
         )
         self.init(
             code: data.code,
             discountPerMember: .init(fragment: data.monthlyDiscountPerReferral.fragments.moneyFragment),
-            discount: .sek(10),
             referrals: referrals.reversed()
         )
     }
@@ -183,26 +179,7 @@ extension Referral {
             code: data.code,
             description: L10n.Forever.Referral.invitedYou(data.name),
             activeDiscount: .init(optionalFragment: data.activeDiscount?.fragments.moneyFragment),
-            status: data.status.asReferralState,
             invitedYou: invitedYou
         )
-    }
-}
-
-extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
-    var asReferralState: Referral.State {
-        switch self {
-        case let .case(t):
-            switch t {
-            case .pending:
-                return .pending
-            case .active:
-                return .active
-            case .terminated:
-                return .terminated
-            }
-        case .unknown:
-            return .unknown
-        }
     }
 }

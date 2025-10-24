@@ -2,8 +2,6 @@ import Combine
 import Foundation
 import PresentableStore
 import SwiftUI
-import hCore
-import hCoreUI
 
 @MainActor
 public struct ClaimsCard: View {

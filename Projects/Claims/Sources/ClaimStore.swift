@@ -2,7 +2,6 @@ import Apollo
 import PresentableStore
 import SwiftUI
 import hCore
-import hCoreUI
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
     @Inject var fetchClaimsClient: hFetchClaimsClient

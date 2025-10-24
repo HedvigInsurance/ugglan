@@ -3,7 +3,6 @@ import Foundation
 import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
-import TerminateContracts
 import hCore
 import hCoreUI
 
@@ -20,14 +19,6 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
         case .details: return L10n.InsuranceDetailsView.tab3Title
         }
     }
-
-    var index: Int {
-        ContractDetailsViews.allCases.firstIndex(of: self) ?? 0
-    }
-
-    func move(_ otherPanel: ContractDetailsViews) -> AnyTransition {
-        otherPanel.index < index ? .move(edge: .trailing) : .move(edge: .leading)
-    }
 }
 
 public struct ContractDetail: View {
@@ -38,8 +29,6 @@ public struct ContractDetail: View {
     @StateObject var scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
         pageModels: ContractDetailsViews.allCases.compactMap { .init(id: $0.id, title: $0.title) }
     )
-    @State private var selectedView = ContractDetailsViews.overview
-    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     public init(
         id: String

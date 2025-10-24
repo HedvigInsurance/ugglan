@@ -1,5 +1,4 @@
 import Foundation
-import hCore
 
 @MainActor
 public protocol AuthenticationClient {

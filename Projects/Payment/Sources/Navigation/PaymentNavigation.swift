@@ -31,12 +31,7 @@ public struct PaymentsNavigation: View {
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
                     case .discounts:
-                        CampaignNavigation(
-                            onEditCode: {
-                                let store: PaymentStore = globalPresentableStoreContainer.get()
-                                store.send(.load)
-                            }
-                        )
+                        CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)

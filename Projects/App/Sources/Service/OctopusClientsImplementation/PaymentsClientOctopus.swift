@@ -396,7 +396,6 @@ extension Discount {
             code: data.code,
             displayValue: MonetaryAmount(fragment: data.discount.fragments.moneyFragment).formattedNegativeAmount,
             description: data.description,
-            discountId: data.code,
             type: .paymentsDiscount
         )
     }

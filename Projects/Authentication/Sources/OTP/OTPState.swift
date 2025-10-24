@@ -35,17 +35,4 @@ public class OTPState: ObservableObject {
         self.maskedEmail = maskedEmail
         self.canResendAt = canResendAt
     }
-
-    func reset() {
-        isLoading = false
-        isResending = false
-        resendUrl = nil
-        verifyUrl = nil
-        code = ""
-        codeErrorMessage = nil
-        otpInputErrorMessage = nil
-        input = ""
-        maskedEmail = nil
-        canResendAt = nil
-    }
 }

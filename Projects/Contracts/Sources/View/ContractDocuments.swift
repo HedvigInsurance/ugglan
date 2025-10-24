@@ -1,14 +1,11 @@
-import Addons
 import Combine
 import Foundation
 import PresentableStore
 import SwiftUI
-import TerminateContracts
 import hCore
 import hCoreUI
 
 struct ContractDocumentsView: View {
-    @PresentableStore var contractStore: ContractStore
     @EnvironmentObject private var contractsNavigationViewModel: ContractsNavigationViewModel
 
     let id: String
@@ -70,9 +67,4 @@ struct ContractDocumentsView: View {
         documents.append(certficateUrl)
         return documents
     }
-}
-
-@MainActor
-private class ContractsDocumentViewModel: ObservableObject {
-    var cancellable: AnyCancellable?
 }

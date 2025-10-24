@@ -15,7 +15,6 @@ struct ContractTable: View {
     @StateObject var vm = ContractTableViewModel()
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
-    @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
     @InjectObservableObject private var featureFlags: FeatureFlags
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {

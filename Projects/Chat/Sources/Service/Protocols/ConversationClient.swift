@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hCoreUI
 
 @MainActor
 public protocol ConversationsClient {

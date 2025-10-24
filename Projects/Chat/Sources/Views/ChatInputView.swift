@@ -233,7 +233,6 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var inputText: String
     @Binding private var height: CGFloat
     @Binding private var keyboardIsShown: Bool
-    private var textCancellable: AnyCancellable?
     private var placeholderLabel = UILabel()
     let onPaste: ((File) -> Void)?
     init(

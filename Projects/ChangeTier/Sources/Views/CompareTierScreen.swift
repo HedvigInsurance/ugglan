@@ -5,7 +5,6 @@ import hCoreUI
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
     @SwiftUI.Environment(\.colorScheme) var colorSchema
     @State var plusImage = hCoreUIAssets.plus.image.getImageFor(style: .body1)
 
@@ -122,7 +121,6 @@ class CompareTierViewModel: ObservableObject {
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     let tiers: [Tier]
-    @Published var selectedPeril: Perils?
     @Published var perils: [(String, [Perils])] = []
     @Published var scrollableSegmentedViewModel: ScrollableSegmentedViewModel?
 

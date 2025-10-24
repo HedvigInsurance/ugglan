@@ -3,7 +3,6 @@ import EditCoInsured
 import Foundation
 import PresentableStore
 import SwiftUI
-import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
@@ -173,14 +172,6 @@ struct ContractInformationView: View {
         }
     }
 
-    private func includeStatusPill(type: StatusPillType?) -> StatusPillType? {
-        if type == nil {
-            return nil
-        } else {
-            return type
-        }
-    }
-
     @ViewBuilder
     private func getAccessoryView(contract: Contract, coInsured: CoInsuredModel) -> some View {
         if contract.showEditCoInsuredInfo, coInsured.terminatesOn == nil {
@@ -272,8 +263,6 @@ struct ContractInformationView: View {
 
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
-    var cancellable: AnyCancellable?
-
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
         contract.coInsured
             .map {

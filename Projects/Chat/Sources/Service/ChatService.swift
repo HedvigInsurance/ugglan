@@ -1,7 +1,6 @@
 import Foundation
 import PresentableStore
 import hCore
-import hCoreUI
 
 @MainActor
 public protocol ChatServiceProtocol {
@@ -12,7 +11,6 @@ public protocol ChatServiceProtocol {
 
 public class ConversationService: ChatServiceProtocol {
     @Inject var client: ConversationClient
-    @PresentableStore var store: ChatStore
 
     private let conversationId: String
     private var olderToken: String?

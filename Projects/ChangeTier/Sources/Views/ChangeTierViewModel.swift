@@ -25,7 +25,6 @@ public class ChangeTierViewModel: ObservableObject {
 
     var currentTier: Tier?
     var currentQuote: Quote?
-    var currentAddon: AddonQuote?
 
     // quoteId has multiple AddonQuotes - there will be only one of each type
     private var relatedAddons: [String: [AddonQuote]] = [:]
