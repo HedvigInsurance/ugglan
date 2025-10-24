@@ -79,12 +79,10 @@ public enum DiscountStatus: String, Sendable, Codable, Hashable {
 }
 
 public struct ReferralsData: Equatable, Codable, Sendable {
-    //    let code: String
     let discountPerMember: MonetaryAmount
     let referrals: [Referral]
 
     public init(code: String, discountPerMember: MonetaryAmount, referrals: [Referral]) {
-        //        self.code = code
         self.discountPerMember = discountPerMember
         self.referrals = referrals
     }
@@ -105,7 +103,6 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
         code: String?,
         description: String,
         activeDiscount: MonetaryAmount? = nil,
-        //        status: State,
         invitedYou: Bool = false
     ) {
         self.id = id
@@ -113,14 +110,6 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
         self.code = code
         self.description = description
         self.activeDiscount = activeDiscount
-        //        self.status = status
         self.invitedYou = invitedYou
     }
-
-    //    public enum State: String, Codable, Sendable {
-    //        case terminated
-    //        case pending
-    //        case active
-    //        case unknown
-    //    }
 }
