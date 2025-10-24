@@ -5,7 +5,6 @@ import hCore
 @MainActor
 class FetchClaimDetailsService {
     @Inject var client: hFetchClaimDetailsClient
-    @PresentableStore var store: ClaimsStore
     let id: String
 
     init(id: String) {
@@ -22,7 +21,7 @@ class FetchClaimDetailsService {
         return try await client.getFiles(for: id)
     }
 
-    func acknowledgeClosedStatus() async throws {
+    func acknowledgeClosedStatus(for id: String) async throws {
         log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(id)", error: nil, attributes: nil)
         return try await client.acknowledgeClosedStatus(for: id)
     }
