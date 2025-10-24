@@ -134,7 +134,6 @@ struct ContractDetails: View {
                         code: "TOGETHER",
                         displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                         description: "15% discount for 12 months",
-                        discountId: "TOGETHER",
                         type: .discount(status: .active)
                     )
                 ],

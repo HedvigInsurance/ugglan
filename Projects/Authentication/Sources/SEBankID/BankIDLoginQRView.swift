@@ -6,7 +6,6 @@ import hCoreUI
 public struct BankIDLoginQRView: View {
     @StateObject var vm = BankIDViewModel()
     @EnvironmentObject var router: Router
-    @EnvironmentObject var otpVM: OTPState
 
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
@@ -128,7 +127,6 @@ class BankIDViewModel: ObservableObject {
     @Published var hasAlreadyOpenedBankId = false
     private var seBankIdState: SEBankIDState = .init()
     var authenticationService = AuthenticationService()
-    private var cancellables = Set<AnyCancellable>()
     private var observeLoginTask: AnyCancellable?
     var router: Router?
     init() {

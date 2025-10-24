@@ -105,10 +105,7 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    func compareAddonDisplayItems(
-        currentDisplayItems: [AddonDisplayItem],
-        newDisplayItems: [AddonDisplayItem]
-    ) -> [QuoteDisplayItem] {
+    func compareAddonDisplayItems(newDisplayItems: [AddonDisplayItem]) -> [QuoteDisplayItem] {
         let displayItems: [QuoteDisplayItem] = newDisplayItems.map { item in
             return .init(title: item.displayTitle, value: item.displayValue)
         }

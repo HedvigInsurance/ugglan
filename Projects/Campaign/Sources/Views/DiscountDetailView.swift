@@ -102,14 +102,12 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
             code: "231223",
             displayValue: "Display value that goes into more lines, it should be fine",
             description: "Very long name that needs to go into 2 rows so we can test it",
-            discountId: "1",
             type: .paymentsDiscount
         )
         let discount2: Discount = .init(
             code: "2312231",
             displayValue: "",
             description: "Very long name that needs to go into 2 rows",
-            discountId: "1",
             type: .paymentsDiscount
         )
         return VStack {

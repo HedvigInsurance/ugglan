@@ -207,7 +207,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                             code: "TOGETHER",
                             displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                             description: "15% discount for 12 months",
-                            discountId: "TOGETHER",
                             type: .discount(status: .active)
                         )
                     ],
@@ -241,7 +240,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                             code: "TOGETHER",
                             displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                             description: "15% discount for 12 months",
-                            discountId: "TOGETHER",
                             type: .discount(status: .active)
                         )
                     ],
@@ -270,7 +268,6 @@ struct PaymentDetails_Previews: PreviewProvider {
                     code: "MY CODE",
                     displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                     description: "3 friends invited",
-                    discountId: "TOGETHER",
                     type: .referral
                 ),
             amountPerReferral: .sek(10),

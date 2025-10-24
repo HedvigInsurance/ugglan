@@ -80,7 +80,7 @@ struct DiscountsView: View {
 
     private func getReferralView(_ referral: Referral, nbOfReferrals: Int) -> some View {
         DiscountDetailView(
-            discount: .init(referral: referral, nbOfReferrals: nbOfReferrals),
+            discount: .init(referral: referral),
             options: [.showExpire]
         )
     }
@@ -103,14 +103,12 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                                 code: "FURRY",
                                 displayValue: "Active",
                                 description: "50% discount for 6 months",
-                                discountId: "id",
                                 type: .discount(status: .active)
                             ),
                             .init(
                                 code: "BUNDLE",
                                 displayValue: "Active",
                                 description: "15% bundle discount",
-                                discountId: "id1",
                                 type: .discount(status: .active)
                             ),
                         ]
@@ -124,14 +122,12 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                                 code: "TOGETHER",
                                 displayValue: "Expired 31 aug 2025",
                                 description: "15% discount for 12 months",
-                                discountId: "id3",
                                 type: .discount(status: .terminated)
                             ),
                             .init(
                                 code: "BUNDLE",
                                 displayValue: "Pending",
                                 description: "15% bundle discount",
-                                discountId: "id4",
                                 type: .discount(status: .pending)
                             ),
                         ]
@@ -141,7 +137,6 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                 referralsData: .init(
                     code: "CODE",
                     discountPerMember: .sek(10),
-                    discount: .sek(30),
                     referrals: [
                         .init(
                             id: "a1",
@@ -149,7 +144,6 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                             code: "CODE",
                             description: "desc",
                             activeDiscount: .sek(10),
-                            status: .active,
                             invitedYou: true
                         ),
                         .init(
@@ -157,24 +151,21 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                             name: "Idris",
                             code: "CODE",
                             description: "desc",
-                            activeDiscount: .sek(10),
-                            status: .active
+                            activeDiscount: .sek(10)
                         ),
                         .init(
                             id: "a3",
                             name: "Atotio",
                             code: "CODE",
                             description: "desc",
-                            activeDiscount: .sek(10),
-                            status: .active
+                            activeDiscount: .sek(10)
                         ),
                         .init(
                             id: "a4",
                             name: "SONNY",
                             code: "CODE",
                             description: "desc",
-                            activeDiscount: .sek(10),
-                            status: .pending
+                            activeDiscount: .sek(10)
                         ),
                         .init(
                             id: "a5",
@@ -182,7 +173,6 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                             code: "CODE",
                             description: "desc",
                             activeDiscount: .sek(30),
-                            status: .terminated,
                             invitedYou: false
                         ),
                     ]
@@ -200,7 +190,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
         return DiscountsView(
             data: .init(
                 discountsData: [],
-                referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
+                referralsData: .init(code: "CODE", discountPerMember: .sek(10), referrals: [])
             )
         )
     }
