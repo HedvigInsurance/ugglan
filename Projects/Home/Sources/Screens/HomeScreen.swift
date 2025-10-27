@@ -221,24 +221,24 @@ class HomeVM: ObservableObject {
 }
 
 #Preview("Active") {
-        fetchDependenciesForPreview()
+    fetchDependenciesForPreview()
 
-        return HomeScreen()
-            .onAppear {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .active,
-                        contracts: []
-                    )
+    return HomeScreen()
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .active,
+                    contracts: []
                 )
-                store.send(.setFutureStatus(status: .none))
-            }
+            )
+            store.send(.setFutureStatus(status: .none))
+        }
 }
 
 #Preview("ActiveInFuture") {
     fetchDependenciesForPreview()
-    
+
     return HomeScreen()
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
@@ -255,7 +255,7 @@ class HomeVM: ObservableObject {
 
 #Preview("TerminatedToday") {
     fetchDependenciesForPreview()
-    
+
     return HomeScreen()
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
@@ -271,7 +271,7 @@ class HomeVM: ObservableObject {
 
 #Preview("Terminated") {
     fetchDependenciesForPreview()
-    
+
     return HomeScreen()
         .onAppear {
             let store: HomeStore = globalPresentableStoreContainer.get()
@@ -287,7 +287,7 @@ class HomeVM: ObservableObject {
 
 #Preview("Deleted") {
     fetchDependenciesForPreview()
-    
+
     return HomeScreen()
         .onAppear {
             ApolloClient.saveDeleteAccountStatus(for: "ID")
