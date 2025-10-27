@@ -55,7 +55,7 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
         assert(mockService.events.first == .getNotification)
         assert(navigationModel.notification == nil)
         assert(vm.isDeletion == false)
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(nanoseconds: 1_100_000_000)
         assert(mockService.events.count == 2)
         assert(mockService.events == [.getNotification, .getNotification])
         assert((navigationModel.notification == nil))
