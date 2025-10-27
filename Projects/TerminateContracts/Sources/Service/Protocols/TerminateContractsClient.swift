@@ -44,6 +44,7 @@ public enum TerminationContractStep: Equatable, Sendable {
     case setTerminationDateStep(model: TerminationFlowDateNextStepModel)
     case setTerminationDeletion(model: TerminationFlowDeletionNextModel)
     case setDeflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel)
+    case setDeflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel)
     case setSuccessStep(model: TerminationFlowSuccessNextModel)
     case setFailedStep(model: TerminationFlowFailedNextModel)
     case setTerminationSurveyStep(model: TerminationFlowSurveyStepModel)

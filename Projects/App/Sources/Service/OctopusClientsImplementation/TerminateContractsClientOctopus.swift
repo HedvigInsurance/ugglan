@@ -93,6 +93,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
             OctopusGraphQL.Objects.FlowTerminationSuccessStep.typename,
             OctopusGraphQL.Objects.FlowTerminationDeletionStep.typename,
             OctopusGraphQL.Objects.FlowTerminationCarAutoDecomStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationCarDeflectAutoCancelStep.typename,
         ]
     }
 }
@@ -127,6 +128,10 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
             return (step: .setTerminationSurveyStep(model: .init(with: step)), progress)
         } else if let step = asFlowTerminationCarAutoDecomStep?.fragments.flowTerminationCarAutoDecomStepFragment {
             return (step: .setDeflectAutoDecom(model: .init(with: step)), progress)
+        } else if let step = asFlowTerminationCarDeflectAutoCancelStep?.fragments
+            .flowTerminationCarDeflectAutoCancelStepStep
+        {
+            return (step: .setDeflectAutoCancel(model: .init(with: step)), progress)
         } else {
             return (step: .openTerminationUpdateAppScreen, nil)
         }
@@ -273,6 +278,12 @@ extension TerminationFlowSurveyStepModel {
             options: options,
             subTitleType: .default
         )
+    }
+}
+
+extension TerminationFlowDeflectAutoCancelModel {
+    init(with data: OctopusGraphQL.FlowTerminationCarDeflectAutoCancelStepStep) {
+        self.init(message: data.message)
     }
 }
 
