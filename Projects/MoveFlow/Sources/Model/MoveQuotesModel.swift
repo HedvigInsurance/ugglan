@@ -25,7 +25,6 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
     let startDate: Date
     let displayName: String
     let insurableLimits: [InsurableLimits]
-    let perils: [Perils]
     let documents: [InsuranceDocument]
     let contractType: TypeOfContract?
     let id: String
@@ -40,7 +39,6 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         startDate: Date,
         displayName: String,
         insurableLimits: [InsurableLimits],
-        perils: [Perils],
         documents: [InsuranceDocument],
         contractType: TypeOfContract?,
         id: String,
@@ -54,7 +52,6 @@ public struct MovingFlowQuote: Codable, Equatable, Hashable, Sendable {
         self.startDate = startDate
         self.displayName = displayName
         self.insurableLimits = insurableLimits
-        self.perils = perils
         self.documents = documents
         self.contractType = contractType
         self.id = id
@@ -76,12 +73,10 @@ public struct InsuranceDocument: Codable, Equatable, Hashable, Sendable {
 }
 
 public struct DisplayItem: Codable, Equatable, Hashable, Sendable {
-    let displaySubtitle: String?
     let displayTitle: String
     let displayValue: String
 
-    public init(displaySubtitle: String?, displayTitle: String, displayValue: String) {
-        self.displaySubtitle = displaySubtitle
+    public init(displayTitle: String, displayValue: String) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
     }
@@ -94,7 +89,6 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
     let coverageDisplayName: String
     let grossPremium: MonetaryAmount
     let addonVariant: AddonVariant
-    let startDate: Date
 
     public init(
         id: String,
@@ -102,8 +96,7 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
         displayItems: [DisplayItem],
         coverageDisplayName: String,
         grossPremium: MonetaryAmount,
-        addonVariant: AddonVariant,
-        startDate: Date,
+        addonVariant: AddonVariant
     ) {
         self.id = id
         self.quoteInfo = quoteInfo
@@ -111,6 +104,5 @@ public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
         self.coverageDisplayName = coverageDisplayName
         self.grossPremium = grossPremium
         self.addonVariant = addonVariant
-        self.startDate = startDate
     }
 }

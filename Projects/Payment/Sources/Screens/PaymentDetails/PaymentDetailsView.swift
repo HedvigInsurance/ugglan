@@ -7,7 +7,6 @@ struct PaymentDetailsView: View {
     private let data: PaymentData
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
-    @Inject var featureFlags: FeatureFlags
 
     init(data: PaymentData) {
         self.data = data
@@ -180,100 +179,98 @@ struct PaymentDetailsView: View {
     }
 }
 
-struct PaymentDetails_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-        let data = PaymentData(
-            id: "id",
-            payment: .init(
-                gross: .sek(200),
-                net: .sek(180),
-                carriedAdjustment: .sek(100),
-                settlementAdjustment: .sek(20),
-                date: "2022-10-30"
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    let data = PaymentData(
+        id: "id",
+        payment: .init(
+            gross: .sek(200),
+            net: .sek(180),
+            carriedAdjustment: .sek(100),
+            settlementAdjustment: .sek(20),
+            date: "2022-10-30"
+        ),
+        status: .upcoming,
+        contracts: [
+            .init(
+                id: "id1",
+                title: "title",
+                subtitle: "subtitle",
+                netAmount: .sek(250),
+                grossAmount: .sek(200),
+                discounts: [
+                    .init(
+                        code: "TOGETHER",
+                        displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                        description: "15% discount for 12 months",
+                        type: .discount(status: .active)
+                    )
+                ],
+                periods: [
+                    .init(
+                        id: "1",
+                        from: "2023-11-10",
+                        to: "2023-11-23",
+                        amount: .sek(100),
+                        isOutstanding: false,
+                        desciption: nil
+                    ),
+                    .init(
+                        id: "2",
+                        from: "2023-11-23",
+                        to: "2023-11-30",
+                        amount: .sek(80),
+                        isOutstanding: true,
+                        desciption: nil
+                    ),
+                ]
             ),
-            status: .upcoming,
-            contracts: [
-                .init(
-                    id: "id1",
-                    title: "title",
-                    subtitle: "subtitle",
-                    netAmount: .sek(250),
-                    grossAmount: .sek(200),
-                    discounts: [
-                        .init(
-                            code: "TOGETHER",
-                            displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
-                            description: "15% discount for 12 months",
-                            type: .discount(status: .active)
-                        )
-                    ],
-                    periods: [
-                        .init(
-                            id: "1",
-                            from: "2023-11-10",
-                            to: "2023-11-23",
-                            amount: .sek(100),
-                            isOutstanding: false,
-                            desciption: nil
-                        ),
-                        .init(
-                            id: "2",
-                            from: "2023-11-23",
-                            to: "2023-11-30",
-                            amount: .sek(80),
-                            isOutstanding: true,
-                            desciption: nil
-                        ),
-                    ]
-                ),
-                .init(
-                    id: "id2",
-                    title: "title 2",
-                    subtitle: "subtitle 2",
-                    netAmount: .sek(350),
-                    grossAmount: .sek(300),
-                    discounts: [
-                        .init(
-                            code: "TOGETHER",
-                            displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
-                            description: "15% discount for 12 months",
-                            type: .discount(status: .active)
-                        )
-                    ],
-                    periods: [
-                        .init(
-                            id: "1",
-                            from: "2023-11-10",
-                            to: "2023-11-23",
-                            amount: .sek(100),
-                            isOutstanding: false,
-                            desciption: nil
-                        ),
-                        .init(
-                            id: "2",
-                            from: "2023-11-23",
-                            to: "2023-11-30",
-                            amount: .sek(80),
-                            isOutstanding: true,
-                            desciption: nil
-                        ),
-                    ]
-                ),
-            ],
-            referralDiscount:
+            .init(
+                id: "id2",
+                title: "title 2",
+                subtitle: "subtitle 2",
+                netAmount: .sek(350),
+                grossAmount: .sek(300),
+                discounts: [
+                    .init(
+                        code: "TOGETHER",
+                        displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                        description: "15% discount for 12 months",
+                        type: .discount(status: .active)
+                    )
+                ],
+                periods: [
+                    .init(
+                        id: "1",
+                        from: "2023-11-10",
+                        to: "2023-11-23",
+                        amount: .sek(100),
+                        isOutstanding: false,
+                        desciption: nil
+                    ),
+                    .init(
+                        id: "2",
+                        from: "2023-11-23",
+                        to: "2023-11-30",
+                        amount: .sek(80),
+                        isOutstanding: true,
+                        desciption: nil
+                    ),
+                ]
+            ),
+        ],
+        referralDiscount:
                 .init(
                     code: "MY CODE",
                     displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                     description: "3 friends invited",
                     type: .referral
                 ),
-            amountPerReferral: .sek(10),
-            paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
-            addedToThePayment: nil
-        )
-        return PaymentDetailsView(data: data)
-    }
+        amountPerReferral: .sek(10),
+        paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
+        addedToThePayment: nil
+    )
+    return PaymentDetailsView(data: data)
 }

@@ -1,6 +1,4 @@
 import Apollo
-import Campaign
-import Contracts
 import Foundation
 import PresentableStore
 import hCore
@@ -10,8 +8,6 @@ public struct PaymentState: StateProtocol {
     public var ongoingPaymentData: [PaymentData] = []
     public var paymentStatusData: PaymentStatusData?
     var paymentHistory: [PaymentHistoryListData] = []
-    var paymentConnectionID: String?
-    var schema: String?
     public init() {}
 }
 

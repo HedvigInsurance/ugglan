@@ -233,11 +233,9 @@ public class PaymentsViewModel: ObservableObject {
     }
 }
 
-struct PaymentsView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        return PaymentsView().environmentObject(PaymentsNavigationViewModel())
-    }
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return PaymentsView().environmentObject(PaymentsNavigationViewModel())
 }

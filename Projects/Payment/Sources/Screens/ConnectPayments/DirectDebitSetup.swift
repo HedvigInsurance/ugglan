@@ -13,7 +13,6 @@ private class DirectDebitWebview: UIView {
     @PresentableStore var paymentStore: PaymentStore
     private let resultSubject = PassthroughSubject<URL?, Never>()
     var cancellables = Set<AnyCancellable>()
-    let setupType: SetupType
     let vc = UIViewController()
     var webView = WKWebView()
     var webViewDelgate = WebViewDelegate(webView: .init())
@@ -26,11 +25,9 @@ private class DirectDebitWebview: UIView {
     }
 
     init(
-        setupType: SetupType,
         showErrorAlert: Binding<Bool>,
         router: Router
     ) {
-        self.setupType = setupType
         _showErrorAlert = showErrorAlert
         self.router = router
         super.init(frame: .zero)
@@ -243,7 +240,7 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
     let router: Router
 
     func makeUIView(context _: Context) -> some UIView {
-        DirectDebitWebview(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
+        DirectDebitWebview(showErrorAlert: $showErrorAlert, router: router)
     }
 
     func updateUIView(_: UIViewType, context _: Context) {}

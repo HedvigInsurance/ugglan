@@ -128,10 +128,8 @@ public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     }
 }
 
-struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
-    static var previews: some View {
-        MovingFlowAddExtraBuildingScreen(
-            houseInformationInputVm: .init()
-        )
-    }
+#Preview {
+    MovingFlowAddExtraBuildingScreen(
+        houseInformationInputVm: .init()
+    )
 }

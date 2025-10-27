@@ -1,5 +1,4 @@
 import SwiftUI
-import hCore
 import hCoreUI
 
 extension View {
@@ -30,18 +29,11 @@ public class ConnectPaymentViewModel: ObservableObject {
 
     public func set(for setupType: SetupType?) {
         Task { @MainActor [weak self] in
-            self?.setupTypeNavigationModel = .init(setUpType: setupType)
+            self?.setupTypeNavigationModel = .init()
         }
     }
 }
 
 struct SetupTypeNavigationModel: Equatable, Identifiable {
-    init(
-        setUpType: SetupType?
-    ) {
-        self.setUpType = setUpType
-    }
-
     let id: String = UUID().uuidString
-    let setUpType: SetupType?
 }

@@ -1,5 +1,4 @@
 import Campaign
-import Contracts
 import Foundation
 import hCore
 import hCoreUI

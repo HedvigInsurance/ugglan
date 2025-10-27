@@ -158,7 +158,7 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
                 if let cost = data.quoteCosts.first(where: { $0.id == quote.id })?.cost {
                     moveQuotesModel?.homeQuotes[index].totalPremium = cost.premium
                     moveQuotesModel?.homeQuotes[index].priceBreakdownItems = cost.discounts.map({
-                        .init(displaySubtitle: nil, displayTitle: $0.displayName, displayValue: $0.displayValue)
+                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
                     })
                 }
             }
@@ -167,7 +167,7 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
                 if let cost = data.quoteCosts.first(where: { $0.id == quote.id })?.cost {
                     moveQuotesModel?.mtaQuotes[index].totalPremium = cost.premium
                     moveQuotesModel?.mtaQuotes[index].priceBreakdownItems = cost.discounts.map({
-                        .init(displaySubtitle: nil, displayTitle: $0.displayName, displayValue: $0.displayValue)
+                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
                     })
                 }
             }
@@ -424,35 +424,4 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
     case typeOfBuildingPicker
     case selectContract
     case error
-}
-
-@MainActor
-extension AddonDataModel {
-    func asContractInfo(
-        ondocumentClicked: @escaping (hPDFDocument) -> Void
-    ) -> QuoteSummaryViewModel.ContractInfo {
-        let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
-            id: id,
-            displayName: quoteInfo.title ?? "",
-            exposureName: coverageDisplayName,
-            premium: .init(
-                gross: grossPremium,
-                net: nil
-            ),
-            documentSection: .init(
-                documents: addonVariant.documents,
-                onTap: { document in
-                    ondocumentClicked(document)
-                }
-            ),
-            displayItems: displayItems.map {
-                .init(title: $0.displayTitle, value: $0.displayValue)
-            },
-            insuranceLimits: [],
-            typeOfContract: nil,
-            isAddon: true,
-            priceBreakdownItems: []
-        )
-        return addonQuoteContractInfo
-    }
 }
