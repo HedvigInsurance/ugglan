@@ -6,8 +6,6 @@ struct CrossSellDiscountProgressComponent: View {
     private let numberOfInsurances: Int
     private let discountPercent: Int?
 
-    @State private var animationProgress: CGFloat = 0
-
     init(crossSell: CrossSell) {
         self.numberOfInsurances = crossSell.numberOfEligibleContracts
         self.discountPercent = crossSell.discountPercent
