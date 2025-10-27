@@ -94,7 +94,6 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
     let code: String?
     let description: String
     let activeDiscount: MonetaryAmount?
-    //    let status: State
     let invitedYou: Bool
 
     public init(
