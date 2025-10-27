@@ -195,7 +195,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     @State var keyboard: CGFloat = 303.99
     @State private var inEdit: Bool = false
     let initDate = Date()
-    //    @Environment(\.hTextFieldError) var errorMessage
+    @Environment(\.hTextFieldError) var errorMessage
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
