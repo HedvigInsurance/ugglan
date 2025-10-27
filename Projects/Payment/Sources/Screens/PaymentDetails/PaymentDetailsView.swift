@@ -262,12 +262,12 @@ struct PaymentDetailsView: View {
             ),
         ],
         referralDiscount:
-                .init(
-                    code: "MY CODE",
-                    displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
-                    description: "3 friends invited",
-                    type: .referral
-                ),
+            .init(
+                code: "MY CODE",
+                displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
+                description: "3 friends invited",
+                type: .referral
+            ),
         amountPerReferral: .sek(10),
         paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
         addedToThePayment: nil
