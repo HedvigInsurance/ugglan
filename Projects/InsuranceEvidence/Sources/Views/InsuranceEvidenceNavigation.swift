@@ -14,7 +14,6 @@ class InsuranceEvidenceNavigationViewModel: ObservableObject {
 
 public struct InsuranceEvidenceNavigation: View {
     @StateObject private var vm = InsuranceEvidenceNavigationViewModel()
-    @EnvironmentObject var router: Router
     public init() {}
 
     public var body: some View {

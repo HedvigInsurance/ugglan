@@ -38,61 +38,55 @@ struct FutureSectionInfoView: View {
     }
 }
 
-struct ActiveInFutureView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return VStack {
-            FutureSectionInfoView()
-                .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    let contract = HomeContract(upcomingRenewal: nil, displayName: "name")
+#Preview("ActiveInFutureView") {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return VStack {
+        FutureSectionInfoView()
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                let contract = HomeContract(upcomingRenewal: nil, displayName: "name")
 
-                    store.send(
-                        .setMemberContractState(
-                            state: .future,
-                            contracts: [contract]
-                        )
+                store.send(
+                    .setMemberContractState(
+                        state: .future,
+                        contracts: [contract]
                     )
-                    store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
-                }
-        }
+                )
+                store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+            }
     }
 }
 
-struct PendingSwitchableView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return VStack {
-            FutureSectionInfoView()
-                .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    store.send(
-                        .setMemberContractState(
-                            state: .future,
-                            contracts: []
-                        )
+#Preview("PendingSwitchableView") {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return VStack {
+        FutureSectionInfoView()
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .future,
+                        contracts: []
                     )
-                    store.send(.setFutureStatus(status: .pendingSwitchable))
-                }
-        }
+                )
+                store.send(.setFutureStatus(status: .pendingSwitchable))
+            }
     }
 }
 
-struct PendingNonSwitchableView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return VStack {
-            FutureSectionInfoView()
-                .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    store.send(
-                        .setMemberContractState(
-                            state: .future,
-                            contracts: []
-                        )
+#Preview("PendingNonSwitchableView") {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return VStack {
+        FutureSectionInfoView()
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .future,
+                        contracts: []
                     )
-                    store.send(.setFutureStatus(status: .pendingNonswitchable))
-                }
-        }
+                )
+                store.send(.setFutureStatus(status: .pendingNonswitchable))
+            }
     }
 }

@@ -3,7 +3,6 @@ import hCore
 import hCoreUI
 
 struct CoInsuredProcessingScreen: View {
-    @StateObject var vm = ProcessingViewModel()
     var showSuccessScreen: Bool
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
@@ -85,20 +84,13 @@ extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
     }
 }
 
-@MainActor
-class ProcessingViewModel: ObservableObject {
-    @Published var progress: Float = 0
-}
-
-struct SuccessScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        let existingCoInsured = (any ExistingCoInsured).self
-        return CoInsuredProcessingScreen(
-            showSuccessScreen: true,
-            intentVM: .init()
-        )
-        .environmentObject(EditCoInsuredNavigationViewModel(config: .init()))
-        .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
-    }
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    let existingCoInsured = (any ExistingCoInsured).self
+    return CoInsuredProcessingScreen(
+        showSuccessScreen: true,
+        intentVM: .init()
+    )
+    .environmentObject(EditCoInsuredNavigationViewModel(config: .init()))
+    .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
 }

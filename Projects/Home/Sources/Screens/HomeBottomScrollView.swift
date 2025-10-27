@@ -63,7 +63,6 @@ class HomeBottomScrollViewModel: ObservableObject {
         }
     }
 
-    private var showConnectPaymentCardView = false
     var cancellables = Set<AnyCancellable>()
 
     init() {
@@ -263,11 +262,9 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 }
 
-struct HomeBottomScrollView_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-        return HomeBottomScrollView(vm: .init())
-    }
+#Preview {
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    return HomeBottomScrollView(vm: .init())
 }
 
 struct InfoCardView: Identifiable, Hashable {

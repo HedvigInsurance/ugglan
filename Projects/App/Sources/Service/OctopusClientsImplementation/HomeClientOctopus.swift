@@ -85,7 +85,6 @@ class HomeClientOctopus: HomeClient {
             let firstVetPartners = firstVetSections.compactMap {
                 FirstVetPartner(
                     id: $0.title ?? "",
-                    buttonTitle: $0.buttonTitle,
                     description: $0.description,
                     url: $0.url,
                     title: $0.title

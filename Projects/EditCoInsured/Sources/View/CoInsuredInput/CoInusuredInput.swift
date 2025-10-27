@@ -8,7 +8,6 @@ struct CoInusuredInputScreen: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @EnvironmentObject private var router: Router
     @ObservedObject var intentViewModel: IntentViewModel
 
     init(
@@ -253,14 +252,12 @@ struct DeleteCoInsuredFields: View {
     }
 }
 
-struct CoInusuredInput_Previews: PreviewProvider {
-    static var previews: some View {
-        CoInusuredInputScreen(
-            vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
-            title: "title",
-            editCoInsuredNavigation: .init(config: .init())
-        )
-    }
+#Preview {
+    CoInusuredInputScreen(
+        vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
+        title: "title",
+        editCoInsuredNavigation: .init(config: .init())
+    )
 }
 
 enum CoInsuredInputType: hTextFieldFocusStateCompliant {
