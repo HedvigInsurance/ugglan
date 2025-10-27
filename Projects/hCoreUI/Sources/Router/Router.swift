@@ -355,6 +355,7 @@ extension View {
         title: String,
         subTitle: String? = nil,
         titleColor: TitleColor? = nil,
+        topPadding: CGFloat = .padding8,
         onTitleTap: (() -> Void)? = nil
     ) -> some View {
         if #available(iOS 26.0, *), isLiquidGlassEnabled {
@@ -363,8 +364,13 @@ extension View {
                     Button {
                         onTitleTap?()
                     } label: {
-                        titleView(title: title, subTitle: subTitle, titleColor: titleColor ?? .default)
-                            .fixedSize()
+                        titleView(
+                            title: title,
+                            subTitle: subTitle,
+                            topPadding: topPadding,
+                            titleColor: titleColor ?? .default
+                        )
+                        .fixedSize()
                     }
                 }
                 .sharedBackgroundVisibility(.hidden)
@@ -375,6 +381,7 @@ extension View {
                     title: title,
                     subTitle: subTitle,
                     titleColor: titleColor ?? .default,
+                    topPadding: topPadding,
                     onTitleTap: onTitleTap
                 )
             }
@@ -391,10 +398,11 @@ extension View {
         title: String,
         subTitle: String?,
         titleColor: TitleColor,
+        topPadding: CGFloat,
         onTitleTap: (() -> Void)? = nil
     ) -> UIView {
         let view: UIView = UIHostingController(
-            rootView: titleView(title: title, subTitle: subTitle, titleColor: titleColor)
+            rootView: titleView(title: title, subTitle: subTitle, topPadding: topPadding, titleColor: titleColor)
                 .onTapGesture {
                     onTitleTap?()
                 }
@@ -406,7 +414,7 @@ extension View {
     }
 
     @ViewBuilder
-    private func titleView(title: String, subTitle: String?, titleColor: TitleColor) -> some View {
+    private func titleView(title: String, subTitle: String?, topPadding: CGFloat, titleColor: TitleColor) -> some View {
         Group {
             if let subTitle {
                 VStack(alignment: .leading, spacing: 0) {
@@ -422,7 +430,7 @@ extension View {
                     .foregroundColor(titleViewColor(titleColor))
             }
         }
-        .padding(.top, .padding8)
+        .padding(.top, topPadding)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isHeader)
     }
