@@ -10,6 +10,11 @@ public protocol TrackingViewNameProtocol {
 }
 
 @MainActor
+public protocol NavigationTitleProtocol {
+    var navigationTitle: String? { get }
+}
+
+@MainActor
 extension String: TrackingViewNameProtocol {
     public var nameForTracking: String {
         self
@@ -21,7 +26,10 @@ public class Router: ObservableObject {
     var routes = [AnyHashable]()
     var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()
     fileprivate var onPush:
-        ((_ options: RouterDestionationOptions, _ view: AnyView, _ contentName: String) -> UIViewController?)?
+        (
+            (_ options: RouterDestionationOptions, _ view: AnyView, _ contentName: String, _ title: String?) ->
+                UIViewController?
+        )?
     fileprivate var onPop: (() -> Void)?
     fileprivate var onPopToRoot: (() -> Void)?
     fileprivate var onPopVC: ((UIViewController) -> Void)?
@@ -30,11 +38,17 @@ public class Router: ObservableObject {
 
     public init() {}
 
-    var builders: [String: Builderrr<AnyView>] = [:]
+    var builders: [String: ContentBuilder<AnyView>] = [:]
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
         let key = "\(T.self)"
+        let titleName: String? = {
+            guard let route = route as? NavigationTitleProtocol else {
+                return nil
+            }
+            return route.navigationTitle
+        }()
         if let builder = builders[key], let view = builder.builder(route) {
-            _ = onPush?(builder.options, view, route.nameForTracking)
+            _ = onPush?(builder.options, view, route.nameForTracking, titleName)
             routes.append(key)
         } else {
             routesToBePushedAfterViewAppears.append(route)
@@ -43,7 +57,7 @@ public class Router: ObservableObject {
 
     func push<T>(view: T) -> UIViewController? where T: View {
         routes.append("\(type(of: view))")
-        return onPush?([], AnyView(view), "\(T.self)")
+        return onPush?([], AnyView(view), "\(T.self)", nil)
     }
 
     public func pop<T>(_ hash: T.Type) {
@@ -89,7 +103,7 @@ public class Router: ObservableObject {
     }
 }
 
-struct Builderrr<Content: View> {
+struct ContentBuilder<Content: View> {
     let builder: (AnyHashable) -> Content?
     let contentName: String
     let options: RouterDestionationOptions
@@ -166,7 +180,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         if options.contains(.navigationBarHidden) {
             navigation.setNavigationBarHidden(true, animated: true)
         }
-        router.onPush = { [weak router, weak navigation] options, view, name in
+        router.onPush = { [weak router, weak navigation] options, view, name, title in
             guard let router = router else { return nil }
             let vc = hHostingController(rootView: view.environmentObject(router), contentName: name)
             vc.onViewWillLayoutSubviews = { [weak vc] in
@@ -174,6 +188,9 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
                 if options.contains(.hidesBackButton) {
                     vc.navigationItem.setHidesBackButton(true, animated: true)
                 }
+            }
+            if let title {
+                vc.title = title
             }
             vc.onViewWillAppear = { [weak vc] in
                 if options.contains(.hidesBottomBarWhenPushed) {
