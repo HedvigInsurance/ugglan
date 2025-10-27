@@ -62,12 +62,14 @@ struct TerminationDeflectAutoDecomScreen: View {
             headerLabel(for: L10n.terminationFlowAutoDecomCoveredTitle)
             subtitleLabel(for: L10n.terminationFlowAutoDecomCoveredInfo)
         }
+        .accessibilityElement(children: .combine)
     }
     private var costView: some View {
         hSection {
             headerLabel(for: L10n.terminationFlowAutoDecomCostsTitle)
             subtitleLabel(for: L10n.terminationFlowAutoDecomCostsInfo)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var infoView: some View {
