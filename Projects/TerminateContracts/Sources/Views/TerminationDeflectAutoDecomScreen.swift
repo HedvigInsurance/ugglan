@@ -21,14 +21,8 @@ struct TerminationDeflectAutoDecomScreen: View {
                 hSection {
                     subtitleLabel(for: L10n.terminationFlowAutoDecomInfo)
                 }
-                hSection {
-                    headerLabel(for: L10n.terminationFlowAutoDecomCoveredTitle)
-                    subtitleLabel(for: L10n.terminationFlowAutoDecomCoveredInfo)
-                }
-                hSection {
-                    headerLabel(for: L10n.terminationFlowAutoDecomCostsTitle)
-                    subtitleLabel(for: L10n.terminationFlowAutoDecomCostsInfo)
-                }
+                coveredView
+                costView
             }
             .fixedSize(horizontal: false, vertical: true)
             .padding(.vertical, .padding16)
@@ -61,6 +55,19 @@ struct TerminationDeflectAutoDecomScreen: View {
                 )
             )
         )
+    }
+
+    private var coveredView: some View {
+        hSection {
+            headerLabel(for: L10n.terminationFlowAutoDecomCoveredTitle)
+            subtitleLabel(for: L10n.terminationFlowAutoDecomCoveredInfo)
+        }
+    }
+    private var costView: some View {
+        hSection {
+            headerLabel(for: L10n.terminationFlowAutoDecomCostsTitle)
+            subtitleLabel(for: L10n.terminationFlowAutoDecomCostsInfo)
+        }
     }
 
     private var infoView: some View {
