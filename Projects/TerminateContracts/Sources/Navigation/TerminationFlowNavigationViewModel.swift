@@ -67,6 +67,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 terminationSurveyStepModel = model
             case .summary:
                 break
+            case .deflectAutoCancel:
+                break
             }
         case let .final(action):
             switch action {
@@ -234,6 +236,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             router.push(TerminationFlowRouterActions.surveyStep(model: model))
         case .openTerminationUpdateAppScreen:
             router.push(TerminationFlowFinalRouterActions.updateApp)
+        case let .setDeflectAutoCancel(model):
+            router.push(TerminationFlowRouterActions.deflectAutoCancel(model: model))
         }
     }
 
@@ -388,6 +392,8 @@ struct TerminationFlowNavigation: View {
                             openSelectInsuranceScreen()
                         case .summary:
                             openTerminationSummaryScreen()
+                        case let .deflectAutoCancel(model):
+                            openDeflectAutoCancel(model: model)
                         }
                     }
                     .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
@@ -454,6 +460,8 @@ struct TerminationFlowNavigation: View {
                 openSelectInsuranceScreen()
             case .summary:
                 openTerminationSummaryScreen()
+            case let .deflectAutoCancel(model):
+                openDeflectAutoCancel(model: model)
             }
         case let .final(action):
             switch action {
@@ -515,6 +523,11 @@ struct TerminationFlowNavigation: View {
 
     private func openTerminationSummaryScreen() -> some View {
         TerminationSummaryScreen()
+            .withDismissButton()
+    }
+
+    private func openDeflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel) -> some View {
+        TerminationDeflectAutoCancelScreen(model: model)
             .withDismissButton()
     }
 
@@ -628,6 +641,7 @@ public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
     case terminationDate(model: TerminationFlowDateNextStepModel?)
     case surveyStep(model: TerminationFlowSurveyStepModel?)
+    case deflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel)
     case summary
 }
 
@@ -642,6 +656,8 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: TerminationSurveyScreen.self)
         case .summary:
             return .init(describing: TerminationSummaryScreen.self)
+        case .deflectAutoCancel:
+            return .init(describing: TerminationDeflectAutoCancelScreen.self)
         }
     }
 }
