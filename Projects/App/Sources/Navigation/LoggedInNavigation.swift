@@ -251,32 +251,16 @@ struct LoggedInNavigation: View {
                 .handleEditCoInsured(
                     with: vm.travelCertificateNavigationVm.editCoInsuredVm
                 )
-            case let .deleteAccount(memberDetails):
+            case .deleteAccount:
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
-                    memberDetails: memberDetails,
                     claimsStore: claimsStore,
                     contractsStore: contractsStore
                 )
 
                 DeleteAccountView(
-                    vm: model,
-                    dismissAction: { profileDismissAction in
-                        vm.profileNavigationVm.isDeleteAccountPresented = nil
-                        switch profileDismissAction {
-                        case .openChat:
-                            withAnimation {
-                                vm.selectedTab = 0
-                            }
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatType.newConversation
-                            )
-                        default:
-                            break
-                        }
-                    }
+                    vm: model
                 )
                 .environmentObject(vm.profileNavigationVm)
             case .pickLanguage:

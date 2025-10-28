@@ -352,7 +352,6 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
         Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in client })
         let navigation = SubmitClaimNavigationViewModel()
         navigation.audioRecordingModel = .init(
-            id: "id",
             questions: [
                 "QUESTION 1 very long how much time it should take to complete this task"
             ],

@@ -710,7 +710,6 @@ extension FlowClaimAudioRecordingStepModel {
             return nil
         }
         self.init(
-            id: data.id,
             questions: data.questions,
             audioContent: .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment)),
             textQuestions: data.freeTextQuestions,
@@ -761,9 +760,7 @@ extension FlowClaimConfirmEmergencyStepModel {
         with data: OctopusGraphQL.FlowClaimConfirmEmergencyStepFragment
     ) {
         self.init(
-            id: data.id,
             text: data.text,
-            confirmEmergency: data.confirmEmergency,
             options: data.options.map { data in
                 FlowClaimConfirmEmergencyOption(displayName: data.displayName, value: data.displayValue)
             }
