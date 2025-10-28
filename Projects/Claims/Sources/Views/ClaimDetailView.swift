@@ -136,7 +136,7 @@ public struct ClaimDetailView: View {
                         hText(L10n.ClaimStatusDetail.MessageView.body)
                         Spacer()
 
-                        if vm.toolbarOptionType.contains(.chat) {
+                        if vm.toolbarOptionType.contains(.chat(hasUnread: false)) {
                             hCoreUIAssets.inbox.view
                         } else {
                             hCoreUIAssets.inboxNotification.view
@@ -146,7 +146,7 @@ public struct ClaimDetailView: View {
                 .withEmptyAccessory
                 .onTap { [weak vm, weak router] in
                     guard let vm else { return }
-                    if vm.toolbarOptionType.contains(.chat) {
+                    if vm.toolbarOptionType.contains(.chat(hasUnread: false)) {
                         if case .conversation = vm.type {
                             router?.pop()
                         } else {
@@ -376,7 +376,7 @@ public class ClaimDetailViewModel: ObservableObject {
 
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
-    @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
+    @Published var toolbarOptionType: [ToolbarOptionType] = [.chat(hasUnread: false)]
 
     @Published var showImagePicker = false
     @Published var showFilePicker = false
@@ -441,7 +441,7 @@ public class ClaimDetailViewModel: ObservableObject {
         let hasNewMessage = conversation.hasNewMessage
         withAnimation {
             self.toolbarOptionType =
-                hasNewMessage ? [.chatNotification] : [.chat]
+                hasNewMessage ? [.chat(hasUnread: true)] : [.chat(hasUnread: false)]
         }
     }
 
