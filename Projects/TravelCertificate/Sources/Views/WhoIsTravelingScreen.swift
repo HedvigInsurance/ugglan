@@ -134,7 +134,6 @@ struct WhoIsTravelingView_Previews: PreviewProvider {
                     exposureDisplayName: "exposure display name",
                     minStartDate: Date(),
                     maxStartDate: Date(),
-                    numberOfCoInsured: 2,
                     maxDuration: 45,
                     email: "email",
                     fullName: "full name"

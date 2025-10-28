@@ -163,7 +163,6 @@ struct SuccessScreen_Previews: PreviewProvider {
                         exposureDisplayName: "exposure display name",
                         minStartDate: Date(),
                         maxStartDate: "2025-12-12".localDateToDate ?? Date(),
-                        numberOfCoInsured: 2,
                         maxDuration: 2,
                         email: "",
                         fullName: ""

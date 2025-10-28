@@ -1,5 +1,4 @@
 import SwiftUI
-import hCore
 import hCoreUI
 
 public struct ListScreen<T>: View {
@@ -39,25 +38,23 @@ public struct ListScreen<T>: View {
     }
 }
 
-struct ItemPickerScreen_Previews: PreviewProvider {
+#Preview {
     struct ModelForPreview {
         let id: String
         let name: String
     }
 
-    static var previews: some View {
-        ListScreen<ModelForPreview>(
-            items: {
-                let items = [
-                    ModelForPreview(id: "id", name: "name"),
-                    ModelForPreview(id: "id2", name: "name2"),
-                ]
+    return ListScreen<ModelForPreview>(
+        items: {
+            let items = [
+                ModelForPreview(id: "id", name: "name"),
+                ModelForPreview(id: "id2", name: "name2"),
+            ]
 
-                return items.compactMap { (object: $0, displayName: $0.name) }
-            }(),
-            onSelected: { _ in
-            },
-            onCancel: {}
-        )
-    }
+            return items.compactMap { (object: $0, displayName: $0.name) }
+        }(),
+        onSelected: { _ in
+        },
+        onCancel: {}
+    )
 }

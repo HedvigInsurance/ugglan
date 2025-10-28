@@ -112,11 +112,9 @@ public class SumitClaimEmergencySelectViewModel: ObservableObject {
     }
 }
 
-struct SumitClaimEmergencySelectScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+#Preview {
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
 
-        return SumitClaimEmergencySelectView(title: L10n.submitClaimEmergencyTitle)
-            .environmentObject(SubmitClaimNavigationViewModel())
-    }
+    return SumitClaimEmergencySelectView(title: L10n.submitClaimEmergencyTitle)
+        .environmentObject(SubmitClaimNavigationViewModel())
 }

@@ -658,7 +658,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 selectedTab = 2
             case .CONNECT_DIRECT_DEBIT:
-                homeNavigationVm.connectPaymentVm.set(for: nil)
+                homeNavigationVm.connectPaymentVm.set()
             case .PAYMENT_FAILED:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 selectedTab = 3
@@ -712,7 +712,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         case .forever:
             dismissAndSelectTab(2)
         case .directDebit:
-            homeNavigationVm.connectPaymentVm.set(for: nil)
+            homeNavigationVm.connectPaymentVm.set()
         case .profile:
             dismissAndSelectTab(4)
         case .insurances:

@@ -383,7 +383,7 @@ struct TerminationFlowNavigation: View {
                         case .terminationDate:
                             openSetTerminationDateLandingScreen(fromSelectInsurance: false)
                         case let .surveyStep(model):
-                            openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
+                            openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
                         case .selectInsurance:
                             openSelectInsuranceScreen()
                         case .summary:
@@ -449,7 +449,7 @@ struct TerminationFlowNavigation: View {
             case .terminationDate:
                 openSetTerminationDateLandingScreen(fromSelectInsurance: false)
             case let .surveyStep(model):
-                openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
+                openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
             case .selectInsurance:
                 openSelectInsuranceScreen()
             case .summary:
@@ -580,15 +580,6 @@ struct TerminationFlowNavigation: View {
                 )
             )
         )
-    }
-
-    private var tabBarInfoView: some View {
-        InfoViewHolder(
-            title: L10n.terminationFlowCancelInfoTitle,
-            description: L10n.terminationFlowCancelInfoText,
-            type: .navigation
-        )
-        .foregroundColor(hTextColor.Opaque.primary)
     }
 }
 
