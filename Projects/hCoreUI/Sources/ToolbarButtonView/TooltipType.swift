@@ -50,7 +50,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         }
     }
 
-    var displayName: String {
+    var accessibilityDisplayName: String {
         switch self {
         case .crossSell:
             return L10n.InsuranceTab.CrossSells.title
@@ -63,6 +63,18 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         }
     }
 
+    @MainActor
+    var displayName: String? {
+        switch self {
+        case .chat:
+            if isLiquidGlassEnabled {
+                return L10n.chatConversationInbox
+            }
+            return nil
+        default:
+            return nil
+        }
+    }
     var showBadge: Bool {
         switch self {
         case let .crossSell(hasNewOffser):
@@ -197,7 +209,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     var offsetForToolTip: CGFloat {
         switch self {
         case .travelCertificate, .insuranceEvidence:
-            return 24
+            return 40
         case .crossSell, .firstVet, .chat:
             return 40
         }
@@ -209,8 +221,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         switch self {
         case .crossSell:
             hSignalColor.Green.element
-        case .firstVet, .chat:
-            hFillColor.Opaque.white
+        case .firstVet:
+            hSignalColor.Blue.firstVet
         default:
             hFillColor.Opaque.primary
         }

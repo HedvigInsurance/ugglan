@@ -35,11 +35,17 @@ public struct ToolbarButtonView: View {
                 action(type)
             }) {
                 ZStack(alignment: .topTrailing) {
-                    if type.shouldAnimate {
-                        imageFor(type: type)
-                            .rotate()
+                    if let displayName = type.displayName {
+                        hText(displayName)
+                            .padding(.horizontal, .padding12)
+                            .fixedSize()
                     } else {
-                        imageFor(type: type)
+                        if type.shouldAnimate {
+                            imageFor(type: type)
+                                .rotate()
+                        } else {
+                            imageFor(type: type)
+                        }
                     }
                     if type.showBadge && !isLiquidGlassEnabled {
                         Circle()
@@ -60,7 +66,7 @@ public struct ToolbarButtonView: View {
             .frame(width: type.imageSize, height: type.imageSize)
             .foregroundColor(type.imageTintColor)
             .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
-            .accessibilityValue(type.displayName)
+            .accessibilityValue(type.accessibilityDisplayName)
     }
 }
 
@@ -177,8 +183,6 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                     badge.font = .systemFont(ofSize: 5)
                     uiBarButtonItem.badge = badge
                 }
-                uiBarButtonItem.style = .prominent
-                uiBarButtonItem.tintColor = type.navBarItemBackgroundColor
             }
             if index < types.count {
                 if #available(iOS 26.0, *) {
@@ -187,9 +191,9 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
             }
         }
         if placement == .leading {
-            vc.navigationItem.leftBarButtonItems = buttonItems
+            vc.navigationItem.setLeftBarButtonItems(buttonItems, animated: false)
         } else {
-            vc.navigationItem.rightBarButtonItems = buttonItems
+            vc.navigationItem.setRightBarButtonItems(buttonItems, animated: false)
         }
     }
 

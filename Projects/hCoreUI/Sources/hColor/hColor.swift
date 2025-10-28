@@ -856,8 +856,7 @@ public struct hSignalColor {
 
         public static var firstVet: some hColor {
             hColorScheme(
-                light: Color(hexString: "30577E"),
-                dark: Color(hexString: "30577E")
+                Color(hexString: "0062FF")
             )
         }
     }
