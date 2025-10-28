@@ -220,94 +220,84 @@ class HomeVM: ObservableObject {
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
 }
 
-struct Active_Previews: PreviewProvider {
-    static var previews: some View {
-        fetchDependenciesForPreview()
+#Preview("Active") {
+    fetchDependenciesForPreview()
 
-        return HomeScreen()
-            .onAppear {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .active,
-                        contracts: []
-                    )
+    return HomeScreen()
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .active,
+                    contracts: []
                 )
-                store.send(.setFutureStatus(status: .none))
-            }
-    }
+            )
+            store.send(.setFutureStatus(status: .none))
+        }
 }
 
-struct ActiveInFuture_Previews: PreviewProvider {
-    static var previews: some View {
-        fetchDependenciesForPreview()
+#Preview("ActiveInFuture") {
+    fetchDependenciesForPreview()
 
-        return HomeScreen()
-            .onAppear {
-                ApolloClient.removeDeleteAccountStatus(for: "ID")
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .future,
-                        contracts: []
-                    )
+    return HomeScreen()
+        .onAppear {
+            ApolloClient.removeDeleteAccountStatus(for: "ID")
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .future,
+                    contracts: []
                 )
-                store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
-            }
-    }
+            )
+            store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+        }
 }
 
-struct TerminatedToday_Previews: PreviewProvider {
-    static var previews: some View {
-        fetchDependenciesForPreview()
+#Preview("TerminatedToday") {
+    fetchDependenciesForPreview()
 
-        return HomeScreen()
-            .onAppear {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .terminated,
-                        contracts: []
-                    )
+    return HomeScreen()
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .terminated,
+                    contracts: []
                 )
-                store.send(.setFutureStatus(status: .pendingSwitchable))
-            }
-    }
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+        }
 }
 
-struct Terminated_Previews: PreviewProvider {
-    static var previews: some View {
-        fetchDependenciesForPreview()
+#Preview("Terminated") {
+    fetchDependenciesForPreview()
 
-        return HomeScreen()
-            .onAppear {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .terminated,
-                        contracts: []
-                    )
+    return HomeScreen()
+        .onAppear {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .terminated,
+                    contracts: []
                 )
-                store.send(.setFutureStatus(status: .pendingSwitchable))
-            }
-    }
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+        }
 }
 
-struct Deleted_Previews: PreviewProvider {
-    static var previews: some View {
-        fetchDependenciesForPreview()
+#Preview("Deleted") {
+    fetchDependenciesForPreview()
 
-        return HomeScreen()
-            .onAppear {
-                ApolloClient.saveDeleteAccountStatus(for: "ID")
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .active,
-                        contracts: []
-                    )
+    return HomeScreen()
+        .onAppear {
+            ApolloClient.saveDeleteAccountStatus(for: "ID")
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMemberContractState(
+                    state: .active,
+                    contracts: []
                 )
-                store.send(.setFutureStatus(status: .pendingSwitchable))
-            }
-    }
+            )
+            store.send(.setFutureStatus(status: .pendingSwitchable))
+        }
 }

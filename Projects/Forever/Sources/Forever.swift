@@ -183,15 +183,13 @@ struct ForeverViewModifier: ViewModifier {
     }
 }
 
-struct ForeverView_Previews: PreviewProvider {
-    static var previews: some View {
-        let vm = ForeverNavigationViewModel()
-        vm.viewState = .success
-        Localization.Locale.currentLocale.send(.en_SE)
-        return ForeverView()
-            .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
-            }
-            .environmentObject(vm)
-    }
+#Preview {
+    let vm = ForeverNavigationViewModel()
+    vm.viewState = .success
+    Localization.Locale.currentLocale.send(.en_SE)
+    return ForeverView()
+        .onAppear {
+            Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
+        }
+        .environmentObject(vm)
 }

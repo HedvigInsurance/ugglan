@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
 import hCoreUI
 
 extension View {

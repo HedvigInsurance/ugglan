@@ -128,20 +128,3 @@ class ProcessingViewModel: ObservableObject {
         case downloadError
     }
 }
-
-extension UIView {
-    func findViewWith(tag: Int) -> UIView? {
-        var viewToReturn: UIView?
-        for subview in subviews {
-            if subview.tag == tag {
-                viewToReturn = subview
-                break
-            }
-            if let view = findViewWith(tag: tag) {
-                viewToReturn = view
-                break
-            }
-        }
-        return viewToReturn
-    }
-}

@@ -5,7 +5,6 @@ import hCoreUI
 public struct CoInsuredInputButton: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @EnvironmentObject private var router: Router
     @ObservedObject private var intentViewModel: IntentViewModel
 
     init(

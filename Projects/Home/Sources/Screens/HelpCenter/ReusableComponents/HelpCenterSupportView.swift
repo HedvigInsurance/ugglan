@@ -4,17 +4,12 @@ import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
-    @Environment(\.sizeCategory) private var sizeCategory
-    let withExtraPadding: Bool
 
     init(
-        router: Router,
-        withExtraPadding: Bool? = false
+        router: Router
     ) {
         self.router = router
-        self.withExtraPadding = withExtraPadding ?? false
     }
 
     var body: some View {

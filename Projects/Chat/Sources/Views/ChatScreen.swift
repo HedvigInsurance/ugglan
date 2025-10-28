@@ -7,9 +7,6 @@ public struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
     @ObservedObject var conversationVm: ChatConversationViewModel
     @ObservedObject var messageVm: ChatMessageViewModel
-
-    @State var infoViewHeight: CGFloat = 0
-    @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
     @State private var isTargetedForDropdown = false

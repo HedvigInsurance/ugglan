@@ -7,7 +7,6 @@ import hCore
 import hCoreUI
 
 public struct RenewalCardView: View {
-    @PresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
     @State private var document: hPDFDocument?
@@ -149,16 +148,14 @@ public struct RenewalCardView: View {
     }
 }
 
-struct RenewalCardView_Previews: PreviewProvider {
-    @PresentableStore static var store: HomeStore
+#Preview {
+    let store: HomeStore = globalPresentableStoreContainer.get()
 
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return RenewalCardView()
-            .onAppear {
-                let state = MemberContractState.active
-                let contract = HomeContract(upcomingRenewal: nil, displayName: "name")
-                store.send(.setMemberContractState(state: state, contracts: [contract]))
-            }
-    }
+    Localization.Locale.currentLocale.send(.en_SE)
+    return RenewalCardView()
+        .onAppear {
+            let state = MemberContractState.active
+            let contract = HomeContract(upcomingRenewal: nil, displayName: "name")
+            store.send(.setMemberContractState(state: state, contracts: [contract]))
+        }
 }

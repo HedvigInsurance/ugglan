@@ -5,20 +5,8 @@ class InsuredPeopleScreenViewModel: ObservableObject {
     @Published var previousValue = CoInsuredModel()
     @Published var coInsuredAdded: [CoInsuredModel] = []
     @Published var coInsuredDeleted: [CoInsuredModel] = []
-    @Published var noSSN = false
     var config: InsuredPeopleConfig = .init()
     @Published var isLoading = false
-    @Published var showInfoCard: Bool = false
-
-    var showSavebutton: Bool {
-        let nbOfMissingCoInsured = config.numberOfMissingCoInsuredWithoutTermination
-        return coInsuredAdded.count >= nbOfMissingCoInsured && nbOfMissingCoInsured != 0
-    }
-
-    var enableSaveChangesButton: Bool {
-        let totalAddedCoInsured = config.contractCoInsured.count + coInsuredAdded.count
-        return totalAddedCoInsured >= config.numberOfMissingCoInsuredWithoutTermination
-    }
 
     var hasContentBelow: Bool {
         nbOfMissingCoInsuredExcludingDeleted > 0

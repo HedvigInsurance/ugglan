@@ -207,7 +207,6 @@ extension MovingFlowQuote {
             insurableLimits: productVariantFragment.insurableLimits.compactMap {
                 .init(label: $0.label, limit: $0.limit, description: $0.description)
             },
-            perils: productVariantFragment.perils.compactMap { .init(fragment: $0.fragments.perilFragment) },
             documents: productVariantFragment.documents.compactMap { .init($0) },
             contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
             id: UUID().uuidString,
@@ -230,7 +229,6 @@ extension MovingFlowQuote {
             insurableLimits: productVariantFragment.insurableLimits.compactMap {
                 .init(label: $0.label, limit: $0.limit, description: $0.description)
             },
-            perils: productVariantFragment.perils.compactMap { .init(fragment: $0.fragments.perilFragment) },
             documents: productVariantFragment.documents.compactMap { .init($0) },
             contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
             id: data.id,
@@ -247,7 +245,6 @@ extension MovingFlowQuote {
 extension DisplayItem {
     init(_ data: OctopusGraphQL.ItemDiscountFragment) {
         self.init(
-            displaySubtitle: nil,
             displayTitle: data.displayName,
             displayValue: data.displayValue
         )
@@ -266,7 +263,6 @@ extension InsuranceDocument {
 extension DisplayItem {
     init(_ data: OctopusGraphQL.MoveQuoteDisplayItemFragment) {
         self.init(
-            displaySubtitle: data.displaySubtitle,
             displayTitle: data.displayTitle,
             displayValue: data.displayValue
         )
@@ -383,14 +379,13 @@ extension AddonDataModel {
             id: fragment.addonId,
             quoteInfo: .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription),
             displayItems: fragment.displayItems.map {
-                .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
+                .init(displayTitle: $0.displayTitle, displayValue: $0.displayValue)
             },
             coverageDisplayName: fragment.coverageDisplayName,
             grossPremium: .init(
                 fragment: fragment.premium.fragments.moneyFragment
             ),
-            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
-            startDate: fragment.startDate.localDateToDate ?? Date()
+            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
         )
     }
 }

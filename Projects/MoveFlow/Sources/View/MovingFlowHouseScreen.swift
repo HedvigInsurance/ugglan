@@ -218,14 +218,12 @@ struct MovingFlowHouseScreen: View {
     }
 }
 
-struct MovingFlowHouseView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.sv_SE)
-        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
-            .environmentObject(MovingFlowNavigationViewModel())
-    }
+#Preview {
+    Localization.Locale.currentLocale.send(.sv_SE)
+    Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
+        .environmentObject(MovingFlowNavigationViewModel())
 }
 
 enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {

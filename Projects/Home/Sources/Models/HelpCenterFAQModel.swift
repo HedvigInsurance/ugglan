@@ -1,6 +1,5 @@
 import Environment
 import Foundation
-import hCore
 import hCoreUI
 
 public struct HelpCenterFAQModel: Codable, Equatable, Hashable, Sendable {
@@ -31,13 +30,11 @@ public struct FAQModel: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
     let question: String
     let answer: String
-    let relatedQuestions: [FAQModel]
 
     public init(
         id: String,
         question: String,
-        answer: String,
-        relatedQuestions: [FAQModel] = []
+        answer: String
     ) {
         self.id = id
         var answer = answer
@@ -58,7 +55,6 @@ public struct FAQModel: Codable, Equatable, Hashable, Sendable, Identifiable {
         }
         self.question = question
         self.answer = answer
-        self.relatedQuestions = relatedQuestions
     }
 }
 

@@ -199,8 +199,7 @@ extension PHAsset {
             failedToGenerateMimeType,
             failedToGetVideoURL,
             failedToGetVideoData,
-            failedToConvertHEIC,
-            failedToConvertToFile
+            failedToConvertHEIC
     }
 
     // generates a fileUpload for current PHAsset

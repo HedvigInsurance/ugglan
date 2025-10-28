@@ -94,18 +94,14 @@ class HeaderViewModel: ObservableObject {
     }
 }
 
-struct HeaderView_Previews: PreviewProvider {
-    static var previews: some View {
-        HeaderView(foreverNavigationVm: ForeverNavigationViewModel()) {}
-            .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
-            }
-    }
+#Preview("HeaderView1") {
+    HeaderView(foreverNavigationVm: ForeverNavigationViewModel()) {}
+        .onAppear {
+            Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
+        }
 }
 
-struct HeaderView_Previews2: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return HeaderView(foreverNavigationVm: ForeverNavigationViewModel()) {}
-    }
+#Preview("HeaderView2") {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return HeaderView(foreverNavigationVm: ForeverNavigationViewModel()) {}
 }

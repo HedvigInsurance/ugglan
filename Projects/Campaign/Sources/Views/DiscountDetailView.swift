@@ -4,16 +4,12 @@ import hCore
 import hCoreUI
 
 public struct DiscountDetailView: View {
-    @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
     let isExpired: Bool
-    let options: PaymentDetailsDiscountOptions
     let discount: Discount
     public init(
         discount: Discount,
-        options: PaymentDetailsDiscountOptions,
     ) {
         self.discount = discount
-        self.options = options
         self.isExpired = {
             switch discount.type {
             case .discount(let status):
@@ -86,35 +82,21 @@ public struct DiscountDetailView: View {
     }
 }
 
-public struct PaymentDetailsDiscountOptions: OptionSet, Sendable {
-    public init(rawValue: UInt) {
-        self.rawValue = rawValue
-    }
-
-    public let rawValue: UInt
-    static let showExpire = PaymentDetailsDiscountOptions(rawValue: 1 << 0)
-    public static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 1)
-}
-
-struct PaymentDetailsDiscount_Previews: PreviewProvider {
-    static var previews: some View {
-        let discount1: Discount = .init(
-            code: "231223",
-            displayValue: "Display value that goes into more lines, it should be fine",
-            description: "Very long name that needs to go into 2 rows so we can test it",
-            discountId: "1",
-            type: .paymentsDiscount
-        )
-        let discount2: Discount = .init(
-            code: "2312231",
-            displayValue: "",
-            description: "Very long name that needs to go into 2 rows",
-            discountId: "1",
-            type: .paymentsDiscount
-        )
-        return VStack {
-            DiscountDetailView(discount: discount1, options: [.showExpire, .forPayment])
-            DiscountDetailView(discount: discount2, options: [.showExpire])
-        }
+#Preview {
+    let discount1: Discount = .init(
+        code: "231223",
+        displayValue: "Display value that goes into more lines, it should be fine",
+        description: "Very long name that needs to go into 2 rows so we can test it",
+        type: .paymentsDiscount
+    )
+    let discount2: Discount = .init(
+        code: "2312231",
+        displayValue: "",
+        description: "Very long name that needs to go into 2 rows",
+        type: .paymentsDiscount
+    )
+    return VStack {
+        DiscountDetailView(discount: discount1)
+        DiscountDetailView(discount: discount2)
     }
 }

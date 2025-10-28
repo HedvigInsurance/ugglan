@@ -172,7 +172,6 @@ public class ClaimFilesViewModel: ObservableObject {
     let fileGridViewModel: FileGridViewModel
     private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
     var claimFileUploadService = hClaimFileUploadService()
-    var fetchClaimService = FetchClaimService()
 
     init(
         endPoint: String,
