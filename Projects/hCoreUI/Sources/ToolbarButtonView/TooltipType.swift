@@ -2,12 +2,10 @@ import Foundation
 import SwiftUI
 import hCore
 
-public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
-    case newOffer
-    case newOfferNotification
+public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
+    case crossSell(hasNewOffer: Bool)
     case firstVet
-    case chat
-    case chatNotification
+    case chat(hasUnread: Bool)
     case travelCertificate
     case insuranceEvidence
 
@@ -17,7 +15,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     @MainActor
     var image: Image {
         switch self {
-        case .newOffer, .newOfferNotification:
+        case .crossSell:
             if isLiquidGlassEnabled {
                 return hCoreUIAssets.campaign.view
             } else {
@@ -29,7 +27,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
             } else {
                 return hCoreUIAssets.firstVetQuickNav.view
             }
-        case .chat, .chatNotification:
+        case .chat:
             if isLiquidGlassEnabled {
                 return hCoreUIAssets.envelope.view
             } else {
@@ -39,36 +37,51 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
             return hCoreUIAssets.infoOutlined.view
         }
     }
+    var priority: Int {
+        switch self {
+        case .crossSell:
+            return 1
+        case .firstVet:
+            return 0
+        case .chat:
+            return 2
+        case .travelCertificate, .insuranceEvidence:
+            return 3
+        }
+    }
 
     var displayName: String {
         switch self {
-        case .newOffer:
+        case .crossSell:
             return L10n.InsuranceTab.CrossSells.title
         case .firstVet:
             return L10n.hcQuickActionsFirstvetTitle
         case .chat:
-            return L10n.CrossSell.Info.faqChatButton
-        case .chatNotification:
             return L10n.Toast.newMessage
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
-        case .newOfferNotification:
-            return L10n.hcQuickActionsFirstvetTitle
+        }
+    }
+
+    var showBadge: Bool {
+        switch self {
+        case let .crossSell(hasNewOffser):
+            return hasNewOffser
+        case let .chat(hasUnread):
+            return hasUnread
+        default:
+            return false
         }
     }
 
     var tooltipId: String {
         switch self {
-        case .newOffer:
+        case .crossSell:
             return "newOfferHint"
-        case .newOfferNotification:
-            return "newOfferHintNotification"
         case .firstVet:
             return "firstVetHint"
         case .chat:
             return "chatHint"
-        case .chatNotification:
-            return "chatHintNotification"
         case .travelCertificate:
             return "travelCertHint"
         case .insuranceEvidence:
@@ -82,48 +95,24 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
 
     var textToShow: String? {
         switch self {
-        case .newOffer:
-            return nil
+        case .crossSell:
+            return L10n.Toast.newOffer
         case .firstVet:
             return nil
-        case .newOfferNotification:
-            return L10n.Toast.newOffer
         case .chat:
-            return L10n.HomeTab.chatHintText
-        case .chatNotification:
             return L10n.Toast.newMessage
         case .travelCertificate, .insuranceEvidence:
             return L10n.Toast.readMore
         }
     }
 
-    var showAsTooltip: Bool {
-        switch self {
-        case .firstVet, .chat, .newOffer:
-            return false
-        default:
-            return true
-        }
-    }
-
-    var showBadge: Bool {
-        switch self {
-        case .chatNotification, .newOfferNotification:
-            return true
-        default:
-            return false
-        }
-    }
-
     var timeIntervalForShowingAgain: TimeInterval? {
         switch self {
         case .chat:
-            return .days(numberOfDays: 30)
-        case .chatNotification:
             return 30
         case .travelCertificate, .insuranceEvidence:
             return 60
-        case .newOfferNotification:
+        case .crossSell:
             return 60 * 10  // 10 minutes
         default:
             return nil
@@ -134,7 +123,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .chat:
             return 1.5
-        case .chatNotification, .travelCertificate, .insuranceEvidence:
+        case .travelCertificate, .insuranceEvidence:
             return 0.5
         default:
             return 0
@@ -142,11 +131,9 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     }
 
     func shouldShowTooltip(for timeInterval: TimeInterval) -> Bool {
-        guard showAsTooltip else {
-            return false
-        }
         switch self {
-        case .chat:
+        case let .chat(hasUnread):
+            if !hasUnread { return false }
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
                     pastDate.timeIntervalSince(Date())
@@ -159,7 +146,8 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
                 return false
             }
             return true
-        case .chatNotification:
+        case let .crossSell(hasNewOffer):
+            if !hasNewOffer { return false }
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
                     pastDate.timeIntervalSince(Date())
@@ -172,18 +160,6 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
             }
             return true
         case .travelCertificate, .insuranceEvidence:
-            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
-                let timeIntervalSincePast = abs(
-                    pastDate.timeIntervalSince(Date())
-                )
-
-                if timeIntervalSincePast > timeInterval {
-                    return true
-                }
-                return false
-            }
-            return true
-        case .newOfferNotification, .newOffer:
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
                     pastDate.timeIntervalSince(Date())
@@ -205,11 +181,11 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return 24
-        case .newOffer, .newOfferNotification:
+        case .crossSell:
             if isLiquidGlassEnabled {
                 return 20
             }
-        case .firstVet, .chat, .chatNotification:
+        case .firstVet, .chat:
             if isLiquidGlassEnabled {
                 return 17
             }
@@ -222,7 +198,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return 24
-        case .newOffer, .newOfferNotification, .firstVet, .chat, .chatNotification:
+        case .crossSell, .firstVet, .chat:
             return 40
         }
     }
@@ -231,9 +207,9 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     @hColorBuilder
     var imageTintColor: some hColor {
         switch self {
-        case .newOffer, .newOfferNotification:
+        case .crossSell:
             hSignalColor.Green.element
-        case .firstVet, .chat, .chatNotification:
+        case .firstVet, .chat:
             hFillColor.Opaque.white
         default:
             hFillColor.Opaque.primary
@@ -245,11 +221,11 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return hFillColor.Opaque.primary.colorFor(.dark, .base).color.uiColor()
-        case .newOfferNotification, .newOffer:
+        case .crossSell:
             return hSignalColor.Green.fill.colorFor(.dark, .base).color.uiColor()
         case .firstVet:
             return hSignalColor.Blue.firstVet.colorFor(.dark, .base).color.uiColor()
-        case .chat, .chatNotification:
+        case .chat:
             return hSignalColor.Grey.element.colorFor(.dark, .base).color.uiColor()
         }
     }
@@ -257,7 +233,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     @MainActor
     var shouldAnimate: Bool {
         switch self {
-        case .newOfferNotification, .newOffer:
+        case .crossSell:
             Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
                 ToolbarOptionType.animateOffer = false
@@ -273,7 +249,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             hFillColor.Opaque.primary
-        case .newOfferNotification:
+        case .crossSell:
             hSignalColor.Green.fill
         default:
             hFillColor.Opaque.secondary
@@ -283,7 +259,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
     @hColorBuilder @MainActor
     var tooltipTextColor: some hColor {
         switch self {
-        case .newOfferNotification:
+        case .crossSell:
             hSignalColor.Green.text
         default:
             hTextColor.Opaque.negative
@@ -303,11 +279,9 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .chat:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
-        case .chatNotification:
-            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         case .travelCertificate, .insuranceEvidence:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
-        case .newOfferNotification, .newOffer:
+        case .crossSell:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         default:
             break
