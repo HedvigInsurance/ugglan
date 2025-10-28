@@ -23,7 +23,7 @@ public struct hRowDivider: View {
 
     public var body: some View {
         RoundedRectangle(cornerRadius: 1, style: .circular)
-            .fill(hBorderColor.secondary)
+            .fill(hBorderColor.primary)
             .frame(height: 1)
             .padding(hWithoutHorizontalPadding.contains(.divider) ? .init() : settings.insets)
     }

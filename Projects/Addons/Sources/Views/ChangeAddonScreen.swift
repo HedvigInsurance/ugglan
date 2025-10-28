@@ -100,7 +100,7 @@ struct ChangeAddonScreen: View {
                 }
                 .disabled(changeAddonVm.disableDropDown)
                 .padding(.top, .padding16)
-                .hBackgroundOption(option: [.locked])
+                .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
                 .hWithoutHorizontalPadding([.section])
                 .accessibilityHidden(false)
             }

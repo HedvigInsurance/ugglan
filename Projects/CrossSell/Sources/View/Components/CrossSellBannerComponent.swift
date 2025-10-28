@@ -5,7 +5,7 @@ import hCoreUI
 struct CrossSellBannerComponent: View {
     let crossSell: CrossSell
     var body: some View {
-        HStack(alignment: .top, spacing: .padding8) {
+        HStack(alignment: .center, spacing: .padding8) {
             hCoreUIAssets.campaign.view
                 .resizable()
                 .frame(width: 20, height: 20)

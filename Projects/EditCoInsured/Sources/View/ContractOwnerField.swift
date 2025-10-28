@@ -32,7 +32,7 @@ public struct ContractOwnerField: View {
 
     public var body: some View {
         hRow {
-            VStack {
+            VStack(spacing: .padding16) {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         hText(fullName)
@@ -50,7 +50,7 @@ public struct ContractOwnerField: View {
                         .hWithoutHorizontalPadding([.divider])
                 }
             }
-            .padding(.bottom, hasContentBelow ? 0 : 16)
+            .padding(.bottom, hasContentBelow ? 0 : .padding16)
             .accessibilityElement(children: .combine)
         }
         .verticalPadding(0)

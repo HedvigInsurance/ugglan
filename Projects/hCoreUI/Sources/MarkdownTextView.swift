@@ -207,6 +207,14 @@ class CustomTextView: UITextView, UITextViewDelegate {
 
         return false
     }
+
+    override func becomeFirstResponder() -> Bool {
+        false
+    }
+
+    override var canBecomeFirstResponder: Bool {
+        false
+    }
 }
 
 public struct CustomTextViewRepresentableConfig {
