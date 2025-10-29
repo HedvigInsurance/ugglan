@@ -27,14 +27,14 @@ extension HomeScreen {
         }
         .setHomeNavigationBars(
             with: $vm.toolbarOptionTypes,
-            and: "HomeView",
+            and: String(describing: HomeScreen.self),
             action: { [weak navigationVm] type in
                 switch type {
-                case .newOffer, .newOfferNotification:
+                case .crossSell:
                     NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                 case .firstVet:
                     navigationVm?.navBarItems.isFirstVetPresented = true
-                case .chat, .chatNotification:
+                case .chat:
                     navigationVm?.router.push(HomeRouterAction.inbox)
                 case .travelCertificate, .insuranceEvidence:
                     break
@@ -200,7 +200,9 @@ class HomeVM: ObservableObject {
             .map(\.toolbarOptionTypes)
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
-                self?.toolbarOptionTypes = value
+                withAnimation {
+                    self?.toolbarOptionTypes = value
+                }
             })
             .store(in: &cancellables)
     }
