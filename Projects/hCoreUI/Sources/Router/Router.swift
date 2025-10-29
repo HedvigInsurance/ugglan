@@ -192,6 +192,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             if let title {
                 vc.title = title
             }
+            vc.view.backgroundColor = .brand(.primaryBackground())
             vc.onViewWillAppear = { [weak vc] in
                 if options.contains(.hidesBottomBarWhenPushed) {
                     if let tabBarController = vc?.tabBarController {
