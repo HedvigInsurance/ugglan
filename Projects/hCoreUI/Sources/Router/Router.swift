@@ -10,6 +10,11 @@ public protocol TrackingViewNameProtocol {
 }
 
 @MainActor
+public protocol NavigationTitleProtocol {
+    var navigationTitle: String? { get }
+}
+
+@MainActor
 extension String: TrackingViewNameProtocol {
     public var nameForTracking: String {
         self
@@ -21,7 +26,10 @@ public class Router: ObservableObject {
     var routes = [AnyHashable]()
     var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()
     fileprivate var onPush:
-        ((_ options: RouterDestionationOptions, _ view: AnyView, _ contentName: String) -> UIViewController?)?
+        (
+            (_ options: RouterDestionationOptions, _ view: AnyView, _ contentName: String, _ title: String?) ->
+                UIViewController?
+        )?
     fileprivate var onPop: (() -> Void)?
     fileprivate var onPopToRoot: (() -> Void)?
     fileprivate var onPopAtIndex: ((Int) -> Void)?
@@ -29,11 +37,17 @@ public class Router: ObservableObject {
 
     public init() {}
 
-    var builders: [String: Builderrr<AnyView>] = [:]
+    var builders: [String: ContentBuilder<AnyView>] = [:]
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
         let key = "\(T.self)"
+        let titleName: String? = {
+            guard let route = route as? NavigationTitleProtocol else {
+                return nil
+            }
+            return route.navigationTitle
+        }()
         if let builder = builders[key], let view = builder.builder(route) {
-            _ = onPush?(builder.options, view, route.nameForTracking)
+            _ = onPush?(builder.options, view, route.nameForTracking, titleName)
             routes.append(key)
         } else {
             routesToBePushedAfterViewAppears.append(route)
@@ -83,7 +97,7 @@ public class Router: ObservableObject {
     }
 }
 
-struct Builderrr<Content: View> {
+struct ContentBuilder<Content: View> {
     let builder: (AnyHashable) -> Content?
     let options: RouterDestionationOptions
     init(builder: @escaping (AnyHashable) -> Content?, options: RouterDestionationOptions) {
@@ -158,7 +172,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         if options.contains(.navigationBarHidden) {
             navigation.setNavigationBarHidden(true, animated: true)
         }
-        router.onPush = { [weak router, weak navigation] options, view, name in
+        router.onPush = { [weak router, weak navigation] options, view, name, title in
             guard let router = router else { return nil }
             let vc = hHostingController(rootView: view.environmentObject(router), contentName: name)
             vc.onViewWillLayoutSubviews = { [weak vc] in
@@ -166,6 +180,9 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
                 if options.contains(.hidesBackButton) {
                     vc.navigationItem.setHidesBackButton(true, animated: true)
                 }
+            }
+            if let title {
+                vc.title = title
             }
             vc.onViewWillAppear = { [weak vc] in
                 if options.contains(.hidesBottomBarWhenPushed) {
@@ -327,6 +344,7 @@ extension View {
         title: String,
         subTitle: String? = nil,
         titleColor: TitleColor? = nil,
+        topPadding: CGFloat = .padding8,
         onTitleTap: (() -> Void)? = nil
     ) -> some View {
         if #available(iOS 26.0, *), isLiquidGlassEnabled {
@@ -335,8 +353,13 @@ extension View {
                     Button {
                         onTitleTap?()
                     } label: {
-                        titleView(title: title, subTitle: subTitle, titleColor: titleColor ?? .default)
-                            .fixedSize()
+                        titleView(
+                            title: title,
+                            subTitle: subTitle,
+                            topPadding: topPadding,
+                            titleColor: titleColor ?? .default
+                        )
+                        .fixedSize()
                     }
                 }
                 .sharedBackgroundVisibility(.hidden)
@@ -347,6 +370,7 @@ extension View {
                     title: title,
                     subTitle: subTitle,
                     titleColor: titleColor ?? .default,
+                    topPadding: topPadding,
                     onTitleTap: onTitleTap
                 )
             }
@@ -363,10 +387,11 @@ extension View {
         title: String,
         subTitle: String?,
         titleColor: TitleColor,
+        topPadding: CGFloat,
         onTitleTap: (() -> Void)? = nil
     ) -> UIView {
         let view: UIView = UIHostingController(
-            rootView: titleView(title: title, subTitle: subTitle, titleColor: titleColor)
+            rootView: titleView(title: title, subTitle: subTitle, topPadding: topPadding, titleColor: titleColor)
                 .onTapGesture {
                     onTitleTap?()
                 }
@@ -378,7 +403,7 @@ extension View {
     }
 
     @ViewBuilder
-    private func titleView(title: String, subTitle: String?, titleColor: TitleColor) -> some View {
+    private func titleView(title: String, subTitle: String?, topPadding: CGFloat, titleColor: TitleColor) -> some View {
         Group {
             if let subTitle {
                 VStack(alignment: .leading, spacing: 0) {
@@ -394,7 +419,7 @@ extension View {
                     .foregroundColor(titleViewColor(titleColor))
             }
         }
-        .padding(.top, .padding8)
+        .padding(.top, topPadding)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isHeader)
     }

@@ -200,7 +200,7 @@ public class FilesUploadViewModel: ObservableObject {
     @Published var progress: Double = 0
     var uploadProgress: Double = 0
     var timerProgress: Double = 0
-    let uploadDelayDuration: UInt64 = 1_500_000_000
+    let uploadDelayDuration: Float = 1.5
 
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
@@ -277,7 +277,7 @@ public class FilesUploadViewModel: ObservableObject {
             if !filteredFiles.isEmpty {
                 setNavigationBarHidden(true)
                 let startDate = Date()
-                async let sleepTask: () = Task.sleep(nanoseconds: uploadDelayDuration)
+                async let sleepTask: () = Task.sleep(seconds: uploadDelayDuration)
                 async let filesUploadTask = claimFileUploadService.upload(
                     endPoint: model.targetUploadUrl,
                     files: filteredFiles

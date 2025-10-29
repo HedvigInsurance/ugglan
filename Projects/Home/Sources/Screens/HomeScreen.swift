@@ -27,15 +27,15 @@ extension HomeScreen {
         }
         .setHomeNavigationBars(
             with: $vm.toolbarOptionTypes,
-            and: "HomeView",
-            action: { type in
+            and: String(describing: HomeScreen.self),
+            action: { [weak navigationVm] type in
                 switch type {
-                case .newOffer, .newOfferNotification:
+                case .crossSell:
                     NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                 case .firstVet:
-                    navigationVm.navBarItems.isFirstVetPresented = true
-                case .chat, .chatNotification:
-                    navigationVm.router.push(String(describing: InboxView.self))
+                    navigationVm?.navBarItems.isFirstVetPresented = true
+                case .chat:
+                    navigationVm?.router.push(HomeRouterAction.inbox)
                 case .travelCertificate, .insuranceEvidence:
                     break
                 }
@@ -200,7 +200,9 @@ class HomeVM: ObservableObject {
             .map(\.toolbarOptionTypes)
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
-                self?.toolbarOptionTypes = value
+                withAnimation {
+                    self?.toolbarOptionTypes = value
+                }
             })
             .store(in: &cancellables)
     }
@@ -300,4 +302,16 @@ class HomeVM: ObservableObject {
             )
             store.send(.setFutureStatus(status: .pendingSwitchable))
         }
+}
+
+public enum HomeRouterAction: TrackingViewNameProtocol, NavigationTitleProtocol {
+    public var navigationTitle: String? {
+        L10n.chatConversationInbox
+    }
+
+    public var nameForTracking: String {
+        String(describing: InboxView.self)
+    }
+
+    case inbox
 }

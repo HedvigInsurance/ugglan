@@ -337,7 +337,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                     // if it fails check again after 1 second
                     // if the task is cancelled, it will throw cancellation error
                     do {
-                        try await Task.sleep(nanoseconds: 1_000_000_000)
+                        try await Task.sleep(seconds: 1)
                         try Task.checkCancellation()
                         self?.fetchNotification(isDeletion: deletion)
                     } catch {

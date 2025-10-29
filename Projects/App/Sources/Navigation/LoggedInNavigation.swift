@@ -325,9 +325,8 @@ struct HomeTab: View {
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                     openClaimDetails(claim: claim, type: .claim(id: claim.id))
                 }
-                .routerDestination(for: String.self) { _ in
+                .routerDestination(for: HomeRouterAction.self) { _ in
                     InboxView()
-                        .configureTitle(L10n.chatConversationInbox)
                         .environmentObject(homeNavigationVm)
                 }
         }
@@ -820,7 +819,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
             Task { [weak self] in
                 do {
-                    try await Task.sleep(nanoseconds: 200_000_000)
+                    try await Task.sleep(seconds: 0.2)
                     let contractsConfig = [contract.asTerminationConfirmConfig]
                     try await self?.terminateInsuranceVm.start(with: contractsConfig)
                 } catch let exception {
@@ -832,7 +831,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         } else {
             Task { [weak self] in
                 do {
-                    try await Task.sleep(nanoseconds: 200_000_000)
+                    try await Task.sleep(seconds: 0.2)
                     let contractsConfig = contractStore.state.activeContracts
                         .filter(\.canTerminate)
                         .map(\.asTerminationConfirmConfig)
@@ -987,7 +986,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 selectedTab = 0
                 Task { [weak self] in
-                    try await Task.sleep(nanoseconds: 200_000_000)
+                    try await Task.sleep(seconds: 0.2)
                     self?.homeNavigationVm.router.push(claim)
                 }
             } catch {
@@ -1017,6 +1016,6 @@ class LoggedInNavigationViewModel: ObservableObject {
 
 extension HomeTab: TrackingViewNameProtocol {
     var nameForTracking: String {
-        "HomeView"
+        String(describing: HomeScreen.self)
     }
 }

@@ -438,7 +438,7 @@ private class TextView: UITextView, UITextViewDelegate {
         updateHeight()
         Task { [weak self] in
             // Delay to ensure the view is fully laid out before updating height
-            try await Task.sleep(nanoseconds: 300_000_000)
+            try await Task.sleep(seconds: 0.3)
             self?.updateHeight()
         }
     }

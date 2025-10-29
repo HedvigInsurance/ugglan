@@ -5,7 +5,7 @@ import hCore
 public class hPaymentClientDemo: hPaymentClient {
     public init() {}
     public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         return (
             .init(
                 id: "",
@@ -147,7 +147,7 @@ public class hPaymentClientDemo: hPaymentClient {
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         return PaymentStatusData(
             status: .noNeedToConnect,
             displayName: "Connected bank",

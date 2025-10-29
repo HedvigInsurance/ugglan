@@ -17,7 +17,7 @@ final class HomeTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: HomeClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
     }
@@ -132,22 +132,22 @@ final class HomeTests: XCTestCase {
         )
         MockData.createMockHomeService(
             fetchImportantMessages: {
-                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
                 return importantMessages
             },
             fetchMemberState: {
-                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
                 return memberState
             },
             fetchQuickActions: {
-                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
                 return [
                     .sickAbroad(partners: []),
                     .firstVet(partners: []),
                 ]
             },
             fetchLatestMessageState: {
-                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
                 return messageState
             }
         )
@@ -193,7 +193,7 @@ extension XCTestCase {
         if closure() {
             exc.fulfill()
         } else {
-            try! await Task.sleep(nanoseconds: 10_000_000)
+            try! await Task.sleep(seconds: 0.01)
             Task {
                 await self.waitUntil(description: description, closure: closure)
                 if closure() {

@@ -70,8 +70,7 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
         vm = model
-
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(model.addonOffer == addonModel)
         assert(model.addonOffer?.quotes == addonModel.quotes)
         assert(model.addonOffer?.quotes.count == addonModel.quotes.count)
@@ -92,7 +91,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         vm = model
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(model.addonOffer?.quotes == nil)
         assert(model.addonOffer?.quotes.first == nil)
         assert(model.addonOffer?.quotes.count == nil)
@@ -116,7 +115,7 @@ final class AddonsViewModelTests: XCTestCase {
         vm = model
         await model.submitAddons()
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(model.submittingAddonsViewState == .success)
     }
 
@@ -137,7 +136,7 @@ final class AddonsViewModelTests: XCTestCase {
         vm = model
         await model.submitAddons()
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         if case let .error(errorMessage) = model.submittingAddonsViewState {
             assert(errorMessage == AddonsError.submitError.localizedDescription)
         } else {

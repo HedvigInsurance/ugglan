@@ -50,18 +50,14 @@ public struct ProfileNavigation<Content: View>: View {
                     switch redirectType {
                     case .myInfo:
                         MyInfoView()
-                            .configureTitle(L10n.profileMyInfoRowTitle)
                     case .appInfo:
                         AppInfoView()
-                            .configureTitle(L10n.profileAppInfo)
                     case .settings:
                         SettingsView()
-                            .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)
                     case .certificates:
                         CertificatesScreen()
-                            .configureTitle(L10n.Profile.Certificates.title)
                             .environmentObject(profileNavigationViewModel)
                     case .claimHistory:
                         ClaimHistoryScreen { claim in
@@ -69,7 +65,12 @@ public struct ProfileNavigation<Content: View>: View {
                                 ProfileRouterTypeWithHiddenBottomBar.claimsCard(claim: claim)
                             )
                         }
-                        .configureTitle(L10n.Profile.ClaimHistory.title)
+                    case .travelCertificates:
+                        TravelCertificateNavigation(
+                            vm: profileNavigationViewModel.travelCertificateNavigationViewModel,
+                            infoButtonPlacement: .trailing,
+                            useOwnNavigation: false
+                        )
                     }
                 }
                 .routerDestination(
@@ -80,18 +81,6 @@ public struct ProfileNavigation<Content: View>: View {
                     case let .claimsCard(claim):
                         ClaimDetailView(claim: claim, type: .claim(id: claim.id))
                             .configureTitle(L10n.claimsYourClaim)
-                    }
-                }
-                .routerDestination(for: ProfileRedirectType.self) { redirectType in
-                    switch redirectType {
-                    case .travelCertificate:
-                        TravelCertificateNavigation(
-                            vm: profileNavigationViewModel.travelCertificateNavigationViewModel,
-                            infoButtonPlacement: .trailing,
-                            useOwnNavigation: false
-                        )
-                    default:
-                        EmptyView()
                     }
                 }
         }
@@ -138,6 +127,7 @@ public enum ProfileRouterType: Hashable {
     case euroBonus
     case certificates
     case claimHistory
+    case travelCertificates
 }
 
 public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
@@ -176,6 +166,29 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: CertificatesScreen.self)
         case .claimHistory:
             return .init(describing: ClaimHistoryScreen.self)
+        case .travelCertificates:
+            return .init(describing: TravelCertificatesListScreen.self)
+        }
+    }
+}
+
+extension ProfileRouterType: NavigationTitleProtocol {
+    public var navigationTitle: String? {
+        switch self {
+        case .myInfo:
+            L10n.profileMyInfoRowTitle
+        case .appInfo:
+            L10n.profileAppInfo
+        case .settings:
+            L10n.EmbarkOnboardingMoreOptions.settingsLabel
+        case .euroBonus:
+            L10n.SasIntegration.title
+        case .certificates:
+            L10n.Profile.Certificates.title
+        case .claimHistory:
+            L10n.Profile.ClaimHistory.title
+        case .travelCertificates:
+            L10n.TravelCertificate.cardTitle
         }
     }
 }
@@ -190,23 +203,23 @@ extension ProfileRouterTypeWithHiddenBottomBar: TrackingViewNameProtocol {
 }
 
 public enum ProfileRedirectType: Hashable {
-    case travelCertificate
     case deleteAccount(memberDetails: MemberDetails)
     case deleteRequestLoading
     case pickLanguage
+    case travelCertificate
 }
 
 extension ProfileRedirectType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
-        case .travelCertificate:
-            return "List screen"
         case .deleteAccount:
             return .init(describing: DeleteAccountView.self)
         case .deleteRequestLoading:
             return .init(describing: DeleteRequestLoadingView.self)
         case .pickLanguage:
             return .init(describing: LanguagePickerView.self)
+        case .travelCertificate:
+            return L10n.TravelCertificate.cardTitle
         }
     }
 }

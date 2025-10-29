@@ -9,7 +9,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
     func sendMidtermChangeIntentCommit(commitId: String) async throws {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
         let delayTask = Task {
-            try await Task.sleep(nanoseconds: 3_000_000_000)
+            try await Task.sleep(seconds: 3)
         }
         let clientTask = Task { @MainActor in
             let data = try await octopus.client.mutation(mutation: mutation)

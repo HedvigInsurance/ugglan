@@ -42,7 +42,7 @@ struct ProfileRow: View {
         case .eurobonus:
             router.push(ProfileRouterType.euroBonus)
         case .travelCertificate:
-            router.push(ProfileRedirectType.travelCertificate)
+            router.push(ProfileRouterType.travelCertificates)
         case .insuranceEvidence:
             profileNavigationViewModel.isCreateInsuranceEvidencePresented = true
         case .certificates:

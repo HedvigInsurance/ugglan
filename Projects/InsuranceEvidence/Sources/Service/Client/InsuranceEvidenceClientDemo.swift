@@ -1,3 +1,5 @@
+import hCore
+
 public class InsuranceEvidenceClientDemo: InsuranceEvidenceClient {
     public init() {}
 
@@ -10,7 +12,7 @@ public class InsuranceEvidenceClientDemo: InsuranceEvidenceClient {
     }
 
     public func createInsuranceEvidence(input _: InsuranceEvidenceInput) async throws -> InsuranceEvidence {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         return InsuranceEvidence(
             url: ""
         )
