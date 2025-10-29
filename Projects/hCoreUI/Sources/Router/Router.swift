@@ -24,7 +24,6 @@ public class Router: ObservableObject {
         ((_ options: RouterDestionationOptions, _ view: AnyView, _ contentName: String) -> UIViewController?)?
     fileprivate var onPop: (() -> Void)?
     fileprivate var onPopToRoot: (() -> Void)?
-    fileprivate var onPopVC: ((UIViewController) -> Void)?
     fileprivate var onPopAtIndex: ((Int) -> Void)?
     fileprivate var onDismiss: ((_ withDismissingAll: Bool) -> Void)?
 
@@ -39,11 +38,6 @@ public class Router: ObservableObject {
         } else {
             routesToBePushedAfterViewAppears.append(route)
         }
-    }
-
-    func push<T>(view: T) -> UIViewController? where T: View {
-        routes.append("\(type(of: view))")
-        return onPush?([], AnyView(view), "\(T.self)")
     }
 
     public func pop<T>(_ hash: T.Type) {
@@ -91,11 +85,9 @@ public class Router: ObservableObject {
 
 struct Builderrr<Content: View> {
     let builder: (AnyHashable) -> Content?
-    let contentName: String
     let options: RouterDestionationOptions
-    init(builder: @escaping (AnyHashable) -> Content?, contentName: String, options: RouterDestionationOptions) {
+    init(builder: @escaping (AnyHashable) -> Content?, options: RouterDestionationOptions) {
         self.builder = builder
-        self.contentName = contentName
         self.options = options
     }
 }
@@ -235,10 +227,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         router.onPopToRoot = { [weak navigation] in
             navigation?.popToRootViewController(animated: true)
         }
-        router.onPopVC = { _ in
-            //            [weak navigation] vc in
-            //            navigation?.popViewController(vc, options: [])
-        }
+
         router.onPopAtIndex = { [weak navigation] index in
             if let viewControllers = navigation?.viewControllers {
                 var newVCs = viewControllers

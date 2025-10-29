@@ -66,10 +66,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         }
     }
 
-    private func handleReady() {
-        setFeatureFlags()
-    }
-
     private func handleUpdate() {
         setFeatureFlags()
     }

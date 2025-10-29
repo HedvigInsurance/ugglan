@@ -79,29 +79,8 @@ public struct EditContractScreen: View {
             selectedType = EditType(rawValue: value ?? "")
         }
     }
-
-    @hColorBuilder
-    func retColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.Opaque.primary
-        } else {
-            hSurfaceColor.Opaque.primary
-        }
-    }
-
-    @hColorBuilder
-    func getBorderColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.Opaque.primary
-        } else {
-            hBorderColor.secondary
-        }
-    }
 }
 
-struct EditContract_Previews: PreviewProvider {
-    static var previews: some View {
-        EditContractScreen(editTypes: []) { _ in
-        }
-    }
+#Preview {
+    EditContractScreen(editTypes: []) { _ in }
 }

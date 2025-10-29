@@ -101,24 +101,22 @@ class StartDateViewModel: ObservableObject {
     }
 }
 
-struct StartDateView_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        return NavigationView {
-            StartDateScreen(
-                vm: .init(
-                    specification: .init(
-                        contractId: "",
-                        displayName: "display name",
-                        exposureDisplayName: "exposure display name",
-                        minStartDate: Date(),
-                        maxStartDate: Date().addingTimeInterval(60 * 60 * 24 * 10),
-                        maxDuration: 45,
-                        email: nil,
-                        fullName: "full name"
-                    )
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return NavigationView {
+        StartDateScreen(
+            vm: .init(
+                specification: .init(
+                    contractId: "",
+                    displayName: "display name",
+                    exposureDisplayName: "exposure display name",
+                    minStartDate: Date(),
+                    maxStartDate: Date().addingTimeInterval(60 * 60 * 24 * 10),
+                    maxDuration: 45,
+                    email: nil,
+                    fullName: "full name"
                 )
             )
-        }
+        )
     }
 }

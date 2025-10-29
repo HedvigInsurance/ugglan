@@ -5,7 +5,6 @@ public struct hAttributedTextView: View {
     let text: NSAttributedString
     let useSecondaryColor: Bool
     @State var height: CGFloat = 20
-    @State var width: CGFloat = 0
 
     public init(text: NSAttributedString, useSecondaryColor: Bool? = false) {
         self.text = text

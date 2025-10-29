@@ -138,8 +138,6 @@ class ProcessingViewModel: ObservableObject {
         } catch {}
     }
 
-    func present(activity _: UIActivityViewController) {}
-
     @MainActor
     var fileName: String {
         "\("Travel Insurance Certificate") \(Date().localDateString)\(".pdf")"
@@ -151,41 +149,22 @@ class ProcessingViewModel: ObservableObject {
     }
 }
 
-struct SuccessScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        return TravelCertificateProcessingScreen()
-            .environmentObject(
-                WhoIsTravelingViewModel(
-                    specification: .init(
-                        contractId: "contractId",
-                        displayName: "display name",
-                        exposureDisplayName: "exposure display name",
-                        minStartDate: Date(),
-                        maxStartDate: "2025-12-12".localDateToDate ?? Date(),
-                        maxDuration: 2,
-                        email: "",
-                        fullName: ""
-                    ),
-                    router: .init()
-                )
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return TravelCertificateProcessingScreen()
+        .environmentObject(
+            WhoIsTravelingViewModel(
+                specification: .init(
+                    contractId: "contractId",
+                    displayName: "display name",
+                    exposureDisplayName: "exposure display name",
+                    minStartDate: Date(),
+                    maxStartDate: "2025-12-12".localDateToDate ?? Date(),
+                    maxDuration: 2,
+                    email: "",
+                    fullName: ""
+                ),
+                router: .init()
             )
-    }
-}
-
-extension UIView {
-    func findViewWith(tag: Int) -> UIView? {
-        var viewToReturn: UIView?
-        for subview in subviews {
-            if subview.tag == tag {
-                viewToReturn = subview
-                break
-            }
-            if let view = findViewWith(tag: tag) {
-                viewToReturn = view
-                break
-            }
-        }
-        return viewToReturn
-    }
+        )
 }

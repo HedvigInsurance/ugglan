@@ -27,14 +27,11 @@ public struct ToastBar {
 
     public struct ToastBarAction {
         let actionText: String
-        let onClick: () -> Void
 
         public init(
-            actionText: String,
-            onClick: @escaping () -> Void
+            actionText: String
         ) {
             self.actionText = actionText
-            self.onClick = onClick
         }
     }
 }
@@ -95,7 +92,7 @@ public struct ToastBarView: View {
                 toastModel: .init(
                     type: .info,
                     text: "testing toast bar action",
-                    action: .init(actionText: "action", onClick: {})
+                    action: .init(actionText: "action")
                 )
             )
         }
@@ -147,7 +144,6 @@ public class Toasts {
 private class ToastUIView: UIView {
     private let onDeinit: @Sendable () -> Void
     private let model: ToastBar
-    private var timerSubscription: Cancellable?
     private var offsetForPanGesture: CGFloat = 0
     init(model: ToastBar, onDeinit: @Sendable @escaping () -> Void) {
         let toastBarView = ToastBarView(toastModel: model)
@@ -177,7 +173,6 @@ private class ToastUIView: UIView {
     }
 
     @objc func handlePan(_ sender: UIPanGestureRecognizer) {
-        disableAutoDismiss()
         var ended = false
         switch sender.state {
         case .began:
@@ -229,20 +224,8 @@ private class ToastUIView: UIView {
         }
     }
 
-    private func disableAutoDismiss() {
-        timerSubscription = nil
-    }
-
     private func setAutoDismiss() {
         let runLoop = RunLoop.main
-        timerSubscription = runLoop.schedule(
-            after: runLoop.now.advanced(by: .seconds(model.duration)),
-            interval: .seconds(6),
-            tolerance: .milliseconds(100),
-            options: nil
-        ) { [weak self] in
-            self?.dismiss()
-        }
     }
 
     private func dismiss() {

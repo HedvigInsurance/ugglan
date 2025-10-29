@@ -11,21 +11,12 @@ extension View {
         cancelButton: String
     ) -> some View {
         modifier(
-            DismissButton(
-                title: title,
-                message: message,
-                confirmButton: confirmButton,
-                cancelButton: cancelButton
-            )
+            DismissButton()
         )
     }
 }
 
 private struct DismissButton: ViewModifier {
-    let title: String
-    let message: String?
-    let confirmButton: String
-    let cancelButton: String
     @State var isPresented = false
     func body(content: Content) -> some View {
         content

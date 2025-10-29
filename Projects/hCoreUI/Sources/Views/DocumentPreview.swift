@@ -70,14 +70,6 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
 
         case url(url: URL, mimeType: MimeType)
         case data(data: Data, mimeType: MimeType)
-        var url: URL? {
-            switch self {
-            case let .url(url, _):
-                return url
-            case .data:
-                return nil
-            }
-        }
     }
 }
 

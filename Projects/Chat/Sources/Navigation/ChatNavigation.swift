@@ -27,10 +27,7 @@ public class ChatNavigationViewModel: ObservableObject {
                     type: .info,
                     text: L10n.chatToastPushNotificationsTitle,
                     action: .init(
-                        actionText: L10n.pushNotificationsAlertActionOk,
-                        onClick: {
-                            NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
-                        }
+                        actionText: L10n.pushNotificationsAlertActionOk
                     ),
                     duration: 6
                 )
