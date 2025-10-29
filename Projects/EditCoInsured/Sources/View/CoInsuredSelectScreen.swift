@@ -128,8 +128,6 @@ struct CoInsuredSelectScreen: View {
     }
 }
 
-struct CoInsuredSelectScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        CoInsuredSelectScreen(contractId: "", editCoInsuredNavigation: .init(config: .init()))
-    }
+#Preview {
+    CoInsuredSelectScreen(contractId: "", editCoInsuredNavigation: .init(config: .init()))
 }

@@ -48,15 +48,13 @@ struct ChangeTierProcessingView: View {
     }
 }
 
-struct ChangeTierProcessingView_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-        Localization.Locale.currentLocale.send(.sv_SE)
-        return ChangeTierProcessingView(
-            vm: .init(
-                changeTierInput: .contractWithSource(data: .init(source: .betterPrice, contractId: "contractId"))
-            )
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    Localization.Locale.currentLocale.send(.sv_SE)
+    return ChangeTierProcessingView(
+        vm: .init(
+            changeTierInput: .contractWithSource(data: .init(source: .betterPrice, contractId: "contractId"))
         )
-    }
+    )
 }

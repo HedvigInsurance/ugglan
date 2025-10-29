@@ -47,25 +47,6 @@ struct InsuredPeopleScreen: View {
         }
     }
 
-    private var saveChangesButton: some View {
-        hButton(
-            .large,
-            .primary,
-            content: .init(title: L10n.generalSaveChangesButton),
-            {
-                Task {
-                    await intentViewModel.performCoInsuredChanges(
-                        commitId: intentViewModel.intent.id
-                    )
-                }
-                editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
-                editCoInsuredNavigation.editCoInsuredConfig = nil
-            }
-        )
-        .hButtonIsLoading(intentViewModel.isLoading)
-        .disabled(!vm.enableSaveChangesButton)
-    }
-
     private func contractOwnerField(hasContentBelow: Bool) -> some View {
         hSection {
             ContractOwnerField(

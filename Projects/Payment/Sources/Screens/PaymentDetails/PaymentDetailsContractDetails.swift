@@ -84,7 +84,7 @@ struct ContractDetails: View {
                 if contract.periods.count - 1 == offset {
                     if !contract.discounts.isEmpty {
                         ForEach(contract.discounts) { discount in
-                            DiscountDetailView(discount: discount, options: [.forPayment])
+                            DiscountDetailView(discount: discount)
                         }
                     }
                     hRow {
@@ -134,7 +134,6 @@ struct ContractDetails: View {
                         code: "TOGETHER",
                         displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
                         description: "15% discount for 12 months",
-                        discountId: "TOGETHER",
                         type: .discount(status: .active)
                     )
                 ],

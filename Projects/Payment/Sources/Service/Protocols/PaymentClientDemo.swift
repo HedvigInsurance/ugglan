@@ -29,7 +29,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 code: "TOGETHER",
                                 displayValue: MonetaryAmount.sek(9).formattedNegativeAmount,
                                 description: "15% discount for 12 months",
-                                discountId: "TOGETHER",
                                 type: .discount(status: .active)
                             )
                         ],
@@ -55,7 +54,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 code: "TOGETHER",
                                 displayValue: MonetaryAmount.sek(8).formattedNegativeAmount,
                                 description: "15% discount for 12 months",
-                                discountId: "TOGETHER",
                                 type: .discount(status: .active)
                             )
                         ],
@@ -99,7 +97,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     code: "TOGETHER",
                                     displayValue: MonetaryAmount.sek(11).formattedNegativeAmount,
                                     description: "15% discount for 12 months",
-                                    discountId: "TOGETHER",
                                     type: .discount(status: .active)
                                 )
                             ],
@@ -125,7 +122,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     code: "TOGETHER",
                                     displayValue: MonetaryAmount.sek(12).formattedNegativeAmount,
                                     description: "15% discount for 12 months",
-                                    discountId: "TOGETHER",
                                     type: .discount(status: .active)
                                 )
                             ],

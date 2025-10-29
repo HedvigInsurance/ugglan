@@ -341,9 +341,8 @@ struct HomeTab: View {
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                     openClaimDetails(claim: claim, type: .claim(id: claim.id))
                 }
-                .routerDestination(for: String.self) { _ in
+                .routerDestination(for: HomeRouterAction.self) { _ in
                     InboxView()
-                        .configureTitle(L10n.chatConversationInbox)
                         .environmentObject(homeNavigationVm)
                 }
         }

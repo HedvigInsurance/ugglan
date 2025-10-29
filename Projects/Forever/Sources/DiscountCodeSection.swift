@@ -27,7 +27,6 @@ struct DiscountCodeSectionView: View {
 
             if let code = foreverNavigationVm.foreverData?.discountCode {
                 ActionButtons(
-                    code: code,
                     onShare: { vm in
                         foreverNavigationVm.shareCode(code: code, modalPresentationWrapperVM: vm)
                     },
@@ -59,7 +58,6 @@ private struct DiscountCodeField: View {
 }
 
 private struct ActionButtons: View {
-    let code: String
     let onShare: (_ vm: ModalPresentationSourceWrapperViewModel) -> Void
     let onChange: () -> Void
     @State var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
@@ -94,13 +92,11 @@ private struct ActionButtons: View {
     }
 }
 
-struct DiscountCodeSectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return DiscountCodeSectionView()
-            .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
-            }
-            .environmentObject(ForeverNavigationViewModel())
-    }
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return DiscountCodeSectionView()
+        .onAppear {
+            Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
+        }
+        .environmentObject(ForeverNavigationViewModel())
 }

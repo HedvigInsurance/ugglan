@@ -90,6 +90,9 @@ struct AddonSelectSubOptionScreen: View {
 }
 
 #Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+
     let currentAddon: AddonQuote = .init(
         displayName: "45 days",
         displayNameLong: "Long display name",
@@ -123,7 +126,7 @@ struct AddonSelectSubOptionScreen: View {
         ]
     )
 
-    AddonSelectSubOptionScreen(
+    return AddonSelectSubOptionScreen(
         addonOffer: .init(
             titleDisplayName: "Travel Plus",
             description: "Extended travel insurance with extra coverage for your travels",
@@ -161,7 +164,11 @@ struct AddonSelectSubOptionScreen: View {
             ]
         ),
         changeAddonNavigationVm: .init(
-            input: .init(addonSource: .insurances)
+            input: .init(
+                addonSource: .insurances,
+                contractConfigs: [.init(contractId: "contractId", exposureName: "exposure", displayName: "displayName")]
+            )
+
         )
     )
 }

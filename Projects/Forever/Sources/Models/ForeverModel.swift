@@ -43,15 +43,6 @@ public struct Referral: Hashable, Codable, Sendable {
             }
         }
 
-        @hColorBuilder var invitedByOtherLabelColor: some hColor {
-            switch self {
-            case .active, .pending:
-                hTextColor.Opaque.tertiary
-            case .terminated:
-                hTextColor.Opaque.tertiary
-            }
-        }
-
         @hColorBuilder var statusColor: some hColor {
             switch self {
             case .active:

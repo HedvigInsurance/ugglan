@@ -25,7 +25,6 @@ public class CoInusuredInputViewModel: ObservableObject {
         SSNError ?? inputError != nil
     }
 
-    var cancellables = Set<AnyCancellable>()
     init(
         coInsuredModel: CoInsuredModel,
         actionType: CoInsuredAction,

@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,7 +5,6 @@ import hCoreUI
 public struct LanguagePickerView: View {
     let onSave: () -> Void
     let onCancel: () -> Void
-    @PresentableStore var store: MarketStore
 
     @State var currentLocale: Localization.Locale = .currentLocale.value
     @State var code: String? = Localization.Locale.currentLocale.value.lprojCode
@@ -70,24 +68,6 @@ public struct LanguagePickerView: View {
             if let locale = Localization.Locale.allCases.first(where: { $0.lprojCode == newValue }) {
                 currentLocale = locale
             }
-        }
-    }
-
-    @hColorBuilder
-    func retColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.Opaque.primary
-        } else {
-            hSurfaceColor.Opaque.primary
-        }
-    }
-
-    @hColorBuilder
-    func getBorderColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            hTextColor.Opaque.primary
-        } else {
-            hBorderColor.secondary
         }
     }
 }

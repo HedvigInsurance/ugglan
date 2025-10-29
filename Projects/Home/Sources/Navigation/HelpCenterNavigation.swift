@@ -1,4 +1,3 @@
-import Addons
 import ChangeTier
 import Chat
 import Contracts
@@ -8,7 +7,6 @@ import PresentableStore
 import SafariServices
 import SwiftUI
 import TerminateContracts
-import TravelCertificate
 import hCore
 import hCoreUI
 
@@ -62,7 +60,6 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
 
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
-    @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
 

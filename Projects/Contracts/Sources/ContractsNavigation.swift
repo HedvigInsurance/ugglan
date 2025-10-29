@@ -38,7 +38,6 @@ public struct ContractsNavigation<Content: View>: View {
                     case .terminatedContracts:
                         Contracts(showTerminated: true)
                             .environmentObject(contractsNavigationVm)
-                            .configureTitle(L10n.InsurancesTab.cancelledInsurancesTitle)
                     }
                 }
         }
@@ -173,12 +172,16 @@ enum ContractsRouterType {
     case terminatedContracts
 }
 
-extension ContractsRouterType: TrackingViewNameProtocol {
+extension ContractsRouterType: TrackingViewNameProtocol, NavigationTitleProtocol {
     var nameForTracking: String {
         switch self {
         case .terminatedContracts:
             return "Terminated Contracts"
         }
+    }
+
+    var navigationTitle: String? {
+        L10n.InsurancesTab.cancelledInsurancesTitle
     }
 }
 
@@ -215,5 +218,11 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
 extension ContractsNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
         .init(describing: Contracts.self)
+    }
+}
+
+extension Contract: NavigationTitleProtocol {
+    public var navigationTitle: String? {
+        currentAgreement?.productVariant.displayName ?? ""
     }
 }

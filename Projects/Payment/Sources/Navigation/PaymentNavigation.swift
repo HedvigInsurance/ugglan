@@ -26,20 +26,14 @@ public struct PaymentsNavigation: View {
                 .configureTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
-                        .configureTitleView(title: paymentData.title, titleColor: paymentData.titleColor)
+                        .configureTitleView(title: paymentData.title, titleColor: paymentData.titleColor, topPadding: 0)
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
                     case .discounts:
-                        CampaignNavigation(
-                            onEditCode: {
-                                let store: PaymentStore = globalPresentableStoreContainer.get()
-                                store.send(.load)
-                            }
-                        )
+                        CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
-                            .configureTitle(L10n.paymentHistoryTitle)
                     }
                 }
         }
@@ -59,12 +53,10 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
     case paymentsView
 }
 
-public enum PaymentsRouterAction: Hashable {
+public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
-}
 
-extension PaymentsRouterAction: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .discounts:
@@ -72,6 +64,21 @@ extension PaymentsRouterAction: TrackingViewNameProtocol {
         case .history:
             return .init(describing: PaymentHistoryView.self)
         }
+    }
+
+    public var navigationTitle: String? {
+        switch self {
+        case .discounts:
+            L10n.paymentsDiscountsSectionTitle
+        case .history:
+            L10n.paymentHistoryTitle
+        }
+    }
+}
+
+extension PaymentData: NavigationTitleProtocol {
+    public var navigationTitle: String? {
+        title
     }
 }
 

@@ -11,12 +11,6 @@ public struct ClaimsState: StateProtocol {
 
     public init() {}
 
-    private enum CodingKeys: String, CodingKey {
-        case activeClaims
-        case historyClaims
-        case files
-    }
-
     @MainActor
     public var hasActiveClaims: Bool {
         if let claims = activeClaims {

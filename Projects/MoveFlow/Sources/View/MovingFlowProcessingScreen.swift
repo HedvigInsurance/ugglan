@@ -44,16 +44,14 @@ struct MovingFlowProcessingScreen: View {
     }
 }
 
-struct SuccessScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.sv_SE)
-        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+#Preview {
+    Localization.Locale.currentLocale.send(.sv_SE)
+    Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
 
-        return MovingFlowProcessingScreen(
-            onSuccessButtonAction: {},
-            onErrorButtonAction: {},
-            movingFlowConfirmVm: .init()
-        )
-        .environmentObject(MovingFlowNavigationViewModel())
-    }
+    return MovingFlowProcessingScreen(
+        onSuccessButtonAction: {},
+        onErrorButtonAction: {},
+        movingFlowConfirmVm: .init()
+    )
+    .environmentObject(MovingFlowNavigationViewModel())
 }

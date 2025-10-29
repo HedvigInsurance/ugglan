@@ -82,14 +82,12 @@ public struct CoInsuredListType: Hashable, Identifiable {
         type: StatusPillType? = nil,
         date: String? = nil,
         locallyAdded: Bool,
-        isContractOwner: Bool? = nil,
         isEmpty: Bool? = false
     ) {
         self.coInsured = coInsured
         self.type = type
         self.date = date
         self.locallyAdded = locallyAdded
-        self.isContractOwner = isContractOwner
         self.isEmpty = isEmpty
     }
 
@@ -97,7 +95,6 @@ public struct CoInsuredListType: Hashable, Identifiable {
     public var type: StatusPillType?
     public var date: String?
     public var locallyAdded: Bool
-    var isContractOwner: Bool?
     public var isEmpty: Bool?
 }
 

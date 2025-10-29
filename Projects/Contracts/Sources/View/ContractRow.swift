@@ -74,12 +74,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let image: Image?
     let contractDisplayName: String
     let contractExposureName: String
-    let terminationMessage: String?
-    let activeFrom: String?
-    let activeInFuture: Bool?
-    let masterInceptionDate: String?
-    let tierDisplayName: String?
     let tagsToShow: [(text: String, type: PillType)]
+
     public init(
         image: Image?,
         contractDisplayName: String,
@@ -93,12 +89,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         self.image = image
         self.contractDisplayName = contractDisplayName
         self.contractExposureName = contractExposureName
-        self.terminationMessage = terminationMessage
 
-        self.activeFrom = activeFrom
-        self.activeInFuture = activeInFuture
-        self.masterInceptionDate = masterInceptionDate
-        self.tierDisplayName = tierDisplayName
         var tagsToShow = [(text: String, type: PillType)]()
         if let tierDisplayName {
             tagsToShow.append((tierDisplayName, .tier))
@@ -211,13 +202,12 @@ private enum PillType {
 private struct StatusPill: View {
     var text: String
     var type: PillType
-    @Environment(\.sizeCategory) private var sizeCategory
 
     var body: some View {
         VStack {
             hText(text, style: .label)
         }
-        .padding(.vertical, 3)
+        .padding(.vertical, .padding3)
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
         .background(type.getBackgroundColor).colorScheme(.light)
