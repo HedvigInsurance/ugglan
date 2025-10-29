@@ -16,7 +16,7 @@ public class ForeverClientDemo: ForeverClient {
     }
 
     public func changeCode(code: String) async throws {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         self.code = code
     }
 }

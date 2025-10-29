@@ -87,7 +87,7 @@ public class EditCoInsuredViewModel: ObservableObject {
             }
 
             if let missingContract {
-                try await Task.sleep(nanoseconds: 400_000_000)
+                try await Task.sleep(seconds: 0.4)
                 let missingContractConfig = InsuredPeopleConfig(
                     contract: missingContract,
                     preSelectedCoInsuredList: existingCoInsured.get(contractId: missingContract.id),

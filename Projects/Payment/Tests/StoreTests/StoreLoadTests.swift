@@ -61,7 +61,7 @@ final class StoreLoadTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.load)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
         XCTAssertNil(store.loadingState[.getPaymentData])
         assert(store.state.ongoingPaymentData == paymentData.ongoing)
         assert(store.state.paymentData == paymentData.upcoming)
@@ -91,7 +91,7 @@ extension XCTestCase {
         if closure() {
             exc.fulfill()
         } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
+            try! await Task.sleep(seconds: 0.1)
             Task {
                 await self.waitUntil(description: description, closure: closure)
                 if closure() {

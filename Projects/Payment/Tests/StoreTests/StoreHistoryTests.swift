@@ -32,7 +32,7 @@ final class StoreHistoryTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.getHistory)
-        try await Task.sleep(nanoseconds: 300_000_000)
+        try await Task.sleep(seconds: 0.3)
         assert(store.loadingState[.getHistory] == nil)
         assert(store.state.paymentHistory == historyData)
         assert(mockService.events.count == 1)

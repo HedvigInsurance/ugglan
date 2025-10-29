@@ -13,7 +13,7 @@ final class PaymentServiceTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: hPaymentClient.self)
-        try await Task.sleep(nanoseconds: 10000)
+        try await Task.sleep(seconds: 0.00001)
 
         XCTAssertNil(sut)
     }

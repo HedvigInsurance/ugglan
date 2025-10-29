@@ -61,7 +61,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
             removedAddons: GraphQLNullable(optionalValue: removedAddons)
         )
         let delayTask = Task {
-            try await Task.sleep(nanoseconds: 3_000_000_000)
+            try await Task.sleep(seconds: 3)
         }
         let data = try await octopus.client.mutation(mutation: mutation)
 

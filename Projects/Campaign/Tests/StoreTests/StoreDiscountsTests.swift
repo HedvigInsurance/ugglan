@@ -53,7 +53,7 @@ final class StoreDiscountsTests: XCTestCase {
         let store = CampaignStore()
         self.store = store
         await store.sendAsync(.fetchDiscountsData)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
         assert(store.loadingState[.getDiscountsData] == nil)
         assert(store.state.paymentDiscountsData == discountsData)
         assert(mockService.events.count == 1)
@@ -67,7 +67,7 @@ final class StoreDiscountsTests: XCTestCase {
         let store = CampaignStore()
         self.store = store
         await store.sendAsync(.fetchDiscountsData)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
         assert(store.loadingState[.getDiscountsData] != nil)
         assert(store.state.paymentDiscountsData == nil)
         assert(mockService.events.count == 1)
