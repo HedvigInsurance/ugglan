@@ -396,7 +396,7 @@ struct TerminationFlowNavigation: View {
                             openSelectInsuranceScreen()
                         case .summary:
                             openTerminationSummaryScreen()
-                        case .deflectAutoDecom(model: let model):
+                        case let .deflectAutoDecom(model):
                             openDeflectAutoDecom(model: model)
                         case let .deflectAutoCancel(model):
                             openDeflectAutoCancel(model: model)
