@@ -202,7 +202,7 @@ public enum ToolbarOptionType: Int, Hashable, Codable, Equatable, Sendable {
         switch self {
         case .newOfferNotification, .newOffer:
             Task {
-                try await Task.sleep(nanoseconds: 3_000_000_000)
+                try await Task.sleep(seconds: 3)
                 ToolbarOptionType.animateOffer = false
             }
             return ToolbarOptionType.animateOffer

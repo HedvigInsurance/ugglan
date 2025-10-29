@@ -13,7 +13,7 @@ final class AuthenticationTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: AuthenticationClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
     }

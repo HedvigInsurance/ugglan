@@ -190,7 +190,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                     if let lowerBoundry, let upperBoundry, sortedTitlePositions.count > 0 {
                         if lowerBoundry == upperBoundry {
                             Task { @MainActor in
-                                try? await Task.sleep(nanoseconds: 50_000_000)
+                                try? await Task.sleep(seconds: 0.05)
                                 withAnimation(.easeInOut(duration: 0.15)) {
                                     self.selectedIndicatorOffset = sortedTitlePositions[lowerBoundry]
                                 }
@@ -259,7 +259,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     func setSelectedTab(with id: String, withAnimation animation: Bool = true) {
         if let index = pageModels.firstIndex(where: { $0.id == id }) {
             Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 50_000_000)
+                try? await Task.sleep(seconds: 0.05)
                 currentId = id
                 Task {
                     scrollTo(

@@ -100,7 +100,7 @@ public class IntentViewModel: ObservableObject {
         if #available(iOS 16.0, *) {
             for i in 1...4 {
                 Task {
-                    try await Task.sleep(nanoseconds: UInt64(i * 100_000_000))
+                    try await Task.sleep(seconds: Float(i) * 0.1)
                     UIApplication.shared.getTopViewController()?.sheetPresentationController?
                         .animateChanges {
                             UIApplication.shared.getTopViewController()?.sheetPresentationController?
