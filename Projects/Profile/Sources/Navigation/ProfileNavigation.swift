@@ -168,7 +168,7 @@ extension ProfileRouterType: TrackingViewNameProtocol {
         case .claimHistory:
             return .init(describing: ClaimHistoryScreen.self)
         case .travelCertificates:
-            return "List screen"
+            return .init(describing: TravelCertificatesListScreen.self)
         }
     }
 }
