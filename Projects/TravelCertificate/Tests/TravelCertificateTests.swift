@@ -84,7 +84,7 @@ final class TravelCertificateTests: XCTestCase {
         )
         sut = mockService
 
-        let model = ListScreenViewModel()
+        let model = TravelCertificatesListScreenViewModel()
         await model.fetchTravelCertificateList()
 
         assert(model.list == list)
