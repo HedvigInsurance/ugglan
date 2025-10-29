@@ -139,7 +139,7 @@ struct TooltipView: View {
         } else {
             xOffset = (proxy.size.width - imageSize) / 2 - (44 - imageSize) / 2
         }
-        yOffset = imageSize + (40 - imageSize) / 2
+        yOffset = type.offsetForToolTip + (40 - type.offsetForToolTip) / 2
     }
 
     // MARK: - Tooltip Animation & Timer
@@ -220,7 +220,7 @@ class ToolTipManager: ObservableObject {
             toolTipsToShow.insert(tooltip)
             Task {
                 try await Task.sleep(nanoseconds: 500_000_000)
-                if let first = Array(toolTipsToShow).sorted(by: { $0.rawValue < $1.rawValue }).first {
+                if let first = Array(toolTipsToShow).sorted(by: { $0.priority < $1.priority }).first {
                     presentTooltip(first)
                 }
             }

@@ -511,8 +511,46 @@ struct BackgroundBlurView: UIViewRepresentable {
         for subview in view.subviews {
             subview.backgroundColor = UIColor.clear
         }
-        return view
+        return MaskedView(subView: view)
     }
 
-    func updateUIView(_: UIView, context _: Context) {}
+    func updateUIView(_ view: UIView, context _: Context) {}
+}
+
+private class MaskedView: UIView {
+    init(subView: UIView) {
+        super.init(frame: .zero)
+        backgroundColor = .clear
+        self.addSubview(subView)
+        subView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let transparent = UIColor(white: 0, alpha: 0).cgColor
+        let opaque = UIColor(white: 0, alpha: 1).cgColor
+
+        let maskLayer = CALayer()
+        maskLayer.frame = bounds
+
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = CGRect(
+            x: bounds.origin.x,
+            y: 0,
+            width: bounds.size.width,
+            height: bounds.size.height
+        )
+        gradientLayer.startPoint = .init(x: 0.5, y: 0)
+        gradientLayer.endPoint = .init(x: 0.5, y: 1)
+        let point: NSNumber = NSNumber(value: 20 / bounds.size.height)
+        gradientLayer.colors = [transparent, opaque, opaque]
+        gradientLayer.locations = [0.0, point, 1]
+
+        maskLayer.addSublayer(gradientLayer)
+        layer.mask = maskLayer
+    }
 }

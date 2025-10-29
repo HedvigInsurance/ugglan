@@ -215,9 +215,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
 
         if crossSellStore.state.hasNewOffer {
-            types.append(.newOfferNotification)
+            types.append(.crossSell(hasNewOffer: true))
         } else {
-            types.append(.newOffer)
+            types.append(.crossSell(hasNewOffer: false))
         }
 
         if state.quickActions.hasFirstVet {
@@ -226,9 +226,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
         if state.hasSentOrRecievedAtLeastOneMessage {
             if state.showChatNotification {
-                types.append(.chatNotification)
+                types.append(.chat(hasUnread: true))
             } else {
-                types.append(.chat)
+                types.append(.chat(hasUnread: false))
             }
         }
 

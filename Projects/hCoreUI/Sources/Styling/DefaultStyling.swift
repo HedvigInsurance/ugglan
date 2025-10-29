@@ -69,15 +69,16 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: additionalHeight ?? subview.frame.origin.y,
-                    width: frame.width + 12,
+                    width: frame.width + (isLiquidGlassEnabled ? 0 : 12),
                     height: subview.frame.size.height
                 )
             }
         }
     }
+}
 
-    //used for setting navigation bar items unclipped
-    func setClipsToBounds(for view: UIView, force: Bool = false) {
+extension UINavigationBar {
+    fileprivate func setClipsToBounds(for view: UIView, force: Bool = false) {
         if force {
             view.clipsToBounds = false
         }
@@ -121,6 +122,10 @@ class LargeNavBar: UINavigationBar {
             if subview.frame.size.height != hNavigationControllerWithLargerNavBar.navigationBarHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("BarContent") {
+                    subview.clipsToBounds = false
+                    if #available(iOS 26.0, *) {
+                        setClipsToBounds(for: subview)
+                    }
                     subview.frame = CGRect(
                         x: 0,
                         y: -12,
@@ -149,7 +154,7 @@ public struct DefaultStyling {
 
         let backImageInsets: UIEdgeInsets = {
             if isLiquidGlassEnabled {
-                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
             } else {
                 UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
             }
