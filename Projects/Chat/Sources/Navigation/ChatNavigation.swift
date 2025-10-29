@@ -28,8 +28,7 @@ public class ChatNavigationViewModel: ObservableObject {
                     text: L10n.chatToastPushNotificationsTitle,
                     action: .init(
                         actionText: L10n.pushNotificationsAlertActionOk
-                    ),
-                    duration: 6
+                    )
                 )
             }
             let toast = createToast()

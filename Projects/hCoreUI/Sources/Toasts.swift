@@ -9,20 +9,17 @@ public struct ToastBar {
     let icon: Image
     let text: String
     let action: ToastBarAction?
-    let duration: Double
 
     public init(
         type: NotificationType,
         icon: Image? = nil,
         text: String,
-        action: ToastBarAction? = nil,
-        duration: Double = 3
+        action: ToastBarAction? = nil
     ) {
         self.type = type
         self.icon = icon ?? type.image
         self.text = text
         self.action = action
-        self.duration = duration
     }
 
     public struct ToastBarAction {
@@ -143,12 +140,10 @@ public class Toasts {
 
 private class ToastUIView: UIView {
     private let onDeinit: @Sendable () -> Void
-    private let model: ToastBar
     private var offsetForPanGesture: CGFloat = 0
     init(model: ToastBar, onDeinit: @Sendable @escaping () -> Void) {
         let toastBarView = ToastBarView(toastModel: model)
         let vc = hHostingController(rootView: toastBarView, contentName: "")
-        self.model = model
         self.onDeinit = onDeinit
         super.init(frame: .zero)
         addSubview(vc.view)

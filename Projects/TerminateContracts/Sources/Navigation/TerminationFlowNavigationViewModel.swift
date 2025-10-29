@@ -369,7 +369,6 @@ struct TerminationFlowNavigation: View {
         ) {
             getView(for: vm.initialStep)
                 .addNavigationInfoButton(
-                    placement: .leading,
                     title: L10n.terminationFlowCancelInfoTitle,
                     description: L10n.terminationFlowCancelInfoText
                 )
@@ -581,11 +580,6 @@ struct TerminationFlowNavigation: View {
             )
         )
     }
-}
-
-struct TerminationFlowActionWrapper: Identifiable, Equatable {
-    var id = UUID().uuidString
-    let action: TerminationFlowActions
 }
 
 public enum TerminationFlowActions: Hashable {

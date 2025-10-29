@@ -198,7 +198,6 @@ public struct InfoViewNavigationModel: Equatable, Identifiable {
 
 extension View {
     public func addNavigationInfoButton(
-        placement: ListToolBarPlacement,
         title: String,
         description: String
     ) -> some View {
