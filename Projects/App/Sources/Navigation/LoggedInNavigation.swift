@@ -1032,6 +1032,6 @@ class LoggedInNavigationViewModel: ObservableObject {
 
 extension HomeTab: TrackingViewNameProtocol {
     var nameForTracking: String {
-        "HomeView"
+        String(describing: HomeScreen.self)
     }
 }
