@@ -6,9 +6,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ListScreen: View {
+public struct TravelCertificateListScreen: View {
     @StateObject var vm = ListScreenViewModel()
-    @EnvironmentObject var router: Router
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
     let infoButtonPlacement: ListToolBarPlacement
@@ -209,7 +208,8 @@ class ListScreenViewModel: ObservableObject {
 }
 
 #Preview {
+    Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in TravelInsuranceClientDemo() })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-    return ListScreen(infoButtonPlacement: .trailing)
+    return TravelCertificateListScreen(infoButtonPlacement: .trailing)
         .environmentObject(TravelCertificateNavigationViewModel())
 }

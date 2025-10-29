@@ -6,7 +6,7 @@ struct BrandPickerView: View {
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     var body: some View {
-        ListScreen<ClaimFlowItemBrandOptionModel>(
+        SubmitClaimListScreen<ClaimFlowItemBrandOptionModel>(
             items: claimsNavigationVm.singleItemModel?.availableItemBrandOptions
                 .compactMap { (object: $0, displayName: $0.displayName) } ?? [],
             onSelected: { [weak router] item in

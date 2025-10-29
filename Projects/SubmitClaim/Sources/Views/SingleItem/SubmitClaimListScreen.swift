@@ -1,7 +1,7 @@
 import SwiftUI
 import hCoreUI
 
-public struct ListScreen<T>: View {
+public struct SubmitClaimListScreen<T>: View {
     var items: [(object: T, displayName: String)]
     let onSelected: (T) -> Void
     let onCancel: () -> Void
@@ -44,7 +44,7 @@ public struct ListScreen<T>: View {
         let name: String
     }
 
-    return ListScreen<ModelForPreview>(
+    return SubmitClaimListScreen<ModelForPreview>(
         items: {
             let items = [
                 ModelForPreview(id: "id", name: "name"),
