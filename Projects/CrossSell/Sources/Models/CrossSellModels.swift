@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 
 public struct CrossSells: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id = UUID()

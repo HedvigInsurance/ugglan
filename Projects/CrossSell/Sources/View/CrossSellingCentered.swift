@@ -1,4 +1,3 @@
-import Addons
 import SwiftUI
 import hCore
 import hCoreUI
@@ -28,18 +27,16 @@ public struct CrossSellingCentered: View {
     }
 }
 
-struct CrossSellingCentered_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingCentered(
-            crossSell: .init(
-                id: "id",
-                title: "Accident Insurance",
-                description: "Help when you need it the most",
-                imageUrl: nil,
-                buttonDescription: "buttonDescription",
-                numberOfEligibleContracts: 1
-            )
+#Preview {
+    Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
+    return CrossSellingCentered(
+        crossSell: .init(
+            id: "id",
+            title: "Accident Insurance",
+            description: "Help when you need it the most",
+            imageUrl: nil,
+            buttonDescription: "buttonDescription",
+            numberOfEligibleContracts: 1
         )
-    }
+    )
 }

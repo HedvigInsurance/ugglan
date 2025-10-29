@@ -42,7 +42,7 @@ extension TravelCertificateRouterActions: TrackingViewNameProtocol {
         case .startDate:
             return .init(describing: StartDateScreen.self)
         case .list:
-            return .init(describing: ListScreen.self)
+            return .init(describing: TravelCertificatesListScreen.self)
         }
     }
 }
@@ -171,7 +171,7 @@ public struct TravelCertificateNavigation: View {
     private func showListScreen(
         infoButtonPlacement: ListToolBarPlacement
     ) -> some View {
-        ListScreen(
+        TravelCertificatesListScreen(
             infoButtonPlacement: infoButtonPlacement
         )
         .configureTitle(L10n.TravelCertificate.cardTitle)

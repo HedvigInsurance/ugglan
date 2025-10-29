@@ -1,5 +1,4 @@
 import Combine
-import Contracts
 import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -8,7 +7,6 @@ import hCoreUI
 
 public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel()
-    @PresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: Router
 
@@ -66,7 +64,7 @@ public struct HelpCenterStartView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 if !vm.searchInProgress {
-                    SupportView(router: router, withExtraPadding: true)
+                    SupportView(router: router)
                         .padding(.top, .padding40)
                 }
             }
@@ -141,14 +139,11 @@ public struct HelpCenterStartView: View {
 
 @MainActor
 class HelpCenterStartViewModel: NSObject, ObservableObject {
-    @PresentableStore var store: HomeStore
     @Published var helpCenterModel: HelpCenterFAQModel?
     var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
-    @Inject var homeClient: HomeClient
 
     // search part
-    @Published var focusState: Bool? = false
     @Published var searchResultsQuestions: [FAQModel] = []
     @Published var searchResultsQuickActions: [QuickAction] = []
     @Published var searchInProgress = false

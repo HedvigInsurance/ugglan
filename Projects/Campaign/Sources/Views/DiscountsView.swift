@@ -1,5 +1,4 @@
 import Combine
-import Forever
 import PresentableStore
 import SwiftUI
 import hCore
@@ -8,7 +7,6 @@ import hCoreUI
 struct DiscountsView: View {
     let data: PaymentDiscountsData
     @PresentableStore var store: CampaignStore
-    @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
     @EnvironmentObject var router: Router
 
     var body: some View {
@@ -29,8 +27,7 @@ struct DiscountsView: View {
         ForEach(data.discountsData, id: \.id) { discountData in
             hSection(discountData.discounts) { discount in
                 DiscountDetailView(
-                    discount: discount,
-                    options: [.showExpire]
+                    discount: discount
                 )
                 if discount == discountData.discounts.last {
                     Group {
@@ -46,9 +43,8 @@ struct DiscountsView: View {
 
     @ViewBuilder
     private var foreverView: some View {
-        let numberOfReferrals = data.referralsData.referrals.count { !$0.invitedYou }
         hSection(data.referralsData.referrals, id: \.id) { referral in
-            getReferralView(referral, nbOfReferrals: numberOfReferrals)
+            getReferralView(referral)
         }
         .withHeader(
             title: L10n.ReferralsInfoSheet.headline,
@@ -78,138 +74,122 @@ struct DiscountsView: View {
         }
     }
 
-    private func getReferralView(_ referral: Referral, nbOfReferrals: Int) -> some View {
+    private func getReferralView(_ referral: Referral) -> some View {
         DiscountDetailView(
-            discount: .init(referral: referral, nbOfReferrals: nbOfReferrals),
-            options: [.showExpire]
+            discount: .init(referral: referral)
         )
     }
 }
 
-struct PaymentsDiscountView_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+#Preview("PaymentsDiscountView") {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
 
-        return DiscountsView(
-            data: .init(
-                discountsData: [
-                    .init(
-                        id: "id1",
-                        displayName: "Dog Premium ∙ Fido",
-                        info: "Your insurance info",
-                        discounts: [
-                            .init(
-                                code: "FURRY",
-                                displayValue: "Active",
-                                description: "50% discount for 6 months",
-                                discountId: "id",
-                                type: .discount(status: .active)
-                            ),
-                            .init(
-                                code: "BUNDLE",
-                                displayValue: "Active",
-                                description: "15% bundle discount",
-                                discountId: "id1",
-                                type: .discount(status: .active)
-                            ),
-                        ]
-                    ),
-                    .init(
-                        id: "id2",
-                        displayName: "House Standard ∙ Villagatan 25",
-                        info: nil,
-                        discounts: [
-                            .init(
-                                code: "TOGETHER",
-                                displayValue: "Expired 31 aug 2025",
-                                description: "15% discount for 12 months",
-                                discountId: "id3",
-                                type: .discount(status: .terminated)
-                            ),
-                            .init(
-                                code: "BUNDLE",
-                                displayValue: "Pending",
-                                description: "15% bundle discount",
-                                discountId: "id4",
-                                type: .discount(status: .pending)
-                            ),
-                        ]
-                    ),
-
-                ],
-                referralsData: .init(
-                    code: "CODE",
-                    discountPerMember: .sek(10),
-                    discount: .sek(30),
-                    referrals: [
+    return DiscountsView(
+        data: .init(
+            discountsData: [
+                .init(
+                    id: "id1",
+                    displayName: "Dog Premium ∙ Fido",
+                    info: "Your insurance info",
+                    discounts: [
                         .init(
-                            id: "a1",
-                            name: "Mark",
-                            code: "CODE",
-                            description: "desc",
-                            activeDiscount: .sek(10),
-                            status: .active,
-                            invitedYou: true
+                            code: "FURRY",
+                            displayValue: "Active",
+                            description: "50% discount for 6 months",
+                            type: .discount(status: .active)
                         ),
                         .init(
-                            id: "a2",
-                            name: "Idris",
-                            code: "CODE",
-                            description: "desc",
-                            activeDiscount: .sek(10),
-                            status: .active
-                        ),
-                        .init(
-                            id: "a3",
-                            name: "Atotio",
-                            code: "CODE",
-                            description: "desc",
-                            activeDiscount: .sek(10),
-                            status: .active
-                        ),
-                        .init(
-                            id: "a4",
-                            name: "SONNY",
-                            code: "CODE",
-                            description: "desc",
-                            activeDiscount: .sek(10),
-                            status: .pending
-                        ),
-                        .init(
-                            id: "a5",
-                            name: "RILLE",
-                            code: "CODE",
-                            description: "desc",
-                            activeDiscount: .sek(30),
-                            status: .terminated,
-                            invitedYou: false
+                            code: "BUNDLE",
+                            displayValue: "Active",
+                            description: "15% bundle discount",
+                            type: .discount(status: .active)
                         ),
                     ]
-                )
+                ),
+                .init(
+                    id: "id2",
+                    displayName: "House Standard ∙ Villagatan 25",
+                    info: nil,
+                    discounts: [
+                        .init(
+                            code: "TOGETHER",
+                            displayValue: "Expired 31 aug 2025",
+                            description: "15% discount for 12 months",
+                            type: .discount(status: .terminated)
+                        ),
+                        .init(
+                            code: "BUNDLE",
+                            displayValue: "Pending",
+                            description: "15% bundle discount",
+                            type: .discount(status: .pending)
+                        ),
+                    ]
+                ),
+
+            ],
+            referralsData: .init(
+                code: "CODE",
+                discountPerMember: .sek(10),
+                referrals: [
+                    .init(
+                        id: "a1",
+                        name: "Mark",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10),
+                        invitedYou: true
+                    ),
+                    .init(
+                        id: "a2",
+                        name: "Idris",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10)
+                    ),
+                    .init(
+                        id: "a3",
+                        name: "Atotio",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10)
+                    ),
+                    .init(
+                        id: "a4",
+                        name: "SONNY",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(10)
+                    ),
+                    .init(
+                        id: "a5",
+                        name: "RILLE",
+                        code: "CODE",
+                        description: "desc",
+                        activeDiscount: .sek(30),
+                        invitedYou: false
+                    ),
+                ]
             )
         )
-    }
+    )
 }
 
-struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+#Preview("PaymentsDiscountViewNoDiscounts") {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
 
-        return DiscountsView(
-            data: .init(
-                discountsData: [],
-                referralsData: .init(code: "CODE", discountPerMember: .sek(10), discount: .sek(30), referrals: [])
-            )
+    return DiscountsView(
+        data: .init(
+            discountsData: [],
+            referralsData: .init(code: "CODE", discountPerMember: .sek(10), referrals: [])
         )
-    }
+    )
 }
 
 public struct PaymentsDiscountsRootView: View {
     @PresentableStore var store: CampaignStore
     @StateObject var vm = PaymentsDiscountsRootViewModel()
-    @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
 
     public var body: some View {
         successView.loading($vm.viewState)

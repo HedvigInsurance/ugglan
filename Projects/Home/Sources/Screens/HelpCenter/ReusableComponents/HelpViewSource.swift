@@ -1,6 +1,4 @@
 import SwiftUI
-import hCore
-import hCoreUI
 
 enum HelpViewSource {
     case homeView

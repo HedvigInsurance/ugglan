@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ClaimStatusCard: View {
     var claim: ClaimModel
@@ -159,28 +158,26 @@ extension ClaimModel {
     }
 }
 
-struct ClaimStatus_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        return hForm {
-            hSection {
-                VStack(spacing: .padding8) {
-                    ClaimStatusCard(claim: .previewData(status: .beingHandled), enableTap: true)
-                    ClaimStatusCard(claim: .previewData(status: .reopened), enableTap: true)
-                    ClaimStatusCard(
-                        claim: .previewData(
-                            status: .closed,
-                            outcome: .paid,
-                            payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
-                        ),
-                        enableTap: true
-                    )
-                    ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCompensated), enableTap: true)
-                    ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCovered), enableTap: true)
-                    ClaimStatusCard(claim: .previewData(status: .closed, outcome: .unresponsive), enableTap: true)
-                }
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return hForm {
+        hSection {
+            VStack(spacing: .padding8) {
+                ClaimStatusCard(claim: .previewData(status: .beingHandled), enableTap: true)
+                ClaimStatusCard(claim: .previewData(status: .reopened), enableTap: true)
+                ClaimStatusCard(
+                    claim: .previewData(
+                        status: .closed,
+                        outcome: .paid,
+                        payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
+                    ),
+                    enableTap: true
+                )
+                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCompensated), enableTap: true)
+                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCovered), enableTap: true)
+                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .unresponsive), enableTap: true)
             }
-            .sectionContainerStyle(.transparent)
         }
+        .sectionContainerStyle(.transparent)
     }
 }

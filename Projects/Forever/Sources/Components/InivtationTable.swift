@@ -92,48 +92,44 @@ struct InvitationRow: View {
     }
 }
 
-struct InvitationTable_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        let navigationVm = ForeverNavigationViewModel()
-        return InvitationTable(foreverData: navigationVm.foreverData).environmentObject(navigationVm)
-    }
+#Preview("Invitation Table") {
+    Localization.Locale.currentLocale.send(.en_SE)
+    let navigationVm = ForeverNavigationViewModel()
+    return InvitationTable(foreverData: navigationVm.foreverData).environmentObject(navigationVm)
 }
 
-struct InvitationRow_Previews: PreviewProvider {
-    static var mockRow: Referral = .init(
+#Preview("Invitation Row") {
+    var mockRow: Referral = .init(
         name: "Axel",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .active
     )
-    static var mockRow2: Referral = .init(
+    var mockRow2: Referral = .init(
         name: "Mock",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .active
     )
 
-    static var mockRow3: Referral = .init(
+    var mockRow3: Referral = .init(
         name: "Mock",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .pending
     )
 
-    static var mockRow4: Referral = .init(
+    var mockRow4: Referral = .init(
         name: "Mock withc long name that needs two rows",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .terminated
     )
 
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return hSection {
-            InvitationRow(row: mockRow, invitedYou: false)
-            InvitationRow(row: mockRow2, invitedYou: false)
-            InvitationRow(row: mockRow3, invitedYou: false)
-            InvitationRow(row: mockRow4, invitedYou: false)
-        }
-        .sectionContainerStyle(.transparent)
-        .previewLayout(PreviewLayout.sizeThatFits)
-        .environmentObject(ForeverNavigationViewModel())
+    Localization.Locale.currentLocale.send(.en_SE)
+    return hSection {
+        InvitationRow(row: mockRow, invitedYou: false)
+        InvitationRow(row: mockRow2, invitedYou: false)
+        InvitationRow(row: mockRow3, invitedYou: false)
+        InvitationRow(row: mockRow4, invitedYou: false)
     }
+    .sectionContainerStyle(.transparent)
+    .previewLayout(PreviewLayout.sizeThatFits)
+    .environmentObject(ForeverNavigationViewModel())
 }

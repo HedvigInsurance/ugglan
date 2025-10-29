@@ -16,7 +16,6 @@ public class ChatNavigationViewModel: ObservableObject {
         self.chatType = chatType
     }
 
-    private var toastPublisher: AnyCancellable?
     func checkForPushNotificationStatus() async {
         let status = await UNUserNotificationCenter.current().notificationSettings()
         switch status.authorizationStatus {

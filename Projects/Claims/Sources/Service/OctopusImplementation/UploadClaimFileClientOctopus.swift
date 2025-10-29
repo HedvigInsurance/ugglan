@@ -28,7 +28,6 @@ public class hClaimFileUploadService {
 
 public struct ClaimFileUploadResponse: Codable, Sendable {
     public let file: FileUpload?
-    let error: String?
 }
 
 public struct FileUpload: Codable, Sendable {

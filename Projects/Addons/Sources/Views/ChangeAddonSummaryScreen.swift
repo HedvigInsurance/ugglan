@@ -35,7 +35,6 @@ extension ChangeAddonViewModel {
                 }
             ),
             displayItems: compareAddonDisplayItems(
-                currentDisplayItems: addonOffer?.currentAddon?.displayItems ?? [],
                 newDisplayItems: selectedQuote?.displayItems ?? []
             ),
             insuranceLimits: [],

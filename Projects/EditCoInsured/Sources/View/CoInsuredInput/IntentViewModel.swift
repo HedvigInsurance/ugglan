@@ -13,20 +13,12 @@ public class IntentViewModel: ObservableObject {
         newCostBreakdown: []
     )
     @Published var isLoading: Bool = false
-    @Published var firstName = ""
-    @Published var lastName = ""
-    @Published var nameFetchedFromSSN: Bool = false
-    @Published var enterManually: Bool = false
     @Published var errorMessageForInput: String?
     @Published var errorMessageForCoinsuredList: String?
     @Published var viewState: ProcessingState = .loading {
         didSet {
             invalidateDetents()
         }
-    }
-
-    var fullName: String {
-        firstName + " " + lastName
     }
 
     var service = EditCoInsuredService()

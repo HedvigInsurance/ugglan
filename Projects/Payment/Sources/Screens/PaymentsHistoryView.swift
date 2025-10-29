@@ -142,11 +142,9 @@ public class PaymentsHistoryViewModel: ObservableObject {
     }
 }
 
-struct PaymentHistoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.sv_SE)
-        Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        return PaymentHistoryView()
-    }
+#Preview {
+    Localization.Locale.currentLocale.send(.sv_SE)
+    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return PaymentHistoryView()
 }

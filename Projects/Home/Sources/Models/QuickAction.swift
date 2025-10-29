@@ -131,14 +131,12 @@ public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable, Sen
 
 public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Sendable {
     public let id: String
-    let buttonTitle: String?
     let description: String?
     let url: String?
     let title: String?
 
-    public init(id: String, buttonTitle: String?, description: String?, url: String?, title: String?) {
+    public init(id: String, description: String?, url: String?, title: String?) {
         self.id = id
-        self.buttonTitle = buttonTitle
         self.description = description
         self.url = url
         self.title = title

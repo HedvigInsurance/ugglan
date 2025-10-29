@@ -9,16 +9,11 @@ class CampaignNavigationViewModel: ObservableObject {}
 
 public struct CampaignNavigation: View {
     @StateObject var campaignNavigationVm = CampaignNavigationViewModel()
-    let onEditCode: () -> Void
 
-    public init(
-        onEditCode: @escaping () -> Void
-    ) {
-        self.onEditCode = onEditCode
-    }
+    public init() {}
 
     public var body: some View {
-        PaymentsDiscountsRootView(campaignNavigationVm: campaignNavigationVm)
+        PaymentsDiscountsRootView()
             .onAppear {
                 let store: CampaignStore = globalPresentableStoreContainer.get()
                 store.send(.fetchDiscountsData)
@@ -46,5 +41,5 @@ extension CampaignRouterAction: TrackingViewNameProtocol {
 }
 
 #Preview {
-    CampaignNavigation(onEditCode: {})
+    CampaignNavigation()
 }

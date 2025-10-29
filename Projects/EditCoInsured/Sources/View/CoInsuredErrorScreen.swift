@@ -4,7 +4,6 @@ import hCoreUI
 
 struct CoInsuredInputErrorView: View {
     @ObservedObject var vm: CoInusuredInputViewModel
-    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     let showEnterManuallyButton: Bool
 
@@ -13,7 +12,6 @@ struct CoInsuredInputErrorView: View {
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel,
         showEnterManuallyButton: Bool
     ) {
-        self.editCoInsuredNavigation = editCoInsuredNavigation
         self.vm = vm
         intentViewModel = editCoInsuredNavigation.intentViewModel
         self.showEnterManuallyButton = showEnterManuallyButton

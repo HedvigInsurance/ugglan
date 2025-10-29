@@ -2,7 +2,6 @@ import Combine
 import PresentableStore
 import SwiftUI
 import hCore
-import hCoreUI
 
 public struct CrossSellingView: View {
     let withHeader: Bool

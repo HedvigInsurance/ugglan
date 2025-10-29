@@ -1,7 +1,6 @@
 import Chat
 import Combine
 import Kingfisher
-import Payment
 import Photos
 import PresentableStore
 import SwiftUI
@@ -314,46 +313,44 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
     case fileUpload
 }
 
-struct ClaimDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
-        Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+#Preview {
+    Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
 
-        let claim = ClaimModel(
-            id: "claimId",
-            status: .beingHandled,
-            outcome: .none,
-            submittedAt: "2023-11-11",
-            signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
-            memberFreeText: nil,
-            payoutAmount: nil,
-            targetFileUploadUri: "",
-            claimType: "Broken item",
-            productVariant: nil,
-            conversation: .init(
-                id: "",
-                type: .claim,
-                newestMessage: nil,
-                createdAt: nil,
-                statusMessage: nil,
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
-            ),
-            appealInstructionsUrl: "https://hedvig.com",
-            isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true,
-            infoText: "If you have more receipts related to this claim, you can upload more on this page.",
-            displayItems: []
-        )
-        return ClaimDetailView(
-            claim: claim,
-            type: .claim(id: "claimId")
-        )
-    }
+    let claim = ClaimModel(
+        id: "claimId",
+        status: .beingHandled,
+        outcome: .none,
+        submittedAt: "2023-11-11",
+        signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
+        memberFreeText: nil,
+        payoutAmount: nil,
+        targetFileUploadUri: "",
+        claimType: "Broken item",
+        productVariant: nil,
+        conversation: .init(
+            id: "",
+            type: .claim,
+            newestMessage: nil,
+            createdAt: nil,
+            statusMessage: nil,
+            status: .open,
+            hasClaim: true,
+            claimType: "claim type",
+            unreadMessageCount: 0
+        ),
+        appealInstructionsUrl: "https://hedvig.com",
+        isUploadingFilesEnabled: true,
+        showClaimClosedFlow: true,
+        infoText: "If you have more receipts related to this claim, you can upload more on this page.",
+        displayItems: []
+    )
+    return ClaimDetailView(
+        claim: claim,
+        type: .claim(id: "claimId")
+    )
 }
 
 @MainActor
