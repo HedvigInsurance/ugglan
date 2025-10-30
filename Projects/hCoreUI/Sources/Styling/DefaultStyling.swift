@@ -12,7 +12,6 @@ public class hNavigationBaseController: UINavigationController {
 }
 
 public class hNavigationController: hNavigationBaseController {
-
     public init(additionalHeight: CGFloat? = nil) {
         super.init(navigationBarClass: NavBar.self, toolbarClass: UIToolbar.self)
         if let navBar = navigationBar as? NavBar {

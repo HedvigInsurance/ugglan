@@ -189,7 +189,6 @@ public enum StateType {
 }
 
 public struct StateButton {
-
     public init() {}
 }
 
