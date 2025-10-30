@@ -349,12 +349,22 @@ struct HomeTab: View {
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
-        .detent(
-            presented: $homeNavigationVm.isSubmitClaimPresented,
-
-            options: .constant(.withoutGrabber)
+        //        .detent(
+        //            presented: $homeNavigationVm.isSubmitClaimPresented,
+        //
+        //            options: .constant(.withoutGrabber)
+        //        ) {
+        //            ClaimsMainNavigation()
+        //        }
+        .modally(
+            presented: $homeNavigationVm.isSubmitClaimPresented
         ) {
-            ClaimsMainNavigation()
+            SubmitClaimChatScreen()
+                .withDismissButton()
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: self
+                )
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented

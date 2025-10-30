@@ -74,6 +74,8 @@
 	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Hedvig använder kamerabiblioteket för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We use speech recognition to convert your voice to text.</string>
 	<key>UIAppFonts</key>
 	<array/>
 	<key>UIDesignRequiresCompatibility</key>
