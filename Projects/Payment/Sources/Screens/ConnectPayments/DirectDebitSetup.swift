@@ -235,7 +235,6 @@ private class DirectDebitWebview: UIView {
 }
 
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
-    let setupType: SetupType
     @Binding var showErrorAlert: Bool
     let router: Router
 
@@ -300,12 +299,12 @@ public struct DirectDebitSetup: View {
                     )
                 )
             } else if showCancelAlert {
-                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
+                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showCancelAlert) {
                         cancelAlert()
                     }
             } else {
-                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
+                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showErrorAlert) {
                         errorAlert()
                     }

@@ -159,7 +159,6 @@ struct TerminationSummaryScreen: View {
     )
     navigationModel.config = navigationModel.configs.first!
     navigationModel.terminationDateStepModel = .init(
-        id: "id",
         maxDate: "",
         minDate: "",
         extraCoverageItem: []
@@ -198,7 +197,6 @@ struct TerminationSummaryScreen: View {
     )
     navigationModel.config = navigationModel.configs.first!
     navigationModel.terminationDeleteStepModel = .init(
-        id: "id",
         extraCoverageItem: [
             .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
             .init(displayName: "Coverage 2", displayValue: "2000 SEK"),

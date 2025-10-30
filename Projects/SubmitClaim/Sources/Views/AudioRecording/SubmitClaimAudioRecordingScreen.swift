@@ -16,7 +16,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @State var isAudioInput = true
     @State var inputText: String = ""
     @State var inputTextError: String?
-    @State var animateField: Bool = false
     @AccessibilityFocusState private var saveAndContinueFocused: Bool
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -283,7 +282,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 selectedValue: inputText,
                 placeholder: L10n.claimsTextInputPlaceholder,
                 popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
-                required: true,
                 maxCharacters: 2000,
                 enableTransition: true
             ) { text in
@@ -346,23 +344,20 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
     }
 }
 
-struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        let client = FetchEntrypointsClientDemo()
-        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in client })
-        let navigation = SubmitClaimNavigationViewModel()
-        navigation.audioRecordingModel = .init(
-            id: "id",
-            questions: [
-                "QUESTION 1 very long how much time it should take to complete this task"
-            ],
-            textQuestions: [],
-            inputTextContent: nil,
-            optionalAudio: false
-        )
-        return SubmitClaimAudioRecordingScreen(
-            url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"),
-            claimsNavigationVm: navigation
-        )
-    }
+#Preview {
+    let client = FetchEntrypointsClientDemo()
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in client })
+    let navigation = SubmitClaimNavigationViewModel()
+    navigation.audioRecordingModel = .init(
+        questions: [
+            "QUESTION 1 very long how much time it should take to complete this task"
+        ],
+        textQuestions: [],
+        inputTextContent: nil,
+        optionalAudio: false
+    )
+    return SubmitClaimAudioRecordingScreen(
+        url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"),
+        claimsNavigationVm: navigation
+    )
 }

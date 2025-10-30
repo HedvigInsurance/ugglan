@@ -27,7 +27,7 @@ public class ConnectPaymentViewModel: ObservableObject {
     @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}
 
-    public func set(for setupType: SetupType?) {
+    public func set() {
         Task { @MainActor [weak self] in
             self?.setupTypeNavigationModel = .init()
         }

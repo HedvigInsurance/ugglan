@@ -90,7 +90,6 @@ struct PrioritizedCard<Content: View, cardItem: Identifiable>: View {
 @MainActor
 public class InfoCardScrollViewModel: NSObject, ObservableObject {
     @Published var activeCard = 0
-    @Published var calcOffset: CGFloat = 0
     @Published var itemsCount: Int = 0
     @Published var spacing: CGFloat = 0
     @Published var cardWidth: CGFloat = 0

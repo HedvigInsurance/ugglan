@@ -74,28 +74,26 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
     }
 }
 
-struct RecordButton_Previews: PreviewProvider {
-    static var previews: some View {
-        let tempDir = FileManager.default.temporaryDirectory
-        let path = tempDir.appendingPathComponent("path.m4a")
+#Preview {
+    let tempDir = FileManager.default.temporaryDirectory
+    let path = tempDir.appendingPathComponent("path.m4a")
 
-        return VStack {
-            VStack {
-                RecordButton(isRecording: false) {}
-                    .environmentObject(AudioRecorder(filePath: path))
-                RecordButton(isRecording: true) {}
-                    .environmentObject(AudioRecorder(filePath: path))
-            }
-            .background(hBackgroundColor.primary)
-            .colorScheme(.light)
-            VStack {
-                RecordButton(isRecording: false) {}
-                    .environmentObject(AudioRecorder(filePath: path))
-                RecordButton(isRecording: true) {}
-                    .environmentObject(AudioRecorder(filePath: path))
-            }
-            .background(hBackgroundColor.primary)
-            .colorScheme(.dark)
+    return VStack {
+        VStack {
+            RecordButton(isRecording: false) {}
+                .environmentObject(AudioRecorder(filePath: path))
+            RecordButton(isRecording: true) {}
+                .environmentObject(AudioRecorder(filePath: path))
         }
+        .background(hBackgroundColor.primary)
+        .colorScheme(.light)
+        VStack {
+            RecordButton(isRecording: false) {}
+                .environmentObject(AudioRecorder(filePath: path))
+            RecordButton(isRecording: true) {}
+                .environmentObject(AudioRecorder(filePath: path))
+        }
+        .background(hBackgroundColor.primary)
+        .colorScheme(.dark)
     }
 }

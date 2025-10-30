@@ -24,7 +24,6 @@ public struct ApplicationState {
     }
 
     private static let preferredLocaleKey = "preferredLocale"
-    private static let marketKey = "market"
 
     public static func setPreferredLocale(_ locale: Localization.Locale) {
         UserDefaults.standard.setValue([locale.lprojCode], forKey: "AppleLanguages")

@@ -1,7 +1,6 @@
 import Foundation
 
 public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
-    let id: String
     let questions: [String]
     public internal(set) var audioContent: AudioContentModel?
     let textQuestions: [String]
@@ -9,14 +8,12 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
     let optionalAudio: Bool
 
     public init(
-        id: String,
         questions: [String],
         audioContent: AudioContentModel? = nil,
         textQuestions: [String],
         inputTextContent: String?,
         optionalAudio: Bool
     ) {
-        self.id = id
         self.questions = questions
         self.audioContent = audioContent
         self.textQuestions = textQuestions

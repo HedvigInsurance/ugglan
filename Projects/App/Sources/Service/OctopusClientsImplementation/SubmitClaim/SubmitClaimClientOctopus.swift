@@ -658,7 +658,7 @@ extension FlowClaimSuccessStepModel {
     fileprivate init(
         with data: OctopusGraphQL.FlowClaimSuccessStepFragment
     ) {
-        self.init(id: data.id)
+        self.init()
     }
 }
 
@@ -666,7 +666,7 @@ extension FlowClaimFailedStepModel {
     fileprivate init(
         with data: OctopusGraphQL.FlowClaimFailedStepFragment
     ) {
-        self.init(id: data.id)
+        self.init()
     }
 }
 
@@ -675,7 +675,6 @@ extension FlowClaimDateOfOccurenceStepModel {
         with data: OctopusGraphQL.FlowClaimDateOfOccurrenceStepFragment
     ) {
         self.init(
-            id: data.id,
             dateOfOccurence: data.dateOfOccurrence,
             maxDate: data.maxDate
         )
@@ -686,7 +685,7 @@ extension FlowClaimDateOfOccurrencePlusLocationStepModel {
     fileprivate init(
         with data: OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationStepFragment
     ) {
-        self.init(id: data.id)
+        self.init()
     }
 }
 
@@ -695,7 +694,6 @@ extension FlowClaimLocationStepModel {
         with data: OctopusGraphQL.FlowClaimLocationStepFragment
     ) {
         self.init(
-            id: data.id,
             location: data.location,
             options: data.options.map { .init(with: $0) }
         )
@@ -710,7 +708,6 @@ extension FlowClaimAudioRecordingStepModel {
             return nil
         }
         self.init(
-            id: data.id,
             questions: data.questions,
             audioContent: .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment)),
             textQuestions: data.freeTextQuestions,
@@ -725,7 +722,6 @@ extension FlowClaimPhoneNumberStepModel {
         with data: OctopusGraphQL.FlowClaimPhoneNumberStepFragment
     ) {
         self.init(
-            id: data.id,
             phoneNumber: data.phoneNumber
         )
     }
@@ -761,9 +757,7 @@ extension FlowClaimConfirmEmergencyStepModel {
         with data: OctopusGraphQL.FlowClaimConfirmEmergencyStepFragment
     ) {
         self.init(
-            id: data.id,
             text: data.text,
-            confirmEmergency: data.confirmEmergency,
             options: data.options.map { data in
                 FlowClaimConfirmEmergencyOption(displayName: data.displayName, value: data.displayValue)
             }
@@ -779,8 +773,6 @@ extension FlowClaimFileUploadStepModel {
             return nil
         }
         self.init(
-            id: data.id,
-            title: data.title,
             targetUploadUrl: data.targetUploadUrl,
             uploads: data.uploads.compactMap {
                 FlowClaimFileUploadStepFileModel(
@@ -799,12 +791,8 @@ extension FlowClaimSummaryStepModel {
         with data: OctopusGraphQL.FlowClaimSummaryStepFragment
     ) {
         self.init(
-            id: data.id,
             title: data.title,
             subtitle: data.subtitle,
-            shouldShowDateOfOccurence: true,
-            shouldShowLocation: true,
-            shouldShowSingleItem: data.singleItemStep != nil,
             selectedContractExposure: data.selectContractStep?.options
                 .first(where: { it in
                     it.id == data.selectContractStep?.selectedOptionId
@@ -1037,8 +1025,6 @@ extension FlowClaimSingleItemCheckoutStepModel {
                 return AvailableCheckoutMethod(
                     id: id,
                     autogiro: ClaimAutomaticAutogiroPayoutModel(
-                        id: fragment.id,
-                        amount: .init(fragment: fragment.amount.fragments.moneyFragment),
                         displayName: fragment.displayName
                     )
                 )
@@ -1048,7 +1034,6 @@ extension FlowClaimSingleItemCheckoutStepModel {
         let compensationFragment = data.compensation.fragments.flowClaimSingleItemCheckoutCompensationFragment
 
         let compensation = Compensation(
-            id: compensationFragment.id,
             deductible: .init(fragment: compensationFragment.deductible.fragments.moneyFragment),
             payoutAmount: .init(fragment: compensationFragment.payoutAmount.fragments.moneyFragment),
             repairCompensation: .init(with: compensationFragment.asFlowClaimSingleItemCheckoutRepairCompensation),
@@ -1056,7 +1041,6 @@ extension FlowClaimSingleItemCheckoutStepModel {
         )
 
         self.init(
-            id: data.id,
             payoutMethods: payoutMethods,
             selectedPayoutMethod: payoutMethods.first,
             compensation: compensation,
@@ -1098,7 +1082,6 @@ extension FlowClaimSingleItemStepModel {
             }
         }
         self.init(
-            id: data.id,
             availableItemBrandOptions: data.availableItemBrands?
                 .map {
                     ClaimFlowItemBrandOptionModel(

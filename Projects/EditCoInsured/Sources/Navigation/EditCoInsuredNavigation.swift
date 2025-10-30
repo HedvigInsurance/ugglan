@@ -288,12 +288,7 @@ extension EditCoInsuredAlertNavigation: TrackingViewNameProtocol {
 
 extension View {
     func addDismissEditCoInsuredFlow() -> some View {
-        withDismissButton(
-            title: L10n.General.areYouSure,
-            message: L10n.Claims.Alert.body,
-            confirmButton: L10n.General.yes,
-            cancelButton: L10n.General.no
-        )
+        withDismissButton()
     }
 }
 

@@ -60,11 +60,7 @@ extension NetworkError: LocalizedError {
 }
 
 struct ResponseError: Decodable {
-    let timestamp: Int
-    let status: Int
-    let error: String
     let message: String
-    let requestId: String
 }
 
 public struct MultipartFormDataRequest {
@@ -76,20 +72,6 @@ public struct MultipartFormDataRequest {
         url: URL
     ) {
         self.url = url
-    }
-
-    func addTextField(named name: String, value: String) {
-        httpBody.appendString(textFormField(named: name, value: value))
-    }
-
-    private func textFormField(named name: String, value: String) -> String {
-        var fieldString = "--\(boundary)\r\n"
-        fieldString += "Content-Disposition: form-data; name=\"\(name)\"\r\n"
-        fieldString += "Content-Type: text/plain; charset=ISO-8859-1\r\n"
-        fieldString += "Content-Transfer-Encoding: 8bit\r\n"
-        fieldString += "\r\n"
-        fieldString += "\(value)\r\n"
-        return fieldString
     }
 
     public func addDataField(fieldName: String, fileName: String, data: Data, mimeType: String) {

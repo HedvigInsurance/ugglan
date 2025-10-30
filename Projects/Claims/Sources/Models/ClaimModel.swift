@@ -1,5 +1,4 @@
 import Chat
-import Contracts
 import CrossSell
 import Foundation
 import hCore

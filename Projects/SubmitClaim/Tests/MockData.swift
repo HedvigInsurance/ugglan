@@ -11,7 +11,6 @@ struct MockData {
         fetchEntrypoints: @escaping FetchEntrypoints = {
             .init(
                 repeating: .init(
-                    id: "id",
                     displayName: "display name",
                     entrypoints: []
                 ),
@@ -31,7 +30,7 @@ struct MockData {
                 claimId: "claim id",
                 context: "context",
                 progress: 0.5,
-                step: .setSuccessStep(model: .init(id: "")),
+                step: .setSuccessStep(model: .init()),
                 nextStepId: ""
             )
         },
@@ -40,7 +39,7 @@ struct MockData {
                 claimId: "claim id",
                 context: context,
                 progress: 0.5,
-                step: .setPhoneNumber(model: .init(id: "id", phoneNumber: phoneNumber)),
+                step: .setPhoneNumber(model: .init(phoneNumber: phoneNumber)),
                 nextStepId: ""
             )
         },
@@ -59,7 +58,7 @@ struct MockData {
                 context: context,
                 progress: 0.5,
                 step: .setAudioStep(
-                    model: .init(id: "", questions: [], textQuestions: [], inputTextContent: nil, optionalAudio: true)
+                    model: .init(questions: [], textQuestions: [], inputTextContent: nil, optionalAudio: true)
                 ),
                 nextStepId: ""
             )
@@ -71,7 +70,6 @@ struct MockData {
                 progress: 0.5,
                 step: .setSingleItem(
                     model: .init(
-                        id: "",
                         availableItemBrandOptions: [],
                         availableItemModelOptions: [],
                         availableItemProblems: [],
@@ -93,8 +91,8 @@ struct MockData {
                     model: .init(
                         summaryStep: nil,
                         singleItemStepModel: nil,
-                        dateOfOccurenceModel: .init(id: "", maxDate: nil),
-                        locationModel: .init(id: "", options: []),
+                        dateOfOccurenceModel: .init(maxDate: nil),
+                        locationModel: .init(options: []),
                         audioRecordingModel: nil,
                         fileUploadModel: nil
                     )
@@ -109,10 +107,8 @@ struct MockData {
                 progress: 0.5,
                 step: .setSingleItemCheckoutStep(
                     model: .init(
-                        id: "",
                         payoutMethods: [],
                         compensation: .init(
-                            id: "",
                             deductible: .init(amount: "", currency: ""),
                             payoutAmount: .init(amount: "", currency: ""),
                             repairCompensation: nil,
@@ -139,7 +135,7 @@ struct MockData {
                 context: context,
                 progress: 0.5,
                 step: .setConfirmDeflectEmergencyStepModel(
-                    model: .init(id: "", text: "", confirmEmergency: nil, options: [])
+                    model: .init(text: "", options: [])
                 ),
                 nextStepId: ""
             )
@@ -149,7 +145,7 @@ struct MockData {
                 claimId: "claim id",
                 context: context,
                 progress: 0.5,
-                step: .setFileUploadStep(model: .init(id: "", title: "", targetUploadUrl: "", uploads: [])),
+                step: .setFileUploadStep(model: .init(targetUploadUrl: "", uploads: [])),
                 nextStepId: ""
             )
         }

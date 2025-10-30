@@ -247,12 +247,10 @@ class BankIDViewModel: ObservableObject {
     }
 }
 
-struct BankIDLoginQR_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
-        return BankIDLoginQRView {}
-            .environmentObject(Router())
-    }
+#Preview {
+    Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
+    return BankIDLoginQRView {}
+        .environmentObject(Router())
 }
 
 public enum AuthenticationRouterType: Hashable {

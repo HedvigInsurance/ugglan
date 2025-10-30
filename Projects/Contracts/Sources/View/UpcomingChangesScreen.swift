@@ -99,7 +99,6 @@ struct UpcomingChangesScreen: View {
                 ProductVariant(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: "",
                     perils: [],
                     insurableLimits: [],
                     documents: [],

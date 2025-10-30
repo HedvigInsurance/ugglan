@@ -1,5 +1,4 @@
 import SwiftUI
-import hCore
 
 extension View {
     public func showInfoScreen(text: Binding<String?>, dismissButtonTitle: String) -> some View {

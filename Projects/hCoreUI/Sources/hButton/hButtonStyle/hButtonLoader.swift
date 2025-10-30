@@ -7,13 +7,10 @@ struct LoaderOrContent<Content: View>: View {
     @Environment(\.colorScheme) var colorScheme
 
     private let content: () -> Content
-    private let color: any hColor
 
     init(
-        color: any hColor,
         @ViewBuilder _ content: @escaping () -> Content
     ) {
-        self.color = color
         self.content = content
     }
 

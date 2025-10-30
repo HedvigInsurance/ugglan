@@ -143,17 +143,15 @@ extension String {
     }
 }
 
-struct MarqueeText_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            MarqueeText(
-                text: "1234567890 1234567890 1234567890",
-                font: .systemFont(ofSize: 20),
-                leftFade: 3,
-                rightFade: 3,
-                startDelay: 0
-            )
-        }
-        .frame(width: 100)
+#Preview {
+    VStack {
+        MarqueeText(
+            text: "1234567890 1234567890 1234567890",
+            font: .systemFont(ofSize: 20),
+            leftFade: 3,
+            rightFade: 3,
+            startDelay: 0
+        )
     }
+    .frame(width: 100)
 }

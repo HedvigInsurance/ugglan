@@ -1,5 +1,4 @@
 import SwiftUI
-import hCore
 
 public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     @Binding var selectedValue: T?
@@ -104,32 +103,31 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     }
 }
 
-struct hRadioOptionField_Previews: PreviewProvider {
-    @State static var value: String? = "id"
-    @State static var error: String?
-    static var previews: some View {
-        VStack {
-            hRadioField(
-                id: "id",
-                leftView: {
-                    hText("id")
-                        .asAnyView
-                },
-                selected: $value,
-                error: $error,
-                useAnimation: true
-            )
-            hRadioField(
-                id: "id2",
-                leftView: {
-                    hText("id2")
-                        .asAnyView
-                },
-                selected: $value,
-                error: $error,
-                useAnimation: true
-            )
-        }
-        .disabled(true)
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var value: String? = "id"
+    @Previewable @State var error: String?
+    VStack {
+        hRadioField(
+            id: "id",
+            leftView: {
+                hText("id")
+                    .asAnyView
+            },
+            selected: $value,
+            error: $error,
+            useAnimation: true
+        )
+        hRadioField(
+            id: "id2",
+            leftView: {
+                hText("id2")
+                    .asAnyView
+            },
+            selected: $value,
+            error: $error,
+            useAnimation: true
+        )
     }
+    .disabled(true)
 }

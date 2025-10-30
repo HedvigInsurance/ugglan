@@ -40,7 +40,6 @@ final class ChangeTierViewModelTests: XCTestCase {
                     productVariant: .init(
                         termsVersion: "",
                         typeOfContract: "",
-                        partner: nil,
                         perils: [],
                         insurableLimits: [],
                         documents: [],

@@ -21,7 +21,6 @@ extension ClaimEntryPointGroupResponseModel {
         with data: OctopusGraphQL.EntrypointGroupFragment
     ) {
         self.init(
-            id: data.id,
             displayName: data.displayName,
             entrypoints: data.entrypoints.map { ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) }
         )

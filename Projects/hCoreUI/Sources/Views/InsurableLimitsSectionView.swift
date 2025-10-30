@@ -52,22 +52,20 @@ public struct InsurableLimitsSectionView: View {
     }
 }
 
-struct InsurableLimitsSectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        let limits: [InsurableLimits] = [
-            .init(label: "TITLE", limit: "LIMIT", description: "DESCRIPTION"),
-            .init(label: "VERY LONG TITLE TITLE", limit: "VERY LONG LIMIT LIMIT LIMIT", description: "DESCRIPTION"),
-            .init(
-                label: "VERY VERY VERY VERY VERY LONG TITLE TITLE",
-                limit: "VERY LONG LIMIT LIMIT LIMIT",
-                description: "DESCRIPTION"
-            ),
-        ]
+#Preview {
+    let limits: [InsurableLimits] = [
+        .init(label: "TITLE", limit: "LIMIT", description: "DESCRIPTION"),
+        .init(label: "VERY LONG TITLE TITLE", limit: "VERY LONG LIMIT LIMIT LIMIT", description: "DESCRIPTION"),
+        .init(
+            label: "VERY VERY VERY VERY VERY LONG TITLE TITLE",
+            limit: "VERY LONG LIMIT LIMIT LIMIT",
+            description: "DESCRIPTION"
+        ),
+    ]
 
-        return VStack {
-            InsurableLimitsSectionView(limits: limits) { _ in
-            }
-            Spacer()
+    return VStack {
+        InsurableLimitsSectionView(limits: limits) { _ in
         }
+        Spacer()
     }
 }

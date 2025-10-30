@@ -3,20 +3,17 @@ import Foundation
 public protocol FlowStepModel: Codable, Equatable, Hashable, Sendable {}
 
 public struct TerminationFlowDateNextStepModel: FlowStepModel {
-    let id: String
     let maxDate: String
     let minDate: String
     let extraCoverageItem: [ExtraCoverageItem]
     var date: Date?
 
     public init(
-        id: String,
         maxDate: String,
         minDate: String,
         date: Date? = nil,
         extraCoverageItem: [ExtraCoverageItem],
     ) {
-        self.id = id
         self.maxDate = maxDate
         self.minDate = minDate
         self.date = date

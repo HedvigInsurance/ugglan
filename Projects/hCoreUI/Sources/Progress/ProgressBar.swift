@@ -1,7 +1,6 @@
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
-import hCore
 
 public struct ProgressBarView: ViewModifier {
     @Binding var progress: Float?

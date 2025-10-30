@@ -21,7 +21,6 @@ public class hCampaignClientDemo: hCampaignClient {
 
             ],
             referralsData: .init(
-                code: "CODE",
                 discountPerMember: .sek(10),
                 referrals: [
                     .init(

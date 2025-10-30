@@ -20,10 +20,8 @@ struct ChangeEuroBonusView: View {
     }
 }
 
-struct ChangeEuroBonusView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChangeEuroBonusView()
-    }
+#Preview {
+    ChangeEuroBonusView()
 }
 
 @MainActor

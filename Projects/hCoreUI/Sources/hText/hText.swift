@@ -1,7 +1,6 @@
 import Combine
 import Foundation
 import SwiftUI
-import hCore
 
 @MainActor
 private struct EnvironmentDefaultHTextStyle: @preconcurrency EnvironmentKey {
@@ -180,7 +179,6 @@ public enum HFontTextStyle {
 public struct hFontModifier: ViewModifier {
     public var style: HFontTextStyle
     @Environment(\.hWithoutFontMultiplier) var withoutFontMultiplier
-    @SwiftUI.Environment(\.sizeCategory) var sizeCategory
 
     public init(style: HFontTextStyle) {
         self.style = style
@@ -196,16 +194,15 @@ public struct hFontModifier: ViewModifier {
     }
 }
 
-struct hFloatingTextFieldd_Previews: PreviewProvider {
-    @State static var value: String = "Ss"
-    @State static var error: String?
-    static var previews: some View {
-        VStack {
-            SwiftUI.TextField("Placeholder", text: $value)
-                .modifier(hFontModifier(style: .body2))
-        }
-        .hFieldSize(.large)
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var value: String = "Ss"
+    @Previewable @State var error: String?
+    VStack {
+        SwiftUI.TextField("Placeholder", text: $value)
+            .modifier(hFontModifier(style: .body2))
     }
+    .hFieldSize(.large)
 }
 
 public struct hText: View {

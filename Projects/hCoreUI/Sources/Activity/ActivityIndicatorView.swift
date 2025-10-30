@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
 
 struct LoadingViewWithContent: ViewModifier {
     @Binding var isLoading: Bool
@@ -82,12 +81,6 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
     }
 }
 
-struct GenericErrorTrackName: TrackingViewNameProtocol {
-    var nameForTracking: String {
-        ""
-    }
-}
-
 struct LoadingViewWithButtonLoadingForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
     func body(content: Content) -> some View {
@@ -101,16 +94,6 @@ struct LoadingViewWithButtonLoadingForProcessingState: ViewModifier {
             )
             .transition(.opacity.animation(.easeInOut(duration: 0.2)))
         }
-    }
-
-    private var loadingIndicatorView: some View {
-        HStack {
-            DotsActivityIndicator(.standard)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(hBackgroundColor.primary.opacity(0.01))
-        .edgesIgnoringSafeArea(.top)
-        .useDarkColor
     }
 }
 

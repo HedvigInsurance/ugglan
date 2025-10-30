@@ -102,25 +102,6 @@ extension UIColor {
                 })
             }
         }
-
-        @MainActor
-        var color: UIColor {
-            self.color(with: nil)
-        }
-
-        @MainActor
-        private var font: UIFont {
-            switch self {
-            case .primaryBackground: return Fonts.fontFor(style: .heading3)
-            case .secondaryBackground: return Fonts.fontFor(style: .heading3)
-            case .primaryBorderColor: return Fonts.fontFor(style: .heading3)
-            case .primaryText: return Fonts.fontFor(style: .heading2)
-            case .secondaryText: return Fonts.fontFor(style: .heading3)
-            case .caution: return Fonts.fontFor(style: .body1)
-            case .alert: return Fonts.fontFor(style: .body1)
-            case .datePickerSelectionColor: return Fonts.fontFor(style: .body1)
-            }
-        }
     }
 
     public static func brand(_ color: BrandColorNew, style: UIUserInterfaceStyle? = nil) -> UIColor {

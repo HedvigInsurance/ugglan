@@ -94,7 +94,7 @@ public class AudioRecorder: @preconcurrency ObservableObject {
         }
 
         if FileManager.default.fileExists(atPath: filePath.relativePath) {
-            recording = Recording(url: filePath, created: Date(), sample: decibelScale)
+            recording = Recording(url: filePath, sample: decibelScale)
         }
     }
 }
@@ -123,14 +123,5 @@ struct AudioPulseBackground: View {
 
 public struct Recording {
     public var url: URL
-    var created: Date
     var sample: [CGFloat]
-    var max: CGFloat {
-        sample.max() ?? 1.0
-    }
-
-    var range: Range<CGFloat> {
-        guard sample.count > 0 else { return 0..<0 }
-        return sample.min()!..<sample.max()!
-    }
 }

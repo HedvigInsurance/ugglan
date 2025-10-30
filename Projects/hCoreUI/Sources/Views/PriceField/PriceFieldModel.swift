@@ -23,9 +23,7 @@ public struct PriceFieldModel: Identifiable, Equatable {
         self.infoButtonModel = infoButtonModel
     }
 
-    func shouldShowPreviousPriceLabel(
-        strikeThroughPrice: StrikeThroughPriceType
-    ) -> Bool {
+    func shouldShowPreviousPriceLabel() -> Bool {
         if let initialValue {
             return newValue != initialValue
         }

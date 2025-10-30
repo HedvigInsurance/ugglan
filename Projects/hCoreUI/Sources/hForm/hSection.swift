@@ -97,7 +97,7 @@ public struct RowViewBuilder {
         )
     }
 
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View, I: View>(
+    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View>(
         _ viewA: A,
         _ viewB: B,
         _ viewC: C,
@@ -348,7 +348,6 @@ extension View {
 }
 
 struct hSectionContainer<Content: View>: View {
-    @Environment(\.hSectionContainerStyle) var containerStyle
     var content: Content
 
     init(

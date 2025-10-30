@@ -27,7 +27,6 @@ final class TravelCertificateTests: XCTestCase {
                 exposureDisplayName: "",
                 minStartDate: Date(),
                 maxStartDate: Date(),
-                numberOfCoInsured: 2,
                 maxDuration: 3,
                 email: nil,
                 fullName: "First Last"

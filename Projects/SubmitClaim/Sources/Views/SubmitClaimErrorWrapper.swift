@@ -34,37 +34,8 @@ private struct ClaimErrorTrackerModifier: ViewModifier {
     }
 }
 
-private struct ClaimErrorTrackerModifierForString: ViewModifier {
-    @Binding var error: String?
-    @State private var processingState = ProcessingState.success
-    @EnvironmentObject var router: Router
-    func body(content: Content) -> some View {
-        content.claimErrorTrackerForState($processingState)
-            .onAppear {
-                processingState = {
-                    if let error {
-                        return .error(errorMessage: error)
-                    }
-                    return .success
-                }()
-            }
-            .onChange(of: error) { _ in
-                processingState = {
-                    if let error {
-                        return .error(errorMessage: error)
-                    }
-                    return .success
-                }()
-            }
-    }
-}
-
 extension View {
     func claimErrorTrackerForState(_ state: Binding<ProcessingState>) -> some View {
         modifier(ClaimErrorTrackerModifier(processingState: state))
-    }
-
-    func claimErrorTracker(for error: Binding<String?>) -> some View {
-        modifier(ClaimErrorTrackerModifierForString(error: error))
     }
 }

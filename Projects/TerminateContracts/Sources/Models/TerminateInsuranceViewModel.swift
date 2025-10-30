@@ -1,8 +1,6 @@
 import ChangeTier
 import Combine
 import Foundation
-import hCore
-import hCoreUI
 
 @MainActor
 public class TerminateInsuranceViewModel: ObservableObject {

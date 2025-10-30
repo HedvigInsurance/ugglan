@@ -9,7 +9,6 @@ public class FetchContractsClientDemo: FetchContractsClient {
         let variant = ProductVariant(
             termsVersion: "",
             typeOfContract: TypeOfContract.seApartmentRent.rawValue,
-            partner: nil,
             perils: [],
             insurableLimits: [
                 .init(

@@ -1,5 +1,4 @@
 import SwiftUI
-import hCore
 
 public struct PriceFieldMultipleRows: View {
     let viewModels: [PriceFieldModel]

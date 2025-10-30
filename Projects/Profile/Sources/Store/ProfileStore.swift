@@ -6,7 +6,6 @@ import hCore
 public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {
     @Inject var profileService: ProfileClient
 
-    let memberSubscriptionPreferenceViewModel = MemberSubscriptionPreferenceViewModel()
     override public func effects(
         _: @escaping () -> ProfileState,
         _ action: ProfileAction

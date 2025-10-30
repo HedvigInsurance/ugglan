@@ -1,16 +1,13 @@
 import Foundation
 
 public struct FlowClaimLocationStepModel: FlowClaimStepModel {
-    let id: String
     public internal(set) var location: String?
     let options: [ClaimFlowLocationOptionModel]
 
     public init(
-        id: String,
         location: String? = nil,
         options: [ClaimFlowLocationOptionModel]
     ) {
-        self.id = id
         self.location = location
         self.options = options
     }

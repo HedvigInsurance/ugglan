@@ -11,7 +11,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -25,7 +25,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -38,7 +38,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -53,7 +53,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -66,7 +66,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -79,7 +79,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -92,7 +92,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -106,7 +106,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -117,7 +117,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }
@@ -131,7 +131,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            step: .setFailedStep(model: .init(id: "")),
+            step: .setFailedStep(model: .init()),
             nextStepId: ""
         )
     }

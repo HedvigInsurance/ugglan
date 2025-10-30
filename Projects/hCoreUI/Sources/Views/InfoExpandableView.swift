@@ -1,7 +1,6 @@
 import SwiftUI
 
 public struct InfoExpandableView: View {
-    @State var height: CGFloat = 0
     @State var selectedFields: [String] = []
     var title: String
     var text: String
@@ -78,15 +77,13 @@ public struct InfoExpandableView: View {
     }
 }
 
-struct InfoExpandableView_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            InfoExpandableView(
-                title: "long longlong long long long title",
-                text:
-                    "long long long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long long"
-            )
-            Spacer()
-        }
+#Preview {
+    VStack {
+        InfoExpandableView(
+            title: "long longlong long long long title",
+            text:
+                "long long long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long longng long long long long long long long long"
+        )
+        Spacer()
     }
 }

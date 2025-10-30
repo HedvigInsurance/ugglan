@@ -1,19 +1,13 @@
 import Foundation
 
 public struct FlowClaimFileUploadStepModel: FlowClaimStepModel {
-    let id: String
-    let title: String
     let targetUploadUrl: String
     let uploads: [FlowClaimFileUploadStepFileModel]
 
     public init(
-        id: String,
-        title: String,
         targetUploadUrl: String,
         uploads: [FlowClaimFileUploadStepFileModel]
     ) {
-        self.id = id
-        self.title = title
         self.targetUploadUrl = targetUploadUrl
         self.uploads = uploads
     }

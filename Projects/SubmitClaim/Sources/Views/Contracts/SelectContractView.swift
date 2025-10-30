@@ -89,9 +89,7 @@ public class SelectContractViewModel: ObservableObject {
     }
 }
 
-struct SelectContractScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
-        return SelectContractView(claimsNavigationVm: .init())
-    }
+#Preview {
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+    return SelectContractView(claimsNavigationVm: .init())
 }

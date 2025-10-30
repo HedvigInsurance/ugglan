@@ -1,6 +1,5 @@
 mutation FlowTerminationSurveyNext($input: FlowTerminationSurveyInput!, $context: FlowContext!) {
   flowTerminationSurveyNext(input: $input, context: $context) {
-    id
     ...FlowTerminationFragment
     context
   }

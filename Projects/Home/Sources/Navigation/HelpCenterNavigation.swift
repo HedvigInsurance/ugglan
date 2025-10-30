@@ -191,7 +191,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     private func handle(quickAction: QuickAction) {
         switch quickAction {
         case .connectPayments:
-            helpCenterVm.connectPaymentsVm.set(for: nil)
+            helpCenterVm.connectPaymentsVm.set()
         case .travelInsurance:
             helpCenterVm.quickActions.isTravelCertificatePresented = true
         case let .editInsurance(insuranceQuickActions):

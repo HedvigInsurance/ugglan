@@ -72,7 +72,6 @@ class WhoIsTravelingViewModel: ObservableObject {
     @Published var hasMissingCoInsuredData = false
     var isPolicyHolderIncluded = true
     @Published var isLoading = false
-    @Published var error: String?
     let contract: Contracts.Contract?
     let router: Router
     init(specification: TravelInsuranceContractSpecification, router: Router) {
@@ -123,25 +122,22 @@ class WhoIsTravelingViewModel: ObservableObject {
     }
 }
 
-struct WhoIsTravelingView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return WhoIsTravelingScreen(
-            vm: .init(
-                specification: .init(
-                    contractId: "",
-                    displayName: "display name",
-                    exposureDisplayName: "exposure display name",
-                    minStartDate: Date(),
-                    maxStartDate: Date(),
-                    numberOfCoInsured: 2,
-                    maxDuration: 45,
-                    email: "email",
-                    fullName: "full name"
-                ),
-                router: .init()
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return WhoIsTravelingScreen(
+        vm: .init(
+            specification: .init(
+                contractId: "",
+                displayName: "display name",
+                exposureDisplayName: "exposure display name",
+                minStartDate: Date(),
+                maxStartDate: Date(),
+                maxDuration: 45,
+                email: "email",
+                fullName: "full name"
             ),
-            travelCertificateNavigationVm: .init()
-        )
-    }
+            router: .init()
+        ),
+        travelCertificateNavigationVm: .init()
+    )
 }

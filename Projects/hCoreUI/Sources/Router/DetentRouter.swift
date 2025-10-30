@@ -283,12 +283,6 @@ class PresentationViewModel: ObservableObject {
     private var formContentSizeChanged: AnyCancellable?
 }
 
-extension UIViewController {
-    var className: String {
-        String(describing: Self.self)
-    }
-}
-
 @MainActor
 public struct DetentPresentationOption: OptionSet, Sendable {
     public let rawValue: UInt

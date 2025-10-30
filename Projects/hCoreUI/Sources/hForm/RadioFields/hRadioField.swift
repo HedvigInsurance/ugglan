@@ -69,140 +69,129 @@ public struct hRadioField<T>: View where T: Equatable {
     }
 }
 
-struct hRadioField_Previews: PreviewProvider {
-    @State static var value: String?
-    @State static var error: String?
-    static var previews: some View {
-        hSection {
-            VStack {
-                hRadioField(
-                    id: "id",
-                    leftView: {
-                        VStack(alignment: .leading) {
-                            hText("Label left view")
-                            hText("920321412")
-                        }
-                        .asAnyView
-                    },
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.large)
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var error: String?
+    @Previewable @State var value: String?
 
-                hRadioField(
-                    id: "id",
-                    itemModel: .init(
-                        title: "Large Label"
-                    ),
-                    leftView: nil,
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.large)
+    return hSection {
+        VStack {
+            hRadioField(
+                id: "id",
+                leftView: {
+                    VStack(alignment: .leading) {
+                        hText("Label left view")
+                        hText("920321412")
+                    }
+                    .asAnyView
+                },
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.large)
 
-                hRadioField(
-                    id: "id",
-                    itemModel: .init(
-                        title: "Large Label",
-                        subTitle: "920321412"
-                    ),
-                    leftView: nil,
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.large)
+            hRadioField(
+                id: "id",
+                itemModel: .init(
+                    title: "Large Label"
+                ),
+                leftView: nil,
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.large)
 
-                hRadioField(
-                    id: "id",
-                    itemModel: .init(
-                        title: "Medium field Label",
-                        subTitle: "920321412"
-                    ),
-                    leftView: nil,
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.medium)
+            hRadioField(
+                id: "id",
+                itemModel: .init(
+                    title: "Large Label",
+                    subTitle: "920321412"
+                ),
+                leftView: nil,
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.large)
 
-                hRadioField(
-                    id: "id",
-                    itemModel: .init(
-                        title: "Small field Label",
-                        subTitle: "920321412"
-                    ),
-                    leftView: nil,
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.small)
+            hRadioField(
+                id: "id",
+                itemModel: .init(
+                    title: "Medium field Label",
+                    subTitle: "920321412"
+                ),
+                leftView: nil,
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.medium)
 
-                hRadioField(
-                    id: "id",
-                    leftView: {
-                        HStack {
-                            hCoreUIAssets.pillowHome.view
-                                .resizable()
-                                .frame(width: 32, height: 32)
+            hRadioField(
+                id: "id",
+                itemModel: .init(
+                    title: "Small field Label",
+                    subTitle: "920321412"
+                ),
+                leftView: nil,
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.small)
 
-                            hText("Custom view with long text")
-                        }
-                        .asAnyView
-                    },
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.small)
+            hRadioField(
+                id: "id",
+                leftView: {
+                    HStack {
+                        hCoreUIAssets.pillowHome.view
+                            .resizable()
+                            .frame(width: 32, height: 32)
 
-                hRadioField(
-                    id: "id",
-                    itemModel: .init(
-                        title: "Label",
-                        subTitle: "920321412"
-                    ),
-                    leftView: nil,
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.large)
-                .hFieldLeftAttachedView
+                        hText("Custom view with long text")
+                    }
+                    .asAnyView
+                },
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.small)
 
-                hRadioField(
-                    id: "id",
-                    itemModel: .init(
-                        title: "Label"
-                    ),
-                    leftView: nil,
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true
-                )
-                .hFieldSize(.large)
-                .hFieldLeftAttachedView
-            }
+            hRadioField(
+                id: "id",
+                itemModel: .init(
+                    title: "Label",
+                    subTitle: "920321412"
+                ),
+                leftView: nil,
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.large)
+            .hFieldLeftAttachedView
+
+            hRadioField(
+                id: "id",
+                itemModel: .init(
+                    title: "Label"
+                ),
+                leftView: nil,
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            .hFieldSize(.large)
+            .hFieldLeftAttachedView
         }
-        .sectionContainerStyle(.transparent)
     }
+    .sectionContainerStyle(.transparent)
 }
 
 extension hFieldSize {
-    var minHeight: CGFloat {
-        switch self {
-        case .small:
-            return 56
-        case .large:
-            return 64
-        case .medium:
-            return 64
-        }
-    }
-
     var topPadding: CGFloat {
         switch self {
         case .small:
@@ -237,22 +226,6 @@ extension hFieldSize {
             return 9
         case .medium:
             return 12.5
-        }
-    }
-
-    var topOffset: CGFloat {
-        switch self {
-        case .small: return 17
-        case .medium: return 21
-        case .large: return 18
-        }
-    }
-
-    var bottomOffset: CGFloat {
-        switch self {
-        case .small: return 17
-        case .medium: return 21
-        case .large: return 18
         }
     }
 }

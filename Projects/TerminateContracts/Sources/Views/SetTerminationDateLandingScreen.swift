@@ -195,15 +195,6 @@ struct SetTerminationDateLandingScreen: View {
         }
         return label
     }
-
-    @hColorBuilder
-    func getFillColor() -> some hColor {
-        if vm.hasAgreedToTerms {
-            hSignalColor.Green.element
-        } else {
-            hSurfaceColor.Opaque.primary
-        }
-    }
 }
 
 @MainActor

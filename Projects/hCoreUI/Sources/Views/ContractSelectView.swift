@@ -1,5 +1,4 @@
 import SwiftUI
-import hCore
 
 public struct ContractSelectView<T: Hashable>: View {
     let itemPickerConfig: ItemConfig<T>

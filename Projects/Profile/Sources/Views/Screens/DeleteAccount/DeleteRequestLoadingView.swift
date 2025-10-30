@@ -1,11 +1,9 @@
 import Apollo
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct DeleteRequestLoadingView: View {
-    @PresentableStore var store: ProfileStore
     var profileService = ProfileService()
     @EnvironmentObject var router: Router
     private var dismissAction: (ProfileNavigationDismissAction) -> Void
@@ -104,8 +102,6 @@ public struct DeleteRequestLoadingView: View {
     }
 }
 
-struct DeleteRequestLoadingView_Previews: PreviewProvider {
-    static var previews: some View {
-        DeleteRequestLoadingView(screenState: .success, dismissAction: { _ in })
-    }
+#Preview {
+    DeleteRequestLoadingView(screenState: .success, dismissAction: { _ in })
 }

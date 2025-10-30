@@ -19,7 +19,7 @@ public struct PDFPreview: View {
             if vm.isLoading {
                 loadingIndicatorView
             } else if let data = vm.data {
-                DocumentRepresentable(data: data, name: vm.document.displayName)
+                DocumentRepresentable(data: data)
                     .introspect(.viewController, on: .iOS(.v13...)) { vc in
                         let navBarItem = UIBarButtonItem(
                             image: UIImage(systemName: "square.and.arrow.up"),
@@ -129,26 +129,20 @@ private class PDFPreviewViewModel: ObservableObject {
 
 private struct DocumentRepresentable: UIViewRepresentable {
     let data: Data
-    let name: String
 
     func makeUIView(context _: Context) -> some UIView {
-        DocumentView(data: data, name: name)
+        DocumentView(data: data)
     }
 
     func updateUIView(_: UIViewType, context _: Context) {}
 }
 
 private class DocumentView: UIView {
-    let data: Data
-    let name: String
     private let pdfView = PDFView()
 
     init(
         data: Data,
-        name: String
     ) {
-        self.data = data
-        self.name = name
         super.init(frame: .zero)
 
         pdfView.backgroundColor = .brand(.primaryBackground())

@@ -184,26 +184,6 @@ public struct SubmitClaimCheckoutScreen: View {
         .noSpacing()
         .hWithoutDivider
     }
-
-    @ViewBuilder
-
-    func displayPaymentMethodField(checkoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
-        if let checkoutStep = checkoutStep {
-            let payoutMethods = checkoutStep.payoutMethods
-            let shouldShowCheckmark = payoutMethods.count > 1
-            ForEach(payoutMethods, id: \.id) { element in
-                hRow {
-                    hText(element.getDisplayName(), style: .body1)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, .padding4)
-                }
-                .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
-                .cornerRadius(.cornerRadiusL)
-                .padding(.bottom, .padding8)
-            }
-        }
-    }
 }
 
 @MainActor
@@ -236,12 +216,10 @@ public class SubmitClaimCheckoutViewModel: ObservableObject {
     }
 }
 
-struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
 
-        return SubmitClaimCheckoutScreen(vm: .init())
-            .environmentObject(SubmitClaimNavigationViewModel())
-    }
+    return SubmitClaimCheckoutScreen(vm: .init())
+        .environmentObject(SubmitClaimNavigationViewModel())
 }

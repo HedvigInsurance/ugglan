@@ -129,7 +129,6 @@ extension TravelInsuranceContractSpecification {
             exposureDisplayName: exposureDisplayName,
             minStartDate: data.minStartDate.localDateToDate ?? Date(),
             maxStartDate: data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90),
-            numberOfCoInsured: data.numberOfCoInsured,
             maxDuration: data.maxDurationDays,
             email: email,
             fullName: fullName

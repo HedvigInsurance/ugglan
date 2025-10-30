@@ -1,5 +1,3 @@
-import Claims
-import Contracts
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,14 +6,11 @@ public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel
     @StateObject var router = Router()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
-    private var dismissAction: (ProfileNavigationDismissAction) -> Void
 
     public init(
-        vm: DeleteAccountViewModel,
-        dismissAction: @escaping (ProfileNavigationDismissAction) -> Void
+        vm: DeleteAccountViewModel
     ) {
         self.vm = vm
-        self.dismissAction = dismissAction
     }
 
     public var body: some View {
@@ -86,17 +81,6 @@ private enum DeleteDetentType: TrackingViewNameProtocol {
     }
 
     case deleteAccountView
-}
-
-struct ParagraphTextModifier<Color: hColor>: ViewModifier {
-    var color: Color
-
-    func body(content: Content) -> some View {
-        content
-            .fixedSize(horizontal: false, vertical: true)
-            .foregroundColor(color)
-            .frame(maxWidth: .infinity, alignment: .leading)
-    }
 }
 
 extension DeleteAccountViewModel {

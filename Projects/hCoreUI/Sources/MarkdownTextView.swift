@@ -8,7 +8,6 @@ public struct MarkdownView: View {
     private let config: CustomTextViewRepresentableConfig
     @State private var height: CGFloat = 20
     @State private var width: CGFloat = 0
-    @Environment(\.colorScheme) var colorScheme
 
     public init(
         config: CustomTextViewRepresentableConfig

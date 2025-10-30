@@ -1,5 +1,4 @@
 import Foundation
-import hCore
 
 public class TerminateContractsClientDemo: TerminateContractsClient {
     public func startTermination(contractId _: String) async throws -> TerminateStepResponse {

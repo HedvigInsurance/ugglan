@@ -83,11 +83,3 @@ public struct BlurredProgressOverlay<Content: View>: View {
         }
     }
 }
-
-struct BlurredProgressOverlayPreviews: PreviewProvider {
-    static var previews: some View {
-        BlurredProgressOverlay {
-            Text("hello world")
-        }
-    }
-}

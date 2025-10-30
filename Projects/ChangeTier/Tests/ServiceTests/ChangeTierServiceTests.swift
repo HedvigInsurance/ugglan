@@ -44,7 +44,6 @@ final class ChangeTierServiceTests: XCTestCase {
                         productVariant: .init(
                             termsVersion: "",
                             typeOfContract: "",
-                            partner: nil,
                             perils: [],
                             insurableLimits: [],
                             documents: [],
@@ -101,7 +100,6 @@ final class ChangeTierServiceTests: XCTestCase {
             .init(
                 termsVersion: "",
                 typeOfContract: "",
-                partner: "",
                 perils: [],
                 insurableLimits: [],
                 documents: [],

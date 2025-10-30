@@ -68,11 +68,9 @@ public struct EuroBonusView: View {
     }
 }
 
-struct EuroBonusView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            EuroBonusView().navigationBarTitleDisplayMode(.inline)
-                .navigationTitle(L10n.SasIntegration.title)
-        }
+#Preview {
+    NavigationView {
+        EuroBonusView().navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(L10n.SasIntegration.title)
     }
 }

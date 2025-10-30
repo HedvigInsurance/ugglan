@@ -23,7 +23,7 @@ final class SubmitClaimTests: XCTestCase {
     func testUpdateClaimSuccess() async {
         let phoneNumer = "0712121212"
 
-        let model = FlowClaimPhoneNumberStepModel(id: "id", phoneNumber: phoneNumer)
+        let model = FlowClaimPhoneNumberStepModel(phoneNumber: phoneNumer)
 
         let updateClaimResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
@@ -49,7 +49,7 @@ final class SubmitClaimTests: XCTestCase {
 
     func testDateOfOccurrenceAndLocationSuccess() async {
         let model = SubmitClaimStep.DateOfOccurrencePlusLocationStepModels(
-            dateOfOccurencePlusLocationModel: .init(id: "id")
+            dateOfOccurencePlusLocationModel: .init()
         )
 
         let dateOfOccurrenceAndLocationResponse: SubmitClaimStepResponse = .init(
@@ -89,7 +89,6 @@ final class SubmitClaimTests: XCTestCase {
             file: .init(data: Data(), name: "name", mimeType: MimeType.PDF.mime)
         )
         let model = FlowClaimAudioRecordingStepModel(
-            id: "id",
             questions: [],
             audioContent: .init(audioUrl: "/file", signedUrl: uploadResponse.audioUrl),
             textQuestions: [],
@@ -125,7 +124,6 @@ final class SubmitClaimTests: XCTestCase {
 
     func testSingleItemSuccess() async {
         let model = FlowClaimSingleItemStepModel(
-            id: "id",
             availableItemBrandOptions: [],
             availableItemModelOptions: [],
             availableItemProblems: [],
@@ -161,8 +159,8 @@ final class SubmitClaimTests: XCTestCase {
         let model = SubmitClaimStep.SummaryStepModels(
             summaryStep: nil,
             singleItemStepModel: nil,
-            dateOfOccurenceModel: .init(id: "id", maxDate: nil),
-            locationModel: .init(id: "id", options: []),
+            dateOfOccurenceModel: .init(maxDate: nil),
+            locationModel: .init(options: []),
             audioRecordingModel: nil,
             fileUploadModel: nil
         )
@@ -191,10 +189,8 @@ final class SubmitClaimTests: XCTestCase {
 
     func testSingleItemCheckoutSuccess() async {
         let model = FlowClaimSingleItemCheckoutStepModel(
-            id: "id",
             payoutMethods: [],
             compensation: .init(
-                id: "id",
                 deductible: .init(amount: "220", currency: "SEK"),
                 payoutAmount: .init(amount: "1000", currency: "SEK"),
                 repairCompensation: nil,
@@ -252,7 +248,7 @@ final class SubmitClaimTests: XCTestCase {
     }
 
     func testEmergencyConfirmSuccess() async {
-        let model = FlowClaimConfirmEmergencyStepModel(id: "id", text: "", confirmEmergency: nil, options: [])
+        let model = FlowClaimConfirmEmergencyStepModel(text: "", options: [])
         let isEmergency = true
 
         let emergencyConfirmResponse: SubmitClaimStepResponse = .init(
@@ -279,7 +275,7 @@ final class SubmitClaimTests: XCTestCase {
 
     func testSubmitFileSuccess() async {
         let ids: [String] = ["id1", "id2", "id3"]
-        let model = FlowClaimFileUploadStepModel(id: "id", title: "title", targetUploadUrl: "", uploads: [])
+        let model = FlowClaimFileUploadStepModel(targetUploadUrl: "", uploads: [])
 
         let submitFileResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",

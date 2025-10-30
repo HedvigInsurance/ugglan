@@ -135,13 +135,14 @@ public struct hTextField: View {
     }
 }
 
-struct hTextFieldPreview: PreviewProvider {
-    static var previews: some View {
-        hTextField(masking: Masking(type: .birthDate(minAge: 0)), value: .constant(""), placeholder: "")
-            .padding(20)
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Masked with Swedish Personal Number")
-    }
+@available(iOS 17.0, *)
+#Preview("Masked with Swedish Personal Number", traits: .sizeThatFitsLayout) {
+    hTextField(
+        masking: Masking(type: .birthDate(minAge: 0)),
+        value: .constant(""),
+        placeholder: ""
+    )
+    .padding(20)
 }
 
 @MainActor

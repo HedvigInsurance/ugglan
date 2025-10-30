@@ -31,7 +31,6 @@ private struct RouterDestinationModifier<D, C>: ViewModifier where D: Hashable, 
                         let view = destination(item as! D)
                         return AnyView(view)
                     },
-                    contentName: "\(C.self)",
                     options: options
                 )
             }

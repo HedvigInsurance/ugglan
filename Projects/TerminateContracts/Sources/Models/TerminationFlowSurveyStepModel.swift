@@ -3,12 +3,10 @@ import hCore
 import hCoreUI
 
 public struct TerminationFlowSurveyStepModel: FlowStepModel {
-    let id: String
     var options: [TerminationFlowSurveyStepModelOption]
     var subTitleType: SurveyScreenSubtitleType
 
-    public init(id: String, options: [TerminationFlowSurveyStepModelOption], subTitleType: SurveyScreenSubtitleType) {
-        self.id = id
+    public init(options: [TerminationFlowSurveyStepModelOption], subTitleType: SurveyScreenSubtitleType) {
         self.options = options
         self.subTitleType = subTitleType
     }
@@ -43,20 +41,17 @@ public enum TerminationFlowSurveyStepSuggestion: FlowStepModel {
 }
 
 public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
-    let id: String
     public let action: FlowTerminationSurveyRedirectAction
     let description: String
     let buttonTitle: String
     let type: SurveySuggestionInfoType
 
     public init(
-        id: String,
         action: FlowTerminationSurveyRedirectAction,
         description: String,
         buttonTitle: String,
         type: SurveySuggestionInfoType
     ) {
-        self.id = id
         self.action = action
         self.description = description
         self.buttonTitle = buttonTitle
@@ -71,14 +66,12 @@ public enum FlowTerminationSurveyRedirectAction: FlowStepModel {
 }
 
 public struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
-    let id: String
     let url: String
     let description: String
     let buttonTitle: String
     let type: SurveySuggestionInfoType
 
-    public init(id: String, url: String, description: String, buttonTitle: String, type: SurveySuggestionInfoType) {
-        self.id = id
+    public init(url: String, description: String, buttonTitle: String, type: SurveySuggestionInfoType) {
         self.url = url
         self.description = description
         self.buttonTitle = buttonTitle
@@ -87,23 +80,19 @@ public struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
 }
 
 public struct TerminationFlowSurveyStepSuggestionInfo: FlowStepModel {
-    let id: String
     let description: String
     let type: SurveySuggestionInfoType
 
-    public init(id: String, description: String, type: SurveySuggestionInfoType) {
-        self.id = id
+    public init(description: String, type: SurveySuggestionInfoType) {
         self.description = description
         self.type = type
     }
 }
 
 public struct TerminationFlowSurveyStepFeedback: FlowStepModel {
-    let id: String
     let isRequired: Bool
 
-    public init(id: String, isRequired: Bool) {
-        self.id = id
+    public init(isRequired: Bool) {
         self.isRequired = isRequired
     }
 }

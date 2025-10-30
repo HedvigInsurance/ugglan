@@ -99,49 +99,47 @@ struct ClaimContactCard: View {
     }
 }
 
-struct ClaimContactCard_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return VStack {
-            ClaimContactCard(
-                model: .init(
-                    id: "id",
-                    imageUrl: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
-                    url: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
-                    phoneNumber: nil,
-                    title: nil,
-                    description: nil,
-                    info: nil,
-                    buttonText: "Button text",
-                    preferredImageHeight: nil
-                )
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return VStack {
+        ClaimContactCard(
+            model: .init(
+                id: "id",
+                imageUrl: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
+                url: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
+                phoneNumber: nil,
+                title: nil,
+                description: nil,
+                info: nil,
+                buttonText: "Button text",
+                preferredImageHeight: nil
             )
-            ClaimContactCard(
-                model: .init(
-                    id: "id1",
-                    imageUrl: nil,
-                    url: nil,
-                    phoneNumber: nil,
-                    title: nil,
-                    description: nil,
-                    info: nil,
-                    buttonText: nil,
-                    preferredImageHeight: nil
-                )
+        )
+        ClaimContactCard(
+            model: .init(
+                id: "id1",
+                imageUrl: nil,
+                url: nil,
+                phoneNumber: nil,
+                title: nil,
+                description: nil,
+                info: nil,
+                buttonText: nil,
+                preferredImageHeight: nil
             )
-            ClaimContactCard(
-                model: .init(
-                    id: "id2",
-                    imageUrl: nil,
-                    url: nil,
-                    phoneNumber: nil,
-                    title: nil,
-                    description: nil,
-                    info: nil,
-                    buttonText: nil,
-                    preferredImageHeight: nil
-                )
+        )
+        ClaimContactCard(
+            model: .init(
+                id: "id2",
+                imageUrl: nil,
+                url: nil,
+                phoneNumber: nil,
+                title: nil,
+                description: nil,
+                info: nil,
+                buttonText: nil,
+                preferredImageHeight: nil
             )
-        }
+        )
     }
 }

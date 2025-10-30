@@ -4,28 +4,14 @@ import SwiftUI
 import hCore
 
 extension View {
-    public func withDismissButton(
-        title: String,
-        message: String?,
-        confirmButton: String,
-        cancelButton: String
-    ) -> some View {
+    public func withDismissButton() -> some View {
         modifier(
-            DismissButton(
-                title: title,
-                message: message,
-                confirmButton: confirmButton,
-                cancelButton: cancelButton
-            )
+            DismissButton()
         )
     }
 }
 
 private struct DismissButton: ViewModifier {
-    let title: String
-    let message: String?
-    let confirmButton: String
-    let cancelButton: String
     @State var isPresented = false
     func body(content: Content) -> some View {
         content
@@ -110,12 +96,7 @@ extension View {
     }
 
     public func withAlertDismiss() -> some View {
-        withDismissButton(
-            title: L10n.General.areYouSure,
-            message: L10n.General.progressWillBeLostAlert,
-            confirmButton: L10n.General.yes,
-            cancelButton: L10n.General.no
-        )
+        withDismissButton()
     }
 }
 

@@ -84,24 +84,15 @@ public struct DisplayItem: Codable, Equatable, Hashable, Sendable {
 
 public struct AddonDataModel: Codable, Equatable, Hashable, Sendable {
     let id: String
-    let quoteInfo: InfoViewDataModel
-    let displayItems: [DisplayItem]
-    let coverageDisplayName: String
     let grossPremium: MonetaryAmount
     let addonVariant: AddonVariant
 
     public init(
         id: String,
-        quoteInfo: InfoViewDataModel,
-        displayItems: [DisplayItem],
-        coverageDisplayName: String,
         grossPremium: MonetaryAmount,
         addonVariant: AddonVariant
     ) {
         self.id = id
-        self.quoteInfo = quoteInfo
-        self.displayItems = displayItems
-        self.coverageDisplayName = coverageDisplayName
         self.grossPremium = grossPremium
         self.addonVariant = addonVariant
     }

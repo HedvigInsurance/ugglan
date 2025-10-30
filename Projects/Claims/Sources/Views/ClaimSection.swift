@@ -5,7 +5,6 @@ import hCoreUI
 struct ClaimSection: View {
     @Binding var claims: [ClaimModel]
     @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
-    @EnvironmentObject var homeRouter: Router
 
     var body: some View {
         InfoCardScrollView(

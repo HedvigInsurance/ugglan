@@ -1,6 +1,5 @@
 import Foundation
 import PresentableStore
-import hCore
 
 public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchProfileState

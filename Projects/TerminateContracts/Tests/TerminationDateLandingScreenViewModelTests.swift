@@ -100,7 +100,6 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
 
     private func setNavigationModel(contractId: String) -> TerminationFlowNavigationViewModel {
         let model: TerminationFlowDateNextStepModel = .init(
-            id: "id",
             maxDate: Date().addingTimeInterval(60 * 60 * 24 * 90).description,
             minDate: Date().localDateString,
             date: nil,

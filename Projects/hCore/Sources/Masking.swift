@@ -21,8 +21,6 @@ public enum MaskType {
 public struct Masking {
     public let type: MaskType
 
-    private var previousText = ""
-
     public init(type: MaskType) { self.type = type }
 
     public func applySettings(_ textField: UITextField) {

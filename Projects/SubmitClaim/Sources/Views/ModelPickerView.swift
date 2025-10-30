@@ -5,13 +5,11 @@ import hCoreUI
 struct ModelPickerView: View {
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @ObservedObject var router: Router
-    let brand: ClaimFlowItemBrandOptionModel
     var itemPickerConfig: ItemConfig<ClaimFlowItemModelOptionModel>
 
     init(router: Router, claimsNavigationVm: SubmitClaimNavigationViewModel, brand: ClaimFlowItemBrandOptionModel) {
         self.router = router
         self.claimsNavigationVm = claimsNavigationVm
-        self.brand = brand
         let step = claimsNavigationVm.singleItemModel
         let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
         itemPickerConfig = .init(

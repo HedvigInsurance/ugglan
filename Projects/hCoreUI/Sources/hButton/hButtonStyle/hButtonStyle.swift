@@ -75,7 +75,7 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             let label = configuration.label
                 .foregroundColor(foregroundColor)
 
-            LoaderOrContent(color: foregroundColor) {
+            LoaderOrContent() {
                 if hUseLightMode {
                     label
                         .colorScheme(.light)

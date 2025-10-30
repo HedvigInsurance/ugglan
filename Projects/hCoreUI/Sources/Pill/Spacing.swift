@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
 
 public struct Spacing {
     public init(height: Float) {

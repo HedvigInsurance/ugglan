@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
 
 public struct StatusCard<MainContent, BottomContent>: View
 where MainContent: View, BottomContent: View {
@@ -110,42 +109,38 @@ struct StatusCardBackgroundModifier: ViewModifier {
     }
 }
 
-struct CardComponent_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            Spacer()
-            StatusCard(
-                onSelected: {},
-                mainContent: Text("T"),
-                title: "TITLE",
-                subTitle: "SUBTITLE",
-                bottomComponent: {
-                    Text("BOTTOM COMPONENT")
-                }
-            )
-            Spacer()
-        }
-        .background(Color.gray)
+#Preview("CardComponent") {
+    VStack {
+        Spacer()
+        StatusCard(
+            onSelected: {},
+            mainContent: Text("T"),
+            title: "TITLE",
+            subTitle: "SUBTITLE",
+            bottomComponent: {
+                Text("BOTTOM COMPONENT")
+            }
+        )
+        Spacer()
     }
+    .background(Color.gray)
 }
 
-struct FCardComponent_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            Spacer()
-            StatusCard(
-                onSelected: {},
-                mainContent: Text("T"),
-                title: "TITLE",
-                subTitle: "SUBTITLE",
-                bottomComponent: {
-                    Text("BOTTOM COMPONENT")
-                }
-            )
-            Spacer()
-        }
-        .background(Color.gray)
+#Preview("FCardComponent") {
+    VStack {
+        Spacer()
+        StatusCard(
+            onSelected: {},
+            mainContent: Text("T"),
+            title: "TITLE",
+            subTitle: "SUBTITLE",
+            bottomComponent: {
+                Text("BOTTOM COMPONENT")
+            }
+        )
+        Spacer()
     }
+    .background(Color.gray)
 }
 
 private struct EnvironmentHCardWithoutSpacing: EnvironmentKey {

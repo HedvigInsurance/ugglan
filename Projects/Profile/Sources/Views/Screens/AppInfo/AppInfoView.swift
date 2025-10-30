@@ -158,24 +158,22 @@ class AppInfoViewModel: ObservableObject {
     }
 }
 
-struct AppInfoView_Previews: PreviewProvider {
-    static var previews: some View {
-        AppInfoView()
-            .onAppear {
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMember(
-                        memberData: .init(
-                            id: "ID",
-                            firstName: "FIRST NAME",
-                            lastName: "LAST NAME",
-                            phone: "PHNE",
-                            email: "EMAIL",
-                            hasTravelCertificate: true,
-                            isContactInfoUpdateNeeded: true
-                        )
+#Preview {
+    AppInfoView()
+        .onAppear {
+            let store: ProfileStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setMember(
+                    memberData: .init(
+                        id: "ID",
+                        firstName: "FIRST NAME",
+                        lastName: "LAST NAME",
+                        phone: "PHNE",
+                        email: "EMAIL",
+                        hasTravelCertificate: true,
+                        isContactInfoUpdateNeeded: true
                     )
                 )
-            }
-    }
+            )
+        }
 }

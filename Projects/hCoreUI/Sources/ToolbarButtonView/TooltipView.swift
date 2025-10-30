@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
 
 extension View {
     public func showTooltip(
@@ -50,7 +49,6 @@ struct TooltipView: View {
     // MARK: - Properties
 
     let type: ToolbarOptionType
-    let timeInterval: TimeInterval
     let placement: ListToolBarPlacement
     private let triangleWidth: CGFloat = 12
     private let trianglePadding: CGFloat = .padding16
@@ -65,7 +63,6 @@ struct TooltipView: View {
 
     init(type: ToolbarOptionType, placement: ListToolBarPlacement) {
         self.type = type
-        timeInterval = type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
         self.placement = placement
     }
 

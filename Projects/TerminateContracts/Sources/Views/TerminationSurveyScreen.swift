@@ -214,7 +214,7 @@ class SurveyScreenViewModel: ObservableObject {
                     errorMessage: error.localizedDescription
                 )
             }
-            return TerminateStepResponse(context: context, step: .setFailedStep(model: .init(id: "")), progress: nil)
+            return TerminateStepResponse(context: context, step: .setFailedStep(model: .init()), progress: nil)
         }
     }
 
@@ -250,7 +250,6 @@ class SurveyScreenViewModel: ObservableObject {
             title: "Option title",
             suggestion: .action(
                 action: .init(
-                    id: "actionId",
                     action: .updateAddress,
                     description: "description",
                     buttonTitle: "button title",
@@ -265,7 +264,6 @@ class SurveyScreenViewModel: ObservableObject {
             title: "Option title 2",
             suggestion: nil,
             feedBack: .init(
-                id: "feedbackId",
                 isRequired: true
             ),
             subOptions: nil
@@ -275,7 +273,6 @@ class SurveyScreenViewModel: ObservableObject {
             title: "Option title 3",
             suggestion: .suggestionInfo(
                 info: .init(
-                    id: "id",
                     description: "description",
                     type: .info
                 )
@@ -288,7 +285,6 @@ class SurveyScreenViewModel: ObservableObject {
             title: "Option title 4",
             suggestion: nil,
             feedBack: .init(
-                id: "feedbackId",
                 isRequired: true
             ),
             subOptions: nil
@@ -309,7 +305,6 @@ struct TerminationFlowSurveyStepFeedBackView: View {
             selectedValue: vm.text,
             placeholder: L10n.terminationSurveyFeedbackHint,
             popupPlaceholder: L10n.terminationSurveyFeedbackPopoverHint,
-            required: vm.required,
             maxCharacters: 2000,
             enableTransition: false
         ) { [weak vm] text in

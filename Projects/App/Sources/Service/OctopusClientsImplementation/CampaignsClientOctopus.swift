@@ -164,7 +164,6 @@ extension ReferralsData {
             )
         )
         self.init(
-            code: data.code,
             discountPerMember: .init(fragment: data.monthlyDiscountPerReferral.fragments.moneyFragment),
             referrals: referrals.reversed()
         )
@@ -178,8 +177,7 @@ extension Referral {
             name: data.name,
             code: data.code,
             description: L10n.Forever.Referral.invitedYou(data.name),
-            activeDiscount: .init(optionalFragment: data.activeDiscount?.fragments.moneyFragment),
-            invitedYou: invitedYou
+            activeDiscount: .init(optionalFragment: data.activeDiscount?.fragments.moneyFragment)
         )
     }
 }

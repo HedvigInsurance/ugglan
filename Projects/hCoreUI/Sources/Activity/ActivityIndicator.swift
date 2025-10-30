@@ -21,14 +21,11 @@ extension View {
 public struct ActivityIndicator: UIViewRepresentable {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.userInterfaceLevel) var userInterfaceLevel
-    var style: UIActivityIndicatorView.Style
     var color: any hColor
 
     public init(
-        style: UIActivityIndicatorView.Style,
         color: any hColor
     ) {
-        self.style = style
         self.color = color
     }
 
@@ -176,8 +173,6 @@ private struct PulsingCircle: View {
     }
 }
 
-struct DotsActivityIndicator_Previews: PreviewProvider {
-    static var previews: some View {
-        DotsActivityIndicator(.standard).background(Color.black)
-    }
+#Preview {
+    DotsActivityIndicator(.standard).background(Color.black)
 }

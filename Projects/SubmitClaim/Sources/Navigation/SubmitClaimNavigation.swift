@@ -18,14 +18,11 @@ public class SubmitClaimNavigationViewModel: ObservableObject {
     @Published var currentClaimContext: String?
     @Published var progress: Float? = 0
     var previousProgress: Float?
-    @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     @Published var occurrencePlusLocationModel: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
     @Published var singleItemModel: FlowClaimSingleItemStepModel?
     @Published var summaryModel: SubmitClaimStep.SummaryStepModels?
     @Published var phoneNumberModel: FlowClaimPhoneNumberStepModel?
     @Published var singleItemCheckoutModel: FlowClaimSingleItemCheckoutStepModel?
-    @Published var successModel: FlowClaimSuccessStepModel?
-    @Published var failedModel: FlowClaimFailedStepModel?
     @Published var audioRecordingModel: FlowClaimAudioRecordingStepModel?
     @Published var contractSelectModel: FlowClaimContractSelectStepModel?
     @Published var fileUploadModel: FlowClaimFileUploadStepModel?
@@ -105,21 +102,6 @@ public class SubmitClaimNavigationViewModel: ObservableObject {
                 startClaimState = .error(errorMessage: exception.localizedDescription)
             }
         }
-    }
-
-    @MainActor
-    func reset() {
-        currentClaimContext = nil
-        occurrencePlusLocationModel = nil
-        singleItemModel = nil
-        summaryModel = nil
-        phoneNumberModel = nil
-        singleItemCheckoutModel = nil
-        successModel = nil
-        failedModel = nil
-        audioRecordingModel = nil
-        contractSelectModel = nil
-        fileUploadModel = nil
     }
 
     func navigate(data: SubmitClaimStepResponse) {
@@ -251,7 +233,6 @@ extension SubmitClaimRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 
 public struct SubmitClaimNavigation: View {
     @StateObject var claimsNavigationVm = SubmitClaimNavigationViewModel()
-    @State var cancellable: AnyCancellable?
 
     public init() {}
 
@@ -473,12 +454,7 @@ public struct ClaimsFileModel: Equatable, Identifiable {
 
 extension View {
     func addDismissClaimsFlow() -> some View {
-        withDismissButton(
-            title: L10n.General.areYouSure,
-            message: L10n.Claims.Alert.body,
-            confirmButton: L10n.General.yes,
-            cancelButton: L10n.General.no
-        )
+        withDismissButton()
     }
 }
 

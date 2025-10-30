@@ -46,8 +46,6 @@ struct TravelCertificateSelectInsuranceScreen: View {
     }
 }
 
-struct TravelInsuranceContractsScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        TravelCertificateSelectInsuranceScreen(router: .init(), specifications: [])
-    }
+#Preview {
+    TravelCertificateSelectInsuranceScreen(router: .init(), specifications: [])
 }

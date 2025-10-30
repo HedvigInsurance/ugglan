@@ -1,12 +1,9 @@
 import Apollo
-import Market
 import PresentableStore
 import SwiftUI
-import hCore
 import hCoreUI
 
 public struct CertificatesScreen: View {
-    @PresentableStore var store: ProfileStore
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
     public var body: some View {

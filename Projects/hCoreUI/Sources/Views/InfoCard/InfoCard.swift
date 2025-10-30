@@ -7,7 +7,6 @@ public struct InfoCard: View {
     let type: NotificationType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
     @Environment(\.hInfoCardCustomView) var customContentView
-    @Environment(\.sizeCategory) var sizeCategory
 
     public init(
         title: String? = nil,
@@ -115,55 +114,53 @@ public struct InfoCard: View {
     }
 }
 
-struct InfoCard_Previews: PreviewProvider {
-    static var previews: some View {
-        hSection {
-            ScrollView {
-                VStack {
-                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .info)
-                        .buttons([
-                            .init(
-                                buttonTitle: "Title",
-                                buttonAction: {}
-                            ),
-                            .init(
-                                buttonTitle: "Title 2",
-                                buttonAction: {}
-                            ),
-                        ])
+#Preview {
+    hSection {
+        ScrollView {
+            VStack {
+                InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {}
+                        ),
+                        .init(
+                            buttonTitle: "Title 2",
+                            buttonAction: {}
+                        ),
+                    ])
 
-                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .info)
-                        .buttons([
-                            .init(
-                                buttonTitle: "Title",
-                                buttonAction: {}
-                            )
-                        ])
+                InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {}
+                        )
+                    ])
 
-                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .attention)
+                InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .attention)
 
-                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .campaign)
-                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .error)
-                    InfoCard(title: "TEST", text: "", type: .error)
-                        .hInfoCardCustomView {
-                            Text("Testing custom texzt view")
-                        }
+                InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .campaign)
+                InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .error)
+                InfoCard(title: "TEST", text: "", type: .error)
+                    .hInfoCardCustomView {
+                        Text("Testing custom texzt view")
+                    }
 
-                    InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
-                        .buttons([
-                            .init(
-                                buttonTitle: "Title",
-                                buttonAction: {}
-                            )
-                        ])
+                InfoCard(title: "TEST", text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {}
+                        )
+                    ])
 
-                    InfoCard(title: "Title", text: "text", type: .info)
-                    InfoCard(title: "Title", text: "text", type: .escalation)
-                }
+                InfoCard(title: "Title", text: "text", type: .info)
+                InfoCard(title: "Title", text: "text", type: .escalation)
             }
         }
-        .preferredColorScheme(.dark)
     }
+    .preferredColorScheme(.dark)
 }
 
 private struct EnvironmentCardButtonsConfig: EnvironmentKey {

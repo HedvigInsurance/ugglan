@@ -3,7 +3,6 @@ import hCore
 
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-    private let showCoverageId = "showCoverageId"
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
 
@@ -102,29 +101,6 @@ public struct QuoteSummaryScreen: View {
             )
         }
         .sectionContainerStyle(.transparent)
-    }
-
-    private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
-        light: hBlueColor.blue100,
-        dark: hBlueColor.blue900
-    )
-
-    @ViewBuilder
-    var chatComponent: some View {
-        VStack(spacing: 0) {
-            hText(L10n.changeAddressNoFind, style: .body1)
-            Spacing(height: 16)
-
-            hButton(
-                .small,
-                .primary,
-                content: .init(title: L10n.openChat),
-                {
-                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                }
-            )
-            .fixedSize()
-        }
     }
 }
 

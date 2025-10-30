@@ -18,7 +18,6 @@ final class FetchEntrypointsTests: XCTestCase {
     func testFetchEntrypointsSuccess() async {
         let entrypoints: [ClaimEntryPointGroupResponseModel] = [
             .init(
-                id: "id1",
                 displayName: "display name",
                 entrypoints: [
                     .init(
