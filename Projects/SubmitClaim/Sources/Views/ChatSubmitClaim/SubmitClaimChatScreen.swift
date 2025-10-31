@@ -186,7 +186,67 @@ class SubmitClaimChatViewModel: ObservableObject {
             }
         } catch {
             print("Failed sending audio reference:", error)
-            if let last = allSteps.last, last.isLoading { _ = allSteps.popLast() }
+        }
+    }
+
+    func submitTask(stepId: String) async {
+        let userStep: SubmitChatStepModel = .init(
+            step: .init(content: .text, id: UUID().uuidString, text: ""),
+            sender: .member,
+            isLoading: false
+        )
+        allSteps.append(userStep)
+        let loadingStep: SubmitChatStepModel = .init(
+            step: .init(content: .task(model: .init(description: "", isCompleted: true)), id: "", text: ""),
+            sender: .hedvig,
+            isLoading: true
+        )
+        allSteps.append(loadingStep)
+        do {
+            let data = try await service.claimIntentSubmitTask(stepId: stepId)
+            withAnimation {
+                allSteps.removeLast()
+                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+            }
+        } catch {
+            print("Failed sending task completed:", error)
+        }
+    }
+
+    func submitForm(fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField], stepId: String) async {
+        let userStep: SubmitChatStepModel = .init(
+            step: .init(content: .text, id: UUID().uuidString, text: ""),
+            sender: .member,
+            isLoading: false
+        )
+        allSteps.append(userStep)
+
+        let loadingStep: SubmitChatStepModel = .init(
+            step: .init(content: .form(model: .init(fields: [])), id: "", text: ""),
+            sender: .hedvig,
+            isLoading: true
+        )
+        allSteps.append(loadingStep)
+        do {
+            let data = try await service.claimIntentSubmitForm(fields: fields, stepId: stepId)
+            withAnimation {
+                allSteps.removeLast()
+                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+            }
+        } catch {
+            print("Failed sending task completed:", error)
+        }
+    }
+
+    func submitSummary(stepId: String) async {
+        do {
+            let data = try await service.claimIntentSubmitSummary(stepId: stepId)
+            withAnimation {
+                allSteps.removeLast()
+                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+            }
+        } catch {
+            print("Failed sending task completed:", error)
         }
     }
 }
