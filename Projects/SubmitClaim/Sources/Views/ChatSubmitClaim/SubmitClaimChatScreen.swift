@@ -239,6 +239,23 @@ class SubmitClaimChatViewModel: ObservableObject {
     }
 
     func submitSummary(stepId: String) async {
+        let userStep: SubmitChatStepModel = .init(
+            step: .init(content: .text, id: UUID().uuidString, text: ""),
+            sender: .member,
+            isLoading: false
+        )
+        allSteps.append(userStep)
+
+        let loadingStep: SubmitChatStepModel = .init(
+            step: .init(
+                content: .summary(model: .init(audioRecordings: [], fileUploads: [], items: [])),
+                id: "",
+                text: ""
+            ),
+            sender: .hedvig,
+            isLoading: true
+        )
+        allSteps.append(loadingStep)
         do {
             let data = try await service.claimIntentSubmitSummary(stepId: stepId)
             withAnimation {
