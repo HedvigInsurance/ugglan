@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 import hCore
 import hCoreUI
 
@@ -35,26 +34,64 @@ public struct SubmitClaimChatScreen: View {
                 placeHolder: viewModel.currentStep?.text ?? L10n.chatInputPlaceholder
             )
         }
-        .onAppear { applyNavBarImageBackground() }
+        .onChange(of: chatInputViewModel.lastFinalTranscription) { finalText in
+            guard
+                let stepId = viewModel.currentStep?.id,
+                let url = chatInputViewModel.lastAudioReference, !url.isEmpty
+            else { return }
+
+            let trimmed = (finalText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return }
+
+            Task {
+                await viewModel.sendAudioReferenceToBackend(
+                    translatedText: trimmed,
+                    url: url,
+                    freeText: trimmed,
+                    stepId: stepId
+                )
+                await MainActor.run {
+                    chatInputViewModel.lastAudioReference = nil
+                    chatInputViewModel.lastFinalTranscription = nil
+                    chatInputViewModel.inputText = ""
+                }
+            }
+        }
+        .detent(
+            item: $viewModel.isDatePickerPresented,
+            transitionType: .detent(style: [.height])
+        ) { datePickerVm in
+            DatePickerView(vm: datePickerVm)
+                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+        }
     }
 
     private var loadingView: some View {
-        HStack { DotsActivityIndicator(.standard) }
-            .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
-            .padding(.horizontal, .padding16)
-            .background(Color.clear)
-            .useDarkColor
-            .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
+        HStack {
+            DotsActivityIndicator(.standard)
+        }
+        .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
+        .padding(.horizontal, .padding16)
+        .background(hBackgroundColor.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
+        .useDarkColor
+        .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
     }
 
     @ViewBuilder
-    func spacing(_ addSpacing: Bool) -> some View { if addSpacing { Spacer() } }
+    func spacing(_ addSpacing: Bool) -> some View {
+        if addSpacing {
+            Spacer()
+        }
+    }
 
     @ViewBuilder
     func senderStamp(sender: SubmitClaimChatMesageSender) -> some View {
         if sender == .hedvig {
             HStack {
-                Circle().frame(width: 16).foregroundColor(hSignalColor.Green.element)
+                Circle()
+                    .frame(width: 16)
+                    .foregroundColor(hSignalColor.Green.element)
                 hText("Hedvig AI Assistent", style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
@@ -64,7 +101,9 @@ public struct SubmitClaimChatScreen: View {
 }
 
 extension SubmitClaimChatScreen: TrackingViewNameProtocol {
-    public var nameForTracking: String { "" }
+    public var nameForTracking: String {
+        ""
+    }
 }
 
 #Preview {
@@ -89,7 +128,11 @@ class SubmitClaimChatViewModel: ObservableObject {
     var hasSelectedDate: Bool = false
     private let service = ClaimIntentService()
 
-    init() { Task { await startClaim() } }
+    init() {
+        Task {
+            await startClaim()
+        }
+    }
 
     func startClaim() async {
         do {
@@ -106,8 +149,7 @@ class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    @MainActor
-    func getNextStep() async -> ClaimIntentStep {
+    @MainActor func getNextStep() async -> ClaimIntentStep {
         do {
             let data = try await service.getNextStep(claimIntentId: intentId ?? "")
             return data
@@ -117,7 +159,7 @@ class SubmitClaimChatViewModel: ObservableObject {
         return .init(content: .summary(model: .init(audioRecordings: [], fileUploads: [], items: [])), id: "", text: "")
     }
 
-    func sendAudioReference(translatedText: String, url: String?, freeText: String?, stepId: String) async {
+    func sendAudioReferenceToBackend(translatedText: String, url: String?, freeText: String?, stepId: String) async {
         let userStep: SubmitChatStepModel = .init(
             step: .init(content: .text, id: UUID().uuidString, text: translatedText),
             sender: .member,
@@ -147,84 +189,15 @@ class SubmitClaimChatViewModel: ObservableObject {
             if let last = allSteps.last, last.isLoading { _ = allSteps.popLast() }
         }
     }
-
-    func submitTask(stepId: String) async {
-        let userStep: SubmitChatStepModel = .init(
-            step: .init(content: .text, id: UUID().uuidString, text: ""),
-            sender: .member,
-            isLoading: false
-        )
-        allSteps.append(userStep)
-
-        let loadingStep: SubmitChatStepModel = .init(
-            step: .init(content: .task(model: .init(description: "", isCompleted: true)), id: "", text: ""),
-            sender: .hedvig,
-            isLoading: true
-        )
-        allSteps.append(loadingStep)
-
-        do {
-            let data = try await service.claimIntentSubmitTask(stepId: stepId)
-            withAnimation {
-                allSteps.removeLast()
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-            }
-        } catch {
-            print("Failed sending task completed:", error)
-        }
-    }
-
-    func submitForm(fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField], stepId: String) async {
-        let userStep: SubmitChatStepModel = .init(
-            step: .init(content: .text, id: UUID().uuidString, text: ""),
-            sender: .member,
-            isLoading: false
-        )
-        allSteps.append(userStep)
-
-        let loadingStep: SubmitChatStepModel = .init(
-            step: .init(content: .form(model: .init(fields: [])), id: "", text: ""),
-            sender: .hedvig,
-            isLoading: true
-        )
-        allSteps.append(loadingStep)
-
-        do {
-            let data = try await service.claimIntentSubmitForm(fields: fields, stepId: stepId)
-            withAnimation {
-                allSteps.removeLast()
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-            }
-        } catch {
-            print("Failed sending task completed:", error)
-        }
-    }
-
-    func submitSummary(stepId: String) async {
-        do {
-            let data = try await service.claimIntentSubmitSummary(stepId: stepId)
-            withAnimation {
-                allSteps.removeLast()
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-            }
-        } catch {
-            print("Failed sending task completed:", error)
-        }
-    }
 }
 
-enum SubmitClaimChatMesageSender { case hedvig, member }
-enum SubmitClaimChatMesageType: Equatable, Hashable { case text(message: String), audio, date }
+enum SubmitClaimChatMesageSender {
+    case hedvig
+    case member
+}
 
-@MainActor private func applyNavBarImageBackground() {
-    let ap = UINavigationBarAppearance()
-    ap.configureWithTransparentBackground()
-    ap.shadowColor = .clear
-    let uiImage: UIImage = hCoreUIAssets.submitClaimBg.image
-    ap.backgroundImage = uiImage.resizableImage(withCapInsets: .zero, resizingMode: .stretch)
-    ap.backgroundColor = .clear
-    let nav = UINavigationBar.appearance()
-    nav.standardAppearance = ap
-    nav.scrollEdgeAppearance = ap
-    nav.compactAppearance = ap
+enum SubmitClaimChatMesageType: Equatable, Hashable {
+    case text(message: String)
+    case audio
+    case date
 }
