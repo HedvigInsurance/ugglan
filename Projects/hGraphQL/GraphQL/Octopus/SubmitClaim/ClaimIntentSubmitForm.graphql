@@ -1,0 +1,13 @@
+mutation ClaimIntentSubmitForm($input: ClaimIntentSubmitFormInput!) {
+  claimIntentSubmitForm(input: $input) {
+    intent {
+      id
+      currentStep {
+        ...ClaimIntentStepFragment
+      }
+    }
+    userError {
+      message
+    }
+  }
+}

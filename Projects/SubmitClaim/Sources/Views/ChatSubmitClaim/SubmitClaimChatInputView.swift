@@ -5,13 +5,14 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimChatInputView: View {
-    @StateObject var viewModel = SubmitClaimChatInputViewModel()
+    @ObservedObject var viewModel: SubmitClaimChatInputViewModel
     @State var height: CGFloat = 0
+    let placeHolder: String
 
     var body: some View {
         HStack {
             CustomTextViewRepresentable(
-                placeholder: L10n.chatInputPlaceholder,
+                placeholder: placeHolder,
                 text: $viewModel.inputText,
                 height: $height,
                 keyboardIsShown: $viewModel.keyboardIsShown,
@@ -57,6 +58,12 @@ class SubmitClaimChatInputViewModel: NSObject, ObservableObject {
     private var startToken = UUID()
     private lazy var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
     private var urlRecognitionTask: SFSpeechRecognitionTask?
+
+    /// Triggers when a recording has finished (URL reference only).
+    @Published var lastAudioReference: String?
+
+    /// Triggers when speech recognition produced a final transcription for the last finished recording.
+    @Published var lastFinalTranscription: String?
 
     func startRecording() {
         let token = UUID()
@@ -151,6 +158,7 @@ class SubmitClaimChatInputViewModel: NSObject, ObservableObject {
 
         let url = makeRecordingURL()
         currentRecordingURL = url
+        // Do NOT set lastAudioReference here — it would fire too early.
 
         let rec = try AVAudioRecorder(url: url, settings: settings)
         rec.isMeteringEnabled = true
@@ -219,7 +227,11 @@ class SubmitClaimChatInputViewModel: NSObject, ObservableObject {
                 Task { @MainActor in
                     if let r = result {
                         self.inputText = r.bestTranscription.formattedString
-                        if r.isFinal { self.urlRecognitionTask = nil }
+                        if r.isFinal {
+                            // Publish the final transcript so the screen can show it
+                            self.lastFinalTranscription = self.inputText
+                            self.urlRecognitionTask = nil
+                        }
                     }
                     if let err = error as NSError? {
                         print("Speech error:", err)
@@ -246,6 +258,9 @@ extension SubmitClaimChatInputViewModel: @preconcurrency AVAudioRecorderDelegate
         pendingURLForTranscription = nil
         handleRecordedAudio(url)
         transcribeRecording(at: url)
+
+        // Publish ONLY after a successful finish (triggers .onChange in the screen)
+        lastAudioReference = url.lastPathComponent
     }
 
     func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
@@ -279,6 +294,10 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context _: Context) {
         guard let tv = uiView as? CustomTextView else { return }
+
+        // Keep placeholder in sync with SwiftUI value
+        tv.setPlaceholder(placeholder)
+
         if tv.text != text {
             tv.text = text
             if tv.isFirstResponder == false {
@@ -336,6 +355,14 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func setPlaceholder(_ text: String) {
+        if placeholderLabel.text != text {
+            placeholderLabel.text = text
+            accessibilityLabel = text
+        }
+        // visibility still driven by emptiness of the actual text
+    }
 
     func textViewDidBeginEditing(_: UITextView) { keyboardIsShown = true }
 

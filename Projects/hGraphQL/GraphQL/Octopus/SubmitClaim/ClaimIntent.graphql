@@ -1,0 +1,58 @@
+query ClaimIntent($claimIntentId: ID!) {
+  claimIntent(id: $claimIntentId) {
+    id
+    currentStep {
+        ...ClaimIntentStepFragment
+    }
+  }
+}
+
+fragment ClaimIntentStepFragment on ClaimIntentStep {
+      id
+      text
+      content {
+        ...ClaimIntentStepContentFragment
+      }
+}
+
+fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
+        ... on ClaimIntentStepContentForm {
+          fields {
+            ...ClaimIntentStepContentFormFieldFragment
+          }
+        }
+        ... on ClaimIntentStepContentTask {
+          description
+          isCompleted
+        }
+        ... on ClaimIntentStepContentAudioRecording {
+          hint
+        }
+        ... on ClaimIntentStepContentSummary {
+          items {
+            title
+            value
+          }
+          audioRecordings {
+            url
+          }
+          fileUploads {
+            url
+          }
+        }
+}
+
+fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {
+            id
+            type
+            title
+            suffix
+            isRequired
+            options {
+              title
+              value
+            }
+            defaultValue
+            minValue
+            maxValue
+}

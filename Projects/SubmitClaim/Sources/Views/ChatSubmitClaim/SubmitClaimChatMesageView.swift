@@ -2,20 +2,23 @@ import SwiftUI
 import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
-    let message: SubmitClaimChatMesage
+    let step: SubmitChatStepModel
+
     @ObservedObject var viewModel: SubmitClaimChatViewModel
 
     var body: some View {
         Group {
-            switch message.type {
-            case let .text(message):
-                hText(message)
-            case .audio:
-                hText("audio")
-            case .date:
-                dropDownView(
-                    message: viewModel.hasSelectedDate ? viewModel.date.displayDateDDMMMYYYYFormat : "Selected date"
-                )
+            switch step.step.content {
+            case let .audioRecording(model):
+                hText(model.hint)
+            case .form(model: let model):
+                hText("")
+            case .task(model: let model):
+                hText("")
+            case .summary(model: let model):
+                hText("")
+            case .text:
+                hText(step.step.text)
             }
         }
         .padding(.horizontal, .padding12)
@@ -25,26 +28,20 @@ struct SubmitClaimChatMesageView: View {
         .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
         .frame(
             maxWidth: 300,
-            alignment: message.sender == .hedvig ? .leading : .trailing
+            alignment: step.sender == .hedvig ? .leading : .trailing
         )
         .onTapGesture {
-            switch message.type {
+            switch step.step.content {
+            case .audioRecording:
+                print("Tapped audio")
+            case .form(model: let model):
+                break
+            case .task(model: let model):
+                break
+            case .summary(model: let model):
+                break
             case .text:
                 break
-            case .audio:
-                print("Tapped audio")
-            case .date:
-                viewModel.isDatePickerPresented = .init(
-                    continueAction: {
-                        viewModel.hasSelectedDate = true
-                        viewModel.isDatePickerPresented = nil
-                    },
-                    cancelAction: {
-                        viewModel.isDatePickerPresented = nil
-                    },
-                    date: $viewModel.date,
-                    config: .init(placeholder: "placeholder", title: "Select date")
-                )
             }
         }
     }
@@ -58,7 +55,7 @@ struct SubmitClaimChatMesageView: View {
 
     @hColorBuilder
     var backgroundColor: some hColor {
-        switch message.sender {
+        switch step.sender {
         case .member:
             hSurfaceColor.Translucent.primary
         case .hedvig:

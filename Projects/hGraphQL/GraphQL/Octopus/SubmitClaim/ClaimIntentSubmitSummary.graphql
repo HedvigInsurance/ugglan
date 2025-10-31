@@ -1,0 +1,14 @@
+mutation ClaimIntentSubmitSummary($input: ClaimIntentSubmitSummaryInput!) {
+  claimIntentSubmitSummary(input: $input) {
+    intent {
+      id
+      currentStep {
+        ...ClaimIntentStepFragment
+      }
+    }
+    userError {
+      message
+    }
+  }
+}
+

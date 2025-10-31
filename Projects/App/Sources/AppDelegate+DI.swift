@@ -55,6 +55,7 @@ enum DI {
             let crossSellClient = CrossSellClientDemo()
             let campaignClient = hCampaignClientDemo()
             let insuranceEvidenceClient = InsuranceEvidenceClientDemo()
+
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
             Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in fetchClaimsService })
@@ -104,6 +105,7 @@ enum DI {
             let fetchClaimDetailsClient = FetchClaimDetailsClientOctopus()
             let crossSellClient = CrossSellClientOctopus()
             let insuranceEvidenceClient = InsuranceEvidenceClientOctopus()
+            let claimIntentClient = ClaimIntentClientOctopus()
 
             switch Environment.current {
             case .staging:
@@ -133,6 +135,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
+                Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -160,6 +163,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
+                Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
             }
         }
     }

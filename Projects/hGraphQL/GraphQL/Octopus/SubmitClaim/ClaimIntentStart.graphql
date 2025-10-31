@@ -1,0 +1,8 @@
+mutation ClaimIntentStart {
+  claimIntentStart {
+      id
+      currentStep {
+        ...ClaimIntentStepFragment
+      }
+  }
+}
