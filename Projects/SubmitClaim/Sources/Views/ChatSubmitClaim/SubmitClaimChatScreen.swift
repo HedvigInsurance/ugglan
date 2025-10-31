@@ -36,7 +36,6 @@ public struct SubmitClaimChatScreen: View {
         }
         .onChange(of: chatInputViewModel.lastFinalTranscription) { finalText in
             guard
-                let stepId = viewModel.currentStep?.id,
                 let url = chatInputViewModel.lastAudioReference, !url.isEmpty
             else { return }
 
@@ -47,14 +46,18 @@ public struct SubmitClaimChatScreen: View {
                 await viewModel.sendAudioReferenceToBackend(
                     translatedText: trimmed,
                     url: url,
-                    freeText: trimmed,
-                    stepId: stepId
+                    freeText: trimmed
                 )
                 await MainActor.run {
                     chatInputViewModel.lastAudioReference = nil
                     chatInputViewModel.lastFinalTranscription = nil
                     chatInputViewModel.inputText = ""
                 }
+            }
+        }
+        .onChange(of: viewModel.hasSelectedDate) { _ in
+            Task {
+                await viewModel.submitForm(fields: [])
             }
         }
         .detent(
@@ -138,7 +141,31 @@ class SubmitClaimChatViewModel: ObservableObject {
         do {
             let data = try await service.startClaimIntent()
             withAnimation {
-                currentStep = data.currentStep
+                let mockCurrentStep = ClaimIntentStep(
+                    content: .form(
+                        model: .init(fields: [
+                            .init(
+                                defaultValue: "Submit date",
+                                id: "dateId",
+                                isRequired: true,
+                                maxValue: "2026-11-01",
+                                minValue: Date().localDateString,
+                                options: [
+                                    .init(title: "option1", value: "value")
+                                ],
+                                suffix: nil,
+                                title: "title",
+                                type: .date
+                            )
+                        ])
+                    ),
+                    id: "",
+                    text: ""
+                )
+
+                currentStep = mockCurrentStep
+
+                //                currentStep = data.currentStep
                 intentId = data.id
                 if let currentStep {
                     allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: false))
@@ -159,7 +186,7 @@ class SubmitClaimChatViewModel: ObservableObject {
         return .init(content: .summary(model: .init(audioRecordings: [], fileUploads: [], items: [])), id: "", text: "")
     }
 
-    func sendAudioReferenceToBackend(translatedText: String, url: String?, freeText: String?, stepId: String) async {
+    func sendAudioReferenceToBackend(translatedText: String, url: String?, freeText: String?) async {
         let userStep: SubmitChatStepModel = .init(
             step: .init(content: .text, id: UUID().uuidString, text: translatedText),
             sender: .member,
@@ -178,7 +205,7 @@ class SubmitClaimChatViewModel: ObservableObject {
             let data = try await service.claimIntentSubmitAudio(
                 reference: url,
                 freeText: freeText,
-                stepId: stepId
+                stepId: currentStep?.id ?? ""
             )
             withAnimation {
                 allSteps.removeLast()
@@ -189,7 +216,7 @@ class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    func submitTask(stepId: String) async {
+    func submitTask() async {
         let userStep: SubmitChatStepModel = .init(
             step: .init(content: .text, id: UUID().uuidString, text: ""),
             sender: .member,
@@ -203,7 +230,7 @@ class SubmitClaimChatViewModel: ObservableObject {
         )
         allSteps.append(loadingStep)
         do {
-            let data = try await service.claimIntentSubmitTask(stepId: stepId)
+            let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
             withAnimation {
                 allSteps.removeLast()
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
@@ -213,22 +240,22 @@ class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    func submitForm(fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField], stepId: String) async {
+    func submitForm(fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField]) async {
         let userStep: SubmitChatStepModel = .init(
-            step: .init(content: .text, id: UUID().uuidString, text: ""),
+            step: .init(content: .text, id: UUID().uuidString, text: date.displayDateDDMMMYYYYFormat),
             sender: .member,
             isLoading: false
         )
         allSteps.append(userStep)
 
         let loadingStep: SubmitChatStepModel = .init(
-            step: .init(content: .form(model: .init(fields: [])), id: "", text: ""),
+            step: .init(content: .form(model: .init(fields: [])), id: "loadingId", text: ""),
             sender: .hedvig,
             isLoading: true
         )
         allSteps.append(loadingStep)
         do {
-            let data = try await service.claimIntentSubmitForm(fields: fields, stepId: stepId)
+            let data = try await service.claimIntentSubmitForm(fields: fields, stepId: currentStep?.id ?? "")
             withAnimation {
                 allSteps.removeLast()
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
