@@ -13,6 +13,14 @@ struct SubmitClaimChatMesageView: View {
                 hText(model.hint)
             case .form(model: let model):
                 hText("")
+                switch model.fields.first?.type {
+                case .date:
+                    dropDownView(
+                        message: viewModel.hasSelectedDate ? viewModel.date.displayDateDDMMMYYYYFormat : "Selected date"
+                    )
+                default:
+                    EmptyView()
+                }
             case .task(model: let model):
                 hText("")
             case .summary(model: let model):
@@ -35,7 +43,22 @@ struct SubmitClaimChatMesageView: View {
             case .audioRecording:
                 print("Tapped audio")
             case .form(model: let model):
-                break
+                switch model.fields.first?.type {
+                case .date:
+                    viewModel.isDatePickerPresented = .init(
+                        continueAction: {
+                            viewModel.hasSelectedDate = true
+                            viewModel.isDatePickerPresented = nil
+                        },
+                        cancelAction: {
+                            viewModel.isDatePickerPresented = nil
+                        },
+                        date: $viewModel.date,
+                        config: .init(placeholder: "placeholder", title: "Select date")
+                    )
+                default:
+                    break
+                }
             case .task(model: let model):
                 break
             case .summary(model: let model):
