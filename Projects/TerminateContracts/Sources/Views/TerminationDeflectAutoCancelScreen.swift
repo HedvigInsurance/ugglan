@@ -12,9 +12,15 @@ struct TerminationDeflectAutoCancelScreen: View {
     var body: some View {
         hForm {
             hSection {
-                hText(model.message)
-                    .foregroundColor(hTextColor.Translucent.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(spacing: .padding16) {
+                    hText(model.message)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    hText(L10n.terminationFlowAutoCancelAbout)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
             .padding(.vertical, .padding16)
         }
