@@ -24,7 +24,30 @@ struct SubmitClaimChatMesageView: View {
             case .task(model: let model):
                 hText("")
             case .summary(model: let model):
-                hText("")
+                VStack(spacing: .padding16) {
+                    VStack(alignment: .leading, spacing: .padding4) {
+                        VStack(alignment: .leading) {
+                            hText("Summary of your claim")
+                            hRowDivider()
+                                .hWithoutHorizontalPadding([.divider])
+                        }
+                        hText("audio recording text", style: .label)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+
+                        ForEach(model.items, id: \.title) { item in
+                            HStack {
+                                hText(item.title, style: .label)
+                                Spacer()
+                                hText(item.value, style: .label)
+                            }
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                        }
+                    }
+
+                    hButton(.medium, .primary, content: .init(title: "Submit claim")) {
+                        // TODO: close and show dubmit claim
+                    }
+                }
             case .text:
                 hText(step.step.text)
             }
