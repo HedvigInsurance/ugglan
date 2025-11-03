@@ -15,7 +15,7 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
         XCTAssertNil(viewModel)
     }
 
@@ -30,7 +30,7 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
         self.viewModel = vm
         navigationModel.terminationDateStepModel?.date = date
         navigationModel.fetchNotification(isDeletion: false)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getNotification)
         assert(navigationModel.notification == .init(message: contractId + date.localDateString, type: .info))
@@ -50,12 +50,12 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
         self.viewModel = vm
         navigationModel.terminationDateStepModel?.date = date
         navigationModel.fetchNotification(isDeletion: false)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getNotification)
         assert(navigationModel.notification == nil)
         assert(vm.isDeletion == false)
-        try await Task.sleep(nanoseconds: 1_100_000_000)
+        try await Task.sleep(seconds: 1)
         assert(mockService.events.count == 2)
         assert(mockService.events == [.getNotification, .getNotification])
         assert((navigationModel.notification == nil))
@@ -72,14 +72,14 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
         navigationModel.terminationDateStepModel?.date = date
         navigationModel.fetchNotification(isDeletion: false)
         //time for first one to execute
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
 
         //fails after first try
         assert(mockService.events.count == 1)
         assert(navigationModel.notification == nil)
         assert(vm.isDeletion == false)
         //added 1 second delay to simulate retry logic
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
 
         //fails after 2nd try
         assert(mockService.events.count == 2)
@@ -90,7 +90,7 @@ final class TerminationDateLandingScreenViewModelTests: XCTestCase {
             .init(message: contractId + date.localDateString, type: .info)
         }
         //added 1 second delay to simulate retry logic
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
 
         //success after 3nd try
         assert(mockService.events.count == 3)

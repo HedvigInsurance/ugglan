@@ -3,7 +3,6 @@ import hCore
 import hCoreUI
 
 struct ContactInfoView: View {
-    @EnvironmentObject var router: Router
     @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     var body: some View {

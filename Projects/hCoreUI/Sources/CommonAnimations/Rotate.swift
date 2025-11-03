@@ -21,16 +21,16 @@ private class RotateViewModel: ObservableObject {
     init() {
         Task {
             let animation = Animation.defaultSpring.speed(0.4)
-            try await Task.sleep(nanoseconds: 1_000_000_000)
+            try await Task.sleep(seconds: 1)
             withAnimation(animation) {
                 angle = 180
             }
-            try await Task.sleep(nanoseconds: 3_000_000_000)
+            try await Task.sleep(seconds: 3)
             try Task.checkCancellation()
             withAnimation(animation) {
                 angle = 360
             }
-            try await Task.sleep(nanoseconds: 4_000_000_000)
+            try await Task.sleep(seconds: 4)
             try Task.checkCancellation()
             angle = 0
         }

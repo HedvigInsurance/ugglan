@@ -44,7 +44,7 @@ final class CrossSellStoreTests: XCTestCase {
         let store = CrossSellStore()
         self.store = store
         await store.sendAsync(.fetchCrossSell)
-        try await Task.sleep(nanoseconds: 5 * 100_000_000)
+        try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchCrossSell] != nil)
         assert(store.state.crossSells.isEmpty)
         assert(mockService.events.count == 1)
@@ -74,7 +74,7 @@ final class CrossSellStoreTests: XCTestCase {
         let store = CrossSellStore()
         self.store = store
         await store.sendAsync(.fetchAddonBanner)
-        try await Task.sleep(nanoseconds: 5 * 100_000_000)
+        try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchAddonBanner] != nil)
         assert(store.state.crossSells.isEmpty)
         assert(mockService.events.count == 1)
@@ -119,7 +119,7 @@ extension XCTestCase {
         if closure() {
             exc.fulfill()
         } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
+            try! await Task.sleep(seconds: 0.1)
             Task {
                 await self.waitUntil(description: description, closure: closure)
                 if closure() {

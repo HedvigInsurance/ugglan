@@ -155,16 +155,13 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
 
         public init(
             title: String,
-            subTitle: String?,
             value: String
         ) {
             self.title = title
-            self.subTitle = subTitle
             self.value = value
         }
 
         let title: String
-        let subTitle: String?
         let value: String
     }
 

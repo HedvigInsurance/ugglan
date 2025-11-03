@@ -14,7 +14,7 @@ final class TravelCertificateTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: TravelInsuranceClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
     }
@@ -84,7 +84,7 @@ final class TravelCertificateTests: XCTestCase {
         )
         sut = mockService
 
-        let model = ListScreenViewModel()
+        let model = TravelCertificatesListScreenViewModel()
         await model.fetchTravelCertificateList()
 
         assert(model.list == list)

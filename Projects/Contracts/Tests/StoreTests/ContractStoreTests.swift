@@ -68,7 +68,7 @@ final class ContractStoreTests: XCTestCase {
             store.loadingState[.fetchContracts] == nil
         }
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
         assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
         assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
@@ -129,7 +129,7 @@ extension XCTestCase {
         if closure() {
             exc.fulfill()
         } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
+            try! await Task.sleep(seconds: 0.1)
             Task {
                 await self.waitUntil(description: description, closure: closure)
                 if closure() {

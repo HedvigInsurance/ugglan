@@ -235,7 +235,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 } else {
                     hasPresentedVC = false
                 }
-                try await Task.sleep(nanoseconds: 50_000_000)
+                try await Task.sleep(seconds: 0.05)
             }
         }
     }

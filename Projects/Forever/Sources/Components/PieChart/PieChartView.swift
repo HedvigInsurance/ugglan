@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
 import hCoreUI
 
 public struct PieChartView: View {
@@ -9,7 +8,6 @@ public struct PieChartView: View {
 
     @State private var percentage: CGFloat = .zero
     @State private var nextSlicePercentage: CGFloat = .zero
-    @State private var showNewAmount: Bool = false
 
     public var body: some View {
         GeometryReader { _ in
@@ -47,14 +45,12 @@ public struct PieChartView: View {
     }
 }
 
-struct PieChart_Previews: PreviewProvider {
-    static var previews: some View {
-        PieChartView(
-            state: .init(
-                percentagePerSlice: 2,
-                slices: 10
-            ),
-            newPrice: "100"
-        )
-    }
+#Preview {
+    PieChartView(
+        state: .init(
+            percentagePerSlice: 2,
+            slices: 10
+        ),
+        newPrice: "100"
+    )
 }

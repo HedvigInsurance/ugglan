@@ -6,8 +6,6 @@ struct CrossSellDiscountProgressComponent: View {
     private let numberOfInsurances: Int
     private let discountPercent: Int?
 
-    @State private var animationProgress: CGFloat = 0
-
     init(crossSell: CrossSell) {
         self.numberOfInsurances = crossSell.numberOfEligibleContracts
         self.discountPercent = crossSell.discountPercent
@@ -97,12 +95,12 @@ private struct AnimatedProgressView: View {
 
     private func animate() {
         Task {
-            try? await Task.sleep(nanoseconds: UInt64(orderOfExecution * 1_000_000_000))
+            try? await Task.sleep(seconds: Float(orderOfExecution))
             withAnimation(.linear(duration: 1)) {
                 animationProgress = 1
             }
             if pulse {
-                try? await Task.sleep(nanoseconds: UInt64(750_000_000))
+                try? await Task.sleep(seconds: 0.75)
                 withAnimation(.linear(duration: 1)) {
                     animationProgress = 0
                 }

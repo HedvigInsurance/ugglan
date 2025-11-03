@@ -45,9 +45,9 @@ public struct hFieldTextContent<T>: View {
         HStack(spacing: .padding8) {
             if leftAlign {
                 VStack(spacing: 0) {
-                    HStack(alignment: .top) {
+                    HStack(alignment: .center) {
                         cellView?()
-                            .frame(alignment: .top)
+                            .frame(alignment: .center)
                             .padding(.top, 2)
                         getTextField
                     }

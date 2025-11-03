@@ -80,7 +80,7 @@ class ProcessingViewModel: ObservableObject {
         viewState = .loading
         do {
             let minimumTime = Task {
-                try await Task.sleep(nanoseconds: 3_000_000_000)
+                try await Task.sleep(seconds: 3)
             }
             let results = try await navigation.service.createInsuranceEvidence(input: input)
             try await minimumTime.value
@@ -126,22 +126,5 @@ class ProcessingViewModel: ObservableObject {
     enum FileError: LocalizedError {
         case urlDoesNotExist
         case downloadError
-    }
-}
-
-extension UIView {
-    func findViewWith(tag: Int) -> UIView? {
-        var viewToReturn: UIView?
-        for subview in subviews {
-            if subview.tag == tag {
-                viewToReturn = subview
-                break
-            }
-            if let view = findViewWith(tag: tag) {
-                viewToReturn = view
-                break
-            }
-        }
-        return viewToReturn
     }
 }

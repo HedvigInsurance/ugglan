@@ -1,11 +1,9 @@
 import Kingfisher
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct FirstVetView: View {
-    @PresentableStore var store: HomeStore
     @EnvironmentObject var router: Router
     private let partners: [FirstVetPartner]
 

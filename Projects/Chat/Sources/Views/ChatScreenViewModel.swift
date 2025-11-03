@@ -3,7 +3,6 @@ import Kingfisher
 import PresentableStore
 import SwiftUI
 import hCore
-import hCoreUI
 
 @MainActor
 public class ChatConversationViewModel: ObservableObject {
@@ -72,7 +71,7 @@ public class ChatMessageViewModel: ObservableObject {
                 isFetchingPreviousMessages = false
             } catch _ {
                 if withAutomaticRetry {
-                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    try? await Task.sleep(seconds: 2)
                     isFetchingPreviousMessages = false
                     await fetchPreviousMessages()
                 } else {

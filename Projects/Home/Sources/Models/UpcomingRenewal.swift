@@ -12,8 +12,3 @@ public struct UpcomingRenewal: Codable, Equatable, Sendable {
         self.draftCertificateUrl = draftCertificateUrl
     }
 }
-
-enum RenewalType {
-    case regular
-    case coInsured
-}

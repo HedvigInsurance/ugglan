@@ -1,7 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
-import hCoreUI
 
 struct Slice: Shape {
     var startSlices: CGFloat = 0

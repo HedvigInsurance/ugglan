@@ -102,15 +102,6 @@ enum MessageStatus: Codable, Hashable, Sendable {
     case sent
     case received
     case failed(error: String)
-
-    private var valueToAdd: String {
-        switch self {
-        case .draft: return "draft"
-        case .sent: return "sent"
-        case .received: return "received"
-        case let .failed(error): return "failed\(error)"
-        }
-    }
 }
 
 public enum MessageType: Codable, Hashable, Sendable {

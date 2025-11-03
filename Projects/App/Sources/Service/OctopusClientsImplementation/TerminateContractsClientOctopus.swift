@@ -27,7 +27,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
             context: terminationContext
         )
         async let dataTask = mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
-        try await Task.sleep(nanoseconds: 3_000_000_000)
+        try await Task.sleep(seconds: 3)
         let data = try await dataTask
         return data
     }
@@ -43,7 +43,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         async let dataTask = mutation.execute(
             \.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep
         )
-        try await Task.sleep(nanoseconds: 3_000_000_000)
+        try await Task.sleep(seconds: 3)
         return try await dataTask
     }
 

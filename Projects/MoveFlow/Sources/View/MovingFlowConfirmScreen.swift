@@ -39,18 +39,16 @@ public class MovingFlowConfirmViewModel: ObservableObject {
     }
 }
 
-struct MovingFlowConfirm_Previews: PreviewProvider {
-    static var previews: some View {
-        let model = QuoteSummaryViewModel(
-            contract: [],
-            activationDate: Date(),
-            premium: .init(
-                gross: .sek(399),
-                net: .sek(399)
-            ),
-            isAddon: false
-        ) {}
-        Localization.Locale.currentLocale.send(.en_SE)
-        return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
-    }
+#Preview {
+    let model = QuoteSummaryViewModel(
+        contract: [],
+        activationDate: Date(),
+        premium: .init(
+            gross: .sek(399),
+            net: .sek(399)
+        ),
+        isAddon: false
+    ) {}
+    Localization.Locale.currentLocale.send(.en_SE)
+    return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
 }

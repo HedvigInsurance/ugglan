@@ -1,5 +1,3 @@
-import Addons
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -42,9 +40,7 @@ extension CrossSellingDetent: TrackingViewNameProtocol {
     }
 }
 
-struct CrossSellingDetent_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingDetent(crossSells: .init(recommended: nil, others: []))
-    }
+#Preview {
+    Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
+    return CrossSellingDetent(crossSells: .init(recommended: nil, others: []))
 }

@@ -5,7 +5,7 @@ import hCore
 public class hPaymentClientDemo: hPaymentClient {
     public init() {}
     public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         return (
             .init(
                 id: "",
@@ -29,7 +29,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 code: "TOGETHER",
                                 displayValue: MonetaryAmount.sek(9).formattedNegativeAmount,
                                 description: "15% discount for 12 months",
-                                discountId: "TOGETHER",
                                 type: .discount(status: .active)
                             )
                         ],
@@ -55,7 +54,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                 code: "TOGETHER",
                                 displayValue: MonetaryAmount.sek(8).formattedNegativeAmount,
                                 description: "15% discount for 12 months",
-                                discountId: "TOGETHER",
                                 type: .discount(status: .active)
                             )
                         ],
@@ -99,7 +97,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     code: "TOGETHER",
                                     displayValue: MonetaryAmount.sek(11).formattedNegativeAmount,
                                     description: "15% discount for 12 months",
-                                    discountId: "TOGETHER",
                                     type: .discount(status: .active)
                                 )
                             ],
@@ -125,7 +122,6 @@ public class hPaymentClientDemo: hPaymentClient {
                                     code: "TOGETHER",
                                     displayValue: MonetaryAmount.sek(12).formattedNegativeAmount,
                                     description: "15% discount for 12 months",
-                                    discountId: "TOGETHER",
                                     type: .discount(status: .active)
                                 )
                             ],
@@ -151,7 +147,7 @@ public class hPaymentClientDemo: hPaymentClient {
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         return PaymentStatusData(
             status: .noNeedToConnect,
             displayName: "Connected bank",

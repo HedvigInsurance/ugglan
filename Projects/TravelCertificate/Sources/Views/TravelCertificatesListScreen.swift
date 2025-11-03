@@ -6,8 +6,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ListScreen: View {
-    @StateObject var vm = ListScreenViewModel()
+public struct TravelCertificatesListScreen: View {
+    @StateObject var vm = TravelCertificatesListScreenViewModel()
     @EnvironmentObject var router: Router
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
@@ -162,7 +162,7 @@ extension View {
 }
 
 @MainActor
-class ListScreenViewModel: ObservableObject {
+class TravelCertificatesListScreenViewModel: ObservableObject {
     var service = TravelInsuranceService()
     @Published var list: [TravelCertificateModel] = []
     @Published var canCreateTravelInsurance: Bool = false
@@ -210,6 +210,6 @@ class ListScreenViewModel: ObservableObject {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-    return ListScreen(infoButtonPlacement: .trailing)
+    return TravelCertificatesListScreen(infoButtonPlacement: .trailing)
         .environmentObject(TravelCertificateNavigationViewModel())
 }

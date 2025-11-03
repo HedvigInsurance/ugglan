@@ -24,9 +24,3 @@ class ChangeTierService {
         return data
     }
 }
-
-extension ChangeTierInputData {
-    fileprivate func logDescription() -> String {
-        ""
-    }
-}

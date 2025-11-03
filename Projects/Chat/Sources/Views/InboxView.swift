@@ -1,5 +1,4 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -136,7 +135,6 @@ class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
     @Published var conversations: [Conversation] = []
     private var pollTimerCancellable: AnyCancellable?
-    @PresentableStore var store: ChatStore
     private var chatClosedObserver: NSObjectProtocol?
 
     func shouldHideDivider(for conversation: Conversation) -> Bool {

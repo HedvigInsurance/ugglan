@@ -5,7 +5,6 @@ import hCoreUI
 public struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     init(
         vm: ChangeTierViewModel

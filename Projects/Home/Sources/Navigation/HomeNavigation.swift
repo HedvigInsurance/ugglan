@@ -1,4 +1,3 @@
-import Chat
 import Combine
 import Contracts
 import CrossSell
@@ -18,7 +17,6 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 @MainActor
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
-    private var cancellables = Set<AnyCancellable>()
 
     public init() {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {

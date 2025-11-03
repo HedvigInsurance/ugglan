@@ -79,7 +79,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
 
         do {
             let delayTask = Task {
-                try await Task.sleep(nanoseconds: 3_000_000_000)
+                try await Task.sleep(seconds: 3)
             }
             let data = try await octopus.client.mutation(mutation: mutation)
 
@@ -125,14 +125,13 @@ class ChangeTierClientOctopus: ChangeTierClient {
                     displayItems: quote.displayItems.map {
                         .init(
                             title: $0.displayTitle,
-                            subTitle: $0.displayValue == "" ? nil : $0.displaySubtitle,
                             value: $0.displayValue
                         )
                     },
                     productVariant: .init(data: quote.productVariant.fragments.productVariantFragment),
                     addons: quote.addons.compactMap { .init(with: $0) },
                     costBreakdown: quote.costBreakdown.map({ item in
-                        .init(title: item.displayName, subTitle: nil, value: item.displayValue)
+                        .init(title: item.displayName, value: item.displayValue)
                     })
                 )
                 allDeductiblesForX.append(deductible)

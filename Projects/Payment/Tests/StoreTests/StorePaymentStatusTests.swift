@@ -30,7 +30,7 @@ final class StorePaymentStatusTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchPaymentStatus)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
         XCTAssertNil(store.loadingState[.getPaymentStatus])
         assert(store.state.paymentStatusData == statusData)
         assert(mockService.events.count == 1)

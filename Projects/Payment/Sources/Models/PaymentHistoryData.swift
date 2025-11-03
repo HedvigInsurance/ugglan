@@ -1,5 +1,4 @@
 import Foundation
-import hCore
 
 public struct PaymentHistoryListData: Codable, Equatable, Identifiable, Sendable {
     public let id: String

@@ -12,7 +12,7 @@ final class FileUploaderTests: XCTestCase {
     override func tearDown() async throws {
         try await super.tearDown()
         Dependencies.shared.remove(for: FileUploaderClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
     }
