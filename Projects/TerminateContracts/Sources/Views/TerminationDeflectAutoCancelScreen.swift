@@ -17,9 +17,11 @@ struct TerminationDeflectAutoCancelScreen: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    hText(L10n.terminationFlowAutoCancelAbout)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if let extraMessage = model.extraMessage {
+                        hText(extraMessage)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
             }
             .padding(.vertical, .padding16)
@@ -28,7 +30,7 @@ struct TerminationDeflectAutoCancelScreen: View {
             title: .init(
                 .small,
                 .heading2,
-                L10n.terminationFlowAutoCancelTitle,
+                model.title,
                 alignment: .leading
             )
         )
@@ -59,7 +61,13 @@ struct TerminationDeflectAutoCancelScreen: View {
 
 struct TerminationDeflectAutoCancelScreen_Previews: PreviewProvider {
     static var previews: some View {
-        TerminationDeflectAutoCancelScreen(model: .init(message: "test message"))
-            .environmentObject(Router())
+        TerminationDeflectAutoCancelScreen(
+            model: .init(
+                title: L10n.terminationFlowAutoCancelTitle,
+                message: "test message",
+                extraMessage: "extra message"
+            )
+        )
+        .environmentObject(Router())
     }
 }

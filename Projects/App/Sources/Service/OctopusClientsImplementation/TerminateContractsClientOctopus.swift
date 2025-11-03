@@ -283,7 +283,7 @@ extension TerminationFlowSurveyStepModel {
 
 extension TerminationFlowDeflectAutoCancelModel {
     init(with data: OctopusGraphQL.FlowTerminationCarDeflectAutoCancelStepStep) {
-        self.init(message: data.message)
+        self.init(title: data.title, message: data.message, extraMessage: data.extraMessage)
     }
 }
 

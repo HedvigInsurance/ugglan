@@ -55,6 +55,8 @@ fragment FlowTerminationCarAutoDecomStepFragment on FlowTerminationCarAutoDecomS
 fragment FlowTerminationCarDeflectAutoCancelStepStep on FlowTerminationCarDeflectAutoCancelStep {
   id
   message
+  title
+  extraMessage
 }
 
 fragment FlowTerminationSurveyStepFragment on FlowTerminationSurveyStep {
