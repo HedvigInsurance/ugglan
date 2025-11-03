@@ -39,27 +39,6 @@ public struct SubmitClaimChatScreen: View {
                 placeHolder: viewModel.currentStep?.text ?? L10n.chatInputPlaceholder
             )
         }
-        .onChange(of: chatInputViewModel.lastFinalTranscription) { finalText in
-            guard
-                let url = chatInputViewModel.lastAudioReference, !url.isEmpty
-            else { return }
-
-            let trimmed = (finalText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !trimmed.isEmpty else { return }
-
-            Task {
-                await viewModel.sendAudioReferenceToBackend(
-                    translatedText: trimmed,
-                    url: url,
-                    freeText: trimmed
-                )
-                await MainActor.run {
-                    chatInputViewModel.lastAudioReference = nil
-                    chatInputViewModel.lastFinalTranscription = nil
-                    chatInputViewModel.inputText = ""
-                }
-            }
-        }
         .onChange(of: viewModel.hasSelectedDate) { _ in
             Task {
                 await viewModel.submitForm(fields: [])
@@ -126,7 +105,7 @@ struct SubmitChatStepModel {
 }
 
 @MainActor
-class SubmitClaimChatViewModel: ObservableObject {
+public class SubmitClaimChatViewModel: ObservableObject {
     @Published var isDatePickerPresented: DatePickerViewModel?
     @Published var date: Date = .init()
     @Published var currentStep: ClaimIntentStep?
@@ -150,6 +129,21 @@ class SubmitClaimChatViewModel: ObservableObject {
                 intentId = data.id
                 if let currentStep {
                     allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: false))
+                    switch currentStep.content {
+                    case let .audioRecording(model):
+                        let memberAudioStep = SubmitChatStepModel(
+                            step: .init(
+                                content: .audioRecording(model: .init(hint: model.hint, uploadURI: model.uploadURI)),
+                                id: currentStep.id + "2",
+                                text: currentStep.text
+                            ),
+                            sender: .member,
+                            isLoading: false
+                        )
+                        allSteps.append(memberAudioStep)
+                    default:
+                        break
+                    }
                 }
             }
         } catch {
@@ -168,22 +162,6 @@ class SubmitClaimChatViewModel: ObservableObject {
     }
 
     func sendAudioReferenceToBackend(translatedText: String, url: String?, freeText: String?) async {
-        withAnimation {
-            let userStep: SubmitChatStepModel = .init(
-                step: .init(content: .text, id: UUID().uuidString, text: translatedText),
-                sender: .member,
-                isLoading: false
-            )
-            allSteps.append(userStep)
-
-            let loadingStep: SubmitChatStepModel = .init(
-                step: .init(content: .audioRecording(model: .init(hint: "")), id: "", text: ""),
-                sender: .hedvig,
-                isLoading: true
-            )
-            allSteps.append(loadingStep)
-        }
-
         do {
             let data = try await service.claimIntentSubmitAudio(
                 reference: url,
@@ -191,57 +169,51 @@ class SubmitClaimChatViewModel: ObservableObject {
                 stepId: currentStep?.id ?? ""
             )
             withAnimation {
-                allSteps.removeLast()
+                // add isLoading here?
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+                currentStep = data.currentStep
+
+                //                switch currentStep?.content {
+                //                case .task(let model):
+                //                    // repeat until completed
+                //                    Task {
+                //                        try await service.claimIntentSubmitAudio(
+                //                            reference: url,
+                //                            freeText: freeText,
+                //                            stepId: currentStep?.id ?? ""
+                //                        )
+                //                    }
+                //                default:
+                //                    break
+                //                }
+
+                Task {
+                    await submitTask()
+                }
             }
         } catch {
-            //            print("Failed sending audio reference:", error)
-
-            let mockCurrentStep = ClaimIntentStep(
-                content: .form(
-                    model: .init(fields: [
-                        .init(
-                            defaultValue: "Submit date",
-                            id: "dateId",
-                            isRequired: true,
-                            maxValue: "2026-11-01",
-                            minValue: Date().localDateString,
-                            options: [
-                                .init(title: "option1", value: "value")
-                            ],
-                            suffix: nil,
-                            title: "title",
-                            type: .date
-                        )
-                    ])
-                ),
-                id: "submitDateId",
-                text: ""
-            )
-
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
             allSteps.removeLast()
-            allSteps.append(.init(step: mockCurrentStep, sender: .hedvig, isLoading: false))
         }
     }
 
     func submitTask() async {
-        let userStep: SubmitChatStepModel = .init(
-            step: .init(content: .text, id: UUID().uuidString, text: ""),
-            sender: .member,
-            isLoading: false
-        )
-        allSteps.append(userStep)
-        let loadingStep: SubmitChatStepModel = .init(
-            step: .init(content: .task(model: .init(description: "", isCompleted: true)), id: "", text: ""),
-            sender: .hedvig,
-            isLoading: true
-        )
-        allSteps.append(loadingStep)
+        //        let userStep: SubmitChatStepModel = .init(
+        //            step: .init(content: .text, id: UUID().uuidString, text: ""),
+        //            sender: .member,
+        //            isLoading: false
+        //        )
+        //        allSteps.append(userStep)
+        //        let loadingStep: SubmitChatStepModel = .init(
+        //            step: .init(content: .task(model: .init(description: "", isCompleted: true)), id: "", text: ""),
+        //            sender: .hedvig,
+        //            isLoading: true
+        //        )
+        //        allSteps.append(loadingStep)
         do {
-            let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
+            //            let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
+            let data = try await service.claimIntentSubmitTask(stepId: allSteps.first?.step.id ?? "")
             withAnimation {
-                allSteps.removeLast()
+                //                allSteps.removeLast()
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
             }
         } catch {

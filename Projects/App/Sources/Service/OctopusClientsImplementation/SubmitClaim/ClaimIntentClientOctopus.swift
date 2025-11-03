@@ -24,12 +24,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     }
 
     func claimIntentSubmitAudio(reference: String?, freeText: String?, stepId: String) async throws -> ClaimIntent {
-        //        let input = OctopusGraphQL.ClaimIntentSubmitAudioInput(stepId: stepId, audioReference: .init(optionalValue: reference), freeText: .init(optionalValue: freeText))
-
         let input = OctopusGraphQL.ClaimIntentSubmitAudioInput(
             stepId: stepId,
-            audioReference: GraphQLNullable(optionalValue: nil),
-            freeText: GraphQLNullable(optionalValue: "freeText")
+            audioReference: GraphQLNullable(optionalValue: reference),
+            freeText: GraphQLNullable(optionalValue: nil)
         )
 
         let mutation = OctopusGraphQL.ClaimIntentSubmitAudioMutation(input: input)
@@ -147,7 +145,7 @@ extension ClaimIntentStepContent {
         } else if let task = fragment.asClaimIntentStepContentTask {
             self = .task(model: .init(description: task.description, isCompleted: task.isCompleted))
         } else if let audioRecording = fragment.asClaimIntentStepContentAudioRecording {
-            self = .audioRecording(model: .init(hint: audioRecording.hint))
+            self = .audioRecording(model: .init(hint: audioRecording.hint, uploadURI: audioRecording.uploadUri))
         } else if let summary = fragment.asClaimIntentStepContentSummary {
             self = .summary(
                 model: .init(

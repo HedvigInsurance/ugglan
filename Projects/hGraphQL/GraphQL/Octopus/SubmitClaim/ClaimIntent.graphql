@@ -27,6 +27,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         }
         ... on ClaimIntentStepContentAudioRecording {
           hint
+          uploadUri
         }
         ... on ClaimIntentStepContentSummary {
           items {

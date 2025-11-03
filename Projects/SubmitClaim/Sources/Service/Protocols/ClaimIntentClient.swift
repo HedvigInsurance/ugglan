@@ -160,9 +160,14 @@ public struct ClaimIntentStepContentTask: Sendable {
 
 public struct ClaimIntentStepContentAudioRecording: Sendable {
     let hint: String
+    let uploadURI: String
 
-    public init(hint: String) {
+    public init(
+        hint: String,
+        uploadURI: String
+    ) {
         self.hint = hint
+        self.uploadURI = uploadURI
     }
 }
 

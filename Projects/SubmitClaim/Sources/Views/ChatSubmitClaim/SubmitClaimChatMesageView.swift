@@ -3,14 +3,22 @@ import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
     let step: SubmitChatStepModel
-
     @ObservedObject var viewModel: SubmitClaimChatViewModel
 
     var body: some View {
         Group {
             switch step.step.content {
             case let .audioRecording(model):
-                hText(model.hint)
+                if step.sender == .hedvig {
+                    hText(model.hint)
+                } else {
+                    switch step.step.content {
+                    case let .audioRecording(model):
+                        SubmitClaimChatAudioRecorder(viewModel: viewModel, uploadURI: model.uploadURI)
+                    default:
+                        EmptyView()
+                    }
+                }
             case .form(model: let model):
                 hText("")
                 switch model.fields.first?.type {
@@ -21,8 +29,13 @@ struct SubmitClaimChatMesageView: View {
                 default:
                     EmptyView()
                 }
-            case .task(model: let model):
-                hText("")
+            case let .task(model):
+                VStack(alignment: .leading) {
+                    hText(step.step.text)
+                    if !model.isCompleted {
+                        hText(model.description)
+                    }
+                }
             case .summary(model: let model):
                 VStack(spacing: .padding16) {
                     VStack(alignment: .leading, spacing: .padding4) {
