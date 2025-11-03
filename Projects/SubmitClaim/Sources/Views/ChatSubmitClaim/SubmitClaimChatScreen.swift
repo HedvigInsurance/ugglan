@@ -365,7 +365,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
             )
 
             try? await Task.sleep(nanoseconds: 3_000_000_000)
-            allSteps.removeLast()
+            //            allSteps.removeLast()
             allSteps.append(.init(step: mockCurrentStep, sender: .hedvig, isLoading: false))
         }
     }
