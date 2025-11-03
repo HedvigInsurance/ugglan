@@ -36,7 +36,9 @@ public struct SubmitClaimChatAudioRecorder: View {
             .appendingPathExtension(AudioRecorder.audioFileExtension)
         self._audioRecorder = ObservedObject(wrappedValue: AudioRecorder(filePath: path))
 
-        func myFunc(_: URL) {}
+        func myFunc(url: URL) {
+            viewModel.audioRecordingUrl = url
+        }
         self.onSubmit = myFunc
     }
 
@@ -45,6 +47,8 @@ public struct SubmitClaimChatAudioRecorder: View {
             ZStack(alignment: .bottom) {
                 Group {
                     if let url = audioRecorder.recording?.url {
+                        playRecordingButton(url: url)
+                    } else if let url = viewModel.audioRecordingUrl {
                         playRecordingButton(url: url)
                     } else {
                         recordNewButton
@@ -63,57 +67,59 @@ public struct SubmitClaimChatAudioRecorder: View {
                     minutes = 0; seconds = 0
                 }
 
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.saveAndContinueButtonLabel),
-                {
-                    onSubmit(url)
-                    Task {
-                        do {
-                            // 1) Build final upload URL
-                            let uploadURL = resolveUploadURL(uploadURI)
-                            logger.info("Resolved upload URL: \(uploadURL.absoluteString, privacy: .public)")
+            if viewModel.audioRecordingUrl == nil {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        onSubmit(url)
+                        Task {
+                            do {
+                                // 1) Build final upload URL
+                                let uploadURL = resolveUploadURL(uploadURI)
+                                logger.info("Resolved upload URL: \(uploadURL.absoluteString, privacy: .public)")
 
-                            // 2) Retrieve token (optional; headers() adds it automatically)
-                            let tokenObj = try await ApolloClient.retreiveToken()
-                            let bearerToken = tokenObj?.accessToken
+                                // 2) Retrieve token (optional; headers() adds it automatically)
+                                let tokenObj = try await ApolloClient.retreiveToken()
+                                let bearerToken = tokenObj?.accessToken
 
-                            // 3) Upload file (multipart, tries multiple field names)
-                            let reference = try await uploadAudio(
-                                uploadURL: uploadURL,
-                                fileURL: url,
-                                bearerToken: bearerToken
-                            )
+                                // 3) Upload file (multipart, tries multiple field names)
+                                let reference = try await uploadAudio(
+                                    uploadURL: uploadURL,
+                                    fileURL: url,
+                                    bearerToken: bearerToken
+                                )
 
-                            // 4) Send UUID reference to backend
-                            await viewModel.sendAudioReferenceToBackend(
-                                translatedText: "",
-                                url: reference.uuidString,
-                                freeText: nil
-                            )
+                                // 4) Send UUID reference to backend
+                                await viewModel.sendAudioReferenceToBackend(
+                                    translatedText: "",
+                                    url: reference.uuidString,
+                                    freeText: nil
+                                )
 
-                            // 5) Clean up local temp
-                            try? FileManager.default.removeItem(at: url)
-                        } catch {
-                            logger.error("Audio upload/send failed: \(String(describing: error))")
+                                // 5) Clean up local temp
+                                try? FileManager.default.removeItem(at: url)
+                            } catch {
+                                logger.error("Audio upload/send failed: \(String(describing: error))")
+                            }
                         }
                     }
-                }
-            )
-            .disabled(audioRecordingVm.viewState == .loading)
-            .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-            .accessibilityFocused($saveAndContinueFocused)
-            .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
+                )
+                .disabled(audioRecordingVm.viewState == .loading)
+                .hButtonIsLoading(audioRecordingVm.viewState == .loading)
+                .accessibilityFocused($saveAndContinueFocused)
+                .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
 
-            hButton(
-                .large,
-                .ghost,
-                content: .init(title: L10n.embarkRecordAgain),
-                {
-                    withAnimation(.spring()) { audioRecorder.restart() }
-                }
-            )
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.embarkRecordAgain),
+                    {
+                        withAnimation(.spring()) { audioRecorder.restart() }
+                    }
+                )
+            }
         }
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .onAppear { audioPlayer.url = url }
@@ -125,7 +131,6 @@ public struct SubmitClaimChatAudioRecorder: View {
                 withAnimation(.spring()) { audioRecorder.toggleRecording() }
             }
             .frame(height: audioRecorder.isRecording ? 144 : 72)
-            //            .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
 
             if !audioRecorder.isRecording {
