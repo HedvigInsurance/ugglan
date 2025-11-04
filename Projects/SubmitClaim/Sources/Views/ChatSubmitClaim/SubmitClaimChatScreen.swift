@@ -1,3 +1,4 @@
+import ChangeTier
 import SwiftUI
 import hCore
 import hCoreUI
@@ -35,16 +36,18 @@ public struct SubmitClaimChatScreen: View {
                 placeHolder: viewModel.currentStep?.text ?? L10n.chatInputPlaceholder
             )
         }
-        //        .onChange(of: viewModel.hasSelectedDate) { _ in
-        //            Task {
-        //                await viewModel.submitForm(fields: [])
-        //            }
-        //        }
         .detent(
             item: $viewModel.isDatePickerPresented,
             transitionType: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
+                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+        }
+        .detent(
+            item: $viewModel.isSelectItemPresented,
+            transitionType: .detent(style: [.height])
+        ) { model in
+            SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
                 .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
     }
@@ -102,17 +105,31 @@ struct SubmitChatStepModel {
     var isLoading: Bool
 }
 
+struct SingleItemModel: Equatable, Identifiable {
+    static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    let id = UUID()
+    let values: [SingleSelectValue]
+}
+
 @MainActor
 public class SubmitClaimChatViewModel: ObservableObject {
     @Published var isDatePickerPresented: DatePickerViewModel?
+    @Published var isSelectItemPresented: SingleItemModel?
     @Published var date: Date = .init()
     @Published var currentStep: ClaimIntentStep?
     @Published var allSteps: [SubmitChatStepModel] = []
     @Published var intentId: String?
     @Published var audioRecordingUrl: URL?
 
+    @Published var hasSubmittedClaim: Bool = false
+    var hasEnteredFormInput: Bool = false
     var hasSelectedDate: Bool = false
     var purchasePrice: String = ""
+    var selectedValue: String = ""
+    @Published var binaryValue: String = ""
 
     var form: Bool = false
 
@@ -195,23 +212,31 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 }
 
                 Task {
-                    try? await Task.sleep(nanoseconds: 5_000_000_000)
-                    let nextStep = await getNextStep()
-                    switch nextStep.content {
-                    case let .task(model):
-                        if model.isCompleted {
-                            allSteps.removeLast()
-                            allSteps.append(.init(step: nextStep, sender: .hedvig, isLoading: false))
-                            currentStep = nextStep
-
-                            await submitTask()
-                        }
-                    default: break
-                    }
+                    await checkTaskRec()
                 }
             }
         } catch {
             allSteps.removeLast()
+        }
+    }
+
+    func checkTaskRec() async {
+        let nextStep = await getNextStep()
+        switch nextStep.content {
+        case let .task(model):
+            if model.isCompleted {
+                allSteps.removeLast()
+                allSteps.append(.init(step: nextStep, sender: .hedvig, isLoading: false))
+                currentStep = nextStep
+
+                await submitTask()
+            } else {
+                allSteps.removeLast()
+                allSteps.append(.init(step: nextStep, sender: .hedvig, isLoading: true))
+                currentStep = nextStep
+                await checkTaskRec()
+            }
+        default: break
         }
     }
 
@@ -221,183 +246,65 @@ public class SubmitClaimChatViewModel: ObservableObject {
 
             withAnimation {
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+                currentStep = data.currentStep
+
+                switch data.currentStep.content {
+                case let .form(model):
+                    let userStep: ClaimIntentStep = .init(
+                        content: .form(model: model),
+                        id: "userForm",
+                        text: data.currentStep.text
+                    )
+                    allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
+                default:
+                    break
+                }
             }
         } catch {
-            //            print("Failed sending task completed:", error)
-
-            let mockFormStep = ClaimIntentStep(
-                content: .form(
-                    model: .init(fields: [
-                        .init(
-                            defaultValue: "",
-                            id: "fieldId1",
-                            isRequired: true,
-                            maxValue: "2026-12-01",
-                            minValue: Date().localDateString,
-                            options: [],
-                            suffix: nil,
-                            title: "Purchase date",
-                            type: .date
-                        ),
-                        .init(
-                            defaultValue: "",
-                            id: "fieldId2",
-                            isRequired: true,
-                            maxValue: nil,
-                            minValue: nil,
-                            options: [],
-                            suffix: nil,
-                            title: "Purchace price",
-                            type: .number
-                        ),
-                        .init(
-                            defaultValue: "",
-                            id: "fieldId3",
-                            isRequired: true,
-                            maxValue: nil,
-                            minValue: nil,
-                            options: [
-                                .init(title: "HEMKOP", value: "Hemköp"),
-                                .init(title: "ICA", value: "ICA"),
-                            ],
-                            suffix: nil,
-                            title: "Store",
-                            type: .singleSelect
-                        ),
-                    ]
-                    )
-                ),
-                id: "formId",
-                text: "Please tell us more about this avocado"
-            )
-
-            allSteps.append(.init(step: mockFormStep, sender: .hedvig, isLoading: false))
-
-            let mockUserDataStep = ClaimIntentStep(
-                content: .form(
-                    model: .init(fields: [
-                        .init(
-                            defaultValue: "",
-                            id: "fieldId1",
-                            isRequired: true,
-                            maxValue: "2026-12-01",
-                            minValue: Date().localDateString,
-                            options: [],
-                            suffix: nil,
-                            title: "Purchase date",
-                            type: .date
-                        ),
-                        .init(
-                            defaultValue: "",
-                            id: "fieldId2",
-                            isRequired: true,
-                            maxValue: nil,
-                            minValue: nil,
-                            options: [],
-                            suffix: nil,
-                            title: "Purchace price",
-                            type: .number
-                        ),
-                        .init(
-                            defaultValue: "",
-                            id: "fieldId3",
-                            isRequired: true,
-                            maxValue: nil,
-                            minValue: nil,
-                            options: [
-                                .init(title: "HEMKOP", value: "Hemköp"),
-                                .init(title: "ICA", value: "ICA"),
-                            ],
-                            suffix: nil,
-                            title: "Store",
-                            type: .singleSelect
-                        ),
-                    ]
-                    )
-                ),
-                id: "formIdUser",
-                text: "Please tell us more about this avocado"
-            )
-
-            allSteps.append(.init(step: mockUserDataStep, sender: .member, isLoading: false))
-
+            print("Failed sending task completed:", error)
         }
     }
 
     func submitForm(fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField]) async {
-        withAnimation {
-            //            let userStep: SubmitChatStepModel = .init(
-            //                step: .init(content: .text, id: UUID().uuidString, text: date.displayDateDDMMMYYYYFormat),
-            //                sender: .member,
-            //                isLoading: false
-            //            )
-            //            allSteps.append(userStep)
-            //
-            //            let loadingStep: SubmitChatStepModel = .init(
-            //                step: .init(content: .form(model: .init(fields: [])), id: "loadingId2", text: ""),
-            //                sender: .hedvig,
-            //                isLoading: true
-            //            )
-            //            allSteps.append(loadingStep)
-        }
         do {
-            let data = try await service.claimIntentSubmitForm(fields: fields, stepId: currentStep?.id ?? "")
+            let inputFields: [FieldValue?] = fields.compactMap { field in
+                switch field.type {
+                case .date:
+                    return FieldValue(id: field.id, values: [date.localDateString])
+                case .number:
+                    return FieldValue(id: field.id, values: [purchasePrice])
+                case .singleSelect:
+                    return FieldValue(id: field.id, values: [selectedValue])
+                case .binary:
+                    return FieldValue(id: field.id, values: [binaryValue])
+                default:
+                    return FieldValue(id: field.id, values: [])
+                }
+            }
+
+            let data = try await service.claimIntentSubmitForm(
+                fields: inputFields.compactMap { $0 },
+                stepId: currentStep?.id ?? ""
+            )
             withAnimation {
-                //                allSteps.removeLast()
+                hasEnteredFormInput = true
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+                currentStep = data.currentStep
             }
         } catch {
-            //            print("Failed sending task completed:", error)
-
-            let mockCurrentStep = ClaimIntentStep(
-                content: .summary(
-                    model: .init(
-                        audioRecordings: [],
-                        fileUploads: [],
-                        items: [
-                            .init(title: "Type of claim", value: "bike theft"),
-                            .init(title: "Date of occurrence", value: "16 okt 2025"),
-                        ]
-                    )
-                ),
-                id: "summaryId",
-                text: ""
-            )
-
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
-            //            allSteps.removeLast()
-            allSteps.append(.init(step: mockCurrentStep, sender: .hedvig, isLoading: false))
+            print("Error: couldn't submit form")
         }
     }
 
-    func submitSummary(stepId: String) async {
-        withAnimation {
-            let userStep: SubmitChatStepModel = .init(
-                step: .init(content: .text, id: UUID().uuidString, text: ""),
-                sender: .member,
-                isLoading: false
-            )
-            allSteps.append(userStep)
-
-            let loadingStep: SubmitChatStepModel = .init(
-                step: .init(
-                    content: .summary(model: .init(audioRecordings: [], fileUploads: [], items: [])),
-                    id: "loadingId3",
-                    text: ""
-                ),
-                sender: .hedvig,
-                isLoading: true
-            )
-            allSteps.append(loadingStep)
-        }
+    func submitSummary() async {
         do {
-            let data = try await service.claimIntentSubmitSummary(stepId: stepId)
+            let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "")
             withAnimation {
-                allSteps.removeLast()
+                hasSubmittedClaim = true
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
             }
         } catch {
-            //            print("Failed sending task completed:", error)
+            print("Failed sending summary:", error)
         }
     }
 }

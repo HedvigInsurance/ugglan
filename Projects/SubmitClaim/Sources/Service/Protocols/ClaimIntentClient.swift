@@ -6,12 +6,22 @@ public protocol ClaimIntentClient {
     func startClaimIntent() async throws -> ClaimIntent
     func claimIntentSubmitAudio(reference: String?, freeText: String?, stepId: String) async throws -> ClaimIntent
     func claimIntentSubmitForm(
-        fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField],
+        fields: [FieldValue],
         stepId: String
     ) async throws -> ClaimIntent
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep
+}
+
+public struct FieldValue: Codable {
+    public let id: String
+    public let values: [String]
+
+    public init(id: String, values: [String]) {
+        self.id = id
+        self.values = values
+    }
 }
 
 @MainActor
@@ -29,7 +39,7 @@ class ClaimIntentService {
     }
 
     func claimIntentSubmitForm(
-        fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField],
+        fields: [FieldValue],
         stepId: String
     ) async throws -> ClaimIntent {
         let data = try await client.claimIntentSubmitForm(fields: fields, stepId: stepId)

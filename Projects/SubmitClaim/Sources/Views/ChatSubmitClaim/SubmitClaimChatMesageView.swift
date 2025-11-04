@@ -20,8 +20,6 @@ struct SubmitClaimChatMesageView: View {
         )
         .onTapGesture {
             switch step.step.content {
-            case .audioRecording:
-                print("Tapped audio")
             case .form(model: let model):
                 switch model.fields.first?.type {
                 case .date:
@@ -39,11 +37,7 @@ struct SubmitClaimChatMesageView: View {
                 default:
                     break
                 }
-            case .task(model: let model):
-                break
-            case .summary(model: let model):
-                break
-            case .text:
+            default:
                 break
             }
         }
@@ -75,37 +69,77 @@ struct SubmitClaimChatMesageView: View {
                     ForEach(model.fields, id: \.id) { field in
                         switch field.type {
                         case .date:
-                            hSection {
-                                hRow {
-                                    dropDownView(
-                                        message: viewModel.hasSelectedDate
-                                            ? viewModel.date.displayDateDDMMMYYYYFormat : field.title
-                                    )
+                            if !viewModel.hasEnteredFormInput {
+                                hSection {
+                                    hRow {
+                                        dropDownView(
+                                            message: viewModel.hasSelectedDate
+                                                ? viewModel.date.displayDateDDMMMYYYYFormat : field.title
+                                        )
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .frame(maxWidth: 250)
+                                .hWithoutHorizontalPadding([.section])
+                            } else {
+                                hText(viewModel.date.displayDateDDMMMYYYYFormat)
+                            }
+                        case .number:
+                            if !viewModel.hasEnteredFormInput {
+                                hFloatingTextField(
+                                    masking: .init(type: .digits),
+                                    value: $viewModel.purchasePrice,
+                                    equals: .constant(nil),
+                                    focusValue: SubmitClaimChatFieldType.purchasePrice,
+                                    placeholder: field.title,
+                                    suffix: field.suffix
+                                )
+                                .frame(maxWidth: 250)
+                            } else {
+                                hText(viewModel.purchasePrice)
+                            }
+                        case .singleSelect:
+                            if !viewModel.hasEnteredFormInput {
+                                DropdownView(
+                                    value: viewModel.selectedValue,
+                                    placeHolder: field.title
+                                ) {
+                                    let values: [SingleSelectValue] = field.options.map {
+                                        .init(title: $0.title, value: $0.value)
+                                    }
+                                    viewModel.isSelectItemPresented = .init(values: values)
+                                }
+                                .frame(maxWidth: 250)
+                            } else {
+                                hText(viewModel.selectedValue)
+                            }
+                        case .binary:
+                            VStack {
+                                hText(field.title)
+                                HStack {
+                                    ForEach(field.options, id: \.value) { option in
+                                        let enabledButton = viewModel.binaryValue == option.value
+                                        hButton(
+                                            .small,
+                                            enabledButton ? .primaryAlt : .ghost,
+                                            content: .init(title: option.title)
+                                        ) {
+                                            viewModel.binaryValue = option.value
+                                        }
+                                        .disabled(viewModel.hasEnteredFormInput)
+                                    }
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .frame(maxWidth: 250)
-                            .hWithoutHorizontalPadding([.section])
-                        case .number:
-                            hFloatingTextField(
-                                masking: .init(type: .digits),
-                                value: $viewModel.purchasePrice,
-                                equals: .constant(nil),
-                                focusValue: SubmitClaimChatFieldType.purchasePrice,
-                                placeholder: field.title,
-                                suffix: field.suffix
-                            )
-                            .frame(maxWidth: 250)
-                        case .singleSelect:
-                            EmptyView()
-                        // todo: implement
                         default:
                             EmptyView()
                         }
                     }
-                    hButton(.small, .primary, content: .init(title: "Send")) {
-                        Task {
-                            await viewModel.submitForm(fields: model.fields)
+
+                    if !viewModel.hasEnteredFormInput {
+                        hButton(.small, .primary, content: .init(title: "Send")) {
+                            Task {
+                                await viewModel.submitForm(fields: model.fields)
+                            }
                         }
                     }
                 }
@@ -121,12 +155,14 @@ struct SubmitClaimChatMesageView: View {
             VStack(spacing: .padding16) {
                 VStack(alignment: .leading, spacing: .padding4) {
                     VStack(alignment: .leading) {
-                        hText("Summary of your claim")
+                        hText(step.step.text)
                         hRowDivider()
                             .hWithoutHorizontalPadding([.divider])
                     }
-                    hText("audio recording text", style: .label)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+
+                    ForEach(model.audioRecordings, id: \.url) { url in
+                        SubmitClaimChatAudioRecorder(viewModel: viewModel, uploadURI: "")
+                    }
 
                     ForEach(model.items, id: \.title) { item in
                         HStack {
@@ -138,8 +174,12 @@ struct SubmitClaimChatMesageView: View {
                     }
                 }
 
-                hButton(.medium, .primary, content: .init(title: "Submit claim")) {
-                    // TODO: close and show dubmit claim
+                if !viewModel.hasSubmittedClaim {
+                    hButton(.medium, .primary, content: .init(title: "Submit claim")) {
+                        Task {
+                            await viewModel.submitSummary()
+                        }
+                    }
                 }
             }
         case .text:

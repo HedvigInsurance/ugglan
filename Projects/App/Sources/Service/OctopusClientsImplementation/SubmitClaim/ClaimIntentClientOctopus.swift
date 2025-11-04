@@ -51,11 +51,11 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     }
 
     func claimIntentSubmitForm(
-        fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField],
+        fields: [FieldValue],
         stepId: String
     ) async throws -> ClaimIntent {
         let fieldInput: [OctopusGraphQL.ClaimIntentFormSubmitInputField] = fields.map {
-            .init(fieldId: $0.id, values: [])
+            .init(fieldId: $0.id, values: GraphQLNullable(optionalValue: $0.values))
         }
         let input = OctopusGraphQL.ClaimIntentSubmitFormInput(stepId: stepId, fields: fieldInput)
         let mutation = OctopusGraphQL.ClaimIntentSubmitFormMutation(input: input)
