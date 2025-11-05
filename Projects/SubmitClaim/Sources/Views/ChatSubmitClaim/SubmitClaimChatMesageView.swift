@@ -111,7 +111,7 @@ struct SubmitClaimChatMesageView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            if !viewModel.hasSubmittedClaim {
+            if viewModel.hasClaimBeenSubmitted == nil {
                 hButton(.medium, .primary, content: .init(title: "Yes, submit claim")) {
                     Task {
                         await viewModel.submitSummary()

@@ -365,6 +365,7 @@ struct HomeTab: View {
                     options: .navigationType(type: .large),
                     tracking: self
                 )
+                .environmentObject(homeNavigationVm.router)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented

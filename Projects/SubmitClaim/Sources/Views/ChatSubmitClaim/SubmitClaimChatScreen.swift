@@ -7,6 +7,7 @@ public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel = SubmitClaimChatViewModel()
     @StateObject var chatInputViewModel = SubmitClaimChatInputViewModel()
     @State private var didAppearTick = 0
+    @EnvironmentObject var router: Router
 
     public init() {}
 
@@ -45,6 +46,13 @@ public struct SubmitClaimChatScreen: View {
         ) { model in
             SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
                 .embededInNavigation(options: .largeNavigationBar, tracking: self)
+        }
+        .modally(
+            item: $viewModel.hasClaimBeenSubmitted
+        ) { claim in
+            SubmitClaimChatSuccessScreen(summaryModel: claim)
+                .environmentObject(viewModel)
+                .environmentObject(router)
         }
     }
 
@@ -116,12 +124,12 @@ struct SingleItemModel: Equatable, Identifiable {
 public class SubmitClaimChatViewModel: ObservableObject {
     @Published var isDatePickerPresented: DatePickerViewModel?
     @Published var isSelectItemPresented: SingleItemModel?
+    @Published var hasClaimBeenSubmitted: ClaimIntentStepContentSummary?
+
     @Published var currentStep: ClaimIntentStep?
     @Published var allSteps: [SubmitChatStepModel] = []
     @Published var intentId: String?
     @Published var audioRecordingUrl: URL?
-
-    @Published var hasSubmittedClaim: Bool = false
 
     @Published var selectedDate = Date()
     @Published var selectedPrice = ""
@@ -324,16 +332,18 @@ public class SubmitClaimChatViewModel: ObservableObject {
     func submitSummary() async {
         do {
             let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "")
-            withAnimation {
-                hasSubmittedClaim = true
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-            }
         } catch {
-            /* TODO: REMOVE WHEN THIS IS WORKING */
-            withAnimation {
-                hasSubmittedClaim = true
-            }
             print("Failed sending summary:", error)
+
+            withAnimation {
+                /* TODO: REMOVE WHEN THIS IS WORKING */
+                switch allSteps.last?.step.content {
+                case let .summary(model):
+                    hasClaimBeenSubmitted = model
+                default:
+                    break
+                }
+            }
         }
     }
 }

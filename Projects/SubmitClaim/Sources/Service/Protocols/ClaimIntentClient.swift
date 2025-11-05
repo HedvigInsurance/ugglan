@@ -181,7 +181,12 @@ public struct ClaimIntentStepContentAudioRecording: Sendable {
     }
 }
 
-public struct ClaimIntentStepContentSummary: Sendable {
+public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
+    public static func == (lhs: ClaimIntentStepContentSummary, rhs: ClaimIntentStepContentSummary) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public let id = UUID()
     let audioRecordings: [ClaimIntentStepContentSummaryAudioRecording]
     let fileUploads: [ClaimIntentStepContentSummaryFileUpload]
     let items: [ClaimIntentStepContentSummaryItem]
