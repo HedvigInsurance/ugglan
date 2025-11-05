@@ -99,7 +99,7 @@ struct InvitationRow: View {
 }
 
 #Preview("Invitation Row") {
-    var mockRow: Referral = .init(
+    let mockRow: Referral = .init(
         name: "Axel",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .active
