@@ -1,10 +1,7 @@
 mutation ClaimIntentSubmitForm($input: ClaimIntentSubmitFormInput!) {
   claimIntentSubmitForm(input: $input) {
     intent {
-      id
-      currentStep {
-        ...ClaimIntentStepFragment
-      }
+        ...ClaimIntentFragment
     }
     userError {
       message

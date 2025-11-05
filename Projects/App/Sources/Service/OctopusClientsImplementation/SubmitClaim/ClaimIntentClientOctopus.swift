@@ -12,14 +12,18 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         let currentStep = data?.claimIntentStart.currentStep
         let id = data?.claimIntentStart.id ?? ""
+        let sourceMessages: [SourceMessage] =
+            data?.claimIntentStart.sourceMessages?
+            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
         if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id)
+            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
         }
 
         return .init(
             currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: ""
+            id: "",
+            sourceMessages: []
         )
     }
 
@@ -35,9 +39,12 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         let currentStep = data?.claimIntentSubmitAudio.intent?.currentStep
         let id = data?.claimIntentSubmitAudio.intent?.id ?? ""
+        let sourceMessages: [SourceMessage] =
+            data?.claimIntentSubmitAudio.intent?.sourceMessages?
+            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
         if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id)
+            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
         }
 
         if let userError = data?.claimIntentSubmitAudio.userError {
@@ -46,7 +53,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         return .init(
             currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: ""
+            id: "",
+            sourceMessages: []
         )
     }
 
@@ -63,14 +71,18 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         let currentStep = data?.claimIntentSubmitForm.intent?.currentStep
         let id = data?.claimIntentSubmitForm.intent?.id ?? ""
+        let sourceMessages: [SourceMessage] =
+            data?.claimIntentSubmitForm.intent?.sourceMessages?
+            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
         if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id)
+            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
         }
 
         return .init(
             currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: ""
+            id: "",
+            sourceMessages: []
         )
     }
 
@@ -81,14 +93,18 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         let currentStep = data?.claimIntentSubmitSummary.intent?.currentStep
         let id = data?.claimIntentSubmitSummary.intent?.id ?? ""
+        let sourceMessages: [SourceMessage] =
+            data?.claimIntentSubmitSummary.intent?.sourceMessages?
+            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
         if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id)
+            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
         }
 
         return .init(
             currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: ""
+            id: "",
+            sourceMessages: []
         )
     }
 
@@ -99,14 +115,18 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         let currentStep = data?.claimIntentSubmitTask.intent?.currentStep
         let id = data?.claimIntentSubmitTask.intent?.id ?? ""
+        let sourceMessages: [SourceMessage] =
+            data?.claimIntentSubmitTask.intent?.sourceMessages?
+            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
         if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id)
+            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
         }
 
         return .init(
             currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: ""
+            id: "",
+            sourceMessages: []
         )
     }
 
@@ -192,5 +212,16 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
         case .binary:
             return .binary
         }
+    }
+}
+
+extension SourceMessage {
+    init(
+        fragment: OctopusGraphQL.ClaimIntentSourceMessageFragment
+    ) {
+        self.init(
+            id: fragment.id,
+            text: fragment.text
+        )
     }
 }

@@ -1,10 +1,17 @@
 query ClaimIntent($claimIntentId: ID!) {
   claimIntent(id: $claimIntentId) {
+    ...ClaimIntentFragment
+  }
+}
+
+fragment ClaimIntentFragment on ClaimIntent {
     id
     currentStep {
         ...ClaimIntentStepFragment
     }
-  }
+    sourceMessages {
+        ...ClaimIntentSourceMessageFragment
+    }
 }
 
 fragment ClaimIntentStepFragment on ClaimIntentStep {
@@ -13,6 +20,11 @@ fragment ClaimIntentStepFragment on ClaimIntentStep {
       content {
         ...ClaimIntentStepContentFragment
       }
+}
+
+fragment ClaimIntentSourceMessageFragment on ClaimIntentSourceMessage {
+    id
+    text
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {

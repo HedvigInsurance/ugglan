@@ -65,10 +65,26 @@ class ClaimIntentService {
 public struct ClaimIntent: Sendable {
     let currentStep: ClaimIntentStep
     let id: String
+    let sourceMessages: [SourceMessage]
 
-    public init(currentStep: ClaimIntentStep, id: String) {
+    public init(
+        currentStep: ClaimIntentStep,
+        id: String,
+        sourceMessages: [SourceMessage]
+    ) {
         self.currentStep = currentStep
         self.id = id
+        self.sourceMessages = sourceMessages
+    }
+}
+
+public struct SourceMessage: Sendable {
+    let id: String
+    let text: String
+
+    public init(id: String, text: String) {
+        self.id = id
+        self.text = text
     }
 }
 
