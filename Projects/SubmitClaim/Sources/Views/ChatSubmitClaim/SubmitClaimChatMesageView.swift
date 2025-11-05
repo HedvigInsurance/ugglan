@@ -147,7 +147,6 @@ struct FormView: View {
     var body: some View {
         if step.sender == .hedvig {
             hText(step.step.text)
-                .fixedSize()
         } else {
             VStack(spacing: .padding8) {
                 VStack(alignment: .center, spacing: .padding4) {
