@@ -22,14 +22,14 @@ struct SubmitClaimSingleSelectScreen: View {
             items: values.compactMap { (object: $0, displayName: .init(title: $0.title)) },
             preSelectedItems: {
 
-                if let value = values.first(where: { $0.value == viewModel.selectedValue }) {
+                if let value = values.first(where: { $0 == viewModel.selectedValue }) {
                     return [value]
                 }
                 return []
             },
             onSelected: { selectedValue in
                 if let object = selectedValue.first?.0 {
-                    viewModel.selectedValue = object.value
+                    viewModel.selectedValue = object
                 }
                 viewModel.isSelectItemPresented = nil
             },

@@ -6,6 +6,7 @@ import hCoreUI
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel = SubmitClaimChatViewModel()
     @StateObject var chatInputViewModel = SubmitClaimChatInputViewModel()
+    @State private var didAppearTick = 0
 
     public init() {}
 
@@ -30,12 +31,7 @@ public struct SubmitClaimChatScreen: View {
             }
             .padding(.horizontal, .padding16)
         }
-        .hFormAttachToBottom {
-            SubmitClaimChatInputView(
-                viewModel: chatInputViewModel,
-                placeHolder: viewModel.currentStep?.text ?? L10n.chatInputPlaceholder
-            )
-        }
+        .onAppear { didAppearTick &+= 1 }
         .detent(
             item: $viewModel.isDatePickerPresented,
             transitionType: .detent(style: [.height])
@@ -78,7 +74,7 @@ public struct SubmitClaimChatScreen: View {
         } else if step.sender == .hedvig {
             HStack {
                 Circle()
-                    .frame(width: 16)
+                    .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Green.element)
                 hText("Hedvig AI Assistent", style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
@@ -95,6 +91,7 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 }
 
 #Preview {
+    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return SubmitClaimChatScreen()
 }
@@ -128,7 +125,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
     var hasEnteredFormInput: Bool = false
     var hasSelectedDate: Bool = false
     var purchasePrice: String = ""
-    var selectedValue: String = ""
+    var selectedValue: SingleSelectValue = .init(title: "", value: "")
     @Published var binaryValue: String = ""
 
     var form: Bool = false
@@ -274,7 +271,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 case .number:
                     return FieldValue(id: field.id, values: [purchasePrice])
                 case .singleSelect:
-                    return FieldValue(id: field.id, values: [selectedValue])
+                    return FieldValue(id: field.id, values: [selectedValue.value])
                 case .binary:
                     return FieldValue(id: field.id, values: [binaryValue])
                 default:
