@@ -6,14 +6,68 @@ import hCoreUI
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel = SubmitClaimChatViewModel()
     @StateObject var chatInputViewModel = SubmitClaimChatInputViewModel()
-    @State private var didAppearTick = 0
     @EnvironmentObject var router: Router
 
     public init() {}
 
     public var body: some View {
-        ScrollViewReader { proxy in
-            hForm {
+        if #available(iOS 16.0, *) {
+            ZStack {
+                hCoreUIAssets.submitClaimBg.view
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+
+                ScrollViewReader { proxy in
+                    mainContent
+                        .task(id: viewModel.allSteps.last?.step.id) {
+                            try? await Task.sleep(nanoseconds: 50_000_000)
+                            withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
+                        }
+                        .onAppear {
+                            proxy.scrollTo("BOTTOM", anchor: .bottom)
+                        }
+                }
+            }
+            .ignoresSafeArea()
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbarBackground(.hidden, for: .automatic)
+            .detent(
+                item: $viewModel.isDatePickerPresented,
+                transitionType: .detent(style: [.height])
+            ) { datePickerVm in
+                DatePickerView(vm: datePickerVm)
+                    .embededInNavigation(options: .largeNavigationBar, tracking: self)
+            }
+            .detent(
+                item: $viewModel.isSelectItemPresented,
+                transitionType: .detent(style: [.height])
+            ) { model in
+                SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
+                    .embededInNavigation(options: .largeNavigationBar, tracking: self)
+            }
+            .modally(item: $viewModel.hasClaimBeenSubmitted) { claim in
+                SubmitClaimChatSuccessScreen(summaryModel: claim)
+                    .environmentObject(viewModel)
+                    .environmentObject(router)
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+    }
+
+    private var mainContent: some View {
+        hForm {
+            ZStack(alignment: .topLeading) {
+                hCoreUIAssets.submitClaimBg.view
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+
                 VStack(spacing: .padding16) {
                     ForEach(viewModel.allSteps, id: \.step.id) { step in
                         HStack {
@@ -27,66 +81,32 @@ public struct SubmitClaimChatScreen: View {
                             }
                             spacing(step.sender == .hedvig)
                         }
-                        .id(step.step.id)  // <-- target each row
+                        .id(step.step.id)
                     }
 
-                    // bottom anchor to guarantee a scroll target
                     Color.clear.frame(height: 1).id("BOTTOM")
                 }
                 .padding(.horizontal, .padding16)
-            }
-            // scroll after the last id changes (i.e. content appended/replaced)
-            .task(id: viewModel.allSteps.last?.step.id) {
-                // allow the new row to lay out before scrolling
-                try? await Task.sleep(nanoseconds: 50_000_000)  // ~50ms
-                withAnimation {
-                    proxy.scrollTo("BOTTOM", anchor: .bottom)
-                }
-            }
-            .onAppear {
-                // initial jump to bottom
-                proxy.scrollTo("BOTTOM", anchor: .bottom)
+                .padding(.top, 120)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
         }
-        .onAppear { didAppearTick &+= 1 }
-        .detent(
-            item: $viewModel.isDatePickerPresented,
-            transitionType: .detent(style: [.height])
-        ) { datePickerVm in
-            DatePickerView(vm: datePickerVm)
-                .embededInNavigation(options: .largeNavigationBar, tracking: self)
-        }
-        .detent(
-            item: $viewModel.isSelectItemPresented,
-            transitionType: .detent(style: [.height])
-        ) { model in
-            SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
-                .embededInNavigation(options: .largeNavigationBar, tracking: self)
-        }
-        .modally(item: $viewModel.hasClaimBeenSubmitted) { claim in
-            SubmitClaimChatSuccessScreen(summaryModel: claim)
-                .environmentObject(viewModel)
-                .environmentObject(router)
-        }
+        .hFormContentPosition(.top)
     }
 
     private var loadingView: some View {
-        HStack {
-            DotsActivityIndicator(.standard)
-        }
-        .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
-        .padding(.horizontal, .padding16)
-        .background(hBackgroundColor.primary.opacity(0.01))
-        .edgesIgnoringSafeArea(.top)
-        .useDarkColor
-        .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
+        HStack { DotsActivityIndicator(.standard) }
+            .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
+            .padding(.horizontal, .padding16)
+            .background(hBackgroundColor.primary.opacity(0.01))
+            .edgesIgnoringSafeArea(.top)
+            .useDarkColor
+            .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
     }
 
     @ViewBuilder
     func spacing(_ addSpacing: Bool) -> some View {
-        if addSpacing {
-            Spacer()
-        }
+        if addSpacing { Spacer() }
     }
 
     @ViewBuilder
@@ -107,9 +127,7 @@ public struct SubmitClaimChatScreen: View {
 }
 
 extension SubmitClaimChatScreen: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        ""
-    }
+    public var nameForTracking: String { "" }
 }
 
 #Preview {
@@ -126,10 +144,7 @@ struct SubmitChatStepModel {
 }
 
 struct SingleItemModel: Equatable, Identifiable {
-    static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool {
-        lhs.id == rhs.id
-    }
-
+    static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool { lhs.id == rhs.id }
     let id: String
     let values: [SingleSelectValue]
 }
@@ -157,9 +172,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
     private let service = ClaimIntentService()
 
     init() {
-        Task {
-            await startClaim()
-        }
+        Task { await startClaim() }
     }
 
     func startClaim() async {
@@ -195,7 +208,6 @@ public class SubmitClaimChatViewModel: ObservableObject {
     @MainActor func getNextStep() async -> ClaimIntentStep {
         do {
             let data = try await service.getNextStep(claimIntentId: intentId ?? "")
-
             switch data.content {
             case .task(let model):
                 if model.isCompleted {
@@ -205,9 +217,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
                         allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: false))
                     }
                 }
-            default: break
+            default:
+                break
             }
-
             return data
         } catch {
             print("fail")
@@ -231,10 +243,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
                     allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
                     currentStep = data.currentStep
                 }
-
-                Task {
-                    await checkTaskRec()
-                }
+                Task { await checkTaskRec() }
             }
         } catch {
             allSteps.removeLast()
@@ -249,7 +258,6 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 allSteps.removeLast()
                 allSteps.append(.init(step: nextStep, sender: .hedvig, isLoading: false))
                 currentStep = nextStep
-
                 await submitTask()
             } else {
                 allSteps.removeLast()
@@ -257,14 +265,14 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 currentStep = nextStep
                 await checkTaskRec()
             }
-        default: break
+        default:
+            break
         }
     }
 
     func submitTask() async {
         do {
             let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
-
             withAnimation {
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
                 currentStep = data.currentStep
@@ -345,12 +353,10 @@ public class SubmitClaimChatViewModel: ObservableObject {
 
     func submitSummary() async {
         do {
-            let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "")
+            _ = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "")
         } catch {
             print("Failed sending summary:", error)
-
             withAnimation {
-                /* TODO: REMOVE WHEN THIS IS WORKING */
                 switch allSteps.last?.step.content {
                 case let .summary(model):
                     hasClaimBeenSubmitted = model

@@ -62,7 +62,7 @@ public struct SubmitClaimChatAudioRecorder: View {
 
     private func playRecordingButton(url: URL) -> some View {
         VStack(spacing: .padding12) {
-            TrackPlayerView(audioPlayer: audioPlayer)
+            TrackPlayerView(audioPlayer: audioPlayer, withoutBackground: true)
                 .onAppear {
                     minutes = 0; seconds = 0
                 }

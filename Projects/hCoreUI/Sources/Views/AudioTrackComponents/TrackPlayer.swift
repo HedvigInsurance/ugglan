@@ -4,6 +4,16 @@ import hCore
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
     @State private var width: CGFloat = 0
+    let withoutBackground: Bool
+
+    init(
+        audioPlayer: AudioPlayer,
+        withoutBackground: Bool = false
+    ) {
+        self.audioPlayer = audioPlayer
+        self.withoutBackground = withoutBackground
+    }
+
     @ViewBuilder var image: some View {
         Image(
             uiImage: {
@@ -89,11 +99,20 @@ struct TrackPlayer: View {
             .frame(height: 64)
             .background(
                 RoundedRectangle(cornerRadius: .cornerRadiusL)
-                    .fill(hSurfaceColor.Opaque.primary)
+                    .fill(backgroundColor)
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()
             }
+        }
+    }
+
+    @hColorBuilder
+    var backgroundColor: some hColor {
+        if withoutBackground {
+            hBackgroundColor.clear
+        } else {
+            hSurfaceColor.Opaque.primary
         }
     }
 }
