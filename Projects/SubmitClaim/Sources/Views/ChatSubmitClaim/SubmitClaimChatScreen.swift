@@ -12,25 +12,41 @@ public struct SubmitClaimChatScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            VStack(spacing: .padding16) {
-                ForEach(viewModel.allSteps, id: \.step.id) { step in
-                    HStack {
-                        spacing(step.sender == .member)
-                        VStack(alignment: .leading, spacing: 0) {
-                            SubmitClaimChatMesageView(step: step, viewModel: viewModel)
-                            switch step.step.content {
-                            case .summary:
-                                EmptyView()
-                            default:
-                                senderStamp(step: step)
+        ScrollViewReader { proxy in
+            hForm {
+                VStack(spacing: .padding16) {
+                    ForEach(viewModel.allSteps, id: \.step.id) { step in
+                        HStack {
+                            spacing(step.sender == .member)
+                            VStack(alignment: .leading, spacing: 0) {
+                                SubmitClaimChatMesageView(step: step, viewModel: viewModel)
+                                switch step.step.content {
+                                case .summary: EmptyView()
+                                default: senderStamp(step: step)
+                                }
                             }
+                            spacing(step.sender == .hedvig)
                         }
-                        spacing(step.sender == .hedvig)
+                        .id(step.step.id)  // <-- target each row
                     }
+
+                    // bottom anchor to guarantee a scroll target
+                    Color.clear.frame(height: 1).id("BOTTOM")
+                }
+                .padding(.horizontal, .padding16)
+            }
+            // scroll after the last id changes (i.e. content appended/replaced)
+            .task(id: viewModel.allSteps.last?.step.id) {
+                // allow the new row to lay out before scrolling
+                try? await Task.sleep(nanoseconds: 50_000_000)  // ~50ms
+                withAnimation {
+                    proxy.scrollTo("BOTTOM", anchor: .bottom)
                 }
             }
-            .padding(.horizontal, .padding16)
+            .onAppear {
+                // initial jump to bottom
+                proxy.scrollTo("BOTTOM", anchor: .bottom)
+            }
         }
         .onAppear { didAppearTick &+= 1 }
         .detent(
@@ -47,9 +63,7 @@ public struct SubmitClaimChatScreen: View {
             SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
                 .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
-        .modally(
-            item: $viewModel.hasClaimBeenSubmitted
-        ) { claim in
+        .modally(item: $viewModel.hasClaimBeenSubmitted) { claim in
             SubmitClaimChatSuccessScreen(summaryModel: claim)
                 .environmentObject(viewModel)
                 .environmentObject(router)
