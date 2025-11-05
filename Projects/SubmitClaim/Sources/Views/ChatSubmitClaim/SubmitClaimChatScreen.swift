@@ -122,18 +122,15 @@ public class SubmitClaimChatViewModel: ObservableObject {
     @Published var audioRecordingUrl: URL?
 
     @Published var hasSubmittedClaim: Bool = false
-    var hasEnteredFormInput: Bool = false
-    //    var hasSelectedDate: (id: String, value: Bool) = ("", false)
+
     @Published var selectedDate = Date()
     @Published var selectedPrice = ""
+    @Published var selectedBinaryValue: String = ""
 
-    var date: [(id: String, value: Date)] = []
+    var dates: [(id: String, value: Date)] = []
     var purchasePrice: [(id: String, value: String)] = []
     var selectedValue: [SingleSelectValue] = []
-
-    @Published var binaryValue: String = ""
-
-    var form: Bool = false
+    @Published var binaryValues: [(id: String, value: String)] = []
 
     private let service = ClaimIntentService()
 
@@ -272,17 +269,17 @@ public class SubmitClaimChatViewModel: ObservableObject {
             let inputFields: [FieldValue?] = fields.compactMap { field in
                 switch field.type {
                 case .date:
-                    let fieldDate = date.first(where: { $0.id == field.id })?.value ?? Date()
+                    let fieldDate = dates.first(where: { $0.id == field.id })?.value ?? Date()
                     return FieldValue(id: field.id, values: [fieldDate.localDateString])
                 case .number:
-                    //                    let price = purchasePrice.first(where: { $0.id == field.id })?.value ?? ""
                     let price = selectedPrice
                     return FieldValue(id: field.id, values: [price])
                 case .singleSelect:
                     let fieldValue = selectedValue.first(where: { $0.fieldId == field.id })?.value ?? ""
                     return FieldValue(id: field.id, values: [fieldValue])
                 case .binary:
-                    return FieldValue(id: field.id, values: [binaryValue])
+                    let fieldBinary = binaryValues.first(where: { $0.id == field.id })?.value ?? ""
+                    return FieldValue(id: field.id, values: [fieldBinary])
                 default:
                     return FieldValue(id: field.id, values: [])
                 }
@@ -293,7 +290,16 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 stepId: currentStep?.id ?? ""
             )
             withAnimation {
-                allSteps.last?.isEnabled = false
+                if let lastStep = allSteps.last {
+                    let updatedStep: SubmitChatStepModel = .init(
+                        step: lastStep.step,
+                        sender: lastStep.sender,
+                        isLoading: lastStep.isLoading,
+                        isEnabled: false
+                    )
+                    allSteps.removeLast()
+                    allSteps.append(updatedStep)
+                }
 
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
                 currentStep = data.currentStep
@@ -302,7 +308,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 case let .form(model):
                     let userStep: ClaimIntentStep = .init(
                         content: .form(model: model),
-                        id: "userForm2",
+                        id: UUID().uuidString,
                         text: data.currentStep.text
                     )
                     allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
@@ -323,6 +329,10 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
             }
         } catch {
+            /* TODO: REMOVE WHEN THIS IS WORKING */
+            withAnimation {
+                hasSubmittedClaim = true
+            }
             print("Failed sending summary:", error)
         }
     }

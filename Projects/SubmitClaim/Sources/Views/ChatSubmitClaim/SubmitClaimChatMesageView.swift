@@ -5,7 +5,6 @@ import hCoreUI
 struct SubmitClaimChatMesageView: View {
     let step: SubmitChatStepModel
     @ObservedObject var viewModel: SubmitClaimChatViewModel
-    //    @State var selectedDate = Date()
 
     var body: some View {
         Group {
@@ -23,16 +22,13 @@ struct SubmitClaimChatMesageView: View {
         .onTapGesture {
             switch step.step.content {
             case .form(model: let model):
-                if !viewModel.hasEnteredFormInput {
+                if step.isEnabled {
                     switch model.fields.first?.type {
                     case .date:
-
-                        //                        selectedDate = viewModel.date.first(where: { $0.id == model.fields.first?.id })?.value ?? Date()
                         if let field = model.fields.first {
                             viewModel.isDatePickerPresented = .init(
                                 continueAction: {
-                                    //                                    viewModel.date = model.fields.first?.date
-                                    viewModel.date.append(
+                                    viewModel.dates.append(
                                         (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
                                     )
                                     viewModel.isDatePickerPresented = nil
@@ -41,7 +37,6 @@ struct SubmitClaimChatMesageView: View {
                                     viewModel.isDatePickerPresented = nil
                                 },
                                 date: $viewModel.selectedDate,
-                                //                            date: ,
                                 config: .init(placeholder: "placeholder", title: "Select date")
                             )
                         }
@@ -161,9 +156,10 @@ struct FormView: View {
                         case .date:
                             hSection {
                                 hRow {
-                                    let date = viewModel.date.first(where: { $0.id == field.id })?.value
+                                    let date = viewModel.dates.first(where: { $0.id == field.id })?.value
                                     dropDownView(
-                                        message: date?.displayDateDDMMMYYYYFormat ?? field.title
+                                        message: date?.displayDateDDMMMYYYYFormat ?? field.title,
+                                        stepId: field.id
                                     )
                                 }
                             }
@@ -183,7 +179,7 @@ struct FormView: View {
                             let selectedValue = viewModel.selectedValue.first(where: { $0.fieldId == field.id })
 
                             DropdownView(
-                                value: selectedValue?.title ?? field.title,
+                                value: selectedValue?.title ?? "",
                                 placeHolder: field.title
                             ) {
                                 let values: [SingleSelectValue] = field.options.map {
@@ -201,12 +197,19 @@ struct FormView: View {
                                             .fixedSize(horizontal: true, vertical: false)
                                         Spacer()
                                         ForEach(field.options, id: \.value) { option in
-                                            let enabled = viewModel.binaryValue == option.value
+
+                                            let currentBinaryValue = viewModel.binaryValues.first(where: {
+                                                $0.id == field.id
+                                            })
+
+                                            let enabled = currentBinaryValue?.value == option.value
                                             hButton(
                                                 .small,
                                                 enabled ? .primaryAlt : .secondary,
                                                 content: .init(title: option.title)
-                                            ) { viewModel.binaryValue = option.value }
+                                            ) {
+                                                viewModel.binaryValues.append((id: field.id, value: option.value))
+                                            }
                                             .disabled(!step.isEnabled)
                                         }
                                         .fixedSize(horizontal: true, vertical: false)
@@ -231,10 +234,10 @@ struct FormView: View {
         }
     }
 
-    func dropDownView(message: String) -> some View {
+    func dropDownView(message: String, stepId: String) -> some View {
         HStack(alignment: .center, spacing: .padding4) {
             hText(message)
-                .foregroundColor(dateColor)
+                .foregroundColor(dateColor(stepId: stepId))
             if step.isEnabled {
                 Spacer()
                 hCoreUIAssets.chevronDown.view
@@ -243,8 +246,9 @@ struct FormView: View {
     }
 
     @hColorBuilder
-    var dateColor: some hColor {
-        if step.isEnabled {
+    func dateColor(stepId: String) -> some hColor {
+        let hasSelectedDate = viewModel.dates.first(where: { $0.id == stepId })?.value != nil
+        if step.isEnabled && hasSelectedDate {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.secondary
@@ -276,37 +280,36 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
     case purchasePrice
 }
 
-//#Preview {
-//    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
-//
-//    let viewModel = SubmitClaimChatViewModel()
-//    viewModel.date = Date()
-//
-//    return SubmitClaimChatMesageView(
-//        step:
-//            .init(
-//                step: .init(
-//                    content: .form(
-//                        model: .init(fields: [
-//                            .init(
-//                                defaultValue: nil,
-//                                id: "",
-//                                isRequired: true,
-//                                maxValue: nil,
-//                                minValue: nil,
-//                                options: [],
-//                                suffix: nil,
-//                                title: "",
-//                                type: .date
-//                            )
-//                        ])
-//                    ),
-//                    id: "id1",
-//                    text: "Select a date"
-//                ),
-//                sender: .member,
-//                isLoading: false
-//            ),
-//        viewModel: viewModel
-//    )
-//}
+#Preview {
+    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
+
+    let viewModel = SubmitClaimChatViewModel()
+
+    return SubmitClaimChatMesageView(
+        step:
+            .init(
+                step: .init(
+                    content: .form(
+                        model: .init(fields: [
+                            .init(
+                                defaultValue: nil,
+                                id: "",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [],
+                                suffix: nil,
+                                title: "",
+                                type: .date
+                            )
+                        ])
+                    ),
+                    id: "id1",
+                    text: "Select a date"
+                ),
+                sender: .member,
+                isLoading: false
+            ),
+        viewModel: viewModel
+    )
+}
