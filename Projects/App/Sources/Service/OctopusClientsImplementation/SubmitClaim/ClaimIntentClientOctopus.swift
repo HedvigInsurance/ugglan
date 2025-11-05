@@ -6,8 +6,12 @@ import hGraphQL
 class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
 
-    func startClaimIntent() async throws -> ClaimIntent {
-        let mutation = OctopusGraphQL.ClaimIntentStartMutation()
+    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
+        let inputId = sourceMessageId != "" ? sourceMessageId : nil
+        let input: OctopusGraphQL.ClaimIntentStartInput = .init(
+            sourceMessageId: GraphQLNullable(optionalValue: inputId)
+        )
+        let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(input))
         let data = try await octopus.client.mutation(mutation: mutation)
 
         let currentStep = data?.claimIntentStart.currentStep

@@ -1,5 +1,5 @@
-mutation ClaimIntentStart {
-  claimIntentStart {
+mutation ClaimIntentStart($input: ClaimIntentStartInput) {
+  claimIntentStart(input: $input) {
     ...ClaimIntentFragment
   }
 }

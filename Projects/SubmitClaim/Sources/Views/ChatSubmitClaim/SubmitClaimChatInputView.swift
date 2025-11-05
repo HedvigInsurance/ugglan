@@ -44,229 +44,15 @@ struct SubmitClaimChatInputView: View {
     }
 }
 
-// MARK: - ViewModel
 @MainActor
 class SubmitClaimChatInputViewModel: NSObject, ObservableObject {
     @Published var inputText: String = ""
     @Published var isRecording: Bool = false
     @Published var keyboardIsShown = false
-
-    //    private var recorder: AVAudioRecorder?
-    //    private var levelTimer: Timer?
-    //    private(set) var currentRecordingURL: URL?
-    //    private var pendingURLForTranscription: URL?
-    //    private var startToken = UUID()
-    //    private lazy var speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
-    //    private var urlRecognitionTask: SFSpeechRecognitionTask?
-    //
-    //    /// Triggers when a recording has finished (URL reference only).
-    //    @Published var lastAudioReference: String?
-    //
-    //    /// Triggers when speech recognition produced a final transcription for the last finished recording.
-    //    @Published var lastFinalTranscription: String?
-
-    //    func startRecording() {
-    //        let token = UUID()
-    //        startToken = token
-    //
-    //        Task { [weak self] in
-    //            guard let self else { return }
-    //            let ok = await requestMicPermission()
-    //            guard ok, self.isStillCurrentStart(token) else { return }
-    //            do {
-    //                try await self._configureAndStartRecorderIfCurrent(token)
-    //            } catch {
-    //                self.failStopIfCurrent(token)
-    //            }
-    //        }
-    //    }
-
-    //    func stopRecording() {
-    //        startToken = UUID()
-    //
-    //        levelTimer?.invalidate(); levelTimer = nil
-    //
-    //        let url = currentRecordingURL
-    //        pendingURLForTranscription = url
-    //
-    //        recorder?.stop()
-    //        recorder = nil
-    //
-    //        isRecording = false
-    //
-    //        try? AVAudioSession.sharedInstance()
-    //            .setActive(false, options: .notifyOthersOnDeactivation)
-    //    }
-
-    //    // MARK: Helpers
-    //    private func isStillCurrentStart(_ token: UUID) -> Bool {
-    //        startToken == token && isRecording
-    //    }
-    //
-    //    private func failStopIfCurrent(_ token: UUID) {
-    //        if isStillCurrentStart(token) { stopRecording() }
-    //    }
-
-    //    private func makeRecordingURL() -> URL {
-    //        URL(fileURLWithPath: NSTemporaryDirectory())
-    //            .appendingPathComponent("voice-\(UUID().uuidString).m4a")
-    //    }
-
-    //    private func handleRecordedAudio(_ url: URL) {
-    //        print("Recorded voice note at:", url)
-    //    }
-
-    //     MARK: Permissions
-    //    private func requestMicPermission() async -> Bool {
-    //        let session = AVAudioSession.sharedInstance()
-    //        var granted = false
-    //        await withCheckedContinuation { (c: CheckedContinuation<Void, Never>) in
-    //            session.requestRecordPermission { g in
-    //                granted = g; c.resume()
-    //            }
-    //        }
-    //        return granted
-    //    }
-
-    //    private func ensureSpeechPermission() async -> Bool {
-    //        let status = SFSpeechRecognizer.authorizationStatus()
-    //        if status == .notDetermined {
-    //            await withCheckedContinuation { (cont: CheckedContinuation<Void, Never>) in
-    //                SFSpeechRecognizer.requestAuthorization { _ in cont.resume() }
-    //            }
-    //        }
-    //        return SFSpeechRecognizer.authorizationStatus() == .authorized
-    //    }
-
-    // MARK: Start AVAudioRecorder
-    //    private func _configureAndStartRecorderIfCurrent(_ token: UUID) async throws {
-    //        let session = AVAudioSession.sharedInstance()
-    //        try session.setCategory(.record, mode: .measurement, options: [.duckOthers])
-    //        try session.setActive(true, options: .notifyOthersOnDeactivation)
-    //
-    //        guard isStillCurrentStart(token) else {
-    //            try? session.setActive(false, options: .notifyOthersOnDeactivation)
-    //            return
-    //        }
-    //
-    //        let settings: [String: Any] = [
-    //            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-    //            AVSampleRateKey: 44_100,
-    //            AVNumberOfChannelsKey: 1,
-    //            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
-    //        ]
-    //
-    //        let url = makeRecordingURL()
-    //        currentRecordingURL = url
-    //        // Do NOT set lastAudioReference here — it would fire too early.
-    //
-    //        let rec = try AVAudioRecorder(url: url, settings: settings)
-    //        rec.isMeteringEnabled = true
-    //        rec.delegate = self
-    //        rec.prepareToRecord()
-    //
-    //        guard isStillCurrentStart(token) else {
-    //            try? session.setActive(false, options: .notifyOthersOnDeactivation)
-    //            return
-    //        }
-    //
-    //        rec.record()
-    //        recorder = rec
-    //        startLevelTimer()
-    //    }
-
-    //    private func startLevelTimer() {
-    //        levelTimer?.invalidate()
-    //        levelTimer = Timer.scheduledTimer(
-    //            timeInterval: 0.1,
-    //            target: self,
-    //            selector: #selector(updateLevel),
-    //            userInfo: nil,
-    //            repeats: true
-    //        )
-    //        RunLoop.main.add(levelTimer!, forMode: .common)
-    //    }
-
-    //    @objc private func updateLevel() {
-    //        guard let rec = recorder else { return }
-    //        rec.updateMeters()
-    //        _ = rec.averagePower(forChannel: 0)
-    //        // Publish a meter value if you want a waveform
-    //    }
-
-    // MARK: Transcription
-
-    //    private func transcribeRecording(at url: URL) {
-    //        Task {
-    //            guard await ensureSpeechPermission() else {
-    //                await MainActor.run {
-    //                    if self.inputText.isEmpty { self.inputText = "[Taligenkänning nekades]" }
-    //                }
-    //                return
-    //            }
-    //            guard let recognizer = speechRecognizer, recognizer.isAvailable else {
-    //                await MainActor.run {
-    //                    if self.inputText.isEmpty { self.inputText = "[Taligenkänning ej tillgänglig]" }
-    //                }
-    //                return
-    //            }
-    //
-    //            let request = SFSpeechURLRecognitionRequest(url: url)
-    //            request.shouldReportPartialResults = true
-    //            request.taskHint = .dictation
-    //            request.requiresOnDeviceRecognition = false
-    //
-    //            await MainActor.run {
-    //                // Clear any leftover status; keep placeholder if still empty
-    //                self.urlRecognitionTask?.cancel()
-    //                self.urlRecognitionTask = nil
-    //            }
-    //
-    //            let task = recognizer.recognitionTask(with: request) { [weak self] result, error in
-    //                guard let self else { return }
-    //                Task { @MainActor in
-    //                    if let r = result {
-    //                        self.inputText = r.bestTranscription.formattedString
-    //                        if r.isFinal {
-    //                            // Publish the final transcript so the screen can show it
-    //                            self.lastFinalTranscription = self.inputText
-    //                            self.urlRecognitionTask = nil
-    //                        }
-    //                    }
-    //                    if let err = error as NSError? {
-    //                        print("Speech error:", err)
-    //                        if self.inputText.isEmpty {
-    //                            self.inputText = "[Kunde inte transkribera ljudet]"
-    //                        }
-    //                        self.urlRecognitionTask = nil
-    //                    }
-    //                }
-    //            }
-    //            await MainActor.run { self.urlRecognitionTask = task }
-    //        }
-    //    }
 }
 
 @MainActor
-extension SubmitClaimChatInputViewModel: @preconcurrency AVAudioRecorderDelegate {
-    //    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-    //        guard flag, let url = pendingURLForTranscription else {
-    //            print("Recording not successful or no URL")
-    //            pendingURLForTranscription = nil
-    //            return
-    //        }
-    //        pendingURLForTranscription = nil
-    //        handleRecordedAudio(url)
-    //        transcribeRecording(at: url)
-    //
-    //        // Publish ONLY after a successful finish (triggers .onChange in the screen)
-    //        lastAudioReference = url.lastPathComponent
-    //    }
-    //
-    //    func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
-    //        print("Recorder encode error:", error ?? "")
-    //    }
-    //
+extension SubmitClaimChatInputViewModel: AVAudioRecorderDelegate {
     func sendTextMessage() {
         let trimmed = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -295,7 +81,6 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context _: Context) {
         guard let tv = uiView as? CustomTextView else { return }
 
-        // Keep placeholder in sync with SwiftUI value
         tv.setPlaceholder(placeholder)
 
         if tv.text != text {
@@ -306,11 +91,9 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
             }
             tv.updateHeight()
         }
-        tv.updateColors()  // placeholder visibility driven by emptiness
+        tv.updateColors()
     }
 }
-
-// MARK: - UITextView subclass
 
 @MainActor
 private class CustomTextView: UITextView, UITextViewDelegate {

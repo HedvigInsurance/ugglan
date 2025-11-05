@@ -282,7 +282,7 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
 
-    let viewModel = SubmitClaimChatViewModel()
+    let viewModel = SubmitClaimChatViewModel(messageId: nil)
 
     return SubmitClaimChatMesageView(
         step:

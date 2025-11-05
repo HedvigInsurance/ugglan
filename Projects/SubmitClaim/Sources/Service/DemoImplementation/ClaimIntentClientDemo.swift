@@ -3,7 +3,7 @@ import Foundation
 public class ClaimIntentClientDemo: ClaimIntentClient {
     public init() {}
 
-    public func startClaimIntent() async throws -> ClaimIntent {
+    public func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 

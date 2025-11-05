@@ -4,11 +4,17 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimChatScreen: View {
-    @StateObject var viewModel = SubmitClaimChatViewModel()
+    @StateObject var viewModel: SubmitClaimChatViewModel
     @StateObject var chatInputViewModel = SubmitClaimChatInputViewModel()
     @EnvironmentObject var router: Router
 
-    public init() {}
+    public init(
+        messageId: String?
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: .init(messageId: messageId)
+        )
+    }
 
     public var body: some View {
         if #available(iOS 16.0, *) {
@@ -133,7 +139,7 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return SubmitClaimChatScreen()
+    return SubmitClaimChatScreen(messageId: nil)
 }
 
 struct SubmitChatStepModel {
@@ -171,13 +177,15 @@ public class SubmitClaimChatViewModel: ObservableObject {
 
     private let service = ClaimIntentService()
 
-    init() {
-        Task { await startClaim() }
+    init(
+        messageId: String?
+    ) {
+        Task { await startClaim(for: messageId) }
     }
 
-    func startClaim() async {
+    func startClaim(for messageId: String?) async {
         do {
-            let data = try await service.startClaimIntent()
+            let data = try await service.startClaimIntent(sourceMessageId: messageId)
             withAnimation {
                 currentStep = data.currentStep
                 intentId = data.id

@@ -3,7 +3,7 @@ import hCore
 
 @MainActor
 public protocol ClaimIntentClient {
-    func startClaimIntent() async throws -> ClaimIntent
+    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent
     func claimIntentSubmitAudio(reference: String?, freeText: String?, stepId: String) async throws -> ClaimIntent
     func claimIntentSubmitForm(
         fields: [FieldValue],
@@ -28,8 +28,8 @@ public struct FieldValue: Codable {
 class ClaimIntentService {
     @Inject var client: ClaimIntentClient
 
-    func startClaimIntent() async throws -> ClaimIntent {
-        let data = try await client.startClaimIntent()
+    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
+        let data = try await client.startClaimIntent(sourceMessageId: sourceMessageId)
         return data
     }
 

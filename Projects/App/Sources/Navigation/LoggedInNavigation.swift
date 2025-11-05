@@ -357,9 +357,9 @@ struct HomeTab: View {
         //            ClaimsMainNavigation()
         //        }
         .modally(
-            presented: $homeNavigationVm.isSubmitClaimPresented
-        ) {
-            SubmitClaimChatScreen()
+            item: $homeNavigationVm.isSubmitClaimPresented
+        ) { messageId in
+            SubmitClaimChatScreen(messageId: messageId)
                 .withDismissButton()
                 .embededInNavigation(
                     options: .navigationType(type: .large),
@@ -781,7 +781,9 @@ class LoggedInNavigationViewModel: ObservableObject {
             Task { await self.handleClaimDetails(claimId: url.getParameter(property: .claimId)) }
         case .submitClaim:
             selectedTab = 0
-            homeNavigationVm.isSubmitClaimPresented = true
+            homeNavigationVm.isSubmitClaimPresented = ""
+        case .claimChat:
+            handleChatClaimDeeplink(url)
         }
     }
 
@@ -801,6 +803,13 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self?.contractsNavigationVm.contractsRouter.push(contract)
             }
         }
+    }
+
+    private func handleChatClaimDeeplink(_ url: URL) {
+        dismissAndSelectTab(0)
+
+        let messageId = url.getParameter(property: .sourceMessageId)
+        homeNavigationVm.isSubmitClaimPresented = messageId ?? ""
     }
 
     private func handleHelpCenterDeeplink(_ url: URL) {
