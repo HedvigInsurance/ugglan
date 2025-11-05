@@ -3,6 +3,7 @@ import hCore
 import hCoreUI
 
 struct SingleSelectValue: Hashable {
+    let fieldId: String
     let title: String
     let value: String
 }
@@ -22,14 +23,18 @@ struct SubmitClaimSingleSelectScreen: View {
             items: values.compactMap { (object: $0, displayName: .init(title: $0.title)) },
             preSelectedItems: {
 
-                if let value = values.first(where: { $0 == viewModel.selectedValue }) {
-                    return [value]
-                }
-                return []
+                //                if let value = values.first(where: { $0 == viewModel.selectedValue }) {
+                //                    return [value]
+                //                }
+                //
+                //                if let value = values.first(where: { $0 == viewModel.selectedValue }) {
+                //                    return [value]
+                //                }
+                []
             },
             onSelected: { selectedValue in
                 if let object = selectedValue.first?.0 {
-                    viewModel.selectedValue = object
+                    viewModel.selectedValue.append(object)
                 }
                 viewModel.isSelectItemPresented = nil
             },

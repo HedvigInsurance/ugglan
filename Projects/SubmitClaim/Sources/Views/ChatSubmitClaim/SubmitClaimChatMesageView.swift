@@ -5,6 +5,7 @@ import hCoreUI
 struct SubmitClaimChatMesageView: View {
     let step: SubmitChatStepModel
     @ObservedObject var viewModel: SubmitClaimChatViewModel
+    //    @State var selectedDate = Date()
 
     var body: some View {
         Group {
@@ -25,17 +26,25 @@ struct SubmitClaimChatMesageView: View {
                 if !viewModel.hasEnteredFormInput {
                     switch model.fields.first?.type {
                     case .date:
-                        viewModel.isDatePickerPresented = .init(
-                            continueAction: {
-                                viewModel.hasSelectedDate = true
-                                viewModel.isDatePickerPresented = nil
-                            },
-                            cancelAction: {
-                                viewModel.isDatePickerPresented = nil
-                            },
-                            date: $viewModel.date,
-                            config: .init(placeholder: "placeholder", title: "Select date")
-                        )
+
+                        //                        selectedDate = viewModel.date.first(where: { $0.id == model.fields.first?.id })?.value ?? Date()
+                        if let field = model.fields.first {
+                            viewModel.isDatePickerPresented = .init(
+                                continueAction: {
+                                    //                                    viewModel.date = model.fields.first?.date
+                                    viewModel.date.append(
+                                        (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
+                                    )
+                                    viewModel.isDatePickerPresented = nil
+                                },
+                                cancelAction: {
+                                    viewModel.isDatePickerPresented = nil
+                                },
+                                date: $viewModel.selectedDate,
+                                //                            date: ,
+                                config: .init(placeholder: "placeholder", title: "Select date")
+                            )
+                        }
                     default:
                         break
                     }
@@ -152,10 +161,9 @@ struct FormView: View {
                         case .date:
                             hSection {
                                 hRow {
+                                    let date = viewModel.date.first(where: { $0.id == field.id })?.value
                                     dropDownView(
-                                        message: viewModel.hasSelectedDate
-                                            ? viewModel.date.displayDateDDMMMYYYYFormat
-                                            : field.title
+                                        message: date?.displayDateDDMMMYYYYFormat ?? field.title
                                     )
                                 }
                             }
@@ -163,25 +171,27 @@ struct FormView: View {
                         case .number:
                             hFloatingTextField(
                                 masking: .init(type: .digits),
-                                value: $viewModel.purchasePrice,
+                                value: $viewModel.selectedPrice,
                                 equals: .constant(nil),
                                 focusValue: SubmitClaimChatFieldType.purchasePrice,
                                 placeholder: field.title,
                                 suffix: field.suffix
                             )
-                            .disabled(viewModel.hasEnteredFormInput)
+                            .disabled(!step.isEnabled)
 
                         case .singleSelect:
+                            let selectedValue = viewModel.selectedValue.first(where: { $0.fieldId == field.id })
+
                             DropdownView(
-                                value: viewModel.selectedValue.title,
+                                value: selectedValue?.title ?? field.title,
                                 placeHolder: field.title
                             ) {
                                 let values: [SingleSelectValue] = field.options.map {
-                                    .init(title: $0.title, value: $0.value)
+                                    .init(fieldId: field.id, title: $0.title, value: $0.value)
                                 }
-                                viewModel.isSelectItemPresented = .init(values: values)
+                                viewModel.isSelectItemPresented = .init(id: field.id, values: values)
                             }
-                            .disabled(viewModel.hasEnteredFormInput)
+                            .disabled(!step.isEnabled)
                         case .binary:
                             hSection {
                                 hRow {
@@ -197,21 +207,20 @@ struct FormView: View {
                                                 enabled ? .primaryAlt : .secondary,
                                                 content: .init(title: option.title)
                                             ) { viewModel.binaryValue = option.value }
-                                            .disabled(viewModel.hasEnteredFormInput)
+                                            .disabled(!step.isEnabled)
                                         }
                                         .fixedSize(horizontal: true, vertical: false)
                                     }
                                     .frame(maxWidth: .infinity, alignment: .center)
                                 }
                             }
-
                         default:
                             EmptyView()
                         }
                     }
                     .hWithoutHorizontalPadding([.section])
                 }
-                if !viewModel.hasEnteredFormInput {
+                if step.isEnabled {
                     hButton(.medium, .primary, content: .init(title: "Send")) {
                         Task {
                             await viewModel.submitForm(fields: model.fields)
@@ -226,7 +235,7 @@ struct FormView: View {
         HStack(alignment: .center, spacing: .padding4) {
             hText(message)
                 .foregroundColor(dateColor)
-            if !viewModel.hasEnteredFormInput {
+            if step.isEnabled {
                 Spacer()
                 hCoreUIAssets.chevronDown.view
             }
@@ -235,7 +244,7 @@ struct FormView: View {
 
     @hColorBuilder
     var dateColor: some hColor {
-        if viewModel.hasSelectedDate && !viewModel.hasEnteredFormInput {
+        if step.isEnabled {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.secondary
@@ -244,7 +253,7 @@ struct FormView: View {
 
     @hColorBuilder
     var binaryColor: some hColor {
-        if !viewModel.hasEnteredFormInput {
+        if step.isEnabled {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.secondary
@@ -267,37 +276,37 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
     case purchasePrice
 }
 
-#Preview {
-    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
-
-    let viewModel = SubmitClaimChatViewModel()
-    viewModel.date = Date()
-
-    return SubmitClaimChatMesageView(
-        step:
-            .init(
-                step: .init(
-                    content: .form(
-                        model: .init(fields: [
-                            .init(
-                                defaultValue: nil,
-                                id: "",
-                                isRequired: true,
-                                maxValue: nil,
-                                minValue: nil,
-                                options: [],
-                                suffix: nil,
-                                title: "",
-                                type: .date
-                            )
-                        ])
-                    ),
-                    id: "id1",
-                    text: "Select a date"
-                ),
-                sender: .member,
-                isLoading: false
-            ),
-        viewModel: viewModel
-    )
-}
+//#Preview {
+//    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
+//
+//    let viewModel = SubmitClaimChatViewModel()
+//    viewModel.date = Date()
+//
+//    return SubmitClaimChatMesageView(
+//        step:
+//            .init(
+//                step: .init(
+//                    content: .form(
+//                        model: .init(fields: [
+//                            .init(
+//                                defaultValue: nil,
+//                                id: "",
+//                                isRequired: true,
+//                                maxValue: nil,
+//                                minValue: nil,
+//                                options: [],
+//                                suffix: nil,
+//                                title: "",
+//                                type: .date
+//                            )
+//                        ])
+//                    ),
+//                    id: "id1",
+//                    text: "Select a date"
+//                ),
+//                sender: .member,
+//                isLoading: false
+//            ),
+//        viewModel: viewModel
+//    )
+//}

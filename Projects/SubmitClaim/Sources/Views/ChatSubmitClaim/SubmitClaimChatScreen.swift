@@ -100,6 +100,7 @@ struct SubmitChatStepModel {
     let step: ClaimIntentStep
     let sender: SubmitClaimChatMesageSender
     var isLoading: Bool
+    @State var isEnabled = true
 }
 
 struct SingleItemModel: Equatable, Identifiable {
@@ -107,7 +108,7 @@ struct SingleItemModel: Equatable, Identifiable {
         lhs.id == rhs.id
     }
 
-    let id = UUID()
+    let id: String
     let values: [SingleSelectValue]
 }
 
@@ -115,7 +116,6 @@ struct SingleItemModel: Equatable, Identifiable {
 public class SubmitClaimChatViewModel: ObservableObject {
     @Published var isDatePickerPresented: DatePickerViewModel?
     @Published var isSelectItemPresented: SingleItemModel?
-    @Published var date: Date = .init()
     @Published var currentStep: ClaimIntentStep?
     @Published var allSteps: [SubmitChatStepModel] = []
     @Published var intentId: String?
@@ -123,9 +123,14 @@ public class SubmitClaimChatViewModel: ObservableObject {
 
     @Published var hasSubmittedClaim: Bool = false
     var hasEnteredFormInput: Bool = false
-    var hasSelectedDate: Bool = false
-    var purchasePrice: String = ""
-    var selectedValue: SingleSelectValue = .init(title: "", value: "")
+    //    var hasSelectedDate: (id: String, value: Bool) = ("", false)
+    @Published var selectedDate = Date()
+    @Published var selectedPrice = ""
+
+    var date: [(id: String, value: Date)] = []
+    var purchasePrice: [(id: String, value: String)] = []
+    var selectedValue: [SingleSelectValue] = []
+
     @Published var binaryValue: String = ""
 
     var form: Bool = false
@@ -267,11 +272,15 @@ public class SubmitClaimChatViewModel: ObservableObject {
             let inputFields: [FieldValue?] = fields.compactMap { field in
                 switch field.type {
                 case .date:
-                    return FieldValue(id: field.id, values: [date.localDateString])
+                    let fieldDate = date.first(where: { $0.id == field.id })?.value ?? Date()
+                    return FieldValue(id: field.id, values: [fieldDate.localDateString])
                 case .number:
-                    return FieldValue(id: field.id, values: [purchasePrice])
+                    //                    let price = purchasePrice.first(where: { $0.id == field.id })?.value ?? ""
+                    let price = selectedPrice
+                    return FieldValue(id: field.id, values: [price])
                 case .singleSelect:
-                    return FieldValue(id: field.id, values: [selectedValue.value])
+                    let fieldValue = selectedValue.first(where: { $0.fieldId == field.id })?.value ?? ""
+                    return FieldValue(id: field.id, values: [fieldValue])
                 case .binary:
                     return FieldValue(id: field.id, values: [binaryValue])
                 default:
@@ -284,9 +293,22 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 stepId: currentStep?.id ?? ""
             )
             withAnimation {
-                hasEnteredFormInput = true
+                allSteps.last?.isEnabled = false
+
                 allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
                 currentStep = data.currentStep
+
+                switch data.currentStep.content {
+                case let .form(model):
+                    let userStep: ClaimIntentStep = .init(
+                        content: .form(model: model),
+                        id: "userForm2",
+                        text: data.currentStep.text
+                    )
+                    allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
+                default:
+                    break
+                }
             }
         } catch {
             print("Error: couldn't submit form")
