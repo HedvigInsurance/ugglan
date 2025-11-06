@@ -16,8 +16,8 @@ struct SubmitClaimChatMesageView: View {
         .foregroundColor(hTextColor.Opaque.primary)
         .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
         .frame(
-            maxWidth: 300,
-            alignment: step.sender == .hedvig ? .leading : .trailing
+            maxWidth: maxWidth,
+            alignment: alignment
         )
         .onTapGesture {
             switch step.step.content {
@@ -25,21 +25,19 @@ struct SubmitClaimChatMesageView: View {
                 if step.isEnabled {
                     switch model.fields.first?.type {
                     case .date:
-                        if let field = model.fields.first {
-                            viewModel.isDatePickerPresented = .init(
-                                continueAction: {
-                                    viewModel.dates.append(
-                                        (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
-                                    )
-                                    viewModel.isDatePickerPresented = nil
-                                },
-                                cancelAction: {
-                                    viewModel.isDatePickerPresented = nil
-                                },
-                                date: $viewModel.selectedDate,
-                                config: .init(placeholder: "placeholder", title: "Select date")
-                            )
-                        }
+                        viewModel.isDatePickerPresented = .init(
+                            continueAction: {
+                                viewModel.dates.append(
+                                    (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
+                                )
+                                viewModel.isDatePickerPresented = nil
+                            },
+                            cancelAction: {
+                                viewModel.isDatePickerPresented = nil
+                            },
+                            date: $viewModel.selectedDate,
+                            config: .init(placeholder: "placeholder", title: "Select date")
+                        )
                     default:
                         break
                     }
@@ -49,6 +47,30 @@ struct SubmitClaimChatMesageView: View {
             }
         }
         .environmentObject(viewModel)
+    }
+
+    var maxWidth: CGFloat {
+        if step.sender == .hedvig {
+            switch step.step.content {
+            case .outcome:
+                return .infinity
+            default:
+                return 300
+            }
+        }
+        return 300
+    }
+
+    var alignment: Alignment {
+        if step.sender == .hedvig {
+            switch step.step.content {
+            case .outcome:
+                return .center
+            default:
+                return .leading
+            }
+        }
+        return .trailing
     }
 
     @ViewBuilder
@@ -86,7 +108,7 @@ struct SubmitClaimChatMesageView: View {
                 hText(step.step.text)
                     .fixedSize(horizontal: false, vertical: true)
                 hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
-                    // TODO: GO TO CLAIM DETAILS
+                    viewModel.goToClaimDetails(model.claimId)
                 }
             }
         }
@@ -164,16 +186,7 @@ struct FormView: View {
                         case .date:
                             dateField(for: field)
                         case .number:
-                            hFloatingTextField(
-                                masking: .init(type: .digits),
-                                value: $viewModel.selectedPrice,
-                                equals: .constant(nil),
-                                focusValue: SubmitClaimChatFieldType.purchasePrice,
-                                placeholder: field.title,
-                                suffix: field.suffix
-                            )
-                            .disabled(!step.isEnabled)
-
+                            numberField(for: field)
                         case .singleSelect:
                             singleSelectField(for: field)
                         case .binary:
@@ -272,6 +285,25 @@ struct FormView: View {
         }
     }
 
+    func numberField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+        hFloatingTextField(
+            masking: .init(type: .digits),
+            value: $viewModel.selectedPrice,
+            equals: .constant(nil),
+            focusValue: SubmitClaimChatFieldType.purchasePrice,
+            placeholder: field.title,
+            suffix: field.suffix
+        )
+        .disabled(!step.isEnabled)
+        .onAppear {
+            if let defaultValue = field.defaultValue {
+                let value: (id: String, value: String) = (id: field.id, value: defaultValue)
+                viewModel.purchasePrice.append(value)
+                viewModel.selectedPrice = defaultValue
+            }
+        }
+    }
+
     func dropDownView(message: String, stepId: String) -> some View {
         HStack(alignment: .center, spacing: .padding4) {
             hText(message)
@@ -321,7 +353,7 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
 
-    let viewModel = SubmitClaimChatViewModel(messageId: nil)
+    let viewModel = SubmitClaimChatViewModel(messageId: nil, goToClaimDetails: { _ in })
 
     return SubmitClaimChatMesageView(
         step:

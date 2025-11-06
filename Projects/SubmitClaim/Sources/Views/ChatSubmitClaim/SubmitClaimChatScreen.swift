@@ -9,10 +9,11 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var router: Router
 
     public init(
-        messageId: String?
+        messageId: String?,
+        goToClaimDetails: @escaping (String) -> Void
     ) {
         _viewModel = StateObject(
-            wrappedValue: .init(messageId: messageId)
+            wrappedValue: .init(messageId: messageId, goToClaimDetails: goToClaimDetails)
         )
     }
 
@@ -141,7 +142,7 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return SubmitClaimChatScreen(messageId: nil)
+    return SubmitClaimChatScreen(messageId: nil, goToClaimDetails: { _ in })
 }
 
 struct SubmitChatStepModel {
@@ -176,12 +177,15 @@ public class SubmitClaimChatViewModel: ObservableObject {
     var purchasePrice: [(id: String, value: String)] = []
     var selectedValue: [SingleSelectValue] = []
     @Published var binaryValues: [(id: String, value: String)] = []
+    var goToClaimDetails: (String) -> Void
 
     private let service = ClaimIntentService()
 
     init(
-        messageId: String?
+        messageId: String?,
+        goToClaimDetails: @escaping (String) -> Void
     ) {
+        self.goToClaimDetails = goToClaimDetails
         Task { await startClaim(for: messageId) }
     }
 
