@@ -20,33 +20,37 @@ struct SubmitClaimChatMesageView: View {
             alignment: alignment
         )
         .onTapGesture {
-            switch step.step.content {
-            case .form(model: let model):
-                if step.isEnabled {
-                    switch model.fields.first?.type {
-                    case .date:
-                        viewModel.isDatePickerPresented = .init(
-                            continueAction: {
-                                viewModel.dates.append(
-                                    (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
-                                )
-                                viewModel.isDatePickerPresented = nil
-                            },
-                            cancelAction: {
-                                viewModel.isDatePickerPresented = nil
-                            },
-                            date: $viewModel.selectedDate,
-                            config: .init(placeholder: "placeholder", title: "Select date")
-                        )
-                    default:
-                        break
-                    }
-                }
-            default:
-                break
-            }
+            onTap()
         }
         .environmentObject(viewModel)
+    }
+
+    func onTap() {
+        switch step.step.content {
+        case .form(model: let model):
+            if step.isEnabled {
+                switch model.fields.first?.type {
+                case .date:
+                    viewModel.isDatePickerPresented = .init(
+                        continueAction: {
+                            viewModel.dates.append(
+                                (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
+                            )
+                            viewModel.isDatePickerPresented = nil
+                        },
+                        cancelAction: {
+                            viewModel.isDatePickerPresented = nil
+                        },
+                        date: $viewModel.selectedDate,
+                        config: .init(placeholder: "placeholder", title: "Select date")
+                    )
+                default:
+                    break
+                }
+            }
+        default:
+            break
+        }
     }
 
     var maxWidth: CGFloat {
@@ -83,12 +87,7 @@ struct SubmitClaimChatMesageView: View {
                     hText(model.hint)
                 }
             } else {
-                switch step.step.content {
-                case let .audioRecording(model):
-                    SubmitClaimChatAudioRecorder(viewModel: viewModel, uploadURI: model.uploadURI)
-                default:
-                    EmptyView()
-                }
+                SubmitClaimChatAudioRecorder(viewModel: viewModel, uploadURI: model.uploadURI)
             }
         case .form(model: let model):
             FormView(step: step, model: model)
