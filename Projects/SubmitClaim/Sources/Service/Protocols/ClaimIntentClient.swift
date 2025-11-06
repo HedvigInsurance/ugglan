@@ -109,6 +109,7 @@ public enum ClaimIntentStepContent: Sendable {
     case task(model: ClaimIntentStepContentTask)
     case audioRecording(model: ClaimIntentStepContentAudioRecording)
     case summary(model: ClaimIntentStepContentSummary)
+    case outcome(model: ClaimIntentStepContentOutcome)
     case text
 }
 
@@ -241,5 +242,13 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
             self.title = title
             self.value = value
         }
+    }
+}
+
+public struct ClaimIntentStepContentOutcome: Sendable, Identifiable, Equatable {
+    let claimId: String
+
+    public init(claimId: String) {
+        self.claimId = claimId
     }
 }

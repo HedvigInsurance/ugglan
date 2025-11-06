@@ -53,6 +53,9 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
             url
           }
         }
+        ... on ClaimIntentStepContentOutcome {
+          claimId
+        }
 }
 
 fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {

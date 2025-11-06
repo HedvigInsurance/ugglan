@@ -178,6 +178,8 @@ extension ClaimIntentStepContent {
                     items: summary.items.map { .init(title: $0.title, value: $0.value) }
                 )
             )
+        } else if let outcome = fragment.asClaimIntentStepContentOutcome {
+            self = .outcome(model: .init(claimId: outcome.claimId))
         } else {
             self = .summary(model: .init(audioRecordings: [], fileUploads: [], items: []))
         }
