@@ -22,18 +22,16 @@ struct SubmitClaimSingleSelectScreen: View {
         itemPickerConfig = .init(
             items: values.compactMap { (object: $0, displayName: .init(title: $0.title)) },
             preSelectedItems: {
-
-                //                if let value = values.first(where: { $0 == viewModel.selectedValue }) {
-                //                    return [value]
-                //                }
-                //
-                //                if let value = values.first(where: { $0 == viewModel.selectedValue }) {
-                //                    return [value]
-                //                }
-                []
+                if let value = values.first(where: { $0.value == viewModel.selectedValue.last?.value }) {
+                    return [value]
+                }
+                return []
             },
             onSelected: { selectedValue in
                 if let object = selectedValue.first?.0 {
+                    if let index = viewModel.selectedValue.firstIndex(where: { $0.fieldId == object.fieldId }) {
+                        viewModel.selectedValue.remove(at: index)
+                    }
                     viewModel.selectedValue.append(object)
                 }
                 viewModel.isSelectItemPresented = nil

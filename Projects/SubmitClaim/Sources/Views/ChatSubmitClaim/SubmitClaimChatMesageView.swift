@@ -33,6 +33,10 @@ struct SubmitClaimChatMesageView: View {
                 case .date:
                     viewModel.isDatePickerPresented = .init(
                         continueAction: {
+                            if let index = viewModel.dates.firstIndex(where: { $0.id == model.fields.first?.id ?? "" })
+                            {
+                                viewModel.dates.remove(at: index)
+                            }
                             viewModel.dates.append(
                                 (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
                             )
@@ -210,7 +214,9 @@ struct FormView: View {
     func dateField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
         if let defaultValue = field.defaultValue {
             let date = (id: field.id, value: defaultValue.localDateToDate ?? Date())
-            viewModel.dates.append(date)
+            if viewModel.dates.first(where: { $0.id == field.id }) == nil {
+                viewModel.dates.append(date)
+            }
         }
 
         return hSection {
@@ -229,7 +235,9 @@ struct FormView: View {
         if let defaultValue = field.defaultValue {
             let defaultTitle = field.options.first(where: { $0.value == defaultValue })?.title ?? ""
             let value: SingleSelectValue = .init(fieldId: field.id, title: defaultTitle, value: defaultValue)
-            viewModel.selectedValue.append(value)
+            if viewModel.selectedValue.first(where: { $0.fieldId == field.id }) == nil {
+                viewModel.selectedValue.append(value)
+            }
         }
 
         return DropdownView(
@@ -279,7 +287,9 @@ struct FormView: View {
         .onAppear {
             if let defaultValue = field.defaultValue {
                 let value: (id: String, value: String) = (id: field.id, value: defaultValue)
-                viewModel.binaryValues.append(value)
+                if viewModel.binaryValues.first(where: { $0.id == field.id }) == nil {
+                    viewModel.binaryValues.append(value)
+                }
             }
         }
     }
@@ -297,8 +307,10 @@ struct FormView: View {
         .onAppear {
             if let defaultValue = field.defaultValue {
                 let value: (id: String, value: String) = (id: field.id, value: defaultValue)
-                viewModel.purchasePrice.append(value)
-                viewModel.selectedPrice = defaultValue
+                if viewModel.purchasePrice.first(where: { $0.id == field.id }) == nil {
+                    viewModel.purchasePrice.append(value)
+                    viewModel.selectedPrice = defaultValue
+                }
             }
         }
     }
