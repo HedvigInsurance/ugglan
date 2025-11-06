@@ -34,12 +34,12 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         if let verifyUrl = otpState.verifyUrl {
             do {
                 try await Task.sleep(seconds: 0.5)
-                let data =
-                    try await networkAuthRepository
-                    .submitOtp(
+                let data = try await asyncFunction(
+                    for: networkAuthRepository.submitOtp(
                         verifyUrl: verifyUrl.absoluteString,
                         otp: otpState.code
                     )
+                )
                 if let data = data as? SubmitOtpResultSuccess {
                     return data.loginAuthorizationCode.code
                 } else {
@@ -57,14 +57,14 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
 
         let email: String? = otpState.input
         do {
-            let data =
-                try await networkAuthRepository
-                .startLoginAttempt(
+            let data = try await asyncFunction(
+                for: networkAuthRepository.startLoginAttempt(
                     loginMethod: .otp,
                     market: .se,
                     personalNumber: personalNumber,
                     email: email
                 )
+            )
             try await Task.sleep(seconds: 0.5)
             if let otpProperties = data as? AuthAttemptResultOtpProperties,
                 let verifyUrl = URL(string: otpProperties.verifyUrl),
@@ -81,7 +81,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
 
     func resend(otp otpState: OTPState) async throws {
         if let resendUrl = otpState.resendUrl {
-            _ = try await networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
+            _ = try await asyncFunction(
+                for: networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
+            )
         } else {
             throw AuthenticationError.resendOtpFailed
         }
@@ -91,11 +93,13 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         do {
             let authUrl = Environment.current.authUrl
             AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
-            let data = try await networkAuthRepository.startLoginAttempt(
-                loginMethod: .seBankid,
-                market: .se,
-                personalNumber: nil,
-                email: nil
+            let data = try await asyncFunction(
+                for: networkAuthRepository.startLoginAttempt(
+                    loginMethod: .seBankid,
+                    market: .se,
+                    personalNumber: nil,
+                    email: nil
+                )
             )
 
             AuthenticationService.logAuthResourceStop(
@@ -107,8 +111,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             case let properties as AuthAttemptResultBankIdProperties:
                 updateStatusTo(.started(code: properties.autoStartToken))
                 let sequence = asyncSequence(
-                    for: networkAuthRepository
-                        .observeLoginStatus(statusUrl: .init(url: properties.statusUrl.url))
+                    for: networkAuthRepository.observeLoginStatus(statusUrl: .init(url: properties.statusUrl.url))
                 )
                 for try await status in sequence {
                     let key = UUID().uuidString
@@ -191,7 +194,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     func logout() async throws {
         do {
             if let token = try await ApolloClient.retreiveToken() {
-                let data = try await networkAuthRepository.revoke(token: token.refreshToken)
+                let data = try await asyncFunction(
+                    for: networkAuthRepository.revoke(token: token.refreshToken)
+                )
                 switch data {
                 case let error as RevokeResultError:
                     throw AuthenticationError.logoutFailure
@@ -209,7 +214,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     }
 
     func exchange(code: String) async throws {
-        let data = try await networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
+        let data = try await asyncFunction(
+            for: networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
+        )
         if let successResult = data as? AuthTokenResultSuccess {
             let tokenData = AuthorizationTokenDto(
                 accessToken: successResult.accessToken.token,
@@ -225,7 +232,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     }
 
     func exchange(refreshToken: String) async throws {
-        let data = try await networkAuthRepository.exchange(grant: RefreshTokenGrant(code: refreshToken))
+        let data = try await asyncFunction(
+            for: networkAuthRepository.exchange(grant: RefreshTokenGrant(code: refreshToken))
+        )
         switch data {
         case let success as AuthTokenResultSuccess:
             log.info("Refresh was sucessfull")
