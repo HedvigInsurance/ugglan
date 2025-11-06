@@ -212,21 +212,22 @@ struct FormView: View {
     }
 
     func dateField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
-        if let defaultValue = field.defaultValue {
-            let date = (id: field.id, value: defaultValue.localDateToDate ?? Date())
-            if viewModel.dates.first(where: { $0.id == field.id }) == nil {
-                viewModel.dates.append(date)
-                viewModel.selectedDate = date.value
-            }
-        }
-
-        return hSection {
+        hSection {
             hRow {
                 let date = viewModel.dates.first(where: { $0.id == field.id })?.value
                 dropDownView(
                     message: date?.displayDateDDMMMYYYYFormat ?? field.title,
                     stepId: field.id
                 )
+            }
+        }
+        .onAppear {
+            if let defaultValue = field.defaultValue {
+                let date = (id: field.id, value: defaultValue.localDateToDate ?? Date())
+                if viewModel.dates.first(where: { $0.id == field.id }) == nil {
+                    viewModel.dates.append(date)
+                    viewModel.selectedDate = date.value
+                }
             }
         }
     }
