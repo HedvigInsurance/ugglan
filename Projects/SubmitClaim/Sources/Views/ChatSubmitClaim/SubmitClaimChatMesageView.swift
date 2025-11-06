@@ -160,16 +160,7 @@ struct FormView: View {
                     ForEach(model.fields, id: \.id) { field in
                         switch field.type {
                         case .date:
-                            hSection {
-                                hRow {
-                                    let date = viewModel.dates.first(where: { $0.id == field.id })?.value
-                                    dropDownView(
-                                        message: date?.displayDateDDMMMYYYYFormat ?? field.title,
-                                        stepId: field.id
-                                    )
-                                }
-                            }
-
+                            dateField(for: field)
                         case .number:
                             hFloatingTextField(
                                 masking: .init(type: .digits),
@@ -182,47 +173,9 @@ struct FormView: View {
                             .disabled(!step.isEnabled)
 
                         case .singleSelect:
-                            let selectedValue = viewModel.selectedValue.first(where: { $0.fieldId == field.id })
-
-                            DropdownView(
-                                value: selectedValue?.title ?? "",
-                                placeHolder: field.title
-                            ) {
-                                let values: [SingleSelectValue] = field.options.map {
-                                    .init(fieldId: field.id, title: $0.title, value: $0.value)
-                                }
-                                viewModel.isSelectItemPresented = .init(id: field.id, values: values)
-                            }
-                            .disabled(!step.isEnabled)
+                            singleSelectField(for: field)
                         case .binary:
-                            hSection {
-                                hRow {
-                                    HStack(alignment: .center, spacing: .padding16) {
-                                        hText(field.title, style: .label)
-                                            .foregroundColor(binaryColor)
-                                            .fixedSize(horizontal: true, vertical: false)
-                                        Spacer()
-                                        ForEach(field.options, id: \.value) { option in
-
-                                            let currentBinaryValue = viewModel.binaryValues.first(where: {
-                                                $0.id == field.id
-                                            })
-
-                                            let enabled = currentBinaryValue?.value == option.value
-                                            hButton(
-                                                .small,
-                                                enabled ? .primaryAlt : .secondary,
-                                                content: .init(title: option.title)
-                                            ) {
-                                                viewModel.binaryValues.append((id: field.id, value: option.value))
-                                            }
-                                            .disabled(!step.isEnabled)
-                                        }
-                                        .fixedSize(horizontal: true, vertical: false)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                }
-                            }
+                            binaryField(for: field)
                         default:
                             EmptyView()
                         }
@@ -236,6 +189,83 @@ struct FormView: View {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    func dateField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+        if let defaultValue = field.defaultValue {
+            let date = (id: field.id, value: defaultValue.localDateToDate ?? Date())
+            viewModel.dates.append(date)
+        }
+
+        return hSection {
+            hRow {
+                let date = viewModel.dates.first(where: { $0.id == field.id })?.value
+                dropDownView(
+                    message: date?.displayDateDDMMMYYYYFormat ?? field.title,
+                    stepId: field.id
+                )
+            }
+        }
+    }
+
+    func singleSelectField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+        let selectedValue = viewModel.selectedValue.first(where: { $0.fieldId == field.id })
+        if let defaultValue = field.defaultValue {
+            let defaultTitle = field.options.first(where: { $0.value == defaultValue })?.title ?? ""
+            let value: SingleSelectValue = .init(fieldId: field.id, title: defaultTitle, value: defaultValue)
+            viewModel.selectedValue.append(value)
+        }
+
+        return DropdownView(
+            value: selectedValue?.title ?? "",
+            placeHolder: field.title
+        ) {
+            let values: [SingleSelectValue] = field.options.map {
+                .init(fieldId: field.id, title: $0.title, value: $0.value)
+            }
+            viewModel.isSelectItemPresented = .init(id: field.id, values: values)
+        }
+        .disabled(!step.isEnabled)
+    }
+
+    func binaryField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+        hSection {
+            hRow {
+                HStack(alignment: .center, spacing: .padding16) {
+                    hText(field.title, style: .label)
+                        .foregroundColor(binaryColor)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                    ForEach(field.options, id: \.value) { option in
+                        let currentBinaryValue = viewModel.binaryValues.first(where: {
+                            $0.id == field.id
+                        })
+
+                        let enabled = currentBinaryValue?.value == option.value
+                        hButton(
+                            .small,
+                            enabled ? .primaryAlt : .secondary,
+                            content: .init(title: option.title)
+                        ) {
+                            if let i = viewModel.binaryValues.firstIndex(where: { $0.id == field.id }) {
+                                viewModel.binaryValues[i].value = option.value
+                            } else {
+                                viewModel.binaryValues.append((id: field.id, value: option.value))
+                            }
+                        }
+                        .disabled(!step.isEnabled)
+                    }
+                    .fixedSize(horizontal: true, vertical: false)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+            }
+        }
+        .onAppear {
+            if let defaultValue = field.defaultValue {
+                let value: (id: String, value: String) = (id: field.id, value: defaultValue)
+                viewModel.binaryValues.append(value)
             }
         }
     }

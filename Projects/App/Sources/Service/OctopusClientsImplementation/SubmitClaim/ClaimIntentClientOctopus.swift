@@ -74,6 +74,13 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         let data = try await octopus.client.mutation(mutation: mutation)
 
         let currentStep = data?.claimIntentSubmitForm.intent?.currentStep
+
+        currentStep?.content.asClaimIntentStepContentForm?.fields
+            .forEach { field in
+                let defaultValue = field.defaultValue
+                print("defaultValue: \(defaultValue ?? "nil")")
+            }
+
         let id = data?.claimIntentSubmitForm.intent?.id ?? ""
         let sourceMessages: [SourceMessage] =
             data?.claimIntentSubmitForm.intent?.sourceMessages?
@@ -122,6 +129,12 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         let sourceMessages: [SourceMessage] =
             data?.claimIntentSubmitTask.intent?.sourceMessages?
             .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+        currentStep?.content.asClaimIntentStepContentForm?.fields
+            .forEach { field in
+                let defaultValue = field.defaultValue
+                print("defaultValue: \(defaultValue ?? "nil")")
+            }
 
         if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
             return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
