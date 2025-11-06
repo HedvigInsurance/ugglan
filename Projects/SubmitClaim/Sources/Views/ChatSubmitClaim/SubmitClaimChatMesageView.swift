@@ -37,9 +37,9 @@ struct SubmitClaimChatMesageView: View {
                             {
                                 viewModel.dates.remove(at: index)
                             }
-                            viewModel.dates.append(
-                                (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
-                            )
+                            let newDate = (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
+                            viewModel.dates.append(newDate)
+                            viewModel.selectedDate = newDate.value
                             viewModel.isDatePickerPresented = nil
                         },
                         cancelAction: {
@@ -216,6 +216,7 @@ struct FormView: View {
             let date = (id: field.id, value: defaultValue.localDateToDate ?? Date())
             if viewModel.dates.first(where: { $0.id == field.id }) == nil {
                 viewModel.dates.append(date)
+                viewModel.selectedDate = date.value
             }
         }
 
