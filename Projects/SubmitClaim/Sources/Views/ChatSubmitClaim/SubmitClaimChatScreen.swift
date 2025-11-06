@@ -189,10 +189,19 @@ public class SubmitClaimChatViewModel: ObservableObject {
             withAnimation {
                 currentStep = data.currentStep
                 intentId = data.id
+                data.sourceMessages.forEach { sourceMessage in
+                    allSteps.append(
+                        .init(
+                            step: .init(content: .text, id: sourceMessage.id, text: sourceMessage.text),
+                            sender: .member,
+                            isLoading: false
+                        )
+                    )
+                }
                 if let currentStep {
-                    allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: false))
                     switch currentStep.content {
                     case let .audioRecording(model):
+                        allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: false))
                         let memberAudioStep = SubmitChatStepModel(
                             step: .init(
                                 content: .audioRecording(model: .init(hint: model.hint, uploadURI: model.uploadURI)),
@@ -203,6 +212,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
                             isLoading: false
                         )
                         allSteps.append(memberAudioStep)
+                    case let .task(model):
+                        allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: !model.isCompleted))
+                        Task { await checkTaskRec() }
                     default:
                         break
                     }
