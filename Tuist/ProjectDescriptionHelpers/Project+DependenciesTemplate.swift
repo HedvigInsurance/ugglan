@@ -12,6 +12,7 @@ public enum ExternalDependencies: CaseIterable {
     case reveal
     case datadog
     case umbrella
+    case kmpNativeCoroutines
     case tagkit
     case introspect
     case svgkit
@@ -61,7 +62,11 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.25.0"))]
         case .umbrella:
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20251106025125"))
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.0-ALPHA-48"))
             ]
         case .tagkit:
             return [
@@ -146,6 +151,10 @@ public enum ExternalDependencies: CaseIterable {
         case .umbrella:
             return [
                 .package(product: "HedvigShared")
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(product: "KMPNativeCoroutinesAsync")
             ]
         case .tagkit:
             return [
