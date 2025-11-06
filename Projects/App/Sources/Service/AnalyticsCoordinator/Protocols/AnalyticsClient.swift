@@ -15,4 +15,5 @@ struct MemberLogDeviceModel: Encodable {
     let os: String
     let brand: String
     let model: String
+    let notificationEnabled: Bool?
 }

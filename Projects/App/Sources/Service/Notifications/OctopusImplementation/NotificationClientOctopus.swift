@@ -1,16 +1,6 @@
 import hCore
 import hGraphQL
 
-@MainActor
-public class NotificationService {
-    @Inject var service: NotificationClient
-
-    func register(for token: String) async throws {
-        log.info("NotificationService: register for token", error: nil, attributes: nil)
-        try await service.register(for: token)
-    }
-}
-
 class NotificationClientOctopus: NotificationClient {
     @Inject var octopus: hOctopus
 

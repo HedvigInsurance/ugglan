@@ -2,6 +2,7 @@ import Apollo
 import Combine
 import DatadogCore
 import SwiftUI
+import UserNotifications
 import hCore
 import hGraphQL
 
@@ -12,14 +13,30 @@ class AnalyticsService {
     func fetchAndSetUserId() async throws {
         log.info("AnalyticsService: fetchAndSetUserId", error: nil, attributes: nil)
         try await client.fetchAndSetUserId()
+        setDeviceInfo()
+    }
+
+    func setDeviceInfo() {
         setDeviceInfoTask = Task { [weak self] in
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let notificationEnabled: Bool = {
+                switch settings.authorizationStatus {
+                case .notDetermined, .denied:
+                    return false
+                default:
+                    return true
+                }
+            }()
             let memberLogDeviceModel = MemberLogDeviceModel(
                 os: UIDevice.current.systemName,
                 brand: "Apple",
-                model: UIDevice.modelName
+                model: UIDevice.modelName,
+                notificationEnabled: notificationEnabled
+
             )
             log.info("AnalyticsService: setDeviceInfo \(memberLogDeviceModel.asString)", error: nil, attributes: nil)
             await self?.client.setDeviceInfo(model: memberLogDeviceModel)
+            let ss = ""
         }
     }
 
@@ -78,7 +95,8 @@ extension MemberLogDeviceModel {
         OctopusGraphQL.MemberLogDeviceInput.init(
             os: self.os,
             brand: self.brand,
-            model: self.model
+            model: self.model,
+            pushNotificationEnabled: GraphQLNullable(optionalValue: self.notificationEnabled)
         )
     }
 }

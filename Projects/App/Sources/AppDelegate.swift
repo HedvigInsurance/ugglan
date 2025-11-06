@@ -24,6 +24,7 @@ import hGraphQL
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
     private var localizationObserverTask: AnyCancellable?
+    let analyticsService = AnalyticsService()
 
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
@@ -95,6 +96,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             let store: ProfileStore = globalPresentableStoreContainer.get()
             store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+            if await ApplicationContext.shared.isLoggedIn {
+                analyticsService.setDeviceInfo()
+            }
         }
     }
 
