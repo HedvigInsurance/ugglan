@@ -245,7 +245,7 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
     }
 }
 
-public struct ClaimIntentStepContentOutcome: Sendable, Identifiable, Equatable {
+public struct ClaimIntentStepContentOutcome: Sendable, Equatable {
     let claimId: String
 
     public init(claimId: String) {

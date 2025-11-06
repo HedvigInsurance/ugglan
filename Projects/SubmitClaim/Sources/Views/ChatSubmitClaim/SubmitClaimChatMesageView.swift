@@ -80,6 +80,13 @@ struct SubmitClaimChatMesageView: View {
             summaryView(model: model)
         case .text:
             hText(step.step.text)
+        case .outcome(model: let model):
+            VStack(spacing: .padding16) {
+                hText(step.step.text)
+                hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
+                    // TODO: GO TO CLAIM DETAILS
+                }
+            }
         }
     }
 
