@@ -75,12 +75,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         let currentStep = data?.claimIntentSubmitForm.intent?.currentStep
 
-        currentStep?.content.asClaimIntentStepContentForm?.fields
-            .forEach { field in
-                let defaultValue = field.defaultValue
-                print("defaultValue: \(defaultValue ?? "nil")")
-            }
-
         let id = data?.claimIntentSubmitForm.intent?.id ?? ""
         let sourceMessages: [SourceMessage] =
             data?.claimIntentSubmitForm.intent?.sourceMessages?

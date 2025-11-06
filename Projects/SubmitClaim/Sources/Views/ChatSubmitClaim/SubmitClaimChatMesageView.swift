@@ -80,9 +80,11 @@ struct SubmitClaimChatMesageView: View {
             summaryView(model: model)
         case .text:
             hText(step.step.text)
+                .fixedSize(horizontal: false, vertical: true)
         case .outcome(model: let model):
             VStack(spacing: .padding16) {
                 hText(step.step.text)
+                    .fixedSize(horizontal: false, vertical: true)
                 hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
                     // TODO: GO TO CLAIM DETAILS
                 }
@@ -119,7 +121,7 @@ struct SubmitClaimChatMesageView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             if viewModel.hasClaimBeenSubmitted == nil {
-                hButton(.medium, .primary, content: .init(title: "Yes, submit claim")) {
+                hButton(.medium, .primary, content: .init(title: "Submit your claim")) {
                     Task {
                         await viewModel.submitSummary()
                     }

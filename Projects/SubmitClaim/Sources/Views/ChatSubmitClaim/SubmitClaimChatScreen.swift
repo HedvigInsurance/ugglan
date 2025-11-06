@@ -81,8 +81,10 @@ public struct SubmitClaimChatScreen: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 SubmitClaimChatMesageView(step: step, viewModel: viewModel)
                                 switch step.step.content {
-                                case .summary: EmptyView()
-                                default: senderStamp(step: step)
+                                case .summary, .outcome:
+                                    EmptyView()
+                                default:
+                                    senderStamp(step: step)
                                 }
                             }
                             spacing(step.sender == .hedvig)
@@ -124,7 +126,7 @@ public struct SubmitClaimChatScreen: View {
                 Circle()
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Green.element)
-                hText("Hedvig AI Assistent", style: .label)
+                hText("Hedvig AI Assistant", style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .padding(.leading, .padding16)
@@ -373,7 +375,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
 
     func submitSummary() async {
         do {
-            _ = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "")
+            let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "")
+            allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+            currentStep = data.currentStep
         } catch {
             print("Failed sending summary:", error)
             withAnimation {
