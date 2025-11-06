@@ -26,7 +26,7 @@ struct ContractInformationView: View {
                         .transition(.opacity.combined(with: .scale))
                     VStack(spacing: 0) {
                         if let displayItems = contract.currentAgreement?.displayItems {
-                            hSection(displayItems, id: \.displayTitle) { item in
+                            hSection(displayItems, id: \.id) { item in
                                 hRow {
                                     hText(item.displayTitle)
                                 }
