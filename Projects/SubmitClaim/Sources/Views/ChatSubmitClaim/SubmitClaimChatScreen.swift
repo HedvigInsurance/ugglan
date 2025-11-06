@@ -60,6 +60,7 @@ public struct SubmitClaimChatScreen: View {
                     .environmentObject(viewModel)
                     .environmentObject(router)
             }
+            .colorScheme(.light)
         } else {
             // Fallback on earlier versions
         }
