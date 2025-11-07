@@ -272,6 +272,7 @@ extension TerminationFlowSurveyStepModel {
                 }
             let stepOptionFragment = layer1.fragments.flowTerminationSurveyStepOptionFragment
             options.append(.init(with: stepOptionFragment, subOptions: subOptions))
+            options.sort { first, _ in first.id == "MOVING" }
         }
         self.init(
             id: data.id,
@@ -308,7 +309,11 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
             let action = optionActionSuggestion.action.asFlowTerminationSurveyRedirectAction
         {
             let buttonTitle = optionActionSuggestion.buttonTitle
-            let description = optionActionSuggestion.description
+            let description =
+                switch (action) {
+                case .updateAddress: "Få 50% rabatt i 3 månader på ditt nya boende om du flyttar med Hedvig"
+                default: optionActionSuggestion.description
+                }
             return .action(
                 action: .init(
                     id: optionActionSuggestion.id,

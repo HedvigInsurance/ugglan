@@ -146,7 +146,7 @@ class SurveyScreenViewModel: ObservableObject {
     let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
-    @Published var continueEnabled = false
+    @Published var continueEnabled = true
 
     @Published var selected: String? {
         didSet {
@@ -169,6 +169,9 @@ class SurveyScreenViewModel: ObservableObject {
     init(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType) {
         self.options = options
         self.subtitleType = subtitleType
+        if options.map(\.id).contains("MOVING_NEW_ADDRESS") {
+            withAnimation { self.selected = options.first?.id }
+        }
     }
 
     private func handleSelection(of option: String?) {
