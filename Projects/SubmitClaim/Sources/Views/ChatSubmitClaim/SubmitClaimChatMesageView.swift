@@ -257,31 +257,35 @@ struct FormView: View {
     func binaryField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
         hSection {
             hRow {
-                HStack(alignment: .center, spacing: .padding16) {
+                VStack(spacing: .padding8) {
                     hText(field.title, style: .label)
                         .foregroundColor(binaryColor)
-                        .fixedSize(horizontal: false, vertical: true)
-                    Spacer()
-                    ForEach(field.options, id: \.value) { option in
-                        let currentBinaryValue = viewModel.binaryValues.first(where: {
-                            $0.id == field.id
-                        })
-
-                        let enabled = currentBinaryValue?.value == option.value
-                        hButton(
-                            .small,
-                            enabled ? .primaryAlt : .secondary,
-                            content: .init(title: option.title)
-                        ) {
-                            if let i = viewModel.binaryValues.firstIndex(where: { $0.id == field.id }) {
-                                viewModel.binaryValues[i].value = option.value
-                            } else {
-                                viewModel.binaryValues.append((id: field.id, value: option.value))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    HStack {
+                        ForEach(field.options, id: \.value) { option in
+                            let currentBinaryValue = viewModel.binaryValues.first(where: {
+                                $0.id == field.id
+                            })
+                            
+                            let enabled = currentBinaryValue?.value == option.value
+                            hButton(
+                                .small,
+                                enabled ? .primaryAlt : .secondary,
+                                content: .init(title: option.title)
+                            ) {
+                                if let i = viewModel.binaryValues.firstIndex(where: { $0.id == field.id }) {
+                                    viewModel.binaryValues[i].value = option.value
+                                } else {
+                                    viewModel.binaryValues.append((id: field.id, value: option.value))
+                                }
                             }
+                            // .disabled makes the button styling disappear
+                            // which means we don't see what we answered for old steps
+                            .allowsHitTesting(step.isEnabled)
+                            .opacity(step.isEnabled ? 1.0 : 0.6)
                         }
-                        .disabled(!step.isEnabled)
                     }
-                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
             }
@@ -384,7 +388,21 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
                                 suffix: nil,
                                 title: "",
                                 type: .date
-                            )
+                            ),
+                            .init(
+                                defaultValue: nil,
+                                id: "2",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [
+                                    .init(title: "Yes", value: "true"),
+                                    .init(title: "No", value: "false"),
+                                ],
+                                suffix: nil,
+                                title: "What do you want to pay",
+                                type: .binary
+                            ),
                         ])
                     ),
                     id: "id1",
