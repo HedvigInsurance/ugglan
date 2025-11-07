@@ -8,7 +8,6 @@ public struct SubmitClaimChatSuccessScreen: View {
     @EnvironmentObject var router: Router
 
     public var body: some View {
-
         hSection {
             VStack(spacing: .padding8) {
                 hCoreUIAssets.checkmarkFilled.view
