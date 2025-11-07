@@ -147,7 +147,7 @@ struct SubmitClaimChatMesageView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             if viewModel.hasClaimBeenSubmitted == nil {
-                hButton(.medium, .primary, content: .init(title: "Submit your claim")) {
+                hButton(.medium, .primary, content: .init(title: L10n.claimFlowChatSubmitClaimButton)) {
                     Task {
                         await viewModel.submitSummary()
                     }
@@ -272,7 +272,7 @@ struct FormView: View {
                             let currentBinaryValue = viewModel.binaryValues.first(where: {
                                 $0.id == field.id
                             })
-                            
+
                             let enabled = currentBinaryValue?.value == option.value
                             hButton(
                                 .small,
