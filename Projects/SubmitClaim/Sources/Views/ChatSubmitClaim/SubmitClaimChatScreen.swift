@@ -6,7 +6,6 @@ import hCoreUI
 @available(iOS 16.0, *)
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
-    @StateObject var chatInputViewModel = SubmitClaimChatInputViewModel()
     @EnvironmentObject var router: Router
 
     public init(
@@ -44,11 +43,6 @@ public struct SubmitClaimChatScreen: View {
         ) { model in
             SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
                 .embededInNavigation(options: .largeNavigationBar, tracking: self)
-        }
-        .modally(item: $viewModel.hasClaimBeenSubmitted) { claim in
-            SubmitClaimChatSuccessScreen(summaryModel: claim)
-                .environmentObject(viewModel)
-                .environmentObject(router)
         }
         .colorScheme(.light)
     }
@@ -365,25 +359,6 @@ public class SubmitClaimChatViewModel: ObservableObject {
             currentStep = data.currentStep
         } catch {
             print("Failed sending summary:", error)
-            withAnimation {
-                switch allSteps.last?.step.content {
-                case let .summary(model):
-                    hasClaimBeenSubmitted = model
-                default:
-                    break
-                }
-            }
         }
     }
-}
-
-enum SubmitClaimChatMesageSender {
-    case hedvig
-    case member
-}
-
-enum SubmitClaimChatMesageType: Equatable, Hashable {
-    case text(message: String)
-    case audio
-    case date
 }
