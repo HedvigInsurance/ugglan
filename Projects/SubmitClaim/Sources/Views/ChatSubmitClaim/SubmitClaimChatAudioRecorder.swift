@@ -254,7 +254,6 @@ private func uploadAudio(
     requestTimeout: TimeInterval = 20,
     resourceTimeout: TimeInterval = 60
 ) async throws -> UUID {
-
     let fileData = try Data(contentsOf: fileURL)
     logger.info(
         "Uploading audio. size=\(fileData.count, privacy: .public) bytes name=\(fileURL.lastPathComponent, privacy: .public)"
