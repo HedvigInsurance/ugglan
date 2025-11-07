@@ -71,6 +71,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
+    @Published public var showYearReview = false
 
     @Published public var navBarItems = NavBarItems()
 

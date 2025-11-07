@@ -481,6 +481,12 @@ struct HomeTab: View {
                 )
             }
         )
+        .modally(
+            presented: $homeNavigationVm.showYearReview
+        ) {
+            StoriesScreen(stories: StoriesScreen.stories)
+                .embededInNavigation(options: .navigationBarHidden, tracking: "App Review")
+        }
     }
 
     private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {

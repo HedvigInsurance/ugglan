@@ -23,6 +23,25 @@ struct HomeBottomScrollView: View {
             vm: scrollVM,
             content: { content in
                 switch content.id {
+                case .appReview2024:
+                    InfoCard(text: "CHECK REVIEW", type: .info)
+                        .buttons(
+                            [
+                                .init(
+                                    buttonTitle: "Show",
+                                    buttonAction: {
+                                        navigationVm.showYearReview = true
+                                        //                                    UserDefaults.appReview2024visited = true
+                                    }
+                                ),
+                                .init(
+                                    buttonTitle: "Hide",
+                                    buttonAction: {
+                                        UserDefaults.appReview2024visited = false
+                                    }
+                                ),
+                            ]
+                        )
                 case .payment:
                     ConnectPaymentCardView()
                         .environmentObject(navigationVm.connectPaymentVm)
@@ -55,6 +74,7 @@ struct HomeBottomScrollView: View {
 @MainActor
 class HomeBottomScrollViewModel: ObservableObject {
     @Published var items = [InfoCardView]()
+
     private var localItems = Set<InfoCardView>() {
         didSet {
             withAnimation {
@@ -66,6 +86,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
+        handleAppReview()
         handlePayments()
         handleMissingCoInsured()
         handleImportantMessages()
@@ -73,6 +94,23 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleTerminatedMessage()
         handleUpdateOfMemberId()
         handleUpdateContactInfo()
+    }
+
+    private func handleAppReview() {
+        if UserDefaults.appReview2024visited == nil {
+            handleItem(.appReview2024, with: true)
+        } else {
+            handleItem(.appReview2024, with: false)
+        }
+        UserDefaults.$appReview2024visited
+            .sink { [weak self] value in
+                if value == nil {
+                    self?.handleItem(.appReview2024, with: true)
+                } else {
+                    self?.handleItem(.appReview2024, with: false)
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -275,6 +313,7 @@ struct InfoCardView: Identifiable, Hashable {
 }
 
 enum InfoCardType: Hashable, Comparable {
+    case appReview2024
     case payment
     case missingCoInsured
     case importantMessage(message: String)
@@ -282,4 +321,46 @@ enum InfoCardType: Hashable, Comparable {
     case deletedView
     case terminated
     case updateContactInfo
+}
+
+@propertyWrapper
+public struct UserDefault<Value> {
+    let key: String
+    let defaultValue: Value
+    var container: UserDefaults = .standard
+    private let publisher = PassthroughSubject<Value, Never>()
+
+    public var wrappedValue: Value {
+        get {
+            container.object(forKey: key) as? Value ?? defaultValue
+        }
+        set {
+            // Check whether we're dealing with an optional and remove the object if the new value is nil.
+            if let optional = newValue as? AnyOptional, optional.isNil {
+                container.removeObject(forKey: key)
+            } else {
+                container.set(newValue, forKey: key)
+            }
+            publisher.send(newValue)
+        }
+    }
+
+    public var projectedValue: AnyPublisher<Value, Never> {
+        publisher.eraseToAnyPublisher()
+    }
+}
+/// Allows to match for optionals with generics that are defined as non-optional.
+public protocol AnyOptional {
+    /// Returns `true` if `nil`, otherwise `false`.
+    var isNil: Bool { get }
+}
+
+extension Optional: AnyOptional {
+    public var isNil: Bool { self == nil }
+}
+
+@MainActor
+extension UserDefaults {
+    @UserDefault(key: "appReview2024visited", defaultValue: nil)
+    public static var appReview2024visited: Bool?
 }

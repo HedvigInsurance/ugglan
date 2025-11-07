@@ -30,6 +30,7 @@ public struct HomeState: StateProtocol {
     public var helpCenterFAQModel: HelpCenterFAQModel?
     public var toolbarOptionTypes: [ToolbarOptionType] = []
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
+
     public var upcomingRenewalContracts: [HomeContract] {
         contracts.filter { $0.upcomingRenewal != nil }
     }
