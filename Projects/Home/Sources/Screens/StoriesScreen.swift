@@ -12,34 +12,32 @@ public struct StoriesScreen: View {
 
     public var body: some View {
         hSection {
-            VStack {
-                HStack {
-                    ForEach(vm.stories) { story in
-                        StoryProgressView(vm: vm, story: story)
+            GeometryReader { proxy in
+                VStack {
+                    HStack(spacing: .padding4) {
+                        ForEach(vm.stories) { story in
+                            StoryProgressView(vm: vm, story: story)
+                        }
                     }
-                }
-                Spacer()
-                ZStack {
-                    ForEach(vm.stories) { story in
-                        StoryView(vm: vm, story: story)
+                    Spacer()
+                    ZStack {
+                        ForEach(vm.stories) { story in
+                            StoryView(vm: vm, story: story)
+                        }
                     }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { gestureValue in
-                            print(gestureValue)
-                            if gestureValue.location.x < 100 {
-                                vm.goToPreviousStory()
-                            } else {
-                                vm.goToNextStory()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { gestureValue in
+                                vm.gestureStart()
                             }
-                        }
-                        .onEnded { gestureValue in
-                        }
-                )
-                .disabled(vm.gestureDisabled)
+                            .onEnded { gestureValue in
+                                vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
+                            }
+                    )
+                    .disabled(vm.gestureDisabled)
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -59,9 +57,11 @@ struct StoryProgressView: View {
             if vm.currentStory == story {
                 ProgressView(value: vm.animateProgress)
                     .progressViewStyle(hProgressViewStyle())
+                    .transition(.opacity)
             } else if vm.seenStories.contains(story) {
                 ProgressView(value: 1)
                     .progressViewStyle(hProgressViewStyle())
+                    .transition(.opacity)
             }
         }
     }
@@ -72,37 +72,51 @@ struct StoryView: View {
     @State private var showTitle = false
     @State private var showSubtitle = false
     @State private var showImage = false
-    @State private var cancellable: Task<(), any Error>?
+    @State private var showThankYouButton = false
 
+    @State private var cancellable: Task<(), any Error>?
+    @EnvironmentObject var router: Router
     var body: some View {
-        VStack {
-            Spacer()
-            if showTitle {
-                hText(story.title, style: .heading3)
-                    .transition(
-                        .asymmetric(
-                            insertion: .move(edge: .trailing).combined(with: .opacity),
-                            removal: .move(edge: .leading).combined(with: .opacity)
-                        )
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        ZStack {
+            VStack {
+                if showTitle {
+                    hText(story.title, style: .heading3)
+                        //                        .transition(
+                        //                            .asymmetric(
+                        //                                insertion: .move(edge: .trailing).combined(with: .opacity),
+                        //                                removal: .move(edge: .leading).combined(with: .opacity)
+                        //                            )
+                        //                        )
+                        .transition(.opacity)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                if showSubtitle {
+                    hText(story.subtitle)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                        //                        .transition(
+                        //                            .asymmetric(
+                        //                                insertion: .move(edge: .trailing).combined(with: .opacity),
+                        //                                removal:
+                        //                                        .move(
+                        //                                            edge:
+                        //                                                    .leading
+                        //                                        )
+                        //                                        .combined(with: .opacity)
+                        //                            )
+                        //                        )
+                        .transition(.opacity)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
             }
-            if showSubtitle {
-                hText(story.subtitle)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .transition(
-                        .asymmetric(
-                            insertion: .move(edge: .trailing).combined(with: .opacity),
-                            removal:
-                                .move(
-                                    edge:
-                                        .leading
-                                )
-                                .combined(with: .opacity)
-                        )
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
+            VStack {
+                Spacer()
+                if showThankYouButton {
+                    hButton(.large, .secondary, content: .init(title: "Tack!")) {
+                        router.dismiss()
+                    }
+                }
             }
             if showImage {
                 if story.mimeType == .GIF {
@@ -110,12 +124,13 @@ struct StoryView: View {
                         .targetCache(ImageCache.default)
                         .frame(width: 300, height: 300)
                         .contentShape(Rectangle())
-                        .transition(
-                            .asymmetric(
-                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                                removal: .move(edge: .leading).combined(with: .opacity)
-                            )
-                        )
+                        //                        .transition(
+                        //                            .asymmetric(
+                        //                                insertion: .move(edge: .trailing).combined(with: .opacity),
+                        //                                removal: .move(edge: .leading).combined(with: .opacity)
+                        //                            )
+                        //                        )
+                        .transition(.opacity)
                         .fixedSize(horizontal: false, vertical: true)
                 } else {
                     KFImage(story.imageUrl)
@@ -132,15 +147,19 @@ struct StoryView: View {
                         .cornerRadius(.padding16)
                         .frame(width: 350)
                         .contentShape(Rectangle())
-                        .transition(
-                            .asymmetric(
-                                insertion: .move(edge: .trailing).combined(with: .opacity).combined(with: .scale),
-                                removal: .move(edge: .leading).combined(with: .opacity).combined(with: .scale)
-                            )
-                        )
+                        //                        .transition(
+                        //                            .asymmetric(
+                        //                                insertion: .move(edge: .trailing)
+                        //                                    .combined(with: .offset(x: 0, y: CGFloat(Int.random(in: 50...100))))
+                        //                                    .combined(with: .opacity),
+                        //                                removal: .move(edge: .leading)
+                        //                                    .combined(with: .offset(x: 0, y: CGFloat(Int.random(in: 50...100))))
+                        //                                    .combined(with: .opacity)
+                        //                            )
+                        //                        )
+                        .transition(.opacity)
                 }
             }
-            Spacer()
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, .padding16)
@@ -156,19 +175,20 @@ struct StoryView: View {
         cancellable?.cancel()
         cancellable = Task {
             withAnimation {
+                showThankYouButton = false
                 showImage = false
             }
-            try await Task.sleep(seconds: 0.1)
+            try await Task.sleep(seconds: 0.2)
             withAnimation {
                 showSubtitle = false
             }
 
-            try await Task.sleep(seconds: 0.2)
+            try await Task.sleep(seconds: 0.3)
             withAnimation {
                 showTitle = false
             }
             if vm.currentStory == story {
-                try await Task.sleep(seconds: 1)
+                try await Task.sleep(seconds: 0.5)
                 try Task.checkCancellation()
                 withAnimation {
                     showImage = true
@@ -184,6 +204,13 @@ struct StoryView: View {
                 withAnimation {
                     showSubtitle = true
                 }
+                if vm.stories.last == story && vm.currentStory == story {
+                    try await Task.sleep(seconds: 2)
+                    try Task.checkCancellation()
+                    withAnimation {
+                        showThankYouButton = true
+                    }
+                }
             }
         }
     }
@@ -196,13 +223,18 @@ class StoriesScreenViewModel: ObservableObject {
     @Published var currentStory: Story! {
         didSet {
             automaticProgressTask?.cancel()
-            setNextStoryAutomatic()
+            automaticProgressTask = nil
+            setNextStoryAutomatic(forDuration: 10)
         }
     }
+
+    private var timeStampOfStart: Date?
+    private var timeStampOfEnd: Date?
+
     @Published var currentStoryProgress: Float = 0
     @Published var gestureDisabled = false
     @Published var animateProgress: Double = 0
-    @State private var automaticProgressTask: Task<(), any Error>?
+    private var automaticProgressTask: Task<(), any Error>?
 
     var currentProgressTask: Task<Void, Never>?
 
@@ -212,13 +244,41 @@ class StoriesScreenViewModel: ObservableObject {
         self.currentStory = stories.first!
     }
 
-    private func setNextStoryAutomatic() {
-        automaticProgressTask = Task { [weak self] in
-            try await Task.sleep(seconds: 1)
-            withAnimation(.easeInOut(duration: 5)) {
-                self?.animateProgress = 1
+    func gestureStart() {
+        if timeStampOfStart == nil {
+            timeStampOfStart = Date()
+            automaticProgressTask?.cancel()
+        }
+    }
+
+    func gestureEnded(withOffset: CGFloat) {
+        timeStampOfEnd = Date()
+        if let timeStampOfStart, let timeStampOfEnd {
+            let diff = timeStampOfEnd.timeIntervalSince(timeStampOfStart)
+            if diff < 0.1 {
+                if withOffset < 0.5 {
+                    goToPreviousStory()
+                } else {
+                    goToNextStory()
+                }
+            } else {
+                let duration = 10 - animateProgress * 10
+                setNextStoryAutomatic(forDuration: Float(duration))
             }
-            try await Task.sleep(seconds: 5)
+            self.timeStampOfStart = nil
+            self.timeStampOfEnd = nil
+        }
+    }
+
+    private func setNextStoryAutomatic(forDuration: Float) {
+        automaticProgressTask = Task { [weak self] in
+            try Task.checkCancellation()
+            let from = Int(100 - forDuration * 10)
+            for i in from...100 {
+                try Task.checkCancellation()
+                self?.animateProgress = Double(i) / 100
+                try await Task.sleep(nanoseconds: 100_000_000)
+            }
             try Task.checkCancellation()
             self?.goToNextStory()
         }
@@ -226,19 +286,17 @@ class StoriesScreenViewModel: ObservableObject {
 
     func goToNextStory() {
         gestureDisabled = true
-        seenStories.append(currentStory)
-        withAnimation {
-            animateProgress = 1
-        }
-
         Task {
             if let currentStoryIndex = stories.firstIndex(where: { $0 == currentStory }) {
                 if currentStoryIndex < stories.count - 1 {
-                    currentStory = stories[currentStoryIndex + 1]
-                    animateProgress = 0
+                    seenStories.append(currentStory)
+                    withAnimation {
+                        currentStory = stories[currentStoryIndex + 1]
+                        animateProgress = 0
+                    }
                 }
             }
-            try await Task.sleep(seconds: 0.1)
+            try await Task.sleep(seconds: 0.05)
             gestureDisabled = false
         }
     }
@@ -246,14 +304,16 @@ class StoriesScreenViewModel: ObservableObject {
     func goToPreviousStory() {
         gestureDisabled = true
         Task {
-            seenStories.removeAll(where: { $0 == currentStory })
             if let currentStoryIndex = stories.firstIndex(where: { $0 == currentStory }) {
+                seenStories.removeAll(where: { $0 == currentStory })
                 if currentStoryIndex > 0 {
                     currentStory = stories[currentStoryIndex - 1]
                     animateProgress = 0
+                } else {
+                    setNextStoryAutomatic(forDuration: 10)
                 }
             }
-            try await Task.sleep(seconds: 1)
+            try await Task.sleep(seconds: 0.05)
             gestureDisabled = false
         }
     }
@@ -277,6 +337,7 @@ public struct Story: Identifiable, Equatable {
 
 #Preview {
     StoriesScreen(stories: StoriesScreen.stories)
+        .environmentObject(Router())
 }
 
 extension StoriesScreen {

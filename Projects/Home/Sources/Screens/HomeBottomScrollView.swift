@@ -24,24 +24,27 @@ struct HomeBottomScrollView: View {
             content: { content in
                 switch content.id {
                 case .appReview2024:
-                    InfoCard(text: "CHECK REVIEW", type: .info)
-                        .buttons(
-                            [
-                                .init(
-                                    buttonTitle: "Show",
-                                    buttonAction: {
-                                        navigationVm.showYearReview = true
-                                        //                                    UserDefaults.appReview2024visited = true
-                                    }
-                                ),
-                                .init(
-                                    buttonTitle: "Hide",
-                                    buttonAction: {
-                                        UserDefaults.appReview2024visited = false
-                                    }
-                                ),
-                            ]
-                        )
+                    InfoCard(
+                        text: "Its time to look back what amazing things happened to you in this year!",
+                        type: .campaign
+                    )
+                    .buttons(
+                        [
+                            .init(
+                                buttonTitle: "Show",
+                                buttonAction: {
+                                    navigationVm.showYearReview = true
+                                    UserDefaults.appReview2024visited = true
+                                }
+                            ),
+                            .init(
+                                buttonTitle: "Hide",
+                                buttonAction: {
+                                    UserDefaults.appReview2024visited = false
+                                }
+                            ),
+                        ]
+                    )
                 case .payment:
                     ConnectPaymentCardView()
                         .environmentObject(navigationVm.connectPaymentVm)
