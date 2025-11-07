@@ -8,7 +8,7 @@ struct SubmitClaimChatMesageView: View {
 
     var body: some View {
         Group {
-            mainContent()
+            mainContent
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, .padding12)
@@ -20,42 +20,7 @@ struct SubmitClaimChatMesageView: View {
             maxWidth: maxWidth,
             alignment: alignment
         )
-        .onTapGesture {
-            onTap()
-        }
         .environmentObject(viewModel)
-    }
-
-    func onTap() {
-        switch step.step.content {
-        case .form(model: let model):
-            if step.isEnabled {
-                switch model.fields.first?.type {
-                case .date:
-                    viewModel.isDatePickerPresented = .init(
-                        continueAction: {
-                            if let index = viewModel.dates.firstIndex(where: { $0.id == model.fields.first?.id ?? "" })
-                            {
-                                viewModel.dates.remove(at: index)
-                            }
-                            let newDate = (id: model.fields.first?.id ?? "", value: viewModel.selectedDate)
-                            viewModel.dates.append(newDate)
-                            viewModel.selectedDate = newDate.value
-                            viewModel.isDatePickerPresented = nil
-                        },
-                        cancelAction: {
-                            viewModel.isDatePickerPresented = nil
-                        },
-                        date: $viewModel.selectedDate,
-                        config: .init(placeholder: "placeholder", title: "Select date")
-                    )
-                default:
-                    break
-                }
-            }
-        default:
-            break
-        }
     }
 
     var maxWidth: CGFloat {
@@ -83,7 +48,7 @@ struct SubmitClaimChatMesageView: View {
     }
 
     @ViewBuilder
-    func mainContent() -> some View {
+    var mainContent: some View {
         switch step.step.content {
         case let .audioRecording(model):
             if step.sender == .hedvig {
@@ -234,6 +199,26 @@ struct FormView: View {
                     viewModel.dates.append(date)
                     viewModel.selectedDate = date.value
                 }
+            }
+        }
+        .onTapGesture {
+            if step.isEnabled {
+                viewModel.isDatePickerPresented = .init(
+                    continueAction: {
+                        if let index = viewModel.dates.firstIndex(where: { $0.id == field.id }) {
+                            viewModel.dates.remove(at: index)
+                        }
+                        let newDate = (id: field.id, value: viewModel.selectedDate)
+                        viewModel.dates.append(newDate)
+                        viewModel.selectedDate = newDate.value
+                        viewModel.isDatePickerPresented = nil
+                    },
+                    cancelAction: {
+                        viewModel.isDatePickerPresented = nil
+                    },
+                    date: $viewModel.selectedDate,
+                    config: .init(placeholder: "placeholder", title: "Select date")
+                )
             }
         }
     }

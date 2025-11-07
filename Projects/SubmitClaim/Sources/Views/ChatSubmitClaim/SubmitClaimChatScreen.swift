@@ -146,7 +146,6 @@ public class SubmitClaimChatViewModel: ObservableObject {
 
     @Published var selectedDate = Date()
     @Published var selectedPrice = ""
-    @Published var selectedBinaryValue: String = ""
 
     var dates: [(id: String, value: Date)] = []
     var purchasePrice: [(id: String, value: String)] = []
