@@ -60,7 +60,7 @@ struct SubmitClaimChatMesageView: View {
     var maxWidth: CGFloat {
         if step.sender == .hedvig {
             switch step.step.content {
-            case .outcome:
+            case .outcome, .summary:
                 return .infinity
             default:
                 return 300
@@ -183,19 +183,25 @@ struct FormView: View {
             hText(step.step.text)
         } else {
             VStack(spacing: .padding8) {
-                VStack(alignment: .center, spacing: .padding4) {
+                VStack(alignment: .center, spacing: .padding8) {
                     ForEach(model.fields, id: \.id) { field in
-                        switch field.type {
-                        case .date:
-                            dateField(for: field)
-                        case .number:
-                            numberField(for: field)
-                        case .singleSelect:
-                            singleSelectField(for: field)
-                        case .binary:
-                            binaryField(for: field)
-                        default:
-                            EmptyView()
+                        ZStack(alignment: .topLeading) {
+                            switch field.type {
+                            case .date:
+                                dateField(for: field)
+                            case .number:
+                                numberField(for: field)
+                            case .singleSelect:
+                                singleSelectField(for: field)
+                            case .binary:
+                                binaryField(for: field)
+                            default:
+                                EmptyView()
+                            }
+                            if field.defaultValue != nil {
+                                AiFillSparkles()
+                                    .offset(x: -9, y: -4)
+                            }
                         }
                     }
                     .hWithoutHorizontalPadding([.section])
@@ -352,6 +358,24 @@ struct FormView: View {
     }
 }
 
+struct AiFillSparkles: View {
+    @State private var isVisible = false
+    var body: some View {
+        Image(systemName: "sparkles")
+            .foregroundColor(hSignalColor.Amber.element)
+            .font(.system(size: 14))
+            .padding(.padding4)
+            .background(Circle().fill(hSignalColor.Amber.fill))
+            .scaleEffect(isVisible ? 1.0 : 0.5)
+            .opacity(isVisible ? 1.0 : 0.0)
+            // Animate both scale and opacity
+            .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 0), value: isVisible)
+            .onAppear {
+                isVisible = true
+            }
+    }
+}
+
 enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
     static var last: SubmitClaimChatFieldType {
         SubmitClaimChatFieldType.purchasePrice
@@ -380,17 +404,17 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
                         model: .init(fields: [
                             .init(
                                 defaultValue: nil,
-                                id: "",
+                                id: "1",
                                 isRequired: true,
                                 maxValue: nil,
                                 minValue: nil,
                                 options: [],
                                 suffix: nil,
-                                title: "",
+                                title: "Date",
                                 type: .date
                             ),
                             .init(
-                                defaultValue: nil,
+                                defaultValue: "false",
                                 id: "2",
                                 isRequired: true,
                                 maxValue: nil,
@@ -400,8 +424,22 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
                                     .init(title: "No", value: "false"),
                                 ],
                                 suffix: nil,
-                                title: "What do you want to pay",
+                                title: "Are you a good person",
                                 type: .binary
+                            ),
+                            .init(
+                                defaultValue: "false",
+                                id: "3",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [
+                                    .init(title: "Yes", value: "true"),
+                                    .init(title: "No", value: "false"),
+                                ],
+                                suffix: nil,
+                                title: "Say yes or no",
+                                type: .singleSelect
                             ),
                         ])
                     ),
