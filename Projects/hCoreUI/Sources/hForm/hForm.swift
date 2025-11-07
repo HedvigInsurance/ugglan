@@ -52,6 +52,12 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
+                        case .aiPoweredGradient:
+                            hCoreUIAssets.submitClaimBg.view
+                                .resizable()
+                                .scaledToFill()
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
                         case .default:
                             if contentPosition == .compact, isLiquidGlassEnabled {
                                 Color.clear
@@ -87,6 +93,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         GeometryReader { geometry in
                             Group {
                                 if contentPosition == .compact, isLiquidGlassEnabled {
+                                    Color.clear
+                                } else if case .aiPoweredGradient = bottomBackgroundStyle {
                                     Color.clear
                                 } else {
                                     hBackgroundColor.primary
@@ -389,6 +397,7 @@ extension View {
 public enum hFormBottomBackgroundStyle {
     case `default`
     case gradient(from: any hColor, to: any hColor)
+    case aiPoweredGradient
 }
 
 @MainActor

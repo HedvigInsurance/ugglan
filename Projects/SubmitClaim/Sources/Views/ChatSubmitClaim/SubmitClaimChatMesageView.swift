@@ -9,6 +9,7 @@ struct SubmitClaimChatMesageView: View {
     var body: some View {
         Group {
             mainContent()
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, .padding12)
         .padding(.vertical, .padding8)
@@ -153,7 +154,6 @@ struct SubmitClaimChatMesageView: View {
                 }
             }
         }
-
     }
 
     @hColorBuilder

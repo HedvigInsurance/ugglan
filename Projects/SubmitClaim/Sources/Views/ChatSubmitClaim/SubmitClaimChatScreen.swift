@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@available(iOS 16.0, *)
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @StateObject var chatInputViewModel = SubmitClaimChatInputViewModel()
@@ -18,90 +19,67 @@ public struct SubmitClaimChatScreen: View {
     }
 
     public var body: some View {
-        if #available(iOS 16.0, *) {
-            ZStack {
-                hCoreUIAssets.submitClaimBg.view
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-                    .accessibilityHidden(true)
-
-                ScrollViewReader { proxy in
-                    mainContent
-                        .task(id: viewModel.allSteps.last?.step.id) {
-                            try? await Task.sleep(nanoseconds: 50_000_000)
-                            withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-                        }
-                        .onAppear {
-                            proxy.scrollTo("BOTTOM", anchor: .bottom)
-                        }
+        ScrollViewReader { proxy in
+            mainContent
+                .task(id: viewModel.allSteps.last?.step.id) {
+                    try? await Task.sleep(nanoseconds: 50_000_000)
+                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
                 }
-            }
-            .ignoresSafeArea()
-            .toolbarBackground(.hidden, for: .navigationBar)
-            .toolbarBackground(.hidden, for: .automatic)
-            .detent(
-                item: $viewModel.isDatePickerPresented,
-                transitionType: .detent(style: [.height])
-            ) { datePickerVm in
-                DatePickerView(vm: datePickerVm)
-                    .embededInNavigation(options: .largeNavigationBar, tracking: self)
-            }
-            .detent(
-                item: $viewModel.isSelectItemPresented,
-                transitionType: .detent(style: [.height])
-            ) { model in
-                SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
-                    .embededInNavigation(options: .largeNavigationBar, tracking: self)
-            }
-            .modally(item: $viewModel.hasClaimBeenSubmitted) { claim in
-                SubmitClaimChatSuccessScreen(summaryModel: claim)
-                    .environmentObject(viewModel)
-                    .environmentObject(router)
-            }
-            .colorScheme(.light)
-        } else {
-            // Fallback on earlier versions
+                .onAppear {
+                    proxy.scrollTo("BOTTOM", anchor: .bottom)
+                }
         }
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbarBackground(.hidden, for: .automatic)
+        .detent(
+            item: $viewModel.isDatePickerPresented,
+            transitionType: .detent(style: [.height])
+        ) { datePickerVm in
+            DatePickerView(vm: datePickerVm)
+                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+        }
+        .detent(
+            item: $viewModel.isSelectItemPresented,
+            transitionType: .detent(style: [.height])
+        ) { model in
+            SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
+                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+        }
+        .modally(item: $viewModel.hasClaimBeenSubmitted) { claim in
+            SubmitClaimChatSuccessScreen(summaryModel: claim)
+                .environmentObject(viewModel)
+                .environmentObject(router)
+        }
+        .colorScheme(.light)
     }
 
     private var mainContent: some View {
         hForm {
-            ZStack(alignment: .topLeading) {
-                hCoreUIAssets.submitClaimBg.view
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-                    .accessibilityHidden(true)
-
-                VStack(spacing: .padding16) {
-                    ForEach(viewModel.allSteps, id: \.step.id) { step in
-                        HStack {
-                            spacing(step.sender == .member)
-                            VStack(alignment: .leading, spacing: 0) {
-                                SubmitClaimChatMesageView(step: step, viewModel: viewModel)
-                                switch step.step.content {
-                                case .summary, .outcome:
-                                    EmptyView()
-                                default:
-                                    senderStamp(step: step)
-                                }
+            VStack(spacing: .padding16) {
+                ForEach(viewModel.allSteps, id: \.step.id) { step in
+                    HStack {
+                        spacing(step.sender == .member)
+                        VStack(alignment: .leading, spacing: 0) {
+                            SubmitClaimChatMesageView(step: step, viewModel: viewModel)
+                            switch step.step.content {
+                            case .summary, .outcome:
+                                EmptyView()
+                            default:
+                                senderStamp(step: step)
                             }
-                            spacing(step.sender == .hedvig)
                         }
-                        .id(step.step.id)
+                        spacing(step.sender == .hedvig)
                     }
-
-                    Color.clear.frame(height: 1).id("BOTTOM")
+                    .id(step.step.id)
                 }
-                .padding(.horizontal, .padding16)
-                .padding(.top, 120)
-                .frame(maxWidth: .infinity, alignment: .topLeading)
+
+                Color.clear.frame(height: 1).id("BOTTOM")
             }
+            .padding(.horizontal, .padding16)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .hFormContentPosition(.top)
+        .hFormBottomBackgroundColor(.aiPoweredGradient)
     }
 
     private var loadingView: some View {
@@ -136,10 +114,12 @@ public struct SubmitClaimChatScreen: View {
     }
 }
 
+@available(iOS 16.0, *)
 extension SubmitClaimChatScreen: TrackingViewNameProtocol {
     public var nameForTracking: String { "" }
 }
 
+@available(iOS 16.0, *)
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
