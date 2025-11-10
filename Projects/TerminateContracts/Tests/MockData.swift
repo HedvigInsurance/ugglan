@@ -56,7 +56,7 @@ struct MockData {
         sendContinueOnDecom: @escaping SendContinueOnDecom = { context in
             .init(
                 context: context,
-                step: .setTerminationSurveyStep(model: .init(id: "id", options: [], subTitleType: .generic)),
+                step: .setTerminationSurveyStep(model: .init(options: [], subTitleType: .generic)),
                 progress: 0
             )
         },

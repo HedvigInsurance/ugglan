@@ -87,17 +87,22 @@ extension ChangeTierViewModel {
         return vm
     }
 }
-
+@available(iOS 17.0, *)
 #Preview {
-    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-    let changeTierInput: ChangeTierInput = .contractWithSource(
-        data: .init(source: .betterCoverage, contractId: "contractId")
-    )
     let changeTierVm = ChangeTierViewModel(
-        changeTierInput: changeTierInput
+        changeTierInput: .contractWithSource(
+            data: .init(source: .betterCoverage, contractId: "contractId")
+        )
     )
+    let changeTierNavigationVm = ChangeTierNavigationViewModel(
+        router: Router(),
+        vm: changeTierVm
+    ) {
+    }
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+
     return ChangeTierSummaryScreen(
         changeTierVm: changeTierVm,
-        changeTierNavigationVm: .init(router: Router(), vm: changeTierVm) {}
+        changeTierNavigationVm: changeTierNavigationVm
     )
 }

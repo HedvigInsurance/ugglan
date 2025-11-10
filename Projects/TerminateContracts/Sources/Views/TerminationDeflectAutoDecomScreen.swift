@@ -112,8 +112,13 @@ struct TerminationDeflectAutoDecomScreen: View {
     }
 }
 
+@available(iOS 17.0, *)
 #Preview {
-    TerminationDeflectAutoDecomScreen(model: .init(), navigation: .init(configs: [], terminateInsuranceViewModel: nil))
+    @Previewable @State var navigation = TerminationFlowNavigationViewModel(
+        configs: [],
+        terminateInsuranceViewModel: nil
+    )
+    TerminationDeflectAutoDecomScreen(model: .init(), navigation: navigation)
         .environmentObject(Router())
 }
 
