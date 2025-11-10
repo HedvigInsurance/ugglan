@@ -25,20 +25,21 @@ struct HomeBottomScrollView: View {
                 switch content.id {
                 case .appReview2024:
                     InfoCard(
-                        text: "Its time to look back what amazing things happened to you in this year!",
+                        text:
+                            "Det är dags att titta tillbaka och reflektera på allt fantastiskt som hett det senaste året!",
                         type: .campaign
                     )
                     .buttons(
                         [
                             .init(
-                                buttonTitle: "Show",
+                                buttonTitle: "Visa",
                                 buttonAction: {
                                     navigationVm.showYearReview = true
                                     UserDefaults.appReview2024visited = true
                                 }
                             ),
                             .init(
-                                buttonTitle: "Hide",
+                                buttonTitle: "Dölj",
                                 buttonAction: {
                                     UserDefaults.appReview2024visited = false
                                 }
