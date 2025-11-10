@@ -188,10 +188,6 @@ public enum StateType {
     }
 }
 
-public struct StateButton {
-    public init() {}
-}
-
 public struct StateViewButtonConfig {
     let actionButton: StateViewButton?
     let actionButtonAttachedToBottom: StateViewButton?

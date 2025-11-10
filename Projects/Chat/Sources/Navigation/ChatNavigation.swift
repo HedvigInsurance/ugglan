@@ -26,6 +26,7 @@ public class ChatNavigationViewModel: ObservableObject {
                 ToastBar(
                     type: .info,
                     text: L10n.chatToastPushNotificationsTitle,
+                    duration: 6,
                     action: .init(
                         actionText: L10n.pushNotificationsAlertActionOk
                     )

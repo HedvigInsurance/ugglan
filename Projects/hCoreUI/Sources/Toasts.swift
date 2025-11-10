@@ -9,17 +9,20 @@ public struct ToastBar {
     let icon: Image
     let text: String
     let action: ToastBarAction?
+    let duration: Double
 
     public init(
         type: NotificationType,
         icon: Image? = nil,
         text: String,
+        duration: Double = 3,
         action: ToastBarAction? = nil
     ) {
         self.type = type
         self.icon = icon ?? type.image
         self.text = text
         self.action = action
+        self.duration = duration
     }
 
     public struct ToastBarAction {
@@ -140,10 +143,13 @@ public class Toasts {
 
 private class ToastUIView: UIView {
     private let onDeinit: @Sendable () -> Void
+    private let model: ToastBar
+    private var timerSubscription: Cancellable?
     private var offsetForPanGesture: CGFloat = 0
     init(model: ToastBar, onDeinit: @Sendable @escaping () -> Void) {
         let toastBarView = ToastBarView(toastModel: model)
         let vc = hHostingController(rootView: toastBarView, contentName: "")
+        self.model = model
         self.onDeinit = onDeinit
         super.init(frame: .zero)
         addSubview(vc.view)
@@ -168,6 +174,7 @@ private class ToastUIView: UIView {
     }
 
     @objc func handlePan(_ sender: UIPanGestureRecognizer) {
+        disableAutoDismiss()
         var ended = false
         switch sender.state {
         case .began:
@@ -219,8 +226,20 @@ private class ToastUIView: UIView {
         }
     }
 
+    private func disableAutoDismiss() {
+        timerSubscription = nil
+    }
+
     private func setAutoDismiss() {
         let runLoop = RunLoop.main
+        timerSubscription = runLoop.schedule(
+            after: runLoop.now.advanced(by: .seconds(model.duration)),
+            interval: .seconds(6),
+            tolerance: .milliseconds(100),
+            options: nil
+        ) { [weak self] in
+            self?.dismiss()
+        }
     }
 
     private func dismiss() {

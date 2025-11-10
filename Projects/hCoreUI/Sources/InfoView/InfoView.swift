@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 
 class InfoViewNavigationViewModel: ObservableObject {
-    @Published var isInfoViewPresented: InfoViewNavigationModel?
+    @Published var isInfoViewPresented = false
 }
 
 public struct InfoViewHolder: View {
@@ -28,10 +28,9 @@ public struct InfoViewHolder: View {
                 .foregroundColor(type.color)
         }
         .detent(
-            item: $infoViewNavigationModel.isInfoViewPresented,
-
+            presented: $infoViewNavigationModel.isInfoViewPresented,
             options: .constant(.withoutGrabber)
-        ) { _ in
+        ) {
             InfoView(
                 title: title,
                 description: description
@@ -186,16 +185,6 @@ class InfoViewModel: ObservableObject {
     weak var vc: UIViewController?
 }
 
-public struct InfoViewNavigationModel: Equatable, Identifiable {
-    public var id: String?
-
-    public static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    public init() {}
-}
-
 extension View {
     public func addNavigationInfoButton(
         title: String,
@@ -230,10 +219,9 @@ struct NavigationInfoButton: ViewModifier {
                 vc.navigationItem.leftBarButtonItem = navBarItem
             }
             .detent(
-                item: $vm.isInfoViewPresented,
-
+                presented: $vm.isInfoViewPresented,
                 options: .constant(.withoutGrabber)
-            ) { _ in
+            ) {
                 InfoView(
                     title: title,
                     description: description
@@ -243,9 +231,9 @@ struct NavigationInfoButton: ViewModifier {
 }
 
 class InfoButtonViewModel: ObservableObject {
-    @Published var isInfoViewPresented: InfoViewNavigationModel?
+    @Published var isInfoViewPresented = false
 
     @objc func transformDataToActivityView() {
-        isInfoViewPresented = .init()
+        isInfoViewPresented = true
     }
 }
