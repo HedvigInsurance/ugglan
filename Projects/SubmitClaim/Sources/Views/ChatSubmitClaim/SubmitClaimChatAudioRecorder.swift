@@ -1,18 +1,27 @@
+import AVFAudio
 @preconcurrency import Apollo
 import Environment
 import OSLog
 import SwiftUI
+import UIKit
 import hCore
 import hCoreUI
 
 public struct SubmitClaimChatAudioRecorder: View {
     @ObservedObject var viewModel: SubmitClaimChatViewModel
-    @ObservedObject var audioPlayer: AudioPlayer
-    @ObservedObject var audioRecorder: AudioRecorder
+    @StateObject var audioPlayer: AudioPlayer
+    @StateObject var audioRecorder: AudioRecorder
 
     @State private var minutes: Int = 0
     @State private var seconds: Int = 0
     @AccessibilityFocusState private var saveAndContinueFocused: Bool
+
+    // UI + alerts
+    @State private var showMicAlert = false
+    @SwiftUI.Environment(\.openURL) private var openURL
+
+    // Guard while system permission sheet is up; hint after first grant
+    @State private var isRequestingMicPermission = false
 
     @StateObject var audioRecordingVm = SubmitClaimAudioRecordingScreenModel()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -25,20 +34,19 @@ public struct SubmitClaimChatAudioRecorder: View {
     ) {
         self._viewModel = ObservedObject(wrappedValue: viewModel)
         let url = URL(string: uploadURI)
-        self._audioPlayer = ObservedObject(wrappedValue: AudioPlayer(url: url))
+        self._audioPlayer = StateObject(wrappedValue: AudioPlayer(url: url))
         self.uploadURI = url?.absoluteString ?? ""
 
         let tmpDir = FileManager.default.temporaryDirectory
         let path =
             tmpDir
-            .appendingPathComponent("claims")
+            .appendingPathComponent("claims", isDirectory: true)
             .appendingPathComponent("audio-file-recording")
             .appendingPathExtension(AudioRecorder.audioFileExtension)
-        self._audioRecorder = ObservedObject(wrappedValue: AudioRecorder(filePath: path))
+        try? ensureParentDirectory(for: path)
+        self._audioRecorder = StateObject(wrappedValue: AudioRecorder(filePath: path))
 
-        func myFunc(url: URL) {
-            viewModel.audioRecordingUrl = url
-        }
+        func myFunc(url: URL) { viewModel.audioRecordingUrl = url }
         self.onSubmit = myFunc
     }
 
@@ -58,6 +66,19 @@ public struct SubmitClaimChatAudioRecorder: View {
             .environmentObject(audioRecorder)
         }
         .sectionContainerStyle(.transparent)
+        .alert(
+            "Microphone Access Needed",
+            isPresented: $showMicAlert,
+            actions: {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            },
+            message: { Text("Enable microphone access to record audio for your claim.") }
+        )
     }
 
     private func playRecordingButton(url: URL) -> some View {
@@ -76,29 +97,23 @@ public struct SubmitClaimChatAudioRecorder: View {
                         onSubmit(url)
                         Task {
                             do {
-                                // 1) Build final upload URL
                                 let uploadURL = resolveUploadURL(uploadURI)
                                 logger.info("Resolved upload URL: \(uploadURL.absoluteString, privacy: .public)")
-
-                                // 2) Retrieve token (optional; headers() adds it automatically)
                                 let tokenObj = try await ApolloClient.retreiveToken()
                                 let bearerToken = tokenObj?.accessToken
 
-                                // 3) Upload file (multipart, tries multiple field names)
                                 let reference = try await uploadAudio(
                                     uploadURL: uploadURL,
                                     fileURL: url,
                                     bearerToken: bearerToken
                                 )
 
-                                // 4) Send UUID reference to backend
                                 await viewModel.sendAudioReferenceToBackend(
                                     translatedText: "",
                                     url: reference.uuidString,
                                     freeText: nil
                                 )
 
-                                // 5) Clean up local temp
                                 try? FileManager.default.removeItem(at: url)
                             } catch {
                                 logger.error("Audio upload/send failed: \(String(describing: error))")
@@ -115,9 +130,7 @@ public struct SubmitClaimChatAudioRecorder: View {
                     .large,
                     .ghost,
                     content: .init(title: L10n.embarkRecordAgain),
-                    {
-                        withAnimation(.spring()) { audioRecorder.restart() }
-                    }
+                    { withAnimation(.spring()) { audioRecorder.restart() } }
                 )
             }
         }
@@ -128,14 +141,16 @@ public struct SubmitClaimChatAudioRecorder: View {
     private var recordNewButton: some View {
         VStack(spacing: .padding8) {
             RecordButton(isRecording: audioRecorder.isRecording) {
-                withAnimation(.spring()) { audioRecorder.toggleRecording() }
+                handleRecordTap()
             }
             .frame(height: audioRecorder.isRecording ? 144 : 72)
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
 
             if !audioRecorder.isRecording {
-                hText(L10n.claimsStartRecordingLabel, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
+                VStack(spacing: .padding4) {
+                    hText(L10n.claimsStartRecordingLabel, style: .body1)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                }
             } else {
                 hText(String(format: "%02d:%02d", minutes, seconds), style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
@@ -159,20 +174,63 @@ public struct SubmitClaimChatAudioRecorder: View {
         .accessibilityAddTraits(.updatesFrequently)
         .accessibilityHint(audioRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
     }
+
+    // MARK: - Permission + recording (iOS 17+ AVAudioApplication)
+    @MainActor
+    private func handleRecordTap() {
+        if isRequestingMicPermission { return }
+        isRequestingMicPermission = true
+
+        if #available(iOS 17.0, *) {
+            AVAudioApplication.requestRecordPermission { granted in
+                DispatchQueue.main.async {
+                    self.isRequestingMicPermission = false
+
+                    if granted {
+                        do {
+                            try self.configureAudioSessionForRecording()
+                            withAnimation(.spring()) { self.audioRecorder.toggleRecording() }
+                        } catch {
+                            logger.error("Configure/record failed: \(String(describing: error))")
+                        }
+                    } else {
+                        self.showMicAlert = true
+                    }
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+    }
+
+    private func audioRecorderIsFresh() -> Bool {
+        audioRecorder.recording == nil && !audioRecorder.isRecording
+    }
+
+    private func configureAudioSessionForRecording() throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(
+            .playAndRecord,
+            mode: .spokenAudio,
+            options: [.defaultToSpeaker, .allowBluetooth]
+        )
+        try session.setActive(true, options: [])
+    }
 }
 
 // MARK: - URL helpers
+
+private func ensureParentDirectory(for fileURL: URL) throws {
+    let dir = fileURL.deletingLastPathComponent()
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+}
 
 private func resolveBase() -> URL {
     URL(string: "https://gateway.test.hedvig.com")!
 }
 
 private func resolveUploadURL(_ pathOrUrl: String) -> URL {
-    // If backend already gave you an absolute URL, just use it:
-    if let absolute = URL(string: pathOrUrl), absolute.scheme != nil {
-        return absolute
-    }
-    // Otherwise join with the gateway base, ensuring exactly one slash
+    if let absolute = URL(string: pathOrUrl), absolute.scheme != nil { return absolute }
     var base = resolveBase()
     let trimmed = pathOrUrl.hasPrefix("/") ? String(pathOrUrl.dropFirst()) : pathOrUrl
     base.appendPathComponent(trimmed)
@@ -211,6 +269,7 @@ private func extractUUIDLike(from string: String) -> String? {
 }
 
 // MARK: - Upload logic
+
 private struct UploadHTTPError: LocalizedError {
     let status: Int
     let body: String
@@ -222,20 +281,17 @@ private struct UploadHTTPError: LocalizedError {
 }
 
 private func decodeReference(data: Data, http: HTTPURLResponse) -> UUID? {
-    // try JSON shapes
     if let ref = try? JSONDecoder().decode(FlexibleReference.self, from: data).value,
         let uuid = UUID(uuidString: ref)
     {
         return uuid
     }
-    // try Location header
     if let loc = http.value(forHTTPHeaderField: "Location"),
         let uuidStr = extractUUIDLike(from: loc),
         let uuid = UUID(uuidString: uuidStr)
     {
         return uuid
     }
-    // try uuid in raw body
     if let bodyStr = String(data: data, encoding: .utf8),
         let uuidStr = extractUUIDLike(from: bodyStr),
         let uuid = UUID(uuidString: uuidStr)
@@ -259,7 +315,6 @@ private func uploadAudio(
         "Uploading audio. size=\(fileData.count, privacy: .public) bytes name=\(fileURL.lastPathComponent, privacy: .public)"
     )
 
-    // Common headers (adds Authorization if token exists)
     let hedvigHeaders = await ApolloClient.headers()
 
     func configuredSession() -> URLSession {
@@ -270,7 +325,6 @@ private func uploadAudio(
         return URLSession(configuration: cfg)
     }
 
-    // ---------- Attempt 1: POST multipart (try multiple field names)
     for field in fieldNameCandidates {
         let boundary = "Boundary-\(UUID().uuidString)"
         var req = URLRequest(url: uploadURL, timeoutInterval: requestTimeout)
@@ -282,7 +336,6 @@ private func uploadAudio(
             req.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
         }
 
-        // Build multipart
         var body = Data()
         body.append("--\(boundary)\r\n")
         body.append("Content-Disposition: form-data; name=\"\(field)\"; filename=\"\(fileURL.lastPathComponent)\"\r\n")
@@ -291,19 +344,8 @@ private func uploadAudio(
         body.append("\r\n--\(boundary)--\r\n")
         req.httpBody = body
 
-        logger.info(
-            """
-            ▶️ POST \(uploadURL.absoluteString, privacy: .public)
-               Field: \(field, privacy: .public)
-               Headers: \(String(describing: req.allHTTPHeaderFields), privacy: .public)
-               Body: \(body.count, privacy: .public) bytes
-            """
-        )
-
         let (respData, resp) = try await configuredSession().data(for: req)
         guard let http = resp as? HTTPURLResponse else { throw URLError(.badServerResponse) }
-        let bodyStr = String(data: respData, encoding: .utf8) ?? "<binary>"
-        logger.info("⬅️ POST status=\(http.statusCode, privacy: .public) Body: \(bodyStr, privacy: .public)")
 
         if (200..<300).contains(http.statusCode) {
             if let uuid = decodeReference(data: respData, http: http) { return uuid }
@@ -315,40 +357,29 @@ private func uploadAudio(
             )
         }
 
-        // If last field candidate, throw a rich error
         if field == fieldNameCandidates.last {
+            let bodyStr = String(data: respData, encoding: .utf8) ?? "<binary>"
             throw UploadHTTPError(status: http.statusCode, body: bodyStr, method: "POST", fieldName: field)
         }
-
-        // Otherwise try next field name
     }
 
-    // ---------- Attempt 2: PUT raw (for presigned/raw endpoints)
+    // PUT fallback
     do {
         var req = URLRequest(url: uploadURL, timeoutInterval: requestTimeout)
         req.httpMethod = "PUT"
         req.httpBody = fileData
         req.setValue(mime, forHTTPHeaderField: "Content-Type")
         req.setValue("application/json", forHTTPHeaderField: "Accept")
+        let hedvigHeaders = await ApolloClient.headers()
         hedvigHeaders.forEach { k, v in req.setValue(v, forHTTPHeaderField: k) }
         if let bearerToken, !bearerToken.isEmpty {
             req.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
         }
 
-        logger.info(
-            """
-            ▶️ PUT \(uploadURL.absoluteString, privacy: .public)
-               Headers: \(String(describing: req.allHTTPHeaderFields), privacy: .public)
-               Body: \(fileData.count, privacy: .public) bytes
-            """
-        )
-
         let (respData, resp) = try await configuredSession().data(for: req)
         guard let http = resp as? HTTPURLResponse else { throw URLError(.badServerResponse) }
-        let bodyStr = String(data: respData, encoding: .utf8) ?? "<binary>"
-        logger.info("⬅️ PUT status=\(http.statusCode, privacy: .public) Body: \(bodyStr, privacy: .public)")
-
         guard (200..<300).contains(http.statusCode) else {
+            let bodyStr = String(data: respData, encoding: .utf8) ?? "<binary>"
             throw UploadHTTPError(status: http.statusCode, body: bodyStr, method: "PUT", fieldName: nil)
         }
 
@@ -360,15 +391,12 @@ private func uploadAudio(
             fieldName: nil
         )
     } catch {
-        // If PUT path also failed, surface the last error (already rich)
         throw error
     }
 }
 
 extension Data {
     fileprivate mutating func append(_ string: String) {
-        if let data = string.data(using: .utf8) {
-            append(data)
-        }
+        if let data = string.data(using: .utf8) { append(data) }
     }
 }
