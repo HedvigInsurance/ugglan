@@ -48,6 +48,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding private var width: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
     @Environment(\.hEnvironmentAccessibilityLabel) var accessibilityLabel
+    @Environment(\.sizeCategory) var sizeCategory
 
     init(
         config: CustomTextViewRepresentableConfig,
@@ -160,6 +161,13 @@ class CustomTextView: UITextView, UITextViewDelegate {
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: config.fontStyle),
             color: config.color.colorFor(colorScheme, .base).color.uiColor()
+        )
+        markdownParser.bold.font = UIFont.boldSystemFont(
+            ofSize: config.fontStyle.fontSize * config.fontStyle.multiplier
+        )
+        markdownParser.header.font = Fonts.fontFor(style: config.fontStyle)
+        markdownParser.italic.font = UIFont.italicSystemFont(
+            ofSize: config.fontStyle.fontSize * config.fontStyle.multiplier
         )
         let attributedString = markdownParser.parse(text)
 

@@ -50,6 +50,17 @@ class TerminateContractsService {
         return response
     }
 
+    func sendContinueAfterDecom(
+        terminationContext: String
+    ) async throws -> TerminateStepResponse {
+        log.info(
+            "TerminateContractsService: sendContinueAfterDecom with context: \(terminationContext)"
+        )
+        let response = try await client.sendContinueAfterDecom(terminationContext: terminationContext)
+        log.info("TerminateContractsService: sendContinueAfterDecom success context: \(response.context)")
+        return response
+    }
+
     func getNotification(
         contractId: String,
         date: Date
