@@ -33,7 +33,6 @@ public struct DeleteAccountView: View {
                                 linkUnderlineStyle: .single,
                                 textAlignment: vm.textAlignment
                             ) { url in
-                                router.dismiss()
                                 NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }
                         )
