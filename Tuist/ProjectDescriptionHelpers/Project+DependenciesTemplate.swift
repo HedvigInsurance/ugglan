@@ -62,7 +62,7 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.25.0"))]
         case .umbrella:
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20251106165957"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20251110142443"))
             ]
         case .kmpNativeCoroutines:
             return [
@@ -131,7 +131,7 @@ public enum ExternalDependencies: CaseIterable {
                 try! FileManager.default.copyItem(
                     atPath: path.pathString,
                     toPath:
-                        "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
+                    "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
                 )
             }
 
