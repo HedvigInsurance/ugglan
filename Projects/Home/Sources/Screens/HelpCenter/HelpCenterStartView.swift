@@ -98,7 +98,7 @@ public struct HelpCenterStartView: View {
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                     .padding(.bottom, .padding4)
 
-                ForEach(quickActions, id: \.displayTitle) { quickAction in
+                ForEach(quickActions, id: \.displayTitle) { [onQuickAction] quickAction in
                     QuickActionView(quickAction: quickAction) {
                         onQuickAction(quickAction)
                     }
@@ -119,14 +119,14 @@ public struct HelpCenterStartView: View {
 
     private func topicsItems(topics: [FaqTopic]) -> some View {
         VStack(spacing: .padding4) {
-            ForEach(topics, id: \.self) { item in
+            ForEach(topics, id: \.self) { [weak router] item in
                 hSection {
                     hRow {
                         hText(item.title)
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap { [weak router] in
+                    .onTap {
                         router?.push(item)
                     }
                 }
