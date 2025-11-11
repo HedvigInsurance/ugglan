@@ -54,16 +54,7 @@ public struct ContractDetail: View {
                             tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier
                         )
                     }
-                    if (TypeOfContract.isDecommisioned(
-                        for: contract.currentAgreement?.productVariant.typeOfContract ?? ""
-                    )) {
-                        hSection {
-                            InfoCard(text: L10n.insuranceDetailsDecommissionInfo, type: .info)
-                        }
-                        .padding(.vertical, .padding8)
-                    } else {
-                        Spacing(height: Float(.padding16))
-                    }
+                    decommisionedInfoView
                     ScrollableSegmentedView(
                         vm: scrollableSegmentedViewModel,
                         contentFor: { id in
@@ -90,6 +81,22 @@ public struct ContractDetail: View {
             .presentableStoreLensAnimation(.default)
             .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
                 vm?.vc = vc
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var decommisionedInfoView: some View {
+        if let contract = store.state.contractForId(id) {
+            if (TypeOfContract.isDecommisioned(
+                for: contract.currentAgreement?.productVariant.typeOfContract ?? ""
+            )) {
+                hSection {
+                    InfoCard(text: L10n.insuranceDetailsDecommissionInfo, type: .info)
+                }
+                .padding(.vertical, .padding8)
+            } else {
+                Spacing(height: Float(.padding16))
             }
         }
     }
