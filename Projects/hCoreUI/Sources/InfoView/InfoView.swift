@@ -39,13 +39,7 @@ public struct InfoViewHolder: View {
     }
 
     private func showInfoView() {
-        let cancelAction = ReferenceAction {}
-
-        infoViewNavigationModel.isInfoViewPresented = .init()
-
-        cancelAction.execute = {
-            router.dismiss()
-        }
+        infoViewNavigationModel.isInfoViewPresented = true
     }
 
     @MainActor
