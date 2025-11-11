@@ -173,7 +173,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                     attributes: [:]
                 )
                 throw AuthenticationError.loginFailure(message: localizedMessage)
-            case let properties as AuthAttemptResultOtpProperties:
+            case _ as AuthAttemptResultOtpProperties:
                 break
             default:
                 break
@@ -198,9 +198,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                     for: networkAuthRepository.revoke(token: token.refreshToken)
                 )
                 switch data {
-                case let error as RevokeResultError:
+                case _ as RevokeResultError:
                     throw AuthenticationError.logoutFailure
-                case let success as RevokeResultSuccess:
+                case _ as RevokeResultSuccess:
                     return
                 default:
                     throw AuthenticationError.logoutFailure
@@ -248,11 +248,11 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         case let error as AuthTokenResultError:
             log.error("Refreshing failed \(error.errorMessage), forcing logout")
             switch error {
-            case let ioError as AuthTokenResultErrorIOError:
+            case _ as AuthTokenResultErrorIOError:
                 throw AuthError.networkIssue
-            case let backendError as AuthTokenResultErrorBackendErrorResponse:
+            case _ as AuthTokenResultErrorBackendErrorResponse:
                 throw AuthError.refreshFailed
-            case let unknownError as AuthTokenResultErrorUnknownError:
+            case _ as AuthTokenResultErrorUnknownError:
                 throw AuthError.refreshFailed
             default:
                 throw AuthError.refreshFailed
