@@ -33,6 +33,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
             {
                 throw ChangeTierError.errorMessage(message: message)
             }
+            throw ChangeTierError.deflect(title: "test", message: "go")
             guard let intent = createIntentResponse?.changeTierDeductibleCreateIntent.intent else {
                 throw ChangeTierError.somethingWentWrong
             }

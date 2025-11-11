@@ -11,7 +11,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
-    @Published var missingQuotes = false
+    @Published var changeTierError: ChangeTierError?
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
@@ -201,7 +201,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     func fetchTiers() {
         withAnimation {
-            self.missingQuotes = false
+            self.changeTierError = nil
             self.viewState = .loading
         }
         Task { @MainActor in
@@ -279,7 +279,13 @@ public class ChangeTierViewModel: ObservableObject {
         if let exception = exception as? ChangeTierError {
             if case .emptyList = exception {
                 withAnimation {
-                    self.missingQuotes = true
+                    self.changeTierError = exception
+                }
+                return
+            }
+            if case .deflect(let title, let message) = exception {
+                withAnimation {
+                    self.changeTierError = exception
                 }
                 return
             }

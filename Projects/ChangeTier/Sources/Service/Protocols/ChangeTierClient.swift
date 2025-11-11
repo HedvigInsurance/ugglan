@@ -9,6 +9,7 @@ public protocol ChangeTierClient {
 }
 
 public enum ChangeTierError: Error {
+    case deflect(title: String, message: String)
     case emptyList
     case somethingWentWrong
     case commitFailed

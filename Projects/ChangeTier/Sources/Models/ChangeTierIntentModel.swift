@@ -40,7 +40,23 @@ public struct ProductVariantComparison: Codable, Equatable, Hashable {
     }
 }
 
-public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
+public protocol ChangeTierIntentModelProtocol {
+}
+
+public struct EmptyTier: ChangeTierIntentModelProtocol {
+    public init() {}
+}
+public struct Deflection: ChangeTierIntentModelProtocol, Codable, Equatable, Hashable, Sendable {
+    let title: String
+    let message: String
+
+    public init(title: String, message: String) {
+        self.title = title
+        self.message = message
+    }
+}
+
+public struct ChangeTierIntentModel: ChangeTierIntentModelProtocol, Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let activationDate: Date
     public let tiers: [Tier]
