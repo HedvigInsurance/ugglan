@@ -98,25 +98,26 @@ struct InvitationRow: View {
     return InvitationTable(foreverData: navigationVm.foreverData).environmentObject(navigationVm)
 }
 
-#Preview("Invitation Row") {
-    var mockRow: Referral = .init(
+@available(iOS 17.0, *)
+#Preview("Invitation Row", traits: .sizeThatFitsLayout) {
+    let mockRow: Referral = .init(
         name: "Axel",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .active
     )
-    var mockRow2: Referral = .init(
+    let mockRow2: Referral = .init(
         name: "Mock",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .active
     )
 
-    var mockRow3: Referral = .init(
+    let mockRow3: Referral = .init(
         name: "Mock",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .pending
     )
 
-    var mockRow4: Referral = .init(
+    let mockRow4: Referral = .init(
         name: "Mock withc long name that needs two rows",
         activeDiscount: MonetaryAmount(amount: "10.0", currency: "SEK"),
         status: .terminated
@@ -130,6 +131,5 @@ struct InvitationRow: View {
         InvitationRow(row: mockRow4, invitedYou: false)
     }
     .sectionContainerStyle(.transparent)
-    .previewLayout(PreviewLayout.sizeThatFits)
     .environmentObject(ForeverNavigationViewModel())
 }

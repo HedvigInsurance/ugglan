@@ -1,10 +1,7 @@
-import PresentableStore
 import SwiftUI
-import hCore
 import hCoreUI
 
 struct ProfileRow: View {
-    @PresentableStore var store: ProfileStore
     @EnvironmentObject var router: Router
     @EnvironmentObject var profileNavigationViewModel: ProfileNavigationViewModel
 

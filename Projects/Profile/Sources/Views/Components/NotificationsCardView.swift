@@ -34,8 +34,6 @@ struct NotificationsCardView: View {
     }
 }
 
-struct NotificationsCardView_Previews: PreviewProvider {
-    static var previews: some View {
-        NotificationsCardView()
-    }
+#Preview {
+    NotificationsCardView()
 }

@@ -29,7 +29,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 productVariant: .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: nil,
                     perils: [
                         .init(
                             id: "id1",
@@ -79,7 +78,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 productVariant: .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: nil,
                     perils: [
                         .init(
                             id: "id1",
@@ -129,7 +127,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 productVariant: .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: nil,
                     perils: [
                         .init(
                             id: "id1",
@@ -235,7 +232,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 productVariant: .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: nil,
                     perils: [
                         .init(
                             id: "id1",
@@ -349,7 +345,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: nil,
                     perils: [],
                     insurableLimits: [],
                     documents: [],
@@ -360,7 +355,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: nil,
                     perils: [],
                     insurableLimits: [],
                     documents: [],
@@ -371,7 +365,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: nil,
                     perils: [],
                     insurableLimits: [],
                     documents: [],

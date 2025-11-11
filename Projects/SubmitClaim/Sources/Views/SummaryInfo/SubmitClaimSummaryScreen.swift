@@ -194,13 +194,11 @@ public struct SubmitClaimSummaryScreen: View {
     }
 }
 
-struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
-        Dependencies.shared.add(module: Module { () -> SubmitClaimClient in SubmitClaimClientDemo() })
-        Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
-        return SubmitClaimSummaryScreen(claimsNavigationVm: .init())
-    }
+#Preview {
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> SubmitClaimClient in SubmitClaimClientDemo() })
+    Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    return SubmitClaimSummaryScreen(claimsNavigationVm: .init())
 }
 
 @MainActor

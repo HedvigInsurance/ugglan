@@ -132,47 +132,46 @@ public struct hCounterField: View {
     }
 }
 
-struct hCounterField_Previews: PreviewProvider {
-    @State static var value: Int = 1
-    static var previews: some View {
-        let counerWithPlaceholder = hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) {
-            value in
-            if value == 0 {
-                return nil
-            } else {
-                return "VALUE \(value)"
-            }
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var value: Int = 1
+    let counerWithPlaceholder = hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) {
+        value in
+        if value == 0 {
+            return nil
+        } else {
+            return "VALUE \(value)"
         }
+    }
 
-        let counerWithWithoutPlaceholder = hCounterField(value: $value, placeholder: "", minValue: 0, maxValue: 5) {
-            value in
-            if value == 0 {
-                return nil
-            } else {
-                return "VALUE \(value)"
-            }
+    let counerWithWithoutPlaceholder = hCounterField(value: $value, placeholder: "", minValue: 0, maxValue: 5) {
+        value in
+        if value == 0 {
+            return nil
+        } else {
+            return "VALUE \(value)"
         }
-        return VStack(alignment: .leading) {
-            Section("With placeholder") {
-                counerWithPlaceholder
-                    .hFieldSize(.large)
+    }
+    return VStack(alignment: .leading) {
+        Section("With placeholder") {
+            counerWithPlaceholder
+                .hFieldSize(.large)
 
-                counerWithPlaceholder
-                    .hFieldSize(.medium)
+            counerWithPlaceholder
+                .hFieldSize(.medium)
 
-                counerWithPlaceholder
-                    .hFieldSize(.small)
-            }
-            Section("Without placeholder") {
-                counerWithWithoutPlaceholder
-                    .hFieldSize(.large)
+            counerWithPlaceholder
+                .hFieldSize(.small)
+        }
+        Section("Without placeholder") {
+            counerWithWithoutPlaceholder
+                .hFieldSize(.large)
 
-                counerWithWithoutPlaceholder
-                    .hFieldSize(.medium)
+            counerWithWithoutPlaceholder
+                .hFieldSize(.medium)
 
-                counerWithWithoutPlaceholder
-                    .hFieldSize(.small)
-            }
+            counerWithWithoutPlaceholder
+                .hFieldSize(.small)
         }
     }
 }

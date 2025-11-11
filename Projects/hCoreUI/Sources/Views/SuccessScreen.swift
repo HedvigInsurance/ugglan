@@ -35,62 +35,56 @@ public struct SuccessScreen: View {
     }
 }
 
-struct SuccessScreenWithoutButtons_Previews: PreviewProvider {
-    static var previews: some View {
-        SuccessScreen(
-            successViewTitle: "SUCCESS",
-            successViewBody: "success"
-        )
-    }
+#Preview("SuccessScreenWithoutButtons") {
+    SuccessScreen(
+        successViewTitle: "SUCCESS",
+        successViewBody: "success"
+    )
 }
 
-struct SuccessScreenWithButtons_Previews: PreviewProvider {
-    static var previews: some View {
-        SuccessScreen(
-            successViewTitle: "SUCCESS",
-            successViewBody: "success"
+#Preview("SuccessScreenWithButtons") {
+    SuccessScreen(
+        successViewTitle: "SUCCESS",
+        successViewBody: "success"
+    )
+    .hStateViewButtonConfig(
+        .init(
+            actionButton: .init(buttonTitle: nil, buttonAction: {}),
+            actionButtonAttachedToBottom:
+                .init(
+                    buttonTitle: "Extra button",
+                    buttonAction: {}
+                ),
+            dismissButton:
+                .init(
+                    buttonTitle: "Close",
+                    buttonAction: {}
+                )
         )
-        .hStateViewButtonConfig(
-            .init(
-                actionButton: .init(buttonTitle: nil, buttonAction: {}),
-                actionButtonAttachedToBottom:
-                    .init(
-                        buttonTitle: "Extra button",
-                        buttonAction: {}
-                    ),
-                dismissButton:
-                    .init(
-                        buttonTitle: "Close",
-                        buttonAction: {}
-                    )
-            )
-        )
-    }
+    )
 }
 
-struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return SuccessScreen(title: "TITLE", subtitle: "SUBTITLE")
-            .hSuccessBottomAttachedView {
-                hSection {
-                    VStack(spacing: .padding16) {
-                        InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
-                        VStack(spacing: .padding8) {
-                            hButton(
-                                .large,
-                                .primary,
-                                content: .init(title: L10n.Certificates.download),
-                                {}
-                            )
+#Preview("SuccessScreenWithCustomBottom") {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return SuccessScreen(title: "TITLE", subtitle: "SUBTITLE")
+        .hSuccessBottomAttachedView {
+            hSection {
+                VStack(spacing: .padding16) {
+                    InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
+                    VStack(spacing: .padding8) {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: L10n.Certificates.download),
+                            {}
+                        )
 
-                            hCloseButton {}
-                        }
+                        hCloseButton {}
                     }
                 }
-                .sectionContainerStyle(.transparent)
             }
-    }
+            .sectionContainerStyle(.transparent)
+        }
 }
 
 @MainActor

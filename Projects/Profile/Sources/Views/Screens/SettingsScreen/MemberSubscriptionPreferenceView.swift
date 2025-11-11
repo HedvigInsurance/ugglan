@@ -118,5 +118,3 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
         }
     }
 }
-
-private struct UnsubscribedMembers {}

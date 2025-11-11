@@ -3,11 +3,9 @@ import Claims
 import Combine
 import Contracts
 import Foundation
-import hCore
 
 @MainActor
 public class DeleteAccountViewModel: ObservableObject {
-    var memberDetails: MemberDetails
     let claimsStore: ClaimsStore
     let contractsStore: ContractStore
 
@@ -24,11 +22,9 @@ public class DeleteAccountViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     public init(
-        memberDetails: MemberDetails,
         claimsStore: ClaimsStore,
         contractsStore: ContractStore
     ) {
-        self.memberDetails = memberDetails
         self.claimsStore = claimsStore
         self.contractsStore = contractsStore
 

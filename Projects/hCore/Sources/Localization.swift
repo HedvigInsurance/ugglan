@@ -1,6 +1,5 @@
 @preconcurrency import Combine
 import Foundation
-import hGraphQL
 
 @MainActor
 public enum Localization {

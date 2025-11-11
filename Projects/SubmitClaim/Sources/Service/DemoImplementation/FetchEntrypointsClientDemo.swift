@@ -5,7 +5,6 @@ public class FetchEntrypointsClientDemo: hFetchEntrypointsClient {
     public func get() async throws -> [ClaimEntryPointGroupResponseModel] {
         [
             ClaimEntryPointGroupResponseModel(
-                id: "entrypointId",
                 displayName: "EntrypointGroup",
                 entrypoints: []
             )
