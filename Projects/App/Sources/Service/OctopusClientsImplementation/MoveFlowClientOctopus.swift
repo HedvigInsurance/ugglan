@@ -101,7 +101,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
                 extraBuildings: houseInformationInputModel.extraBuildings.map {
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: Int32($0.livingArea),
-                        type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
+                        type: $0.type,
                         hasWaterConnected: $0.connectedToWater
                     )
                 }
