@@ -13,19 +13,16 @@ public struct ChangeTierLandingScreen: View {
     }
 
     public var body: some View {
-        if let changeTierError = vm.changeTierError {
-            switch changeTierError {
-            case let .deflect(title, message):
-                ChangeTierDeflectView(
-                    title: title,
-                    message: message
-                )
-            default:
-                InfoScreen(text: L10n.terminationNoTierQuotesSubtitle, dismissButtonTitle: L10n.embarkGoBackButton) {
-                    [weak changeTierNavigationVm] in
-                    changeTierNavigationVm?.missingQuotesGoBackPressed()
-                }
+        if vm.displayEmptyTierMessage {
+            InfoScreen(text: L10n.terminationNoTierQuotesSubtitle, dismissButtonTitle: L10n.embarkGoBackButton) {
+                [weak changeTierNavigationVm] in
+                changeTierNavigationVm?.missingQuotesGoBackPressed()
             }
+        } else if let deflection = vm.deflection {
+            ChangeTierDeflectView(
+                title: deflection.title,
+                message: deflection.message
+            )
         } else if vm.dataProviderViewState.isError {
             GenericErrorView(
                 description: L10n.General.defaultError,

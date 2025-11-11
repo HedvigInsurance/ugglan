@@ -40,15 +40,15 @@ public struct ProductVariantComparison: Codable, Equatable, Hashable {
     }
 }
 
-public protocol ChangeTierIntentModelProtocol {
+public enum ChangeTierIntentModelState: Codable, Equatable, Hashable, Sendable {
+    case emptyTier
+    case deflection(deflection: Deflection)
+    case changeTierIntentModel(changeTierIntentModel: ChangeTierIntentModel)
 }
 
-public struct EmptyTier: ChangeTierIntentModelProtocol {
-    public init() {}
-}
-public struct Deflection: ChangeTierIntentModelProtocol, Codable, Equatable, Hashable, Sendable {
-    let title: String
-    let message: String
+public struct Deflection: Codable, Equatable, Hashable, Sendable {
+    public let title: String
+    public let message: String
 
     public init(title: String, message: String) {
         self.title = title
@@ -56,7 +56,7 @@ public struct Deflection: ChangeTierIntentModelProtocol, Codable, Equatable, Has
     }
 }
 
-public struct ChangeTierIntentModel: ChangeTierIntentModelProtocol, Codable, Equatable, Hashable, Sendable {
+public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let activationDate: Date
     public let tiers: [Tier]
