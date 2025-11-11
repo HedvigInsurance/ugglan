@@ -12,16 +12,21 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             sourceMessageId: GraphQLNullable(optionalValue: inputId)
         )
         let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(input))
-        let data = try await octopus.client.mutation(mutation: mutation)
 
-        let currentStep = data?.claimIntentStart.currentStep
-        let id = data?.claimIntentStart.id ?? ""
-        let sourceMessages: [SourceMessage] =
-            data?.claimIntentStart.sourceMessages?
-            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
 
-        if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            let currentStep = data?.claimIntentStart.currentStep
+            let id = data?.claimIntentStart.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentStart.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
         return .init(
@@ -39,20 +44,25 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         )
 
         let mutation = OctopusGraphQL.ClaimIntentSubmitAudioMutation(input: input)
-        let data = try await octopus.client.mutation(mutation: mutation)
 
-        let currentStep = data?.claimIntentSubmitAudio.intent?.currentStep
-        let id = data?.claimIntentSubmitAudio.intent?.id ?? ""
-        let sourceMessages: [SourceMessage] =
-            data?.claimIntentSubmitAudio.intent?.sourceMessages?
-            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
 
-        if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
-        }
+            if let userError = data?.claimIntentSubmitAudio.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
 
-        if let userError = data?.claimIntentSubmitAudio.userError {
-            print("audio error: ", userError)
+            let currentStep = data?.claimIntentSubmitAudio.intent?.currentStep
+            let id = data?.claimIntentSubmitAudio.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitAudio.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
         return .init(
@@ -71,17 +81,24 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         }
         let input = OctopusGraphQL.ClaimIntentSubmitFormInput(stepId: stepId, fields: fieldInput)
         let mutation = OctopusGraphQL.ClaimIntentSubmitFormMutation(input: input)
-        let data = try await octopus.client.mutation(mutation: mutation)
 
-        let currentStep = data?.claimIntentSubmitForm.intent?.currentStep
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSubmitForm.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
 
-        let id = data?.claimIntentSubmitForm.intent?.id ?? ""
-        let sourceMessages: [SourceMessage] =
-            data?.claimIntentSubmitForm.intent?.sourceMessages?
-            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let currentStep = data?.claimIntentSubmitForm.intent?.currentStep
+            let id = data?.claimIntentSubmitForm.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitForm.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
-        if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
         return .init(
@@ -94,16 +111,24 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent {
         let input = OctopusGraphQL.ClaimIntentSubmitSummaryInput(stepId: stepId)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSummaryMutation(input: input)
-        let data = try await octopus.client.mutation(mutation: mutation)
 
-        let currentStep = data?.claimIntentSubmitSummary.intent?.currentStep
-        let id = data?.claimIntentSubmitSummary.intent?.id ?? ""
-        let sourceMessages: [SourceMessage] =
-            data?.claimIntentSubmitSummary.intent?.sourceMessages?
-            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSubmitSummary.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
 
-        if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            let currentStep = data?.claimIntentSubmitSummary.intent?.currentStep
+            let id = data?.claimIntentSubmitSummary.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitSummary.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
         return .init(
@@ -116,22 +141,31 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent {
         let input = OctopusGraphQL.ClaimIntentSubmitTaskInput(stepId: stepId)
         let mutation = OctopusGraphQL.ClaimIntentSubmitTaskMutation(input: input)
-        let data = try await octopus.client.mutation(mutation: mutation)
 
-        let currentStep = data?.claimIntentSubmitTask.intent?.currentStep
-        let id = data?.claimIntentSubmitTask.intent?.id ?? ""
-        let sourceMessages: [SourceMessage] =
-            data?.claimIntentSubmitTask.intent?.sourceMessages?
-            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-
-        currentStep?.content.asClaimIntentStepContentForm?.fields
-            .forEach { field in
-                let defaultValue = field.defaultValue
-                print("defaultValue: \(defaultValue ?? "nil")")
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSubmitTask.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
             }
 
-        if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-            return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            let currentStep = data?.claimIntentSubmitTask.intent?.currentStep
+            let id = data?.claimIntentSubmitTask.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitTask.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            currentStep?.content.asClaimIntentStepContentForm?.fields
+                .forEach { field in
+                    let defaultValue = field.defaultValue
+                    print("defaultValue: \(defaultValue ?? "nil")")
+                }
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
         return .init(
@@ -143,9 +177,15 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep {
         let query = OctopusGraphQL.ClaimIntentQuery(claimIntentId: claimIntentId)
-        let data = try await octopus.client.fetch(query: query)
 
-        return ClaimIntentStep(fragment: data.claimIntent.currentStep.fragments.claimIntentStepFragment)
+        do {
+            let data = try await octopus.client.fetch(query: query)
+
+            return ClaimIntentStep(fragment: data.claimIntent.currentStep.fragments.claimIntentStepFragment)
+
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
     }
 }
 

@@ -7,29 +7,45 @@ import hCoreUI
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var router: Router
+    let messageId: String?
 
     public init(
         messageId: String?,
         goToClaimDetails: @escaping (String) -> Void
     ) {
+        self.messageId = messageId
         _viewModel = StateObject(
             wrappedValue: .init(messageId: messageId, goToClaimDetails: goToClaimDetails)
         )
     }
 
     public var body: some View {
+        successView.loading($viewModel.viewState)
+            .hStateViewButtonConfig(
+                .init(
+                    actionButton: .init(buttonAction: {
+                        Task { await viewModel.startClaim(for: messageId) }
+                    }),
+                    dismissButton: nil
+                )
+            )
+    }
+
+    private var successView: some View {
         ScrollViewReader { proxy in
             mainContent
                 .task(id: viewModel.allSteps.last?.step.id) {
-                    try? await Task.sleep(nanoseconds: 50_000_000)
+                    try? await Task.sleep(seconds: 0.05)
                     withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
                 }
                 .onAppear {
                     proxy.scrollTo("BOTTOM", anchor: .bottom)
                 }
+                .onChange(of: viewModel.allSteps.count) { _ in
+                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
+                }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
-        .toolbarBackground(.hidden, for: .automatic)
         .detent(
             item: $viewModel.isDatePickerPresented,
             transitionType: .detent(style: [.height])
@@ -50,7 +66,7 @@ public struct SubmitClaimChatScreen: View {
     private var mainContent: some View {
         hForm {
             VStack(spacing: .padding16) {
-                ForEach(viewModel.allSteps, id: \.step.id) { step in
+                ForEach(viewModel.allSteps) { step in
                     HStack {
                         spacing(step.sender == .member)
                         VStack(alignment: .leading, spacing: 0) {
@@ -120,11 +136,19 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
     return SubmitClaimChatScreen(messageId: nil, goToClaimDetails: { _ in })
 }
 
-struct SubmitChatStepModel {
+final class SubmitChatStepModel: ObservableObject, Identifiable {
+    var id: String { "\(step.id)-\(sender)" }
     let step: ClaimIntentStep
     let sender: SubmitClaimChatMesageSender
-    var isLoading: Bool
-    @State var isEnabled = true
+    @Published var isLoading: Bool
+    @Published var isEnabled: Bool
+
+    init(step: ClaimIntentStep, sender: SubmitClaimChatMesageSender, isLoading: Bool, isEnabled: Bool = true) {
+        self.step = step
+        self.sender = sender
+        self.isLoading = isLoading
+        self.isEnabled = isEnabled
+    }
 }
 
 struct SingleItemModel: Equatable, Identifiable {
@@ -138,6 +162,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
     @Published var isDatePickerPresented: DatePickerViewModel?
     @Published var isSelectItemPresented: SingleItemModel?
     @Published var hasClaimBeenSubmitted: ClaimIntentStepContentSummary?
+    @Published var viewState: ProcessingState = .loading
 
     @Published var currentStep: ClaimIntentStep?
     @Published var allSteps: [SubmitChatStepModel] = []
@@ -164,6 +189,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
     }
 
     func startClaim(for messageId: String?) async {
+        withAnimation {
+            viewState = .loading
+        }
         do {
             let data = try await service.startClaimIntent(sourceMessageId: messageId)
             withAnimation {
@@ -199,9 +227,12 @@ public class SubmitClaimChatViewModel: ObservableObject {
                         break
                     }
                 }
+                viewState = .success
             }
         } catch {
-            print("fail")
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
         }
     }
 
@@ -222,7 +253,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
             }
             return data
         } catch {
-            print("fail")
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
         }
         return .init(content: .summary(model: .init(audioRecordings: [], fileUploads: [], items: [])), id: "", text: "")
     }
@@ -246,7 +279,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 Task { await checkTaskRec() }
             }
         } catch {
-            allSteps.removeLast()
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
         }
     }
 
@@ -291,6 +326,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
             }
         } catch {
             print("Failed sending task completed:", error)
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
         }
     }
 
@@ -348,6 +386,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
             }
         } catch {
             print("Error: couldn't submit form")
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
         }
     }
 
@@ -358,6 +399,9 @@ public class SubmitClaimChatViewModel: ObservableObject {
             currentStep = data.currentStep
         } catch {
             print("Failed sending summary:", error)
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
         }
     }
 }

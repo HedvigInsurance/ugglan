@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
-    let step: SubmitChatStepModel
+    @ObservedObject var step: SubmitChatStepModel
     @ObservedObject var viewModel: SubmitClaimChatViewModel
 
     var body: some View {
