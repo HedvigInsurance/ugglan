@@ -58,7 +58,7 @@ extension ForeverRouterActions: TrackingViewNameProtocol {
 
 public struct ForeverNavigation: View {
     @EnvironmentObject var router: Router
-    private var changeCodeRouter = Router()
+    private let changeCodeRouter = Router()
     @StateObject var foreverNavigationVm = ForeverNavigationViewModel()
     let useOwnNavigation: Bool
 
