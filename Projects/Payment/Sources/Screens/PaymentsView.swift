@@ -198,7 +198,7 @@ public struct PaymentsView: View {
                             .secondary,
                             content: .init(title: statusData.connectButtonTitle),
                             {
-                                paymentNavigationVm.connectPaymentVm.set(for: nil)
+                                paymentNavigationVm.connectPaymentVm.set()
                             }
                         )
                     }

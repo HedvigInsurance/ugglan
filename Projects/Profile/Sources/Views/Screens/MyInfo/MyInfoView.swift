@@ -92,16 +92,12 @@ public class MyInfoViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
     @Published var disabledSaveButton: Bool = false
 
-    private var originalPhone: String
-    private var originalEmail: String
     private var cancellables = Set<AnyCancellable>()
     @Published var showInfoCard: Bool
 
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         showInfoCard = store.state.memberDetails?.isContactInfoUpdateNeeded ?? false
-        originalPhone = store.state.memberDetails?.phone ?? ""
-        originalEmail = store.state.memberDetails?.email ?? ""
         currentPhoneInput = store.state.memberDetails?.phone ?? ""
         currentEmailInput = store.state.memberDetails?.email ?? ""
         $currentPhoneInput
@@ -203,9 +199,6 @@ public class MyInfoViewModel: ObservableObject {
         let newPhone = updatedContactData.phone
         let newEmail = updatedContactData.email
 
-        originalPhone = newPhone
-        originalEmail = newEmail
-
         store.send(.setMemberPhone(phone: newPhone))
         store.send(.setMemberEmail(email: newEmail))
     }
@@ -229,24 +222,22 @@ public class MyInfoViewModel: ObservableObject {
     }
 }
 
-struct MyInfoView_Previews: PreviewProvider {
-    static var previews: some View {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(
-            .setMember(
-                memberData: .init(
-                    id: "1",
-                    firstName: "Ma",
-                    lastName: "",
-                    phone: "",
-                    email: "sladjann@gmail.com",
-                    hasTravelCertificate: true,
-                    isContactInfoUpdateNeeded: true
-                )
+#Preview {
+    let store: ProfileStore = globalPresentableStoreContainer.get()
+    store.send(
+        .setMember(
+            memberData: .init(
+                id: "1",
+                firstName: "Ma",
+                lastName: "",
+                phone: "",
+                email: "sladjann@gmail.com",
+                hasTravelCertificate: true,
+                isContactInfoUpdateNeeded: true
             )
         )
-        return NavigationView {
-            MyInfoView()
-        }
+    )
+    return NavigationView {
+        MyInfoView()
     }
 }

@@ -306,13 +306,14 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
 public struct AgreementDisplayItem: Codable, Hashable, Sendable {
     let displayTitle: String
     let displayValue: String
-
+    let id: String
     public init(
         title displayTitle: String,
         value displayValue: String
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
+        self.id = UUID().uuidString
     }
 }
 

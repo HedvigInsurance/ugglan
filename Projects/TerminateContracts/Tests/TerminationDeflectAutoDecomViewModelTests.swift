@@ -26,7 +26,7 @@ final class TerminationDeflectAutoDecomViewModelTests: XCTestCase {
     func testContinueWithTerminationSuccess() async throws {
         let expectedStep = TerminateStepResponse(
             context: context,
-            step: .setTerminationSurveyStep(model: .init(id: "survey-id", options: [], subTitleType: .generic)),
+            step: .setTerminationSurveyStep(model: .init(options: [], subTitleType: .generic)),
             progress: 0.5
         )
 
@@ -49,7 +49,7 @@ final class TerminationDeflectAutoDecomViewModelTests: XCTestCase {
     }
 
     func testNavigationWithDifferentSteps() async throws {
-        let surveyModel = TerminationFlowSurveyStepModel(id: "survey-id", options: [], subTitleType: .generic)
+        let surveyModel = TerminationFlowSurveyStepModel(options: [], subTitleType: .generic)
         let expectedStep = TerminateStepResponse(
             context: "new-context",
             step: .setTerminationSurveyStep(model: surveyModel),
@@ -70,7 +70,6 @@ final class TerminationDeflectAutoDecomViewModelTests: XCTestCase {
         verifyServiceCalled(mockService, expectedEvent: .sendContinueAfterDecom)
         assertStateTransition(stateChanges, expected: [.success, .loading, .success])
         assert(navigationModel.currentContext == "new-context")
-        assert(navigationModel.terminationSurveyStepModel?.id == surveyModel.id)
     }
 
     // MARK: - Failure Tests
@@ -134,7 +133,6 @@ final class TerminationDeflectAutoDecomViewModelTests: XCTestCase {
 
     private func createNavigationModel(context: String) -> TerminationFlowNavigationViewModel {
         let model = TerminationFlowDateNextStepModel(
-            id: "test-id",
             maxDate: Date().addingTimeInterval(60 * 60 * 24 * 90).description,
             minDate: Date().localDateString,
             date: nil,

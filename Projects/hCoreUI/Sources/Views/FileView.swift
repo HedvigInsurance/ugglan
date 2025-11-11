@@ -141,11 +141,6 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
 
     /// The content type of the image.
     public let contentType: UTType
-
-    private var internalKey: String {
-        pickerResult.assetIdentifier ?? UUID().uuidString
-    }
-
     public var cacheKey: String
 
     /// Creates an image data provider from a given `PHPickerResult`.

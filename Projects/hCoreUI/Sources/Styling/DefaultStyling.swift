@@ -12,10 +12,7 @@ public class hNavigationBaseController: UINavigationController {
 }
 
 public class hNavigationController: hNavigationBaseController {
-    private let additionalHeight: CGFloat?
-
     public init(additionalHeight: CGFloat? = nil) {
-        self.additionalHeight = additionalHeight
         super.init(navigationBarClass: NavBar.self, toolbarClass: UIToolbar.self)
         if let navBar = navigationBar as? NavBar {
             navBar.additionalHeight = additionalHeight
@@ -26,7 +23,6 @@ public class hNavigationController: hNavigationBaseController {
     }
 
     override public init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
-        additionalHeight = nil
         super.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
     }
 

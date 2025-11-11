@@ -129,8 +129,6 @@ public class SubmitClaimOccurrencePlusLocationViewModel: ObservableObject {
     }
 }
 
-struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: .init())
-    }
+#Preview {
+    SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: .init())
 }

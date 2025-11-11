@@ -7,13 +7,6 @@ struct SubmitClaimCheckoutTransferringScreen: View {
     @ObservedObject var vm: SubmitClaimCheckoutViewModel
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
-    @State var errorAnimation: Bool = false
-    @State var progress: Float = 0
-
-    @Namespace private var animation
-    init(vm: SubmitClaimCheckoutViewModel) {
-        self.vm = vm
-    }
 
     var body: some View {
         BlurredProgressOverlay {

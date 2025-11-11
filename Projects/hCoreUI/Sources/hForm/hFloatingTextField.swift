@@ -243,33 +243,33 @@ class TextFieldVM: ObservableObject {
     @Published var onReturnTap: Date?
 }
 
-struct hFloatingTextField_Previews: PreviewProvider {
-    @State static var value: String = "Text Input"
-    @State static var error: String?
-    @State static var previewType: PreviewType?
-    static var previews: some View {
-        VStack {
-            hFloatingTextField<PreviewType>(
-                masking: .init(type: .none),
-                value: $value,
-                equals: $previewType,
-                focusValue: .first,
-                placeholder: "Label",
-                suffix: "SEK",
-                error: $error
-            )
-            hFloatingTextField<PreviewType>(
-                masking: .init(type: .none),
-                value: $value,
-                equals: $previewType,
-                focusValue: .second,
-                placeholder: "Label",
-                error: $error
-            )
-            .disabled(true)
-        }
-        .hFieldSize(.large)
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var value: String = "Text Input"
+    @Previewable @State var error: String?
+    @Previewable @State var previewType: PreviewType?
+
+    return VStack {
+        hFloatingTextField<PreviewType>(
+            masking: .init(type: .none),
+            value: $value,
+            equals: $previewType,
+            focusValue: .first,
+            placeholder: "Label",
+            suffix: "SEK",
+            error: $error
+        )
+        hFloatingTextField<PreviewType>(
+            masking: .init(type: .none),
+            value: $value,
+            equals: $previewType,
+            focusValue: .second,
+            placeholder: "Label",
+            error: $error
+        )
+        .disabled(true)
     }
+    .hFieldSize(.large)
 
     enum PreviewType: Int, CaseIterable, hTextFieldFocusStateCompliant {
         static var last: PreviewType {

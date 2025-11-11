@@ -34,7 +34,7 @@ public class HomeNavigationViewModel: ObservableObject {
                     self?.openChat = openChat
                 } else if self?.openChat != openChat {
                     self?.openChat = nil
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                         self?.openChat = openChat
                     }
                 }

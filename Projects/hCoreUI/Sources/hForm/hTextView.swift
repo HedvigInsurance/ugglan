@@ -6,7 +6,6 @@ import hCore
 public struct hTextView: View {
     private let placeholder: String
     private let popupPlaceholder: String
-    private let required: Bool
     private let maxCharacters: Int
     @State private var height: CGFloat = 100
     @State private var width: CGFloat = 0
@@ -14,14 +13,12 @@ public struct hTextView: View {
     @State private var value: String = ""
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
-    @Environment(\.colorScheme) var colorSchema
     private let onContinue: (_ text: String) -> Void
     private let enableTransition: Bool
     public init(
         selectedValue: String,
         placeholder: String,
         popupPlaceholder: String,
-        required: Bool,
         maxCharacters: Int,
         enableTransition: Bool,
         onContinue: @escaping (_ text: String) -> Void = { _ in }
@@ -30,7 +27,6 @@ public struct hTextView: View {
         self.placeholder = placeholder
         self.popupPlaceholder = popupPlaceholder
         self.onContinue = onContinue
-        self.required = required
         self.enableTransition = enableTransition
         self.maxCharacters = maxCharacters
     }
@@ -91,15 +87,6 @@ public struct hTextView: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(placeholder)
         .accessibilityAddTraits(.isButton)
-    }
-
-    @hColorBuilder
-    var getTextColor: some hColor {
-        if selectedValue.count < maxCharacters {
-            hTextColor.Opaque.tertiary
-        } else {
-            hSignalColor.Red.element
-        }
     }
 
     private func showFreeTextField() {
@@ -163,7 +150,6 @@ public struct hTextView: View {
                                         selectedValue: valuee,
                                         placeholder: "Placeholder LONG ONE PLACE H O L D E R THAT NEEDS more rows",
                                         popupPlaceholder: "title",
-                                        required: true,
                                         maxCharacters: 2000,
                                         enableTransition: false
                                     ) { value in
@@ -190,12 +176,9 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     fileprivate let enableTransition: Bool
     @Binding fileprivate var value: String
     @Binding private var height: CGFloat
-    @State var showButtons = false
     @Environment(\.safeAreaInsets) private var safeAreaInsets
     @State var keyboard: CGFloat = 303.99
     @State private var inEdit: Bool = false
-    let initDate = Date()
-    @Environment(\.hTextFieldError) var errorMessage
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.verticalSizeClass) var verticalSizeClass
 

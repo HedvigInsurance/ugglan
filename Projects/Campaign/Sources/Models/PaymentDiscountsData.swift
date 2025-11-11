@@ -82,7 +82,7 @@ public struct ReferralsData: Equatable, Codable, Sendable {
     let discountPerMember: MonetaryAmount
     let referrals: [Referral]
 
-    public init(code: String, discountPerMember: MonetaryAmount, referrals: [Referral]) {
+    public init(discountPerMember: MonetaryAmount, referrals: [Referral]) {
         self.discountPerMember = discountPerMember
         self.referrals = referrals
     }
@@ -94,21 +94,18 @@ public struct Referral: Equatable, Codable, Identifiable, Sendable {
     let code: String?
     let description: String
     let activeDiscount: MonetaryAmount?
-    let invitedYou: Bool
 
     public init(
         id: String,
         name: String,
         code: String?,
         description: String,
-        activeDiscount: MonetaryAmount? = nil,
-        invitedYou: Bool = false
+        activeDiscount: MonetaryAmount? = nil
     ) {
         self.id = id
         self.name = name
         self.code = code
         self.description = description
         self.activeDiscount = activeDiscount
-        self.invitedYou = invitedYou
     }
 }
