@@ -54,6 +54,16 @@ public struct ContractDetail: View {
                             tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier
                         )
                     }
+                    if (TypeOfContract.isDecommisioned(
+                        for: contract.currentAgreement?.productVariant.typeOfContract ?? ""
+                    )) {
+                        hSection {
+                            InfoCard(text: L10n.insuranceDetailsDecommissionInfo, type: .info)
+                        }
+                        .padding(.vertical, .padding8)
+                    } else {
+                        Spacing(height: Float(.padding16))
+                    }
                     ScrollableSegmentedView(
                         vm: scrollableSegmentedViewModel,
                         contentFor: { id in
@@ -71,7 +81,6 @@ public struct ContractDetail: View {
                             }
                         }
                     )
-                    .padding(.top, .padding16)
                     .padding(.bottom, .padding8)
                 }
                 .sectionContainerStyle(.transparent)
