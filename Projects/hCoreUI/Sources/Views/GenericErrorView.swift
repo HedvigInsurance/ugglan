@@ -30,51 +30,47 @@ public struct GenericErrorView: View {
     }
 }
 
-struct Error_Previews: PreviewProvider {
-    static var previews: some View {
-        GenericErrorView(
-            formPosition: .center
+#Preview("Error") {
+    GenericErrorView(
+        formPosition: .center
+    )
+    .hStateViewButtonConfig(
+        .init(
+            actionButton: .init(buttonTitle: nil, buttonAction: {}),
+            actionButtonAttachedToBottom:
+                .init(
+                    buttonTitle: "Extra button",
+                    buttonAction: {}
+                ),
+            dismissButton:
+                .init(
+                    buttonTitle: "Close",
+                    buttonAction: {}
+                )
         )
-        .hStateViewButtonConfig(
-            .init(
-                actionButton: .init(buttonTitle: nil, buttonAction: {}),
-                actionButtonAttachedToBottom:
-                    .init(
-                        buttonTitle: "Extra button",
-                        buttonAction: {}
-                    ),
-                dismissButton:
-                    .init(
-                        buttonTitle: "Close",
-                        buttonAction: {}
-                    )
-            )
-        )
-    }
+    )
 }
 
-struct ErrorAttachToBottom_Previews: PreviewProvider {
-    static var previews: some View {
-        GenericErrorView(
-            formPosition: .center,
-            attachContentToBottom: true
+#Preview("ErrorAttachToBottom") {
+    GenericErrorView(
+        formPosition: .center,
+        attachContentToBottom: true
+    )
+    .hStateViewButtonConfig(
+        .init(
+            actionButton: .init(buttonTitle: nil, buttonAction: {}),
+            actionButtonAttachedToBottom:
+                .init(
+                    buttonTitle: "Extra button",
+                    buttonAction: {}
+                ),
+            dismissButton:
+                .init(
+                    buttonTitle: "Close",
+                    buttonAction: {}
+                )
         )
-        .hStateViewButtonConfig(
-            .init(
-                actionButton: .init(buttonTitle: nil, buttonAction: {}),
-                actionButtonAttachedToBottom:
-                    .init(
-                        buttonTitle: "Extra button",
-                        buttonAction: {}
-                    ),
-                dismissButton:
-                    .init(
-                        buttonTitle: "Close",
-                        buttonAction: {}
-                    )
-            )
-        )
-    }
+    )
 }
 
 private struct EnvironmenthExtraTopPadding: EnvironmentKey {

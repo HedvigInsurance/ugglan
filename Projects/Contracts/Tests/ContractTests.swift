@@ -27,7 +27,6 @@ final class ContractsTests: XCTestCase {
                         productVariant: .init(
                             termsVersion: "",
                             typeOfContract: "",
-                            partner: nil,
                             perils: [],
                             insurableLimits: [],
                             documents: [],

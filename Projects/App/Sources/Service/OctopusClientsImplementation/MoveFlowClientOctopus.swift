@@ -101,7 +101,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
                 extraBuildings: houseInformationInputModel.extraBuildings.map {
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: Int32($0.livingArea),
-                        type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
+                        type: $0.type,
                         hasWaterConnected: $0.connectedToWater
                     )
                 }
@@ -377,11 +377,6 @@ extension AddonDataModel {
     init(fragment: OctopusGraphQL.MoveAddonQuoteFragment) {
         self.init(
             id: fragment.addonId,
-            quoteInfo: .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription),
-            displayItems: fragment.displayItems.map {
-                .init(displayTitle: $0.displayTitle, displayValue: $0.displayValue)
-            },
-            coverageDisplayName: fragment.coverageDisplayName,
             grossPremium: .init(
                 fragment: fragment.premium.fragments.moneyFragment
             ),

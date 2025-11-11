@@ -19,7 +19,6 @@ struct MockData {
                 context: context,
                 step: .setTerminationDateStep(
                     model: .init(
-                        id: "id",
                         maxDate: "2025-11-11",
                         minDate: Date().localDateString,
                         extraCoverageItem: [
@@ -36,7 +35,6 @@ struct MockData {
                 step: .setTerminationDeletion(
                     model: model
                         ?? .init(
-                            id: "id",
                             extraCoverageItem: [
                                 .init(displayName: "Travel plus", displayValue: "45 days")
                             ]
@@ -48,7 +46,7 @@ struct MockData {
         surveySend: @escaping SendSurvey = { context, _, _ in
             .init(
                 context: context,
-                step: .setTerminationSurveyStep(model: .init(id: "id", options: [], subTitleType: .generic)),
+                step: .setTerminationSurveyStep(model: .init(options: [], subTitleType: .generic)),
                 progress: 0
             )
         },
@@ -58,7 +56,7 @@ struct MockData {
         sendContinueOnDecom: @escaping SendContinueOnDecom = { context in
             .init(
                 context: context,
-                step: .setTerminationSurveyStep(model: .init(id: "id", options: [], subTitleType: .generic)),
+                step: .setTerminationSurveyStep(model: .init(options: [], subTitleType: .generic)),
                 progress: 0
             )
         },

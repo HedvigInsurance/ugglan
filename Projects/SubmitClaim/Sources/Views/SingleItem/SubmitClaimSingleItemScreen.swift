@@ -4,7 +4,6 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimSingleItemScreen: View {
-    @State var type: ClaimsFlowSingleItemFieldType?
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @StateObject var vm = SubmitClaimSingleItemViewModel()
 
@@ -159,11 +158,9 @@ enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
     case purchasePrice
 }
 
-struct SubmitClaimSingleItem_Previews: PreviewProvider {
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+#Preview {
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
 
-        return SubmitClaimSingleItemScreen()
-            .environmentObject(SubmitClaimNavigationViewModel())
-    }
+    return SubmitClaimSingleItemScreen()
+        .environmentObject(SubmitClaimNavigationViewModel())
 }

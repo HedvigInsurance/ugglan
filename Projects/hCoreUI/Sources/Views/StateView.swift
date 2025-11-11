@@ -188,19 +188,6 @@ public enum StateType {
     }
 }
 
-public struct StateButton {
-    fileprivate let buttonTitle: String?
-    fileprivate let buttonAction: () -> Void
-
-    public init(
-        buttonTitle: String? = nil,
-        buttonAction: @escaping () -> Void
-    ) {
-        self.buttonTitle = buttonTitle
-        self.buttonAction = buttonAction
-    }
-}
-
 public struct StateViewButtonConfig {
     let actionButton: StateViewButton?
     let actionButtonAttachedToBottom: StateViewButton?

@@ -147,8 +147,6 @@ enum ClaimsFlowContactType: hTextFieldFocusStateCompliant {
     case phoneNumber
 }
 
-struct SubmitClaimContactScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimContactScreen(model: .init(id: "", phoneNumber: ""))
-    }
+#Preview {
+    SubmitClaimContactScreen(model: .init(phoneNumber: ""))
 }
