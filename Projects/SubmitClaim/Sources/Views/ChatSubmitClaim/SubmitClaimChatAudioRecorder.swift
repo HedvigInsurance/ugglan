@@ -175,7 +175,6 @@ public struct SubmitClaimChatAudioRecorder: View {
         .accessibilityHint(audioRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
     }
 
-    // MARK: - Permission + recording (iOS 17+ AVAudioApplication)
     @MainActor
     private func handleRecordTap() {
         if isRequestingMicPermission { return }
@@ -199,7 +198,6 @@ public struct SubmitClaimChatAudioRecorder: View {
                 }
             }
         } else {
-            // Fallback on earlier versions
         }
     }
 
@@ -212,7 +210,7 @@ public struct SubmitClaimChatAudioRecorder: View {
         try session.setCategory(
             .playAndRecord,
             mode: .spokenAudio,
-            options: [.defaultToSpeaker, .allowBluetooth]
+            options: [.defaultToSpeaker, .allowBluetoothHFP]
         )
         try session.setActive(true, options: [])
     }

@@ -3,7 +3,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-@available(iOS 16.0, *)
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var router: Router
@@ -32,20 +31,14 @@ public struct SubmitClaimChatScreen: View {
     }
 
     private var successView: some View {
-        ScrollViewReader { proxy in
-            mainContent
-                .task(id: viewModel.allSteps.last?.step.id) {
-                    try? await Task.sleep(seconds: 0.05)
-                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-                }
-                .onAppear {
-                    proxy.scrollTo("BOTTOM", anchor: .bottom)
-                }
-                .onChange(of: viewModel.allSteps.count) { _ in
-                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-                }
+        Group {
+            if #available(iOS 16.0, *) {
+                scrollContent
+                    .toolbarBackground(.hidden, for: .navigationBar)
+            } else {
+                scrollContent
+            }
         }
-        .toolbarBackground(.hidden, for: .navigationBar)
         .detent(
             item: $viewModel.isDatePickerPresented,
             transitionType: .detent(style: [.height])
@@ -61,6 +54,22 @@ public struct SubmitClaimChatScreen: View {
                 .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
         .colorScheme(.light)
+    }
+
+    private var scrollContent: some View {
+        ScrollViewReader { proxy in
+            mainContent
+                .task(id: viewModel.allSteps.last?.step.id) {
+                    try? await Task.sleep(seconds: 0.05)
+                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
+                }
+                .onAppear {
+                    proxy.scrollTo("BOTTOM", anchor: .bottom)
+                }
+                .onChange(of: viewModel.allSteps.count) { _ in
+                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
+                }
+        }
     }
 
     private var mainContent: some View {
@@ -124,37 +133,14 @@ public struct SubmitClaimChatScreen: View {
     }
 }
 
-@available(iOS 16.0, *)
 extension SubmitClaimChatScreen: TrackingViewNameProtocol {
     public var nameForTracking: String { "" }
 }
 
-@available(iOS 16.0, *)
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return SubmitClaimChatScreen(messageId: nil, goToClaimDetails: { _ in })
-}
-
-final class SubmitChatStepModel: ObservableObject, Identifiable {
-    var id: String { "\(step.id)-\(sender)" }
-    let step: ClaimIntentStep
-    let sender: SubmitClaimChatMesageSender
-    @Published var isLoading: Bool
-    @Published var isEnabled: Bool
-
-    init(step: ClaimIntentStep, sender: SubmitClaimChatMesageSender, isLoading: Bool, isEnabled: Bool = true) {
-        self.step = step
-        self.sender = sender
-        self.isLoading = isLoading
-        self.isEnabled = isEnabled
-    }
-}
-
-struct SingleItemModel: Equatable, Identifiable {
-    static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool { lhs.id == rhs.id }
-    let id: String
-    let values: [SingleSelectValue]
 }
 
 @MainActor
