@@ -101,7 +101,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
                 extraBuildings: houseInformationInputModel.extraBuildings.map {
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: Int32($0.livingArea),
-                        type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
+                        type: $0.type.type,
                         hasWaterConnected: $0.connectedToWater
                     )
                 }
@@ -139,7 +139,7 @@ extension MoveConfigurationModel {
             currentHomeAddresses: data.currentHomeAddresses.compactMap {
                 MoveAddress(from: $0.fragments.moveAddressFragment)
             },
-            extraBuildingTypes: data.extraBuildingTypes.compactMap(\.rawValue),
+            extraBuildingTypes: data.extraBuildingTypesV2.map { .init(type: $0.type, displayName: $0.displayName) },
             isApartmentAvailableforStudent: data.isApartmentAvailableforStudent ?? false,
             maxApartmentNumberCoInsured: data.maxApartmentNumberCoInsured,
             maxApartmentSquareMeters: data.maxApartmentSquareMeters,
