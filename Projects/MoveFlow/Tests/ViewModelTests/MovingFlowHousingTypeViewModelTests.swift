@@ -25,7 +25,14 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
     }
 
     func testHousingTypeSuccess() async {
-        let extraBuildings = [ExtraBuilding(id: "", type: "building tyoe", livingArea: 20, connectedToWater: false)]
+        let extraBuildings = [
+            ExtraBuilding(
+                id: "",
+                type: ExtraBuildingType(type: "building type 1", displayName: "building display type"),
+                livingArea: 20,
+                connectedToWater: false
+            )
+        ]
 
         let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
             _ in

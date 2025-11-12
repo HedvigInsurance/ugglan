@@ -11,9 +11,12 @@ mutation MoveIntentCreate {
 
 fragment MoveIntentFragment on MoveIntent {
       currentHomeAddresses {
-        ...MoveAddressFragment
+		  ...MoveAddressFragment
       }
-      extraBuildingTypes
+      extraBuildingTypesV2 {
+		  displayName
+		  type
+	  }
       id
       isApartmentAvailableforStudent
       maxApartmentNumberCoInsured

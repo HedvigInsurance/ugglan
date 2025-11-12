@@ -4,7 +4,7 @@ import hCore
 @testable import MoveFlow
 
 final class MovingFlowAddExtraBuildingViewModelTests: XCTestCase {
-    let buildingType = "building type"
+    let buildingType = ExtraBuildingType(type: "building type", displayName: "building display type")
 
     override func setUp() {
         super.setUp()
