@@ -116,12 +116,12 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                 for try await status in sequence {
                     let key = UUID().uuidString
                     AuthenticationService.logAuthResourceStart(key, authUrl)
-                    
+
                     AuthenticationService.logAuthResourceStop(
                         key,
                         HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
                     )
-                    
+
                     switch status {
                     case let failed as LoginStatusResultFailed:
                         let message = failed.localisedMessage

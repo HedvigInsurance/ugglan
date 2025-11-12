@@ -8,6 +8,7 @@ import CoreDependencies
 import DatadogLogs
 import Forever
 import Foundation
+import HedvigShared
 import MoveFlow
 import Payment
 import PresentableStore
@@ -19,7 +20,6 @@ import TravelCertificate
 import hCore
 import hCoreUI
 import hGraphQL
-import HedvigShared
 
 @MainActor
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -170,7 +170,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
         DefaultStyling.installCustom()
-        
+
         UNUserNotificationCenter.current().delegate = self
         observeNotificationsSettings()
         Main_nativeKt.doInitKoin(
