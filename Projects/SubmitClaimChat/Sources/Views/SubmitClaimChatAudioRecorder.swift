@@ -201,10 +201,6 @@ public struct SubmitClaimChatAudioRecorder: View {
         }
     }
 
-    private func audioRecorderIsFresh() -> Bool {
-        audioRecorder.recording == nil && !audioRecorder.isRecording
-    }
-
     private func configureAudioSessionForRecording() throws {
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(
@@ -217,7 +213,6 @@ public struct SubmitClaimChatAudioRecorder: View {
 }
 
 // MARK: - URL helpers
-
 private func ensureParentDirectory(for fileURL: URL) throws {
     let dir = fileURL.deletingLastPathComponent()
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
