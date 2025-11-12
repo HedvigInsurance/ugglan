@@ -79,7 +79,6 @@ final class DeleteAccountViewModelTests: XCTestCase {
                         productVariant: .init(
                             termsVersion: "",
                             typeOfContract: "",
-                            partner: nil,
                             perils: [],
                             insurableLimits: [],
                             documents: [],
@@ -108,7 +107,6 @@ final class DeleteAccountViewModelTests: XCTestCase {
         )
 
         let model = DeleteAccountViewModel(
-            memberDetails: memberDetails,
             claimsStore: claimsStore,
             contractsStore: contractStore
         )
@@ -130,7 +128,6 @@ final class DeleteAccountViewModelTests: XCTestCase {
         self.contractStore = contractStore
 
         let model = DeleteAccountViewModel(
-            memberDetails: memberDetails,
             claimsStore: claimsStore,
             contractsStore: contractStore
         )

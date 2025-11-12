@@ -1,9 +1,7 @@
 import Apollo
-import Contracts
 import Foundation
 import PresentableStore
 import SwiftUI
-import hCore
 import hCoreUI
 
 public struct ProfileState: StateProtocol {

@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 
 class InfoViewNavigationViewModel: ObservableObject {
-    @Published var isInfoViewPresented: InfoViewNavigationModel?
+    @Published var isInfoViewPresented = false
 }
 
 public struct InfoViewHolder: View {
@@ -28,10 +28,9 @@ public struct InfoViewHolder: View {
                 .foregroundColor(type.color)
         }
         .detent(
-            item: $infoViewNavigationModel.isInfoViewPresented,
-
+            presented: $infoViewNavigationModel.isInfoViewPresented,
             options: .constant(.withoutGrabber)
-        ) { _ in
+        ) {
             InfoView(
                 title: title,
                 description: description
@@ -40,16 +39,7 @@ public struct InfoViewHolder: View {
     }
 
     private func showInfoView() {
-        let cancelAction = ReferenceAction {}
-
-        infoViewNavigationModel.isInfoViewPresented = .init(
-            title: title,
-            description: description
-        )
-
-        cancelAction.execute = {
-            router.dismiss()
-        }
+        infoViewNavigationModel.isInfoViewPresented = true
     }
 
     @MainActor
@@ -189,47 +179,24 @@ class InfoViewModel: ObservableObject {
     weak var vc: UIViewController?
 }
 
-public struct InfoViewNavigationModel: Equatable, Identifiable {
-    public var id: String?
-
-    public static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    let title: String
-    let description: String
-    @StateObject fileprivate var vm = InfoViewModel()
-
-    public init(
-        title: String,
-        description: String,
-    ) {
-        self.title = title
-        self.description = description
-    }
-}
-
 extension View {
     public func addNavigationInfoButton(
-        placement: ListToolBarPlacement,
         title: String,
         description: String
     ) -> some View {
-        modifier(NavigationInfoButton(placement: placement, title: title, description: description))
+        modifier(NavigationInfoButton(title: title, description: description))
     }
 }
 
 struct NavigationInfoButton: ViewModifier {
-    let placement: ListToolBarPlacement
     let title: String
     let description: String
     @StateObject var vm = InfoButtonViewModel()
+
     init(
-        placement: ListToolBarPlacement,
         title: String,
         description: String
     ) {
-        self.placement = placement
         self.title = title
         self.description = description
     }
@@ -245,15 +212,10 @@ struct NavigationInfoButton: ViewModifier {
                 )
                 vc.navigationItem.leftBarButtonItem = navBarItem
             }
-            .onAppear {
-                vm.title = title
-                vm.description = description
-            }
             .detent(
-                item: $vm.isInfoViewPresented,
-
+                presented: $vm.isInfoViewPresented,
                 options: .constant(.withoutGrabber)
-            ) { _ in
+            ) {
                 InfoView(
                     title: title,
                     description: description
@@ -263,10 +225,9 @@ struct NavigationInfoButton: ViewModifier {
 }
 
 class InfoButtonViewModel: ObservableObject {
-    @Published var isInfoViewPresented: InfoViewNavigationModel?
-    var title: String?
-    var description: String?
+    @Published var isInfoViewPresented = false
+
     @objc func transformDataToActivityView() {
-        isInfoViewPresented = .init(title: title!, description: description!)
+        isInfoViewPresented = true
     }
 }

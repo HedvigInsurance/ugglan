@@ -1,5 +1,4 @@
 import Apollo
-import Contracts
 import PresentableStore
 import SwiftUI
 import hCore
@@ -99,8 +98,6 @@ struct SettingsView: View {
     }
 }
 
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView()
-    }
+#Preview {
+    SettingsView()
 }

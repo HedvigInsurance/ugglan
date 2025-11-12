@@ -15,7 +15,7 @@ struct SubmitClaimFilesUploadScreen: View {
         claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
-        let model = claimsNavigationVm.fileUploadModel ?? .init(id: "", title: "", targetUploadUrl: "", uploads: [])
+        let model = claimsNavigationVm.fileUploadModel ?? .init(targetUploadUrl: "", uploads: [])
         _vm = StateObject(wrappedValue: FilesUploadViewModel(model: model))
     }
 
@@ -178,7 +178,6 @@ struct SubmitClaimFilesUploadScreen: View {
     }
 
     func skip() {
-        vm.hasFilesToUpload = false
         Task {
             let step = await vm.submitFileUpload(
                 ids: [],
@@ -196,7 +195,6 @@ struct SubmitClaimFilesUploadScreen: View {
 public class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
-    @Published var hasFilesToUpload: Bool = false
     @Published var skipPressed = false
     @Published var error: String?
     @Published var progress: Double = 0
@@ -276,7 +274,6 @@ public class FilesUploadViewModel: ObservableObject {
                     return false
                 }
             }
-            hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {
                 setNavigationBarHidden(true)
                 let startDate = Date()

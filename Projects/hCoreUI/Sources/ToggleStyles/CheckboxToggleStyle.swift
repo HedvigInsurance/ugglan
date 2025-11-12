@@ -177,42 +177,41 @@ public struct CheckboxToggleView: View {
     }
 }
 
-struct ChecboxToggleStyle_Previews: PreviewProvider {
-    @State static var isOn: Bool = true
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var isOn: Bool = true
 
-    static var previews: some View {
-        VStack {
-            CheckboxToggleView(
-                title: "Large label",
-                subtitle: "This is the description area where you can expand upon this option.",
-                isOn: $isOn
-            )
-            .hFieldSize(.large)
+    VStack {
+        CheckboxToggleView(
+            title: "Large label",
+            subtitle: "This is the description area where you can expand upon this option.",
+            isOn: $isOn
+        )
+        .hFieldSize(.large)
 
-            CheckboxToggleView(
-                title: "Small label",
-                subtitle: "This is the description area where you can expand upon this option.",
-                isOn: $isOn
-            )
-            .hFieldSize(.small)
+        CheckboxToggleView(
+            title: "Small label",
+            subtitle: "This is the description area where you can expand upon this option.",
+            isOn: $isOn
+        )
+        .hFieldSize(.small)
 
-            CheckboxToggleView(
-                title: "Large label",
-                isOn: $isOn
-            )
-            .hFieldSize(.large)
+        CheckboxToggleView(
+            title: "Large label",
+            isOn: $isOn
+        )
+        .hFieldSize(.large)
 
-            CheckboxToggleView(
-                title: "Medium label",
-                isOn: $isOn
-            )
-            .hFieldSize(.medium)
+        CheckboxToggleView(
+            title: "Medium label",
+            isOn: $isOn
+        )
+        .hFieldSize(.medium)
 
-            CheckboxToggleView(
-                title: "Small label",
-                isOn: $isOn
-            )
-            .hFieldSize(.small)
-        }
+        CheckboxToggleView(
+            title: "Small label",
+            isOn: $isOn
+        )
+        .hFieldSize(.small)
     }
 }
