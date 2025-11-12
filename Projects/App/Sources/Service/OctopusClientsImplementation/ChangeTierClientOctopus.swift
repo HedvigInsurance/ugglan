@@ -33,15 +33,9 @@ class ChangeTierClientOctopus: ChangeTierClient {
             {
                 throw ChangeTierError.errorMessage(message: message)
             }
-            let testDeflection: Deflection? = Deflection(
-                title: "How to change back to your previous coverage",
-                message:
-                    "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. Once that’s done, your insurance will be updated automatically."
-            )
 
-            // TODO: use data from graphql
-            if let deflection = testDeflection {
-                return .deflection(deflection: deflection)
+            if let deflection = createIntentResponse?.changeTierDeductibleCreateIntent.deflectOutput {
+                return .deflection(deflection: Deflection(title: deflection.title, message: deflection.message))
             }
             guard let intent = createIntentResponse?.changeTierDeductibleCreateIntent.intent else {
                 throw ChangeTierError.somethingWentWrong
