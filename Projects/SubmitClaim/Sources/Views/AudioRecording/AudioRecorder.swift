@@ -12,64 +12,67 @@ public class AudioRecorder: @preconcurrency ObservableObject {
         self.filePath = filePath
     }
 
-    public let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
-    public var isRecording = false { didSet { objectWillChange.send(self) } }
-    public var recording: Recording? { didSet { objectWillChange.send(self) } }
-    var decibelScale: [CGFloat] = [] { didSet { objectWillChange.send(self) } }
+    public var isRecording = false {
+        didSet {
+            objectWillChange.send(self)
+        }
+    }
 
-    let recordingTimer = Timer.publish(every: 1 / 30, on: .main, in: .common).autoconnect()
-    private var recorder: AVAudioRecorder?
+    public var recording: Recording? {
+        didSet {
+            objectWillChange.send(self)
+        }
+    }
+
+    var decibelScale: [CGFloat] = [] {
+        didSet {
+            objectWillChange.send(self)
+        }
+    }
+
+    let recordingTimer = Timer.publish(every: 1 / 30, on: .main, in: .common)
+        .autoconnect()
+
+    public let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
+    var recorder: AVAudioRecorder?
 
     public func toggleRecording() {
-        if isRecording { stopRecording() } else { startRecording() }
-    }
-
-    /// Clear current recording and reset the underlying AVAudioRecorder on next start.
-    public func restart() {
-        recorder?.stop()
-        recorder = nil
-        isRecording = false
-        recording = nil
-        decibelScale.removeAll()
-    }
-
-    /// Prepare the underlying AVAudioRecorder.
-    /// Call ONLY AFTER mic permission is granted and the audio session is configured+active.
-    public func prepareIfNeeded() throws {
-        if recorder != nil { return }
-
-        // Ensure directory exists
-        try FileManager.default.createDirectory(
-            at: filePath.deletingLastPathComponent(),
-            withIntermediateDirectories: true
-        )
-
-        // Remove stale file (if any)
-        if FileManager.default.fileExists(atPath: filePath.path) {
-            try? FileManager.default.removeItem(at: filePath)
+        if isRecording {
+            stopRecording()
+        } else {
+            startRecording()
         }
+    }
 
-        let settings: [String: Any] = [
+    public func restart() {
+        recording = nil
+    }
+
+    private func startRecording() {
+        let recordingSession = AVAudioSession.sharedInstance()
+
+        do {
+            try recordingSession.setCategory(.record)
+            try recordingSession.setActive(true)
+            try FileManager.default.removeItem(at: filePath)
+        } catch {
+            print("Failed")
+        }
+        let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 12_000,
+            AVSampleRateKey: 12000,
             AVNumberOfChannelsKey: 1,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
         ]
 
-        let newRecorder = try AVAudioRecorder(url: filePath, settings: settings)
-        newRecorder.isMeteringEnabled = true
-        newRecorder.prepareToRecord()
-        self.recorder = newRecorder
-        self.decibelScale = []
-    }
-
-    private func startRecording() {
         do {
-            try prepareIfNeeded()
+            recorder = try AVAudioRecorder(url: filePath, settings: settings)
+            decibelScale = []
             recorder?.record()
+            recorder?.isMeteringEnabled = true
             isRecording = true
         } catch {
-            print("Could not start recording: \(error)")
+            print("Could not start recording")
         }
     }
 
@@ -83,10 +86,9 @@ public class AudioRecorder: @preconcurrency ObservableObject {
         recorder?.stop()
         isRecording = false
 
-        // Deactivate session first, then optionally drop to a passive category
         do {
-            try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
             try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
             print("Failed to reset AVAudioSession: \(error)")
         }
@@ -107,13 +109,13 @@ struct AudioPulseBackground: View {
             .onReceive(audioRecorder.recordingTimer) { _ in
                 audioRecorder.refresh()
             }
-            .scaleEffect(scaleEffect)
+            .scaleEffect(
+                scaleEffect
+            )
             .onChange(of: audioRecorder.decibelScale) { _ in
                 withAnimation(.spring) {
                     scaleEffect =
-                        audioRecorder.isRecording
-                        ? pow((audioRecorder.decibelScale.last ?? 0.0) + 0.95, 4)
-                        : 0.95
+                        audioRecorder.isRecording ? pow((audioRecorder.decibelScale.last ?? 0.0) + 0.95, 4) : 0.95
                 }
             }
     }

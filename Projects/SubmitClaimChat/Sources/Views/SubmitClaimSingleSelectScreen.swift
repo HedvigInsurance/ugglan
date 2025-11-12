@@ -52,7 +52,7 @@ struct SubmitClaimSingleSelectScreen: View {
     }
 }
 
-#Preview {
-    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
-    return LocationView(claimsNavigationVm: .init(), router: .init())
-}
+//#Preview {
+//    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+//    return LocationView(claimsNavigationVm: .init(), router: .init())
+//}

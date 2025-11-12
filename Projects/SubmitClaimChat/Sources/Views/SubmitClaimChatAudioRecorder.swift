@@ -23,7 +23,7 @@ public struct SubmitClaimChatAudioRecorder: View {
     // Guard while system permission sheet is up; hint after first grant
     @State private var isRequestingMicPermission = false
 
-    @StateObject var audioRecordingVm = SubmitClaimAudioRecordingScreenModel()
+    @StateObject var audioRecordingVm = AudioRecorderViewModel()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let onSubmit: (_ url: URL) -> Void
     let uploadURI: String

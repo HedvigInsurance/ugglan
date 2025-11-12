@@ -18,6 +18,7 @@ import PresentableStore
 import Profile
 import SafariServices
 import SubmitClaim
+import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts

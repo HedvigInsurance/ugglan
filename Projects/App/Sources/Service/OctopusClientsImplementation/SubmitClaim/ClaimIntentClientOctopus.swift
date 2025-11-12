@@ -1,5 +1,5 @@
 import Foundation
-import SubmitClaim
+import SubmitClaimChat
 import hCore
 import hGraphQL
 

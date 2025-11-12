@@ -18,6 +18,7 @@ import Payment
 import PresentableStore
 import Profile
 import SubmitClaim
+import SubmitClaimChat
 import TerminateContracts
 import TravelCertificate
 import hCore
