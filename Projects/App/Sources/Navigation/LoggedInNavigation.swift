@@ -344,34 +344,29 @@ struct HomeTab: View {
         .modally(
             item: $homeNavigationVm.isSubmitClaimPresented
         ) { messageId in
-            if #available(iOS 16.0, *) {
-                SubmitClaimChatScreen(
-                    messageId: messageId,
-                    goToClaimDetails: {
-                        claimId in
-                        homeNavigationVm.isSubmitClaimPresented = nil
+            SubmitClaimChatScreen(
+                messageId: messageId,
+                goToClaimDetails: {
+                    claimId in
+                    homeNavigationVm.isSubmitClaimPresented = nil
 
-                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                        claimsStore.send(.fetchActiveClaims)
+                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    claimsStore.send(.fetchActiveClaims)
 
-                        Task {
-                            try await Task.sleep(seconds: 2)
-                            if let claim = claimsStore.state.getClaimFor(id: claimId) {
-                                homeNavigationVm.router.push(claim)
-                            }
+                    Task {
+                        try await Task.sleep(seconds: 2)
+                        if let claim = claimsStore.state.getClaimFor(id: claimId) {
+                            homeNavigationVm.router.push(claim)
                         }
                     }
-                )
-                .withDismissButton()
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: self
-                )
-                .environmentObject(homeNavigationVm.router)
-            } else {
-                // Fallback on earlier versions
-                EmptyView()
-            }
+                }
+            )
+            .withDismissButton()
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: self
+            )
+            .environmentObject(homeNavigationVm.router)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
