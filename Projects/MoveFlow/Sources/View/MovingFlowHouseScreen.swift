@@ -126,7 +126,7 @@ struct MovingFlowHouseScreen: View {
                         extraBuilding in
                         HStack {
                             VStack(alignment: .leading, spacing: 0) {
-                                hText(extraBuilding.type.translatedValue, style: .body1)
+                                hText(extraBuilding.type.displayName, style: .body1)
                                 HStack(spacing: 0) {
                                     hText(extraBuilding.descriptionText, style: .label)
                                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -244,7 +244,16 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
     case ancillaryArea
 }
 
-public typealias ExtraBuildingType = String
+public struct ExtraBuildingType: Sendable, Hashable {
+    public let type: String
+    public let displayName: String
+
+    public init(type: String, displayName: String) {
+        self.type = type
+        self.displayName = displayName
+    }
+}
+
 @MainActor
 public class HouseInformationInputModel: ObservableObject, @preconcurrency Equatable, Identifiable {
     public static func == (_: HouseInformationInputModel, _: HouseInformationInputModel) -> Bool {
@@ -333,13 +342,5 @@ public struct ExtraBuilding: Identifiable {
             elements.append(L10n.changeAddressExtraBuildingsWaterLabel)
         }
         return elements.displayName
-    }
-}
-
-extension ExtraBuildingType {
-    var translatedValue: String {
-        let key = "FIELD_EXTRA_BUIDLINGS_\(uppercased())_LABEL"
-        let translatedValue = L10nDerivation(table: "", key: key, args: []).render()
-        return key == translatedValue ? self : translatedValue
     }
 }
