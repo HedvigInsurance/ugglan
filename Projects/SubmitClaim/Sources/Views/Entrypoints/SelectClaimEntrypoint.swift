@@ -1,14 +1,13 @@
 import AVFoundation
-import Claims
+import HedvigShared
 import SwiftUI
 import TagKit
 import hCore
 import hCoreUI
-import HedvigShared
 
 struct ClaimChatViewController: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        return ClaimChatViewControllerKt.ClaimChatViewController()
+        ClaimChatViewControllerKt.ClaimChatViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
@@ -28,81 +27,81 @@ public struct SelectClaimEntrypointGroup: View {
 
     public var body: some View {
         ClaimChatViewController()
-//        hForm {}
-//            .hFormTitle(
-//                title: .init(
-//                    .small,
-//                    .heading2,
-//                    L10n.claimTriagingNavigationTitle,
-//                    alignment: .leading
-//                )
-//            )
-//            .hFormAttachToBottom {
-//                VStack {
-//                    ShowTagList(
-//                        tagsToShow: claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.map(\.displayName),
-//                        onTap: { tag in
-//                            claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup = tag
-//                            claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints =
-//                                claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.first(where: {
-//                                    $0.displayName == claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup
-//                                })?
-//                                .entrypoints ?? []
-//                        },
-//                        onButtonClick: {
-//                            if claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup != nil {
-//                                claimsNavigationVm.previousProgress = 0
-//
-//                                if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.isEmpty {
-//                                    claimsNavigationVm.entrypoints.selectedEntrypoints =
-//                                        claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
-//
-//                                    buttonIsLoading = true
-//                                    Task {
-//                                        await claimsNavigationVm.startClaimRequest(
-//                                            entrypointId: nil,
-//                                            entrypointOptionId: nil
-//                                        )
-//                                        buttonIsLoading = false
-//                                    }
-//                                } else {
-//                                    if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == []
-//                                    {
-//                                        claimsNavigationVm.progress = 0.2
-//                                    } else {
-//                                        claimsNavigationVm.progress = 0.1
-//                                    }
-//
-//                                    claimsNavigationVm.entrypoints.selectedEntrypoints =
-//                                        claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
-//                                    claimsNavigationVm.router.push(SubmitClaimRouterActions.triagingEntrypoint)
-//                                }
-//                            }
-//                        },
-//                        oldValue: $claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup,
-//                        buttonIsLoading: $buttonIsLoading
-//                    )
-//                }
-//            }
-//            .trackErrorState(for: $vm.viewState)
-//            .hStateViewButtonConfig(
-//                .init(
-//                    actionButton: .init(
-//                        buttonAction: {
-//                            vm.fetchClaimEntrypointGroups()
-//                        }),
-//                    dismissButton: .init(
-//                        buttonTitle: L10n.openChat,
-//                        buttonAction: {
-//                            claimsNavigationVm.router.dismiss()
-//                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-//                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-//                            }
-//                        }
-//                    )
-//                )
-//            )
-//            .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+        //        hForm {}
+        //            .hFormTitle(
+        //                title: .init(
+        //                    .small,
+        //                    .heading2,
+        //                    L10n.claimTriagingNavigationTitle,
+        //                    alignment: .leading
+        //                )
+        //            )
+        //            .hFormAttachToBottom {
+        //                VStack {
+        //                    ShowTagList(
+        //                        tagsToShow: claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.map(\.displayName),
+        //                        onTap: { tag in
+        //                            claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup = tag
+        //                            claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints =
+        //                                claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.first(where: {
+        //                                    $0.displayName == claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup
+        //                                })?
+        //                                .entrypoints ?? []
+        //                        },
+        //                        onButtonClick: {
+        //                            if claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup != nil {
+        //                                claimsNavigationVm.previousProgress = 0
+        //
+        //                                if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.isEmpty {
+        //                                    claimsNavigationVm.entrypoints.selectedEntrypoints =
+        //                                        claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
+        //
+        //                                    buttonIsLoading = true
+        //                                    Task {
+        //                                        await claimsNavigationVm.startClaimRequest(
+        //                                            entrypointId: nil,
+        //                                            entrypointOptionId: nil
+        //                                        )
+        //                                        buttonIsLoading = false
+        //                                    }
+        //                                } else {
+        //                                    if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == []
+        //                                    {
+        //                                        claimsNavigationVm.progress = 0.2
+        //                                    } else {
+        //                                        claimsNavigationVm.progress = 0.1
+        //                                    }
+        //
+        //                                    claimsNavigationVm.entrypoints.selectedEntrypoints =
+        //                                        claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
+        //                                    claimsNavigationVm.router.push(SubmitClaimRouterActions.triagingEntrypoint)
+        //                                }
+        //                            }
+        //                        },
+        //                        oldValue: $claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup,
+        //                        buttonIsLoading: $buttonIsLoading
+        //                    )
+        //                }
+        //            }
+        //            .trackErrorState(for: $vm.viewState)
+        //            .hStateViewButtonConfig(
+        //                .init(
+        //                    actionButton: .init(
+        //                        buttonAction: {
+        //                            vm.fetchClaimEntrypointGroups()
+        //                        }),
+        //                    dismissButton: .init(
+        //                        buttonTitle: L10n.openChat,
+        //                        buttonAction: {
+        //                            claimsNavigationVm.router.dismiss()
+        //                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        //                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+        //                            }
+        //                        }
+        //                    )
+        //                )
+        //            )
+        //            .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
     }
 }
 
