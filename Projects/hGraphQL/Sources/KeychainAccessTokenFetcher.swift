@@ -1,8 +1,10 @@
 @preconcurrency import Apollo
 import HedvigShared
 
-class KeychainAccessTokenFetcher : AccessTokenFetcher {
-    func fetch() -> String? {
+public class KeychainAccessTokenFetcher: AccessTokenFetcher {
+    public init() {}
+
+    public func fetch() -> String? {
         final class TokenBox: @unchecked Sendable {
             var token: String?
         }
