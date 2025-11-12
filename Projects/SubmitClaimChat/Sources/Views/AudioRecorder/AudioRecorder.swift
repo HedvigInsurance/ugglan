@@ -126,38 +126,5 @@ public struct Recording {
 
 @MainActor
 public class AudioRecorderViewModel: ObservableObject {
-    //    private let service = SubmitClaimService()
     @Published public var viewState: ProcessingState = .success
-
-    //    @MainActor
-    //    func submitAudioRecording(
-    //        context: String,
-    //        currentClaimId: String,
-    //        type: SubmitAudioRecordingType,
-    //        model: FlowClaimAudioRecordingStepModel
-    //    ) async -> SubmitClaimStepResponse? {
-    //        withAnimation {
-    //            self.viewState = .loading
-    //        }
-    //
-    //        do {
-    //            let data = try await service.submitAudioRecording(
-    //                type: type,
-    //                context: context,
-    //                currentClaimId: currentClaimId,
-    //                model: model
-    //            )
-    //
-    //            withAnimation {
-    //                self.viewState = .success
-    //            }
-    //
-    //            return data
-    //        } catch let exception {
-    //            withAnimation {
-    //                self.viewState = .error(errorMessage: exception.localizedDescription)
-    //            }
-    //        }
-    //        return nil
-    //    }
 }
