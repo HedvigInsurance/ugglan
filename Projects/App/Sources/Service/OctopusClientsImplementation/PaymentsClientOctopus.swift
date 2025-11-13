@@ -390,17 +390,3 @@ extension PaymentData.PaymentStatus {
         }
     }
 }
-
-//@MainActor
-//extension Discount {
-//    public init(
-//        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment
-//    ) {
-//        self.init(
-//            code: data.code,
-//            displayValue: MonetaryAmount(fragment: data.discount.fragments.moneyFragment).formattedNegativeAmount,
-//            description: data.description,
-//            type: .paymentsDiscount
-//        )
-//    }
-//}
