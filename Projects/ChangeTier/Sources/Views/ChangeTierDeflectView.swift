@@ -9,13 +9,13 @@ struct ChangeTierDeflectView: View {
 
     var body: some View {
         hForm {
-            hText(message)
-                .padding(.top, .padding16)
-                .foregroundColor(hTextColor.Translucent.secondary)
+            hRow {
+                hText(message)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
-        .hFormTitle(
-            title: .init(.small, .body2, title, alignment: .leading),
-        )
+        .hFormTitle(title: .init(.small, .body2, title, alignment: .leading))
         .hFormAlwaysAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
