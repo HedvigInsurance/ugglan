@@ -138,7 +138,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                             case .emptyTier:
                                 self?.infoText = L10n.terminationNoTierQuotesSubtitle
                             case let .deflection(deflection):
-                                // TODO: display deflection? or shouldnt happen?
                                 self?.infoText = deflection.message
                             }
                         } catch let exception {
