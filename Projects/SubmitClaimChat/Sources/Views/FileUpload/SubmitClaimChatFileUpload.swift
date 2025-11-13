@@ -59,8 +59,8 @@ struct SubmitClaimChatFileUpload: View {
                                     await viewModel.submitFile(fileIds: fileIds)
                                 }
                             }
-                            .hButtonIsLoading(fileUploadVm.isLoading || !step.isEnabled)
-                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty)
+                            .hButtonIsLoading(fileUploadVm.isLoading)
+                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty || !step.isEnabled)
                             if fileUploadVm.isLoading {
                                 GeometryReader { geo in
                                     Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
