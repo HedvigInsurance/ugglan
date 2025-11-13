@@ -4,7 +4,7 @@ import hCore
 @MainActor
 public protocol ClaimIntentClient {
     func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent
-    func claimIntentSubmitAudio(reference: String?, freeText: String?, stepId: String) async throws -> ClaimIntent
+    func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent
     func claimIntentSubmitForm(
         fields: [FieldValue],
         stepId: String
@@ -33,8 +33,8 @@ class ClaimIntentService {
         return data
     }
 
-    func claimIntentSubmitAudio(reference: String?, freeText: String?, stepId: String) async throws -> ClaimIntent {
-        let data = try await client.claimIntentSubmitAudio(reference: reference, freeText: freeText, stepId: stepId)
+    func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent {
+        let data = try await client.claimIntentSubmitAudio(fileId: fileId, freeText: freeText, stepId: stepId)
         return data
     }
 

@@ -8,7 +8,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     }
 
     public func claimIntentSubmitAudio(
-        reference: String?,
+        fileId: String?,
         freeText: String?,
         stepId: String
     ) async throws -> ClaimIntent {

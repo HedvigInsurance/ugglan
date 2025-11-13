@@ -249,7 +249,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
     func sendAudioReferenceToBackend(translatedText: String, url: String?, freeText: String?) async {
         do {
             let data = try await service.claimIntentSubmitAudio(
-                reference: url,
+                fileId: url,
                 freeText: freeText,
                 stepId: currentStep?.id ?? ""
             )

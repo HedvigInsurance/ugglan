@@ -9,8 +9,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
         let inputId = sourceMessageId != "" ? sourceMessageId : nil
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
-            sourceMessageId: GraphQLNullable(optionalValue: inputId)
-            //            developmentFlow: GraphQLNullable(optionalValue: true)
+            sourceMessageId: GraphQLNullable(optionalValue: inputId),
+            developmentFlow: GraphQLNullable(optionalValue: false)
         )
         let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(input))
 
