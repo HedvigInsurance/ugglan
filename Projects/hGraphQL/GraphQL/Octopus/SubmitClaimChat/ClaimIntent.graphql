@@ -51,10 +51,12 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
           }
           fileUploads {
             url
+            contentType
+            fileName
           }
         }
         ... on ClaimIntentStepContentOutcome {
-          claimId
+            claimId
         }
 }
 

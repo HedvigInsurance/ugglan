@@ -10,6 +10,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         let inputId = sourceMessageId != "" ? sourceMessageId : nil
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
             sourceMessageId: GraphQLNullable(optionalValue: inputId)
+            //            developmentFlow: GraphQLNullable(optionalValue: true)
         )
         let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(input))
 
@@ -36,10 +37,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         )
     }
 
-    func claimIntentSubmitAudio(reference: String?, freeText: String?, stepId: String) async throws -> ClaimIntent {
+    func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent {
         let input = OctopusGraphQL.ClaimIntentSubmitAudioInput(
             stepId: stepId,
-            audioReference: GraphQLNullable(optionalValue: reference),
+            audioFileId: GraphQLNullable(optionalValue: fileId),
             freeText: GraphQLNullable(optionalValue: nil)
         )
 
