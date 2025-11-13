@@ -54,7 +54,7 @@ public struct ContractDetail: View {
                             tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier
                         )
                     }
-                    decommisionedInfoView
+                    decommissionedInfoView
                     ScrollableSegmentedView(
                         vm: scrollableSegmentedViewModel,
                         contentFor: { id in
@@ -86,7 +86,7 @@ public struct ContractDetail: View {
     }
 
     @ViewBuilder
-    private var decommisionedInfoView: some View {
+    private var decommissionedInfoView: some View {
         if let contract = store.state.contractForId(id) {
             if (TypeOfContract.isDecommisioned(
                 for: contract.currentAgreement?.productVariant.typeOfContract ?? ""
