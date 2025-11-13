@@ -6,11 +6,11 @@ import hGraphQL
 class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
 
-    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
+    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent? {
         let inputId = sourceMessageId != "" ? sourceMessageId : nil
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
             sourceMessageId: GraphQLNullable(optionalValue: inputId),
-            developmentFlow: GraphQLNullable(optionalValue: false)
+            developmentFlow: GraphQLNullable(optionalValue: true)
         )
         let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(input))
 
@@ -29,15 +29,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
-
-        return .init(
-            currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: "",
-            sourceMessages: []
-        )
+        return nil
     }
 
-    func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent {
+    func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent? {
         let input = OctopusGraphQL.ClaimIntentSubmitAudioInput(
             stepId: stepId,
             audioFileId: GraphQLNullable(optionalValue: fileId),
@@ -66,17 +61,43 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
-        return .init(
-            currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: "",
-            sourceMessages: []
+        return nil
+    }
+
+    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent? {
+        let input = OctopusGraphQL.ClaimIntentSubmitFileUploadInput(
+            stepId: stepId,
+            fileIds: fildIds
         )
+
+        let mutation = OctopusGraphQL.ClaimIntentSubmitFileUploadMutation(input: input)
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+
+            if let userError = data?.claimIntentSubmitFileUpload.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
+
+            let currentStep = data?.claimIntentSubmitFileUpload.intent?.currentStep
+            let id = data?.claimIntentSubmitFileUpload.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitFileUpload.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
+
+        return nil
     }
 
     func claimIntentSubmitForm(
         fields: [FieldValue],
         stepId: String
-    ) async throws -> ClaimIntent {
+    ) async throws -> ClaimIntent? {
         let fieldInput: [OctopusGraphQL.ClaimIntentFormSubmitInputField] = fields.map {
             .init(fieldId: $0.id, values: GraphQLNullable(optionalValue: $0.values))
         }
@@ -102,14 +123,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
-        return .init(
-            currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: "",
-            sourceMessages: []
-        )
+        return nil
     }
 
-    func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent {
+    func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent? {
         let input = OctopusGraphQL.ClaimIntentSubmitSummaryInput(stepId: stepId)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSummaryMutation(input: input)
 
@@ -132,14 +149,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
-        return .init(
-            currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: "",
-            sourceMessages: []
-        )
+        return nil
     }
 
-    func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent {
+    func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent? {
         let input = OctopusGraphQL.ClaimIntentSubmitTaskInput(stepId: stepId)
         let mutation = OctopusGraphQL.ClaimIntentSubmitTaskMutation(input: input)
 
@@ -169,11 +182,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
 
-        return .init(
-            currentStep: .init(content: .task(model: .init(description: "", isCompleted: false)), id: "", text: ""),
-            id: "",
-            sourceMessages: []
-        )
+        return nil
     }
 
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep {
@@ -228,6 +237,8 @@ extension ClaimIntentStepContent {
             )
         } else if let outcome = fragment.asClaimIntentStepContentOutcome {
             self = .outcome(model: .init(claimId: outcome.claimId))
+        } else if let fileUpload = fragment.asClaimIntentStepContentFileUpload {
+            self = .fileUpload(model: .init(uploadURI: fileUpload.uploadUri))
         } else {
             self = .summary(model: .init(audioRecordings: [], fileUploads: [], items: []))
         }

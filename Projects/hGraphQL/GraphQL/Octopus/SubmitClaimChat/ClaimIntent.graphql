@@ -41,6 +41,9 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
           hint
           uploadUri
         }
+        ... on ClaimIntentStepContentFileUpload {
+          uploadUri
+        }
         ... on ClaimIntentStepContentSummary {
           items {
             title

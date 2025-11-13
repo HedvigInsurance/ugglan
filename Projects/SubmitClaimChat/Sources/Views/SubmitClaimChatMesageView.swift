@@ -80,6 +80,8 @@ struct SubmitClaimChatMesageView: View {
                     viewModel.goToClaimDetails(model.claimId)
                 }
             }
+        case .fileUpload(let model):
+            SubmitClaimChatFileUpload(step: step, model: model)
         }
     }
 
@@ -378,62 +380,13 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
-
     let viewModel = SubmitClaimChatViewModel(messageId: nil, goToClaimDetails: { _ in })
+    let content: ClaimIntentStepContentFileUpload = .init(uploadURI: "/hedvig/upload")
+    let step: ClaimIntentStep = .init(content: .fileUpload(model: content), id: "id1", text: "upload files")
+    let stepModel: SubmitChatStepModel = .init(step: step, sender: .member, isLoading: false)
 
     return SubmitClaimChatMesageView(
-        step:
-            .init(
-                step: .init(
-                    content: .form(
-                        model: .init(fields: [
-                            .init(
-                                defaultValue: nil,
-                                id: "1",
-                                isRequired: true,
-                                maxValue: nil,
-                                minValue: nil,
-                                options: [],
-                                suffix: nil,
-                                title: "Date",
-                                type: .date
-                            ),
-                            .init(
-                                defaultValue: "false",
-                                id: "2",
-                                isRequired: true,
-                                maxValue: nil,
-                                minValue: nil,
-                                options: [
-                                    .init(title: "Yes", value: "true"),
-                                    .init(title: "No", value: "false"),
-                                ],
-                                suffix: nil,
-                                title: "Are you a good person",
-                                type: .binary
-                            ),
-                            .init(
-                                defaultValue: "false",
-                                id: "3",
-                                isRequired: true,
-                                maxValue: nil,
-                                minValue: nil,
-                                options: [
-                                    .init(title: "Yes", value: "true"),
-                                    .init(title: "No", value: "false"),
-                                ],
-                                suffix: nil,
-                                title: "Say yes or no",
-                                type: .singleSelect
-                            ),
-                        ])
-                    ),
-                    id: "id1",
-                    text: "Select a date"
-                ),
-                sender: .member,
-                isLoading: false
-            ),
+        step: stepModel,
         viewModel: viewModel
     )
 }

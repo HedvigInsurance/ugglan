@@ -3,7 +3,7 @@ import Foundation
 public class ClaimIntentClientDemo: ClaimIntentClient {
     public init() {}
 
-    public func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
+    public func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent? {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
@@ -11,19 +11,23 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         fileId: String?,
         freeText: String?,
         stepId: String
-    ) async throws -> ClaimIntent {
+    ) async throws -> ClaimIntent? {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
-    public func claimIntentSubmitForm(fields: [FieldValue], stepId: String) async throws -> ClaimIntent {
+    public func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent? {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
-    public func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent {
+    public func claimIntentSubmitForm(fields: [FieldValue], stepId: String) async throws -> ClaimIntent? {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
-    public func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent {
+    public func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent? {
+        .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
+    }
+
+    public func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent? {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
