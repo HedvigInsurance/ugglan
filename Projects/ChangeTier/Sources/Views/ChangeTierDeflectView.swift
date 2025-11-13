@@ -19,16 +19,24 @@ struct ChangeTierDeflectView: View {
         .hFormAlwaysAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hButton(.large, .primary, content: .init(title: L10n.terminationFlowIUnderstandText)) {
-                        router.dismiss()
-                    }
-                    hButton(.large, .ghost, content: .init(title: L10n.CrossSell.Info.faqChatButton)) {
-                        router.dismiss()
-                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                    }
+                    iUnderstandButton
+                    contactUsButton
                 }
             }
             .sectionContainerStyle(.transparent)
+        }
+    }
+
+    var contactUsButton: some View {
+        hButton(.large, .ghost, content: .init(title: L10n.CrossSell.Info.faqChatButton)) {
+            router.dismiss()
+            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+        }
+    }
+
+    var iUnderstandButton: some View {
+        hButton(.large, .primary, content: .init(title: L10n.terminationFlowIUnderstandText)) {
+            router.dismiss()
         }
     }
 }
