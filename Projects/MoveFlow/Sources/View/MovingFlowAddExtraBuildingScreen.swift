@@ -49,7 +49,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
     @ViewBuilder
     private var typeOfBuilding: some View {
         hFloatingField(
-            value: vm.buildingType?.translatedValue ?? "",
+            value: vm.buildingType?.displayName ?? "",
             placeholder: L10n.changeAddressExtraBuildingContainerTitle,
             error: $vm.buildingTypeError
         ) {
