@@ -7,7 +7,7 @@ import hCoreUI
 struct SubmitClaimChatFileUpload: View {
     let step: SubmitChatStepModel
     let model: ClaimIntentStepContentFileUpload
-    @StateObject fileprivate var fileUploadVm: FilesUploadViewModel
+    @ObservedObject var fileUploadVm: FilesUploadViewModel
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @State var showImagePicker = false
     @State var showFilePicker = false
@@ -15,15 +15,18 @@ struct SubmitClaimChatFileUpload: View {
 
     init(
         step: SubmitChatStepModel,
-        model: ClaimIntentStepContentFileUpload
+        model: ClaimIntentStepContentFileUpload,
+        fileUploadVm: FilesUploadViewModel
     ) {
         self.step = step
         self.model = model
-        self._fileUploadVm = StateObject(
-            wrappedValue: FilesUploadViewModel(
-                model: .init(uploadUri: model.uploadURI)
-            )
-        )
+        self.fileUploadVm = fileUploadVm
+        fileUploadVm.model.uploadUri = model.uploadURI
+        //        self._fileUploadVm = StateObject(
+        //            wrappedValue: FilesUploadViewModel(
+        //                model: .init(uploadUri: model.uploadURI)
+        //            )
+        //        )
     }
 
     var body: some View {
@@ -40,9 +43,6 @@ struct SubmitClaimChatFileUpload: View {
                 VStack {
                     FilesGridView(vm: fileUploadVm.fileGridViewModel)
                     HStack(spacing: .padding8) {
-                        //                        if let error = fileUploadVm.error {
-                        //                            InfoCard(text: error, type: .attention)
-                        //                        }
                         hButton(
                             .small,
                             .secondary,
@@ -154,14 +154,8 @@ struct SubmitClaimChatFileUpload: View {
 }
 
 public struct FileUploadModel: Sendable {
-    let uploadUri: String
+    var uploadUri: String? = nil
     @State var uploads: [FileModel] = []
-
-    public init(
-        uploadUri: String
-    ) {
-        self.uploadUri = uploadUri
-    }
 }
 
 public struct FileModel: Codable, Equatable, Hashable, Sendable {
@@ -189,7 +183,7 @@ public class FilesUploadViewModel: ObservableObject {
     var timerProgress: Double = 0
     let uploadDelayDuration: Float = 1.5
 
-    private let model: FileUploadModel
+    var model: FileUploadModel
     var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
     private var delayTimer: AnyCancellable?
@@ -238,7 +232,6 @@ public class FilesUploadViewModel: ObservableObject {
         }
     }
 
-    //upload
     func uploadFiles() async -> [String] {
         withAnimation {
             error = nil
@@ -264,14 +257,11 @@ public class FilesUploadViewModel: ObservableObject {
                 }
             }
             if !filteredFiles.isEmpty {
-                setNavigationBarHidden(true)
                 let startDate = Date()
 
-                let uploadURL = resolveUploadURL(model.uploadUri)
-
                 async let sleepTask: () = Task.sleep(seconds: uploadDelayDuration)
-                async let filesUploadTask = claimFileUploadService.upload(
-                    endPoint: uploadURL.absoluteString,
+                async let filesUploadTask = claimFileUploadService.uploadClaimsChatFile(
+                    endPoint: model.uploadUri ?? "",
                     files: filteredFiles
                 ) { progress in
                     DispatchQueue.main.async { [weak self] in
@@ -302,64 +292,19 @@ public class FilesUploadViewModel: ObservableObject {
                 withAnimation {
                     self.progress = 1
                 }
-                let files = data[1] as! [ClaimFileUploadResponse]
-                let uploadedFiles = files.compactMap { $0.file?.fileId }
-                let filesToReplaceLocalFiles =
-                    files
-                    .compactMap(\.file)
-                    .compactMap(
-                        {
-                            File(
-                                id: $0.fileId,
-                                size: 0,
-                                mimeType: MimeType.findBy(mimeType: $0.mimeType),
-                                name: $0.name,
-                                source: .url(
-                                    url: URL(string: $0.url)!,
-                                    mimeType: MimeType.findBy(mimeType: $0.mimeType)
-                                )
-                            )
-                        }
-                    )
-                // added delay so we don't have a flickering
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-                    guard let self = self else { return }
-                    for file in filesToReplaceLocalFiles {
-                        if let index = self.fileGridViewModel.files.firstIndex(where: {
-                            if case .localFile = $0.source { return true } else { return false }
-                        }) {
-                            self.fileGridViewModel.files[index] = file
-                        }
-                    }
-                }
-                return alreadyUploadedFiles + uploadedFiles
+                let fileIds = data[1] as! [String]
+                isLoading = false
+                return fileIds
             } else {
+                isLoading = false
                 return alreadyUploadedFiles
             }
         } catch let ex {
             withAnimation {
                 error = ex.localizedDescription
-                setNavigationBarHidden(false)
                 isLoading = false
             }
         }
         return []
-    }
-
-    private func resolveBase() -> URL {
-        URL(string: "https://gateway.test.hedvig.com")!
-    }
-
-    private func resolveUploadURL(_ pathOrUrl: String) -> URL {
-        if let absolute = URL(string: pathOrUrl), absolute.scheme != nil { return absolute }
-        var base = resolveBase()
-        let trimmed = pathOrUrl.hasPrefix("/") ? String(pathOrUrl.dropFirst()) : pathOrUrl
-        base.appendPathComponent(trimmed)
-        return base
-    }
-
-    private func setNavigationBarHidden(_ hidden: Bool) {
-        let nav = UIApplication.shared.getTopViewControllerNavigation()
-        nav?.setNavigationBarHidden(hidden, animated: true)
     }
 }

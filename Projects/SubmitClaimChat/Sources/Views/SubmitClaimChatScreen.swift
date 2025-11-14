@@ -4,6 +4,7 @@ import hCoreUI
 
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
+    @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     let input: StartClaimInput
 
@@ -78,7 +79,11 @@ public struct SubmitClaimChatScreen: View {
                     HStack {
                         spacing(step.sender == .member)
                         VStack(alignment: .leading, spacing: 0) {
-                            SubmitClaimChatMesageView(step: step, viewModel: viewModel)
+                            SubmitClaimChatMesageView(
+                                step: step,
+                                viewModel: viewModel,
+                                fileUploadViewModel: fileUploadVm
+                            )
                             switch step.step.content {
                             case .summary, .outcome:
                                 EmptyView()

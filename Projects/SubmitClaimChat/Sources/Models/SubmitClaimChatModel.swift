@@ -168,7 +168,7 @@ public struct ClaimIntentStepContentAudioRecording: Sendable {
 }
 
 public struct ClaimIntentStepContentFileUpload: Sendable {
-    let uploadURI: String
+    public let uploadURI: String
     let isSkippable: Bool
     let isRegrettable: Bool
 

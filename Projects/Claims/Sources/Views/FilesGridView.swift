@@ -31,32 +31,32 @@ public struct FilesGridView: View {
                     .cornerRadius(.padding12)
                     .contentShape(Rectangle())
                     .opacity(vm.options.contains(.loading) ? 0.5 : 1)
-                    //                    if vm.options.contains(.delete) {
-                    //                        Button(
-                    //                            action: {
-                    //                                vm.delete(file)
-                    //                            },
-                    //                            label: {
-                    //                                Circle().fill(Color.clear)
-                    //                                    .frame(width: 30, height: 30)
-                    //                                    .hShadow()
-                    //                                    .overlay(
-                    //                                        Circle().fill(hBackgroundColor.primary)
-                    //                                            .frame(width: 24, height: 24)
-                    //                                            .hShadow()
-                    //                                            .overlay(
-                    //                                                hCoreUIAssets.closeSmall.view
-                    //                                                    .resizable()
-                    //                                                    .frame(width: 16, height: 16)
-                    //                                                    .foregroundColor(hTextColor.Opaque.secondary)
-                    //                                            )
-                    //                                    )
-                    //                                    .offset(.init(width: 8, height: -8))
-                    //                                    .accessibilityLabel(L10n.General.remove)
-                    //                            }
-                    //                        )
-                    //                        .zIndex(.infinity)
-                    //                    }
+                    if vm.options.contains(.delete) {
+                        Button(
+                            action: {
+                                vm.delete(file)
+                            },
+                            label: {
+                                Circle().fill(Color.clear)
+                                    .frame(width: 30, height: 30)
+                                    .hShadow()
+                                    .overlay(
+                                        Circle().fill(hBackgroundColor.primary)
+                                            .frame(width: 24, height: 24)
+                                            .hShadow()
+                                            .overlay(
+                                                hCoreUIAssets.closeSmall.view
+                                                    .resizable()
+                                                    .frame(width: 16, height: 16)
+                                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                            )
+                                    )
+                                    .offset(.init(width: 8, height: -8))
+                                    .accessibilityLabel(L10n.General.remove)
+                            }
+                        )
+                        .zIndex(.infinity)
+                    }
                 }
                 .transition(.scale.combined(with: .opacity))
             }

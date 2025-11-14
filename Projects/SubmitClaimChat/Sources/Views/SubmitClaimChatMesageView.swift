@@ -1,3 +1,4 @@
+import Claims
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,6 +6,7 @@ import hCoreUI
 struct SubmitClaimChatMesageView: View {
     @ObservedObject var step: SubmitChatStepModel
     @ObservedObject var viewModel: SubmitClaimChatViewModel
+    @ObservedObject var fileUploadViewModel: FilesUploadViewModel
 
     var body: some View {
         Group {
@@ -81,7 +83,10 @@ struct SubmitClaimChatMesageView: View {
                 }
             }
         case .fileUpload(let model):
-            SubmitClaimChatFileUpload(step: step, model: model)
+            SubmitClaimChatFileUpload(step: step, model: model, fileUploadVm: fileUploadViewModel)
+                .onAppear {
+                    fileUploadViewModel.model.uploadUri = model.uploadURI
+                }
         case .select(model: let model):
             if step.sender == .hedvig {
                 hText(step.step.text)
@@ -124,6 +129,14 @@ struct SubmitClaimChatMesageView: View {
                 ForEach(model.audioRecordings, id: \.url) { url in
                     hSection {
                         SubmitClaimChatAudioRecorder(viewModel: viewModel, uploadURI: "")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .hWithoutHorizontalPadding([.section])
+                }
+
+                ForEach(model.fileUploads, id: \.url) { url in
+                    hSection {
+                        FilesGridView(vm: fileUploadViewModel.fileGridViewModel)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .hWithoutHorizontalPadding([.section])
@@ -421,6 +434,7 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 
     return SubmitClaimChatMesageView(
         step: stepModel,
-        viewModel: viewModel
+        viewModel: viewModel,
+        fileUploadViewModel: .init(model: .init())
     )
 }

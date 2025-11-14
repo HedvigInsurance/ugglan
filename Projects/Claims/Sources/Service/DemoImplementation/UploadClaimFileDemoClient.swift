@@ -10,4 +10,12 @@ public class hClaimFileUploadClientDemo: hClaimFileUploadClient {
     ) async throws -> [ClaimFileUploadResponse] {
         []
     }
+
+    public func uploadClaimsChatFile(
+        endPoint: String,
+        files: [hCore.File],
+        withProgress: (@Sendable (Double) -> Void)?
+    ) async throws -> [String] {
+        []
+    }
 }
