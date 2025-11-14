@@ -177,7 +177,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
                 return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
             }
-
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
@@ -192,7 +191,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let data = try await octopus.client.fetch(query: query)
 
             return ClaimIntentStep(fragment: data.claimIntent.currentStep.fragments.claimIntentStepFragment)
-
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
