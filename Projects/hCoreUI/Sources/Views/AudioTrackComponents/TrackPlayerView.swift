@@ -3,11 +3,14 @@ import hCore
 
 public struct TrackPlayerView: View {
     @ObservedObject var audioPlayer: AudioPlayer
+    let withoutBackground: Bool
 
     public init(
-        audioPlayer: AudioPlayer
+        audioPlayer: AudioPlayer,
+        withoutBackground: Bool = false
     ) {
         self.audioPlayer = audioPlayer
+        self.withoutBackground = withoutBackground
     }
 
     public var body: some View {
@@ -24,7 +27,8 @@ public struct TrackPlayerView: View {
                 ])
         default:
             TrackPlayer(
-                audioPlayer: audioPlayer
+                audioPlayer: audioPlayer,
+                withoutBackground: withoutBackground
             )
             .accessibilityElement(children: .combine)
             .accessibilityRemoveTraits(.isImage)

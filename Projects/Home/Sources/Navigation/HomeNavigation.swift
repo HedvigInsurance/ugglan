@@ -69,7 +69,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var router = Router()
 
-    @Published public var isSubmitClaimPresented = false
+    @Published public var isSubmitClaimPresented: String?
     @Published public var isHelpCenterPresented = false
 
     @Published public var navBarItems = NavBarItems()

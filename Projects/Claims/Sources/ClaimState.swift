@@ -24,4 +24,8 @@ public struct ClaimsState: StateProtocol {
         }
         return false
     }
+
+    public func getClaimFor(id: String) -> ClaimModel? {
+        activeClaims?.first(where: { $0.id == id })
+    }
 }
