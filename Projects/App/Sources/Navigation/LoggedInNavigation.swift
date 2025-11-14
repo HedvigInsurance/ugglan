@@ -336,7 +336,6 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-
             options: .constant(.withoutGrabber)
         ) {
             ClaimsMainNavigation()
@@ -350,7 +349,6 @@ struct HomeTab: View {
                 goToClaimDetails: {
                     claimId in
                     homeNavigationVm.claimsAutomationStartInput = nil
-
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchActiveClaims)
 
@@ -808,7 +806,6 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     private func handleChatClaimDeeplink(_ url: URL) {
         dismissAndSelectTab(0)
-
         if let messageId = url.getParameter(property: .sourceMessageId) {
             homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: messageId)
         }

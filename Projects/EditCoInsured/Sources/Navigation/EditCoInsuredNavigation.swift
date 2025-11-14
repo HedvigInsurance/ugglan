@@ -288,7 +288,7 @@ extension EditCoInsuredAlertNavigation: TrackingViewNameProtocol {
 
 extension View {
     func addDismissEditCoInsuredFlow() -> some View {
-        withDismissButton()
+        withAlertDismiss()
     }
 }
 

@@ -40,10 +40,8 @@ public struct ClaimHistoryScreen: View {
                         HStack {
                             hText(claim.claimType)
                             Spacer()
-                            if let outcome = claim.outcome?.text {
-                                hPill(text: outcome, color: .clear)
-                                    .hFieldSize(.small)
-                            }
+                            hPill(text: claim.outcome?.text ?? L10n.Claim.StatusBar.closed, color: .clear)
+                                .hFieldSize(.small)
                         }
                         if let submittedAt = getSubTitle(for: claim) {
                             hText(submittedAt, style: .label)

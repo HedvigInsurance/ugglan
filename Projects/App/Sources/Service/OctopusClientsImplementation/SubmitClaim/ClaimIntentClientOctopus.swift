@@ -5,7 +5,6 @@ import hGraphQL
 
 class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
-
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntent {
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
             sourceMessageId: GraphQLNullable(optionalValue: input.sourceMessageId),
