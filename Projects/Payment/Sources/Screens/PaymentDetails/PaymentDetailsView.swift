@@ -200,14 +200,6 @@ struct PaymentDetailsView: View {
                 subtitle: "subtitle",
                 netAmount: .sek(250),
                 grossAmount: .sek(200),
-                discounts: [
-                    .init(
-                        code: "TOGETHER",
-                        displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
-                        description: "15% discount for 12 months",
-                        type: .discount(status: .active)
-                    )
-                ],
                 periods: [
                     .init(
                         id: "1",
@@ -225,6 +217,9 @@ struct PaymentDetailsView: View {
                         isOutstanding: true,
                         desciption: nil
                     ),
+                ],
+                priceBreakdown: [
+                    .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(10))
                 ]
             ),
             .init(
@@ -233,14 +228,6 @@ struct PaymentDetailsView: View {
                 subtitle: "subtitle 2",
                 netAmount: .sek(350),
                 grossAmount: .sek(300),
-                discounts: [
-                    .init(
-                        code: "TOGETHER",
-                        displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
-                        description: "15% discount for 12 months",
-                        type: .discount(status: .active)
-                    )
-                ],
                 periods: [
                     .init(
                         id: "1",
@@ -258,6 +245,9 @@ struct PaymentDetailsView: View {
                         isOutstanding: true,
                         desciption: nil
                     ),
+                ],
+                priceBreakdown: [
+                    .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(10))
                 ]
             ),
         ],
