@@ -39,6 +39,7 @@ struct PriceBreakdownView: View {
         VStack(spacing: .padding4) {
             ForEach(model.infoButtonDisplayItems, id: \.title) { item in
                 PriceBreakdowRowItem(title: item.title, value: item.value)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
         .accessibilityElement(children: .combine)
@@ -66,10 +67,8 @@ public struct PriceBreakdowRowItem: View {
     public var body: some View {
         HStack {
             hText(title, style: .label)
-                .foregroundColor(hTextColor.Opaque.secondary)
             Spacer()
             hText(value, style: .label)
-                .foregroundColor(hTextColor.Opaque.secondary)
         }
         .accessibilityElement(children: .combine)
     }

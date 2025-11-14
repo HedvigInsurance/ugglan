@@ -73,8 +73,8 @@ struct ContractDetails: View {
                     .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                     .hPriceFormatting(setTo: .month)
                     .hTextStyle(.label)
-                    .foregroundColor(hTextColor.Translucent.secondary)
                 }
+                .foregroundColor(hTextColor.Translucent.secondary)
             }
             hSection {
                 VStack(alignment: .leading, spacing: .padding16) {
