@@ -342,6 +342,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
     func submitSelect(selectId: String) async {
         do {
             let data = try await service.claimIntentSubmitSelect(stepId: currentStep?.id ?? "", selectId: selectId)
+            disablePreviousStep()
             if let step = data?.currentStep {
                 showNextStep(for: step)
             }
@@ -378,20 +379,25 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 fields: inputFields.compactMap { $0 },
                 stepId: currentStep?.id ?? ""
             ) {
-                if let lastStep = allSteps.last {
-                    let updatedStep: SubmitChatStepModel = .init(
-                        step: lastStep.step,
-                        sender: lastStep.sender,
-                        isLoading: lastStep.isLoading,
-                        isEnabled: false
-                    )
-                    allSteps.removeLast()
-                    allSteps.append(updatedStep)
-                }
+                disablePreviousStep()
                 showNextStep(for: data.currentStep)
             }
         } catch {
             print("Error: couldn't submit form")
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
+        }
+    }
+
+    func submitSummary() async {
+        do {
+            if let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "") {
+                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+                currentStep = data.currentStep
+            }
+        } catch {
+            print("Failed sending summary:", error)
             withAnimation {
                 self.viewState = .error(errorMessage: error.localizedDescription)
             }
@@ -419,17 +425,16 @@ public class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    func submitSummary() async {
-        do {
-            if let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "") {
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-                currentStep = data.currentStep
-            }
-        } catch {
-            print("Failed sending summary:", error)
-            withAnimation {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            }
+    func disablePreviousStep() {
+        if let lastStep = allSteps.last {
+            let updatedStep: SubmitChatStepModel = .init(
+                step: lastStep.step,
+                sender: lastStep.sender,
+                isLoading: lastStep.isLoading,
+                isEnabled: false
+            )
+            allSteps.removeLast()
+            allSteps.append(updatedStep)
         }
     }
 }

@@ -89,11 +89,23 @@ struct SubmitClaimChatMesageView: View {
             } else {
                 HStack(spacing: .padding8) {
                     ForEach(model.options, id: \.id) { option in
-                        hButton(.medium, .secondary, content: .init(title: option.title)) {
+                        let currentBinaryValue = viewModel.binaryValues.first(where: {
+                            $0.value == option.id
+                        })
+                        let enabled = currentBinaryValue?.value == option.id
+
+                        hButton(.medium, enabled ? .primaryAlt : .secondary, content: .init(title: option.title)) {
                             Task {
+                                if let i = viewModel.binaryValues.firstIndex(where: { $0.id == option.id }) {
+                                    viewModel.binaryValues[i].value = option.id
+                                } else {
+                                    viewModel.binaryValues.append((id: option.id, value: option.id))
+                                }
                                 await viewModel.submitSelect(selectId: option.id)
                             }
                         }
+                        .allowsHitTesting(step.isEnabled)
+                        .opacity(step.isEnabled ? 1.0 : 0.6)
                     }
                 }
             }
