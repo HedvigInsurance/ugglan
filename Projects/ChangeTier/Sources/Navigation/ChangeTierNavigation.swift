@@ -50,7 +50,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         useOwnNavigation = true
     }
 
-    public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModelState {
         let service = ChangeTierService()
         let data = try await service.getTier(input: input)
         return data

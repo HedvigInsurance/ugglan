@@ -126,31 +126,27 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                             withAnimation {
                                 self?.redirectActionLoadingState = .success
                             }
-                            DispatchQueue.main.async { [weak self] in
-                                self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
-                                    intent: newInput,
-                                    onSelect: nil
-                                )
-                                self?.router.dismiss()
+                            switch newInput {
+                            case let .changeTierIntentModel(intent):
+                                DispatchQueue.main.async { [weak self] in
+                                    self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
+                                        intent: intent,
+                                        onSelect: nil
+                                    )
+                                    self?.router.dismiss()
+                                }
+                            case .emptyTier:
+                                self?.infoText = L10n.terminationNoTierQuotesSubtitle
+                            case let .deflection(deflection):
+                                self?.infoText = deflection.message
                             }
                         } catch let exception {
                             withAnimation {
                                 self?.redirectActionLoadingState = .success
                             }
-                            if let exception = exception as? ChangeTierError {
-                                switch exception {
-                                case .emptyList:
-                                    self?.infoText = L10n.terminationNoTierQuotesSubtitle
-                                default:
-                                    Toasts.shared.displayToastBar(
-                                        toast: .init(type: .error, text: exception.localizedDescription)
-                                    )
-                                }
-                            } else {
-                                Toasts.shared.displayToastBar(
-                                    toast: .init(type: .error, text: exception.localizedDescription)
-                                )
-                            }
+                            Toasts.shared.displayToastBar(
+                                toast: .init(type: .error, text: exception.localizedDescription)
+                            )
                         }
                     }
                 }

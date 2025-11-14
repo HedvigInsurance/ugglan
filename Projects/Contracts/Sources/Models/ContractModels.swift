@@ -197,15 +197,7 @@ extension TypeOfContract {
             return false
         case .seAccidentStudent:
             return false
-        case .seCarTraffic:
-            return false
-        case .seCarHalf:
-            return false
-        case .seCarFull:
-            return false
-        case .seCarTrialFull:
-            return false
-        case .seCarTrialHalf:
+        case .seCarTraffic, .seCarHalf, .seCarFull, .seCarTrialFull, .seCarTrialHalf, .seCarDecommisioned:
             return false
         case .seGroupApartmentBrf:
             return true

@@ -64,10 +64,10 @@ class MockChangeTierService: ChangeTierClient {
         compareProductVariantsClosure = compareProductVariants
     }
 
-    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModelState {
         events.append(.getTier)
         let data = try await fetchTier(input)
-        return data
+        return .changeTierIntentModel(changeTierIntentModel: data)
     }
 
     func commitTier(quoteId: String) async throws {

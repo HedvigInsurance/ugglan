@@ -40,6 +40,22 @@ public struct ProductVariantComparison: Codable, Equatable, Hashable {
     }
 }
 
+public enum ChangeTierIntentModelState: Codable, Equatable, Hashable, Sendable {
+    case emptyTier
+    case deflection(deflection: Deflection)
+    case changeTierIntentModel(changeTierIntentModel: ChangeTierIntentModel)
+}
+
+public struct Deflection: Codable, Equatable, Hashable, Sendable {
+    public let title: String
+    public let message: String
+
+    public init(title: String, message: String) {
+        self.title = title
+        self.message = message
+    }
+}
+
 public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let activationDate: Date

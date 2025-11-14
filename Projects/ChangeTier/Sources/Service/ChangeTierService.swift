@@ -4,7 +4,7 @@ import hCore
 class ChangeTierService {
     @Inject var client: ChangeTierClient
 
-    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModelState {
         log.info("ChangeTierService.getTier: for \(input.asString)", error: nil, attributes: nil)
         return try await client.getTier(input: input)
     }

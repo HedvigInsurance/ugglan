@@ -133,6 +133,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .layoutPriority(3)
                 content
                     .layoutPriority(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
                     .layoutPriority(bottomAttachedView == nil ? 2 : 1)
                 getBottomAttachedView
