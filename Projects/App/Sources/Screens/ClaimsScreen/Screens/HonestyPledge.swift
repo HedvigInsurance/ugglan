@@ -1,5 +1,6 @@
 import Claims
 import Combine
+import Environment
 import Profile
 import SwiftUI
 import hCore
@@ -146,10 +147,10 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @EnvironmentObject var router: Router
-    let onConfirmAction: (() -> Void)?
+    let onConfirmAction: ((_ action: HonestyPledgeAction) -> Void)?
 
     init(
-        onConfirmAction: (() -> Void)?
+        onConfirmAction: ((_ action: HonestyPledgeAction) -> Void)?
     ) {
         self.onConfirmAction = onConfirmAction
     }
@@ -169,10 +170,24 @@ struct HonestyPledge: View {
                 }
 
                 SlideToConfirm(onConfirmAction: {
-                    onConfirmAction?()
+                    onConfirmAction?(.submitClaim)
                 })
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
+
+                if Environment.current == .staging {
+                    HStack {
+                        hButton(.medium, .secondaryAlt, content: .init(title: "AI claim")) {
+                            onConfirmAction?(.automationSubmitClaim)
+                        }
+                        .withGradientBorder(shape: RoundedRectangle(cornerRadius: .padding8))
+                        hButton(.medium, .secondaryAlt, content: .init(title: "Dev AI claim")) {
+                            onConfirmAction?(.devAutomationSubmitClaim)
+                        }
+                        .withGradientBorder(shape: RoundedRectangle(cornerRadius: .padding8))
+                    }
+                    .hButtonTakeFullWidth(true)
+                }
 
                 hCancelButton {
                     router.dismiss()
@@ -185,6 +200,12 @@ struct HonestyPledge: View {
     }
 }
 
+enum HonestyPledgeAction {
+    case submitClaim
+    case automationSubmitClaim
+    case devAutomationSubmitClaim
+}
+
 #Preview {
-    HonestyPledge {}
+    HonestyPledge { _ in }
 }

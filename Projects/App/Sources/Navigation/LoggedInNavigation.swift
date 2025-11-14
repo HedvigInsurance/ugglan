@@ -334,21 +334,22 @@ struct HomeTab: View {
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
-        //        .detent(
-        //            presented: $homeNavigationVm.isSubmitClaimPresented,
-        //
-        //            options: .constant(.withoutGrabber)
-        //        ) {
-        //            ClaimsMainNavigation()
-        //        }
+        .detent(
+            presented: $homeNavigationVm.isSubmitClaimPresented,
+
+            options: .constant(.withoutGrabber)
+        ) {
+            ClaimsMainNavigation()
+                .environmentObject(homeNavigationVm)
+        }
         .modally(
-            item: $homeNavigationVm.isSubmitClaimPresented
+            item: $homeNavigationVm.claimsAutomationClaimId
         ) { messageId in
             SubmitClaimChatScreen(
                 messageId: messageId,
                 goToClaimDetails: {
                     claimId in
-                    homeNavigationVm.isSubmitClaimPresented = nil
+                    homeNavigationVm.claimsAutomationClaimId = nil
 
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchActiveClaims)
@@ -366,7 +367,6 @@ struct HomeTab: View {
                 options: .navigationType(type: .large),
                 tracking: self
             )
-            .environmentObject(homeNavigationVm.router)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
@@ -782,7 +782,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             Task { await self.handleClaimDetails(claimId: url.getParameter(property: .claimId)) }
         case .submitClaim:
             selectedTab = 0
-            homeNavigationVm.isSubmitClaimPresented = ""
+            homeNavigationVm.isSubmitClaimPresented = true
         case .claimChat:
             handleChatClaimDeeplink(url)
         }
@@ -810,7 +810,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         dismissAndSelectTab(0)
 
         let messageId = url.getParameter(property: .sourceMessageId)
-        homeNavigationVm.isSubmitClaimPresented = messageId ?? ""
+        homeNavigationVm.claimsAutomationClaimId = messageId ?? ""
     }
 
     private func handleHelpCenterDeeplink(_ url: URL) {
