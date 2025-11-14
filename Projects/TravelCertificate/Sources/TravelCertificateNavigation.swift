@@ -225,6 +225,6 @@ public struct TravelCertificateNavigation: View {
 
 extension View {
     func addDismissFlow() -> some View {
-        withDismissButton()
+        withAlertDismiss()
     }
 }
