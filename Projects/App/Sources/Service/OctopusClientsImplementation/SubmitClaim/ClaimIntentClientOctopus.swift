@@ -5,6 +5,7 @@ import hGraphQL
 
 class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
+
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntent? {
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
             sourceMessageId: GraphQLNullable(optionalValue: input.sourceMessageId),
@@ -27,7 +28,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
-
         return nil
     }
 
@@ -51,6 +51,36 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let id = data?.claimIntentSubmitAudio.intent?.id ?? ""
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitAudio.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
+
+        return nil
+    }
+
+    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent? {
+        let input = OctopusGraphQL.ClaimIntentSubmitFileUploadInput(
+            stepId: stepId,
+            fileIds: fildIds
+        )
+
+        let mutation = OctopusGraphQL.ClaimIntentSubmitFileUploadMutation(input: input)
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+
+            if let userError = data?.claimIntentSubmitFileUpload.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
+
+            let currentStep = data?.claimIntentSubmitFileUpload.intent?.currentStep
+            let id = data?.claimIntentSubmitFileUpload.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitFileUpload.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
@@ -153,6 +183,32 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         return nil
     }
 
+    func claimIntentSubmitSelect(stepId: String, selectId: String) async throws -> SubmitClaimChat.ClaimIntent? {
+        let input = OctopusGraphQL.ClaimIntentSubmitSelectInput(stepId: stepId, selectedId: selectId)
+        let mutation = OctopusGraphQL.ClaimIntentSubmitSelectMutation(input: input)
+
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSubmitSelect.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
+
+            let currentStep = data?.claimIntentSubmitSelect.intent?.currentStep
+            let id = data?.claimIntentSubmitSelect.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitSelect.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
+
+        return nil
+    }
+
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep {
         let query = OctopusGraphQL.ClaimIntentQuery(claimIntentId: claimIntentId)
 
@@ -189,11 +245,18 @@ extension ClaimIntentStepContent {
                 )
             }
 
-            self = .form(model: .init(fields: fields))
+            self = .form(model: .init(fields: fields, isSkippable: form.isSkippable, isRegrettable: form.isRegrettable))
         } else if let task = fragment.asClaimIntentStepContentTask {
             self = .task(model: .init(description: task.description, isCompleted: task.isCompleted))
         } else if let audioRecording = fragment.asClaimIntentStepContentAudioRecording {
-            self = .audioRecording(model: .init(hint: audioRecording.hint, uploadURI: audioRecording.uploadUri))
+            self = .audioRecording(
+                model: .init(
+                    hint: audioRecording.hint,
+                    uploadURI: audioRecording.uploadUri,
+                    isSkippable: audioRecording.isSkippable,
+                    isRegrettable: audioRecording.isRegrettable
+                )
+            )
         } else if let summary = fragment.asClaimIntentStepContentSummary {
             self = .summary(
                 model: .init(
@@ -204,6 +267,23 @@ extension ClaimIntentStepContent {
             )
         } else if let outcome = fragment.asClaimIntentStepContentOutcome {
             self = .outcome(model: .init(claimId: outcome.claimId))
+        } else if let fileUpload = fragment.asClaimIntentStepContentFileUpload {
+            self = .fileUpload(
+                model: .init(
+                    uploadURI: fileUpload.uploadUri,
+                    isSkippable: fileUpload.isSkippable,
+                    isRegrettable: fileUpload.isRegrettable
+                )
+            )
+        } else if let select = fragment.asClaimIntentStepContentSelect {
+            self = .select(
+                model: .init(
+                    options: select.options.map { .init(id: $0.id, title: $0.title) },
+                    isSkippable: select.isSkippable,
+                    isRegrettable: select.isRegrettable
+                )
+            )
+
         } else {
             self = .summary(model: .init(audioRecordings: [], fileUploads: [], items: []))
         }

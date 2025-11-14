@@ -1,0 +1,10 @@
+mutation ClaimIntentSubmitFileUpload($input: ClaimIntentSubmitFileUploadInput!) {
+  claimIntentSubmitFileUpload(input: $input) {
+    intent {
+        ...ClaimIntentFragment
+    }
+    userError {
+      message
+    }
+  }
+}

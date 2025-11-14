@@ -1,3 +1,4 @@
+import Claims
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,6 +6,7 @@ import hCoreUI
 struct SubmitClaimChatMesageView: View {
     @ObservedObject var step: SubmitChatStepModel
     @ObservedObject var viewModel: SubmitClaimChatViewModel
+    @ObservedObject var fileUploadViewModel: FilesUploadViewModel
 
     var body: some View {
         Group {
@@ -80,6 +82,38 @@ struct SubmitClaimChatMesageView: View {
                     viewModel.goToClaimDetails(model.claimId)
                 }
             }
+        case .fileUpload(let model):
+            SubmitClaimChatFileUpload(step: step, model: model, fileUploadVm: fileUploadViewModel)
+                .onAppear {
+                    fileUploadViewModel.model.uploadUri = model.uploadURI
+                }
+        case .select(model: let model):
+            if step.sender == .hedvig {
+                hText(step.step.text)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                HStack(spacing: .padding8) {
+                    ForEach(model.options, id: \.id) { option in
+                        let currentBinaryValue = viewModel.binaryValues.first(where: {
+                            $0.value == option.id
+                        })
+                        let enabled = currentBinaryValue?.value == option.id
+
+                        hButton(.medium, enabled ? .primaryAlt : .secondary, content: .init(title: option.title)) {
+                            Task {
+                                if let i = viewModel.binaryValues.firstIndex(where: { $0.id == option.id }) {
+                                    viewModel.binaryValues[i].value = option.id
+                                } else {
+                                    viewModel.binaryValues.append((id: option.id, value: option.id))
+                                }
+                                await viewModel.submitSelect(selectId: option.id)
+                            }
+                        }
+                        .allowsHitTesting(step.isEnabled)
+                        .opacity(step.isEnabled ? 1.0 : 0.6)
+                    }
+                }
+            }
         }
     }
 
@@ -95,6 +129,14 @@ struct SubmitClaimChatMesageView: View {
                 ForEach(model.audioRecordings, id: \.url) { url in
                     hSection {
                         SubmitClaimChatAudioRecorder(viewModel: viewModel, uploadURI: "")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .hWithoutHorizontalPadding([.section])
+                }
+
+                ForEach(model.fileUploads, id: \.url) { url in
+                    hSection {
+                        FilesGridView(vm: fileUploadViewModel.fileGridViewModel)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .hWithoutHorizontalPadding([.section])
@@ -378,64 +420,21 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
+    let content: ClaimIntentStepContentFileUpload = .init(
+        uploadURI: "/hedvig/upload",
+        isSkippable: true,
+        isRegrettable: true
+    )
+    let step: ClaimIntentStep = .init(content: .fileUpload(model: content), id: "id1", text: "upload files")
+    let stepModel: SubmitChatStepModel = .init(step: step, sender: .member, isLoading: false)
     let viewModel = SubmitClaimChatViewModel(
         input: .init(sourceMessageId: nil, devFlow: false),
         goToClaimDetails: { _ in }
     )
 
     return SubmitClaimChatMesageView(
-        step:
-            .init(
-                step: .init(
-                    content: .form(
-                        model: .init(fields: [
-                            .init(
-                                defaultValue: nil,
-                                id: "1",
-                                isRequired: true,
-                                maxValue: nil,
-                                minValue: nil,
-                                options: [],
-                                suffix: nil,
-                                title: "Date",
-                                type: .date
-                            ),
-                            .init(
-                                defaultValue: "false",
-                                id: "2",
-                                isRequired: true,
-                                maxValue: nil,
-                                minValue: nil,
-                                options: [
-                                    .init(title: "Yes", value: "true"),
-                                    .init(title: "No", value: "false"),
-                                ],
-                                suffix: nil,
-                                title: "Are you a good person",
-                                type: .binary
-                            ),
-                            .init(
-                                defaultValue: "false",
-                                id: "3",
-                                isRequired: true,
-                                maxValue: nil,
-                                minValue: nil,
-                                options: [
-                                    .init(title: "Yes", value: "true"),
-                                    .init(title: "No", value: "false"),
-                                ],
-                                suffix: nil,
-                                title: "Say yes or no",
-                                type: .singleSelect
-                            ),
-                        ])
-                    ),
-                    id: "id1",
-                    text: "Select a date"
-                ),
-                sender: .member,
-                isLoading: false
-            ),
-        viewModel: viewModel
+        step: stepModel,
+        viewModel: viewModel,
+        fileUploadViewModel: .init(model: .init())
     )
 }
