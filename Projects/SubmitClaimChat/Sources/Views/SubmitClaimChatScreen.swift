@@ -292,8 +292,30 @@ public class SubmitClaimChatViewModel: ObservableObject {
         if let currentStep {
             let memberAudioStep = SubmitChatStepModel(
                 step: .init(
-                    content: .audioRecording(model: .init(hint: model.hint, uploadURI: model.uploadURI)),
-                    id: currentStep.id + "2",
+                    content: .audioRecording(
+                        model: .init(
+                            hint: model.hint,
+                            uploadURI: model.uploadURI,
+                            isSkippable: model.isSkippable,
+                            isRegrettable: model.isRegrettable
+                        )
+                    ),
+                    id: UUID().uuidString,
+                    text: currentStep.text
+                ),
+                sender: .member,
+                isLoading: false
+            )
+            allSteps.append(memberAudioStep)
+        }
+    }
+
+    func displaySelect(_ model: ClaimIntentStepContentSelect) {
+        if let currentStep {
+            let memberAudioStep = SubmitChatStepModel(
+                step: .init(
+                    content: .select(model: model),
+                    id: UUID().uuidString,
                     text: currentStep.text
                 ),
                 sender: .member,
@@ -306,6 +328,20 @@ public class SubmitClaimChatViewModel: ObservableObject {
     func submitTask() async {
         do {
             let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
+            if let step = data?.currentStep {
+                showNextStep(for: step)
+            }
+        } catch {
+            print("Failed sending select", error)
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
+        }
+    }
+
+    func submitSelect(selectId: String) async {
+        do {
+            let data = try await service.claimIntentSubmitSelect(stepId: currentStep?.id ?? "", selectId: selectId)
             if let step = data?.currentStep {
                 showNextStep(for: step)
             }
@@ -375,6 +411,8 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 displayFile(model)
             case let .task(model):
                 displayTask(model)
+            case let .select(model):
+                displaySelect(model)
             default:
                 break
             }

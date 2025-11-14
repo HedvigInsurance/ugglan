@@ -82,6 +82,21 @@ struct SubmitClaimChatMesageView: View {
             }
         case .fileUpload(let model):
             SubmitClaimChatFileUpload(step: step, model: model)
+        case .select(model: let model):
+            if step.sender == .hedvig {
+                hText(step.step.text)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                HStack(spacing: .padding8) {
+                    ForEach(model.options, id: \.id) { option in
+                        hButton(.medium, .secondary, content: .init(title: option.title)) {
+                            Task {
+                                await viewModel.submitSelect(selectId: option.id)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -380,7 +395,11 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
-    let content: ClaimIntentStepContentFileUpload = .init(uploadURI: "/hedvig/upload")
+    let content: ClaimIntentStepContentFileUpload = .init(
+        uploadURI: "/hedvig/upload",
+        isSkippable: true,
+        isRegrettable: true
+    )
     let step: ClaimIntentStep = .init(content: .fileUpload(model: content), id: "id1", text: "upload files")
     let stepModel: SubmitChatStepModel = .init(step: step, sender: .member, isLoading: false)
     let viewModel = SubmitClaimChatViewModel(

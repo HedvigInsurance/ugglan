@@ -75,16 +75,19 @@ public enum ClaimIntentStepContent: Sendable {
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
     case outcome(model: ClaimIntentStepContentOutcome)
+    case select(model: ClaimIntentStepContentSelect)
     case text
 }
 
 public struct ClaimIntentStepContentForm: Sendable {
     let fields: [ClaimIntentStepContentFormField]
+    let isSkippable: Bool
+    let isRegrettable: Bool
 
-    public init(
-        fields: [ClaimIntentStepContentFormField]
-    ) {
+    public init(fields: [ClaimIntentStepContentFormField], isSkippable: Bool, isRegrettable: Bool) {
         self.fields = fields
+        self.isSkippable = isSkippable
+        self.isRegrettable = isRegrettable
     }
 
     public struct ClaimIntentStepContentFormField: Sendable {
@@ -153,23 +156,26 @@ public struct ClaimIntentStepContentTask: Sendable {
 public struct ClaimIntentStepContentAudioRecording: Sendable {
     let hint: String
     let uploadURI: String
+    let isSkippable: Bool
+    let isRegrettable: Bool
 
-    public init(
-        hint: String,
-        uploadURI: String
-    ) {
+    public init(hint: String, uploadURI: String, isSkippable: Bool, isRegrettable: Bool) {
         self.hint = hint
         self.uploadURI = uploadURI
+        self.isSkippable = isSkippable
+        self.isRegrettable = isRegrettable
     }
 }
 
 public struct ClaimIntentStepContentFileUpload: Sendable {
     let uploadURI: String
+    let isSkippable: Bool
+    let isRegrettable: Bool
 
-    public init(
-        uploadURI: String
-    ) {
+    public init(uploadURI: String, isSkippable: Bool, isRegrettable: Bool) {
         self.uploadURI = uploadURI
+        self.isSkippable = isSkippable
+        self.isRegrettable = isRegrettable
     }
 }
 
@@ -216,6 +222,28 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
         public init(title: String, value: String) {
             self.title = title
             self.value = value
+        }
+    }
+}
+
+public struct ClaimIntentStepContentSelect: Sendable, Equatable {
+    let options: [ClaimIntentStepContentSelectOption]
+    let isSkippable: Bool
+    let isRegrettable: Bool
+
+    public init(options: [ClaimIntentStepContentSelectOption], isSkippable: Bool, isRegrettable: Bool) {
+        self.options = options
+        self.isSkippable = isSkippable
+        self.isRegrettable = isRegrettable
+    }
+
+    public struct ClaimIntentStepContentSelectOption: Sendable, Equatable {
+        let id: String
+        let title: String
+
+        public init(id: String, title: String) {
+            self.id = id
+            self.title = title
         }
     }
 }
