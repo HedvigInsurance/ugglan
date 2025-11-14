@@ -1,7 +1,5 @@
 import Foundation
 
-
-
 final class SubmitChatStepModel: ObservableObject, Identifiable {
     var id: String { "\(step.id)-\(sender)" }
     let step: ClaimIntentStep
