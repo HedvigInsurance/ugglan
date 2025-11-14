@@ -85,7 +85,7 @@ public struct PriceField: View {
             PremiumText(
                 text: newPremiumText,
                 strikeThrough: strikeThroughPrice == .crossNewPrice,
-                usePrimary: viewModel.useSecondaryColor ? false : true
+                usePrimary: !viewModel.useSecondaryColor
             )
         }
     }
