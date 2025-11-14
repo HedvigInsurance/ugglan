@@ -28,7 +28,7 @@ struct ContractDetails: View {
                     hCoreUIAssets.chevronDown.view
                         .resizable()
                         .frame(width: 24, height: 24)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .foregroundColor(hTextColor.Translucent.secondary)
                         .rotationEffect(
                             expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
                         )
@@ -73,7 +73,7 @@ struct ContractDetails: View {
                     .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                     .hPriceFormatting(setTo: .month)
                     .hTextStyle(.label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
             hSection {
@@ -83,18 +83,18 @@ struct ContractDetails: View {
                             HStack {
                                 hText(period.fromToDate)
                                     .foregroundColor(
-                                        hTextColor.Opaque.secondary
+                                        hTextColor.Translucent.secondary
                                     )
                                 Spacer()
                                 hText(period.amount.formattedAmount)
                                     .foregroundColor(
-                                        hTextColor.Opaque.secondary
+                                        hTextColor.Translucent.secondary
                                     )
                             }
                             if let desciption = period.desciption {
                                 hText(desciption)
                                     .foregroundColor(
-                                        getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                        getColor(hTextColor.Translucent.secondary, isOutstanding: period.isOutstanding)
                                     )
                             }
                         }
