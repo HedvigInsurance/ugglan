@@ -22,11 +22,6 @@ struct SubmitClaimChatFileUpload: View {
         self.model = model
         self.fileUploadVm = fileUploadVm
         fileUploadVm.model.uploadUri = model.uploadURI
-        //        self._fileUploadVm = StateObject(
-        //            wrappedValue: FilesUploadViewModel(
-        //                model: .init(uploadUri: model.uploadURI)
-        //            )
-        //        )
     }
 
     var body: some View {
