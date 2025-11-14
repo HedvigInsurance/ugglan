@@ -334,22 +334,21 @@ struct HomeTab: View {
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
-        //        .detent(
-        //            presented: $homeNavigationVm.isSubmitClaimPresented,
-        //
-        //            options: .constant(.withoutGrabber)
-        //        ) {
-        //            ClaimsMainNavigation()
-        //        }
+        .detent(
+            presented: $homeNavigationVm.isSubmitClaimPresented,
+            options: .constant(.withoutGrabber)
+        ) {
+            ClaimsMainNavigation()
+                .environmentObject(homeNavigationVm)
+        }
         .modally(
-            item: $homeNavigationVm.isSubmitClaimPresented
-        ) { messageId in
+            item: $homeNavigationVm.claimsAutomationStartInput
+        ) { input in
             SubmitClaimChatScreen(
-                messageId: messageId,
+                input: input,
                 goToClaimDetails: {
                     claimId in
-                    homeNavigationVm.isSubmitClaimPresented = nil
-
+                    homeNavigationVm.claimsAutomationStartInput = nil
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchActiveClaims)
 
@@ -366,7 +365,6 @@ struct HomeTab: View {
                 options: .navigationType(type: .large),
                 tracking: self
             )
-            .environmentObject(homeNavigationVm.router)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
@@ -782,7 +780,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             Task { await self.handleClaimDetails(claimId: url.getParameter(property: .claimId)) }
         case .submitClaim:
             selectedTab = 0
-            homeNavigationVm.isSubmitClaimPresented = ""
+            homeNavigationVm.isSubmitClaimPresented = true
         case .claimChat:
             handleChatClaimDeeplink(url)
         }
@@ -808,9 +806,9 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     private func handleChatClaimDeeplink(_ url: URL) {
         dismissAndSelectTab(0)
-
-        let messageId = url.getParameter(property: .sourceMessageId)
-        homeNavigationVm.isSubmitClaimPresented = messageId ?? ""
+        if let messageId = url.getParameter(property: .sourceMessageId) {
+            homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: messageId)
+        }
     }
 
     private func handleHelpCenterDeeplink(_ url: URL) {

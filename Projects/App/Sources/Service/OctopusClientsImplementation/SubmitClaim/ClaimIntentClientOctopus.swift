@@ -5,12 +5,10 @@ import hGraphQL
 
 class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
-
-    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
-        let inputId = sourceMessageId != "" ? sourceMessageId : nil
+    func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntent {
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
-            sourceMessageId: GraphQLNullable(optionalValue: inputId),
-            developmentFlow: GraphQLNullable(optionalValue: false)
+            sourceMessageId: GraphQLNullable(optionalValue: input.sourceMessageId),
+            developmentFlow: GraphQLNullable(optionalValue: input.devFlow)
         )
         let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(input))
 
@@ -164,7 +162,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
                 return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
             }
-
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
@@ -183,7 +180,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let data = try await octopus.client.fetch(query: query)
 
             return ClaimIntentStep(fragment: data.claimIntent.currentStep.fragments.claimIntentStepFragment)
-
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }

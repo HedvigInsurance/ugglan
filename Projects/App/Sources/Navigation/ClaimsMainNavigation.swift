@@ -1,7 +1,9 @@
 import Claims
+import Home
 import PresentableStore
 import Profile
 import SubmitClaim
+import SubmitClaimChat
 import SwiftUI
 import hCore
 import hCoreUI
@@ -15,6 +17,7 @@ struct ClaimsMainNavigation: View {
     @StateObject private var claimsNavigationVm = ClaimsMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false
     @State private var measuredHeight: CGFloat = 0
+    @EnvironmentObject var homeNavigationVm: HomeNavigationViewModel
 
     var body: some View {
         RouterHost(router: claimsRouter, tracking: self) {
@@ -67,12 +70,19 @@ struct ClaimsMainNavigation: View {
     }
 
     func honestyPledge() -> some View {
-        HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] in
-            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
-                claimsRouter?.push(SubmitClaimRouterActionsWithoutBackButton.askForPushNotifications)
-            } else {
-                claimsNavigationVm?.isClaimsFlowPresented = true
+        HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] action in
+            switch action {
+            case .automationSubmitClaim:
+                homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
+            case .devAutomationSubmitClaim:
+                homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil, devFlow: true)
+            case .submitClaim:
+                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                if profileStore.state.pushNotificationCurrentStatus() != .authorized {
+                    claimsRouter?.push(SubmitClaimRouterActionsWithoutBackButton.askForPushNotifications)
+                } else {
+                    claimsNavigationVm?.isClaimsFlowPresented = true
+                }
             }
         })
     }

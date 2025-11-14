@@ -3,7 +3,7 @@ import hCore
 
 @MainActor
 public protocol ClaimIntentClient {
-    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent
+    func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntent
     func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent
     func claimIntentSubmitForm(
         fields: [FieldValue],
@@ -12,6 +12,18 @@ public protocol ClaimIntentClient {
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep
+}
+
+public struct StartClaimInput: Equatable, Identifiable {
+    public let id: String
+    public let sourceMessageId: String?
+    public let devFlow: Bool
+
+    public init(sourceMessageId: String?, devFlow: Bool = false) {
+        self.id = UUID().uuidString
+        self.sourceMessageId = sourceMessageId
+        self.devFlow = devFlow
+    }
 }
 
 public struct FieldValue: Codable {
@@ -28,8 +40,8 @@ public struct FieldValue: Codable {
 class ClaimIntentService {
     @Inject var client: ClaimIntentClient
 
-    func startClaimIntent(sourceMessageId: String?) async throws -> ClaimIntent {
-        let data = try await client.startClaimIntent(sourceMessageId: sourceMessageId)
+    func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntent {
+        let data = try await client.startClaimIntent(input: input)
         return data
     }
 
