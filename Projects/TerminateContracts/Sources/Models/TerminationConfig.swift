@@ -1,4 +1,4 @@
-import hCoreUI
+import hCore
 
 public struct TerminationConfirmConfig: Codable & Equatable & Hashable & Sendable {
     public var contractId: String
