@@ -78,7 +78,7 @@ public struct ClaimDetailView: View {
                     }
                 }
             }
-            .withDismissButton()
+            .withAlertDismiss()
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
             .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
         }
