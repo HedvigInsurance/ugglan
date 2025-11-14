@@ -28,7 +28,7 @@ public struct InsuranceEvidenceNavigation: View {
                     InsuranceEvidenceProcessingScreen(vm: processingViewModel)
                 }
             }
-            .withDismissButton()
+            .withAlertDismiss()
         }
         .detent(
             presented: $vm.isInfoViewPresented,
