@@ -73,9 +73,9 @@ struct ClaimsMainNavigation: View {
         HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] action in
             switch action {
             case .automationSubmitClaim:
-                homeNavigationVm.claimsAutomationClaimId = ""
+                homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
             case .devAutomationSubmitClaim:
-                homeNavigationVm.claimsAutomationClaimId = ""
+                homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil, devFlow: true)
             case .submitClaim:
                 let profileStore: ProfileStore = globalPresentableStoreContainer.get()
                 if profileStore.state.pushNotificationCurrentStatus() != .authorized {

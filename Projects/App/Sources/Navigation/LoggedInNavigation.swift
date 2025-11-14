@@ -343,13 +343,13 @@ struct HomeTab: View {
                 .environmentObject(homeNavigationVm)
         }
         .modally(
-            item: $homeNavigationVm.claimsAutomationClaimId
-        ) { messageId in
+            item: $homeNavigationVm.claimsAutomationStartInput
+        ) { input in
             SubmitClaimChatScreen(
-                messageId: messageId,
+                input: input,
                 goToClaimDetails: {
                     claimId in
-                    homeNavigationVm.claimsAutomationClaimId = nil
+                    homeNavigationVm.claimsAutomationStartInput = nil
 
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchActiveClaims)
@@ -809,8 +809,9 @@ class LoggedInNavigationViewModel: ObservableObject {
     private func handleChatClaimDeeplink(_ url: URL) {
         dismissAndSelectTab(0)
 
-        let messageId = url.getParameter(property: .sourceMessageId)
-        homeNavigationVm.claimsAutomationClaimId = messageId ?? ""
+        if let messageId = url.getParameter(property: .sourceMessageId) {
+            homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: messageId)
+        }
     }
 
     private func handleHelpCenterDeeplink(_ url: URL) {
