@@ -5,15 +5,15 @@ import hCoreUI
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var router: Router
-    let messageId: String?
+    let input: StartClaimInput
 
     public init(
-        messageId: String?,
+        input: StartClaimInput,
         goToClaimDetails: @escaping (String) -> Void
     ) {
-        self.messageId = messageId
+        self.input = input
         _viewModel = StateObject(
-            wrappedValue: .init(messageId: messageId, goToClaimDetails: goToClaimDetails)
+            wrappedValue: .init(input: input, goToClaimDetails: goToClaimDetails)
         )
     }
 
@@ -22,7 +22,7 @@ public struct SubmitClaimChatScreen: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        Task { await viewModel.startClaim(for: messageId) }
+                        Task { await viewModel.startClaim(for: input) }
                     }),
                     dismissButton: nil
                 )
@@ -139,7 +139,7 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return SubmitClaimChatScreen(messageId: nil, goToClaimDetails: { _ in })
+    return SubmitClaimChatScreen(input: .init(sourceMessageId: nil, devFlow: false), goToClaimDetails: { _ in })
 }
 
 @MainActor
@@ -166,19 +166,19 @@ public class SubmitClaimChatViewModel: ObservableObject {
     private let service = ClaimIntentService()
 
     init(
-        messageId: String?,
+        input: StartClaimInput,
         goToClaimDetails: @escaping (String) -> Void
     ) {
         self.goToClaimDetails = goToClaimDetails
-        Task { await startClaim(for: messageId) }
+        Task { await startClaim(for: input) }
     }
 
-    func startClaim(for messageId: String?) async {
+    func startClaim(for input: StartClaimInput) async {
         withAnimation {
             viewState = .loading
         }
         do {
-            if let data = try await service.startClaimIntent(sourceMessageId: messageId) {
+            if let data = try await service.startClaimIntent(input: input) {
                 withAnimation {
                     intentId = data.id
                     data.sourceMessages.forEach { sourceMessage in

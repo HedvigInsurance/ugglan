@@ -5,6 +5,7 @@ import EditCoInsured
 import Foundation
 import Payment
 import PresentableStore
+import SubmitClaimChat
 import SwiftUI
 import hCore
 import hCoreUI
@@ -69,7 +70,8 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var router = Router()
 
-    @Published public var isSubmitClaimPresented: String?
+    @Published public var isSubmitClaimPresented = false
+    @Published public var claimsAutomationStartInput: StartClaimInput?
     @Published public var isHelpCenterPresented = false
 
     @Published public var navBarItems = NavBarItems()

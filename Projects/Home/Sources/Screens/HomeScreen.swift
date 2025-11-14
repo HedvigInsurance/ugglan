@@ -100,7 +100,7 @@ extension HomeScreen {
                 .primary,
                 content: .init(title: L10n.HomeTab.claimButtonText),
                 {
-                    navigationVm.isSubmitClaimPresented = ""
+                    navigationVm.isSubmitClaimPresented = true
                 }
             )
         }

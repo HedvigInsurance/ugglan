@@ -380,10 +380,13 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
-    let viewModel = SubmitClaimChatViewModel(messageId: nil, goToClaimDetails: { _ in })
     let content: ClaimIntentStepContentFileUpload = .init(uploadURI: "/hedvig/upload")
     let step: ClaimIntentStep = .init(content: .fileUpload(model: content), id: "id1", text: "upload files")
     let stepModel: SubmitChatStepModel = .init(step: step, sender: .member, isLoading: false)
+    let viewModel = SubmitClaimChatViewModel(
+        input: .init(sourceMessageId: nil, devFlow: false),
+        goToClaimDetails: { _ in }
+    )
 
     return SubmitClaimChatMesageView(
         step: stepModel,
