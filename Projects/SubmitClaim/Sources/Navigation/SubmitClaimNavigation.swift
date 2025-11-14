@@ -408,7 +408,7 @@ public struct SubmitClaimNavigation: View {
                 )
             )
         )
-        .withDismissButton()
+        .withAlertDismiss()
     }
 
     private func openDamagePickerScreen() -> some View {
@@ -454,7 +454,7 @@ public struct ClaimsFileModel: Equatable, Identifiable {
 
 extension View {
     func addDismissClaimsFlow() -> some View {
-        withDismissButton()
+        withAlertDismiss()
     }
 }
 

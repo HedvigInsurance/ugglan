@@ -6,13 +6,21 @@ import hCore
 extension View {
     public func withDismissButton() -> some View {
         modifier(
-            DismissButton()
+            DismissButton(withAlert: false)
+        )
+    }
+
+    public func withAlertDismiss() -> some View {
+        modifier(
+            DismissButton(withAlert: true)
         )
     }
 }
 
 private struct DismissButton: ViewModifier {
-    @State var isPresented = false
+    let withAlert: Bool
+    @EnvironmentObject var router: Router
+    @State var isAlertPresented = false
     func body(content: Content) -> some View {
         content
             .toolbar {
@@ -20,7 +28,11 @@ private struct DismissButton: ViewModifier {
                     placement: .topBarTrailing
                 ) {
                     Button {
-                        isPresented = true
+                        if withAlert {
+                            isAlertPresented = true
+                        } else {
+                            router.dismiss()
+                        }
                     } label: {
                         hCoreUIAssets.close.view
                             .frame(minWidth: 44, minHeight: 44)
@@ -30,7 +42,7 @@ private struct DismissButton: ViewModifier {
                     .accessibilityAddTraits(.isButton)
                 }
             }
-            .withDismissAlert(isPresented: $isPresented)
+            .withDismissAlert(isPresented: $isAlertPresented)
     }
 }
 
@@ -47,7 +59,7 @@ private struct DismissAlertPopup: ViewModifier {
     let cancelButton: String
 
     @Binding var isPresented: Bool
-    @StateObject var vm = DismissButtonViewModel()
+    @EnvironmentObject var router: Router
 
     init(
         title: String = L10n.General.areYouSure,
@@ -67,48 +79,33 @@ private struct DismissAlertPopup: ViewModifier {
             .alert(title, isPresented: $isPresented) {
                 HStack {
                     Button(cancelButton, role: .cancel) {
-                        dismiss()
+                        isPresented = false
                     }
-                    Button(confirmButton, role: .destructive) { [weak vm] in
-                        vm?.vc?.dismiss(animated: true)
+                    Button(confirmButton, role: .destructive) {
+                        router.dismiss()
                     }
                 }
             } message: {
                 hText(message ?? "")
             }
-            .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
-                vm?.vc = vc
-            }
     }
-
-    private func dismiss() {
-        isPresented = false
-    }
-}
-
-private class DismissButtonViewModel: ObservableObject {
-    weak var vc: UIViewController?
 }
 
 extension View {
     public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
         modifier(CloseButtonModifier(reducedTopSpacing: reducedTopSpacing))
     }
-
-    public func withAlertDismiss() -> some View {
-        withDismissButton()
-    }
 }
 
 private struct CloseButtonModifier: ViewModifier {
-    @StateObject var vm = DismissButtonViewModel()
     let reducedTopSpacing: Int
+    @EnvironmentObject var router: Router
 
     func body(content: Content) -> some View {
         content
             .setToolbarTrailing {
                 Button {
-                    vm.vc?.dismiss(animated: true)
+                    router.dismiss()
                 } label: {
                     hCoreUIAssets.close.view
                         .closeButtonOffset(y: CGFloat(-reducedTopSpacing))
@@ -118,9 +115,6 @@ private struct CloseButtonModifier: ViewModifier {
                 .foregroundColor(hTextColor.Opaque.primary)
                 .accessibilityLabel(L10n.a11YClose)
                 .accessibilityAddTraits(.isButton)
-            }
-            .introspect(.viewController, on: .iOS(.v13...)) { vc in
-                vm.vc = vc
             }
     }
 }
