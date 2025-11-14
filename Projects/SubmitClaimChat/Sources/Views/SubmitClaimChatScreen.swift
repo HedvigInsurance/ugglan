@@ -178,41 +178,21 @@ public class SubmitClaimChatViewModel: ObservableObject {
             viewState = .loading
         }
         do {
-            let data = try await service.startClaimIntent(input: input)
-            withAnimation {
-                currentStep = data.currentStep
-                intentId = data.id
-                data.sourceMessages.forEach { sourceMessage in
-                    allSteps.append(
-                        .init(
-                            step: .init(content: .text, id: sourceMessage.id, text: sourceMessage.text),
-                            sender: .member,
-                            isLoading: false
+            if let data = try await service.startClaimIntent(input: input) {
+                withAnimation {
+                    intentId = data.id
+                    data.sourceMessages.forEach { sourceMessage in
+                        allSteps.append(
+                            .init(
+                                step: .init(content: .text, id: sourceMessage.id, text: sourceMessage.text),
+                                sender: .member,
+                                isLoading: false
+                            )
                         )
-                    )
-                }
-                if let currentStep {
-                    switch currentStep.content {
-                    case let .audioRecording(model):
-                        allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: false))
-                        let memberAudioStep = SubmitChatStepModel(
-                            step: .init(
-                                content: .audioRecording(model: .init(hint: model.hint, uploadURI: model.uploadURI)),
-                                id: currentStep.id + "2",
-                                text: currentStep.text
-                            ),
-                            sender: .member,
-                            isLoading: false
-                        )
-                        allSteps.append(memberAudioStep)
-                    case let .task(model):
-                        allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: !model.isCompleted))
-                        Task { await checkTaskRec() }
-                    default:
-                        break
                     }
+                    showNextStep(for: data.currentStep)
+                    viewState = .success
                 }
-                viewState = .success
             }
         } catch {
             withAnimation {
@@ -221,47 +201,25 @@ public class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    @MainActor func getNextStep() async -> ClaimIntentStep {
+    @MainActor func getNextStep() async {
         do {
             let data = try await service.getNextStep(claimIntentId: intentId ?? "")
-            switch data.content {
-            case .task(let model):
-                if model.isCompleted {
-                    currentStep = data
-                    allSteps.removeLast()
-                    if let currentStep {
-                        allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: false))
-                    }
-                }
-            default:
-                break
-            }
-            return data
+            showNextStep(for: data)
         } catch {
             withAnimation {
                 self.viewState = .error(errorMessage: error.localizedDescription)
             }
         }
-        return .init(content: .summary(model: .init(audioRecordings: [], fileUploads: [], items: [])), id: "", text: "")
     }
 
     func sendAudioReferenceToBackend(translatedText: String, url: String?, freeText: String?) async {
         do {
-            let data = try await service.claimIntentSubmitAudio(
+            if let data = try await service.claimIntentSubmitAudio(
                 fileId: url,
                 freeText: freeText,
                 stepId: currentStep?.id ?? ""
-            )
-            withAnimation {
-                switch data.currentStep.content {
-                case let .task(model):
-                    allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: !model.isCompleted))
-                    currentStep = data.currentStep
-                default:
-                    allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-                    currentStep = data.currentStep
-                }
-                Task { await checkTaskRec() }
+            ) {
+                showNextStep(for: data.currentStep)
             }
         } catch {
             withAnimation {
@@ -270,44 +228,50 @@ public class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    func checkTaskRec() async {
-        let nextStep = await getNextStep()
-        switch nextStep.content {
-        case let .task(model):
-            if model.isCompleted {
-                allSteps.removeLast()
-                allSteps.append(.init(step: nextStep, sender: .hedvig, isLoading: false))
-                currentStep = nextStep
-                await submitTask()
-            } else {
-                allSteps.removeLast()
-                allSteps.append(.init(step: nextStep, sender: .hedvig, isLoading: true))
-                currentStep = nextStep
-                await checkTaskRec()
+    func displayTask(_ model: ClaimIntentStepContentTask) {
+        if let currentStep {
+            let newSteps = allSteps.filter({
+                $0.step.id != currentStep.id
+            })
+            allSteps = newSteps
+            allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: !model.isCompleted))
+            Task {
+                model.isCompleted ? await submitTask() : await getNextStep()
             }
-        default:
-            break
+        }
+    }
+
+    func displayForm(_ model: ClaimIntentStepContentForm) {
+        if let currentStep {
+            let userStep: ClaimIntentStep = .init(
+                content: .form(model: model),
+                id: UUID().uuidString,
+                text: currentStep.text
+            )
+            allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
+        }
+    }
+
+    func displayAudio(_ model: ClaimIntentStepContentAudioRecording) {
+        if let currentStep {
+            let memberAudioStep = SubmitChatStepModel(
+                step: .init(
+                    content: .audioRecording(model: .init(hint: model.hint, uploadURI: model.uploadURI)),
+                    id: currentStep.id + "2",
+                    text: currentStep.text
+                ),
+                sender: .member,
+                isLoading: false
+            )
+            allSteps.append(memberAudioStep)
         }
     }
 
     func submitTask() async {
         do {
             let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
-            withAnimation {
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-                currentStep = data.currentStep
-
-                switch data.currentStep.content {
-                case let .form(model):
-                    let userStep: ClaimIntentStep = .init(
-                        content: .form(model: model),
-                        id: "userForm",
-                        text: data.currentStep.text
-                    )
-                    allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
-                default:
-                    break
-                }
+            if let step = data?.currentStep {
+                showNextStep(for: step)
             }
         } catch {
             print("Failed sending task completed:", error)
@@ -338,11 +302,10 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 }
             }
 
-            let data = try await service.claimIntentSubmitForm(
+            if let data = try await service.claimIntentSubmitForm(
                 fields: inputFields.compactMap { $0 },
                 stepId: currentStep?.id ?? ""
-            )
-            withAnimation {
+            ) {
                 if let lastStep = allSteps.last {
                     let updatedStep: SubmitChatStepModel = .init(
                         step: lastStep.step,
@@ -353,21 +316,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
                     allSteps.removeLast()
                     allSteps.append(updatedStep)
                 }
-
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-                currentStep = data.currentStep
-
-                switch data.currentStep.content {
-                case let .form(model):
-                    let userStep: ClaimIntentStep = .init(
-                        content: .form(model: model),
-                        id: UUID().uuidString,
-                        text: data.currentStep.text
-                    )
-                    allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
-                default:
-                    break
-                }
+                showNextStep(for: data.currentStep)
             }
         } catch {
             print("Error: couldn't submit form")
@@ -377,11 +326,29 @@ public class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
+    func showNextStep(for step: ClaimIntentStep) {
+        withAnimation {
+            currentStep = step
+            allSteps.append(.init(step: step, sender: .hedvig, isLoading: false))
+            switch step.content {
+            case let .audioRecording(model):
+                displayAudio(model)
+            case let .form(model):
+                displayForm(model)
+            case let .task(model):
+                displayTask(model)
+            default:
+                break
+            }
+        }
+    }
+
     func submitSummary() async {
         do {
-            let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "")
-            allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-            currentStep = data.currentStep
+            if let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "") {
+                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
+                currentStep = data.currentStep
+            }
         } catch {
             print("Failed sending summary:", error)
             withAnimation {
