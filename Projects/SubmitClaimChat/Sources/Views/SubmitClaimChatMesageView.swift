@@ -9,20 +9,31 @@ struct SubmitClaimChatMesageView: View {
     @ObservedObject var fileUploadViewModel: FilesUploadViewModel
 
     var body: some View {
-        Group {
-            mainContent
+        switch step.step.content {
+        case let .audioRecording(model):
+            audioContent(for: model)
+        case let .form(model):
+            formContent(for: model)
+        case let .task(model):
+            taskContent(for: model)
+        case let .summary(model):
+            summaryView(model: model)
+        case .text:
+            hText(step.step.text)
                 .fixedSize(horizontal: false, vertical: true)
+        case let .outcome(model):
+            VStack(spacing: .padding16) {
+                hText(step.step.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
+                    viewModel.goToClaimDetails(model.claimId)
+                }
+            }
+        case let .fileUpload(model):
+            fileContent(for: model)
+        case let .select(model):
+            selectContent(for: model)
         }
-        .padding(.horizontal, .padding12)
-        .padding(.vertical, .padding8)
-        .background(backgroundColor)
-        .foregroundColor(hTextColor.Opaque.primary)
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
-        .frame(
-            maxWidth: maxWidth,
-            alignment: alignment
-        )
-        .environmentObject(viewModel)
     }
 
     var maxWidth: CGFloat {
@@ -49,10 +60,8 @@ struct SubmitClaimChatMesageView: View {
         return .trailing
     }
 
-    @ViewBuilder
-    var mainContent: some View {
-        switch step.step.content {
-        case let .audioRecording(model):
+    private func audioContent(for model: ClaimIntentStepContentAudioRecording) -> some View {
+        content(isSkippable: model.isSkippable) {
             if step.sender == .hedvig {
                 VStack(alignment: .leading) {
                     hText(step.step.text)
@@ -61,33 +70,34 @@ struct SubmitClaimChatMesageView: View {
             } else {
                 SubmitClaimChatAudioRecorder(viewModel: viewModel, uploadURI: model.uploadURI)
             }
-        case .form(model: let model):
+        }
+    }
+
+    private func formContent(for model: ClaimIntentStepContentForm) -> some View {
+        content(isSkippable: model.isSkippable) {
             FormView(step: step, model: model)
-        case let .task(model):
-            VStack(alignment: .leading) {
-                hText(step.step.text)
-                hText(model.description, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        case .summary(model: let model):
-            summaryView(model: model)
-        case .text:
+        }
+    }
+
+    private func taskContent(for model: ClaimIntentStepContentTask) -> some View {
+        VStack(alignment: .leading) {
             hText(step.step.text)
-                .fixedSize(horizontal: false, vertical: true)
-        case .outcome(model: let model):
-            VStack(spacing: .padding16) {
-                hText(step.step.text)
-                    .fixedSize(horizontal: false, vertical: true)
-                hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
-                    viewModel.goToClaimDetails(model.claimId)
-                }
-            }
-        case .fileUpload(let model):
+            hText(model.description, style: .label)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+    }
+
+    private func fileContent(for model: ClaimIntentStepContentFileUpload) -> some View {
+        content(isSkippable: model.isSkippable) {
             SubmitClaimChatFileUpload(step: step, model: model, fileUploadVm: fileUploadViewModel)
                 .onAppear {
                     fileUploadViewModel.model.uploadUri = model.uploadURI
                 }
-        case .select(model: let model):
+        }
+    }
+
+    private func selectContent(for model: ClaimIntentStepContentSelect) -> some View {
+        content(isSkippable: model.isSkippable) {
             if step.sender == .hedvig {
                 hText(step.step.text)
                     .fixedSize(horizontal: false, vertical: true)
@@ -113,6 +123,37 @@ struct SubmitClaimChatMesageView: View {
                         .opacity(step.isEnabled ? 1.0 : 0.6)
                     }
                 }
+            }
+        }
+    }
+
+    private func content(isSkippable: Bool, content: @escaping () -> any View) -> some View {
+        VStack(spacing: .padding8) {
+            Group {
+                content().asAnyView
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, .padding12)
+            .padding(.vertical, .padding8)
+            .background(backgroundColor)
+            .foregroundColor(hTextColor.Opaque.primary)
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
+            .frame(
+                maxWidth: maxWidth,
+                alignment: alignment
+            )
+            .environmentObject(viewModel)
+
+            if isSkippable && step.sender == .member {
+                skipButton
+            }
+        }
+    }
+
+    private var skipButton: some View {
+        hButton(.medium, .secondary, content: .init(title: "Skip")) {
+            Task {
+                await viewModel.skipStep()
             }
         }
     }

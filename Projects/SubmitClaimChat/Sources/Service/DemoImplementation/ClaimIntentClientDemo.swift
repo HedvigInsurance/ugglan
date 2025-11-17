@@ -35,6 +35,10 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
+    public func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent? {
+        .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
+    }
+
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep {
         .init(content: .text, id: "id", text: "")
     }
