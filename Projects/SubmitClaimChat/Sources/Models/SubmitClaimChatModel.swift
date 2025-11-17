@@ -1,24 +1,15 @@
 import Foundation
 
-final class SubmitChatStepModel: ObservableObject, Identifiable {
-    var id: String { "\(step.id)-\(sender)" }
-    let step: ClaimIntentStep
-    let sender: SubmitClaimChatMesageSender
-    @Published var isLoading: Bool
-    @Published var isEnabled: Bool
-
-    init(step: ClaimIntentStep, sender: SubmitClaimChatMesageSender, isLoading: Bool, isEnabled: Bool = true) {
-        self.step = step
-        self.sender = sender
-        self.isLoading = isLoading
-        self.isEnabled = isEnabled
-    }
-}
-
 struct SingleItemModel: Equatable, Identifiable {
     static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool { lhs.id == rhs.id }
     let id: String
     let values: [SingleSelectValue]
+}
+
+struct SingleSelectValue: Hashable {
+    let fieldId: String
+    let title: String
+    let value: String
 }
 
 enum SubmitClaimChatMesageSender {
@@ -74,6 +65,7 @@ public enum ClaimIntentStepContent: Sendable {
     case audioRecording(model: ClaimIntentStepContentAudioRecording)
     case summary(model: ClaimIntentStepContentSummary)
     case outcome(model: ClaimIntentStepContentOutcome)
+    case singleSelect(model: [ClaimIntentContentSelectOption])
     case text
 }
 

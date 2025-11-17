@@ -153,16 +153,56 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         return nil
     }
 
-    func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep {
+    func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
         let query = OctopusGraphQL.ClaimIntentQuery(claimIntentId: claimIntentId)
 
         do {
             let data = try await octopus.client.fetch(query: query)
+            let sourceMessages: [SourceMessage] =
+                data.claimIntent.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
-            return ClaimIntentStep(fragment: data.claimIntent.currentStep.fragments.claimIntentStepFragment)
+            let currentStepFragment = data.claimIntent.currentStep.fragments.claimIntentStepFragment
+            return .init(
+                currentStep: .init(fragment: currentStepFragment),
+                id: data.claimIntent.id,
+                sourceMessages: sourceMessages
+            )
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
+    }
+
+    func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent {
+        let input = OctopusGraphQL.ClaimIntentSubmitSelectInput(stepId: stepId, selectedId: selectedValue)
+        let mutation = OctopusGraphQL.ClaimIntentSubmitSelectMutation(input: input)
+
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSubmitSelect.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
+
+            let currentStep = data?.claimIntentSubmitSelect.intent?.currentStep
+            let id = data?.claimIntentSubmitSelect.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSubmitSelect.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            currentStep?.content.asClaimIntentStepContentForm?.fields
+                .forEach { field in
+                    let defaultValue = field.defaultValue
+                    print("defaultValue: \(defaultValue ?? "nil")")
+                }
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
+
+        throw SubmitClaimError.error(message: "Wrong data")
     }
 }
 
@@ -204,6 +244,8 @@ extension ClaimIntentStepContent {
             )
         } else if let outcome = fragment.asClaimIntentStepContentOutcome {
             self = .outcome(model: .init(claimId: outcome.claimId))
+        } else if let singleStep = fragment.asClaimIntentStepContentSelect {
+            self = .singleSelect(model: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) }))
         } else {
             self = .summary(model: .init(audioRecordings: [], fileUploads: [], items: []))
         }

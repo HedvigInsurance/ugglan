@@ -1,17 +1,15 @@
-import AVFAudio
-@preconcurrency import Apollo
-import Environment
-import OSLog
 import SwiftUI
-import UIKit
-import hCore
 import hCoreUI
+import hGraphQL
+import hCore
+import AVFoundation
+import Apollo
 
-public struct SubmitClaimChatAudioRecorder: View {
-    @ObservedObject var viewModel: SubmitClaimChatViewModel
+struct SubmitClaimAudioView: View {
+    @EnvironmentObject var viewModel: SubmitClaimAudioStep
+    @EnvironmentObject var mainVM: SubmitClaimChatViewModel
     @StateObject var audioPlayer: AudioPlayer
     @StateObject var audioRecorder: AudioRecorder
-
     @State private var minutes: Int = 0
     @State private var seconds: Int = 0
     @AccessibilityFocusState private var saveAndContinueFocused: Bool
@@ -25,18 +23,9 @@ public struct SubmitClaimChatAudioRecorder: View {
 
     @StateObject var audioRecordingVm = AudioRecorderViewModel()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    private let onSubmit: (_ url: URL) -> Void
-    let uploadURI: String
 
-    public init(
-        viewModel: SubmitClaimChatViewModel,
-        uploadURI: String
-    ) {
-        self._viewModel = ObservedObject(wrappedValue: viewModel)
-        let url = URL(string: uploadURI)
-        self._audioPlayer = StateObject(wrappedValue: AudioPlayer(url: url))
-        self.uploadURI = url?.absoluteString ?? ""
-
+    init() {
+        self._audioPlayer = StateObject(wrappedValue: AudioPlayer(url: nil))
         let tmpDir = FileManager.default.temporaryDirectory
         let path =
             tmpDir
@@ -45,9 +34,6 @@ public struct SubmitClaimChatAudioRecorder: View {
             .appendingPathExtension(AudioRecorder.audioFileExtension)
         try? ensureParentDirectory(for: path)
         self._audioRecorder = StateObject(wrappedValue: AudioRecorder(filePath: path))
-
-        func myFunc(url: URL) { viewModel.audioRecordingUrl = url }
-        self.onSubmit = myFunc
     }
 
     public var body: some View {
@@ -56,7 +42,7 @@ public struct SubmitClaimChatAudioRecorder: View {
                 Group {
                     if let url = audioRecorder.recording?.url {
                         playRecordingButton(url: url)
-                    } else if let url = viewModel.audioRecordingUrl {
+                    } else if let url = viewModel.audioFileURL {
                         playRecordingButton(url: url)
                     } else {
                         recordNewButton
@@ -88,35 +74,32 @@ public struct SubmitClaimChatAudioRecorder: View {
                     minutes = 0; seconds = 0
                 }
 
-            if viewModel.audioRecordingUrl == nil {
+            if viewModel.audioFileURL == nil {
                 hButton(
                     .large,
                     .primary,
                     content: .init(title: L10n.saveAndContinueButtonLabel),
                     {
-                        onSubmit(url)
                         Task {
                             do {
-                                let uploadURL = resolveUploadURL(uploadURI)
-                                logger.info("Resolved upload URL: \(uploadURL.absoluteString, privacy: .public)")
+                                let uploadURL = resolveUploadURL(viewModel.audioRecordingModel.uploadURI)
                                 let tokenObj = try await ApolloClient.retreiveToken()
                                 let bearerToken = tokenObj?.accessToken
-
                                 let reference = try await uploadAudio(
                                     uploadURL: uploadURL,
                                     fileURL: url,
                                     bearerToken: bearerToken
                                 )
+                                
+                                viewModel.audioFileId = reference.uuidString
 
-                                await viewModel.sendAudioReferenceToBackend(
-                                    translatedText: "",
-                                    url: reference.uuidString,
-                                    freeText: nil
-                                )
+                                
+//                                try await viewModel.submitResponse()
+                                try await mainVM.submitStep(handler: viewModel)
 
                                 try? FileManager.default.removeItem(at: url)
-                            } catch {
-                                logger.error("Audio upload/send failed: \(String(describing: error))")
+                            } catch let ex{
+                                let ss = ""
                             }
                         }
                     }
@@ -190,7 +173,7 @@ public struct SubmitClaimChatAudioRecorder: View {
                             try self.configureAudioSessionForRecording()
                             withAnimation(.spring()) { self.audioRecorder.toggleRecording() }
                         } catch {
-                            logger.error("Configure/record failed: \(String(describing: error))")
+                            
                         }
                     } else {
                         self.showMicAlert = true
@@ -212,6 +195,7 @@ public struct SubmitClaimChatAudioRecorder: View {
     }
 }
 
+
 // MARK: - URL helpers
 private func ensureParentDirectory(for fileURL: URL) throws {
     let dir = fileURL.deletingLastPathComponent()
@@ -229,10 +213,6 @@ private func resolveUploadURL(_ pathOrUrl: String) -> URL {
     base.appendPathComponent(trimmed)
     return base
 }
-
-// MARK: - Logger + decoding
-
-private let logger = Logger(subsystem: "SubmitClaim", category: "Upload")
 
 private struct FlexibleReference: Decodable {
     let value: String
@@ -304,10 +284,6 @@ private func uploadAudio(
     resourceTimeout: TimeInterval = 60
 ) async throws -> UUID {
     let fileData = try Data(contentsOf: fileURL)
-    logger.info(
-        "Uploading audio. size=\(fileData.count, privacy: .public) bytes name=\(fileURL.lastPathComponent, privacy: .public)"
-    )
-
     let hedvigHeaders = await ApolloClient.headers()
 
     func configuredSession() -> URLSession {

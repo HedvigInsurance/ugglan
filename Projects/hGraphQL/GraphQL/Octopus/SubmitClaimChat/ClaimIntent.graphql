@@ -58,6 +58,14 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         ... on ClaimIntentStepContentOutcome {
             claimId
         }
+		... on ClaimIntentStepContentSelect {
+			  options {
+				id
+				title
+			  }
+			  isSkippable
+			  isRegrettable
+		}
 }
 
 fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {

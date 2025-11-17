@@ -9,9 +9,10 @@ public protocol ClaimIntentClient {
         fields: [FieldValue],
         stepId: String
     ) async throws -> ClaimIntent?
+    func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent?
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent?
-    func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep
+    func getNextStep(claimIntentId: String) async throws -> ClaimIntent
 }
 
 public struct StartClaimInput: Equatable, Identifiable {
@@ -68,8 +69,13 @@ class ClaimIntentService {
         return data
     }
 
-    func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep {
+    func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
         let data = try await client.getNextStep(claimIntentId: claimIntentId)
+        return data
+    }
+
+    func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent {
+        let data = try await client.claimIntentSubmitSelect(stepId: stepId, selectedValue: selectedValue)
         return data
     }
 }

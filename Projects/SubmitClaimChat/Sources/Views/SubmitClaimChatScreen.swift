@@ -13,20 +13,12 @@ public struct SubmitClaimChatScreen: View {
     ) {
         self.input = input
         _viewModel = StateObject(
-            wrappedValue: .init(input: input, goToClaimDetails: goToClaimDetails)
+            wrappedValue: .init(input: input)
         )
     }
 
     public var body: some View {
-        successView.loading($viewModel.viewState)
-            .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init(buttonAction: {
-                        Task { await viewModel.startClaim(for: input) }
-                    }),
-                    dismissButton: nil
-                )
-            )
+        successView
     }
 
     private var successView: some View {
@@ -38,27 +30,13 @@ public struct SubmitClaimChatScreen: View {
                 scrollContent
             }
         }
-        .detent(
-            item: $viewModel.isDatePickerPresented,
-            transitionType: .detent(style: [.height])
-        ) { datePickerVm in
-            DatePickerView(vm: datePickerVm)
-                .embededInNavigation(options: .largeNavigationBar, tracking: self)
-        }
-        .detent(
-            item: $viewModel.isSelectItemPresented,
-            transitionType: .detent(style: [.height])
-        ) { model in
-            SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
-                .embededInNavigation(options: .largeNavigationBar, tracking: self)
-        }
         .colorScheme(.light)
     }
 
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .task(id: viewModel.allSteps.last?.step.id) {
+                .task(id: viewModel.allSteps.last?.claimIntent.currentStep.id) {
                     try? await Task.sleep(seconds: 0.05)
                     withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
                 }
@@ -74,23 +52,17 @@ public struct SubmitClaimChatScreen: View {
     private var mainContent: some View {
         hForm {
             VStack(spacing: .padding16) {
-                ForEach(viewModel.allSteps) { step in
+                ForEach(viewModel.allSteps, id: \.claimIntent.currentStep.id) { step in
                     HStack {
                         spacing(step.sender == .member)
                         VStack(alignment: .leading, spacing: 0) {
-                            SubmitClaimChatMesageView(step: step, viewModel: viewModel)
-                            switch step.step.content {
-                            case .summary, .outcome:
-                                EmptyView()
-                            default:
-                                senderStamp(step: step)
-                            }
+                            SubmitClaimChatMesageView(step: step)
+                            senderStamp(step: step)
                         }
                         spacing(step.sender == .hedvig)
                     }
-                    .id(step.step.id)
+                    .id(step.id)
                 }
-
                 Color.clear.frame(height: 1).id("BOTTOM")
             }
             .padding(.horizontal, .padding16)
@@ -98,6 +70,7 @@ public struct SubmitClaimChatScreen: View {
         }
         .hFormContentPosition(.top)
         .hFormBottomBackgroundColor(.aiPoweredGradient)
+        .environmentObject(viewModel)
     }
 
     private var loadingView: some View {
@@ -116,7 +89,7 @@ public struct SubmitClaimChatScreen: View {
     }
 
     @ViewBuilder
-    func senderStamp(step: SubmitChatStepModel) -> some View {
+    func senderStamp(step: any ClaimIntentStepHandler) -> some View {
         if step.isLoading {
             loadingView
         } else if step.sender == .hedvig {
@@ -142,218 +115,82 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
     return SubmitClaimChatScreen(input: .init(sourceMessageId: nil, devFlow: false), goToClaimDetails: { _ in })
 }
 
+// MARK: - Main Model
 @MainActor
-public class SubmitClaimChatViewModel: ObservableObject {
-    @Published var isDatePickerPresented: DatePickerViewModel?
-    @Published var isSelectItemPresented: SingleItemModel?
-    @Published var hasClaimBeenSubmitted: ClaimIntentStepContentSummary?
-    @Published var viewState: ProcessingState = .loading
+final class SubmitClaimChatViewModel: ObservableObject {
+    @Published var currentStepHandler: (any ClaimIntentStepHandler)?
+    @Published var allSteps: [any ClaimIntentStepHandler] = []
 
-    @Published var currentStep: ClaimIntentStep?
-    @Published var allSteps: [SubmitChatStepModel] = []
-    @Published var intentId: String?
-    @Published var audioRecordingUrl: URL?
-
-    @Published var selectedDate = Date()
-    @Published var selectedPrice = ""
-
-    var dates: [(id: String, value: Date)] = []
-    var purchasePrice: [(id: String, value: String)] = []
-    var selectedValue: [SingleSelectValue] = []
-    @Published var binaryValues: [(id: String, value: String)] = []
-    var goToClaimDetails: (String) -> Void
-
-    private let service = ClaimIntentService()
-
-    init(
-        input: StartClaimInput,
-        goToClaimDetails: @escaping (String) -> Void
-    ) {
-        self.goToClaimDetails = goToClaimDetails
-        Task { await startClaim(for: input) }
+    private let service: ClaimIntentService = ClaimIntentService()
+    private let input: StartClaimInput
+    init(input: StartClaimInput) {
+        self.input = input
+        Task {
+            try? await startClaimIntent(input: input)
+        }
     }
 
-    func startClaim(for input: StartClaimInput) async {
-        withAnimation {
-            viewState = .loading
+    func startClaimIntent(input: StartClaimInput) async throws {
+        guard let claimIntent = try await service.startClaimIntent(input: input) else {
+            throw ClaimIntentError.invalidResponse
         }
-        do {
-            if let data = try await service.startClaimIntent(input: input) {
-                withAnimation {
-                    intentId = data.id
-                    data.sourceMessages.forEach { sourceMessage in
-                        allSteps.append(
-                            .init(
-                                step: .init(content: .text, id: sourceMessage.id, text: sourceMessage.text),
-                                sender: .member,
-                                isLoading: false
-                            )
-                        )
+
+        processClaimIntent(claimIntent)
+    }
+
+    private func processClaimIntent(_ claimIntent: ClaimIntent) {
+        let handler = getNextStep(claimIntent)
+        self.currentStepHandler = handler
+        self.allSteps.append(handler)
+        if let handler = handler as? SubmitClaimTaskStep {
+            handleTaskStep(handler: handler)
+        }
+    }
+
+    private func getNextStep(_ claimIntent: ClaimIntent) -> any ClaimIntentStepHandler {
+        ClaimIntentStepHandlerFactory.createHandler(
+            for: claimIntent,
+            sender: .hedvig,
+            service: service
+        )
+    }
+
+    private func handleTaskStep(handler: SubmitClaimTaskStep) {
+        Task {
+            do {
+                if handler.isTaskCompleted {
+                    let claimIntent = try await handler.submitResponse()
+                    withAnimation {
+                        allSteps.removeAll(where: {
+                            $0.claimIntent.currentStep.id == handler.claimIntent.currentStep.id
+                        })
+                        processClaimIntent(claimIntent)
                     }
-                    showNextStep(for: data.currentStep)
-                    viewState = .success
+                } else {
+                    try await Task.sleep(seconds: 0.5)
+                    let claimIntent = try await getNextStep(intentId: handler.claimIntent.id)
+                    let newHandler = getNextStep(claimIntent)
+                    if let newHandler = newHandler as? SubmitClaimTaskStep {
+                        handleTaskStep(handler: newHandler)
+                    } else {
+                        processClaimIntent(claimIntent)
+                    }
                 }
-            }
-        } catch {
-            withAnimation {
-                self.viewState = .error(errorMessage: error.localizedDescription)
+            } catch let ex {
+                let ss = ""
             }
         }
     }
 
-    @MainActor func getNextStep() async {
-        do {
-            let data = try await service.getNextStep(claimIntentId: intentId ?? "")
-            showNextStep(for: data)
-        } catch {
-            withAnimation {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            }
-        }
+    private func getNextStep(intentId: String) async throws -> ClaimIntent {
+        try await service.getNextStep(claimIntentId: intentId)
     }
 
-    func sendAudioReferenceToBackend(translatedText: String, url: String?, freeText: String?) async {
-        do {
-            if let data = try await service.claimIntentSubmitAudio(
-                fileId: url,
-                freeText: freeText,
-                stepId: currentStep?.id ?? ""
-            ) {
-                showNextStep(for: data.currentStep)
-            }
-        } catch {
-            withAnimation {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            }
-        }
-    }
-
-    func displayTask(_ model: ClaimIntentStepContentTask) {
-        if let currentStep {
-            let newSteps = allSteps.filter({
-                $0.step.id != currentStep.id
-            })
-            allSteps = newSteps
-            allSteps.append(.init(step: currentStep, sender: .hedvig, isLoading: !model.isCompleted))
-            Task {
-                model.isCompleted ? await submitTask() : await getNextStep()
-            }
-        }
-    }
-
-    func displayForm(_ model: ClaimIntentStepContentForm) {
-        if let currentStep {
-            let userStep: ClaimIntentStep = .init(
-                content: .form(model: model),
-                id: UUID().uuidString,
-                text: currentStep.text
-            )
-            allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
-        }
-    }
-
-    func displayAudio(_ model: ClaimIntentStepContentAudioRecording) {
-        if let currentStep {
-            let memberAudioStep = SubmitChatStepModel(
-                step: .init(
-                    content: .audioRecording(model: .init(hint: model.hint, uploadURI: model.uploadURI)),
-                    id: currentStep.id + "2",
-                    text: currentStep.text
-                ),
-                sender: .member,
-                isLoading: false
-            )
-            allSteps.append(memberAudioStep)
-        }
-    }
-
-    func submitTask() async {
-        do {
-            let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
-            if let step = data?.currentStep {
-                showNextStep(for: step)
-            }
-        } catch {
-            print("Failed sending task completed:", error)
-            withAnimation {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            }
-        }
-    }
-
-    func submitForm(fields: [ClaimIntentStepContentForm.ClaimIntentStepContentFormField]) async {
-        do {
-            let inputFields: [FieldValue?] = fields.compactMap { field in
-                switch field.type {
-                case .date:
-                    let fieldDate = dates.first(where: { $0.id == field.id })?.value ?? Date()
-                    return FieldValue(id: field.id, values: [fieldDate.localDateString])
-                case .number:
-                    let price = selectedPrice
-                    return FieldValue(id: field.id, values: [price])
-                case .singleSelect:
-                    let fieldValue = selectedValue.first(where: { $0.fieldId == field.id })?.value ?? ""
-                    return FieldValue(id: field.id, values: [fieldValue])
-                case .binary:
-                    let fieldBinary = binaryValues.first(where: { $0.id == field.id })?.value ?? ""
-                    return FieldValue(id: field.id, values: [fieldBinary])
-                default:
-                    return FieldValue(id: field.id, values: [])
-                }
-            }
-
-            if let data = try await service.claimIntentSubmitForm(
-                fields: inputFields.compactMap { $0 },
-                stepId: currentStep?.id ?? ""
-            ) {
-                if let lastStep = allSteps.last {
-                    let updatedStep: SubmitChatStepModel = .init(
-                        step: lastStep.step,
-                        sender: lastStep.sender,
-                        isLoading: lastStep.isLoading,
-                        isEnabled: false
-                    )
-                    allSteps.removeLast()
-                    allSteps.append(updatedStep)
-                }
-                showNextStep(for: data.currentStep)
-            }
-        } catch {
-            print("Error: couldn't submit form")
-            withAnimation {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            }
-        }
-    }
-
-    func showNextStep(for step: ClaimIntentStep) {
-        withAnimation {
-            currentStep = step
-            allSteps.append(.init(step: step, sender: .hedvig, isLoading: false))
-            switch step.content {
-            case let .audioRecording(model):
-                displayAudio(model)
-            case let .form(model):
-                displayForm(model)
-            case let .task(model):
-                displayTask(model)
-            default:
-                break
-            }
-        }
-    }
-
-    func submitSummary() async {
-        do {
-            if let data = try await service.claimIntentSubmitSummary(stepId: currentStep?.id ?? "") {
-                allSteps.append(.init(step: data.currentStep, sender: .hedvig, isLoading: false))
-                currentStep = data.currentStep
-            }
-        } catch {
-            print("Failed sending summary:", error)
-            withAnimation {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            }
-        }
+    func submitStep(handler: any ClaimIntentStepHandler) async throws {
+        handler.isLoading = true
+        let claimIntent = try await handler.submitResponse()
+        handler.isLoading = false
+        handler.isEnabled = false
+        processClaimIntent(claimIntent)
     }
 }
