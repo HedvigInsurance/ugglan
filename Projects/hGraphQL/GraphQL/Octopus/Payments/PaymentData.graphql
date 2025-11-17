@@ -30,10 +30,12 @@ fragment MemberChargeFragment on MemberCharge{
         net {
           ...MoneyFragment
         }
-        discounts {
-            ...MemberChargeBreakdownItemDiscountFragment
-        }
-
+		insurancePriceBreakdown {
+			amount {
+				...MoneyFragment
+			}
+			displayTitle
+		}
         periods {
           fromDate
           toDate

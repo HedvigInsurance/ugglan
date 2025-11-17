@@ -28,7 +28,7 @@ struct ContractDetails: View {
                     hCoreUIAssets.chevronDown.view
                         .resizable()
                         .frame(width: 24, height: 24)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .foregroundColor(hTextColor.Translucent.secondary)
                         .rotationEffect(
                             expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
                         )
@@ -56,52 +56,64 @@ struct ContractDetails: View {
     @ViewBuilder
     func getContractDetails(for contract: PaymentData.ContractPaymentDetails) -> some View {
         if expandedContracts.contains(contract.id) {
-            hSection(Array(contract.periods.enumerated()), id: \.element.id) { offset, period in
-                hRow {
-                    VStack(alignment: .leading, spacing: 0) {
-                        HStack {
-                            hText(period.fromToDate)
-                                .foregroundColor(
-                                    getColor(hTextColor.Opaque.primary, isOutstanding: period.isOutstanding)
-                                )
-                            Spacer()
-                            hText(period.amount.formattedAmount)
-                                .foregroundColor(
-                                    getColor(hTextColor.Opaque.primary, isOutstanding: period.isOutstanding)
-                                )
-                        }
-                        if let desciption = period.desciption {
-                            hText(desciption, style: .label)
-                                .foregroundColor(
-                                    getColor(hTextColor.Translucent.secondary, isOutstanding: period.isOutstanding)
-                                )
-                        }
+            hRowDivider()
+            hRow {
+                VStack(spacing: .padding6) {
+                    ForEach(contract.priceBreakdown) { item in
+                        PriceBreakdowRowItem(title: item.displayTitle, value: item.amount.priceFormat(.month))
                     }
-                }
-                .withEmptyAccessory
-                .accessibilityElement(children: .combine)
-
-                if contract.periods.count - 1 == offset {
-                    if !contract.discounts.isEmpty {
-                        ForEach(contract.discounts) { discount in
-                            DiscountDetailView(discount: discount)
-                        }
-                    }
-                    hRow {
-                        PriceField(
-                            viewModel: .init(
-                                initialValue: contract.grossAmount,
-                                newValue: contract.netAmount,
-                                title: L10n.paymentsSubtotal
-                            )
+                    PriceField(
+                        viewModel: .init(
+                            initialValue: contract.grossAmount,
+                            newValue: contract.netAmount,
+                            title: L10n.paymentsSubtotal,
+                            useSecondaryColor: true
                         )
-                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-                        .hPriceFormatting(setTo: .month)
-                    }
+                    )
+                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                    .hPriceFormatting(setTo: .month)
+                    .hTextStyle(.label)
                 }
+                .foregroundColor(hTextColor.Translucent.secondary)
             }
-            .hWithoutHorizontalPadding([.section])
-            .transition(.opacity)
+            hSection {
+                VStack(alignment: .leading, spacing: .padding16) {
+                    ForEach(contract.periods) { period in
+                        VStack(alignment: .leading, spacing: 0) {
+                            HStack {
+                                hText(period.fromToDate)
+                                    .foregroundColor(
+                                        hTextColor.Translucent.secondary
+                                    )
+                                Spacer()
+                                hText(period.amount.formattedAmount)
+                                    .foregroundColor(
+                                        hTextColor.Translucent.secondary
+                                    )
+                            }
+                            if let desciption = period.desciption {
+                                hText(desciption)
+                                    .foregroundColor(
+                                        getColor(hTextColor.Translucent.secondary, isOutstanding: period.isOutstanding)
+                                    )
+                            }
+                        }
+                        .accessibilityElement(children: .combine)
+                        .hTextStyle(.label)
+                    }
+                    PriceField(
+                        viewModel: .init(
+                            initialValue: nil,
+                            newValue: contract.netAmount,
+                            title: L10n.paymentsAmountToPay
+                        )
+                    )
+                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                    .hPriceFormatting(setTo: .month)
+                }
+                .padding(.bottom, .padding16)
+            }
+            .withHeader(title: "Period")
         }
     }
 
@@ -129,14 +141,6 @@ struct ContractDetails: View {
                 subtitle: "subtitle which is long so it takes 2 so we can see how it looks",
                 netAmount: .sek(250),
                 grossAmount: .sek(200),
-                discounts: [
-                    .init(
-                        code: "TOGETHER",
-                        displayValue: MonetaryAmount.sek(10).formattedNegativeAmount,
-                        description: "15% discount for 12 months",
-                        type: .discount(status: .active)
-                    )
-                ],
                 periods: [
                     .init(
                         id: "1",
@@ -152,8 +156,12 @@ struct ContractDetails: View {
                         to: "2023-11-30",
                         amount: .sek(80),
                         isOutstanding: true,
-                        desciption: nil
+                        desciption: "description"
                     ),
+                ],
+                priceBreakdown: [
+                    .init(displayTitle: "Contract", amount: MonetaryAmount.sek(10)),
+                    .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(10)),
                 ]
             )
         )
