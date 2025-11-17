@@ -1,9 +1,9 @@
-import SwiftUI
-import hCoreUI
-import hGraphQL
-import hCore
 import AVFoundation
 import Apollo
+import SwiftUI
+import hCore
+import hCoreUI
+import hGraphQL
 
 struct SubmitClaimAudioView: View {
     @EnvironmentObject var viewModel: SubmitClaimAudioStep
@@ -90,15 +90,14 @@ struct SubmitClaimAudioView: View {
                                     fileURL: url,
                                     bearerToken: bearerToken
                                 )
-                                
+
                                 viewModel.audioFileId = reference.uuidString
 
-                                
-//                                try await viewModel.submitResponse()
+                                //                                try await viewModel.submitResponse()
                                 try await mainVM.submitStep(handler: viewModel)
 
                                 try? FileManager.default.removeItem(at: url)
-                            } catch let ex{
+                            } catch let ex {
                                 let ss = ""
                             }
                         }
@@ -173,7 +172,6 @@ struct SubmitClaimAudioView: View {
                             try self.configureAudioSessionForRecording()
                             withAnimation(.spring()) { self.audioRecorder.toggleRecording() }
                         } catch {
-                            
                         }
                     } else {
                         self.showMicAlert = true
@@ -194,7 +192,6 @@ struct SubmitClaimAudioView: View {
         try session.setActive(true, options: [])
     }
 }
-
 
 // MARK: - URL helpers
 private func ensureParentDirectory(for fileURL: URL) throws {
