@@ -50,9 +50,13 @@ class ChangeTierClientOctopus: ChangeTierClient {
             )
             let currentDeductible = getCurrentDeductible(agreementToChange: agreementToChange, currentTier: currentTier)
 
+            let displayName =
+                currentDeductible?.productVariant?.displayName
+                ?? currentTier.quotes.first?.productVariant?.displayName
+                ?? intent.quotes.first?.productVariant.displayName ?? ""
+
             let intentModel: ChangeTierIntentModel = .init(
-                displayName: (currentDeductible?.productVariant?.displayName
-                    ?? intent.quotes.first?.productVariant.displayName) ?? "",
+                displayName: displayName,
                 activationDate: intent.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
                 currentTier: currentTier,
@@ -228,7 +232,21 @@ class ChangeTierClientOctopus: ChangeTierClient {
                     addons: [],
                     costBreakdown: []
                 )
+            } else if let firstQuote = currentTier.quotes.first {
+                return Quote(
+                    id: "current",
+                    quoteAmount: nil,
+                    quotePercentage: nil,
+                    subTitle: nil,
+                    currentTotalCost: totalCost,
+                    newTotalCost: totalCost,
+                    displayItems: firstQuote.displayItems,
+                    productVariant: firstQuote.productVariant,
+                    addons: [],
+                    costBreakdown: []
+                )
             }
+
             return nil
         }()
         return currentDeductible

@@ -24,14 +24,6 @@ public class hPaymentClientDemo: hPaymentClient {
                         subtitle: "Bastugatan 25 ∙ Bara du",
                         netAmount: .sek(250),
                         grossAmount: .sek(200),
-                        discounts: [
-                            .init(
-                                code: "TOGETHER",
-                                displayValue: MonetaryAmount.sek(9).formattedNegativeAmount,
-                                description: "15% discount for 12 months",
-                                type: .discount(status: .active)
-                            )
-                        ],
                         periods: [
                             .init(
                                 id: "id",
@@ -41,6 +33,9 @@ public class hPaymentClientDemo: hPaymentClient {
                                 isOutstanding: false,
                                 desciption: nil
                             )
+                        ],
+                        priceBreakdown: [
+                            .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(9))
                         ]
                     ),
                     .init(
@@ -49,14 +44,6 @@ public class hPaymentClientDemo: hPaymentClient {
                         subtitle: "Lola ∙ Huskatt/blandras",
                         netAmount: .sek(250),
                         grossAmount: .sek(200),
-                        discounts: [
-                            .init(
-                                code: "TOGETHER",
-                                displayValue: MonetaryAmount.sek(8).formattedNegativeAmount,
-                                description: "15% discount for 12 months",
-                                type: .discount(status: .active)
-                            )
-                        ],
                         periods: [
                             .init(
                                 id: "id2",
@@ -66,6 +53,9 @@ public class hPaymentClientDemo: hPaymentClient {
                                 isOutstanding: false,
                                 desciption: nil
                             )
+                        ],
+                        priceBreakdown: [
+                            .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(8))
                         ]
                     ),
                 ],
@@ -92,14 +82,6 @@ public class hPaymentClientDemo: hPaymentClient {
                             subtitle: "Bastugatan 25 ∙ Bara du",
                             netAmount: .sek(250),
                             grossAmount: .sek(200),
-                            discounts: [
-                                .init(
-                                    code: "TOGETHER",
-                                    displayValue: MonetaryAmount.sek(11).formattedNegativeAmount,
-                                    description: "15% discount for 12 months",
-                                    type: .discount(status: .active)
-                                )
-                            ],
                             periods: [
                                 .init(
                                     id: "id",
@@ -109,6 +91,9 @@ public class hPaymentClientDemo: hPaymentClient {
                                     isOutstanding: false,
                                     desciption: nil
                                 )
+                            ],
+                            priceBreakdown: [
+                                .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(11))
                             ]
                         ),
                         .init(
@@ -117,14 +102,6 @@ public class hPaymentClientDemo: hPaymentClient {
                             subtitle: "Lola ∙ Huskatt/blandras",
                             netAmount: .sek(250),
                             grossAmount: .sek(200),
-                            discounts: [
-                                .init(
-                                    code: "TOGETHER",
-                                    displayValue: MonetaryAmount.sek(12).formattedNegativeAmount,
-                                    description: "15% discount for 12 months",
-                                    type: .discount(status: .active)
-                                )
-                            ],
                             periods: [
                                 .init(
                                     id: "id2",
@@ -134,6 +111,9 @@ public class hPaymentClientDemo: hPaymentClient {
                                     isOutstanding: false,
                                     desciption: nil
                                 )
+                            ],
+                            priceBreakdown: [
+                                .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(12))
                             ]
                         ),
                     ],
