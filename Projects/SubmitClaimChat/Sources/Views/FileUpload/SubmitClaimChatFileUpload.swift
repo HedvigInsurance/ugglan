@@ -71,28 +71,16 @@ struct SubmitClaimChatFileUpload: View {
                 }
             } else {
                 hSection {
-                    VStack(spacing: .padding8) {
-                        hButton(
-                            .large,
-                            .primary,
-                            content: .init(title: L10n.ClaimStatusDetail.addFiles),
-                            {
-                                showFilePickerAlert()
-                            }
-                        )
-                        .hButtonIsLoading(fileUploadVm.isLoading && !fileUploadVm.skipPressed)
-                        .disabled(fileUploadVm.isLoading && fileUploadVm.skipPressed)
-                        hButton(
-                            .large,
-                            .ghost,
-                            content: .init(title: L10n.NavBar.skip),
-                            {
-                                skip()
-                            }
-                        )
-                        .disabled(fileUploadVm.isLoading && !fileUploadVm.skipPressed)
-                        .hButtonIsLoading(fileUploadVm.isLoading && fileUploadVm.skipPressed)
-                    }
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.ClaimStatusDetail.addFiles),
+                        {
+                            showFilePickerAlert()
+                        }
+                    )
+                    .hButtonIsLoading(fileUploadVm.isLoading)
+                    .disabled(fileUploadVm.isLoading)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -140,12 +128,6 @@ struct SubmitClaimChatFileUpload: View {
             }
         }
     }
-
-    func skip() {
-        Task {
-            await viewModel.submitFile(fileIds: [])
-        }
-    }
 }
 
 public struct FileUploadModel: Sendable {
@@ -171,7 +153,6 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 public class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
-    @Published var skipPressed = false
     @Published var error: String?
     @Published var progress: Double = 0
     var uploadProgress: Double = 0

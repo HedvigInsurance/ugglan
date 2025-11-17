@@ -347,7 +347,6 @@ public class SubmitClaimChatViewModel: ObservableObject {
     func submitSelect(selectId: String) async {
         do {
             let data = try await service.claimIntentSubmitSelect(stepId: currentStep?.id ?? "", selectId: selectId)
-            disablePreviousStep()
             if let step = data?.currentStep {
                 showNextStep(for: step)
             }
@@ -384,7 +383,6 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 fields: inputFields.compactMap { $0 },
                 stepId: currentStep?.id ?? ""
             ) {
-                disablePreviousStep()
                 showNextStep(for: data.currentStep)
             }
         } catch {
@@ -425,6 +423,7 @@ public class SubmitClaimChatViewModel: ObservableObject {
 
     func showNextStep(for step: ClaimIntentStep) {
         withAnimation {
+            disablePreviousStep()
             currentStep = step
             allSteps.append(.init(step: step, sender: .hedvig, isLoading: false))
             switch step.content {

@@ -144,13 +144,14 @@ struct SubmitClaimChatMesageView: View {
             )
             .environmentObject(viewModel)
 
-            if isSkippable && step.sender == .member {
+            if isSkippable && step.sender == .member && step.isEnabled {
                 skipButton
             }
         }
     }
 
     private var skipButton: some View {
+        /* TODO: DISAPPEAR WHEN STEP IS DONE */
         hButton(.medium, .secondary, content: .init(title: "Skip")) {
             Task {
                 await viewModel.skipStep()
