@@ -241,10 +241,14 @@ extension PaymentData.ContractPaymentDetails {
             subtitle: data.displaySubtitle,
             netAmount: .init(fragment: data.net.fragments.moneyFragment),
             grossAmount: .init(fragment: data.gross.fragments.moneyFragment),
-            discounts: data.discounts?
-                .compactMap { .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment) }
-                ?? [],
-            periods: data.periods.compactMap { .init(with: $0) }
+            periods: data.periods.compactMap { .init(with: $0) },
+            priceBreakdown:
+                data.insurancePriceBreakdown.map {
+                    .init(
+                        displayTitle: $0.displayTitle,
+                        amount: MonetaryAmount(fragment: $0.amount.fragments.moneyFragment)
+                    )
+                }
         )
     }
 }
@@ -384,19 +388,5 @@ extension PaymentData.PaymentStatus {
         case .unknown:
             return .unknown
         }
-    }
-}
-
-@MainActor
-extension Discount {
-    public init(
-        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment
-    ) {
-        self.init(
-            code: data.code,
-            displayValue: MonetaryAmount(fragment: data.discount.fragments.moneyFragment).formattedNegativeAmount,
-            description: data.description,
-            type: .paymentsDiscount
-        )
     }
 }
