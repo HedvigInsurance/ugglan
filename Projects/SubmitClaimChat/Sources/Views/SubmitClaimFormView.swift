@@ -4,7 +4,6 @@ import hCoreUI
 
 struct SubmitClaimFormView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
-
     var body: some View {
         VStack(spacing: .padding8) {
             VStack(alignment: .leading, spacing: .padding8) {

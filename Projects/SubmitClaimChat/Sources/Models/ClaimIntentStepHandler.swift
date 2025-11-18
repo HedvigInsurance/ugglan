@@ -7,9 +7,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var id: String { claimIntent.currentStep.id }
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMesageSender { .member }
+
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
-
     let service: ClaimIntentService
     let mainHandler: (ClaimIntent) -> Void
 

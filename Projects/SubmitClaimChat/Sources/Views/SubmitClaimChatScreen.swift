@@ -3,6 +3,7 @@ import hCore
 import hCoreUI
 
 public typealias GoToClaimDetails = (String) -> Void
+
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var router: Router
@@ -95,9 +96,9 @@ extension View {
 final class SubmitClaimChatViewModel: ObservableObject {
     @Published var allSteps: [ClaimIntentStepHandler] = []
     let goToClaimDetails: GoToClaimDetails
-
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
+
     init(input: StartClaimInput, goToClaimDetails: @escaping GoToClaimDetails) {
         self.input = input
         self.goToClaimDetails = goToClaimDetails
@@ -110,7 +111,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
         guard let claimIntent = try await service.startClaimIntent(input: input) else {
             throw ClaimIntentError.invalidResponse
         }
-
         processClaimIntent(claimIntent)
     }
 

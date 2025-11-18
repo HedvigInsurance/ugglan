@@ -4,6 +4,7 @@ import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+
     @ViewBuilder
     var body: some View {
         VStack(alignment: .leading, spacing: .padding8) {
