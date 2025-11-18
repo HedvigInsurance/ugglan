@@ -4,7 +4,7 @@ import hCoreUI
 final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
     var id: String { claimIntent.id }
     let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender
+    let sender: SubmitClaimChatMesageSender = .member
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
     @Published var isDatePickerPresented: DatePickerViewModel?
@@ -15,9 +15,8 @@ final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
 
     @Published var dateForPicker: Date = Date()
     @Published var formValues: [String: FormStepValue] = [:]
-    required init(claimIntent: ClaimIntent, sender: SubmitClaimChatMesageSender, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
         self.claimIntent = claimIntent
-        self.sender = sender
         self.service = service
         guard case .form(let model) = claimIntent.currentStep.content else {
             fatalError("FormStepHandler initialized with non-form content")

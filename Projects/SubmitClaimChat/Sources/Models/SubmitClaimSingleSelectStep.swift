@@ -3,16 +3,15 @@ import SwiftUI
 final class SubmitClaimSingleSelectStep: @MainActor ClaimIntentStepHandler {
     var id: String { claimIntent.id }
     let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender
+    let sender: SubmitClaimChatMesageSender = .member
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
     @Published var selectedOption: String?
     let options: [ClaimIntentContentSelectOption]
     private let service: ClaimIntentService
 
-    required init(claimIntent: ClaimIntent, sender: SubmitClaimChatMesageSender, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
         self.claimIntent = claimIntent
-        self.sender = sender
         self.service = service
         guard case .singleSelect(let model) = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-single select content")

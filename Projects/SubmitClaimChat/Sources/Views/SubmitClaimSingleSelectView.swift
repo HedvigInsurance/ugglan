@@ -18,13 +18,11 @@ struct SubmitClaimSingleSelectView: View {
                 }
             }
         }
-        .disabled(!viewModel.isEnabled)
-        if viewModel.selectedOption != nil && viewModel.isEnabled {
-            hContinueButton {
-                Task {
-                    try await mainVM.submitStep(handler: viewModel)
-                }
+        hContinueButton {
+            Task {
+                try await mainVM.submitStep(handler: viewModel)
             }
         }
+        .disabled(viewModel.selectedOption == nil)
     }
 }

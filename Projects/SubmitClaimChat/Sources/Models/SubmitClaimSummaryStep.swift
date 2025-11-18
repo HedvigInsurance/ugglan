@@ -1,18 +1,18 @@
 import SwiftUI
+import hCoreUI
 
 final class SubmitClaimSummaryStep: @MainActor ClaimIntentStepHandler {
     var id: String { claimIntent.id }
     let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender
+    let sender: SubmitClaimChatMesageSender = .hedvig
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
 
     let summaryModel: ClaimIntentStepContentSummary
     private let service: ClaimIntentService
 
-    required init(claimIntent: ClaimIntent, sender: SubmitClaimChatMesageSender, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
         self.claimIntent = claimIntent
-        self.sender = sender
         self.service = service
         guard case .summary(let model) = claimIntent.currentStep.content else {
             fatalError("SummaryStepHandler initialized with non-summary content")

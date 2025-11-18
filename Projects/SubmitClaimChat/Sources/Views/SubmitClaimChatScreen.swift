@@ -51,21 +51,31 @@ public struct SubmitClaimChatScreen: View {
 
     private var mainContent: some View {
         hForm {
-            VStack(spacing: .padding16) {
+            VStack(alignment: .leading, spacing: .padding16) {
                 ForEach(viewModel.allSteps, id: \.claimIntent.currentStep.id) { step in
+                    VStack(alignment: .leading, spacing: .padding8) {
+                        hText(step.claimIntent.currentStep.text)
+                        senderStamp(step: step)
+                    }
                     HStack {
                         spacing(step.sender == .member)
-                        VStack(alignment: .leading, spacing: 0) {
+                        VStack(alignment: .leading, spacing: .padding8) {
                             SubmitClaimChatMesageView(step: step)
-                            senderStamp(step: step)
+                                .frame(
+                                    maxWidth: step.maxWidth,
+                                    alignment: step.alignment
+                                )
                         }
+                        .fixedSize(horizontal: false, vertical: true)
+                        .disabled(!step.isEnabled)
                         spacing(step.sender == .hedvig)
                     }
                     .id(step.id)
                 }
-                Color.clear.frame(height: 1).id("BOTTOM")
+                Color.clear.frame(height: 50).id("BOTTOM")
             }
-            .padding(.horizontal, .padding16)
+            .padding(.horizontal, .padding12)
+            .padding(.vertical, .padding8)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
         .hFormContentPosition(.top)
@@ -92,7 +102,7 @@ public struct SubmitClaimChatScreen: View {
     func senderStamp(step: any ClaimIntentStepHandler) -> some View {
         if step.isLoading {
             loadingView
-        } else if step.sender == .hedvig {
+        } else {
             HStack {
                 Circle()
                     .frame(width: 16, height: 16)
@@ -100,7 +110,6 @@ public struct SubmitClaimChatScreen: View {
                 hText("Hedvig AI Assistant", style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
-            .padding(.leading, .padding16)
         }
     }
 }
@@ -118,8 +127,8 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
-    @Published var currentStepHandler: (any ClaimIntentStepHandler)?
-    @Published var allSteps: [any ClaimIntentStepHandler] = []
+    @Published var currentStepHandler: (any ClaimIntentStepHandler & ObservableObject)?
+    @Published var allSteps: [any ClaimIntentStepHandler & ObservableObject] = []
 
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
@@ -139,7 +148,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
 
     private func processClaimIntent(_ claimIntent: ClaimIntent) {
-        let handler = getNextStep(claimIntent)
+        let handler = getStep(for: claimIntent)
         self.currentStepHandler = handler
         self.allSteps.append(handler)
         if let handler = handler as? SubmitClaimTaskStep {
@@ -147,10 +156,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    private func getNextStep(_ claimIntent: ClaimIntent) -> any ClaimIntentStepHandler {
+    private func getStep(for claimIntent: ClaimIntent) -> any ClaimIntentStepHandler {
         ClaimIntentStepHandlerFactory.createHandler(
             for: claimIntent,
-            sender: .hedvig,
             service: service
         )
     }
@@ -161,23 +169,16 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 if handler.isTaskCompleted {
                     let claimIntent = try await handler.submitResponse()
                     withAnimation {
-                        allSteps.removeAll(where: {
-                            $0.claimIntent.currentStep.id == handler.claimIntent.currentStep.id
-                        })
                         processClaimIntent(claimIntent)
                     }
                 } else {
-                    try await Task.sleep(seconds: 0.5)
+                    try await Task.sleep(seconds: 1)
                     let claimIntent = try await getNextStep(intentId: handler.claimIntent.id)
-                    let newHandler = getNextStep(claimIntent)
-                    if let newHandler = newHandler as? SubmitClaimTaskStep {
-                        handleTaskStep(handler: newHandler)
-                    } else {
-                        processClaimIntent(claimIntent)
-                    }
+                    handler.claimIntent = claimIntent
+                    handleTaskStep(handler: handler)
                 }
             } catch let ex {
-                let ss = ""
+                handleTaskStep(handler: handler)
             }
         }
     }
@@ -187,10 +188,14 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
 
     func submitStep(handler: any ClaimIntentStepHandler) async throws {
-        handler.isLoading = true
+        withAnimation {
+            handler.isLoading = true
+        }
         let claimIntent = try await handler.submitResponse()
-        handler.isLoading = false
-        handler.isEnabled = false
-        processClaimIntent(claimIntent)
+        withAnimation {
+            handler.isLoading = false
+            handler.isEnabled = false
+            processClaimIntent(claimIntent)
+        }
     }
 }

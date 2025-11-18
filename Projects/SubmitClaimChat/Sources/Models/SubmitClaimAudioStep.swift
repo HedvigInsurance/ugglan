@@ -9,7 +9,7 @@ import hGraphQL
 final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
     var id: String { claimIntent.id }
     let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender
+    let sender: SubmitClaimChatMesageSender = .member
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
     @Published var recordingState: RecordingState = .idle
@@ -26,9 +26,8 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
         case uploading
     }
 
-    required init(claimIntent: ClaimIntent, sender: SubmitClaimChatMesageSender, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
         self.claimIntent = claimIntent
-        self.sender = sender
         self.service = service
         guard case .audioRecording(let model) = claimIntent.currentStep.content else {
             fatalError("AudioRecordingStepHandler initialized with non-audioRecording content")

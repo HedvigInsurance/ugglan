@@ -3,16 +3,15 @@ import SwiftUI
 final class OutcomeStepHandler: @MainActor ClaimIntentStepHandler {
     var id: String { claimIntent.id }
     let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender
+    let sender: SubmitClaimChatMesageSender = .hedvig
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
 
     let outcomeModel: ClaimIntentStepContentOutcome
     private let service: ClaimIntentService
 
-    required init(claimIntent: ClaimIntent, sender: SubmitClaimChatMesageSender, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
         self.claimIntent = claimIntent
-        self.sender = sender
         self.service = service
         guard case .outcome(let model) = claimIntent.currentStep.content else {
             fatalError("OutcomeStepHandler initialized with non-outcome content")
