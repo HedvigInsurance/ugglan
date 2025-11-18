@@ -8,9 +8,15 @@ struct SubmitClaimChatMesageView: View {
 
     @ViewBuilder
     var body: some View {
-        VStack(alignment: .leading, spacing: .padding8) {
-            hText(viewModel.claimIntent.currentStep.text)
-            senderStamp(step: viewModel)
+        HStack {
+            VStack(alignment: .leading, spacing: .padding8) {
+                hText(viewModel.claimIntent.currentStep.text)
+                senderStamp(step: viewModel)
+            }
+            Spacer()
+            if viewModel.isRegrettable && !viewModel.isEnabled {
+                regretButton
+            }
         }
         HStack {
             spacing(viewModel.sender == .member)
@@ -46,10 +52,6 @@ struct SubmitClaimChatMesageView: View {
             .hButtonIsLoading(viewModel.isLoading)
             .fixedSize(horizontal: false, vertical: true)
             spacing(viewModel.sender == .hedvig)
-
-            if viewModel.isRegrettable && !viewModel.isEnabled {
-                regretButton
-            }
         }
         .id(viewModel.id)
     }
