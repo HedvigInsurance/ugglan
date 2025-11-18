@@ -1,5 +1,6 @@
 import AVFoundation
 import Apollo
+import Environment
 import Foundation
 import SwiftUI
 import hCore
@@ -12,10 +13,9 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
     let sender: SubmitClaimChatMesageSender = .member
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
-    @Published var recordingState: RecordingState = .idle
-    @Published var audioFileURL: URL?
-    @Published var audioFileId: String?
+    var audioFileURL: URL?
 
+    @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
     private let service: ClaimIntentService
 
@@ -35,27 +35,32 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
         self.audioRecordingModel = model
     }
 
-    func startRecording() {
-        recordingState = .recording
-        // Start recording logic
-    }
-
-    func stopRecording() {
-        recordingState = .recorded
-        // Stop recording logic
-    }
-
     func submitResponse() async throws -> ClaimIntent {
+        guard let audioFileURL else {
+            throw ClaimIntentError.invalidResponse
+        }
         isLoading = true
-        recordingState = .uploading
+        let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
+        let multipart = MultipartFormDataRequest(url: url)
+        let data = try Data(contentsOf: audioFileURL)
+        multipart.addDataField(
+            fieldName: "files",
+            fileName: audioFileURL.lastPathComponent,
+            data: data,
+            mimeType: "audio/m4a"
+        )
+        let response: FileUploadResponseModel = try await fileUploadClient.upload(
+            url: audioFileURL,
+            multipart: multipart
+        )
+        let fileId = response.fileIds.first!
         defer {
             isLoading = false
-            recordingState = .idle
         }
 
         guard
             let result = try await service.claimIntentSubmitAudio(
-                fileId: audioFileId,
+                fileId: fileId,
                 freeText: nil,
                 stepId: claimIntent.currentStep.id
             )
@@ -64,5 +69,9 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
         }
 
         return result
+    }
+
+    struct FileUploadResponseModel: Codable, Sendable {
+        let fileIds: [String]
     }
 }
