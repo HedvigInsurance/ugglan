@@ -93,7 +93,6 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
-    @Published var currentStepHandler: ClaimIntentStepHandler?
     @Published var allSteps: [ClaimIntentStepHandler] = []
     let goToClaimDetails: GoToClaimDetails
 
@@ -117,7 +116,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
     private func processClaimIntent(_ claimIntent: ClaimIntent) {
         let handler = getStep(for: claimIntent)
-        self.currentStepHandler = handler
         self.allSteps.append(handler)
     }
 
