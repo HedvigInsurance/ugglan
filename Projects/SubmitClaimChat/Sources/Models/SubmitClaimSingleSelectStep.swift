@@ -37,6 +37,11 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         }
         return result
     }
+
+    override func skip() async throws -> ClaimIntent {
+        super.skip()
+        selectedOption = nil
+    }
 }
 
 public struct ClaimIntentContentSelectOption: Sendable {

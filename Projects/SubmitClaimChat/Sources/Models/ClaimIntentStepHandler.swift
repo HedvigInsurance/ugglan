@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import hCore
 import hCoreUI
 
@@ -7,6 +8,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var id: String { claimIntent.currentStep.id }
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMesageSender { .member }
+    var isSkippable: Bool { claimIntent.isSkippable }
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
@@ -26,6 +28,28 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     @discardableResult
     func submitResponse() async throws -> ClaimIntent {
         fatalError("submitResponse must be overridden")
+    }
+
+    @discardableResult
+    func skip() async throws -> ClaimIntent {
+        withAnimation {
+            isLoading = true
+        }
+        defer {
+            withAnimation {
+                isLoading = false
+            }
+        }
+        let result = try await service.claimIntentSkipStep(stepId: id)
+        guard let result else {
+            throw ClaimIntentError.invalidResponse
+        }
+        withAnimation {
+            isLoading = false
+            isEnabled = false
+        }
+        mainHandler(result)
+        return result
     }
 }
 

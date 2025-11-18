@@ -34,17 +34,28 @@ struct SubmitClaimChatMesageView: View {
                         SubmitClaimOnknownView(viewModel: viewModel)
                     }
                 }
-                .disabled(!viewModel.isEnabled)
-                .hButtonIsLoading(viewModel.isLoading)
                 .frame(
                     maxWidth: viewModel.maxWidth,
                     alignment: viewModel.alignment
                 )
+                if viewModel.isSkippable && viewModel.isEnabled {
+                    skipButton
+                }
             }
+            .disabled(!viewModel.isEnabled)
+            .hButtonIsLoading(viewModel.isLoading)
             .fixedSize(horizontal: false, vertical: true)
             spacing(viewModel.sender == .hedvig)
         }
         .id(viewModel.id)
+    }
+
+    private var skipButton: some View {
+        hButton(.medium, .secondary, content: .init(title: "Skip")) {
+            Task {
+                try await viewModel.skip()
+            }
+        }
     }
 
     @ViewBuilder
