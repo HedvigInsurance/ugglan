@@ -15,6 +15,10 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
+    public func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent? {
+        .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
+    }
+
     public func claimIntentSubmitForm(fields: [FieldValue], stepId: String) async throws -> ClaimIntent? {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
@@ -27,11 +31,15 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
-    public func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
+    public func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent? {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 
-    public func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent {
+    public func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent? {
+        .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
+    }
+
+    public func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
         .init(currentStep: .init(content: .text, id: "id", text: ""), id: "", sourceMessages: [])
     }
 }

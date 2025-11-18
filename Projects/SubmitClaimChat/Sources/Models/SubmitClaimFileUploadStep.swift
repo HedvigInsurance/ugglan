@@ -1,17 +1,20 @@
 import SwiftUI
 
-final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
+final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
     @Published var selectedOption: String?
-    let options: [ClaimIntentContentSelectOption]
+    let model: ClaimIntentStepContentFileUpload
+    let fileUploadVm: FilesUploadViewModel
 
     required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
-        guard case .singleSelect(let model) = claimIntent.currentStep.content else {
+        guard case .fileUpload(let model) = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-single select content")
         }
-        self.options = model
+        self.model = model
+        fileUploadVm = .init(model: .init(uploadUri: model.uploadURI))
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
+    @discardableResult
     override func submitResponse() async throws -> ClaimIntent {
         withAnimation {
             isLoading = true
@@ -21,30 +24,17 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
                 isLoading = false
             }
         }
+        let uploadedFiles = await fileUploadVm.uploadFiles()
 
-        // Acknowledge text step and get next step
-        guard
-            let result = try await service.claimIntentSubmitSelect(
-                stepId: claimIntent.currentStep.id,
-                selectedValue: selectedOption!
-            )
-        else {
-            throw ClaimIntentError.unknown
+        let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
+
+        guard let result else {
+            throw ClaimIntentError.invalidResponse
         }
         mainHandler(result)
         withAnimation {
             isEnabled = false
         }
         return result
-    }
-}
-
-public struct ClaimIntentContentSelectOption: Sendable {
-    let id: String
-    let title: String
-
-    public init(id: String, title: String) {
-        self.id = id
-        self.title = title
     }
 }

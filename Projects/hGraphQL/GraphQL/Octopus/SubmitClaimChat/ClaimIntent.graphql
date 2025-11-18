@@ -32,6 +32,8 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
           fields {
             ...ClaimIntentStepContentFormFieldFragment
           }
+          isSkippable
+          isRegrettable
         }
         ... on ClaimIntentStepContentTask {
           description
@@ -40,6 +42,13 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         ... on ClaimIntentStepContentAudioRecording {
           hint
           uploadUri
+          isSkippable
+          isRegrettable
+        }
+        ... on ClaimIntentStepContentFileUpload {
+          uploadUri
+          isSkippable
+          isRegrettable
         }
         ... on ClaimIntentStepContentSummary {
           items {

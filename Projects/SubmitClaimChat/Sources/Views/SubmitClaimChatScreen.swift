@@ -6,6 +6,7 @@ public typealias GoToClaimDetails = (String) -> Void
 
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
+    @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     let input: StartClaimInput
     let goToClaimDetails: GoToClaimDetails

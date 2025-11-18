@@ -21,15 +21,21 @@ public struct ClaimIntent: Sendable {
     let currentStep: ClaimIntentStep
     let id: String
     let sourceMessages: [SourceMessage]
+    let isSkippable: Bool
+    let isRegrettable: Bool
 
     public init(
         currentStep: ClaimIntentStep,
         id: String,
-        sourceMessages: [SourceMessage]
+        sourceMessages: [SourceMessage],
+        isSkippable: Bool = false,
+        isRegrettable: Bool = false
     ) {
         self.currentStep = currentStep
         self.id = id
         self.sourceMessages = sourceMessages
+        self.isSkippable = isSkippable
+        self.isRegrettable = isRegrettable
     }
 }
 
@@ -63,6 +69,7 @@ public enum ClaimIntentStepContent: Sendable {
     case form(model: ClaimIntentStepContentForm)
     case task(model: ClaimIntentStepContentTask)
     case audioRecording(model: ClaimIntentStepContentAudioRecording)
+    case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
     case outcome(model: ClaimIntentStepContentOutcome)
     case singleSelect(model: [ClaimIntentContentSelectOption])
@@ -73,9 +80,7 @@ public enum ClaimIntentStepContent: Sendable {
 public struct ClaimIntentStepContentForm: Sendable {
     let fields: [ClaimIntentStepContentFormField]
 
-    public init(
-        fields: [ClaimIntentStepContentFormField]
-    ) {
+    public init(fields: [ClaimIntentStepContentFormField]) {
         self.fields = fields
     }
 
@@ -146,11 +151,16 @@ public struct ClaimIntentStepContentAudioRecording: Sendable {
     let hint: String
     let uploadURI: String
 
-    public init(
-        hint: String,
-        uploadURI: String
-    ) {
+    public init(hint: String, uploadURI: String) {
         self.hint = hint
+        self.uploadURI = uploadURI
+    }
+}
+
+public struct ClaimIntentStepContentFileUpload: Sendable {
+    public let uploadURI: String
+
+    public init(uploadURI: String) {
         self.uploadURI = uploadURI
     }
 }

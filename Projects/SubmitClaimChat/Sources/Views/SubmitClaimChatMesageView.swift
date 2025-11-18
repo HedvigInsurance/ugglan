@@ -1,3 +1,4 @@
+import Claims
 import SwiftUI
 import hCore
 import hCoreUI
@@ -27,6 +28,8 @@ struct SubmitClaimChatMesageView: View {
                         SubmitClaimTaskView(viewModel: viewModel)
                     } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
                         SubmitClaimOutcomeView(viewModel: viewModel)
+                    } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
+                        SubmitClaimFileUploadView(viewModel: viewModel)
                     } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
                         SubmitClaimOnknownView(viewModel: viewModel)
                     }

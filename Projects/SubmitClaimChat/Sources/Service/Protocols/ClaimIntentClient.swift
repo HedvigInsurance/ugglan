@@ -5,13 +5,15 @@ import hCore
 public protocol ClaimIntentClient {
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntent?
     func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent?
+    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent?
     func claimIntentSubmitForm(
         fields: [FieldValue],
         stepId: String
     ) async throws -> ClaimIntent?
-    func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent
+    func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent?
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent?
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent?
+    func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent?
     func getNextStep(claimIntentId: String) async throws -> ClaimIntent
 }
 
@@ -51,6 +53,11 @@ class ClaimIntentService {
         return data
     }
 
+    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent? {
+        let data = try await client.claimIntentSubmitFile(stepId: stepId, fildIds: fildIds)
+        return data
+    }
+
     func claimIntentSubmitForm(
         fields: [FieldValue],
         stepId: String
@@ -69,13 +76,18 @@ class ClaimIntentService {
         return data
     }
 
+    func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent? {
+        let data = try await client.claimIntentSubmitSelect(stepId: stepId, selectedValue: selectedValue)
+        return data
+    }
+
     func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
         let data = try await client.getNextStep(claimIntentId: claimIntentId)
         return data
     }
 
-    func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent {
-        let data = try await client.claimIntentSubmitSelect(stepId: stepId, selectedValue: selectedValue)
+    func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent? {
+        let data = try await client.claimIntentSkipStep(stepId: stepId)
         return data
     }
 }
