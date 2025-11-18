@@ -86,7 +86,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             isRegrettable: false
         )
     }
-    
+
     public func claimIntentRegretStep(stepId: String) async throws -> ClaimIntent? {
         .init(
             currentStep: .init(content: .text, id: "id", text: ""),
