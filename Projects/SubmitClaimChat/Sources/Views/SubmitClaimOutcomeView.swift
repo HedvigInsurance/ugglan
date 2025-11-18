@@ -8,7 +8,7 @@ struct SubmitClaimOutcomeView: View {
     var body: some View {
         VStack(spacing: .padding16) {
             hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
-                mainVM.goToClaimDetails(viewModel.claimIntent.id)
+                mainVM.goToClaimDetails(viewModel.outcomeModel.claimId)
             }
         }
     }

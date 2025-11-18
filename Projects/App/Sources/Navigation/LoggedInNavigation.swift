@@ -346,15 +346,13 @@ struct HomeTab: View {
         ) { input in
             SubmitClaimChatScreen(
                 input: input,
-                goToClaimDetails: {
-                    claimId in
-                    homeNavigationVm.claimsAutomationStartInput = nil
+                goToClaimDetails: { [weak homeNavigationVm] claimId in
+                    homeNavigationVm?.claimsAutomationStartInput = nil
                     Task {
                         let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                         await claimsStore.sendAsync(.fetchActiveClaims)
-                        try await Task.sleep(seconds: 2)
                         if let claim = claimsStore.state.getClaimFor(id: claimId) {
-                            homeNavigationVm.router.push(claim)
+                            homeNavigationVm?.router.push(claim)
                         }
                     }
                 }
