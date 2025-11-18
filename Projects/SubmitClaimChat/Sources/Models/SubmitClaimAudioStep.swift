@@ -20,7 +20,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         case uploading
     }
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent, Bool) -> Void) {
         guard case .audioRecording(let model) = claimIntent.currentStep.content else {
             fatalError("AudioRecordingStepHandler initialized with non-audioRecording content")
         }
@@ -66,7 +66,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             throw ClaimIntentError.invalidResponse
         }
 
-        mainHandler(result)
+        mainHandler(result, false)
         withAnimation {
             isEnabled = false
         }

@@ -112,11 +112,16 @@ final class SubmitClaimChatViewModel: ObservableObject {
         guard let claimIntent = try await service.startClaimIntent(input: input) else {
             throw ClaimIntentError.invalidResponse
         }
-        processClaimIntent(claimIntent)
+        processClaimIntent(claimIntent, isRegret: false)
     }
 
-    private func processClaimIntent(_ claimIntent: ClaimIntent) {
+    private func processClaimIntent(_ claimIntent: ClaimIntent, isRegret: Bool) {
         let handler = getStep(for: claimIntent)
+        if isRegret {
+            if let indexToRemove = allSteps.firstIndex(where: { $0.isRegretted }) {
+                allSteps.removeSubrange((indexToRemove)..<allSteps.count)
+            }
+        }
         self.allSteps.append(handler)
     }
 
@@ -124,9 +129,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
         ClaimIntentStepHandlerFactory.createHandler(
             for: claimIntent,
             service: service
-        ) { [weak self] newClaimIntent in
+        ) { [weak self] newClaimIntent, isRegret in
             withAnimation {
-                self?.processClaimIntent(newClaimIntent)
+                self?.processClaimIntent(newClaimIntent, isRegret: isRegret)
             }
         }
     }

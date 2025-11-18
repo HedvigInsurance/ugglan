@@ -9,13 +9,19 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMesageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
+    var isRegrettable: Bool { claimIntent.isRegrettable }
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
+    @Published var isRegretted: Bool = false
     let service: ClaimIntentService
-    let mainHandler: (ClaimIntent) -> Void
+    let mainHandler: (ClaimIntent, Bool) -> Void
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(
+        claimIntent: ClaimIntent,
+        service: ClaimIntentService,
+        mainHandler: @escaping (ClaimIntent, Bool) -> Void
+    ) {
         self.claimIntent = claimIntent
         self.service = service
         self.mainHandler = mainHandler
@@ -48,7 +54,31 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             isLoading = false
             isEnabled = false
         }
-        mainHandler(result)
+        mainHandler(result, false)
+        return result
+    }
+
+    @discardableResult
+    func regret() async throws -> ClaimIntent {
+        withAnimation {
+            isLoading = true
+        }
+        defer {
+            withAnimation {
+                isLoading = false
+            }
+        }
+
+        let result = try await service.claimIntentRegretStep(stepId: id)
+        guard let result else {
+            throw ClaimIntentError.invalidResponse
+        }
+        withAnimation {
+            isLoading = false
+            isEnabled = false
+            isRegretted = true
+        }
+        mainHandler(result, true)
         return result
     }
 }
@@ -58,7 +88,7 @@ enum ClaimIntentStepHandlerFactory {
     static func createHandler(
         for claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping ((ClaimIntent) -> Void)
+        mainHandler: @escaping ((ClaimIntent, Bool) -> Void)
     ) -> ClaimIntentStepHandler {
         switch claimIntent.currentStep.content {
         case .form:

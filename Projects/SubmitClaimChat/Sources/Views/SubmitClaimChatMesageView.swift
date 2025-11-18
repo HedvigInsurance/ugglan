@@ -46,6 +46,10 @@ struct SubmitClaimChatMesageView: View {
             .hButtonIsLoading(viewModel.isLoading)
             .fixedSize(horizontal: false, vertical: true)
             spacing(viewModel.sender == .hedvig)
+
+            if viewModel.isRegrettable && !viewModel.isEnabled {
+                regretButton
+            }
         }
         .id(viewModel.id)
     }
@@ -56,6 +60,15 @@ struct SubmitClaimChatMesageView: View {
                 try await viewModel.skip()
             }
         }
+    }
+
+    private var regretButton: some View {
+        hCoreUIAssets.edit.view
+            .onTapGesture {
+                Task {
+                    try await viewModel.regret()
+                }
+            }
     }
 
     @ViewBuilder

@@ -6,7 +6,11 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
 
     let summaryModel: ClaimIntentStepContentSummary
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(
+        claimIntent: ClaimIntent,
+        service: ClaimIntentService,
+        mainHandler: @escaping (ClaimIntent, Bool) -> Void
+    ) {
         guard case .summary(let model) = claimIntent.currentStep.content else {
             fatalError("SummaryStepHandler initialized with non-summary content")
         }
@@ -32,7 +36,7 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
             throw ClaimIntentError.invalidResponse
         }
 
-        mainHandler(result)
+        mainHandler(result, false)
         withAnimation {
             isEnabled = false
         }
