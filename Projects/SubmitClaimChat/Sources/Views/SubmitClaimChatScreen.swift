@@ -4,6 +4,7 @@ import hCoreUI
 
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
+    @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     let input: StartClaimInput
 
@@ -78,7 +79,11 @@ public struct SubmitClaimChatScreen: View {
                     HStack {
                         spacing(step.sender == .member)
                         VStack(alignment: .leading, spacing: 0) {
-                            SubmitClaimChatMesageView(step: step, viewModel: viewModel)
+                            SubmitClaimChatMesageView(
+                                step: step,
+                                viewModel: viewModel,
+                                fileUploadViewModel: fileUploadVm
+                            )
                             switch step.step.content {
                             case .summary, .outcome:
                                 EmptyView()
@@ -228,6 +233,31 @@ public class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
+    func submitFile(fileIds: [String]) async {
+        do {
+            let data = try await service.claimIntentSubmitFile(stepId: currentStep?.id ?? "", fildIds: fileIds)
+            withAnimation {
+                if let step = data?.currentStep {
+                    if let lastStep = allSteps.last {
+                        let updatedStep: SubmitChatStepModel = .init(
+                            step: lastStep.step,
+                            sender: lastStep.sender,
+                            isLoading: lastStep.isLoading,
+                            isEnabled: false
+                        )
+                        allSteps.removeLast()
+                        allSteps.append(updatedStep)
+                    }
+                    showNextStep(for: step)
+                }
+            }
+        } catch {
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
+        }
+    }
+
     func displayTask(_ model: ClaimIntentStepContentTask) {
         if let currentStep {
             let newSteps = allSteps.filter({
@@ -238,6 +268,17 @@ public class SubmitClaimChatViewModel: ObservableObject {
             Task {
                 model.isCompleted ? await submitTask() : await getNextStep()
             }
+        }
+    }
+
+    func displayFile(_ model: ClaimIntentStepContentFileUpload) {
+        if let currentStep {
+            let userStep: ClaimIntentStep = .init(
+                content: .fileUpload(model: model),
+                id: UUID().uuidString,
+                text: currentStep.text
+            )
+            allSteps.append(.init(step: userStep, sender: .member, isLoading: false))
         }
     }
 
@@ -256,8 +297,30 @@ public class SubmitClaimChatViewModel: ObservableObject {
         if let currentStep {
             let memberAudioStep = SubmitChatStepModel(
                 step: .init(
-                    content: .audioRecording(model: .init(hint: model.hint, uploadURI: model.uploadURI)),
-                    id: currentStep.id + "2",
+                    content: .audioRecording(
+                        model: .init(
+                            hint: model.hint,
+                            uploadURI: model.uploadURI,
+                            isSkippable: model.isSkippable,
+                            isRegrettable: model.isRegrettable
+                        )
+                    ),
+                    id: UUID().uuidString,
+                    text: currentStep.text
+                ),
+                sender: .member,
+                isLoading: false
+            )
+            allSteps.append(memberAudioStep)
+        }
+    }
+
+    func displaySelect(_ model: ClaimIntentStepContentSelect) {
+        if let currentStep {
+            let memberAudioStep = SubmitChatStepModel(
+                step: .init(
+                    content: .select(model: model),
+                    id: UUID().uuidString,
                     text: currentStep.text
                 ),
                 sender: .member,
@@ -270,6 +333,21 @@ public class SubmitClaimChatViewModel: ObservableObject {
     func submitTask() async {
         do {
             let data = try await service.claimIntentSubmitTask(stepId: currentStep?.id ?? "")
+            if let step = data?.currentStep {
+                showNextStep(for: step)
+            }
+        } catch {
+            print("Failed sending select", error)
+            withAnimation {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            }
+        }
+    }
+
+    func submitSelect(selectId: String) async {
+        do {
+            let data = try await service.claimIntentSubmitSelect(stepId: currentStep?.id ?? "", selectId: selectId)
+            disablePreviousStep()
             if let step = data?.currentStep {
                 showNextStep(for: step)
             }
@@ -306,39 +384,13 @@ public class SubmitClaimChatViewModel: ObservableObject {
                 fields: inputFields.compactMap { $0 },
                 stepId: currentStep?.id ?? ""
             ) {
-                if let lastStep = allSteps.last {
-                    let updatedStep: SubmitChatStepModel = .init(
-                        step: lastStep.step,
-                        sender: lastStep.sender,
-                        isLoading: lastStep.isLoading,
-                        isEnabled: false
-                    )
-                    allSteps.removeLast()
-                    allSteps.append(updatedStep)
-                }
+                disablePreviousStep()
                 showNextStep(for: data.currentStep)
             }
         } catch {
             print("Error: couldn't submit form")
             withAnimation {
                 self.viewState = .error(errorMessage: error.localizedDescription)
-            }
-        }
-    }
-
-    func showNextStep(for step: ClaimIntentStep) {
-        withAnimation {
-            currentStep = step
-            allSteps.append(.init(step: step, sender: .hedvig, isLoading: false))
-            switch step.content {
-            case let .audioRecording(model):
-                displayAudio(model)
-            case let .form(model):
-                displayForm(model)
-            case let .task(model):
-                displayTask(model)
-            default:
-                break
             }
         }
     }
@@ -354,6 +406,40 @@ public class SubmitClaimChatViewModel: ObservableObject {
             withAnimation {
                 self.viewState = .error(errorMessage: error.localizedDescription)
             }
+        }
+    }
+
+    func showNextStep(for step: ClaimIntentStep) {
+        withAnimation {
+            currentStep = step
+            allSteps.append(.init(step: step, sender: .hedvig, isLoading: false))
+            switch step.content {
+            case let .audioRecording(model):
+                displayAudio(model)
+            case let .form(model):
+                displayForm(model)
+            case let .fileUpload(model):
+                displayFile(model)
+            case let .task(model):
+                displayTask(model)
+            case let .select(model):
+                displaySelect(model)
+            default:
+                break
+            }
+        }
+    }
+
+    func disablePreviousStep() {
+        if let lastStep = allSteps.last {
+            let updatedStep: SubmitChatStepModel = .init(
+                step: lastStep.step,
+                sender: lastStep.sender,
+                isLoading: lastStep.isLoading,
+                isEnabled: false
+            )
+            allSteps.removeLast()
+            allSteps.append(updatedStep)
         }
     }
 }

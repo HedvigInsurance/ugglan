@@ -5,12 +5,14 @@ import hCore
 public protocol ClaimIntentClient {
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntent?
     func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntent?
+    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent?
     func claimIntentSubmitForm(
         fields: [FieldValue],
         stepId: String
     ) async throws -> ClaimIntent?
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent?
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent?
+    func claimIntentSubmitSelect(stepId: String, selectId: String) async throws -> ClaimIntent?
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep
 }
 
@@ -50,6 +52,11 @@ class ClaimIntentService {
         return data
     }
 
+    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntent? {
+        let data = try await client.claimIntentSubmitFile(stepId: stepId, fildIds: fildIds)
+        return data
+    }
+
     func claimIntentSubmitForm(
         fields: [FieldValue],
         stepId: String
@@ -65,6 +72,11 @@ class ClaimIntentService {
 
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent? {
         let data = try await client.claimIntentSubmitTask(stepId: stepId)
+        return data
+    }
+
+    func claimIntentSubmitSelect(stepId: String, selectId: String) async throws -> ClaimIntent? {
+        let data = try await client.claimIntentSubmitSelect(stepId: stepId, selectId: selectId)
         return data
     }
 
