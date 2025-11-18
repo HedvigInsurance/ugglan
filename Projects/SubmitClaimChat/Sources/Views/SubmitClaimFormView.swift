@@ -8,7 +8,7 @@ struct SubmitClaimFormView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            VStack(alignment: .center, spacing: .padding8) {
+            VStack(alignment: .leading, spacing: .padding8) {
                 ForEach(viewModel.formModel.fields, id: \.id) { field in
                     hText(field.title)
                     ZStack(alignment: .topLeading) {
