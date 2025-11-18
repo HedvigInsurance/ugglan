@@ -30,7 +30,6 @@ public struct SubmitClaimChatScreen: View {
                 scrollContent
             }
         }
-        .colorScheme(.light)
     }
 
     private var scrollContent: some View {
