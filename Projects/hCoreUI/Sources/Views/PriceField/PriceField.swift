@@ -85,7 +85,7 @@ public struct PriceField: View {
             PremiumText(
                 text: newPremiumText,
                 strikeThrough: strikeThroughPrice == .crossNewPrice,
-                usePrimary: true
+                usePrimary: !viewModel.useSecondaryColor
             )
         }
     }
@@ -100,11 +100,15 @@ public struct PriceField: View {
 
     @hColorBuilder
     private func getTotalColor() -> some hColor {
-        switch strikeThroughPrice {
-        case .crossNewPrice:
+        if viewModel.useSecondaryColor {
             hTextColor.Translucent.secondary
-        case .crossOldPrice, .none:
-            hTextColor.Opaque.primary
+        } else {
+            switch strikeThroughPrice {
+            case .crossNewPrice:
+                hTextColor.Translucent.secondary
+            case .crossOldPrice, .none:
+                hTextColor.Opaque.primary
+            }
         }
     }
 }
