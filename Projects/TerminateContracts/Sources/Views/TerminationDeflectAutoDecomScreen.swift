@@ -74,6 +74,7 @@ struct TerminationDeflectAutoDecomScreen: View {
 
     private var infoView: some View {
         InfoCard(text: L10n.terminationFlowAutoDecomNotification, type: .info)
+            .accessibilitySortPriority(1)
     }
 
     private var bottomButtons: some View {
