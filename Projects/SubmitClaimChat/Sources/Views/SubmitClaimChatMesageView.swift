@@ -14,30 +14,32 @@ struct SubmitClaimChatMesageView: View {
         }
         HStack {
             spacing(viewModel.sender == .member)
-            VStack(alignment: .leading, spacing: .padding8) {
-                Group {
-                    if let viewModel = viewModel as? SubmitClaimAudioStep {
-                        SubmitClaimAudioView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
-                        SubmitClaimSingleSelectView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimFormStep {
-                        SubmitClaimFormView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
-                        SubmitClaimSummaryView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimTaskStep {
-                        SubmitClaimTaskView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
-                        SubmitClaimOutcomeView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
-                        SubmitClaimFileUploadView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
-                        SubmitClaimOnknownView(viewModel: viewModel)
+            VStack(alignment: .center, spacing: .padding8) {
+                VStack(alignment: .leading, spacing: .padding8) {
+                    Group {
+                        if let viewModel = viewModel as? SubmitClaimAudioStep {
+                            SubmitClaimAudioView(viewModel: viewModel)
+                        } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
+                            SubmitClaimSingleSelectView(viewModel: viewModel)
+                        } else if let viewModel = viewModel as? SubmitClaimFormStep {
+                            SubmitClaimFormView(viewModel: viewModel)
+                        } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
+                            SubmitClaimSummaryView(viewModel: viewModel)
+                        } else if let viewModel = viewModel as? SubmitClaimTaskStep {
+                            SubmitClaimTaskView(viewModel: viewModel)
+                        } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
+                            SubmitClaimOutcomeView(viewModel: viewModel)
+                        } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
+                            SubmitClaimFileUploadView(viewModel: viewModel)
+                        } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
+                            SubmitClaimUnknownView(viewModel: viewModel)
+                        }
                     }
+                    .frame(
+                        maxWidth: viewModel.maxWidth,
+                        alignment: viewModel.alignment
+                    )
                 }
-                .frame(
-                    maxWidth: viewModel.maxWidth,
-                    alignment: viewModel.alignment
-                )
                 if viewModel.isSkippable && viewModel.isEnabled {
                     skipButton
                 }

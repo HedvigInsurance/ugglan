@@ -1,7 +1,7 @@
 import SwiftUI
 import hCoreUI
 
-struct SubmitClaimOnknownView: View {
+struct SubmitClaimUnknownView: View {
     @ObservedObject var viewModel: SubmitClaimUnknownStep
 
     var body: some View {
