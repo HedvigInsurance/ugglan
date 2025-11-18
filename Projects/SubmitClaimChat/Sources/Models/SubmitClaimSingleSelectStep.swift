@@ -39,8 +39,9 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     }
 
     override func skip() async throws -> ClaimIntent {
-        super.skip()
+        let data = try await super.skip()
         selectedOption = nil
+        return data
     }
 }
 
