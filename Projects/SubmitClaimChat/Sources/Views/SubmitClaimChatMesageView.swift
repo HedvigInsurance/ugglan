@@ -3,32 +3,28 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
-    var step: any ClaimIntentStepHandler
+    @ObservedObject var viewModel: ClaimIntentStepHandler
     @ViewBuilder
     var body: some View {
         Group {
-            if let step = step as? SubmitClaimAudioStep {
-                SubmitClaimAudioView()
-                    .environmentObject(step)
-            } else if let step = step as? SubmitClaimSingleSelectStep {
-                SubmitClaimSingleSelectView()
-                    .environmentObject(step)
-            } else if let step = step as? SubmitClaimFormStep {
-                SubmitClaimFormView()
-                    .environmentObject(step)
-            } else if let step = step as? SubmitClaimSummaryStep {
-                SubmitClaimSummaryView()
-                    .environmentObject(step)
-            } else if let step = step as? SubmitClaimTaskStep {
-                SubmitClaimTaskView()
-                    .environmentObject(step)
-            } else if let step = step as? SubmitClaimOutcomeStep {
-                SubmitClaimOutcomeView()
-                    .environmentObject(step)
+            if let viewModel = viewModel as? SubmitClaimAudioStep {
+                SubmitClaimAudioView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
+                SubmitClaimSingleSelectView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimFormStep {
+                SubmitClaimFormView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
+                SubmitClaimSummaryView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimTaskStep {
+                SubmitClaimTaskView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
+                SubmitClaimOutcomeView(viewModel: viewModel)
             } else {
-                hText("--- \(String(describing: step.self)) ---")
+                hText("--- \(String(describing: viewModel.self)) ---")
             }
         }
+        .disabled(!viewModel.isEnabled)
+        .hButtonIsLoading(viewModel.isLoading)
     }
 }
 

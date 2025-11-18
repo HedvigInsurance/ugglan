@@ -1,25 +1,14 @@
 import SwiftUI
 
-final class SubmitClaimTextStep: @MainActor ClaimIntentStepHandler {
-    var id: String { claimIntent.id }
-    let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender = .member
-    @Published var isLoading: Bool = false
-    @Published var isEnabled: Bool = true
-
-    private let service: ClaimIntentService
-    private let mainHandler: (ClaimIntent) -> Void
-
+final class SubmitClaimTextStep: ClaimIntentStepHandler {
     required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
-        self.claimIntent = claimIntent
-        self.service = service
-        self.mainHandler = mainHandler
+        super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         guard case .text = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-text content")
         }
     }
 
-    func submitResponse() async throws -> ClaimIntent {
+    override func submitResponse() async throws -> ClaimIntent {
         withAnimation {
             isLoading = true
         }

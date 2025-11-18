@@ -1,29 +1,21 @@
 import SwiftUI
 import hCoreUI
 
-final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
-    var id: String { claimIntent.id }
-    let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender = .member
-    @Published var isLoading: Bool = false
-    @Published var isEnabled: Bool = true
+final class SubmitClaimFormStep: ClaimIntentStepHandler {
     @Published var isDatePickerPresented: DatePickerViewModel?
     @Published var isSelectItemPresented: SingleItemModel?
 
     let formModel: ClaimIntentStepContentForm
-    private let service: ClaimIntentService
-    private let mainHandler: (ClaimIntent) -> Void
 
     @Published var dateForPicker: Date = Date()
     @Published var formValues: [String: FormStepValue] = [:]
+
     required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
-        self.claimIntent = claimIntent
-        self.service = service
-        self.mainHandler = mainHandler
         guard case .form(let model) = claimIntent.currentStep.content else {
             fatalError("FormStepHandler initialized with non-form content")
         }
         self.formModel = model
+        super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         self.initializeFormValues()
     }
 
@@ -41,7 +33,7 @@ final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
         formValues[fieldId]!
     }
 
-    func validateInput() -> Bool {
+    override func validateInput() -> Bool {
         // Validate required fields
         for field in formModel.fields where field.isRequired {
             guard let value = formValues[field.id], !value.value.isEmpty else {
@@ -51,7 +43,7 @@ final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
         return true
     }
 
-    func submitResponse() async throws -> ClaimIntent {
+    override func submitResponse() async throws -> ClaimIntent {
         guard validateInput() else {
             throw ClaimIntentError.invalidInput
         }

@@ -1,27 +1,18 @@
 import SwiftUI
 
-final class SubmitClaimSingleSelectStep: @MainActor ClaimIntentStepHandler {
-    var id: String { claimIntent.id }
-    let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender = .member
-    @Published var isLoading: Bool = false
-    @Published var isEnabled: Bool = true
+final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     @Published var selectedOption: String?
     let options: [ClaimIntentContentSelectOption]
-    private let service: ClaimIntentService
-    private let mainHandler: (ClaimIntent) -> Void
 
     required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
-        self.claimIntent = claimIntent
-        self.service = service
-        self.mainHandler = mainHandler
         guard case .singleSelect(let model) = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-single select content")
         }
         self.options = model
+        super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    func submitResponse() async throws -> ClaimIntent {
+    override func submitResponse() async throws -> ClaimIntent {
         withAnimation {
             isLoading = true
         }

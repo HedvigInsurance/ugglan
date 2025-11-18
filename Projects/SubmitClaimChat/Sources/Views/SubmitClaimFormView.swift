@@ -3,7 +3,7 @@ import TagKit
 import hCoreUI
 
 struct SubmitClaimFormView: View {
-    @EnvironmentObject var viewModel: SubmitClaimFormStep
+    @ObservedObject var viewModel: SubmitClaimFormStep
 
     var body: some View {
         VStack(spacing: .padding8) {
@@ -47,8 +47,6 @@ struct SubmitClaimFormView: View {
                 }
             }
         }
-        .disabled(!viewModel.isEnabled)
-        .hButtonIsLoading(viewModel.isLoading)
         .detent(
             item: $viewModel.isDatePickerPresented,
             transitionType: .detent(style: [.height])

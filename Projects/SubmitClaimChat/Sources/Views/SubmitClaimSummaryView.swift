@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimSummaryView: View {
-    @EnvironmentObject var viewModel: SubmitClaimSummaryStep
+    @ObservedObject var viewModel: SubmitClaimSummaryStep
     var body: some View {
         VStack(
             spacing: .padding8
@@ -38,7 +38,5 @@ struct SubmitClaimSummaryView: View {
                 }
             }
         }
-        .disabled(!viewModel.isEnabled)
-        .hButtonIsLoading(viewModel.isLoading)
     }
 }

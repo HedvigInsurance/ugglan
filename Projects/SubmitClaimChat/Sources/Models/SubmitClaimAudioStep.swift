@@ -7,18 +7,11 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
-    var id: String { claimIntent.id }
-    let claimIntent: ClaimIntent
-    let sender: SubmitClaimChatMesageSender = .member
-    @Published var isLoading: Bool = false
-    @Published var isEnabled: Bool = true
+final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     var audioFileURL: URL?
 
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
-    private let service: ClaimIntentService
-    private let mainHandler: (ClaimIntent) -> Void
 
     enum RecordingState {
         case idle
@@ -28,17 +21,15 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
     }
 
     required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
-        self.claimIntent = claimIntent
-        self.service = service
-        self.mainHandler = mainHandler
         guard case .audioRecording(let model) = claimIntent.currentStep.content else {
             fatalError("AudioRecordingStepHandler initialized with non-audioRecording content")
         }
         self.audioRecordingModel = model
+        super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
     @discardableResult
-    func submitResponse() async throws -> ClaimIntent {
+    override func submitResponse() async throws -> ClaimIntent {
         guard let audioFileURL else {
             throw ClaimIntentError.invalidResponse
         }

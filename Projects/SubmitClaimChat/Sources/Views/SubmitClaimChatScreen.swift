@@ -61,7 +61,7 @@ public struct SubmitClaimChatScreen: View {
                     HStack {
                         spacing(step.sender == .member)
                         VStack(alignment: .leading, spacing: .padding8) {
-                            SubmitClaimChatMesageView(step: step)
+                            SubmitClaimChatMesageView(viewModel: step)
                                 .frame(
                                     maxWidth: step.maxWidth,
                                     alignment: step.alignment
@@ -100,7 +100,7 @@ public struct SubmitClaimChatScreen: View {
     }
 
     @ViewBuilder
-    func senderStamp(step: any ClaimIntentStepHandler) -> some View {
+    func senderStamp(step: ClaimIntentStepHandler) -> some View {
         if step.isLoading {
             loadingView
         } else {
@@ -139,8 +139,8 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
-    @Published var currentStepHandler: (any ClaimIntentStepHandler & ObservableObject)?
-    @Published var allSteps: [any ClaimIntentStepHandler & ObservableObject] = []
+    @Published var currentStepHandler: ClaimIntentStepHandler?
+    @Published var allSteps: [ClaimIntentStepHandler] = []
     let goToClaimDetails: GoToClaimDetails
 
     private let service: ClaimIntentService = ClaimIntentService()
@@ -167,16 +167,13 @@ final class SubmitClaimChatViewModel: ObservableObject {
         self.allSteps.append(handler)
     }
 
-    private func getStep(for claimIntent: ClaimIntent) -> any ClaimIntentStepHandler {
+    private func getStep(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
         ClaimIntentStepHandlerFactory.createHandler(
             for: claimIntent,
             service: service
         ) { [weak self] newClaimIntent in
-            Task {
-                try await Task.sleep(seconds: 0.1)
-                withAnimation {
-                    self?.processClaimIntent(newClaimIntent)
-                }
+            withAnimation {
+                self?.processClaimIntent(newClaimIntent)
             }
         }
     }

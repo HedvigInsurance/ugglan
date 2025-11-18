@@ -3,7 +3,7 @@ import TagKit
 import hCoreUI
 
 struct SubmitClaimSingleSelectView: View {
-    @EnvironmentObject var viewModel: SubmitClaimSingleSelectStep
+    @ObservedObject var viewModel: SubmitClaimSingleSelectStep
 
     public var body: some View {
         TagList(tags: viewModel.options.compactMap({ $0.id })) { tag in
@@ -23,7 +23,5 @@ struct SubmitClaimSingleSelectView: View {
             }
         }
         .disabled(viewModel.selectedOption == nil)
-        .disabled(!viewModel.isEnabled)
-        .hButtonIsLoading(viewModel.isLoading)
     }
 }

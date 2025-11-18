@@ -3,22 +3,29 @@ import hCore
 import hCoreUI
 
 @MainActor
-protocol ClaimIntentStepHandler: AnyObject, ObservableObject, Identifiable {
-    var id: String { get }
-    var claimIntent: ClaimIntent { get }
-    var sender: SubmitClaimChatMesageSender { get }
-    var isLoading: Bool { get set }
-    var isEnabled: Bool { get set }
+class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
+    var id: String { claimIntent.currentStep.id }
+    var claimIntent: ClaimIntent
+    var sender: SubmitClaimChatMesageSender { .member }
+    @Published var isLoading: Bool = false
+    @Published var isEnabled: Bool = true
 
-    init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void)
-    func validateInput() -> Bool
-    @discardableResult
-    func submitResponse() async throws -> ClaimIntent
-}
+    let service: ClaimIntentService
+    let mainHandler: (ClaimIntent) -> Void
 
-extension ClaimIntentStepHandler {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+        self.claimIntent = claimIntent
+        self.service = service
+        self.mainHandler = mainHandler
+    }
+
     func validateInput() -> Bool {
         true
+    }
+
+    @discardableResult
+    func submitResponse() async throws -> ClaimIntent {
+        fatalError("submitResponse must be overridden")
     }
 }
 
@@ -27,8 +34,8 @@ enum ClaimIntentStepHandlerFactory {
     static func createHandler(
         for claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping ((ClaimIntent) -> Void),
-    ) -> any ClaimIntentStepHandler {
+        mainHandler: @escaping ((ClaimIntent) -> Void)
+    ) -> ClaimIntentStepHandler {
         switch claimIntent.currentStep.content {
         case .form:
             return SubmitClaimFormStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)

@@ -1,8 +1,9 @@
 import SwiftUI
 
-final class SubmitClaimTaskStep: @MainActor ClaimIntentStepHandler {
-    var id: String { claimIntent.currentStep.id }
-    var claimIntent: ClaimIntent {
+final class SubmitClaimTaskStep: ClaimIntentStepHandler {
+    override var id: String { claimIntent.currentStep.id }
+    override var sender: SubmitClaimChatMesageSender { .hedvig }
+    override var claimIntent: ClaimIntent {
         didSet {
             if case let .task(model) = claimIntent.currentStep.content {
                 withAnimation {
@@ -11,29 +12,22 @@ final class SubmitClaimTaskStep: @MainActor ClaimIntentStepHandler {
             }
         }
     }
-    let sender: SubmitClaimChatMesageSender = .hedvig
-    @Published var isLoading: Bool = false
-    @Published var isEnabled: Bool = true
 
     @Published var taskModel: ClaimIntentStepContentTask
-    private let service: ClaimIntentService
-    private let mainHandler: (ClaimIntent) -> Void
 
     required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
-        self.claimIntent = claimIntent
-        self.service = service
-        self.mainHandler = mainHandler
         guard case .task(let model) = claimIntent.currentStep.content else {
             fatalError("TaskStepHandler initialized with non-task content")
         }
         self.taskModel = model
+        super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task {
             try await Task.sleep(seconds: 1)
             _ = try await submitResponse()
         }
     }
 
-    func submitResponse() async throws -> ClaimIntent {
+    override func submitResponse() async throws -> ClaimIntent {
         withAnimation {
             isLoading = true
         }
@@ -59,7 +53,7 @@ final class SubmitClaimTaskStep: @MainActor ClaimIntentStepHandler {
         if taskModel.isCompleted {
             return
         } else {
-            try await Task.sleep(seconds: 1)
+            try await Task.sleep(seconds: 0.5)
             let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id)
             self.claimIntent = claimIntent
             try await getNextStep()

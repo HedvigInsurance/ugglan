@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct SubmitClaimAudioView: View {
-    @EnvironmentObject var viewModel: SubmitClaimAudioStep
+    @ObservedObject var viewModel: SubmitClaimAudioStep
     @StateObject var audioPlayer: AudioPlayer
     @StateObject var audioRecorder: AudioRecorder
     @State private var minutes: Int = 0
@@ -23,7 +23,8 @@ struct SubmitClaimAudioView: View {
     @StateObject var audioRecordingVm = AudioRecorderViewModel()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
-    init() {
+    init(viewModel: SubmitClaimAudioStep) {
+        self.viewModel = viewModel
         self._audioPlayer = StateObject(wrappedValue: AudioPlayer(url: nil))
         let tmpDir = FileManager.default.temporaryDirectory
         let path =
@@ -64,8 +65,6 @@ struct SubmitClaimAudioView: View {
             },
             message: { Text("Enable microphone access to record audio for your claim.") }
         )
-        .disabled(!viewModel.isEnabled)
-        .hButtonIsLoading(viewModel.isLoading)
     }
 
     private func playRecordingButton(url: URL) -> some View {

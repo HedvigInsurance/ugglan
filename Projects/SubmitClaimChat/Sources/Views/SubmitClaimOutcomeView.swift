@@ -2,7 +2,7 @@ import SwiftUI
 import hCoreUI
 
 struct SubmitClaimOutcomeView: View {
-    @EnvironmentObject var viewModel: SubmitClaimOutcomeStep
+    @ObservedObject var viewModel: SubmitClaimOutcomeStep
     @EnvironmentObject var mainVM: SubmitClaimChatViewModel
 
     var body: some View {
