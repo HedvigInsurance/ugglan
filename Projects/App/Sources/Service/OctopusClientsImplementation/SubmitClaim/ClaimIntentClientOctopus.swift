@@ -21,9 +21,19 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentStart.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -52,9 +62,19 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitAudio.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -82,9 +102,19 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitFileUpload.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -114,9 +144,19 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitForm.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -140,9 +180,19 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitSummary.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -166,6 +216,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitTask.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             currentStep?.content.asClaimIntentStepContentForm?.fields
                 .forEach { field in
@@ -174,7 +228,13 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 }
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -197,9 +257,19 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSkipStep.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -216,12 +286,18 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data.claimIntent.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable = data.claimIntent.currentStep.content.fragments.claimIntentStepContentFragment
+                .extractIsSkippable()
+            let isRegrettable = data.claimIntent.currentStep.content.fragments.claimIntentStepContentFragment
+                .extractIsRegrettable()
 
             let currentStepFragment = data.claimIntent.currentStep.fragments.claimIntentStepFragment
             return .init(
                 currentStep: .init(fragment: currentStepFragment),
                 id: data.claimIntent.id,
-                sourceMessages: sourceMessages
+                sourceMessages: sourceMessages,
+                isSkippable: isSkippable,
+                isRegrettable: isRegrettable
             )
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -243,6 +319,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitSelect.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
 
             currentStep?.content.asClaimIntentStepContentForm?.fields
                 .forEach { field in
@@ -251,7 +331,13 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 }
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
-                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
             }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
@@ -360,5 +446,33 @@ extension SourceMessage {
             id: fragment.id,
             text: fragment.text
         )
+    }
+}
+
+extension OctopusGraphQL.ClaimIntentStepContentFragment {
+    func extractIsSkippable() -> Bool {
+        if let form = asClaimIntentStepContentForm {
+            return form.isSkippable
+        } else if let audioRecording = asClaimIntentStepContentAudioRecording {
+            return audioRecording.isSkippable
+        } else if let fileUpload = asClaimIntentStepContentFileUpload {
+            return fileUpload.isSkippable
+        } else if let select = asClaimIntentStepContentSelect {
+            return select.isSkippable
+        }
+        return false
+    }
+
+    func extractIsRegrettable() -> Bool {
+        if let form = asClaimIntentStepContentForm {
+            return form.isRegrettable
+        } else if let audioRecording = asClaimIntentStepContentAudioRecording {
+            return audioRecording.isRegrettable
+        } else if let fileUpload = asClaimIntentStepContentFileUpload {
+            return fileUpload.isRegrettable
+        } else if let select = asClaimIntentStepContentSelect {
+            return select.isRegrettable
+        }
+        return false
     }
 }

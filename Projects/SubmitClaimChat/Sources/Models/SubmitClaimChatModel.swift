@@ -28,8 +28,8 @@ public struct ClaimIntent: Sendable {
         currentStep: ClaimIntentStep,
         id: String,
         sourceMessages: [SourceMessage],
-        isSkippable: Bool = false,
-        isRegrettable: Bool = false
+        isSkippable: Bool,
+        isRegrettable: Bool
     ) {
         self.currentStep = currentStep
         self.id = id
