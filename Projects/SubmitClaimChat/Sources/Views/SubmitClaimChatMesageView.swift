@@ -8,52 +8,54 @@ struct SubmitClaimChatMesageView: View {
 
     @ViewBuilder
     var body: some View {
-        VStack(alignment: .leading, spacing: .padding8) {
-            hText(viewModel.claimIntent.currentStep.text)
-            senderStamp(step: viewModel)
-        }
-        HStack {
-            spacing(viewModel.sender == .member)
-            VStack(alignment: .center, spacing: .padding8) {
-                VStack(alignment: .leading, spacing: .padding8) {
-                    Group {
-                        if let viewModel = viewModel as? SubmitClaimAudioStep {
-                            SubmitClaimAudioView(viewModel: viewModel)
-                        } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
-                            SubmitClaimSingleSelectView(viewModel: viewModel)
-                        } else if let viewModel = viewModel as? SubmitClaimFormStep {
-                            SubmitClaimFormView(viewModel: viewModel)
-                        } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
-                            SubmitClaimSummaryView(viewModel: viewModel)
-                        } else if let viewModel = viewModel as? SubmitClaimTaskStep {
-                            SubmitClaimTaskView(viewModel: viewModel)
-                        } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
-                            SubmitClaimOutcomeView(viewModel: viewModel)
-                        } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
-                            SubmitClaimFileUploadView(viewModel: viewModel)
-                        } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
-                            SubmitClaimUnknownView(viewModel: viewModel)
-                        }
-                    }
-                    .frame(
-                        maxWidth: viewModel.maxWidth,
-                        alignment: viewModel.alignment
-                    )
-                }
-                if viewModel.isSkippable && viewModel.isEnabled {
-                    skipButton
-                }
+        VStack(alignment: .leading, spacing: viewModel.verticalPadding) {
+            VStack(alignment: .leading, spacing: .padding8) {
+                hText(viewModel.claimIntent.currentStep.text)
+                senderStamp(step: viewModel)
             }
-            .disabled(!viewModel.isEnabled)
-            .hButtonIsLoading(viewModel.isLoading)
-            .fixedSize(horizontal: false, vertical: true)
-            spacing(viewModel.sender == .hedvig)
+            HStack {
+                spacing(viewModel.sender == .member)
+                VStack(alignment: .center, spacing: .padding8) {
+                    VStack(alignment: .leading, spacing: .padding8) {
+                        Group {
+                            if let viewModel = viewModel as? SubmitClaimAudioStep {
+                                SubmitClaimAudioView(viewModel: viewModel)
+                            } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
+                                SubmitClaimSingleSelectView(viewModel: viewModel)
+                            } else if let viewModel = viewModel as? SubmitClaimFormStep {
+                                SubmitClaimFormView(viewModel: viewModel)
+                            } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
+                                SubmitClaimSummaryView(viewModel: viewModel)
+                            } else if let viewModel = viewModel as? SubmitClaimTaskStep {
+                                SubmitClaimTaskView(viewModel: viewModel)
+                            } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
+                                SubmitClaimOutcomeView(viewModel: viewModel)
+                            } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
+                                SubmitClaimFileUploadView(viewModel: viewModel)
+                            } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
+                                SubmitClaimUnknownView(viewModel: viewModel)
+                            }
+                        }
+                        .frame(
+                            maxWidth: viewModel.maxWidth,
+                            alignment: viewModel.alignment
+                        )
+                    }
+                    if viewModel.isSkippable && viewModel.isEnabled {
+                        skipButton
+                    }
+                }
+                .disabled(!viewModel.isEnabled)
+                .hButtonIsLoading(viewModel.isLoading)
+                .fixedSize(horizontal: false, vertical: true)
+                spacing(viewModel.sender == .hedvig)
+            }
+            .id(viewModel.id)
         }
-        .id(viewModel.id)
     }
 
     private var skipButton: some View {
-        hButton(.medium, .secondary, content: .init(title: "Skip")) {
+        hButton(.medium, .ghost, content: .init(title: "Skip")) {
             Task {
                 try await viewModel.skip()
             }
@@ -111,5 +113,14 @@ extension ClaimIntentStepHandler {
             }
         }
         return .trailing
+    }
+
+    var verticalPadding: CGFloat {
+        switch claimIntent.currentStep.content {
+        case .task:
+            return .padding8
+        default:
+            return .padding16
+        }
     }
 }
