@@ -19,6 +19,9 @@ struct SubmitClaimChatMesageView: View {
             } else if let step = step as? SubmitClaimSummaryStep {
                 SubmitClaimSummaryView()
                     .environmentObject(step)
+            } else if let step = step as? SubmitClaimTaskStep {
+                SubmitClaimTaskView()
+                    .environmentObject(step)
             } else {
                 hText("--- \(String(describing: step.self)) ---")
             }

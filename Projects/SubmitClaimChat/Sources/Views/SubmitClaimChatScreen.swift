@@ -166,7 +166,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     private func handleTaskStep(handler: SubmitClaimTaskStep) {
         Task {
             do {
-                if handler.isTaskCompleted {
+                if handler.taskModel.isCompleted {
                     let claimIntent = try await handler.submitResponse()
                     withAnimation {
                         processClaimIntent(claimIntent)

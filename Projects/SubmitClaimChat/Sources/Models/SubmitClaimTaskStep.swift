@@ -5,16 +5,17 @@ final class SubmitClaimTaskStep: @MainActor ClaimIntentStepHandler {
     var claimIntent: ClaimIntent {
         didSet {
             if case let .task(model) = claimIntent.currentStep.content {
-                isTaskCompleted = model.isCompleted
+                withAnimation {
+                    taskModel = model
+                }
             }
         }
     }
     let sender: SubmitClaimChatMesageSender = .hedvig
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
-    @Published var isTaskCompleted: Bool = false
 
-    private let taskModel: ClaimIntentStepContentTask
+    @Published var taskModel: ClaimIntentStepContentTask
     private let service: ClaimIntentService
 
     required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
@@ -24,7 +25,6 @@ final class SubmitClaimTaskStep: @MainActor ClaimIntentStepHandler {
             fatalError("TaskStepHandler initialized with non-task content")
         }
         self.taskModel = model
-        self.isTaskCompleted = model.isCompleted
     }
 
     func submitResponse() async throws -> ClaimIntent {
@@ -40,9 +40,5 @@ final class SubmitClaimTaskStep: @MainActor ClaimIntentStepHandler {
         }
 
         return result
-    }
-
-    func toggleTaskCompletion() {
-        isTaskCompleted.toggle()
     }
 }

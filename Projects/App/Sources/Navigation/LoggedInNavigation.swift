@@ -362,7 +362,6 @@ struct HomeTab: View {
             )
             .withDismissButton()
             .embededInNavigation(
-                options: .navigationType(type: .large),
                 tracking: self
             )
         }
