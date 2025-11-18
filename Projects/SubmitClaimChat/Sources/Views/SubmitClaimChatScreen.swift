@@ -53,7 +53,7 @@ public struct SubmitClaimChatScreen: View {
     private var mainContent: some View {
         hForm {
             VStack(alignment: .leading, spacing: .padding16) {
-                ForEach(viewModel.allSteps, id: \.claimIntent.id) { step in
+                ForEach(viewModel.allSteps, id: \.id) { step in
                     SubmitClaimChatMesageView(viewModel: step)
                 }
                 Color.clear.frame(height: 50).id("BOTTOM")
