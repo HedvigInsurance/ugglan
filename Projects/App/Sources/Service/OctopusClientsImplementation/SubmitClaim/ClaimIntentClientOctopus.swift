@@ -183,7 +183,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         return nil
     }
 
-    func claimIntentSubmitSelect(stepId: String, selectId: String) async throws -> SubmitClaimChat.ClaimIntent? {
+    func claimIntentSubmitSelect(stepId: String, selectId: String) async throws -> ClaimIntent? {
         let input = OctopusGraphQL.ClaimIntentSubmitSelectInput(stepId: stepId, selectedId: selectId)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSelectMutation(input: input)
 
@@ -197,6 +197,31 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let id = data?.claimIntentSubmitSelect.intent?.id ?? ""
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitSelect.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(currentStep: .init(fragment: currentStepFragment), id: id, sourceMessages: sourceMessages)
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
+
+        return nil
+    }
+
+    func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent? {
+        let mutation = OctopusGraphQL.ClaimIntentSkipStepMutation(stepId: stepId)
+
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSkipStep.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
+
+            let currentStep = data?.claimIntentSkipStep.intent?.currentStep
+            let id = data?.claimIntentSkipStep.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentSkipStep.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
 
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {

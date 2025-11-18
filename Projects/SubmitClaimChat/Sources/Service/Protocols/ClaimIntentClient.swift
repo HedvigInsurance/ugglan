@@ -13,6 +13,7 @@ public protocol ClaimIntentClient {
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent?
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent?
     func claimIntentSubmitSelect(stepId: String, selectId: String) async throws -> ClaimIntent?
+    func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent?
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep
 }
 
@@ -82,6 +83,11 @@ class ClaimIntentService {
 
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentStep {
         let data = try await client.getNextStep(claimIntentId: claimIntentId)
+        return data
+    }
+
+    func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent? {
+        let data = try await client.claimIntentSkipStep(stepId: stepId)
         return data
     }
 }
