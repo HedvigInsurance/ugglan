@@ -1,6 +1,6 @@
 import SwiftUI
 
-final class OutcomeStepHandler: @MainActor ClaimIntentStepHandler {
+final class SubmitClaimOutcomeStep: @MainActor ClaimIntentStepHandler {
     var id: String { claimIntent.id }
     let claimIntent: ClaimIntent
     let sender: SubmitClaimChatMesageSender = .hedvig

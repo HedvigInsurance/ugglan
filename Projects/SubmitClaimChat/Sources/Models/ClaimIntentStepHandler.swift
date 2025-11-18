@@ -37,7 +37,7 @@ enum ClaimIntentStepHandlerFactory {
         case .summary:
             return SubmitClaimSummaryStep(claimIntent: claimIntent, service: service)
         case .outcome:
-            return OutcomeStepHandler(claimIntent: claimIntent, service: service)
+            return SubmitClaimOutcomeStep(claimIntent: claimIntent, service: service)
         case .text:
             return SubmitClaimTextStep(claimIntent: claimIntent, service: service)
         case .singleSelect:

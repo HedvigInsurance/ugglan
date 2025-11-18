@@ -6,12 +6,13 @@ public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var router: Router
     let input: StartClaimInput
-
+    let goToClaimDetails: (String) -> Void
     public init(
         input: StartClaimInput,
         goToClaimDetails: @escaping (String) -> Void
     ) {
         self.input = input
+        self.goToClaimDetails = goToClaimDetails
         _viewModel = StateObject(
             wrappedValue: .init(input: input)
         )
