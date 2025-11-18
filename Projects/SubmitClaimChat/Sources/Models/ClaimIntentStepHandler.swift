@@ -51,6 +51,8 @@ enum ClaimIntentStepHandlerFactory {
             return SubmitClaimTextStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .singleSelect:
             return SubmitClaimSingleSelectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+        case .unknown:
+            return SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }
     }
 }
@@ -59,4 +61,5 @@ enum ClaimIntentStepHandlerFactory {
 enum ClaimIntentError: Error {
     case invalidInput
     case invalidResponse
+    case unknown
 }

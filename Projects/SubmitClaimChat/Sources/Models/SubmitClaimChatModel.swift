@@ -67,6 +67,7 @@ public enum ClaimIntentStepContent: Sendable {
     case outcome(model: ClaimIntentStepContentOutcome)
     case singleSelect(model: [ClaimIntentContentSelectOption])
     case text
+    case unknown
 }
 
 public struct ClaimIntentStepContentForm: Sendable {

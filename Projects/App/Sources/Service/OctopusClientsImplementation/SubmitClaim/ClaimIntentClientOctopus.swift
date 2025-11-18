@@ -228,7 +228,6 @@ extension ClaimIntentStepContent {
                     fragment: $0.fragments.claimIntentStepContentFormFieldFragment
                 )
             }
-
             self = .form(model: .init(fields: fields))
         } else if let task = fragment.asClaimIntentStepContentTask {
             self = .task(model: .init(description: task.description, isCompleted: task.isCompleted))
@@ -247,7 +246,7 @@ extension ClaimIntentStepContent {
         } else if let singleStep = fragment.asClaimIntentStepContentSelect {
             self = .singleSelect(model: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) }))
         } else {
-            self = .summary(model: .init(audioRecordings: [], fileUploads: [], items: []))
+            self = .unknown
         }
     }
 }

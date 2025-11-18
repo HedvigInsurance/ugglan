@@ -4,12 +4,10 @@ import hCoreUI
 final class SubmitClaimFormStep: ClaimIntentStepHandler {
     @Published var isDatePickerPresented: DatePickerViewModel?
     @Published var isSelectItemPresented: SingleItemModel?
-
-    let formModel: ClaimIntentStepContentForm
-
     @Published var dateForPicker: Date = Date()
     @Published var formValues: [String: FormStepValue] = [:]
 
+    let formModel: ClaimIntentStepContentForm
     required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
         guard case .form(let model) = claimIntent.currentStep.content else {
             fatalError("FormStepHandler initialized with non-form content")

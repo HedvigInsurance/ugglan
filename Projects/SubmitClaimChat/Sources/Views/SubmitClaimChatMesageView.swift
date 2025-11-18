@@ -26,8 +26,8 @@ struct SubmitClaimChatMesageView: View {
                         SubmitClaimTaskView(viewModel: viewModel)
                     } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
                         SubmitClaimOutcomeView(viewModel: viewModel)
-                    } else {
-                        hText("--- \(String(describing: viewModel.self)) ---")
+                    } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
+                        SubmitClaimOnknownView(viewModel: viewModel)
                     }
                 }
                 .disabled(!viewModel.isEnabled)
