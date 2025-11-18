@@ -53,24 +53,8 @@ public struct SubmitClaimChatScreen: View {
     private var mainContent: some View {
         hForm {
             VStack(alignment: .leading, spacing: .padding16) {
-                ForEach(viewModel.allSteps, id: \.claimIntent.currentStep.id) { step in
-                    VStack(alignment: .leading, spacing: .padding8) {
-                        hText(step.claimIntent.currentStep.text)
-                        senderStamp(step: step)
-                    }
-                    HStack {
-                        spacing(step.sender == .member)
-                        VStack(alignment: .leading, spacing: .padding8) {
-                            SubmitClaimChatMesageView(viewModel: step)
-                                .frame(
-                                    maxWidth: step.maxWidth,
-                                    alignment: step.alignment
-                                )
-                        }
-                        .fixedSize(horizontal: false, vertical: true)
-                        spacing(step.sender == .hedvig)
-                    }
-                    .id(step.id)
+                ForEach(viewModel.allSteps, id: \.claimIntent.id) { step in
+                    SubmitClaimChatMesageView(viewModel: step)
                 }
                 Color.clear.frame(height: 50).id("BOTTOM")
             }
@@ -82,36 +66,6 @@ public struct SubmitClaimChatScreen: View {
         .hFormBottomBackgroundColor(.aiPoweredGradient)
         .environmentObject(viewModel)
         .hideScrollIndicators()
-    }
-
-    private var loadingView: some View {
-        HStack { DotsActivityIndicator(.standard) }
-            .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
-            .padding(.horizontal, .padding16)
-            .background(hBackgroundColor.primary.opacity(0.01))
-            .edgesIgnoringSafeArea(.top)
-            .useDarkColor
-            .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
-    }
-
-    @ViewBuilder
-    func spacing(_ addSpacing: Bool) -> some View {
-        if addSpacing { Spacer() }
-    }
-
-    @ViewBuilder
-    func senderStamp(step: ClaimIntentStepHandler) -> some View {
-        if step.isLoading {
-            loadingView
-        } else {
-            HStack {
-                Circle()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.Green.element)
-                hText("Hedvig AI Assistant", style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
     }
 }
 
