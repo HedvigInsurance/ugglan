@@ -10,10 +10,12 @@ final class SubmitClaimSummaryStep: @MainActor ClaimIntentStepHandler {
 
     let summaryModel: ClaimIntentStepContentSummary
     private let service: ClaimIntentService
+    private let mainHandler: (ClaimIntent) -> Void
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
         self.claimIntent = claimIntent
         self.service = service
+        self.mainHandler = mainHandler
         guard case .summary(let model) = claimIntent.currentStep.content else {
             fatalError("SummaryStepHandler initialized with non-summary content")
         }
@@ -21,8 +23,14 @@ final class SubmitClaimSummaryStep: @MainActor ClaimIntentStepHandler {
     }
 
     func submitResponse() async throws -> ClaimIntent {
-        isLoading = true
-        defer { isLoading = false }
+        withAnimation {
+            isLoading = true
+        }
+        defer {
+            withAnimation {
+                isLoading = false
+            }
+        }
 
         guard
             let result = try await service.claimIntentSubmitSummary(
@@ -32,6 +40,10 @@ final class SubmitClaimSummaryStep: @MainActor ClaimIntentStepHandler {
             throw ClaimIntentError.invalidResponse
         }
 
+        mainHandler(result)
+        withAnimation {
+            isEnabled = false
+        }
         return result
     }
 }

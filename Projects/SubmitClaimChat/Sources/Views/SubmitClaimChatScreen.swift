@@ -68,7 +68,6 @@ public struct SubmitClaimChatScreen: View {
                                 )
                         }
                         .fixedSize(horizontal: false, vertical: true)
-                        .disabled(!step.isEnabled)
                         spacing(step.sender == .hedvig)
                     }
                     .id(step.id)
@@ -82,6 +81,7 @@ public struct SubmitClaimChatScreen: View {
         .hFormContentPosition(.top)
         .hFormBottomBackgroundColor(.aiPoweredGradient)
         .environmentObject(viewModel)
+        .hideScrollIndicators()
     }
 
     private var loadingView: some View {
@@ -119,6 +119,17 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
     public var nameForTracking: String { "" }
 }
 
+extension View {
+    @ViewBuilder
+    func hideScrollIndicators() -> some View {
+        if #available(iOS 16.0, *) {
+            self.scrollIndicators(.hidden)
+        } else {
+            self
+        }
+    }
+}
+
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
@@ -154,51 +165,19 @@ final class SubmitClaimChatViewModel: ObservableObject {
         let handler = getStep(for: claimIntent)
         self.currentStepHandler = handler
         self.allSteps.append(handler)
-        if let handler = handler as? SubmitClaimTaskStep {
-            handleTaskStep(handler: handler)
-        }
     }
 
     private func getStep(for claimIntent: ClaimIntent) -> any ClaimIntentStepHandler {
         ClaimIntentStepHandlerFactory.createHandler(
             for: claimIntent,
             service: service
-        )
-    }
-
-    private func handleTaskStep(handler: SubmitClaimTaskStep) {
-        Task {
-            do {
-                if handler.taskModel.isCompleted {
-                    let claimIntent = try await handler.submitResponse()
-                    withAnimation {
-                        processClaimIntent(claimIntent)
-                    }
-                } else {
-                    try await Task.sleep(seconds: 1)
-                    let claimIntent = try await getNextStep(intentId: handler.claimIntent.id)
-                    handler.claimIntent = claimIntent
-                    handleTaskStep(handler: handler)
+        ) { [weak self] newClaimIntent in
+            Task {
+                try await Task.sleep(seconds: 0.1)
+                withAnimation {
+                    self?.processClaimIntent(newClaimIntent)
                 }
-            } catch let ex {
-                handleTaskStep(handler: handler)
             }
-        }
-    }
-
-    private func getNextStep(intentId: String) async throws -> ClaimIntent {
-        try await service.getNextStep(claimIntentId: intentId)
-    }
-
-    func submitStep(handler: any ClaimIntentStepHandler) async throws {
-        withAnimation {
-            handler.isLoading = true
-        }
-        let claimIntent = try await handler.submitResponse()
-        withAnimation {
-            handler.isLoading = false
-            handler.isEnabled = false
-            processClaimIntent(claimIntent)
         }
     }
 }

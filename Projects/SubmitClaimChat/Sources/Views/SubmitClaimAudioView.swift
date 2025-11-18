@@ -7,7 +7,6 @@ import hGraphQL
 
 struct SubmitClaimAudioView: View {
     @EnvironmentObject var viewModel: SubmitClaimAudioStep
-    @EnvironmentObject var mainVM: SubmitClaimChatViewModel
     @StateObject var audioPlayer: AudioPlayer
     @StateObject var audioRecorder: AudioRecorder
     @State private var minutes: Int = 0
@@ -65,6 +64,8 @@ struct SubmitClaimAudioView: View {
             },
             message: { Text("Enable microphone access to record audio for your claim.") }
         )
+        .disabled(!viewModel.isEnabled)
+        .hButtonIsLoading(viewModel.isLoading)
     }
 
     private func playRecordingButton(url: URL) -> some View {
@@ -82,7 +83,7 @@ struct SubmitClaimAudioView: View {
                     Task {
                         do {
                             viewModel.audioFileURL = url
-                            try await mainVM.submitStep(handler: viewModel)
+                            try await viewModel.submitResponse()
                             try? FileManager.default.removeItem(at: url)
                         } catch {
                         }

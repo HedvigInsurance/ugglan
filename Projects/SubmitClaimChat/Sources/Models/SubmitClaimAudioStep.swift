@@ -18,6 +18,7 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
     private let service: ClaimIntentService
+    private let mainHandler: (ClaimIntent) -> Void
 
     enum RecordingState {
         case idle
@@ -26,20 +27,24 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
         case uploading
     }
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
         self.claimIntent = claimIntent
         self.service = service
+        self.mainHandler = mainHandler
         guard case .audioRecording(let model) = claimIntent.currentStep.content else {
             fatalError("AudioRecordingStepHandler initialized with non-audioRecording content")
         }
         self.audioRecordingModel = model
     }
 
+    @discardableResult
     func submitResponse() async throws -> ClaimIntent {
         guard let audioFileURL else {
             throw ClaimIntentError.invalidResponse
         }
-        isLoading = true
+        withAnimation {
+            isLoading = true
+        }
         let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
         let multipart = MultipartFormDataRequest(url: url)
         let data = try Data(contentsOf: audioFileURL)
@@ -55,7 +60,9 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
         )
         let fileId = response.fileIds.first!
         defer {
-            isLoading = false
+            withAnimation {
+                isLoading = false
+            }
         }
 
         guard
@@ -68,6 +75,10 @@ final class SubmitClaimAudioStep: @MainActor ClaimIntentStepHandler {
             throw ClaimIntentError.invalidResponse
         }
 
+        mainHandler(result)
+        withAnimation {
+            isEnabled = false
+        }
         return result
     }
 

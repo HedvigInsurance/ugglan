@@ -4,7 +4,6 @@ import hCoreUI
 
 struct SubmitClaimSingleSelectView: View {
     @EnvironmentObject var viewModel: SubmitClaimSingleSelectStep
-    @EnvironmentObject var mainVM: SubmitClaimChatViewModel
 
     public var body: some View {
         TagList(tags: viewModel.options.compactMap({ $0.id })) { tag in
@@ -20,9 +19,11 @@ struct SubmitClaimSingleSelectView: View {
         }
         hContinueButton {
             Task {
-                try await mainVM.submitStep(handler: viewModel)
+                try await viewModel.submitResponse()
             }
         }
         .disabled(viewModel.selectedOption == nil)
+        .disabled(!viewModel.isEnabled)
+        .hButtonIsLoading(viewModel.isLoading)
     }
 }

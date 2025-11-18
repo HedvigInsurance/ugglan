@@ -10,8 +10,9 @@ protocol ClaimIntentStepHandler: AnyObject, ObservableObject, Identifiable {
     var isLoading: Bool { get set }
     var isEnabled: Bool { get set }
 
-    init(claimIntent: ClaimIntent, service: ClaimIntentService)
+    init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void)
     func validateInput() -> Bool
+    @discardableResult
     func submitResponse() async throws -> ClaimIntent
 }
 
@@ -25,23 +26,24 @@ enum ClaimIntentStepHandlerFactory {
     @MainActor
     static func createHandler(
         for claimIntent: ClaimIntent,
-        service: ClaimIntentService
+        service: ClaimIntentService,
+        mainHandler: @escaping ((ClaimIntent) -> Void),
     ) -> any ClaimIntentStepHandler {
         switch claimIntent.currentStep.content {
         case .form:
-            return SubmitClaimFormStep(claimIntent: claimIntent, service: service)
+            return SubmitClaimFormStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .task:
-            return SubmitClaimTaskStep(claimIntent: claimIntent, service: service)
+            return SubmitClaimTaskStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .audioRecording:
-            return SubmitClaimAudioStep(claimIntent: claimIntent, service: service)
+            return SubmitClaimAudioStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .summary:
-            return SubmitClaimSummaryStep(claimIntent: claimIntent, service: service)
+            return SubmitClaimSummaryStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .outcome:
-            return SubmitClaimOutcomeStep(claimIntent: claimIntent, service: service)
+            return SubmitClaimOutcomeStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .text:
-            return SubmitClaimTextStep(claimIntent: claimIntent, service: service)
+            return SubmitClaimTextStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .singleSelect:
-            return SubmitClaimSingleSelectStep(claimIntent: claimIntent, service: service)
+            return SubmitClaimSingleSelectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }
     }
 }

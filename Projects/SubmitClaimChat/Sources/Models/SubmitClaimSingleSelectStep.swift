@@ -9,10 +9,12 @@ final class SubmitClaimSingleSelectStep: @MainActor ClaimIntentStepHandler {
     @Published var selectedOption: String?
     let options: [ClaimIntentContentSelectOption]
     private let service: ClaimIntentService
+    private let mainHandler: (ClaimIntent) -> Void
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
         self.claimIntent = claimIntent
         self.service = service
+        self.mainHandler = mainHandler
         guard case .singleSelect(let model) = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-single select content")
         }
@@ -20,14 +22,24 @@ final class SubmitClaimSingleSelectStep: @MainActor ClaimIntentStepHandler {
     }
 
     func submitResponse() async throws -> ClaimIntent {
-        isLoading = true
-        defer { isLoading = false }
+        withAnimation {
+            isLoading = true
+        }
+        defer {
+            withAnimation {
+                isLoading = false
+            }
+        }
 
         // Acknowledge text step and get next step
         let result = try await service.claimIntentSubmitSelect(
             stepId: claimIntent.currentStep.id,
             selectedValue: selectedOption!
         )
+        mainHandler(result)
+        withAnimation {
+            isEnabled = false
+        }
         return result
     }
 }

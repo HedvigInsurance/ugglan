@@ -12,12 +12,14 @@ final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
 
     let formModel: ClaimIntentStepContentForm
     private let service: ClaimIntentService
+    private let mainHandler: (ClaimIntent) -> Void
 
     @Published var dateForPicker: Date = Date()
     @Published var formValues: [String: FormStepValue] = [:]
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService) {
+    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
         self.claimIntent = claimIntent
         self.service = service
+        self.mainHandler = mainHandler
         guard case .form(let model) = claimIntent.currentStep.content else {
             fatalError("FormStepHandler initialized with non-form content")
         }
@@ -54,8 +56,14 @@ final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
             throw ClaimIntentError.invalidInput
         }
 
-        isLoading = true
-        defer { isLoading = false }
+        withAnimation {
+            isLoading = true
+        }
+        defer {
+            withAnimation {
+                isLoading = false
+            }
+        }
 
         let fieldValues = formValues.map { FieldValue(id: $0.key, values: [$0.value.value]) }
 
@@ -66,6 +74,10 @@ final class SubmitClaimFormStep: @MainActor ClaimIntentStepHandler {
             )
         else {
             throw ClaimIntentError.invalidResponse
+        }
+        mainHandler(result)
+        withAnimation {
+            isEnabled = false
         }
         return result
     }

@@ -3,7 +3,6 @@ import TagKit
 import hCoreUI
 
 struct SubmitClaimFormView: View {
-    @EnvironmentObject var mainVM: SubmitClaimChatViewModel
     @EnvironmentObject var viewModel: SubmitClaimFormStep
 
     var body: some View {
@@ -43,12 +42,13 @@ struct SubmitClaimFormView: View {
             if viewModel.isEnabled {
                 hButton(.medium, .primary, content: .init(title: "Send")) {
                     Task {
-                        try await mainVM.submitStep(handler: viewModel)
+                        try await viewModel.submitResponse()
                     }
                 }
             }
         }
         .disabled(!viewModel.isEnabled)
+        .hButtonIsLoading(viewModel.isLoading)
         .detent(
             item: $viewModel.isDatePickerPresented,
             transitionType: .detent(style: [.height])
@@ -132,7 +132,6 @@ struct SubmitClaimFormView: View {
             }
             viewModel.isSelectItemPresented = .init(id: field.id, values: values)
         }
-        .disabled(!viewModel.isEnabled)
     }
 
     func binaryField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
