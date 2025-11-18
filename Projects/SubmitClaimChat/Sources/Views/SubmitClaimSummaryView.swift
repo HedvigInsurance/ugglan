@@ -4,6 +4,7 @@ import hCoreUI
 
 struct SubmitClaimSummaryView: View {
     @EnvironmentObject var viewModel: SubmitClaimSummaryStep
+    @EnvironmentObject var mainVM: SubmitClaimChatViewModel
     var body: some View {
         VStack(
             spacing: .padding8
@@ -34,7 +35,7 @@ struct SubmitClaimSummaryView: View {
 
             hButton(.medium, .primary, content: .init(title: L10n.claimFlowChatSubmitClaimButton)) {
                 Task {
-                    try await viewModel.submitResponse()
+                    try await mainVM.submitStep(handler: viewModel)
                 }
             }
         }

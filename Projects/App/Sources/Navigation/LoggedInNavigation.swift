@@ -349,10 +349,9 @@ struct HomeTab: View {
                 goToClaimDetails: {
                     claimId in
                     homeNavigationVm.claimsAutomationStartInput = nil
-                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                    claimsStore.send(.fetchActiveClaims)
-
                     Task {
+                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                        await claimsStore.sendAsync(.fetchActiveClaims)
                         try await Task.sleep(seconds: 2)
                         if let claim = claimsStore.state.getClaimFor(id: claimId) {
                             homeNavigationVm.router.push(claim)

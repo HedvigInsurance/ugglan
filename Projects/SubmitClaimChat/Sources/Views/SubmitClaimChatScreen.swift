@@ -2,19 +2,20 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+public typealias GoToClaimDetails = (String) -> Void
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var router: Router
     let input: StartClaimInput
-    let goToClaimDetails: (String) -> Void
+    let goToClaimDetails: GoToClaimDetails
     public init(
         input: StartClaimInput,
-        goToClaimDetails: @escaping (String) -> Void
+        goToClaimDetails: @escaping GoToClaimDetails
     ) {
         self.input = input
         self.goToClaimDetails = goToClaimDetails
         _viewModel = StateObject(
-            wrappedValue: .init(input: input)
+            wrappedValue: .init(input: input, goToClaimDetails: goToClaimDetails)
         )
     }
 
@@ -129,11 +130,13 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 final class SubmitClaimChatViewModel: ObservableObject {
     @Published var currentStepHandler: (any ClaimIntentStepHandler & ObservableObject)?
     @Published var allSteps: [any ClaimIntentStepHandler & ObservableObject] = []
+    let goToClaimDetails: GoToClaimDetails
 
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
-    init(input: StartClaimInput) {
+    init(input: StartClaimInput, goToClaimDetails: @escaping GoToClaimDetails) {
         self.input = input
+        self.goToClaimDetails = goToClaimDetails
         Task {
             try? await startClaimIntent(input: input)
         }
