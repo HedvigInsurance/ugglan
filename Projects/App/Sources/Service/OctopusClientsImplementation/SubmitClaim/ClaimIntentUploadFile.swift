@@ -1,12 +1,5 @@
 import Apollo
 import Foundation
-//
-//  ClaimIntentUploadFile.swift
-//  Ugglan
-//
-//  Created by Sladan Nimcevic on 2025-11-18.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
 import SubmitClaimChat
 import hCore
 import hGraphQL
