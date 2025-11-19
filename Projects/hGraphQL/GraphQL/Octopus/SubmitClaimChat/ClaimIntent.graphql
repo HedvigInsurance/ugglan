@@ -78,16 +78,16 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
 }
 
 fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {
-            id
-            type
-            title
-            suffix
-            isRequired
-            options {
-              title
-              value
-            }
-            defaultValue
-            minValue
-            maxValue
+	id
+	type
+	title
+	suffix
+	isRequired
+	options {
+		title
+		value
+	}
+	defaultValues
+	minValue
+	maxValue
 }

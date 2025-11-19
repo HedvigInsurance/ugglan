@@ -128,7 +128,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         stepId: String
     ) async throws -> ClaimIntent? {
         let fieldInput: [OctopusGraphQL.ClaimIntentFormSubmitInputField] = fields.map {
-            .init(fieldId: $0.id, values: GraphQLNullable(optionalValue: $0.values))
+            .init(fieldId: $0.id, values: $0.values)
         }
         let input = OctopusGraphQL.ClaimIntentSubmitFormInput(stepId: stepId, fields: fieldInput)
         let mutation = OctopusGraphQL.ClaimIntentSubmitFormMutation(input: input)
@@ -220,13 +220,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
-
-            currentStep?.content.asClaimIntentStepContentForm?.fields
-                .forEach { field in
-                    let defaultValue = field.defaultValue
-                    print("defaultValue: \(defaultValue ?? "nil")")
-                }
-
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
                 return .init(
                     currentStep: .init(fragment: currentStepFragment),
@@ -323,13 +316,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
-
-            currentStep?.content.asClaimIntentStepContentForm?.fields
-                .forEach { field in
-                    let defaultValue = field.defaultValue
-                    print("defaultValue: \(defaultValue ?? "nil")")
-                }
-
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
                 return .init(
                     currentStep: .init(fragment: currentStepFragment),
@@ -408,7 +394,7 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
         fragment: OctopusGraphQL.ClaimIntentStepContentFormFieldFragment
     ) {
         self.init(
-            defaultValue: fragment.defaultValue,
+            defaultValues: fragment.defaultValues,
             id: fragment.id,
             isRequired: fragment.isRequired,
             maxValue: fragment.maxValue,
@@ -434,6 +420,8 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
             return .singleSelect
         case .binary:
             return .binary
+        case .multiSelect:
+            return .multiSelect
         }
     }
 }

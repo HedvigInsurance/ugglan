@@ -29,8 +29,11 @@ struct SubmitClaimFormView: View {
                             FormBinaryView(vm: viewModel.getFormStepValue(for: field.id), options: field.options)
                         case .singleSelect:
                             singleSelectField(for: field)
+                        case .multiSelect:
+                            multiSelectField(for: field)
                         }
-                        if field.defaultValue != nil {
+
+                        if !field.defaultValues.isEmpty {
                             AiFillSparkles()
                                 .offset(x: -9, y: -4)
                         }
@@ -60,29 +63,22 @@ struct SubmitClaimFormView: View {
                 config: .init(
                     items: model.values.map({ ($0, .init(title: $0.title)) }),
                     preSelectedItems: {
-                        let filedId = model.values[0].fieldId
-                        let model = viewModel.getFormStepValue(for: filedId)
-                        let options = viewModel.formModel.fields.first(where: { $0.id == filedId })?.options
-                        let value = model.value
+                        let fieldModel = viewModel.getFormStepValue(for: model.id)
+                        let fieldOptions = viewModel.formModel.fields.first(where: { $0.id == model.id })?.options
+                        let selectedValues = fieldModel.values
 
-                        return options?.filter({ $0.value == value })
-                            .map({ SingleSelectValue(fieldId: filedId, title: $0.title, value: $0.value) }) ?? []
+                        return fieldOptions?.filter({ selectedValues.contains($0.value) })
+                            .map({ SingleSelectValue(title: $0.title, value: $0.value) }) ?? []
                     },
-                    onSelected: { value in
-                        if let selectedValue = value.first, let fieldId = selectedValue.0?.fieldId,
-                            let value = selectedValue.0?.value
-                        {
-                            viewModel.getFormStepValue(for: fieldId).value = value
-                        }
+                    onSelected: { values in
+                        viewModel.getFormStepValue(for: model.id).values = values.compactMap({ $0.0?.value })
                         viewModel.isSelectItemPresented = nil
                     }
                 )
             )
-            .hItemPickerAttributes([.singleSelect])
+            .hItemPickerAttributes(model.multiselect ? [] : [.singleSelect])
             .hFormContentPosition(.compact)
-            .embededInNavigation(tracking: "")
-            //            SubmitClaimSingleSelectScreen(viewModel: viewModel, values: model.values)
-            //                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+            .embededInNavigation(options: .largeNavigationBar, tracking: "")
         }
     }
 
@@ -91,19 +87,19 @@ struct SubmitClaimFormView: View {
             hRow {
                 let date = viewModel.formValues[field.id]
                 dropDownView(
-                    message: date?.value ?? field.title,
+                    message: date?.values.first ?? field.title,
                     fieldId: field.id
                 )
             }
         }
         .onTapGesture {
             if viewModel.isEnabled {
-                viewModel.dateForPicker = viewModel.formValues[field.id]?.value.localDateToDate ?? Date()
+                viewModel.dateForPicker = viewModel.formValues[field.id]?.values.first?.localDateToDate ?? Date()
                 viewModel.isDatePickerPresented = .init(
                     id: field.id,
                     continueAction: {
                         viewModel.formValues[viewModel.isDatePickerPresented?.id ?? ""] = .init(
-                            value: viewModel.dateForPicker.localDateString
+                            values: [viewModel.dateForPicker.localDateString]
                         )
                         viewModel.isDatePickerPresented = nil
                     },
@@ -119,15 +115,30 @@ struct SubmitClaimFormView: View {
 
     func singleSelectField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
         let selectedValue = viewModel.getFormStepValue(for: field.id)
-        let selectedOption = field.options.first(where: { $0.value == selectedValue.value })
+        let selectedOption = field.options.first(where: { selectedValue.values.contains($0.value) })
         return DropdownView(
             value: selectedOption?.title ?? "",
             placeHolder: field.title
         ) {
             let values: [SingleSelectValue] = field.options.map {
-                .init(fieldId: field.id, title: $0.title, value: $0.value)
+                .init(title: $0.title, value: $0.value)
             }
-            viewModel.isSelectItemPresented = .init(id: field.id, values: values)
+            viewModel.isSelectItemPresented = .init(id: field.id, values: values, multiselect: false)
+        }
+    }
+
+    func multiSelectField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+        let selectedValue = viewModel.getFormStepValue(for: field.id)
+        let selectedOption = field.options.filter({ selectedValue.values.contains($0.value) })
+
+        return DropdownView(
+            value: selectedOption.map({ $0.title }).joined(separator: ", "),
+            placeHolder: field.title
+        ) {
+            let values: [SingleSelectValue] = field.options.map {
+                .init(title: $0.title, value: $0.value)
+            }
+            viewModel.isSelectItemPresented = .init(id: field.id, values: values, multiselect: true)
         }
     }
 
@@ -141,13 +152,13 @@ struct SubmitClaimFormView: View {
                     HStack {
                         ForEach(field.options, id: \.value) { option in
                             let currentBinaryValue = viewModel.getFormStepValue(for: field.id)
-                            let enabled = currentBinaryValue.value == option.value
+                            let enabled = currentBinaryValue.values.first == option.value
                             hButton(
                                 .small,
                                 enabled ? .primaryAlt : .secondary,
                                 content: .init(title: option.title)
                             ) {
-                                currentBinaryValue.value = option.value
+                                currentBinaryValue.values = [option.value]
                             }
                             // .disabled makes the button styling disappear
                             // which means we don't see what we answered for old steps
@@ -175,7 +186,7 @@ struct SubmitClaimFormView: View {
 
     @hColorBuilder
     func dateColor(fieldId: String) -> some hColor {
-        let hasSelectedDate = viewModel.getFormStepValue(for: fieldId).value != ""
+        let hasSelectedDate = !viewModel.getFormStepValue(for: fieldId).values.isEmpty
         if viewModel.isEnabled && hasSelectedDate {
             hTextColor.Opaque.primary
         } else {
