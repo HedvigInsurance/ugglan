@@ -54,7 +54,9 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             return
         } else {
             try await Task.sleep(seconds: 0.5)
-            let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id)
+            guard let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id) else {
+                throw ClaimIntentError.invalidResponse
+            }
             self.claimIntent = claimIntent
             try await getNextStep()
         }

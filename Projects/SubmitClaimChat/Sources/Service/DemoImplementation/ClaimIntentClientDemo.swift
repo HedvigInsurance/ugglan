@@ -87,7 +87,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         )
     }
 
-    public func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
+    public func getNextStep(claimIntentId: String) async throws -> ClaimIntent? {
         .init(
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",

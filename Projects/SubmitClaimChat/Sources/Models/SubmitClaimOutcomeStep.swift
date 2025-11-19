@@ -24,7 +24,9 @@ final class SubmitClaimOutcomeStep: ClaimIntentStepHandler {
         }
 
         // Outcome is typically the final step, get next step to check for any continuation
-        let result = try await service.getNextStep(claimIntentId: claimIntent.id)
+        guard let result = try await service.getNextStep(claimIntentId: claimIntent.id) else {
+            throw ClaimIntentError.invalidResponse
+        }
         mainHandler(result)
         withAnimation {
             isEnabled = false

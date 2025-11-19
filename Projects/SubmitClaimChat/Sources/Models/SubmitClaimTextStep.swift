@@ -19,7 +19,9 @@ final class SubmitClaimTextStep: ClaimIntentStepHandler {
         }
 
         // Acknowledge text step and get next step
-        let result = try await service.getNextStep(claimIntentId: claimIntent.id)
+        guard let result = try await service.getNextStep(claimIntentId: claimIntent.id) else {
+            throw ClaimIntentError.invalidResponse
+        }
         mainHandler(result)
         withAnimation {
             isEnabled = false
