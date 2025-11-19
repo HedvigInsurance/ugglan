@@ -43,9 +43,9 @@ struct CrosssSellStackComponent: View {
                 ExpandingView(
                     mainContent: {
                         hCoreUIAssets.campaign.view.foregroundColor(hSignalColor.Green.element)
+                            .rotate(onAppear: true)
                             .frame(width: 17, height: 17)
                             .padding(.vertical, .padding8)
-                            .rotate()
                     },
                     expandingContent: {
                         hText(L10n.insurancesCrossSellDiscountsAvailable, style: .label)
