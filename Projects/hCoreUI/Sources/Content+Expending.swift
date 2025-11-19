@@ -33,9 +33,9 @@ public struct ExpandingView: View {
                     }
                 }
                 .onAppear {
+                    animation = nil
+                    expanded = false
                     Task {
-                        animation = nil
-                        expanded = false
                         try? await Task.sleep(seconds: delay)
                         animation = .easeInOut(duration: 1)
                         expanded = true
