@@ -4,10 +4,10 @@ struct SingleItemModel: Equatable, Identifiable {
     static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool { lhs.id == rhs.id }
     let id: String
     let values: [SingleSelectValue]
+    let multiselect: Bool
 }
 
 struct SingleSelectValue: Hashable {
-    let fieldId: String
     let title: String
     let value: String
 }
@@ -85,7 +85,7 @@ public struct ClaimIntentStepContentForm: Sendable {
     }
 
     public struct ClaimIntentStepContentFormField: Sendable {
-        let defaultValue: String?
+        let defaultValues: [String]
         public let id: String
         let isRequired: Bool
         let maxValue: String?
@@ -96,7 +96,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         let type: ClaimIntentStepContentFormFieldType
 
         public init(
-            defaultValue: String?,
+            defaultValues: [String],
             id: String,
             isRequired: Bool,
             maxValue: String?,
@@ -106,7 +106,7 @@ public struct ClaimIntentStepContentForm: Sendable {
             title: String,
             type: ClaimIntentStepContentFormFieldType
         ) {
-            self.defaultValue = defaultValue
+            self.defaultValues = defaultValues
             self.id = id
             self.isRequired = isRequired
             self.maxValue = maxValue
@@ -133,6 +133,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         case date
         case number
         case singleSelect
+        case multiSelect
         case binary
     }
 }
