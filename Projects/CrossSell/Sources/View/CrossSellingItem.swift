@@ -37,15 +37,15 @@ struct CrossSellingItem: View {
                         .accessibilityHidden(true)
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 0) {
-                            hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
+                            hText(crossSell.title, style: .label).foregroundColor(hTextColor.Translucent.secondary)
                             MarqueeText(
                                 text: crossSell.description,
-                                font: Fonts.fontFor(style: .label),
+                                font: Fonts.fontFor(style: .body1),
                                 leftFade: 3,
                                 rightFade: 3,
                                 startDelay: 2
                             )
-                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                         }
                         Spacer()
 

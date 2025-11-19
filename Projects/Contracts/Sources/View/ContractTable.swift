@@ -132,22 +132,23 @@ struct ContractTable: View {
             ) { contracts in
                 VStack(spacing: .padding8) {
                     ForEach(contracts, id: \.id) { contract in
-                        ContractRow(
-                            image: contract.pillowType?.bgImage,
-                            terminationMessage: contract.terminationMessage,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
-                                ?? "",
-                            contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
-                            activeInFuture: contract.activeInFuture,
-                            masterInceptionDate: contract.masterInceptionDate,
-                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
-                            onClick: {
-                                router.push(contract)
-                            }
-                        )
-                        .fixedSize(horizontal: false, vertical: true)
-                        .transition(.slide)
+                        //                        ContractRow(
+                        //                            image: contract.pillowType?.bgImage,
+                        //                            terminationMessage: contract.terminationMessage,
+                        //                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
+                        //                                ?? "",
+                        //                            contractExposureName: contract.exposureDisplayName,
+                        //                            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
+                        //                            activeInFuture: contract.activeInFuture,
+                        //                            masterInceptionDate: contract.masterInceptionDate,
+                        //                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
+                        //                            onClick: {
+                        //                                router.push(contract)
+                        //                            }
+                        //                        )
+                        //                        .fixedSize(horizontal: false, vertical: true)
+                        //                        .transition(.slide)
+                        hText(contract.exposureDisplayName)
                     }
                 }
             }

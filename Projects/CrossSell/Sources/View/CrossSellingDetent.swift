@@ -16,7 +16,7 @@ public struct CrossSellingDetent: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrosssSellStackComponent(crossSells: crossSells.others, withHeader: false)
+                CrosssSellStackComponent(crossSells: crossSells.others, showDiscount: false, withHeader: false)
             }
         }
         .hFormAttachToBottom {

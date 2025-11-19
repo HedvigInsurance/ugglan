@@ -2,6 +2,7 @@ import Combine
 import PresentableStore
 import SwiftUI
 import hCore
+import hCoreUI
 
 public struct CrossSellingView: View {
     let withHeader: Bool
@@ -21,8 +22,12 @@ public struct CrossSellingView: View {
                     state.crossSells
                 }
             ) { crossSells in
-                if !crossSells.isEmpty {
-                    CrosssSellStackComponent(crossSells: crossSells, withHeader: withHeader)
+                if !crossSells.others.isEmpty {
+                    CrosssSellStackComponent(
+                        crossSells: crossSells.others,
+                        showDiscount: true,
+                        withHeader: withHeader
+                    )
                 }
             }
         }
