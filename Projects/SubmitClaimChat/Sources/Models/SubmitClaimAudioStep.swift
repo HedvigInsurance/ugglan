@@ -9,7 +9,7 @@ import hGraphQL
 
 final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     var audioFileURL: URL?
-
+    @Published var uploadProgress: Double = 0
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
 
@@ -48,7 +48,13 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         let response: FileUploadResponseModel = try await fileUploadClient.upload(
             url: audioFileURL,
             multipart: multipart
-        )
+        ) { [weak self] progress in
+            Task { @MainActor in
+                withAnimation {
+                    self?.uploadProgress = progress
+                }
+            }
+        }
         let fileId = response.fileIds.first!
         defer {
             withAnimation {

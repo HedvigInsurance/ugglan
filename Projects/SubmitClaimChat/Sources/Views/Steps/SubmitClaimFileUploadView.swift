@@ -40,7 +40,6 @@ struct SubmitClaimFileUploadView: View {
                                 showFilePickerAlert()
                             }
                         )
-                        //                        .disabled(fileUploadVm.isLoading || !viewModel.isEnabled)
                         ZStack(alignment: .leading) {
                             hButton(.small, .primary, content: .init(title: L10n.generalContinueButton)) {
                                 Task {
@@ -48,7 +47,7 @@ struct SubmitClaimFileUploadView: View {
                                 }
                             }
                             .hButtonIsLoading(fileUploadVm.isLoading)
-                            //                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty || !step.isEnabled)
+                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty)
                             if fileUploadVm.isLoading {
                                 GeometryReader { geo in
                                     Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
@@ -235,7 +234,6 @@ public class FilesUploadViewModel: ObservableObject {
                 ) { progress in
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
-                        self.uploadProgress = progress
                         withAnimation {
                             self.progress = min(self.uploadProgress, self.timerProgress)
                         }
