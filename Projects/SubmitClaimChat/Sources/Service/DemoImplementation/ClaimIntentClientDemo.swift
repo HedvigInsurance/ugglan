@@ -8,6 +8,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -22,6 +45,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -32,6 +78,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -42,6 +111,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -52,6 +144,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -62,6 +177,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -72,6 +210,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -82,6 +243,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -92,6 +276,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )
@@ -102,6 +309,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",
             sourceMessages: [],
+            outcome: .claim(
+                model: .init(
+                    claimId: "",
+                    claim: .init(
+                        id: "",
+                        status: .beingHandled,
+                        outcome: nil,
+                        submittedAt: nil,
+                        signedAudioURL: nil,
+                        memberFreeText: nil,
+                        payoutAmount: nil,
+                        targetFileUploadUri: "",
+                        claimType: "",
+                        productVariant: nil,
+                        conversation: nil,
+                        appealInstructionsUrl: nil,
+                        isUploadingFilesEnabled: true,
+                        showClaimClosedFlow: true,
+                        infoText: nil,
+                        displayItems: []
+                    )
+                )
+            ),
             isSkippable: false,
             isRegrettable: false
         )

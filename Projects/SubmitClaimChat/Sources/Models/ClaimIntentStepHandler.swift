@@ -97,8 +97,6 @@ enum ClaimIntentStepHandlerFactory {
             return SubmitClaimAudioStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .summary:
             return SubmitClaimSummaryStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        case .outcome:
-            return SubmitClaimOutcomeStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .text:
             return SubmitClaimTextStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .singleSelect:

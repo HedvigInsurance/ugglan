@@ -32,8 +32,6 @@ struct SubmitClaimChatMesageView: View {
                         SubmitClaimSummaryView(viewModel: viewModel)
                     } else if let viewModel = viewModel as? SubmitClaimTaskStep {
                         SubmitClaimTaskView(viewModel: viewModel)
-                    } else if let viewModel = viewModel as? SubmitClaimOutcomeStep {
-                        SubmitClaimOutcomeView(viewModel: viewModel)
                     } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                         SubmitClaimFileUploadView(viewModel: viewModel)
                     } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
@@ -107,7 +105,7 @@ struct SubmitClaimChatMesageView: View {
 extension ClaimIntentStepHandler {
     var maxWidth: CGFloat {
         switch claimIntent.currentStep.content {
-        case .outcome, .summary, .singleSelect:
+        case .summary, .singleSelect:
             return .infinity
         default:
             return 300
@@ -117,8 +115,8 @@ extension ClaimIntentStepHandler {
     var alignment: Alignment {
         if sender == .hedvig {
             switch claimIntent.currentStep.content {
-            case .outcome:
-                return .center
+            //            case .outcome:
+            //                return .center
             default:
                 return .leading
             }

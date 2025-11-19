@@ -1,3 +1,4 @@
+import Claims
 import Foundation
 
 struct SingleItemModel: Equatable, Identifiable {
@@ -21,6 +22,7 @@ public struct ClaimIntent: Sendable {
     let currentStep: ClaimIntentStep
     let id: String
     let sourceMessages: [SourceMessage]
+    let outcome: ClaimIntentStepOutcome
     let isSkippable: Bool
     let isRegrettable: Bool
 
@@ -28,12 +30,14 @@ public struct ClaimIntent: Sendable {
         currentStep: ClaimIntentStep,
         id: String,
         sourceMessages: [SourceMessage],
+        outcome: ClaimIntentStepOutcome,
         isSkippable: Bool,
         isRegrettable: Bool
     ) {
         self.currentStep = currentStep
         self.id = id
         self.sourceMessages = sourceMessages
+        self.outcome = outcome
         self.isSkippable = isSkippable
         self.isRegrettable = isRegrettable
     }
@@ -71,10 +75,14 @@ public enum ClaimIntentStepContent: Sendable {
     case audioRecording(model: ClaimIntentStepContentAudioRecording)
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
-    case outcome(model: ClaimIntentStepContentOutcome)
     case singleSelect(model: [ClaimIntentContentSelectOption])
     case text
     case unknown
+}
+
+public enum ClaimIntentStepOutcome: Sendable {
+    case deflect(model: ClaimIntentOutcomeDeflection)
+    case claim(model: ClaimIntentOutcomeClaim)
 }
 
 public struct ClaimIntentStepContentForm: Sendable {
@@ -213,10 +221,72 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
     }
 }
 
-public struct ClaimIntentStepContentOutcome: Sendable, Equatable {
-    let claimId: String
+public struct ClaimIntentOutcomeDeflection: Sendable {
+    let type: ClaimIntentOutcomeDeflectionType?
+    let title: String?
+    let description: String?
+    let partners: [ClaimIntentOutcomeDeflectionPartner]
 
-    public init(claimId: String) {
+    public init(
+        type: ClaimIntentOutcomeDeflectionType?,
+        title: String?,
+        description: String?,
+        partners: [ClaimIntentOutcomeDeflectionPartner]
+    ) {
+        self.type = type
+        self.title = title
+        self.description = description
+        self.partners = partners
+    }
+
+    public struct ClaimIntentOutcomeDeflectionPartner: Sendable {
+        let id: String
+        let imageUrl: String?
+        let phoneNumber: String?
+        let title: String?
+        let description: String?
+        let info: String?
+        let url: String?
+        let urlButtonTitle: String?
+
+        public init(
+            id: String,
+            imageUrl: String?,
+            phoneNumber: String?,
+            title: String?,
+            description: String?,
+            info: String?,
+            url: String?,
+            urlButtonTitle: String?
+        ) {
+            self.id = id
+            self.imageUrl = imageUrl
+            self.phoneNumber = phoneNumber
+            self.title = title
+            self.description = description
+            self.info = info
+            self.url = url
+            self.urlButtonTitle = urlButtonTitle
+        }
+    }
+
+    public enum ClaimIntentOutcomeDeflectionType: Sendable {
+        case emergency
+        case glass
+        case towing
+        case eir
+        case pests
+        case idProtection
+        case unknown
+    }
+}
+
+public struct ClaimIntentOutcomeClaim: Sendable {
+    let claimId: String
+    let claim: ClaimModel
+
+    public init(claimId: String, claim: ClaimModel) {
         self.claimId = claimId
+        self.claim = claim
     }
 }

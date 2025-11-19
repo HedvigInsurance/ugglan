@@ -12,6 +12,37 @@ fragment ClaimIntentFragment on ClaimIntent {
     sourceMessages {
         ...ClaimIntentSourceMessageFragment
     }
+    outcome {
+        ...ClaimIntentOutcomeFragment
+    }
+}
+
+fragment ClaimIntentOutcomeFragment on ClaimIntentOutcome {
+    ...  on ClaimIntentOutcomeClaim {
+        claim {
+            ...ClaimFragment
+        }
+        claimId
+    }
+    ... on ClaimIntentOutcomeDeflection {
+        type
+        title
+        description
+        partners {
+            ...ClaimIntentOutcomeDeflectionPartnerFragment
+        }
+    }
+}
+
+fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentOutcomeDeflectionPartner {
+    id
+    imageUrl
+    phoneNumber
+    title
+    description
+    info
+    url
+    urlButtonTitle
 }
 
 fragment ClaimIntentStepFragment on ClaimIntentStep {
