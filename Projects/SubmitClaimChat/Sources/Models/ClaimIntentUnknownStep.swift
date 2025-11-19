@@ -4,7 +4,7 @@ final class SubmitClaimUnknownStep: ClaimIntentStepHandler {
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping (ClaimIntent, Bool) -> Void
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
     ) {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }

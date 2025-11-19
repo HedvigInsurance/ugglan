@@ -305,7 +305,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         return nil
     }
-    func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
+    func getNextStep(claimIntentId: String) async throws -> ClaimIntent? {
         let query = OctopusGraphQL.ClaimIntentQuery(claimIntentId: claimIntentId)
 
         do {
@@ -313,22 +313,24 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data.claimIntent.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let isSkippable = data.claimIntent.currentStep.content.fragments.claimIntentStepContentFragment
+            let isSkippable = data.claimIntent.currentStep?.content.fragments.claimIntentStepContentFragment
                 .extractIsSkippable()
-            let isRegrettable = data.claimIntent.currentStep.content.fragments.claimIntentStepContentFragment
+            let isRegrettable = data.claimIntent.currentStep?.content.fragments.claimIntentStepContentFragment
                 .extractIsRegrettable()
 
-            let currentStepFragment = data.claimIntent.currentStep.fragments.claimIntentStepFragment
-            return .init(
-                currentStep: .init(fragment: currentStepFragment),
-                id: data.claimIntent.id,
-                sourceMessages: sourceMessages,
-                isSkippable: isSkippable,
-                isRegrettable: isRegrettable
-            )
+            if let currentStepFragment = data.claimIntent.currentStep?.fragments.claimIntentStepFragment {
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: data.claimIntent.id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable ?? false,
+                    isRegrettable: isRegrettable ?? false
+                )
+            }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
+        return nil
     }
 
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent? {
@@ -407,8 +409,6 @@ extension ClaimIntentStepContent {
                     items: summary.items.map { .init(title: $0.title, value: $0.value) }
                 )
             )
-        } else if let outcome = fragment.asClaimIntentStepContentOutcome {
-            self = .outcome(model: .init(claimId: outcome.claimId))
         } else if let singleStep = fragment.asClaimIntentStepContentSelect {
             self = .singleSelect(model: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) }))
         } else if let fileUpload = fragment.asClaimIntentStepContentFileUpload {

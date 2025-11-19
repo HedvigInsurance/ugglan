@@ -8,7 +8,7 @@ final class SubmitClaimOutcomeStep: ClaimIntentStepHandler {
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping (ClaimIntent, Bool) -> Void
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
     ) {
         guard case .outcome(let model) = claimIntent.currentStep.content else {
             fatalError("OutcomeStepHandler initialized with non-outcome content")
@@ -28,8 +28,13 @@ final class SubmitClaimOutcomeStep: ClaimIntentStepHandler {
         }
 
         // Outcome is typically the final step, get next step to check for any continuation
-        let result = try await service.getNextStep(claimIntentId: claimIntent.id)
-        mainHandler(result, false)
+        guard
+            let result = try await service.getNextStep(claimIntentId: claimIntent.id)
+
+        else {
+            throw ClaimIntentError.invalidResponse
+        }
+        mainHandler(.goToNext(claimIntent: result))
         withAnimation {
             isEnabled = false
         }

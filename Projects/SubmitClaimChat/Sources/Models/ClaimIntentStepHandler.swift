@@ -13,14 +13,13 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
-    @Published var isRegretted: Bool = false
     let service: ClaimIntentService
-    let mainHandler: (ClaimIntent, Bool) -> Void
+    let mainHandler: (SubmitClaimEvent) -> Void
 
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping (ClaimIntent, Bool) -> Void
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
     ) {
         self.claimIntent = claimIntent
         self.service = service
@@ -54,7 +53,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             isLoading = false
             isEnabled = false
         }
-        mainHandler(result, false)
+        mainHandler(.goToNext(claimIntent: result))
         return result
     }
 
@@ -76,9 +75,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         withAnimation {
             isLoading = false
             isEnabled = false
-            isRegretted = true
         }
-        mainHandler(result, true)
+        mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: result))
         return result
     }
 }
@@ -88,7 +86,7 @@ enum ClaimIntentStepHandlerFactory {
     static func createHandler(
         for claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping ((ClaimIntent, Bool) -> Void)
+        mainHandler: @escaping ((SubmitClaimEvent) -> Void)
     ) -> ClaimIntentStepHandler {
         switch claimIntent.currentStep.content {
         case .form:
@@ -111,6 +109,11 @@ enum ClaimIntentStepHandlerFactory {
             return SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }
     }
+}
+
+enum SubmitClaimEvent {
+    case goToNext(claimIntent: ClaimIntent)
+    case regret(currentClaimIntent: ClaimIntent, newclaimIntent: ClaimIntent)
 }
 
 // MARK: - Errors

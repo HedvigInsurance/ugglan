@@ -64,9 +64,6 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
             fileName
           }
         }
-        ... on ClaimIntentStepContentOutcome {
-            claimId
-        }
 		... on ClaimIntentStepContentSelect {
 			  options {
 				id

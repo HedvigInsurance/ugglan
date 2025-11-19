@@ -18,7 +18,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping (ClaimIntent, Bool) -> Void
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
     ) {
         guard case .task(let model) = claimIntent.currentStep.content else {
             fatalError("TaskStepHandler initialized with non-task content")
@@ -46,7 +46,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-        mainHandler(claimIntent, false)
+        mainHandler(.goToNext(claimIntent: claimIntent))
         withAnimation {
             isEnabled = false
         }
@@ -58,7 +58,9 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             return
         } else {
             try await Task.sleep(seconds: 0.5)
-            let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id)
+            guard let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id) else {
+                throw ClaimIntentError.invalidResponse
+            }
             self.claimIntent = claimIntent
             try await getNextStep()
         }
