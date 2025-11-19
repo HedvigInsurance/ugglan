@@ -4,31 +4,25 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimChatFileUpload: View {
-    let step: SubmitChatStepModel
-    let model: ClaimIntentStepContentFileUpload
+struct SubmitClaimFileUploadView: View {
+    @ObservedObject var viewModel: SubmitClaimFileUploadStep
     @ObservedObject var fileUploadVm: FilesUploadViewModel
-    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @State var showImagePicker = false
     @State var showFilePicker = false
     @State var showCamera = false
 
     init(
-        step: SubmitChatStepModel,
-        model: ClaimIntentStepContentFileUpload,
-        fileUploadVm: FilesUploadViewModel
+        viewModel: SubmitClaimFileUploadStep
     ) {
-        self.step = step
-        self.model = model
-        self.fileUploadVm = fileUploadVm
-        fileUploadVm.model.uploadUri = model.uploadURI
+        fileUploadVm = viewModel.fileUploadVm
+        self.viewModel = viewModel
     }
 
     var body: some View {
-        if step.sender == .member {
+        if viewModel.sender == .member {
             showFilesView
         } else {
-            hText(step.step.text)
+            hText(viewModel.claimIntent.currentStep.text)
         }
     }
 
@@ -46,16 +40,15 @@ struct SubmitClaimChatFileUpload: View {
                                 showFilePickerAlert()
                             }
                         )
-                        .disabled(fileUploadVm.isLoading || !step.isEnabled)
+                        //                        .disabled(fileUploadVm.isLoading || !viewModel.isEnabled)
                         ZStack(alignment: .leading) {
                             hButton(.small, .primary, content: .init(title: L10n.generalContinueButton)) {
                                 Task {
-                                    let fileIds = await fileUploadVm.uploadFiles()
-                                    await viewModel.submitFile(fileIds: fileIds)
+                                    try await viewModel.submitResponse()
                                 }
                             }
                             .hButtonIsLoading(fileUploadVm.isLoading)
-                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty || !step.isEnabled)
+                            //                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty || !step.isEnabled)
                             if fileUploadVm.isLoading {
                                 GeometryReader { geo in
                                     Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)

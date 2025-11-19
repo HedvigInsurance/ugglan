@@ -346,23 +346,19 @@ struct HomeTab: View {
         ) { input in
             SubmitClaimChatScreen(
                 input: input,
-                goToClaimDetails: {
-                    claimId in
-                    homeNavigationVm.claimsAutomationStartInput = nil
-                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                    claimsStore.send(.fetchActiveClaims)
-
+                goToClaimDetails: { [weak homeNavigationVm] claimId in
+                    homeNavigationVm?.claimsAutomationStartInput = nil
                     Task {
-                        try await Task.sleep(seconds: 2)
+                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                        await claimsStore.sendAsync(.fetchActiveClaims)
                         if let claim = claimsStore.state.getClaimFor(id: claimId) {
-                            homeNavigationVm.router.push(claim)
+                            homeNavigationVm?.router.push(claim)
                         }
                     }
                 }
             )
             .withDismissButton()
             .embededInNavigation(
-                options: .navigationType(type: .large),
                 tracking: self
             )
         }

@@ -1,24 +1,15 @@
 import Foundation
 
-final class SubmitChatStepModel: ObservableObject, Identifiable {
-    var id: String { "\(step.id)-\(sender)" }
-    let step: ClaimIntentStep
-    let sender: SubmitClaimChatMesageSender
-    @Published var isLoading: Bool
-    @Published var isEnabled: Bool
-
-    init(step: ClaimIntentStep, sender: SubmitClaimChatMesageSender, isLoading: Bool, isEnabled: Bool = true) {
-        self.step = step
-        self.sender = sender
-        self.isLoading = isLoading
-        self.isEnabled = isEnabled
-    }
-}
-
 struct SingleItemModel: Equatable, Identifiable {
     static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool { lhs.id == rhs.id }
     let id: String
     let values: [SingleSelectValue]
+}
+
+struct SingleSelectValue: Hashable {
+    let fieldId: String
+    let title: String
+    let value: String
 }
 
 enum SubmitClaimChatMesageSender {
@@ -30,15 +21,21 @@ public struct ClaimIntent: Sendable {
     let currentStep: ClaimIntentStep
     let id: String
     let sourceMessages: [SourceMessage]
+    let isSkippable: Bool
+    let isRegrettable: Bool
 
     public init(
         currentStep: ClaimIntentStep,
         id: String,
-        sourceMessages: [SourceMessage]
+        sourceMessages: [SourceMessage],
+        isSkippable: Bool,
+        isRegrettable: Bool
     ) {
         self.currentStep = currentStep
         self.id = id
         self.sourceMessages = sourceMessages
+        self.isSkippable = isSkippable
+        self.isRegrettable = isRegrettable
     }
 }
 
@@ -75,19 +72,16 @@ public enum ClaimIntentStepContent: Sendable {
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
     case outcome(model: ClaimIntentStepContentOutcome)
-    case select(model: ClaimIntentStepContentSelect)
+    case singleSelect(model: [ClaimIntentContentSelectOption])
     case text
+    case unknown
 }
 
 public struct ClaimIntentStepContentForm: Sendable {
     let fields: [ClaimIntentStepContentFormField]
-    let isSkippable: Bool
-    let isRegrettable: Bool
 
-    public init(fields: [ClaimIntentStepContentFormField], isSkippable: Bool, isRegrettable: Bool) {
+    public init(fields: [ClaimIntentStepContentFormField]) {
         self.fields = fields
-        self.isSkippable = isSkippable
-        self.isRegrettable = isRegrettable
     }
 
     public struct ClaimIntentStepContentFormField: Sendable {
@@ -156,26 +150,18 @@ public struct ClaimIntentStepContentTask: Sendable {
 public struct ClaimIntentStepContentAudioRecording: Sendable {
     let hint: String
     let uploadURI: String
-    let isSkippable: Bool
-    let isRegrettable: Bool
 
-    public init(hint: String, uploadURI: String, isSkippable: Bool, isRegrettable: Bool) {
+    public init(hint: String, uploadURI: String) {
         self.hint = hint
         self.uploadURI = uploadURI
-        self.isSkippable = isSkippable
-        self.isRegrettable = isRegrettable
     }
 }
 
 public struct ClaimIntentStepContentFileUpload: Sendable {
     public let uploadURI: String
-    let isSkippable: Bool
-    let isRegrettable: Bool
 
-    public init(uploadURI: String, isSkippable: Bool, isRegrettable: Bool) {
+    public init(uploadURI: String) {
         self.uploadURI = uploadURI
-        self.isSkippable = isSkippable
-        self.isRegrettable = isRegrettable
     }
 }
 
@@ -222,28 +208,6 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
         public init(title: String, value: String) {
             self.title = title
             self.value = value
-        }
-    }
-}
-
-public struct ClaimIntentStepContentSelect: Sendable, Equatable {
-    let options: [ClaimIntentStepContentSelectOption]
-    let isSkippable: Bool
-    let isRegrettable: Bool
-
-    public init(options: [ClaimIntentStepContentSelectOption], isSkippable: Bool, isRegrettable: Bool) {
-        self.options = options
-        self.isSkippable = isSkippable
-        self.isRegrettable = isRegrettable
-    }
-
-    public struct ClaimIntentStepContentSelectOption: Sendable, Equatable {
-        let id: String
-        let title: String
-
-        public init(id: String, title: String) {
-            self.id = id
-            self.title = title
         }
     }
 }
