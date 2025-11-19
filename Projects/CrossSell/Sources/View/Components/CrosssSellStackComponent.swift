@@ -40,19 +40,26 @@ struct CrosssSellStackComponent: View {
     private var hasDiscountView: some View {
         if showDiscount {
             HStack {
-                hCoreUIAssets.campaign.view.foregroundColor(hSignalColor.Green.element)
-                    .rotate()
-                    .frame(width: 17, height: 17)
-                    .modifier(
-                        ExpandingContentModifier(expandingContent: {
-                            hText(L10n.insurancesCrossSellDiscountsAvailable, style: .label)
-                                .foregroundColor(hSignalColor.Green.text)
-                                .padding(.trailing, .padding4)
-                        })
+                ExpandingView(
+                    mainContent: {
+                        hCoreUIAssets.campaign.view.foregroundColor(hSignalColor.Green.element)
+                            .frame(width: 17, height: 17)
+                            .padding(.vertical, .padding8)
+                            .rotate()
+                    },
+                    expandingContent: {
+                        hText(L10n.insurancesCrossSellDiscountsAvailable, style: .label)
+                            .foregroundColor(hSignalColor.Green.text)
+                            .padding(.trailing, .padding4)
+                    }
+                ) { finalView in
+                    AnyView(
+                        finalView
+                            .padding(.horizontal, .padding8)
+                            .background(hHighlightColor.Green.fillOne)
+                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
                     )
-                    .padding(.padding8)
-                    .background(hHighlightColor.Green.fillOne)
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
+                }
                 Spacer()
             }
         }
@@ -73,45 +80,4 @@ struct CrosssSellStackComponent: View {
         showDiscount: true,
         withHeader: true
     )
-}
-
-public struct ExpandingContentModifier<AddedView: View>: ViewModifier {
-    @ViewBuilder var expandingContent: () -> AddedView
-    let spacing: CGFloat
-    let delay: Float
-    //    @State var expanded = false
-    @StateObject var vm = AnimationViewModel()
-
-    public init(
-        spacing: CGFloat = .padding8,
-        delay: Float = 1,
-        @ViewBuilder expandingContent: @escaping () -> AddedView
-    ) {
-        self.spacing = spacing
-        self.delay = delay
-        self.expandingContent = expandingContent
-    }
-
-    public func body(content: Content) -> some View {
-        HStack(spacing: spacing) {
-            content
-            if vm.expanded {
-                expandingContent()
-            }
-        }
-        .onAppear {
-            Task {
-                vm.expanded = false
-                try? await Task.sleep(seconds: delay)
-                let animation = Animation.easeInOut(duration: 1)
-                withAnimation(animation) {
-                    vm.expanded = true
-                }
-            }
-        }
-    }
-}
-
-class AnimationViewModel: ObservableObject {
-    @Published var expanded: Bool = false
 }
