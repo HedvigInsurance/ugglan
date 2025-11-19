@@ -22,9 +22,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentStart.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentStart.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -67,9 +66,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitAudio.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentSubmitAudio.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -111,9 +109,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitFileUpload.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentSubmitFileUpload.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -157,9 +154,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitForm.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentSubmitForm.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -197,9 +193,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitSummary.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentSubmitSummary.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -237,9 +232,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitTask.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentSubmitTask.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -276,9 +270,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSkipStep.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentSkipStep.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -315,9 +308,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentRegretStep.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentRegretStep.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
@@ -348,9 +340,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data.claimIntent.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data.claimIntent.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable = data.claimIntent.currentStep?.content.fragments.claimIntentStepContentFragment
                 .extractIsSkippable()
             let isRegrettable = data.claimIntent.currentStep?.content.fragments.claimIntentStepContentFragment
@@ -387,9 +378,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data?.claimIntentSubmitSelect.intent?.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let outcome: ClaimIntentStepOutcome =
+            let outcome: ClaimIntentStepOutcome? =
                 .init(fragment: data?.claimIntentSubmitSelect.intent?.outcome?.fragments.claimIntentOutcomeFragment)
-                ?? .deflect(model: .init(type: .unknown, title: nil, description: nil, partners: []))
             let isSkippable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =

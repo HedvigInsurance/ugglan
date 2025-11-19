@@ -22,7 +22,7 @@ public struct ClaimIntent: Sendable {
     let currentStep: ClaimIntentStep
     let id: String
     let sourceMessages: [SourceMessage]
-    let outcome: ClaimIntentStepOutcome
+    let outcome: ClaimIntentStepOutcome?
     let isSkippable: Bool
     let isRegrettable: Bool
 
@@ -30,7 +30,7 @@ public struct ClaimIntent: Sendable {
         currentStep: ClaimIntentStep,
         id: String,
         sourceMessages: [SourceMessage],
-        outcome: ClaimIntentStepOutcome,
+        outcome: ClaimIntentStepOutcome?,
         isSkippable: Bool,
         isRegrettable: Bool
     ) {
