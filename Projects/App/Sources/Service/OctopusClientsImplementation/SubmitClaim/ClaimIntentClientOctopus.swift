@@ -312,7 +312,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         return nil
     }
-
     func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
         let query = OctopusGraphQL.ClaimIntentQuery(claimIntentId: claimIntentId)
 

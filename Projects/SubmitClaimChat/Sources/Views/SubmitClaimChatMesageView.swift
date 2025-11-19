@@ -37,16 +37,16 @@ struct SubmitClaimChatMesageView: View {
                     } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                         SubmitClaimFileUploadView(viewModel: viewModel)
                     } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
-                        SubmitClaimOnknownView(viewModel: viewModel)
+                        SubmitClaimUnknownView(viewModel: viewModel)
+                    }
+                    if viewModel.isSkippable && viewModel.isEnabled {
+                        skipButton
                     }
                 }
                 .frame(
                     maxWidth: viewModel.maxWidth,
                     alignment: viewModel.alignment
                 )
-                if viewModel.isSkippable && viewModel.isEnabled {
-                    skipButton
-                }
             }
             .disabled(!viewModel.isEnabled)
             .hButtonIsLoading(viewModel.isLoading)

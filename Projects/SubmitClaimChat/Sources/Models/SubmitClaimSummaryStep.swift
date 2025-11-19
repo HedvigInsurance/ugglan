@@ -35,7 +35,6 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-
         mainHandler(result, false)
         withAnimation {
             isEnabled = false
