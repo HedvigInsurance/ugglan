@@ -10,6 +10,7 @@ import hCoreUI
 public struct ClaimDetailView: View {
     @StateObject var vm: ClaimDetailViewModel
     @EnvironmentObject var router: Router
+    @State private var showFileSourcePicker = false
 
     public init(
         claim: ClaimModel?,
@@ -36,35 +37,12 @@ public struct ClaimDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $vm.showImagePicker) {
-            ImagePicker { images in
-                vm.showAddFiles(with: images)
+        .showFileSourcePicker(
+            $showFileSourcePicker,
+            selecedFiles: { [weak vm] files in
+                vm?.showAddFiles(with: files)
             }
-            .ignoresSafeArea()
-        }
-        .sheet(isPresented: $vm.showFilePicker) {
-            FileImporterView { files in
-                vm.showAddFiles(with: files)
-            }
-            .ignoresSafeArea()
-        }
-        .sheet(isPresented: $vm.showCamera) {
-            CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 0.9)
-                else { return }
-                let file = File(
-                    id: UUID().uuidString,
-                    size: Double(data.count),
-                    mimeType: .JPEG,
-                    name: "image_\(Date()).jpeg",
-                    source: .data(data: data)
-                )
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    vm.showAddFiles(with: [file])
-                }
-            }
-            .ignoresSafeArea()
-        }
+        )
         .modally(item: $vm.showFilesView) { [weak vm] item in
             ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
                 let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -260,8 +238,8 @@ public struct ClaimDetailView: View {
                                 .medium,
                                 .primary,
                                 content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
-                                { [weak vm] in
-                                    vm?.showFilePickerAlert()
+                                {
+                                    showFileSourcePicker = true
                                 }
                             )
                         }
@@ -375,10 +353,6 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat(hasUnread: false)]
 
-    @Published var showImagePicker = false
-    @Published var showFilePicker = false
-    @Published var showCamera = false
-
     let fileGridViewModel: FileGridViewModel
     let type: ClaimDetailsType
     private var cancellables = Set<AnyCancellable>()
@@ -487,32 +461,6 @@ public class ClaimDetailViewModel: ObservableObject {
 
     var canAddFiles: Bool {
         claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
-    }
-
-    fileprivate func showFilePickerAlert() {
-        FilePicker.showAlert { [weak self] selected in
-            Task { @MainActor in
-                switch selected {
-                case .camera:
-                    self?.showCamera = true
-                case .imagePicker:
-                    let access = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
-                    switch access {
-                    case .notDetermined, .restricted, .denied:
-                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                            return
-                        }
-                        Dependencies.urlOpener.open(settingsUrl)
-                    case .authorized, .limited:
-                        self?.showImagePicker = true
-                    @unknown default:
-                        self?.showImagePicker = true
-                    }
-                case .filePicker:
-                    self?.showFilePicker = true
-                }
-            }
-        }
     }
 }
 

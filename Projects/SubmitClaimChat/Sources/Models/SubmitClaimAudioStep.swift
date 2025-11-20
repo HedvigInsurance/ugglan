@@ -82,8 +82,8 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         }
         return result
     }
+}
 
-    struct FileUploadResponseModel: Codable, Sendable {
-        let fileIds: [String]
-    }
+struct FileUploadResponseModel: Codable, Sendable {
+    let fileIds: [String]
 }
