@@ -87,7 +87,17 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         )
     }
 
-    public func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
+    public func claimIntentRegretStep(stepId: String) async throws -> ClaimIntent? {
+        .init(
+            currentStep: .init(content: .text, id: "id", text: ""),
+            id: "",
+            sourceMessages: [],
+            isSkippable: false,
+            isRegrettable: false
+        )
+    }
+
+    public func getNextStep(claimIntentId: String) async throws -> ClaimIntent? {
         .init(
             currentStep: .init(content: .text, id: "id", text: ""),
             id: "",

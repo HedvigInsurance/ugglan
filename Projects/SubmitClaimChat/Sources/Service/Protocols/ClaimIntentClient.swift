@@ -14,7 +14,8 @@ public protocol ClaimIntentClient {
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntent?
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntent?
     func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent?
-    func getNextStep(claimIntentId: String) async throws -> ClaimIntent
+    func claimIntentRegretStep(stepId: String) async throws -> ClaimIntent?
+    func getNextStep(claimIntentId: String) async throws -> ClaimIntent?
 }
 
 public struct StartClaimInput: Equatable, Identifiable {
@@ -81,13 +82,18 @@ class ClaimIntentService {
         return data
     }
 
-    func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
+    func getNextStep(claimIntentId: String) async throws -> ClaimIntent? {
         let data = try await client.getNextStep(claimIntentId: claimIntentId)
         return data
     }
 
     func claimIntentSkipStep(stepId: String) async throws -> ClaimIntent? {
         let data = try await client.claimIntentSkipStep(stepId: stepId)
+        return data
+    }
+
+    func claimIntentRegretStep(stepId: String) async throws -> ClaimIntent? {
+        let data = try await client.claimIntentRegretStep(stepId: stepId)
         return data
     }
 }

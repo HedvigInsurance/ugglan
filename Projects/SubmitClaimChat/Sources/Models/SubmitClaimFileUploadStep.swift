@@ -5,7 +5,11 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
     let model: ClaimIntentStepContentFileUpload
     let fileUploadVm: FilesUploadViewModel
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(
+        claimIntent: ClaimIntent,
+        service: ClaimIntentService,
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
+    ) {
         guard case .fileUpload(let model) = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-single select content")
         }
@@ -31,7 +35,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         guard let result else {
             throw ClaimIntentError.invalidResponse
         }
-        mainHandler(result)
+        mainHandler(.goToNext(claimIntent: result))
         withAnimation {
             isEnabled = false
         }

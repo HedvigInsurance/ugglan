@@ -128,7 +128,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         stepId: String
     ) async throws -> ClaimIntent? {
         let fieldInput: [OctopusGraphQL.ClaimIntentFormSubmitInputField] = fields.map {
-            .init(fieldId: $0.id, values: GraphQLNullable(optionalValue: $0.values))
+            .init(fieldId: $0.id, values: $0.values)
         }
         let input = OctopusGraphQL.ClaimIntentSubmitFormInput(stepId: stepId, fields: fieldInput)
         let mutation = OctopusGraphQL.ClaimIntentSubmitFormMutation(input: input)
@@ -220,13 +220,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
-
-            currentStep?.content.asClaimIntentStepContentForm?.fields
-                .forEach { field in
-                    let defaultValue = field.defaultValue
-                    print("defaultValue: \(defaultValue ?? "nil")")
-                }
-
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
                 return .init(
                     currentStep: .init(fragment: currentStepFragment),
@@ -278,7 +271,42 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         return nil
     }
 
-    func getNextStep(claimIntentId: String) async throws -> ClaimIntent {
+    func claimIntentRegretStep(stepId: String) async throws -> SubmitClaimChat.ClaimIntent? {
+        let mutation = OctopusGraphQL.ClaimIntentRegretStepMutation(stepId: stepId)
+
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentRegretStep.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
+
+            let currentStep = data?.claimIntentRegretStep.intent?.currentStep
+            let id = data?.claimIntentRegretStep.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentRegretStep.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
+
+        return nil
+    }
+
+    func getNextStep(claimIntentId: String) async throws -> ClaimIntent? {
         let query = OctopusGraphQL.ClaimIntentQuery(claimIntentId: claimIntentId)
 
         do {
@@ -286,22 +314,24 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let sourceMessages: [SourceMessage] =
                 data.claimIntent.sourceMessages?
                 .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
-            let isSkippable = data.claimIntent.currentStep.content.fragments.claimIntentStepContentFragment
+            let isSkippable = data.claimIntent.currentStep?.content.fragments.claimIntentStepContentFragment
                 .extractIsSkippable()
-            let isRegrettable = data.claimIntent.currentStep.content.fragments.claimIntentStepContentFragment
+            let isRegrettable = data.claimIntent.currentStep?.content.fragments.claimIntentStepContentFragment
                 .extractIsRegrettable()
 
-            let currentStepFragment = data.claimIntent.currentStep.fragments.claimIntentStepFragment
-            return .init(
-                currentStep: .init(fragment: currentStepFragment),
-                id: data.claimIntent.id,
-                sourceMessages: sourceMessages,
-                isSkippable: isSkippable,
-                isRegrettable: isRegrettable
-            )
+            if let currentStepFragment = data.claimIntent.currentStep?.fragments.claimIntentStepFragment {
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: data.claimIntent.id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable ?? false,
+                    isRegrettable: isRegrettable ?? false
+                )
+            }
         } catch {
             throw SubmitClaimError.error(message: error.localizedDescription)
         }
+        return nil
     }
 
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntent? {
@@ -323,13 +353,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
             let isRegrettable =
                 currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
-
-            currentStep?.content.asClaimIntentStepContentForm?.fields
-                .forEach { field in
-                    let defaultValue = field.defaultValue
-                    print("defaultValue: \(defaultValue ?? "nil")")
-                }
-
             if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
                 return .init(
                     currentStep: .init(fragment: currentStepFragment),
@@ -387,8 +410,6 @@ extension ClaimIntentStepContent {
                     items: summary.items.map { .init(title: $0.title, value: $0.value) }
                 )
             )
-        } else if let outcome = fragment.asClaimIntentStepContentOutcome {
-            self = .outcome(model: .init(claimId: outcome.claimId))
         } else if let singleStep = fragment.asClaimIntentStepContentSelect {
             self = .singleSelect(model: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) }))
         } else if let fileUpload = fragment.asClaimIntentStepContentFileUpload {
@@ -408,7 +429,7 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
         fragment: OctopusGraphQL.ClaimIntentStepContentFormFieldFragment
     ) {
         self.init(
-            defaultValue: fragment.defaultValue,
+            defaultValues: fragment.defaultValues,
             id: fragment.id,
             isRequired: fragment.isRequired,
             maxValue: fragment.maxValue,
@@ -434,6 +455,8 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
             return .singleSelect
         case .binary:
             return .binary
+        case .multiSelect:
+            return .multiSelect
         }
     }
 }
