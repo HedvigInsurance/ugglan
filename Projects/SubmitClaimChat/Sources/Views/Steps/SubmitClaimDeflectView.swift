@@ -93,12 +93,6 @@ public struct SubmitClaimDeflectScreen: View {
 
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
-    //    let model = ClaimIntentOutcomeDeflection(
-    //        type: .emergency,
-    //        title: "emergency deflect",
-    //        description: "description",
-    //        partners: []
-    //    )
 
     let model = ClaimIntentOutcomeDeflection(
         type: .towing,

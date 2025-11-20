@@ -82,14 +82,6 @@ public enum ClaimIntentStepContent: Sendable {
     case unknown
 }
 
-//public struct ClaimIntentStepOutcomeModel: Sendable, Hashable, TrackingViewNameProtocol {
-//    public var nameForTracking: String {
-//        return "outcome"
-//    }
-//
-//    let model: ClaimIntentStepOutcome
-//}
-
 public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol {
     public var nameForTracking: String {
         ""

@@ -115,8 +115,6 @@ extension ClaimIntentStepHandler {
     var alignment: Alignment {
         if sender == .hedvig {
             switch claimIntent.currentStep.content {
-            //            case .outcome:
-            //                return .center
             default:
                 return .leading
             }
