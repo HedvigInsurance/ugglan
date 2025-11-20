@@ -207,7 +207,7 @@ public struct ChangeTierNavigation: View {
             if changeTierNavigationVm.useOwnNavigation {
                 RouterHost(
                     router: changeTierNavigationVm.router,
-                    options: [],
+                    options: .extendedNavigationWidth,
                     tracking: ChangeTierTrackingType.changeTierLandingScreen
                 ) {
                     wrapperHost
@@ -249,6 +249,7 @@ public struct ChangeTierNavigation: View {
             )
             .withDismissButton()
             .embededInNavigation(
+                options: .extendedNavigationWidth,
                 tracking: ChangeTierTrackingType.compareTier
             )
             .environmentObject(changeTierNavigationVm)

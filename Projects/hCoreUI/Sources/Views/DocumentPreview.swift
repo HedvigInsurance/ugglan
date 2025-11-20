@@ -136,7 +136,10 @@ public struct DocumentPreview: View {
         .introspect(.viewController, on: .iOS(.v13...)) { vc in
             vm.vc = vc
         }
-        .embededInNavigation(options: [.navigationBarHidden], tracking: self)
+        .embededInNavigation(
+            options: [.navigationBarHidden],
+            tracking: self
+        )
     }
 }
 

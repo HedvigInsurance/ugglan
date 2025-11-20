@@ -14,7 +14,11 @@ public struct DeleteAccountView: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: DeleteDetentType.deleteAccountView) {
+        RouterHost(
+            router: router,
+            options: .extendedNavigationWidth,
+            tracking: DeleteDetentType.deleteAccountView
+        ) {
             hForm {
                 hSection {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {

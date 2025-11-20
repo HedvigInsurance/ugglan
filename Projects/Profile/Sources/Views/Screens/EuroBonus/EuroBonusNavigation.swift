@@ -33,7 +33,11 @@ public struct EuroBonusNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(router: router, tracking: EuroBonusDetentType.euroBonus) {
+                RouterHost(
+                    router: router,
+                    options: .extendedNavigationWidth,
+                    tracking: EuroBonusDetentType.euroBonus
+                ) {
                     EuroBonusView()
                         .configureTitle(L10n.SasIntegration.title)
                         .withDismissButton()
@@ -62,7 +66,7 @@ public struct EuroBonusNavigation: View {
                     }
                 }
                 .embededInNavigation(
-                    options: .navigationType(type: .large),
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: EuroBonusDetentType.changeEuroBonus
                 )
         }

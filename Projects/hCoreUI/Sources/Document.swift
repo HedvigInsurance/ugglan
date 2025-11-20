@@ -39,7 +39,10 @@ public struct PDFPreview: View {
         }
         .navigationTitle(vm.document.displayName)
         .navigationBarTitleDisplayMode(.inline)
-        .embededInNavigation(tracking: self)
+        .embededInNavigation(
+            options: .extendedNavigationWidth,
+            tracking: self
+        )
         .withDismissButton()
     }
 
