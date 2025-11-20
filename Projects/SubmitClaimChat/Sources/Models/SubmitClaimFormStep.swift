@@ -8,7 +8,11 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
     @Published var formValues: [String: FormStepValue] = [:]
 
     let formModel: ClaimIntentStepContentForm
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(
+        claimIntent: ClaimIntent,
+        service: ClaimIntentService,
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
+    ) {
         guard case .form(let model) = claimIntent.currentStep.content else {
             fatalError("FormStepHandler initialized with non-form content")
         }
@@ -61,7 +65,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-        mainHandler(result)
+        mainHandler(.goToNext(claimIntent: result))
         withAnimation {
             isEnabled = false
         }

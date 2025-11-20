@@ -271,6 +271,41 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         return nil
     }
 
+    func claimIntentRegretStep(stepId: String) async throws -> SubmitClaimChat.ClaimIntent? {
+        let mutation = OctopusGraphQL.ClaimIntentRegretStepMutation(stepId: stepId)
+
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentRegretStep.userError, let message = userError.message {
+                throw SubmitClaimError.error(message: message)
+            }
+
+            let currentStep = data?.claimIntentRegretStep.intent?.currentStep
+            let id = data?.claimIntentRegretStep.intent?.id ?? ""
+            let sourceMessages: [SourceMessage] =
+                data?.claimIntentRegretStep.intent?.sourceMessages?
+                .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
+            let isSkippable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsSkippable() ?? false
+            let isRegrettable =
+                currentStep?.content.fragments.claimIntentStepContentFragment.extractIsRegrettable() ?? false
+
+            if let currentStepFragment = currentStep?.fragments.claimIntentStepFragment {
+                return .init(
+                    currentStep: .init(fragment: currentStepFragment),
+                    id: id,
+                    sourceMessages: sourceMessages,
+                    isSkippable: isSkippable,
+                    isRegrettable: isRegrettable
+                )
+            }
+        } catch {
+            throw SubmitClaimError.error(message: error.localizedDescription)
+        }
+
+        return nil
+    }
+
     func getNextStep(claimIntentId: String) async throws -> ClaimIntent? {
         let query = OctopusGraphQL.ClaimIntentQuery(claimIntentId: claimIntentId)
 

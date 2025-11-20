@@ -1,7 +1,11 @@
 import SwiftUI
 
 final class SubmitClaimTextStep: ClaimIntentStepHandler {
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(
+        claimIntent: ClaimIntent,
+        service: ClaimIntentService,
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
+    ) {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         guard case .text = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-text content")
@@ -22,7 +26,7 @@ final class SubmitClaimTextStep: ClaimIntentStepHandler {
         guard let result = try await service.getNextStep(claimIntentId: claimIntent.id) else {
             throw ClaimIntentError.invalidResponse
         }
-        mainHandler(result)
+        mainHandler(.goToNext(claimIntent: result))
         withAnimation {
             isEnabled = false
         }

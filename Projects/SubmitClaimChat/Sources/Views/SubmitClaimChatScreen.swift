@@ -112,21 +112,30 @@ final class SubmitClaimChatViewModel: ObservableObject {
         guard let claimIntent = try await service.startClaimIntent(input: input) else {
             throw ClaimIntentError.invalidResponse
         }
-        processClaimIntent(claimIntent)
+        processClaimIntent(.goToNext(claimIntent: claimIntent))
     }
 
-    private func processClaimIntent(_ claimIntent: ClaimIntent) {
-        let handler = getStep(for: claimIntent)
-        self.allSteps.append(handler)
+    private func processClaimIntent(_ claimEvent: SubmitClaimEvent) {
+        switch claimEvent {
+        case let .goToNext(claimIntent):
+            let handler = getStep(for: claimIntent)
+            self.allSteps.append(handler)
+        case let .regret(currentClaimIntent, newclaimIntent):
+            let handler = getStep(for: newclaimIntent)
+            if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
+                allSteps.removeSubrange((indexToRemove)..<allSteps.count)
+            }
+            self.allSteps.append(handler)
+        }
     }
 
     private func getStep(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
         ClaimIntentStepHandlerFactory.createHandler(
             for: claimIntent,
             service: service
-        ) { [weak self] newClaimIntent in
+        ) { [weak self] claimEvent in
             withAnimation {
-                self?.processClaimIntent(newClaimIntent)
+                self?.processClaimIntent(claimEvent)
             }
         }
     }

@@ -4,7 +4,11 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     @Published var selectedOption: String?
     let options: [ClaimIntentContentSelectOption]
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(
+        claimIntent: ClaimIntent,
+        service: ClaimIntentService,
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
+    ) {
         guard case .singleSelect(let model) = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-single select content")
         }
@@ -31,7 +35,7 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.unknown
         }
-        mainHandler(result)
+        mainHandler(.goToNext(claimIntent: result))
         withAnimation {
             isEnabled = false
         }

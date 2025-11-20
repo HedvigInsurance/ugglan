@@ -9,13 +9,18 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMesageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
+    var isRegrettable: Bool { claimIntent.isRegrettable }
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
     let service: ClaimIntentService
-    let mainHandler: (ClaimIntent) -> Void
+    let mainHandler: (SubmitClaimEvent) -> Void
 
-    required init(claimIntent: ClaimIntent, service: ClaimIntentService, mainHandler: @escaping (ClaimIntent) -> Void) {
+    required init(
+        claimIntent: ClaimIntent,
+        service: ClaimIntentService,
+        mainHandler: @escaping (SubmitClaimEvent) -> Void
+    ) {
         self.claimIntent = claimIntent
         self.service = service
         self.mainHandler = mainHandler
@@ -48,7 +53,30 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             isLoading = false
             isEnabled = false
         }
-        mainHandler(result)
+        mainHandler(.goToNext(claimIntent: result))
+        return result
+    }
+
+    @discardableResult
+    func regret() async throws -> ClaimIntent {
+        withAnimation {
+            isLoading = true
+        }
+        defer {
+            withAnimation {
+                isLoading = false
+            }
+        }
+
+        let result = try await service.claimIntentRegretStep(stepId: id)
+        guard let result else {
+            throw ClaimIntentError.invalidResponse
+        }
+        withAnimation {
+            isLoading = false
+            isEnabled = false
+        }
+        mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: result))
         return result
     }
 }
@@ -58,7 +86,7 @@ enum ClaimIntentStepHandlerFactory {
     static func createHandler(
         for claimIntent: ClaimIntent,
         service: ClaimIntentService,
-        mainHandler: @escaping ((ClaimIntent) -> Void)
+        mainHandler: @escaping ((SubmitClaimEvent) -> Void)
     ) -> ClaimIntentStepHandler {
         switch claimIntent.currentStep.content {
         case .form:
@@ -81,6 +109,11 @@ enum ClaimIntentStepHandlerFactory {
             return SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }
     }
+}
+
+enum SubmitClaimEvent {
+    case goToNext(claimIntent: ClaimIntent)
+    case regret(currentClaimIntent: ClaimIntent, newclaimIntent: ClaimIntent)
 }
 
 // MARK: - Errors
