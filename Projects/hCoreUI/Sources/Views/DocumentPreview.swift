@@ -124,7 +124,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
             target: self,
             action: #selector(share(sender:))
         )
-        vc?.navigationItem.rightBarButtonItem = barButtonItem
+        vc?.navigationItem.leftBarButtonItem = barButtonItem
     }
 
     @objc func share(sender: UIBarButtonItem) {
@@ -239,6 +239,7 @@ public struct DocumentPreview: View {
                 vm?.vc = vc
             }
         }
+        .configureTitle(vm.type.name ?? "")
         .embededInNavigation(tracking: self)
     }
 }
