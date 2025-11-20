@@ -16,7 +16,7 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func submitResponse() async throws -> ClaimIntent {
+    override func submitResponse() async throws {
         withAnimation {
             isLoading = true
         }
@@ -35,14 +35,20 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.unknown
         }
-        mainHandler(.goToNext(claimIntent: result))
+
+        switch result {
+        case let .intent(model):
+            mainHandler(.goToNext(claimIntent: model))
+        case let .outcome(model):
+            mainHandler(.outcome(model: model))
+        }
+
         withAnimation {
             isEnabled = false
         }
-        return result
     }
 
-    override func skip() async throws -> ClaimIntent {
+    override func skip() async throws -> ClaimIntent? {
         let data = try await super.skip()
         selectedOption = nil
         return data

@@ -31,12 +31,12 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     }
 
     @discardableResult
-    func submitResponse() async throws -> ClaimIntent {
+    func submitResponse() async throws {
         fatalError("submitResponse must be overridden")
     }
 
     @discardableResult
-    func skip() async throws -> ClaimIntent {
+    func skip() async throws -> ClaimIntent? {
         withAnimation {
             isLoading = true
         }
@@ -53,8 +53,15 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             isLoading = false
             isEnabled = false
         }
-        mainHandler(.goToNext(claimIntent: result))
-        return result
+
+        switch result {
+        case let .intent(model):
+            mainHandler(.goToNext(claimIntent: model))
+            return model
+        case let .outcome(model):
+            mainHandler(.outcome(model: model))
+            return nil
+        }
     }
 
     @discardableResult
@@ -76,8 +83,24 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             isLoading = false
             isEnabled = false
         }
-        mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: result))
-        return result
+
+        switch result {
+        case let .intent(model):
+            mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: model))
+            return model
+        case let .outcome(model):
+            break
+        }
+
+        return .init(
+            currentStep: .init(content: .text, id: "", text: ""),
+            id: "",
+            sourceMessages: [],
+            outcome: nil,
+            isSkippable: false,
+            isRegrettable: true
+        )
+
     }
 }
 
@@ -112,6 +135,7 @@ enum ClaimIntentStepHandlerFactory {
 enum SubmitClaimEvent {
     case goToNext(claimIntent: ClaimIntent)
     case regret(currentClaimIntent: ClaimIntent, newclaimIntent: ClaimIntent)
+    case outcome(model: ClaimIntentStepOutcome)
 }
 
 // MARK: - Errors

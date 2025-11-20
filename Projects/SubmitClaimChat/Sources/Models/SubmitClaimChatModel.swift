@@ -1,5 +1,7 @@
 import Claims
 import Foundation
+import hCore
+import hCoreUI
 
 struct SingleItemModel: Equatable, Identifiable {
     static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool { lhs.id == rhs.id }
@@ -80,9 +82,22 @@ public enum ClaimIntentStepContent: Sendable {
     case unknown
 }
 
-public enum ClaimIntentStepOutcome: Sendable {
+//public struct ClaimIntentStepOutcomeModel: Sendable, Hashable, TrackingViewNameProtocol {
+//    public var nameForTracking: String {
+//        return "outcome"
+//    }
+//
+//    let model: ClaimIntentStepOutcome
+//}
+
+public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        ""
+    }
+
     case deflect(model: ClaimIntentOutcomeDeflection)
     case claim(model: ClaimIntentOutcomeClaim)
+    case unknown
 }
 
 public struct ClaimIntentStepContentForm: Sendable {
@@ -221,52 +236,78 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
     }
 }
 
-public struct ClaimIntentOutcomeDeflection: Sendable {
+public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
     let type: ClaimIntentOutcomeDeflectionType?
     let title: String?
     let description: String?
-    let partners: [ClaimIntentOutcomeDeflectionPartner]
+    let partners: [Partner]
+    let infoText: String?
+    let warningText: String?
+    let infoSectionText: String?
+    let infoSectionTitle: String?
+    let questions: [DeflectQuestion]
 
     public init(
         type: ClaimIntentOutcomeDeflectionType?,
         title: String?,
         description: String?,
-        partners: [ClaimIntentOutcomeDeflectionPartner]
+        partners: [Partner]
     ) {
         self.type = type
         self.title = title
         self.description = description
         self.partners = partners
-    }
 
-    public struct ClaimIntentOutcomeDeflectionPartner: Sendable {
-        let id: String
-        let imageUrl: String?
-        let phoneNumber: String?
-        let title: String?
-        let description: String?
-        let info: String?
-        let url: String?
-        let urlButtonTitle: String?
-
-        public init(
-            id: String,
-            imageUrl: String?,
-            phoneNumber: String?,
-            title: String?,
-            description: String?,
-            info: String?,
-            url: String?,
-            urlButtonTitle: String?
-        ) {
-            self.id = id
-            self.imageUrl = imageUrl
-            self.phoneNumber = phoneNumber
-            self.title = title
-            self.description = description
-            self.info = info
-            self.url = url
-            self.urlButtonTitle = urlButtonTitle
+        switch type {
+        case .emergency:
+            infoSectionText = L10n.submitClaimEmergencyInsuranceCoverLabel
+            infoSectionTitle = L10n.submitClaimEmergencyInsuranceCoverTitle
+            infoText = nil
+            warningText = L10n.submitClaimEmergencyInfoLabel
+            questions = [
+                .init(question: L10n.submitClaimEmergencyFaq1Title, answer: L10n.submitClaimEmergencyFaq1Label),
+                .init(question: L10n.submitClaimEmergencyFaq2Title, answer: L10n.submitClaimEmergencyFaq2Label),
+                .init(question: L10n.submitClaimEmergencyFaq3Title, answer: L10n.submitClaimEmergencyFaq3Label),
+                .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
+                .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
+                .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
+                .init(question: L10n.submitClaimEmergencyFaq7Title, answer: L10n.submitClaimEmergencyFaq7Label),
+                .init(question: L10n.submitClaimEmergencyFaq8Title, answer: L10n.submitClaimEmergencyFaq8Label),
+            ]
+        case .glass:
+            infoText = L10n.submitClaimGlassDamageInfoLabel
+            warningText = nil
+            infoSectionText = L10n.submitClaimGlassDamageHowItWorksLabel
+            infoSectionTitle = L10n.submitClaimHowItWorksTitle
+            questions = []
+        case .towing:
+            infoText = L10n.submitClaimTowingInfoLabel
+            warningText = nil
+            infoSectionText = L10n.submitClaimTowingHowItWorksLabel
+            infoSectionTitle = L10n.submitClaimHowItWorksTitle
+            questions = [
+                .init(question: L10n.submitClaimTowingQ1, answer: L10n.submitClaimTowingA1),
+                .init(question: L10n.submitClaimTowingQ2, answer: L10n.submitClaimTowingA2),
+                .init(question: L10n.submitClaimTowingQ3, answer: L10n.submitClaimTowingA3),
+            ]
+        case .eir:
+            infoText = nil
+            warningText = nil
+            infoSectionText = nil
+            infoSectionTitle = nil
+            questions = []
+        case .pests:
+            infoText = L10n.submitClaimPestsInfoLabel
+            warningText = nil
+            infoSectionText = L10n.submitClaimPestsHowItWorksLabel
+            infoSectionTitle = L10n.submitClaimHowItWorksTitle
+            questions = []
+        case .idProtection, .unknown, .none:
+            infoText = nil
+            warningText = nil
+            infoSectionText = nil
+            infoSectionTitle = nil
+            questions = []
         }
     }
 
@@ -281,7 +322,7 @@ public struct ClaimIntentOutcomeDeflection: Sendable {
     }
 }
 
-public struct ClaimIntentOutcomeClaim: Sendable {
+public struct ClaimIntentOutcomeClaim: Sendable, Hashable {
     let claimId: String
     let claim: ClaimModel
 

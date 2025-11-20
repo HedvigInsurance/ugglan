@@ -2,27 +2,31 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public typealias GoToClaimDetails = (String) -> Void
-
 public struct SubmitClaimChatScreen: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     let input: StartClaimInput
-    let goToClaimDetails: GoToClaimDetails
+
     public init(
-        input: StartClaimInput,
-        goToClaimDetails: @escaping GoToClaimDetails
+        input: StartClaimInput
     ) {
         self.input = input
-        self.goToClaimDetails = goToClaimDetails
         _viewModel = StateObject(
-            wrappedValue: .init(input: input, goToClaimDetails: goToClaimDetails)
+            wrappedValue: .init(
+                input: input
+            )
         )
     }
 
     public var body: some View {
         successView
+            .onAppear {
+                viewModel.onOutcome = { [router] outcome in
+                    let outcomeModel: ClaimIntentStepOutcome = outcome
+                    router.push(outcomeModel)
+                }
+            }
     }
 
     private var successView: some View {
@@ -89,20 +93,21 @@ extension View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return SubmitClaimChatScreen(input: .init(sourceMessageId: nil, devFlow: false), goToClaimDetails: { _ in })
+    return SubmitClaimChatScreen(input: .init(sourceMessageId: nil, devFlow: false))
 }
 
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
     @Published var allSteps: [ClaimIntentStepHandler] = []
-    let goToClaimDetails: GoToClaimDetails
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
+    var onOutcome: ((ClaimIntentStepOutcome) -> Void)?
 
-    init(input: StartClaimInput, goToClaimDetails: @escaping GoToClaimDetails) {
+    init(
+        input: StartClaimInput
+    ) {
         self.input = input
-        self.goToClaimDetails = goToClaimDetails
         Task {
             try? await startClaimIntent(input: input)
         }
@@ -112,7 +117,13 @@ final class SubmitClaimChatViewModel: ObservableObject {
         guard let claimIntent = try await service.startClaimIntent(input: input) else {
             throw ClaimIntentError.invalidResponse
         }
-        processClaimIntent(.goToNext(claimIntent: claimIntent))
+
+        switch claimIntent {
+        case let .intent(model):
+            processClaimIntent(.goToNext(claimIntent: model))
+        case let .outcome(model):
+            processClaimIntent(.outcome(model: model))
+        }
     }
 
     private func processClaimIntent(_ claimEvent: SubmitClaimEvent) {
@@ -126,6 +137,8 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 allSteps.removeSubrange((indexToRemove)..<allSteps.count)
             }
             self.allSteps.append(handler)
+        case let .outcome(model):
+            onOutcome?(model)
         }
     }
 

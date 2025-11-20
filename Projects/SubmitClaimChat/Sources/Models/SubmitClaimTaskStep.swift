@@ -31,7 +31,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
     }
 
-    override func submitResponse() async throws -> ClaimIntent {
+    override func submitResponse() async throws {
         withAnimation {
             isLoading = true
         }
@@ -46,11 +46,16 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-        mainHandler(.goToNext(claimIntent: claimIntent))
+        switch claimIntent {
+        case let .intent(model):
+            mainHandler(.goToNext(claimIntent: model))
+        case let .outcome(model):
+            mainHandler(.outcome(model: model))
+        }
+
         withAnimation {
             isEnabled = false
         }
-        return claimIntent
     }
 
     private func getNextStep() async throws {
@@ -61,7 +66,14 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             guard let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id) else {
                 throw ClaimIntentError.invalidResponse
             }
-            self.claimIntent = claimIntent
+
+            switch claimIntent {
+            case let .intent(model):
+                self.claimIntent = model
+            default:
+                break
+            }
+
             try await getNextStep()
         }
     }
