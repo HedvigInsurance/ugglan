@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 
 public class hNavigationBaseController: UINavigationController {
+    static let extendedNavigationWidthOffset: CGFloat = 12
     var onDeinit: (@Sendable () -> Void)?
 
     deinit {
@@ -67,7 +68,8 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: additionalHeight ?? subview.frame.origin.y,
-                    width: frame.width + (extendedNavigationWidth ? 12 : 0),
+                    width: frame.width
+                        + (extendedNavigationWidth ? hNavigationBaseController.extendedNavigationWidthOffset : 0),
                     height: subview.frame.size.height
                 )
             }
@@ -126,7 +128,8 @@ class LargeNavBar: UINavigationBar {
                     subview.frame = CGRect(
                         x: 0,
                         y: -12,
-                        width: frame.width + (extendedNavigationWidth ? 12 : 0),
+                        width: frame.width
+                            + (extendedNavigationWidth ? hNavigationBaseController.extendedNavigationWidthOffset : 0),
                         height: hNavigationControllerWithLargerNavBar.navigationBarHeight - 44
                     )
                 }
