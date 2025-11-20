@@ -66,7 +66,6 @@ public class FilesUploadViewModel: ObservableObject {
     let fileGridViewModel: FileGridViewModel
     private var delayTimer: AnyCancellable?
     private var initObservers = [AnyCancellable]()
-    var claimFileUploadService = hClaimFileUploadService()
 
     public init(
         model: FileUploadModel

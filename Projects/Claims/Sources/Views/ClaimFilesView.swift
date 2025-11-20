@@ -79,7 +79,8 @@ public struct ClaimFilesView: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
-        }.showFileSourcePicker($showFileSourcePicker) {[weak vm] files in
+        }
+        .showFileSourcePicker($showFileSourcePicker) { [weak vm] files in
             for file in files {
                 vm?.add(file: file)
             }
@@ -287,4 +288,3 @@ public struct FileUrlModel: Identifiable, Equatable {
     return ClaimFilesView(endPoint: "", files: files) { _ in
     }
 }
-
