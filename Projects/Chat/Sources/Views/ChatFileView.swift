@@ -78,7 +78,6 @@ struct ChatFileView: View {
             .overlay {
                 VStack {
                     if !file.name.isEmpty {
-                        // we are missing name so we dont show it
                         hText(file.name, style: .finePrint)
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .padding(.padding8)
