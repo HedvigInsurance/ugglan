@@ -132,7 +132,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
             do {
                 let data = try await fetchData()
                 guard let name = type.name else { return }
-                let fileURL = try createTemporaryFile(data: data, name: name, extension: type.mimeType.name)
+                let fileURL = try createTemporaryFile(data: data, name: name, ext: type.mimeType.name)
                 presentShareSheet(for: fileURL, from: sender)
             } catch {
                 Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.somethingWentWrong))
@@ -150,12 +150,12 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
         }
     }
 
-    private func createTemporaryFile(data: Data, name: String, extension: String) throws -> URL {
+    private func createTemporaryFile(data: Data, name: String, ext: String) throws -> URL {
         cleanupTemporaryFile()
 
         let contentURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(name)
-            .appendingPathExtension(`extension`)
+            .appendingPathExtension(ext)
         if FileManager.default.fileExists(atPath: contentURL.path) {
             try FileManager.default.removeItem(at: contentURL)
         }
