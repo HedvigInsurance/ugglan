@@ -1,5 +1,6 @@
 import Apollo
 import Authentication
+import AutomaticLog
 import Chat
 import Claims
 import Combine
@@ -8,7 +9,6 @@ import CoreDependencies
 import DatadogLogs
 import Forever
 import Foundation
-import AutomaticLog
 import MoveFlow
 import Payment
 import PresentableStore
