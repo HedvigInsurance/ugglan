@@ -380,37 +380,18 @@ extension ClaimIntentStepOutcome {
         } else if let deflect = fragment.asClaimIntentOutcomeDeflection {
             self = .deflect(
                 model: .init(
-                    type: deflect.type?.asType,
                     title: deflect.title,
-                    description: deflect.description,
+                    content: .init(title: deflect.content.title, description: deflect.content.description),
                     partners: deflect.partners.map {
                         .init(fragment: $0.fragments.claimIntentOutcomeDeflectionPartnerFragment)
-                    }
+                    },
+                    infoText: deflect.infoText,
+                    warningText: deflect.warningText,
+                    questions: deflect.faq.map { .init(question: $0.title, answer: $0.description) }
                 )
             )
         } else {
             self = .unknown
-        }
-    }
-}
-
-extension GraphQLEnum<OctopusGraphQL.ClaimIntentOutcomeDeflectionType> {
-    public var asType: ClaimIntentOutcomeDeflection.ClaimIntentOutcomeDeflectionType {
-        switch self {
-        case .emergency:
-            return .emergency
-        case .glass:
-            return .glass
-        case .towing:
-            return .towing
-        case .eir:
-            return .eir
-        case .pests:
-            return .pests
-        case .idProtection:
-            return .idProtection
-        default:
-            return .unknown
         }
     }
 }

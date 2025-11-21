@@ -17,12 +17,7 @@ public struct SubmitClaimDeflectScreen: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                if let infoText = model.infoSectionTitle {
-                    hSection {
-                        InfoCard(text: infoText, type: .info)
-                            .accessibilitySortPriority(2)
-                    }
-                } else if let warningText = model.warningText {
+                if let warningText = model.warningText {
                     hSection {
                         InfoCard(text: warningText, type: .attention)
                             .accessibilitySortPriority(2)
@@ -30,7 +25,7 @@ public struct SubmitClaimDeflectScreen: View {
                 }
 
                 VStack(spacing: .padding16) {
-                    if let infoViewTitle = model.infoSectionTitle, let infoViewText = model.infoSectionText {
+                    if let infoViewTitle = model.title, let infoViewText = model.infoText {
                         let title =
                             model.partners.count == 1
                             ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
@@ -57,8 +52,8 @@ public struct SubmitClaimDeflectScreen: View {
 
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
-                        hText(model.title ?? "")
-                        hText(model.description ?? "")
+                        hText(model.content.title)
+                        hText(model.content.description)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
@@ -95,10 +90,30 @@ public struct SubmitClaimDeflectScreen: View {
     Localization.Locale.currentLocale.send(.en_SE)
 
     let model = ClaimIntentOutcomeDeflection(
-        type: .towing,
-        title: "emergency deflect",
-        description: "description",
-        partners: []
+        title: "title",
+        content: .init(
+            title: "content title",
+            description: "content description"
+        ),
+        partners: [
+            .init(
+                id: "partnerId1",
+                imageUrl: nil,
+                url: nil,
+                phoneNumber: nil,
+                title: "partner title",
+                description: "partner description",
+                info: "info",
+                buttonText: "button",
+                preferredImageHeight: nil
+            )
+        ],
+        infoText: "info text",
+        warningText: "warning text",
+        questions: [
+            .init(question: "question 1", answer: "answer 1"),
+            .init(question: "question 2", answer: "answer 2"),
+        ]
     )
 
     return SubmitClaimDeflectScreen(model: model, openChat: {})

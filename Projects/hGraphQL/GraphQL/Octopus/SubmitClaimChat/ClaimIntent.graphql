@@ -25,9 +25,21 @@ fragment ClaimIntentOutcomeFragment on ClaimIntentOutcome {
         claimId
     }
     ... on ClaimIntentOutcomeDeflection {
-        type
+        infoText
+        warningText
+        partnersInfo {
+            title
+            description
+        }
+        content {
+            description
+            title
+        }
+        faq {
+            title
+            description
+        }
         title
-        description
         partners {
             ...ClaimIntentOutcomeDeflectionPartnerFragment
         }
