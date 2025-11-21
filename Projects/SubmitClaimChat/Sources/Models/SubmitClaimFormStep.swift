@@ -41,20 +41,10 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         return true
     }
 
-    override func submitResponse() async throws -> ClaimIntent {
+    override func executeStep() async throws -> ClaimIntent {
         guard validateInput() else {
             throw ClaimIntentError.invalidInput
         }
-
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
-
         let fieldValues = formValues.map { FieldValue(id: $0.key, values: $0.value.values) }
 
         guard
@@ -64,10 +54,6 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
             )
         else {
             throw ClaimIntentError.invalidResponse
-        }
-        mainHandler(.goToNext(claimIntent: result))
-        withAnimation {
-            isEnabled = false
         }
         return result
     }

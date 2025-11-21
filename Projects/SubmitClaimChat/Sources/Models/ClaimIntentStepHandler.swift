@@ -13,6 +13,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
+    @Published var error: Error?
+
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
 
@@ -30,54 +32,76 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         true
     }
 
-    @discardableResult
-    func submitResponse() async throws -> ClaimIntent {
+    func executeStep() async throws -> ClaimIntent {
         fatalError("submitResponse must be overridden")
     }
 
-    @discardableResult
-    func skip() async throws -> ClaimIntent {
+    final func submitResponse() async {
         withAnimation {
             isLoading = true
+            isEnabled = false
         }
         defer {
             withAnimation {
+                isEnabled = self.error != nil
                 isLoading = false
             }
         }
-        let result = try await service.claimIntentSkipStep(stepId: id)
-        guard let result else {
-            throw ClaimIntentError.invalidResponse
+        do {
+            let result = try await executeStep()
+            mainHandler(.goToNext(claimIntent: result))
+        } catch let error {
+            self.error = error
         }
-        withAnimation {
-            isLoading = false
-            isEnabled = false
-        }
-        mainHandler(.goToNext(claimIntent: result))
-        return result
     }
 
-    @discardableResult
-    func regret() async throws -> ClaimIntent {
+    func skip() async {
         withAnimation {
             isLoading = true
+            isEnabled = false
         }
         defer {
             withAnimation {
+                isEnabled = true
+                isLoading = false
+            }
+        }
+        do {
+            let result = try await service.claimIntentSkipStep(stepId: id)
+            guard let result else {
+                throw ClaimIntentError.invalidResponse
+            }
+            mainHandler(.goToNext(claimIntent: result))
+        } catch let ex {
+            self.error = ex
+        }
+    }
+
+    func regret() async {
+        withAnimation {
+            isLoading = true
+            isEnabled = false
+        }
+        defer {
+            withAnimation {
+                isEnabled = true
                 isLoading = false
             }
         }
 
-        let result = try await service.claimIntentRegretStep(stepId: id)
-        guard let result else {
-            throw ClaimIntentError.invalidResponse
+        do {
+            let result = try await service.claimIntentRegretStep(stepId: id)
+            guard let result else {
+                throw ClaimIntentError.invalidResponse
+            }
+            withAnimation {
+                isLoading = false
+                isEnabled = false
+            }
+            mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: result))
+        } catch let ex {
+            self.error = ex
         }
-        withAnimation {
-            isLoading = false
-            isEnabled = false
-        }
-        mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: result))
-        return result
     }
 }
 

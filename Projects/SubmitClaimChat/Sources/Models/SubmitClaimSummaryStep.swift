@@ -18,26 +18,13 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func submitResponse() async throws -> ClaimIntent {
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
-
+    override func executeStep() async throws -> ClaimIntent {
         guard
             let result = try await service.claimIntentSubmitSummary(
                 stepId: claimIntent.currentStep.id
             )
         else {
             throw ClaimIntentError.invalidResponse
-        }
-        mainHandler(.goToNext(claimIntent: result))
-        withAnimation {
-            isEnabled = false
         }
         return result
     }

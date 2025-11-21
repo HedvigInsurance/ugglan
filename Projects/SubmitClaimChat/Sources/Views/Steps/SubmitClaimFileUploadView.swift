@@ -40,7 +40,7 @@ struct SubmitClaimFileUploadView: View {
                         .hButtonIsLoading(false)
                         hButton(.small, .primary, content: .init(title: L10n.generalContinueButton)) {
                             Task {
-                                try await viewModel.submitResponse()
+                                await viewModel.submitResponse()
                             }
                         }
                         .hButtonIsLoading(false)

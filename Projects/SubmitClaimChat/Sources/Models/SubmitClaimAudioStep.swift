@@ -31,14 +31,9 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         self.audioRecordingModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
-
-    @discardableResult
-    override func submitResponse() async throws -> ClaimIntent {
+    override func executeStep() async throws -> ClaimIntent {
         guard let audioFileURL else {
             throw ClaimIntentError.invalidResponse
-        }
-        withAnimation {
-            isLoading = true
         }
         let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
         let multipart = MultipartFormDataRequest(url: url)
@@ -60,11 +55,6 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             }
         }
         let fileId = response.fileIds.first!
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
 
         guard
             let result = try await service.claimIntentSubmitAudio(
@@ -74,11 +64,6 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             )
         else {
             throw ClaimIntentError.invalidResponse
-        }
-
-        mainHandler(.goToNext(claimIntent: result))
-        withAnimation {
-            isEnabled = false
         }
         return result
     }
