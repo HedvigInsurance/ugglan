@@ -8,7 +8,7 @@ import CoreDependencies
 import DatadogLogs
 import Forever
 import Foundation
-import LogMacro
+import AutomaticLog
 import MoveFlow
 import Payment
 import PresentableStore
@@ -202,7 +202,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let datadogLogger = Logger.create(with: config)
         hGraphQL.graphQlLogger = DatadogLogger(datadogLogger: datadogLogger)
         log = DatadogLogger(datadogLogger: datadogLogger)
-        LogMacro.loginClosure = { message in
+        AutomaticLog.loginClosure = { message in
             Task { @MainActor in
                 log.info(message, error: nil, attributes: nil)
             }

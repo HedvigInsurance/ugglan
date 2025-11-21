@@ -6,7 +6,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct LogMacro: BodyMacro {
+public struct AutomaticLog: BodyMacro {
     public static func expansion(
         of attribute: AttributeSyntax,
         providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -37,7 +37,7 @@ public struct LogMacro: BodyMacro {
 
         let logSetupCode = """
             let _logArgs: [String: String] = [\(dictElements)]
-            LogMacro.loginClosure("➡️ \(fullFunctionName) called with: " + String(describing: _logArgs))
+            AutomaticLog.loginClosure("➡️ \(fullFunctionName) called with: " + String(describing: _logArgs))
             """
 
         let parsedSetup = Parser.parse(source: logSetupCode)
@@ -67,10 +67,10 @@ public struct LogMacro: BodyMacro {
                         let _logResult = try \(awaitKeyword){ () \(asyncKeyword)throws -> \(returnType) in
                             \(bodyCode)
                         }()
-                        LogMacro.loginClosure("⬅️ \(fullFunctionName) returned: " + String(describing: _logResult))
+                        AutomaticLog.loginClosure("⬅️ \(fullFunctionName) returned: " + String(describing: _logResult))
                         return _logResult
                     } catch {
-                        LogMacro.loginClosure("❌ \(fullFunctionName) threw error: " + String(describing: error))
+                        AutomaticLog.loginClosure("❌ \(fullFunctionName) threw error: " + String(describing: error))
                         throw error
                     }
                     """
@@ -95,7 +95,7 @@ public struct LogMacro: BodyMacro {
                     let _logResult =\(closureCall){\(closureSignature)in
                         \(bodyCode)
                     }()
-                    LogMacro.loginClosure("⬅️ \(fullFunctionName) returned: " + String(describing: _logResult))
+                    AutomaticLog.loginClosure("⬅️ \(fullFunctionName) returned: " + String(describing: _logResult))
                     return _logResult
                     """
             }
@@ -112,9 +112,9 @@ public struct LogMacro: BodyMacro {
                 let throwingCode = """
                     do {
                         \(body.statements.description)
-                        LogMacro.loginClosure("⬅️ \(fullFunctionName) completed")
+                        AutomaticLog.loginClosure("⬅️ \(fullFunctionName) completed")
                     } catch {
-                        LogMacro.loginClosure("❌ \(fullFunctionName) threw error: " + String(describing: error))
+                        AutomaticLog.loginClosure("❌ \(fullFunctionName) threw error: " + String(describing: error))
                         throw error
                     }
                     """
@@ -126,7 +126,7 @@ public struct LogMacro: BodyMacro {
 
                 // Add completion log
                 let completionCode = """
-                    LogMacro.loginClosure("⬅️ \(fullFunctionName) completed")
+                    AutomaticLog.loginClosure("⬅️ \(fullFunctionName) completed")
                     """
                 let parsedCompletion = Parser.parse(source: completionCode)
                 statements.append(contentsOf: parsedCompletion.statements)
@@ -170,8 +170,8 @@ public struct LogMacro: BodyMacro {
 }
 
 @main
-struct LogMacroPlugin: CompilerPlugin {
+struct AutomaticLogPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        LogMacro.self
+        AutomaticLog.self
     ]
 }

@@ -3,4 +3,4 @@ nonisolated(unsafe) public var loginClosure: @Sendable (String) -> Void = { mess
 }
 
 @attached(body)
-public macro Log() = #externalMacro(module: "LogMacroMacros", type: "LogMacro")
+public macro Log() = #externalMacro(module: "AutomaticLogMacros", type: "AutomaticLog")

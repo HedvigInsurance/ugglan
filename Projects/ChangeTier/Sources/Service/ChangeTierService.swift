@@ -1,4 +1,4 @@
-import LogMacro
+import AutomaticLog
 import hCore
 
 @MainActor
