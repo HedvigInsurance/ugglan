@@ -44,6 +44,7 @@ fragment ChatMessageActionFragment on ChatMessageAction {
 fragment ChatMessageFileFragment on ChatMessageFile {
     signedUrl
     mimeType
+	fileName
 }
 
 fragment ChatMessageTextFragment on ChatMessageText {
