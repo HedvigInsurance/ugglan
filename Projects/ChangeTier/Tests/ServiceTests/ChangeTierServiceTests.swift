@@ -81,7 +81,11 @@ final class ChangeTierServiceTests: XCTestCase {
         let respondedTiersData = try! await mockService.getTier(
             input: .init(source: .changeTier, contractId: "contractId")
         )
-        assert(respondedTiersData == changeTierIntentModel)
+        if case let .changeTierIntentModel(data) = respondedTiersData {
+            assert(data == changeTierIntentModel)
+        } else {
+            assertionFailure("shouldn't happen")
+        }
     }
 
     func testCompareProductVariantDataSuccess() async {

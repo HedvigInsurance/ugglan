@@ -19,10 +19,11 @@ struct TerminationDeflectAutoDecomScreen: View {
         hForm {
             VStack(spacing: .padding16) {
                 hSection {
-                    subtitleLabel(for: L10n.terminationFlowAutoDecomInfo)
+                    subtitleLabel(for: model.message)
                 }
-                coveredView
-                costView
+                ForEach(model.explanations, id: \.self) { explanation in
+                    sectionView(for: explanation.title, and: explanation.text)
+                }
             }
             .fixedSize(horizontal: false, vertical: true)
             .padding(.vertical, .padding16)
@@ -31,7 +32,7 @@ struct TerminationDeflectAutoDecomScreen: View {
             title: .init(
                 .small,
                 .heading2,
-                L10n.terminationFlowAutoDecomTitle,
+                model.title,
                 alignment: .leading
             )
         )
@@ -57,23 +58,22 @@ struct TerminationDeflectAutoDecomScreen: View {
         )
     }
 
-    private var coveredView: some View {
+    private func sectionView(for title: String?, and subtitle: String) -> some View {
         hSection {
-            headerLabel(for: L10n.terminationFlowAutoDecomCoveredTitle)
-            subtitleLabel(for: L10n.terminationFlowAutoDecomCoveredInfo)
-        }
-        .accessibilityElement(children: .combine)
-    }
-    private var costView: some View {
-        hSection {
-            headerLabel(for: L10n.terminationFlowAutoDecomCostsTitle)
-            subtitleLabel(for: L10n.terminationFlowAutoDecomCostsInfo)
+            if let title {
+                headerLabel(for: title)
+            }
+            subtitleLabel(for: subtitle)
         }
         .accessibilityElement(children: .combine)
     }
 
+    @ViewBuilder
     private var infoView: some View {
-        InfoCard(text: L10n.terminationFlowAutoDecomNotification, type: .info)
+        if let info = model.info {
+            InfoCard(text: info, type: .info)
+                .accessibilitySortPriority(1)
+        }
     }
 
     private var bottomButtons: some View {
@@ -118,8 +118,16 @@ struct TerminationDeflectAutoDecomScreen: View {
         configs: [],
         terminateInsuranceViewModel: nil
     )
-    TerminationDeflectAutoDecomScreen(model: .init(), navigation: navigation)
-        .environmentObject(Router())
+    TerminationDeflectAutoDecomScreen(
+        model: .init(
+            message: "message",
+            title: "title",
+            explanations: [.init(title: "title", text: "text")],
+            info: "info"
+        ),
+        navigation: navigation
+    )
+    .environmentObject(Router())
 }
 
 @MainActor

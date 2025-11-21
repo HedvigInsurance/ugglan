@@ -3,13 +3,12 @@ import hCore
 
 @MainActor
 public protocol ChangeTierClient {
-    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModelState
     func commitTier(quoteId: String) async throws
     func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison
 }
 
 public enum ChangeTierError: Error {
-    case emptyList
     case somethingWentWrong
     case commitFailed
     case networkError
