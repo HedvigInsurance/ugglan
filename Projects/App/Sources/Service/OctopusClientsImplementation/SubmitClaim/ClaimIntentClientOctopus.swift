@@ -8,13 +8,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
 
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
-        log.addUserAction(
-            type: .custom,
-            name: "claimIntentStart",
-            error: nil,
-            attributes: nil
-        )
-
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
             sourceMessageId: GraphQLNullable(optionalValue: input.sourceMessageId),
             developmentFlow: GraphQLNullable(optionalValue: input.devFlow)
@@ -224,13 +217,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntentType? {
         let input = OctopusGraphQL.ClaimIntentSubmitSelectInput(stepId: stepId, selectedId: selectedValue)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSelectMutation(input: input)
-
-        log.addUserAction(
-            type: .custom,
-            name: "claimIntentSubmitSelect",
-            error: nil,
-            attributes: nil
-        )
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
