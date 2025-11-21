@@ -50,6 +50,13 @@ fragment FlowTerminationSuccessFragment on FlowTerminationSuccessStep{
 
 fragment FlowTerminationCarAutoDecomStepFragment on FlowTerminationCarAutoDecomStep {
 	id
+	explanations {
+	  text
+	  title
+	}
+	info
+	message
+	title
 }
 
 fragment FlowTerminationCarDeflectAutoCancelStepStep on FlowTerminationCarDeflectAutoCancelStep {

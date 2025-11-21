@@ -232,7 +232,12 @@ extension OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation.Data: Terminati
 
 extension TerminationFlowDeflectAutoDecomModel {
     init(with data: OctopusGraphQL.FlowTerminationCarAutoDecomStepFragment) {
-        self.init()
+        self.init(
+            message: data.message,
+            title: data.title,
+            explanations: data.explanations.map({ .init(title: $0.title, text: $0.text) }),
+            info: data.info
+        )
     }
 }
 
