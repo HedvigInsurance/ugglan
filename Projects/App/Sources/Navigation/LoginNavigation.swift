@@ -50,7 +50,10 @@ struct LoginNavigation: View {
                     LoginErrorView(message: message)
                 }
             }
-            .embededInNavigation(tracking: String.init(describing: BankIDLoginQRView.self))
+            .embededInNavigation(
+                options: .extendedNavigationWidth,
+                tracking: String.init(describing: BankIDLoginQRView.self)
+            )
         }
     }
 

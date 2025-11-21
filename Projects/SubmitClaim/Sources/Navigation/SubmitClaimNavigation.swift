@@ -239,7 +239,7 @@ public struct SubmitClaimNavigation: View {
     public var body: some View {
         RouterHost(
             router: claimsNavigationVm.router,
-            options: [.navigationType(type: .withProgress)],
+            options: [.navigationType(type: .withProgress), .extendedNavigationWidth],
             tracking: ClaimsDetentType.entryPoints
         ) {
             SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
@@ -311,7 +311,10 @@ public struct SubmitClaimNavigation: View {
             LocationView(claimsNavigationVm: claimsNavigationVm, router: claimsNavigationVm.router)
                 .environmentObject(claimsNavigationVm)
                 .navigationTitle(L10n.Claims.Incident.Screen.location)
-                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.locationPicker)
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: ClaimsDetentType.locationPicker
+                )
         }
         .detent(
             presented: $claimsNavigationVm.isBrandPickerPresented,

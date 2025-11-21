@@ -44,7 +44,10 @@ public struct ProfileNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: profileNavigationViewModel.profileRouter, tracking: ProfileDetentType.profile) {
+        RouterHost(
+            router: profileNavigationViewModel.profileRouter,
+            tracking: ProfileDetentType.profile
+        ) {
             ProfileView()
                 .routerDestination(for: ProfileRouterType.self) { redirectType in
                     switch redirectType {
