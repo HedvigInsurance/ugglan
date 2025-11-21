@@ -5,17 +5,12 @@ public typealias GoToClaimDetails = (String) -> Void
 
 public struct SubmitClaimOutcomeScreen: View {
     let outcome: ClaimIntentStepOutcome
-    let goToClaimDetails: GoToClaimDetails
-    let openChat: () -> Void
+    @EnvironmentObject var navigationVm: SubmitClaimChatViewModel
 
     public init(
-        outcome: ClaimIntentStepOutcome,
-        goToClaimDetails: @escaping GoToClaimDetails,
-        openChat: @escaping () -> Void
+        outcome: ClaimIntentStepOutcome
     ) {
         self.outcome = outcome
-        self.goToClaimDetails = goToClaimDetails
-        self.openChat = openChat
     }
 
     public var body: some View {
@@ -23,15 +18,13 @@ public struct SubmitClaimOutcomeScreen: View {
         case let .deflect(model):
             SubmitClaimDeflectScreen(
                 model: model,
-                openChat: {
-                    openChat()
-                }
+                openChat: { navigationVm.openChat() }
             )
         case let .claim(model):
             VStack(spacing: .padding16) {
                 hText("Your claim was submitted successfully")
                 hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
-                    goToClaimDetails(model.claimId)
+                    navigationVm.goToClaimDetails(model.claimId)
                 }
             }
         case .unknown:

@@ -3,21 +3,11 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimChatScreen: View {
-    @StateObject var viewModel: SubmitClaimChatViewModel
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
-    let input: StartClaimInput
 
-    public init(
-        input: StartClaimInput
-    ) {
-        self.input = input
-        _viewModel = StateObject(
-            wrappedValue: .init(
-                input: input
-            )
-        )
-    }
+    public init() {}
 
     public var body: some View {
         successView
@@ -93,7 +83,7 @@ extension View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return SubmitClaimChatScreen(input: .init(sourceMessageId: nil, devFlow: false))
+    return SubmitClaimChatScreen()
 }
 
 // MARK: - Main Model
@@ -103,11 +93,17 @@ final class SubmitClaimChatViewModel: ObservableObject {
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
     var onOutcome: ((ClaimIntentStepOutcome) -> Void)?
+    let goToClaimDetails: GoToClaimDetails
+    let openChat: () -> Void
 
     init(
-        input: StartClaimInput
+        input: StartClaimInput,
+        goToClaimDetails: @escaping GoToClaimDetails,
+        openChat: @escaping () -> Void
     ) {
         self.input = input
+        self.goToClaimDetails = goToClaimDetails
+        self.openChat = openChat
         Task {
             try? await startClaimIntent(input: input)
         }

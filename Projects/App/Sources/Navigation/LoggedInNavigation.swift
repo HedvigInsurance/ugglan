@@ -344,39 +344,25 @@ struct HomeTab: View {
         .modally(
             item: $homeNavigationVm.claimsAutomationStartInput
         ) { input in
-            SubmitClaimChatScreen(
-                input: input
-            )
-            .routerDestination(
-                for: ClaimIntentStepOutcome.self,
-                options: [.hidesBottomBarWhenPushed, .hidesBackButton]
-            ) { outcome in
-                SubmitClaimOutcomeScreen(
-                    outcome: outcome,
-                    goToClaimDetails: { [weak homeNavigationVm] claimId in
-                        homeNavigationVm?.claimsAutomationStartInput = nil
-                        Task {
-                            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            await claimsStore.sendAsync(.fetchActiveClaims)
-                            if let claim = claimsStore.state.getClaimFor(id: claimId) {
-                                homeNavigationVm?.router.push(claim)
-                            }
+            SubmitClaimChatNavigation(
+                input: input,
+                goToClaimDetails: { [weak homeNavigationVm] claimId in
+                    homeNavigationVm?.claimsAutomationStartInput = nil
+                    Task {
+                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                        await claimsStore.sendAsync(.fetchActiveClaims)
+                        if let claim = claimsStore.state.getClaimFor(id: claimId) {
+                            homeNavigationVm?.router.push(claim)
                         }
-                    },
-                    openChat: {
-                        NotificationCenter.default.post(
-                            name: .openChat,
-                            object: ChatType.newConversation
-                        )
                     }
-                )
-                .withDismissButton()
-            }
-            .withDismissButton()
-            .embededInNavigation(
-                tracking: self
+                },
+                openChat: {
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.newConversation
+                    )
+                }
             )
-            .environmentObject(homeNavigationVm.router)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
