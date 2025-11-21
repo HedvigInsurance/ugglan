@@ -6,7 +6,7 @@ class ChangeTierService {
     @Inject var client: ChangeTierClient
 
     @Log
-    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModelState {
         try await client.getTier(input: input)
     }
 
@@ -17,7 +17,6 @@ class ChangeTierService {
 
     @Log
     func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
-        let data = try await client.compareProductVariants(termsVersion: termsVersion)
-        return data
+        try await client.compareProductVariants(termsVersion: termsVersion)
     }
 }

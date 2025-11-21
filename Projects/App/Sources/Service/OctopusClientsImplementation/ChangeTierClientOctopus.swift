@@ -7,7 +7,7 @@ import hGraphQL
 class ChangeTierClientOctopus: ChangeTierClient {
     @Inject @preconcurrency var octopus: hOctopus
 
-    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModelState {
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {
             switch input.source {
             case .changeTier: return .selfService
@@ -32,6 +32,10 @@ class ChangeTierClientOctopus: ChangeTierClient {
             if let error = createIntentResponse?.changeTierDeductibleCreateIntent.userError, let message = error.message
             {
                 throw ChangeTierError.errorMessage(message: message)
+            }
+
+            if let deflection = createIntentResponse?.changeTierDeductibleCreateIntent.deflectOutput {
+                return .deflection(deflection: Deflection(title: deflection.title, message: deflection.message))
             }
             guard let intent = createIntentResponse?.changeTierDeductibleCreateIntent.intent else {
                 throw ChangeTierError.somethingWentWrong
@@ -65,10 +69,10 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 relatedAddons: [:]
             )
             if intentModel.tiers.isEmpty {
-                throw ChangeTierError.emptyList
+                return .emptyTier
             }
 
-            return intentModel
+            return .changeTierIntentModel(changeTierIntentModel: intentModel)
         } catch let ex {
             if let ex = ex as? ChangeTierError {
                 throw ex
