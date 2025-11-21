@@ -27,7 +27,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentStart
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
@@ -50,7 +50,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentSubmitAudio.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
@@ -71,7 +71,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentSubmitFileUpload.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
@@ -94,18 +94,11 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentSubmitForm.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntentType? {
-        log.addUserAction(
-            type: .custom,
-            name: "claimIntentSubmitSummary",
-            error: nil,
-            attributes: nil
-        )
-
         let input = OctopusGraphQL.ClaimIntentSubmitSummaryInput(stepId: stepId)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSummaryMutation(input: input)
 
@@ -125,6 +118,15 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     func handleStep(
         intentFragment: OctopusGraphQL.ClaimIntentFragment?
     ) -> ClaimIntentType? {
+        if let trackingId = intentFragment?.currentStep?.content.__typename {
+            log.addUserAction(
+                type: .custom,
+                name: trackingId,
+                error: nil,
+                attributes: nil
+            )
+        }
+
         let id = intentFragment?.id ?? ""
         let sourceMessages: [SourceMessage] =
             intentFragment?.sourceMessages?
@@ -171,7 +173,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentSubmitTask.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
@@ -187,7 +189,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentSkipStep.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
@@ -203,7 +205,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentRegretStep.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
@@ -215,13 +217,20 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data.claimIntent
             return handleStep(intentFragment: intent.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
     }
 
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntentType? {
         let input = OctopusGraphQL.ClaimIntentSubmitSelectInput(stepId: stepId, selectedId: selectedValue)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSelectMutation(input: input)
+
+        log.addUserAction(
+            type: .custom,
+            name: "claimIntentSubmitSelect",
+            error: nil,
+            attributes: nil
+        )
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
@@ -232,8 +241,18 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let intent = data?.claimIntentSubmitSelect.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw try logClaimIntentError(error)
         }
+    }
+
+    func logClaimIntentError(_ error: Error) throws -> Error {
+        log.addUserAction(
+            type: .custom,
+            name: "ClaimIntentError",
+            error: nil,
+            attributes: nil
+        )
+        return SubmitClaimError.error(message: error.localizedDescription)
     }
 }
 
