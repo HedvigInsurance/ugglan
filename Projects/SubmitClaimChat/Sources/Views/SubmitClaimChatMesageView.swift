@@ -70,6 +70,7 @@ struct SubmitClaimChatMesageView: View {
                 await viewModel.skip()
             }
         }
+        .disabled(!viewModel.isEnabled)
     }
 
     private var regretButton: some View {

@@ -69,7 +69,6 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
         defer {
             withAnimation {
-                isEnabled = true
                 isLoading = false
             }
         }
