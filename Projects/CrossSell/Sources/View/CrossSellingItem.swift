@@ -37,22 +37,22 @@ struct CrossSellingItem: View {
                         .accessibilityHidden(true)
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 0) {
-                            hText(crossSell.title, style: .label).foregroundColor(hTextColor.Translucent.secondary)
+                            hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Translucent.primary)
                             MarqueeText(
                                 text: crossSell.description,
-                                font: Fonts.fontFor(style: .body1),
+                                font: Fonts.fontFor(style: .label),
                                 leftFade: 3,
                                 rightFade: 3,
                                 startDelay: 2
                             )
-                            .foregroundColor(hTextColor.Opaque.primary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                         }
                         Spacer()
 
                         hButton(
                             .small,
-                            .secondary,
-                            content: .init(title: L10n.crossSellGetPrice),
+                            .primaryAlt,
+                            content: .init(title: crossSell.buttonTitle),
                             {
                                 fieldIsClicked.toggle()
                                 openExternal()
@@ -80,6 +80,7 @@ struct CrossSellingItem: View {
             id: "id",
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
+            buttonTitle: "Save 50%",
             imageUrl: nil,
             buttonDescription: "button description"
         )

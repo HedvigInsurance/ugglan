@@ -12,6 +12,7 @@ struct MockData {
                     id: "crossSellId",
                     title: "title",
                     description: "description",
+                    buttonTitle: "Save 15%",
                     imageUrl: nil,
                     buttonDescription: "button description"
                 )

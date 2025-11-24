@@ -10,7 +10,6 @@ struct CrosssSellStackComponent: View {
         if withHeader {
             hSection {
                 VStack(spacing: .padding16) {
-                    hasDiscountView
                     ForEach(crossSells, id: \.title) { crossSell in
                         CrossSellingItem(crossSell: crossSell)
                             .transition(.slide)
@@ -18,7 +17,7 @@ struct CrosssSellStackComponent: View {
                 }
             }
             .withHeader(
-                title: L10n.InsuranceTab.CrossSells.title
+                title: L10n.insuranceOffersSubheading
             )
             .sectionContainerStyle(.transparent)
             .transition(.slide)
@@ -35,35 +34,6 @@ struct CrosssSellStackComponent: View {
             .transition(.slide)
         }
     }
-
-    @ViewBuilder
-    private var hasDiscountView: some View {
-        if showDiscount {
-            HStack {
-                ExpandingView(
-                    mainContent: {
-                        hCoreUIAssets.campaign.view.foregroundColor(hSignalColor.Green.element)
-                            .rotate(onAppear: true)
-                            .frame(width: 17, height: 17)
-                            .padding(.vertical, .padding8)
-                    },
-                    expandingContent: {
-                        hText(L10n.insurancesCrossSellDiscountsAvailable, style: .label)
-                            .foregroundColor(hSignalColor.Green.text)
-                            .padding(.trailing, .padding4)
-                    }
-                ) { finalView in
-                    AnyView(
-                        finalView
-                            .padding(.horizontal, .padding8)
-                            .background(hHighlightColor.Green.fillOne)
-                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
-                    )
-                }
-                Spacer()
-            }
-        }
-    }
 }
 
 #Preview {
@@ -73,9 +43,18 @@ struct CrosssSellStackComponent: View {
                 id: "id",
                 title: "title",
                 description: "long description that goes long way",
+                buttonTitle: "Save 15%",
                 imageUrl: nil,
                 buttonDescription: "button"
-            )
+            ),
+            .init(
+                id: "id",
+                title: "short btn",
+                description: "short",
+                buttonTitle: "Save 15%",
+                imageUrl: nil,
+                buttonDescription: "button"
+            ),
         ],
         showDiscount: true,
         withHeader: true

@@ -59,6 +59,7 @@ extension CrossSell {
             id: data.id,
             title: data.title,
             description: data.description,
+            buttonTitle: data.buttonTitle,
             webActionURL: data.storeUrl,
             imageUrl: URL(string: data.pillowImageSmall.src),
             buttonDescription: ""
@@ -71,6 +72,7 @@ extension CrossSell {
             id: crossSellFragment.id,
             title: crossSellFragment.title,
             description: crossSellFragment.description,
+            buttonTitle: crossSellFragment.buttonTitle,
             webActionURL: crossSellFragment.storeUrl,
             bannerText: data.bannerText,
             buttonText: data.buttonText,
