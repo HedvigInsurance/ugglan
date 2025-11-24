@@ -24,7 +24,6 @@ public struct ClaimIntent: Sendable {
     let currentStep: ClaimIntentStep
     let id: String
     let sourceMessages: [SourceMessage]
-    let outcome: ClaimIntentStepOutcome?
     let isSkippable: Bool
     let isRegrettable: Bool
 
@@ -32,14 +31,12 @@ public struct ClaimIntent: Sendable {
         currentStep: ClaimIntentStep,
         id: String,
         sourceMessages: [SourceMessage],
-        outcome: ClaimIntentStepOutcome?,
         isSkippable: Bool,
         isRegrettable: Bool
     ) {
         self.currentStep = currentStep
         self.id = id
         self.sourceMessages = sourceMessages
-        self.outcome = outcome
         self.isSkippable = isSkippable
         self.isRegrettable = isRegrettable
     }
@@ -78,7 +75,6 @@ public enum ClaimIntentStepContent: Sendable {
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
     case singleSelect(model: [ClaimIntentContentSelectOption])
-    case text
     case unknown
 }
 

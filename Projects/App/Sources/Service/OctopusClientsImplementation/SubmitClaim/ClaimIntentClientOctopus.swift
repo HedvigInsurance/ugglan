@@ -140,7 +140,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                     currentStep: .init(fragment: currentStepFragment),
                     id: id,
                     sourceMessages: sourceMessages,
-                    outcome: outcome,
                     isSkippable: isSkippable,
                     isRegrettable: isRegrettable
                 )

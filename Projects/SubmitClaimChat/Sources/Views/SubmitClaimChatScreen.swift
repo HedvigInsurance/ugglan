@@ -11,12 +11,6 @@ public struct SubmitClaimChatScreen: View {
 
     public var body: some View {
         successView
-            .onAppear {
-                viewModel.onOutcome = { [router] outcome in
-                    let outcomeModel: ClaimIntentStepOutcome = outcome
-                    router.push(outcomeModel)
-                }
-            }
     }
 
     private var successView: some View {
@@ -92,9 +86,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
     @Published var allSteps: [ClaimIntentStepHandler] = []
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
-    var onOutcome: ((ClaimIntentStepOutcome) -> Void)?
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
+    let router = Router()
 
     init(
         input: StartClaimInput,
@@ -134,7 +128,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             }
             self.allSteps.append(handler)
         case let .outcome(model):
-            onOutcome?(model)
+            router.push(model)
         }
     }
 

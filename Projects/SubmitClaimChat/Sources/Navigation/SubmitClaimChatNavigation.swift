@@ -2,7 +2,6 @@ import SwiftUI
 import hCoreUI
 
 public struct SubmitClaimChatNavigation: View {
-    @StateObject var router = Router()
     @StateObject var viewModel: SubmitClaimChatViewModel
 
     public init(
@@ -20,7 +19,7 @@ public struct SubmitClaimChatNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: self) {
+        RouterHost(router: viewModel.router, tracking: self) {
             SubmitClaimChatScreen()
                 .routerDestination(
                     for: ClaimIntentStepOutcome.self,
@@ -30,12 +29,8 @@ public struct SubmitClaimChatNavigation: View {
                         .withDismissButton()
                 }
                 .withDismissButton()
-                .embededInNavigation(
-                    tracking: self
-                )
-                .environmentObject(router)
-                .environmentObject(viewModel)
         }
+        .environmentObject(viewModel)
     }
 }
 

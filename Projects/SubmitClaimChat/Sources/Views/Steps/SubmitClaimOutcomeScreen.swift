@@ -18,13 +18,15 @@ public struct SubmitClaimOutcomeScreen: View {
         case let .deflect(model):
             SubmitClaimDeflectScreen(
                 model: model,
-                openChat: { navigationVm.openChat() }
+                openChat: { [weak navigationVm] in
+                    navigationVm?.openChat()
+                }
             )
         case let .claim(model):
             VStack(spacing: .padding16) {
                 hText("Your claim was submitted successfully")
-                hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
-                    navigationVm.goToClaimDetails(model.claimId)
+                hButton(.medium, .secondary, content: .init(title: "Go to claim")) { [weak navigationVm] in
+                    navigationVm?.goToClaimDetails(model.claimId)
                 }
             }
         case .unknown:
