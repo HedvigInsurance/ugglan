@@ -191,7 +191,7 @@ extension OctopusGraphQL.MessageFragment {
                         id: id,
                         size: 0,
                         mimeType: mimeType,
-                        name: "",
+                        name: file.fileName ?? "",
                         source: .url(url: url, mimeType: mimeType)
                     )
                 )

@@ -92,7 +92,7 @@ public struct EditCoInsuredNavigation: View {
     public var body: some View {
         RouterHost(
             router: router,
-            options: .navigationType(type: .large),
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: openSpecificScreen.getTrackingType(for: config)
         ) {
             if openSpecificScreen == .newInsurance {
@@ -123,7 +123,7 @@ public struct EditCoInsuredNavigation: View {
         ) { coInsuredInputModel in
             coInsuredInput(coInsuredInputModel: coInsuredInputModel)
                 .embededInNavigation(
-                    options: [.navigationType(type: .large)],
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: EditCoInsuredDetentType.coInsuredInput
                 )
         }
@@ -134,7 +134,7 @@ public struct EditCoInsuredNavigation: View {
             openCoInsuredSelectScreen(contractId: selectCoInsured.id)
                 .environmentObject(editCoInsuredNavigationVm)
                 .embededInNavigation(
-                    options: [.navigationType(type: .large)],
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: EditCoInsuredDetentType.selectCoInsured
                 )
         }
@@ -226,7 +226,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large), tracking: self) {
+        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
             openSelectInsurance()
         }
     }
@@ -259,7 +259,7 @@ public struct EditCoInsuredAlertNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large), tracking: self) {
+        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
             openMissingCoInsuredAlert()
         }
     }

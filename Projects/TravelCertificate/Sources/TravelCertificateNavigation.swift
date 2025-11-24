@@ -98,7 +98,11 @@ public struct TravelCertificateNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(router: router, tracking: TravelCertificateRouterActions.list(specifications: [])) {
+                RouterHost(
+                    router: router,
+                    options: .extendedNavigationWidth,
+                    tracking: TravelCertificateRouterActions.list(specifications: [])
+                ) {
                     getListScreen
                 }
             } else {
@@ -159,6 +163,7 @@ public struct TravelCertificateNavigation: View {
                 }
                 .embededInNavigation(
                     router: createNewRouter,
+                    options: .extendedNavigationWidth,
                     tracking: specificationModel.specification.count > 1
                         ? TravelCertificateRouterActions.list(specifications: specificationModel.specification)
                         : TravelCertificateRouterActions.startDate(

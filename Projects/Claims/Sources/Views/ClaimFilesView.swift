@@ -220,15 +220,15 @@ public struct FileUrlModel: Identifiable, Equatable {
     }
 
     public enum FileUrlModelType: Codable, Equatable {
-        case url(url: URL, mimeType: MimeType)
-        case data(data: Data, mimeType: MimeType)
+        case url(url: URL, name: String, mimeType: MimeType)
+        case data(data: Data, name: String, mimeType: MimeType)
 
         public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
             switch self {
-            case let .url(url, mimeType):
-                return .url(url: url, mimeType: mimeType)
-            case let .data(data, mimeType):
-                return .data(data: data, mimeType: mimeType)
+            case let .url(url, name, mimeType):
+                return .url(url: url, name: name, mimeType: mimeType)
+            case let .data(data, name, mimeType):
+                return .data(data: data, name: name, mimeType: mimeType)
             }
         }
     }
