@@ -82,8 +82,8 @@ struct SubmitClaimAudioView: View {
                     Task {
                         do {
                             viewModel.audioFileURL = url
-                            try await viewModel.submitResponse()
-                            try? FileManager.default.removeItem(at: url)
+                            await viewModel.submitResponse()
+                            try FileManager.default.removeItem(at: url)
                         } catch {
                         }
                     }

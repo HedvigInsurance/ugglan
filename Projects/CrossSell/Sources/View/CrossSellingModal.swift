@@ -31,7 +31,10 @@ public struct CrossSellingModal: View {
             }
             .withDismissButton()
             .setViewController
-            .embededInNavigation(tracking: self)
+            .embededInNavigation(
+                options: .extendedNavigationWidth,
+                tracking: self
+            )
         }
     }
 }

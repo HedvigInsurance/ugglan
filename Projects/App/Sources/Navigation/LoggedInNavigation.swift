@@ -423,7 +423,7 @@ struct HomeTab: View {
                     .configureTitle(model.id.title)
                     .withDismissButton()
                     .embededInNavigation(
-                        options: .navigationType(type: .large),
+                        options: [.navigationType(type: .large), .extendedNavigationWidth],
                         tracking: LoggedInNavigationDetentType.submitClaimDeflect
                     )
                 }
@@ -441,7 +441,7 @@ struct HomeTab: View {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .embededInNavigation(
-                    options: .navigationType(type: .large),
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: LoggedInNavigationDetentType.firstVet
                 )
         }

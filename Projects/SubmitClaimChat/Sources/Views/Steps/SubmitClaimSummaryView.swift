@@ -34,7 +34,7 @@ struct SubmitClaimSummaryView: View {
 
             hButton(.medium, .primary, content: .init(title: L10n.claimFlowChatSubmitClaimButton)) {
                 Task {
-                    try await viewModel.submitResponse()
+                    await viewModel.submitResponse()
                 }
             }
         }

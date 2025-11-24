@@ -5,9 +5,7 @@ import hCoreUI
 
 public struct ClaimFilesView: View {
     @ObservedObject private var vm: ClaimFilesViewModel
-    @State var showImagePicker = false
-    @State var showFilePicker = false
-    @State var showCamera = false
+    @State private var showFileSourcePicker = false
     public init(endPoint: String, files: [File], onSuccess: @escaping (_ data: [ClaimFileUploadResponse]) -> Void) {
         vm = .init(
             endPoint: endPoint,
@@ -58,7 +56,7 @@ public struct ClaimFilesView: View {
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
                                 {
-                                    showFilePickerAlert()
+                                    showFileSourcePicker = true
                                 }
                             )
                             .disabled(vm.isLoading)
@@ -80,63 +78,11 @@ public struct ClaimFilesView: View {
                     .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
-                .sheet(isPresented: $showImagePicker) {
-                    ImagePicker { images in
-                        for image in images {
-                            vm.add(file: image)
-                        }
-                    }
-                    .ignoresSafeArea()
-                }
-                .sheet(isPresented: $showFilePicker) {
-                    FileImporterView { files in
-                        for file in files {
-                            vm.add(file: file)
-                        }
-                    }
-                    .ignoresSafeArea()
-                }
-                .sheet(isPresented: $showCamera) {
-                    CameraPickerView { image in
-                        guard let data = image.jpegData(compressionQuality: 0.9)
-                        else { return }
-                        let file = File(
-                            id: UUID().uuidString,
-                            size: Double(data.count),
-                            mimeType: .JPEG,
-                            name: "image_\(Date()).jpeg",
-                            source: .data(data: data)
-                        )
-                        vm.add(file: file)
-                    }
-                    .ignoresSafeArea()
-                }
             }
         }
-    }
-
-    private func showFilePickerAlert() {
-        FilePicker.showAlert { selected in
-            Task { @MainActor in
-                switch selected {
-                case .camera:
-                    showCamera = true
-                case .imagePicker:
-                    let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
-                    switch status {
-                    case .notDetermined, .restricted, .denied:
-                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                            return
-                        }
-                        Dependencies.urlOpener.open(settingsUrl)
-                    case .authorized, .limited:
-                        showImagePicker = true
-                    @unknown default:
-                        showImagePicker = true
-                    }
-                case .filePicker:
-                    showFilePicker = true
-                }
+        .showFileSourcePicker($showFileSourcePicker) { [weak vm] files in
+            for file in files {
+                vm?.add(file: file)
             }
         }
     }
@@ -274,15 +220,15 @@ public struct FileUrlModel: Identifiable, Equatable {
     }
 
     public enum FileUrlModelType: Codable, Equatable {
-        case url(url: URL, mimeType: MimeType)
-        case data(data: Data, mimeType: MimeType)
+        case url(url: URL, name: String, mimeType: MimeType)
+        case data(data: Data, name: String, mimeType: MimeType)
 
         public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
             switch self {
-            case let .url(url, mimeType):
-                return .url(url: url, mimeType: mimeType)
-            case let .data(data, mimeType):
-                return .data(data: data, mimeType: mimeType)
+            case let .url(url, name, mimeType):
+                return .url(url: url, name: name, mimeType: mimeType)
+            case let .data(data, name, mimeType):
+                return .data(data: data, name: name, mimeType: mimeType)
             }
         }
     }
@@ -340,59 +286,5 @@ public struct FileUrlModel: Identifiable, Equatable {
         ),
     ]
     return ClaimFilesView(endPoint: "", files: files) { _ in
-    }
-}
-
-@MainActor
-public struct FilePicker {
-    public static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
-        let alert = UIAlertController(
-            title: nil,
-            message: nil,
-            preferredStyle: UIDevice.current.userInterfaceIdiom == .phone ? .actionSheet : .alert
-        )
-
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.fileUploadPhotoLibrary,
-                style: .default,
-                handler: { _ in
-                    closure(.imagePicker)
-                }
-            )
-        )
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.fileUploadTakePhoto,
-                style: .default,
-                handler: { _ in
-                    closure(.camera)
-                }
-            )
-        )
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.fileUploadChooseFiles,
-                style: .default,
-                handler: { _ in
-                    closure(.filePicker)
-                }
-            )
-        )
-        alert.addAction(
-            UIAlertAction(
-                title: L10n.generalCancelButton,
-                style: .cancel,
-                handler: { _ in }
-            )
-        )
-
-        UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
-    }
-
-    public enum SelectedFileInputType {
-        case camera
-        case imagePicker
-        case filePicker
     }
 }

@@ -11,7 +11,10 @@ public class ChangeTierViewModel: ObservableObject {
 
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
-    @Published var missingQuotes = false
+
+    @Published var displayEmptyTierMessage: Bool = false
+    @Published var deflection: Deflection?
+
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
@@ -201,22 +204,31 @@ public class ChangeTierViewModel: ObservableObject {
 
     func fetchTiers() {
         withAnimation {
-            self.missingQuotes = false
+            self.displayEmptyTierMessage = false
+            self.deflection = nil
             self.viewState = .loading
         }
         Task { @MainActor in
             do {
                 let data = try await getData()
-                updateCurrentTiers(data)
-                updateDisplayProperties(data)
-                updateSelectedValues(data)
-                updatePremiumAndDeductible()
+                switch data {
+                case let .changeTierIntentModel(data):
+                    updateCurrentTiers(data)
+                    updateDisplayProperties(data)
+                    updateSelectedValues(data)
+                    updatePremiumAndDeductible()
 
-                withAnimation {
-                    self.viewState = .success
+                    withAnimation {
+                        self.viewState = .success
+                    }
+                case .emptyTier: withAnimation { self.displayEmptyTierMessage = true }
+
+                case let .deflection(deflection): withAnimation { self.deflection = deflection }
                 }
             } catch let exception {
-                handleError(exception)
+                withAnimation {
+                    self.viewState = .error(errorMessage: exception.localizedDescription)
+                }
             }
         }
     }
@@ -275,26 +287,12 @@ public class ChangeTierViewModel: ObservableObject {
         calculateTotal()
     }
 
-    private func handleError(_ exception: Error) {
-        if let exception = exception as? ChangeTierError {
-            if case .emptyList = exception {
-                withAnimation {
-                    self.missingQuotes = true
-                }
-                return
-            }
-        }
-        withAnimation {
-            self.viewState = .error(errorMessage: exception.localizedDescription)
-        }
-    }
-
-    private func getData() async throws -> ChangeTierIntentModel {
+    private func getData() async throws -> ChangeTierIntentModelState {
         switch changeTierInput {
         case let .contractWithSource(source):
             return try await service.getTier(input: source)
         case let .existingIntent(intent, _):
-            return intent
+            return .changeTierIntentModel(changeTierIntentModel: intent)
         }
     }
 

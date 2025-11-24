@@ -19,7 +19,7 @@ struct SubmitClaimSingleSelectView: View {
         }
         hContinueButton {
             Task {
-                try await viewModel.submitResponse()
+                await viewModel.submitResponse()
             }
         }
         .disabled(viewModel.selectedOption == nil)

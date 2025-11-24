@@ -151,12 +151,13 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
 
     public func makeUIViewController(context _: Context) -> UINavigationController {
         let navigation: hNavigationBaseController = {
+            let extendedNavigationWidth = options.contains(.extendedNavigationWidth)
             if options.contains(.largeNavigationBar) {
-                return hNavigationControllerWithLargerNavBar()
+                return hNavigationControllerWithLargerNavBar(extendedNavigationWidth: extendedNavigationWidth)
             } else if options.contains(.navigationBarWithProgress) {
-                return hNavigationController(additionalHeight: 4)
+                return hNavigationController(additionalHeight: 4, extendedNavigationWidth: extendedNavigationWidth)
             }
-            return hNavigationController()
+            return hNavigationController(extendedNavigationWidth: extendedNavigationWidth)
         }()
         let controller = hHostingController(
             rootView: initialView().environmentObject(router),

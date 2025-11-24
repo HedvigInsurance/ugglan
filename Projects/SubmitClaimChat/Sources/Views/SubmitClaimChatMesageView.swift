@@ -1,4 +1,3 @@
-import Claims
 import SwiftUI
 import hCore
 import hCoreUI
@@ -48,6 +47,17 @@ struct SubmitClaimChatMesageView: View {
             }
             .disabled(!viewModel.isEnabled)
             .hButtonIsLoading(viewModel.isLoading)
+            .trackError(for: $viewModel.error)
+            .hStateViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: { [weak viewModel] in
+                            withAnimation {
+                                viewModel?.error = nil
+                            }
+                        })
+                )
+            )
             .fixedSize(horizontal: false, vertical: true)
             spacing(viewModel.sender == .hedvig)
         }
@@ -57,7 +67,7 @@ struct SubmitClaimChatMesageView: View {
     private var skipButton: some View {
         hButton(.medium, .secondary, content: .init(title: "Skip")) {
             Task {
-                try await viewModel.skip()
+                await viewModel.skip()
             }
         }
     }
@@ -66,7 +76,7 @@ struct SubmitClaimChatMesageView: View {
         hCoreUIAssets.edit.view
             .onTapGesture {
                 Task {
-                    try await viewModel.regret()
+                    await viewModel.regret()
                 }
             }
     }

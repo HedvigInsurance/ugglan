@@ -13,6 +13,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
+    @Published var error: Error?
+
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
 
@@ -30,77 +32,94 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         true
     }
 
-    @discardableResult
-    func submitResponse() async throws {
+    func executeStep() async throws -> ClaimIntentType {
         fatalError("submitResponse must be overridden")
     }
 
-    @discardableResult
-    func skip() async throws -> ClaimIntent? {
+    final func submitResponse() async {
         withAnimation {
             isLoading = true
+            isEnabled = false
         }
         defer {
             withAnimation {
+                isEnabled = self.error != nil
                 isLoading = false
             }
         }
-        let result = try await service.claimIntentSkipStep(stepId: id)
-        guard let result else {
-            throw ClaimIntentError.invalidResponse
-        }
-        withAnimation {
-            isLoading = false
-            isEnabled = false
-        }
+        do {
+            let result = try await executeStep()
 
-        switch result {
-        case let .intent(model):
-            mainHandler(.goToNext(claimIntent: model))
-            return model
-        case let .outcome(model):
-            mainHandler(.outcome(model: model))
-            return nil
+            switch result {
+            case let .intent(model):
+                mainHandler(.goToNext(claimIntent: model))
+            case let .outcome(model):
+                mainHandler(.outcome(model: model))
+            }
+
+        } catch let error {
+            self.error = error
         }
     }
 
-    @discardableResult
-    func regret() async throws -> ClaimIntent {
+    func skip() async {
         withAnimation {
             isLoading = true
+            isEnabled = false
         }
         defer {
             withAnimation {
+                isEnabled = true
+                isLoading = false
+            }
+        }
+        do {
+            let result = try await service.claimIntentSkipStep(stepId: id)
+            guard let result else {
+                throw ClaimIntentError.invalidResponse
+            }
+            switch result {
+            case let .intent(model):
+                mainHandler(.goToNext(claimIntent: model))
+            case let .outcome(model):
+                mainHandler(.outcome(model: model))
+            }
+        } catch let ex {
+            self.error = ex
+        }
+    }
+
+    func regret() async {
+        withAnimation {
+            isLoading = true
+            isEnabled = false
+        }
+        defer {
+            withAnimation {
+                isEnabled = true
                 isLoading = false
             }
         }
 
-        let result = try await service.claimIntentRegretStep(stepId: id)
-        guard let result else {
-            throw ClaimIntentError.invalidResponse
-        }
-        withAnimation {
-            isLoading = false
-            isEnabled = false
-        }
+        do {
+            let result = try await service.claimIntentRegretStep(stepId: id)
+            guard let result else {
+                throw ClaimIntentError.invalidResponse
+            }
+            withAnimation {
+                isLoading = false
+                isEnabled = false
+            }
 
-        switch result {
-        case let .intent(model):
-            mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: model))
-            return model
-        case let .outcome(model):
-            break
+            switch result {
+            case let .intent(model):
+                mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: model))
+            case .outcome:
+                break
+            }
+        } catch let ex {
+            self.error = ex
         }
-
-        return .init(
-            currentStep: .init(content: .text, id: "", text: ""),
-            id: "",
-            sourceMessages: [],
-            outcome: nil,
-            isSkippable: false,
-            isRegrettable: true
-        )
-
     }
 }
 

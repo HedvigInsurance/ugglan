@@ -12,30 +12,10 @@ final class SubmitClaimTextStep: ClaimIntentStepHandler {
         }
     }
 
-    override func submitResponse() async throws {
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
-
-        // Acknowledge text step and get next step
+    override func executeStep() async throws -> ClaimIntentType {
         guard let result = try await service.getNextStep(claimIntentId: claimIntent.id) else {
             throw ClaimIntentError.invalidResponse
         }
-
-        switch result {
-        case let .intent(model):
-            mainHandler(.goToNext(claimIntent: model))
-        case let .outcome(model):
-            mainHandler(.outcome(model: model))
-        }
-
-        withAnimation {
-            isEnabled = false
-        }
+        return result
     }
 }

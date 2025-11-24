@@ -18,16 +18,7 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func submitResponse() async throws {
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
-
+    override func executeStep() async throws -> ClaimIntentType {
         guard
             let result = try await service.claimIntentSubmitSummary(
                 stepId: claimIntent.currentStep.id
@@ -35,16 +26,6 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-
-        switch result {
-        case let .intent(model):
-            mainHandler(.goToNext(claimIntent: model))
-        case let .outcome(model):
-            mainHandler(.outcome(model: model))
-        }
-
-        withAnimation {
-            isEnabled = false
-        }
+        return result
     }
 }

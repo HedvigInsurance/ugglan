@@ -20,7 +20,7 @@ struct ClaimsMainNavigation: View {
     @EnvironmentObject var homeNavigationVm: HomeNavigationViewModel
 
     var body: some View {
-        RouterHost(router: claimsRouter, tracking: self) {
+        RouterHost(router: claimsRouter, options: .extendedNavigationWidth, tracking: self) {
             honestyPledge()
                 .captureHeight(in: $measuredHeight)
                 .onDisappear {

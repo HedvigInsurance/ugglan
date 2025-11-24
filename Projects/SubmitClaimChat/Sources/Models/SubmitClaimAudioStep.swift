@@ -9,7 +9,7 @@ import hGraphQL
 
 final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     var audioFileURL: URL?
-
+    @Published var uploadProgress: Double = 0
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
 
@@ -32,13 +32,9 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    @discardableResult
-    override func submitResponse() async throws {
+    override func executeStep() async throws -> ClaimIntentType {
         guard let audioFileURL else {
             throw ClaimIntentError.invalidResponse
-        }
-        withAnimation {
-            isLoading = true
         }
         let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
         let multipart = MultipartFormDataRequest(url: url)
@@ -52,13 +48,14 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         let response: FileUploadResponseModel = try await fileUploadClient.upload(
             url: audioFileURL,
             multipart: multipart
-        )
-        let fileId = response.fileIds.first!
-        defer {
-            withAnimation {
-                isLoading = false
+        ) { [weak self] progress in
+            Task { @MainActor in
+                withAnimation {
+                    self?.uploadProgress = progress
+                }
             }
         }
+        let fileId = response.fileIds.first!
 
         guard
             let result = try await service.claimIntentSubmitAudio(
@@ -69,20 +66,10 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-
-        switch result {
-        case let .intent(model):
-            mainHandler(.goToNext(claimIntent: model))
-        case let .outcome(model):
-            mainHandler(.outcome(model: model))
-        }
-
-        withAnimation {
-            isEnabled = false
-        }
+        return result
     }
+}
 
-    struct FileUploadResponseModel: Codable, Sendable {
-        let fileIds: [String]
-    }
+struct FileUploadResponseModel: Codable, Sendable {
+    let fileIds: [String]
 }

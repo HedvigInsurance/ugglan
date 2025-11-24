@@ -235,6 +235,7 @@ public struct MovingFlowNavigation: View {
     public var body: some View {
         RouterHost(
             router: router,
+            options: .extendedNavigationWidth,
             tracking: movingFlowNavigationVm.initialTrackingType ?? MovingFlowDetentType.selectHousingType
         ) {
             getInitalScreen()

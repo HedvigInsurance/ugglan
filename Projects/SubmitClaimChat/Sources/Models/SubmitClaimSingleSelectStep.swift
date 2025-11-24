@@ -16,17 +16,7 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func submitResponse() async throws {
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
-
-        // Acknowledge text step and get next step
+    override func executeStep() async throws -> ClaimIntentType {
         guard
             let result = try await service.claimIntentSubmitSelect(
                 stepId: claimIntent.currentStep.id,
@@ -35,23 +25,12 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.unknown
         }
-
-        switch result {
-        case let .intent(model):
-            mainHandler(.goToNext(claimIntent: model))
-        case let .outcome(model):
-            mainHandler(.outcome(model: model))
-        }
-
-        withAnimation {
-            isEnabled = false
-        }
+        return result
     }
 
-    override func skip() async throws -> ClaimIntent? {
-        let data = try await super.skip()
+    override func skip() async {
+        await super.skip()
         selectedOption = nil
-        return data
     }
 }
 
