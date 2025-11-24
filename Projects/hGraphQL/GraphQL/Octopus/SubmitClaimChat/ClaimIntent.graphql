@@ -114,6 +114,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
 			  }
 			  isSkippable
 			  isRegrettable
+              defaultSelectedId
 		}
 }
 

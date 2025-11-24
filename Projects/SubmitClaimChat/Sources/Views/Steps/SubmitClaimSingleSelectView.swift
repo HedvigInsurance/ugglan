@@ -6,9 +6,9 @@ struct SubmitClaimSingleSelectView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
 
     public var body: some View {
-        TagList(tags: viewModel.options.compactMap({ $0.id })) { tag in
+        TagList(tags: viewModel.model.options.compactMap({ $0.id })) { tag in
             hPill(
-                text: viewModel.options.first(where: { $0.id == tag })?.title ?? "",
+                text: viewModel.model.options.first(where: { $0.id == tag })?.title ?? "",
                 color: viewModel.selectedOption == tag ? .green : .grey
             )
             .onTapGesture {

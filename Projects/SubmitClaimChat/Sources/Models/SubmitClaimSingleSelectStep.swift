@@ -2,7 +2,7 @@ import SwiftUI
 
 final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     @Published var selectedOption: String?
-    let options: [ClaimIntentContentSelectOption]
+    let model: ClaimIntentStepContentSelect
 
     required init(
         claimIntent: ClaimIntent,
@@ -12,8 +12,13 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         guard case .singleSelect(let model) = claimIntent.currentStep.content else {
             fatalError("TextStepHandler initialized with non-single select content")
         }
-        self.options = model
+        self.model = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+        self.initializeSelectValues()
+    }
+
+    private func initializeSelectValues() {
+        selectedOption = model.defaultSelectedId
     }
 
     override func executeStep() async throws -> ClaimIntentType {

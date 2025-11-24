@@ -74,7 +74,7 @@ public enum ClaimIntentStepContent: Sendable {
     case audioRecording(model: ClaimIntentStepContentAudioRecording)
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
-    case singleSelect(model: [ClaimIntentContentSelectOption])
+    case singleSelect(model: ClaimIntentStepContentSelect)
     case unknown
 }
 
@@ -174,6 +174,16 @@ public struct ClaimIntentStepContentFileUpload: Sendable {
 
     public init(uploadURI: String) {
         self.uploadURI = uploadURI
+    }
+}
+
+public struct ClaimIntentStepContentSelect: Sendable {
+    let defaultSelectedId: String?
+    let options: [ClaimIntentContentSelectOption]
+
+    public init(defaultSelectedId: String?, options: [ClaimIntentContentSelectOption]) {
+        self.defaultSelectedId = defaultSelectedId
+        self.options = options
     }
 }
 
