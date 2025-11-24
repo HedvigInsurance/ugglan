@@ -17,26 +17,12 @@ final class SubmitClaimOutcomeStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func submitResponse() async throws -> ClaimIntent {
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
-
-        // Outcome is typically the final step, get next step to check for any continuation
+    override func executeStep() async throws -> ClaimIntent {
         guard
             let result = try await service.getNextStep(claimIntentId: claimIntent.id)
 
         else {
             throw ClaimIntentError.invalidResponse
-        }
-        mainHandler(.goToNext(claimIntent: result))
-        withAnimation {
-            isEnabled = false
         }
         return result
     }

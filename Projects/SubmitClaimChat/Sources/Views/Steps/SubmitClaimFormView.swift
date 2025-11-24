@@ -44,7 +44,7 @@ struct SubmitClaimFormView: View {
             if viewModel.isEnabled {
                 hButton(.medium, .primary, content: .init(title: "Send")) {
                     Task {
-                        try await viewModel.submitResponse()
+                        await viewModel.submitResponse()
                     }
                 }
             }

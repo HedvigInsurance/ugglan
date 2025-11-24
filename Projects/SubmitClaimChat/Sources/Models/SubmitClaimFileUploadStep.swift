@@ -22,16 +22,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    @discardableResult
-    override func submitResponse() async throws -> ClaimIntent {
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
+    override func executeStep() async throws -> ClaimIntent {
         let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
         let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
 
@@ -39,10 +30,6 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
 
         guard let result else {
             throw ClaimIntentError.invalidResponse
-        }
-        mainHandler(.goToNext(claimIntent: result))
-        withAnimation {
-            isEnabled = false
         }
         return result
     }

@@ -27,30 +27,18 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task {
             try await Task.sleep(seconds: 1)
-            _ = try await submitResponse()
+            await submitResponse()
         }
     }
 
-    override func submitResponse() async throws -> ClaimIntent {
-        withAnimation {
-            isLoading = true
-        }
-        defer {
-            withAnimation {
-                isLoading = false
-            }
-        }
+    override func executeStep() async throws -> ClaimIntent {
         try await getNextStep()
         guard
-            let claimIntent = try await service.claimIntentSubmitTask(stepId: claimIntent.currentStep.id)
+            let result = try await service.claimIntentSubmitTask(stepId: claimIntent.currentStep.id)
         else {
             throw ClaimIntentError.invalidResponse
         }
-        mainHandler(.goToNext(claimIntent: claimIntent))
-        withAnimation {
-            isEnabled = false
-        }
-        return claimIntent
+        return result
     }
 
     private func getNextStep() async throws {
