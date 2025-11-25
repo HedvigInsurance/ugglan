@@ -56,7 +56,6 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             case let .outcome(model):
                 mainHandler(.outcome(model: model))
             }
-
         } catch let error {
             self.error = error
         }
