@@ -58,21 +58,24 @@ struct SubmitClaimFormView: View {
         .detent(
             item: $viewModel.isSelectItemPresented,
             transitionType: .detent(style: [.height])
-        ) { model in
+        ) { [weak viewModel] model in
             ItemPickerScreen<SingleSelectValue>(
                 config: .init(
                     items: model.values.map({ ($0, .init(title: $0.title)) }),
                     preSelectedItems: {
-                        let fieldModel = viewModel.getFormStepValue(for: model.id)
-                        let fieldOptions = viewModel.formModel.fields.first(where: { $0.id == model.id })?.options
-                        let selectedValues = fieldModel.values
+                        if let fieldModel = viewModel?.getFormStepValue(for: model.id),
+                            let fieldOptions = viewModel?.formModel.fields.first(where: { $0.id == model.id })?.options
+                        {
+                            let selectedValues = fieldModel.values
 
-                        return fieldOptions?.filter({ selectedValues.contains($0.value) })
-                            .map({ SingleSelectValue(title: $0.title, value: $0.value) }) ?? []
+                            return fieldOptions.filter({ selectedValues.contains($0.value) })
+                                .map({ SingleSelectValue(title: $0.title, value: $0.value) })
+                        }
+                        return []
                     },
-                    onSelected: { values in
-                        viewModel.getFormStepValue(for: model.id).values = values.compactMap({ $0.0?.value })
-                        viewModel.isSelectItemPresented = nil
+                    onSelected: { [weak viewModel] values in
+                        viewModel?.getFormStepValue(for: model.id).values = values.compactMap({ $0.0?.value })
+                        viewModel?.isSelectItemPresented = nil
                     }
                 )
             )
@@ -97,14 +100,15 @@ struct SubmitClaimFormView: View {
                 viewModel.dateForPicker = viewModel.formValues[field.id]?.values.first?.localDateToDate ?? Date()
                 viewModel.isDatePickerPresented = .init(
                     id: field.id,
-                    continueAction: {
+                    continueAction: { [weak viewModel] in
+                        guard let viewModel else { return }
                         viewModel.formValues[viewModel.isDatePickerPresented?.id ?? ""] = .init(
                             values: [viewModel.dateForPicker.localDateString]
                         )
                         viewModel.isDatePickerPresented = nil
                     },
-                    cancelAction: {
-                        viewModel.isDatePickerPresented = nil
+                    cancelAction: { [weak viewModel] in
+                        viewModel?.isDatePickerPresented = nil
                     },
                     date: $viewModel.dateForPicker,
                     config: .init(placeholder: "placeholder", title: "Select date")
@@ -119,11 +123,11 @@ struct SubmitClaimFormView: View {
         return DropdownView(
             value: selectedOption?.title ?? "",
             placeHolder: field.title
-        ) {
+        ) { [weak viewModel] in
             let values: [SingleSelectValue] = field.options.map {
                 .init(title: $0.title, value: $0.value)
             }
-            viewModel.isSelectItemPresented = .init(id: field.id, values: values, multiselect: false)
+            viewModel?.isSelectItemPresented = .init(id: field.id, values: values, multiselect: false)
         }
     }
 
@@ -134,11 +138,11 @@ struct SubmitClaimFormView: View {
         return DropdownView(
             value: selectedOption.map({ $0.title }).joined(separator: ", "),
             placeHolder: field.title
-        ) {
+        ) { [weak viewModel] in
             let values: [SingleSelectValue] = field.options.map {
                 .init(title: $0.title, value: $0.value)
             }
-            viewModel.isSelectItemPresented = .init(id: field.id, values: values, multiselect: true)
+            viewModel?.isSelectItemPresented = .init(id: field.id, values: values, multiselect: true)
         }
     }
 
@@ -229,8 +233,8 @@ struct FormBinaryView: View {
         TagList(tags: options.compactMap({ $0.value })) { tag in
             hPill(text: options.first(where: { $0.value == tag })?.title ?? "", color: vm.value == tag ? .green : .grey)
                 .onTapGesture {
-                    withAnimation {
-                        vm.value = tag
+                    withAnimation { [weak vm] in
+                        vm?.value = tag
                     }
                 }
         }
