@@ -29,7 +29,7 @@ final class CrossSellStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchCrossSell)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells == CrossSell.getDefault
+            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells.others == CrossSell.getDefault
         }
 
         assert(mockService.events.count == 1)
@@ -46,7 +46,7 @@ final class CrossSellStoreTests: XCTestCase {
         await store.sendAsync(.fetchCrossSell)
         try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchCrossSell] != nil)
-        assert(store.state.crossSells.isEmpty)
+        assert(store.state.crossSells.others.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
@@ -76,7 +76,7 @@ final class CrossSellStoreTests: XCTestCase {
         await store.sendAsync(.fetchAddonBanner)
         try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchAddonBanner] != nil)
-        assert(store.state.crossSells.isEmpty)
+        assert(store.state.crossSells.others.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getAddonBannerModel)
     }
@@ -89,6 +89,7 @@ extension CrossSell {
             id: "1",
             title: "car",
             description: "description",
+            buttonTitle: "button title",
             imageUrl: nil,
             buttonDescription: "button description"
         ),
@@ -96,6 +97,7 @@ extension CrossSell {
             id: "2",
             title: "home",
             description: "description",
+            buttonTitle: "button title",
             imageUrl: nil,
             buttonDescription: "button description"
         ),
