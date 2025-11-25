@@ -103,11 +103,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 textField?.becomeFirstResponder()
             }
         }
-        .onChange(of: equals) { equals in
+        .onChange(of: equals) { [weak vm] equals in
             if equals == focusValue {
-                vm.textField?.becomeFirstResponder()
-            } else if vm.textField?.isEditing == true {
-                vm.textField?.resignFirstResponder()
+                vm?.textField?.becomeFirstResponder()
+            } else if vm?.textField?.isEditing == true {
+                vm?.textField?.resignFirstResponder()
             }
         }
         .onChange(of: innerValue) { currentValue in

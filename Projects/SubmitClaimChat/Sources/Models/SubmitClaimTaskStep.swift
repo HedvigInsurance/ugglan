@@ -31,7 +31,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
     }
 
-    override func executeStep() async throws -> ClaimIntent {
+    override func executeStep() async throws -> ClaimIntentType {
         try await getNextStep()
         guard
             let result = try await service.claimIntentSubmitTask(stepId: claimIntent.currentStep.id)
@@ -49,7 +49,14 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             guard let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id) else {
                 throw ClaimIntentError.invalidResponse
             }
-            self.claimIntent = claimIntent
+
+            switch claimIntent {
+            case let .intent(model):
+                self.claimIntent = model
+            default:
+                break
+            }
+
             try await getNextStep()
         }
     }

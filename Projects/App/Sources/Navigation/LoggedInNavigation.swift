@@ -344,7 +344,7 @@ struct HomeTab: View {
         .modally(
             item: $homeNavigationVm.claimsAutomationStartInput
         ) { input in
-            SubmitClaimChatScreen(
+            SubmitClaimChatNavigation(
                 input: input,
                 goToClaimDetails: { [weak homeNavigationVm] claimId in
                     homeNavigationVm?.claimsAutomationStartInput = nil
@@ -355,11 +355,13 @@ struct HomeTab: View {
                             homeNavigationVm?.router.push(claim)
                         }
                     }
+                },
+                openChat: {
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.newConversation
+                    )
                 }
-            )
-            .withDismissButton()
-            .embededInNavigation(
-                tracking: self
             )
         }
         .modally(

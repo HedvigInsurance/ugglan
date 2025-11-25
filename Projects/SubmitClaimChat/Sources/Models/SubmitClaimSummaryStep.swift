@@ -18,7 +18,7 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func executeStep() async throws -> ClaimIntent {
+    override func executeStep() async throws -> ClaimIntentType {
         guard
             let result = try await service.claimIntentSubmitSummary(
                 stepId: claimIntent.currentStep.id

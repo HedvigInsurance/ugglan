@@ -22,10 +22,9 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func executeStep() async throws -> ClaimIntent {
+    override func executeStep() async throws -> ClaimIntentType {
         let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
         let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
-
         let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
 
         guard let result else {

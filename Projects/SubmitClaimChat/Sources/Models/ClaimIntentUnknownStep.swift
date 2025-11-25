@@ -9,7 +9,7 @@ final class SubmitClaimUnknownStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func executeStep() async throws -> ClaimIntent {
+    override func executeStep() async throws -> ClaimIntentType {
         throw ClaimIntentError.invalidResponse
     }
 }

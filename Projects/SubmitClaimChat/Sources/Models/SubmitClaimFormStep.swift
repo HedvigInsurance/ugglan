@@ -41,7 +41,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         return true
     }
 
-    override func executeStep() async throws -> ClaimIntent {
+    override func executeStep() async throws -> ClaimIntentType {
         guard validateInput() else {
             throw ClaimIntentError.invalidInput
         }

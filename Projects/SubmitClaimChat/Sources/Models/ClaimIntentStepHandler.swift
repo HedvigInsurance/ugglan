@@ -32,7 +32,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         true
     }
 
-    func executeStep() async throws -> ClaimIntent {
+    func executeStep() async throws -> ClaimIntentType {
         fatalError("submitResponse must be overridden")
     }
 
@@ -49,7 +49,14 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
         do {
             let result = try await executeStep()
-            mainHandler(.goToNext(claimIntent: result))
+
+            switch result {
+            case let .intent(model):
+                mainHandler(.goToNext(claimIntent: model))
+            case let .outcome(model):
+                mainHandler(.outcome(model: model))
+            }
+
         } catch let error {
             self.error = error
         }
@@ -62,7 +69,6 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
         defer {
             withAnimation {
-                isEnabled = true
                 isLoading = false
             }
         }
@@ -71,7 +77,12 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             guard let result else {
                 throw ClaimIntentError.invalidResponse
             }
-            mainHandler(.goToNext(claimIntent: result))
+            switch result {
+            case let .intent(model):
+                mainHandler(.goToNext(claimIntent: model))
+            case let .outcome(model):
+                mainHandler(.outcome(model: model))
+            }
         } catch let ex {
             self.error = ex
         }
@@ -98,7 +109,13 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 isLoading = false
                 isEnabled = false
             }
-            mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: result))
+
+            switch result {
+            case let .intent(model):
+                mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: model))
+            case .outcome:
+                break
+            }
         } catch let ex {
             self.error = ex
         }
@@ -121,10 +138,6 @@ enum ClaimIntentStepHandlerFactory {
             return SubmitClaimAudioStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .summary:
             return SubmitClaimSummaryStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        case .outcome:
-            return SubmitClaimOutcomeStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        case .text:
-            return SubmitClaimTextStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .singleSelect:
             return SubmitClaimSingleSelectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .fileUpload:
@@ -138,6 +151,7 @@ enum ClaimIntentStepHandlerFactory {
 enum SubmitClaimEvent {
     case goToNext(claimIntent: ClaimIntent)
     case regret(currentClaimIntent: ClaimIntent, newclaimIntent: ClaimIntent)
+    case outcome(model: ClaimIntentStepOutcome)
 }
 
 // MARK: - Errors

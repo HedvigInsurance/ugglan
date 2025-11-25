@@ -31,7 +31,8 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         self.audioRecordingModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
-    override func executeStep() async throws -> ClaimIntent {
+
+    override func executeStep() async throws -> ClaimIntentType {
         guard let audioFileURL else {
             throw ClaimIntentError.invalidResponse
         }

@@ -1,4 +1,7 @@
+import Claims
 import Foundation
+import hCore
+import hCoreUI
 
 struct SingleItemModel: Equatable, Identifiable {
     static func == (lhs: SingleItemModel, rhs: SingleItemModel) -> Bool { lhs.id == rhs.id }
@@ -71,9 +74,17 @@ public enum ClaimIntentStepContent: Sendable {
     case audioRecording(model: ClaimIntentStepContentAudioRecording)
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
-    case outcome(model: ClaimIntentStepContentOutcome)
     case singleSelect(model: [ClaimIntentContentSelectOption])
-    case text
+    case unknown
+}
+
+public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        ""
+    }
+
+    case deflect(model: ClaimIntentOutcomeDeflection)
+    case claim(model: ClaimIntentOutcomeClaim)
     case unknown
 }
 
@@ -213,10 +224,47 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
     }
 }
 
-public struct ClaimIntentStepContentOutcome: Sendable, Equatable {
-    let claimId: String
+public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
+    let title: String?
+    let content: ClaimIntentOutcomeDeflectionInfoBlock
+    let partners: [Partner]
+    let infoText: String?
+    let warningText: String?
+    let questions: [DeflectQuestion]
 
-    public init(claimId: String) {
+    public init(
+        title: String?,
+        content: ClaimIntentOutcomeDeflectionInfoBlock,
+        partners: [Partner],
+        infoText: String?,
+        warningText: String?,
+        questions: [DeflectQuestion]
+    ) {
+        self.title = title
+        self.content = content
+        self.partners = partners
+        self.infoText = infoText
+        self.warningText = warningText
+        self.questions = questions
+    }
+
+    public struct ClaimIntentOutcomeDeflectionInfoBlock: Sendable, Hashable {
+        let title: String
+        let description: String
+
+        public init(title: String, description: String) {
+            self.title = title
+            self.description = description
+        }
+    }
+}
+
+public struct ClaimIntentOutcomeClaim: Sendable, Hashable {
+    let claimId: String
+    let claim: ClaimModel
+
+    public init(claimId: String, claim: ClaimModel) {
         self.claimId = claimId
+        self.claim = claim
     }
 }
