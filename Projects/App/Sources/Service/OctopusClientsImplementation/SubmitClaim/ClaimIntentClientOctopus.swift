@@ -282,7 +282,12 @@ extension ClaimIntentStepContent {
                 )
             )
         } else if let singleStep = fragment.asClaimIntentStepContentSelect {
-            self = .singleSelect(model: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) }))
+            self = .singleSelect(
+                model: .init(
+                    defaultSelectedId: singleStep.defaultSelectedId,
+                    options: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) })
+                )
+            )
         } else if let fileUpload = fragment.asClaimIntentStepContentFileUpload {
             self = .fileUpload(
                 model: .init(
