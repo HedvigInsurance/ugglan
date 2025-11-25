@@ -10,33 +10,18 @@ public struct SubmitClaimChatScreen: View {
     public init() {}
 
     public var body: some View {
-        successView
-    }
-
-    private var successView: some View {
-        Group {
-            if #available(iOS 16.0, *) {
-                scrollContent
-                    .toolbarBackground(.hidden, for: .navigationBar)
-            } else {
-                scrollContent
-            }
-        }
+        scrollContent
+            .hideToolbarBackgroundIfAvailable()
     }
 
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .task(id: viewModel.allSteps.last?.claimIntent.currentStep.id) {
-                    try? await Task.sleep(seconds: 0.05)
-                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-                }
-                .onAppear {
-                    proxy.scrollTo("BOTTOM", anchor: .bottom)
-                }
-                .onChange(of: viewModel.allSteps.count) { _ in
-                    withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-                }
+                .scrollToBottom(
+                    proxy: proxy,
+                    id: viewModel.allSteps.last?.claimIntent.currentStep.id,
+                    count: viewModel.allSteps.count
+                )
         }
     }
 
@@ -64,6 +49,29 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 }
 
 extension View {
+    @ViewBuilder
+    func hideToolbarBackgroundIfAvailable() -> some View {
+        if #available(iOS 16.0, *) {
+            self.toolbarBackground(.hidden, for: .navigationBar)
+        } else {
+            self
+        }
+    }
+
+    func scrollToBottom<T: Hashable>(proxy: ScrollViewProxy, id: T?, count: Int) -> some View {
+        self
+            .task(id: id) {
+                try? await Task.sleep(seconds: 0.05)
+                withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
+            }
+            .onAppear {
+                proxy.scrollTo("BOTTOM", anchor: .bottom)
+            }
+            .onChange(of: count) { _ in
+                withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
+            }
+    }
+
     @ViewBuilder
     func hideScrollIndicators() -> some View {
         if #available(iOS 16.0, *) {
