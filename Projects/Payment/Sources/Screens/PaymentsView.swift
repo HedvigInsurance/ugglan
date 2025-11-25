@@ -154,24 +154,6 @@ public struct PaymentsView: View {
         }
     }
 
-    //    @ViewBuilder
-    //    private func connectedPaymentMethod(displayName: String, descriptor: String) -> some View {
-    //        hRow {
-    //            hCoreUIAssets.payments.view
-    //                .resizable()
-    //                .aspectRatio(contentMode: .fit)
-    //                .frame(width: 24, height: 24)
-    //                .foregroundColor(hTextColor.Opaque.primary)
-    //            hText(displayName)
-    //            Spacer()
-    //        }
-    //        .withCustomAccessory {
-    //            hText(descriptor).foregroundColor(hTextColor.Opaque.secondary)
-    //        }
-    //        .hWithoutHorizontalPadding([.row])
-    //        .dividerInsets(.all, 0)
-    //    }
-
     private func connectedPaymentMethod(data: PaymentChargeData) -> some View {
         hRow {
             hCoreUIAssets.payments.view
