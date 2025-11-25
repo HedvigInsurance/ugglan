@@ -53,7 +53,9 @@ struct SubmitClaimChatMesageView: View {
                     actionButton: .init(
                         buttonAction: { [weak viewModel] in
                             withAnimation {
+                                viewModel?.isEnabled = true
                                 viewModel?.error = nil
+                                viewModel?.isLoading = false
                             }
                         })
                 )
