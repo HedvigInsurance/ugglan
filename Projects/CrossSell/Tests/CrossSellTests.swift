@@ -21,6 +21,7 @@ final class CrossSellTests: XCTestCase {
                 id: "1",
                 title: "car",
                 description: "description",
+                buttonTitle: "button title",
                 imageUrl: nil,
                 buttonDescription: "button description"
             ),
@@ -28,6 +29,7 @@ final class CrossSellTests: XCTestCase {
                 id: "2",
                 title: "pet",
                 description: "description",
+                buttonTitle: "button title",
                 imageUrl: nil,
                 buttonDescription: "button description"
             ),
