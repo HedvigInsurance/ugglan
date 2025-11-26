@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 @MainActor
@@ -55,6 +56,13 @@ extension Date {
     }
 }
 
+@MainActor
+extension Int {
+    public func ordinalDate() -> String {
+        Dependencies.dateService.asOrdinal(for: self)
+    }
+}
+
 extension Calendar {
     /// returns a boolean indicating if provided date is in the same week as current week
     public func isDateInWeek(from date: Date) -> Bool {
@@ -66,62 +74,91 @@ extension Calendar {
 
 @MainActor
 public class DateService {
-    public init() {}
-    let localDateStringFormatter: DateFormatter = {
+    private let locale: Localization.Locale
+    public init(locale: Localization.Locale = Localization.Locale.currentLocale.value) {
+        self.locale = locale
+    }
+
+    lazy private(set) var localDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.locale = Locale(identifier: locale.code)
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
 
-    let localbirthDateStringFormatter: DateFormatter = {
+    lazy private(set) var localbirthDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.locale = Locale(identifier: locale.code)
         formatter.dateFormat = "yyMMdd"
         return formatter
     }()
 
-    let displayddMMM: DateFormatter = {
+    lazy private(set) fileprivate var displayddMMM: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.locale = Locale(identifier: locale.code)
         formatter.dateFormat = "dd MMM"
         return formatter
     }()
 
-    let displayMMMMddYYYY: DateFormatter = {
+    lazy private(set) fileprivate var displayMMMMddYYYY: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.locale = Locale(identifier: locale.code)
         formatter.dateFormat = "MMMM dd YYYY"
         return formatter
     }()
 
-    let YYYYFormat: DateFormatter = {
+    lazy private(set) fileprivate var YYYYFormat: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.locale = Locale(identifier: locale.code)
         formatter.dateFormat = "yyyy"
         return formatter
     }()
 
-    let displayddMMMyyyy: DateFormatter = {
+    lazy private(set) fileprivate var displayddMMMyyyy: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.locale = Locale(identifier: locale.code)
         formatter.dateFormat = "dd MMM yyyy"
         return formatter
     }()
 
-    let displayddMMMyyyyHHmm: DateFormatter = {
+    lazy private(set) fileprivate var displayddMMMyyyyHHmm: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
+        formatter.locale = Locale(identifier: locale.code)
         formatter.dateFormat = "dd.MM.yyyy HH:mm"
         return formatter
     }()
 
-    let localDateToIso8601Date: ISO8601DateFormatter = {
+    lazy private(set) var localDateToIso8601Date: ISO8601DateFormatter = {
         var formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         formatter.timeZone = .current
         return formatter
     }()
+
+    fileprivate func asOrdinal(for day: Int) -> String {
+        let lastDigit = day % 10
+        let sufix: String = {
+            switch locale {
+            case .en_SE:
+                switch lastDigit {
+                case 1: return "st"
+                case 2: return "nd"
+                case 3: return "rd"
+                default: return "th"
+                }
+            case .sv_SE:
+                switch day {
+                case 11, 12: return "\(day):e"
+                default:
+                    switch lastDigit {
+                    case 1, 2: return ":a"
+                    default: return ":e"
+                    }
+                }
+            }
+        }()
+        return "\(day)\(sufix)"
+    }
 }
 
 extension Dependencies {

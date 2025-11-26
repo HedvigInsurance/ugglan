@@ -34,7 +34,7 @@ struct PaymentMethodView: View {
     var body: some View {
         hSection {
             regularRow(for: L10n.paymentsPaymentMethod, and: data.paymentMethod)
-            if withDate, let dueDate = data.chargingDayInTheMonth?.asString.appending(".") {
+            if withDate, let dueDate = data.chargingDayInTheMonth?.ordinalDate() {
                 infoRow(
                     for: L10n.paymentsPaymentDue,
                     and: L10n.paymentsDueDescription(dueDate),
