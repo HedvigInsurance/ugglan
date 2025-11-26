@@ -22,6 +22,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
     let title: String
     let description: String
+    let buttonTitle: String
     let webActionURL: String?
     let imageUrl: URL?
     let bannerText: String?
@@ -37,6 +38,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         id: String,
         title: String,
         description: String,
+        buttonTitle: String,
         webActionURL: String? = nil,
         bannerText: String? = nil,
         buttonText: String? = nil,
@@ -51,6 +53,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         self.id = id
         self.title = title
         self.description = description
+        self.buttonTitle = buttonTitle
         self.webActionURL = webActionURL
         self.imageUrl = imageUrl
         self.bannerText = bannerText

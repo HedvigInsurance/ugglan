@@ -6,19 +6,6 @@ import hGraphQL
 
 class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
-
-    func getCrossSell() async throws -> [CrossSell] {
-        let crossSellsInput = OctopusGraphQL.CrossSellInput(
-            userFlow: GraphQLEnum<OctopusGraphQL.UserFlow>.case(.insurances),
-            experiments: []
-        )
-        let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)
-        let crossSells = try await octopus.client.fetch(query: query)
-        return crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
-            CrossSell($0.fragments.crossSellFragment)
-        }
-    }
-
     func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
         let flowSource: GraphQLNullable<GraphQLEnum<OctopusGraphQL.FlowSource>> = {
             if let flowSource = source.asGraphQLFlowSource {
@@ -72,6 +59,7 @@ extension CrossSell {
             id: data.id,
             title: data.title,
             description: data.description,
+            buttonTitle: data.buttonTitle,
             webActionURL: data.storeUrl,
             imageUrl: URL(string: data.pillowImageSmall.src),
             buttonDescription: ""
@@ -84,6 +72,7 @@ extension CrossSell {
             id: crossSellFragment.id,
             title: crossSellFragment.title,
             description: crossSellFragment.description,
+            buttonTitle: crossSellFragment.buttonTitle,
             webActionURL: crossSellFragment.storeUrl,
             bannerText: data.bannerText,
             buttonText: data.buttonText,
@@ -106,6 +95,7 @@ extension CrossSellSource {
         case .changeTier: return .smartXSell
         case .addon: return .smartXSell
         case .movingFlow: return .smartXSell
+        case .insurances: return .insurances
         }
     }
 
@@ -116,6 +106,7 @@ extension CrossSellSource {
         case .changeTier: return .changeTier
         case .addon: return .addon
         case .movingFlow: return .moving
+        case .insurances: return nil
         }
     }
 }
