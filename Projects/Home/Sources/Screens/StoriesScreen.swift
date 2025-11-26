@@ -11,38 +11,56 @@ public struct StoriesScreen: View {
     }
 
     public var body: some View {
-        hSection {
-            GeometryReader { proxy in
-                VStack {
-                    HStack(spacing: .padding4) {
-                        ForEach(vm.stories) { story in
-                            StoryProgressView(vm: vm, story: story)
-                        }
-                    }
-                    Spacer()
-                    ZStack {
-                        ForEach(vm.stories) { story in
-                            StoryView(vm: vm, story: story)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { gestureValue in
-                                vm.gestureStart()
+        hForm {
+            hSection {
+                GeometryReader { proxy in
+                    VStack(spacing: 0) {
+                        HStack(spacing: .padding4) {
+                            ForEach(vm.stories) { story in
+                                StoryProgressView(vm: vm, story: story)
                             }
-                            .onEnded { gestureValue in
-                                vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
+                        }
+                        .padding(.top, .padding16)
+                        ZStack {
+                            ForEach(vm.stories) { story in
+                                StoryView(vm: vm, story: story)
                             }
-                    )
-                    .disabled(vm.gestureDisabled)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { gestureValue in
+                                    vm.gestureStart()
+                                }
+                                .onEnded { gestureValue in
+                                    vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
+                                }
+                        )
+                        .disabled(vm.gestureDisabled)
+                    }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .gradient(index: $vm.currentIndex)
+            .frame(height: 600)
         }
-        .background(hBackgroundColor.primary)
         .sectionContainerStyle(.transparent)
+    }
+}
+
+extension View {
+    @ViewBuilder
+    fileprivate func gradient(index: Binding<Int>) -> some View {
+        if #available(iOS 18.0, *) {
+            ZStack {
+                MeshGradientView(index: index)
+                    .blur(radius: 20)
+                self
+            }
+        } else {
+            self
+        }
     }
 }
 
@@ -72,64 +90,46 @@ struct StoryView: View {
     @State private var showTitle = false
     @State private var showSubtitle = false
     @State private var showImage = false
-    @State private var showThankYouButton = false
 
     @State private var cancellable: Task<(), any Error>?
     @EnvironmentObject var router: Router
     var body: some View {
-        ZStack {
-            VStack {
+        VStack {
+            Group {
                 if showTitle {
                     hText(story.title, style: .heading3)
-                        //                        .transition(
-                        //                            .asymmetric(
-                        //                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                        //                                removal: .move(edge: .leading).combined(with: .opacity)
-                        //                            )
-                        //                        )
                         .transition(.opacity)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    hText(story.title, style: .heading3)
+                        .transition(.opacity)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .opacity(0)
                 }
+
                 if showSubtitle {
                     hText(story.subtitle)
                         .foregroundColor(hTextColor.Opaque.secondary)
-                        //                        .transition(
-                        //                            .asymmetric(
-                        //                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                        //                                removal:
-                        //                                        .move(
-                        //                                            edge:
-                        //                                                    .leading
-                        //                                        )
-                        //                                        .combined(with: .opacity)
-                        //                            )
-                        //                        )
                         .transition(.opacity)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer()
-            }
-            VStack {
-                Spacer()
-                if showThankYouButton {
-                    hButton(.large, .secondary, content: .init(title: "Tack!")) {
-                        router.dismiss()
-                    }
+                } else {
+                    hText(story.subtitle)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .transition(.opacity)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .opacity(0)
                 }
             }
+            .fixedSize(horizontal: false, vertical: true)
+            Spacer()
             if showImage {
                 if story.mimeType == .GIF {
                     KFAnimatedImage(story.imageUrl)
                         .targetCache(ImageCache.default)
-                        .frame(width: 300, height: 300)
+                        .frame(width: 250, height: 250)
                         .contentShape(Rectangle())
-                        //                        .transition(
-                        //                            .asymmetric(
-                        //                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                        //                                removal: .move(edge: .leading).combined(with: .opacity)
-                        //                            )
-                        //                        )
                         .transition(.opacity)
                         .fixedSize(horizontal: false, vertical: true)
                 } else {
@@ -145,21 +145,12 @@ struct StoryView: View {
                             contentMode: .fit
                         )
                         .cornerRadius(.padding16)
-                        .frame(width: 350)
+                        .frame(width: 300)
                         .contentShape(Rectangle())
-                        //                        .transition(
-                        //                            .asymmetric(
-                        //                                insertion: .move(edge: .trailing)
-                        //                                    .combined(with: .offset(x: 0, y: CGFloat(Int.random(in: 50...100))))
-                        //                                    .combined(with: .opacity),
-                        //                                removal: .move(edge: .leading)
-                        //                                    .combined(with: .offset(x: 0, y: CGFloat(Int.random(in: 50...100))))
-                        //                                    .combined(with: .opacity)
-                        //                            )
-                        //                        )
                         .transition(.opacity)
                 }
             }
+            Spacer()
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, .padding16)
@@ -175,7 +166,6 @@ struct StoryView: View {
         cancellable?.cancel()
         cancellable = Task {
             withAnimation {
-                showThankYouButton = false
                 showImage = false
             }
             try await Task.sleep(seconds: 0.2)
@@ -207,9 +197,6 @@ struct StoryView: View {
                 if vm.stories.last == story && vm.currentStory == story {
                     try await Task.sleep(seconds: 2)
                     try Task.checkCancellation()
-                    withAnimation {
-                        showThankYouButton = true
-                    }
                 }
             }
         }
@@ -225,8 +212,12 @@ class StoriesScreenViewModel: ObservableObject {
             automaticProgressTask?.cancel()
             automaticProgressTask = nil
             setNextStoryAutomatic(forDuration: 10)
+            if let index = stories.firstIndex(of: currentStory) {
+                currentIndex = index
+            }
         }
     }
+    @Published var currentIndex: Int = 0
 
     private var timeStampOfStart: Date?
     private var timeStampOfEnd: Date?
@@ -336,8 +327,10 @@ public struct Story: Identifiable, Equatable {
 }
 
 #Preview {
-    StoriesScreen(stories: StoriesScreen.stories)
-        .environmentObject(Router())
+    Group {
+        StoriesScreen(stories: StoriesScreen.stories)
+            .environmentObject(Router())
+    }
 }
 
 extension StoriesScreen {
@@ -448,4 +441,45 @@ extension StoriesScreen {
             mimeType: .PNG
         ),
     ]
+}
+
+@available(iOS 18.0, *)
+struct MeshGradientView: View {
+    @Binding var index: Int
+    @State private var points = MeshGradientView.getPoints(for: 0)
+    @State var colors: [Color] = MeshGradientView.getColors(for: 0)
+    var body: some View {
+        MeshGradient(width: 3, height: 3, points: points, colors: colors)
+            .onChange(of: index) { value in
+                withAnimation(.easeInOut(duration: 2)) {
+                    colors = MeshGradientView.getColors(for: value)
+                    points = MeshGradientView.getPoints(for: value)
+                }
+            }
+    }
+
+    private static func getColors(for index: Int) -> [Color] {
+        [
+            .red.opacity(0.2),
+            .purple.opacity(0.2),
+            .indigo.opacity(0.2),
+            .orange.opacity(0.2),
+            .blue.opacity(0.2),
+            .blue.opacity(0.2),
+            .yellow.opacity(0.2),
+            .green.opacity(0.2),
+            .mint.opacity(0.2),
+        ]
+    }
+
+    private static func getPoints(for index: Int) -> [SIMD2<Float>] {
+        let value = abs(Float(sin(CGFloat(index))))
+        let opositive = 1 - value
+        print("VALUE IS  \(index) \(value)")
+        return [
+            .init(0, 0), .init(0.5, 0), .init(1, 0),
+            .init(0, value), .init(opositive, value), .init(1, 0.5),
+            .init(0, 1), .init(0.5, 1), .init(1, 1),
+        ]
+    }
 }
