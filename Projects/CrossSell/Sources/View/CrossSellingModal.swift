@@ -25,7 +25,7 @@ public struct CrossSellingModal: View {
                             CrossSellButtonComponent(crossSell: recommended)
                         }
                     }
-                    CrosssSellStackComponent(crossSells: crossSells.others, withHeader: crossSells.recommended != nil)
+                    CrossSellStackComponent(crossSells: crossSells.others, withHeader: crossSells.recommended != nil)
                 }
                 .padding(.bottom, .padding16)
             }
