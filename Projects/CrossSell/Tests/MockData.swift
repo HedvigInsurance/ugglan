@@ -6,17 +6,6 @@ import hCore
 @MainActor
 struct MockData {
     static func createMockCrossSellService(
-        fetchCrossSell: @escaping FetchCrossSell = {
-            [
-                .init(
-                    id: "crossSellId",
-                    title: "title",
-                    description: "description",
-                    imageUrl: nil,
-                    buttonDescription: "button description"
-                )
-            ]
-        },
         fetchAddonBannerModel: @escaping FetchAddonBanner = { _ in
             .init(
                 contractIds: ["contractId"],
@@ -25,14 +14,13 @@ struct MockData {
                 badges: []
             )
         },
-        fetchCrossSells: @escaping FetchCrossSells = { _ in
+        fetchCrossSell: @escaping FetchCrossSell = { _ in
             .init(recommended: nil, others: [])
         }
     ) -> MockCrossSellService {
         let service = MockCrossSellService(
             fetchCrossSell: fetchCrossSell,
-            fetchAddonBannerModel: fetchAddonBannerModel,
-            fetchCrossSells: fetchCrossSells
+            fetchAddonBannerModel: fetchAddonBannerModel
         )
         Dependencies.shared.add(module: Module { () -> CrossSellClient in service })
         return service
@@ -44,48 +32,37 @@ enum MockContractError: Error {
     case fetchAddonBanner
 }
 
-typealias FetchCrossSell = () async throws -> [CrossSell]
+typealias FetchCrossSell = (CrossSellSource) async throws -> CrossSells
 typealias FetchAddonBanner = (AddonSource) async throws -> AddonBannerModel?
-typealias FetchCrossSells = (CrossSellSource) async throws -> CrossSells
 
 class MockCrossSellService: CrossSellClient {
     var events = [Event]()
     var fetchCrossSell: FetchCrossSell
     var fetchAddonBannerModel: FetchAddonBanner
-    var fetchCrossSells: FetchCrossSells
 
     enum Event {
         case getCrossSell
         case getAddonBannerModel
-        case getCrossSells
     }
 
     init(
         fetchCrossSell: @escaping FetchCrossSell,
         fetchAddonBannerModel: @escaping FetchAddonBanner,
-        fetchCrossSells: @escaping FetchCrossSells
 
     ) {
         self.fetchCrossSell = fetchCrossSell
         self.fetchAddonBannerModel = fetchAddonBannerModel
-        self.fetchCrossSells = fetchCrossSells
     }
 
-    func getCrossSell() async throws -> [CrossSell] {
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
         events.append(.getCrossSell)
-        let data = try await fetchCrossSell()
+        let data = try await fetchCrossSell(source)
         return data
     }
 
     func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         events.append(.getAddonBannerModel)
         let data = try await fetchAddonBannerModel(source)
-        return data
-    }
-
-    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
-        events.append(.getCrossSells)
-        let data = try await fetchCrossSells(source)
         return data
     }
 }

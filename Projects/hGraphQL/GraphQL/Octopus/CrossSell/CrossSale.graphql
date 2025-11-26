@@ -32,6 +32,7 @@ fragment CrossSellFragment on CrossSell {
     description
     storeUrl
     title
+    buttonTitle
     pillowImageSmall {
         ...StoryblokImageAssetFragment
     }

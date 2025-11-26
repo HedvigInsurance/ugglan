@@ -37,6 +37,7 @@ struct CrossSellButtonComponent: View {
             id: "id1",
             title: "title",
             description: "description",
+            buttonTitle: "Save 15%",
             imageUrl: nil,
             buttonDescription: "button"
         )

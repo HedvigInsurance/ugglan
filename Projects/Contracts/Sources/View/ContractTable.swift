@@ -50,6 +50,9 @@ struct ContractTable: View {
                 )
             if !showTerminated {
                 VStack(spacing: .padding8) {
+                    CrossSellingView(withHeader: true)
+                        .padding(.top, .padding8)
+
                     if let banner = vm.addonBannerModel {
                         hSection {
                             let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
@@ -63,13 +66,11 @@ struct ContractTable: View {
                                 addon: banner
                             )
                         }
+                        .withHeader(title: L10n.insuranceAddonsSubheading)
                         .sectionContainerStyle(.transparent)
                     }
 
                     movingToANewHomeView
-                    CrossSellingView(withHeader: true)
-                        .padding(.top, .padding8)
-
                     PresentableStoreLens(
                         ContractStore.self,
                         getter: { state in
