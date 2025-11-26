@@ -28,7 +28,7 @@ public struct StoriesScreen: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .contentShape(Rectangle())
-                        .gesture(
+                        .simultaneousGesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { gestureValue in
                                     vm.gestureStart()
@@ -448,6 +448,7 @@ struct MeshGradientView: View {
     @Binding var index: Int
     @State private var points = MeshGradientView.getPoints(for: 0)
     @State var colors: [Color] = MeshGradientView.getColors(for: 0)
+    @Environment(\.colorScheme) var colorScheme
     var body: some View {
         MeshGradient(width: 3, height: 3, points: points, colors: colors)
             .onChange(of: index) { value in
@@ -456,19 +457,27 @@ struct MeshGradientView: View {
                     points = MeshGradientView.getPoints(for: value)
                 }
             }
+            .onChange(of: colorScheme) { _ in
+                withAnimation(.easeInOut(duration: 2)) {
+                    colors = MeshGradientView.getColors(for: index)
+                    points = MeshGradientView.getPoints(for: index)
+                }
+            }
     }
 
     private static func getColors(for index: Int) -> [Color] {
-        [
-            .red.opacity(0.2),
-            .purple.opacity(0.2),
-            .indigo.opacity(0.2),
-            .orange.opacity(0.2),
-            .blue.opacity(0.2),
-            .blue.opacity(0.2),
-            .yellow.opacity(0.2),
-            .green.opacity(0.2),
-            .mint.opacity(0.2),
+        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        let mixBy = colorScheme == .dark ? 0.4 : 0.0
+        return [
+            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
         ]
     }
 
