@@ -1,7 +1,6 @@
 import Combine
 import Foundation
 import SwiftUI
-import hCore
 
 public struct hFloatingField: View {
     private var placeholder: String
@@ -11,7 +10,6 @@ public struct hFloatingField: View {
     private let onTap: () -> Void
     @Environment(\.hFieldTrailingView) var fieldTrailingView
     @Environment(\.isEnabled) var isEnabled
-    @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
     @Environment(\.hFieldSize) var size
     @Environment(\.hBackgroundOption) var backgroundOption
     @Environment(\.hAnimateField) var animateField
@@ -107,28 +105,27 @@ public struct hFloatingField: View {
     }
 }
 
-struct hFloatingField_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var value = "S"
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var value = "S"
 
-        VStack {
-            hFloatingField(value: value, placeholder: "ni", error: nil) {}
-                .hFieldSize(.large)
-                .hFieldTrailingView {
-                    hCoreUIAssets.copy.view
-                }
-            hFloatingField(value: value, placeholder: "ni", error: nil) {}
-                .hFieldTrailingView {
-                    hCoreUIAssets.copy.view
-                }
-                .hFieldSize(.medium)
+    VStack {
+        hFloatingField(value: value, placeholder: "ni", error: nil) {}
+            .hFieldSize(.large)
+            .hFieldTrailingView {
+                hCoreUIAssets.copy.view
+            }
+        hFloatingField(value: value, placeholder: "ni", error: nil) {}
+            .hFieldTrailingView {
+                hCoreUIAssets.copy.view
+            }
+            .hFieldSize(.medium)
 
-            hFloatingField(value: value, placeholder: "ni", error: nil) {}
-                .hFieldTrailingView {
-                    hCoreUIAssets.copy.view
-                }
-                .hFieldSize(.small)
-        }
+        hFloatingField(value: value, placeholder: "ni", error: nil) {}
+            .hFieldTrailingView {
+                hCoreUIAssets.copy.view
+            }
+            .hFieldSize(.small)
     }
 }
 
@@ -146,22 +143,5 @@ extension EnvironmentValues {
 extension View {
     public func hFieldTrailingView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hFieldTrailingView, AnyView(content()))
-    }
-}
-
-private struct EnvironmentWithoutFixedHeight: EnvironmentKey {
-    static let defaultValue: Bool? = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutFixedHeight: Bool? {
-        get { self[EnvironmentWithoutFixedHeight.self] }
-        set { self[EnvironmentWithoutFixedHeight.self] = newValue }
-    }
-}
-
-extension View {
-    public var hWithoutFixedHeight: some View {
-        environment(\.hWithoutFixedHeight, true)
     }
 }

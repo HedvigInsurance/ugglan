@@ -38,9 +38,7 @@ struct SupportView: View {
     }
 }
 
-struct SupportView_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return SupportView(openChat: {})
-    }
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    return SupportView(openChat: {})
 }

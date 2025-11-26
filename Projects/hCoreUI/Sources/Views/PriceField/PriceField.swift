@@ -73,9 +73,7 @@ public struct PriceField: View {
 
     @ViewBuilder
     private var priceField: some View {
-        if viewModel.shouldShowPreviousPriceLabel(
-            strikeThroughPrice: strikeThroughPrice
-        ) {
+        if viewModel.shouldShowPreviousPriceLabel() {
             PremiumText(
                 text: currentPremiumText,
                 strikeThrough: strikeThroughPrice == .crossOldPrice,
@@ -87,16 +85,9 @@ public struct PriceField: View {
             PremiumText(
                 text: newPremiumText,
                 strikeThrough: strikeThroughPrice == .crossNewPrice,
-                usePrimary: true
+                usePrimary: !viewModel.useSecondaryColor
             )
         }
-    }
-
-    @ViewBuilder
-    private func subTitleField(text: String) -> some View {
-        hText(text, style: .label)
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .foregroundColor(hTextColor.Opaque.secondary)
     }
 
     private var currentPremiumText: String {
@@ -109,11 +100,15 @@ public struct PriceField: View {
 
     @hColorBuilder
     private func getTotalColor() -> some hColor {
-        switch strikeThroughPrice {
-        case .crossNewPrice:
+        if viewModel.useSecondaryColor {
             hTextColor.Translucent.secondary
-        case .crossOldPrice, .none:
-            hTextColor.Opaque.primary
+        } else {
+            switch strikeThroughPrice {
+            case .crossNewPrice:
+                hTextColor.Translucent.secondary
+            case .crossOldPrice, .none:
+                hTextColor.Opaque.primary
+            }
         }
     }
 }

@@ -1,18 +1,6 @@
 import Apollo
 import SwiftUI
 
-extension hGraphQL.GraphQLError {
-    var logDescription: String {
-        switch self {
-        case let .graphQLError(errors):
-            let messages = errors.map(\.localizedDescription)
-            return messages.joined(separator: " ")
-        case let .otherError(error):
-            return "Other error \(error)"
-        }
-    }
-}
-
 public enum GraphQLError: Error {
     case graphQLError(errors: [Apollo.GraphQLError])
     case otherError(error: Error)
@@ -21,8 +9,7 @@ public enum GraphQLError: Error {
 @MainActor
 extension ApolloClient {
     public func fetch<Query: GraphQLQuery>(
-        query: Query,
-        cachePolicy: CachePolicy.Query.SingleResponse = .networkOnly
+        query: Query
     ) async throws -> Query.Data where Query.ResponseFormat == SingleResponseFormat {
         do {
             let response = try await fetch(

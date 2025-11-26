@@ -126,31 +126,27 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                             withAnimation {
                                 self?.redirectActionLoadingState = .success
                             }
-                            DispatchQueue.main.async { [weak self] in
-                                self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
-                                    intent: newInput,
-                                    onSelect: nil
-                                )
-                                self?.router.dismiss()
+                            switch newInput {
+                            case let .changeTierIntentModel(intent):
+                                DispatchQueue.main.async { [weak self] in
+                                    self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
+                                        intent: intent,
+                                        onSelect: nil
+                                    )
+                                    self?.router.dismiss()
+                                }
+                            case .emptyTier:
+                                self?.infoText = L10n.terminationNoTierQuotesSubtitle
+                            case let .deflection(deflection):
+                                self?.infoText = deflection.message
                             }
                         } catch let exception {
                             withAnimation {
                                 self?.redirectActionLoadingState = .success
                             }
-                            if let exception = exception as? ChangeTierError {
-                                switch exception {
-                                case .emptyList:
-                                    self?.infoText = L10n.terminationNoTierQuotesSubtitle
-                                default:
-                                    Toasts.shared.displayToastBar(
-                                        toast: .init(type: .error, text: exception.localizedDescription)
-                                    )
-                                }
-                            } else {
-                                Toasts.shared.displayToastBar(
-                                    toast: .init(type: .error, text: exception.localizedDescription)
-                                )
-                            }
+                            Toasts.shared.displayToastBar(
+                                toast: .init(type: .error, text: exception.localizedDescription)
+                            )
                         }
                     }
                 }
@@ -372,12 +368,14 @@ struct TerminationFlowNavigation: View {
     var body: some View {
         RouterHost(
             router: vm.router,
-            options: [.navigationType(type: .withProgress)],
+            options: [
+                .navigationType(type: .withProgress),
+                .extendedNavigationWidth,
+            ],
             tracking: vm.initialStep
         ) {
             getView(for: vm.initialStep)
                 .addNavigationInfoButton(
-                    placement: .leading,
                     title: L10n.terminationFlowCancelInfoTitle,
                     description: L10n.terminationFlowCancelInfoText
                 )
@@ -391,7 +389,7 @@ struct TerminationFlowNavigation: View {
                         case .terminationDate:
                             openSetTerminationDateLandingScreen(fromSelectInsurance: false)
                         case let .surveyStep(model):
-                            openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
+                            openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
                         case .selectInsurance:
                             openSelectInsuranceScreen()
                         case .summary:
@@ -461,7 +459,7 @@ struct TerminationFlowNavigation: View {
             case .terminationDate:
                 openSetTerminationDateLandingScreen(fromSelectInsurance: false)
             case let .surveyStep(model):
-                openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
+                openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
             case .selectInsurance:
                 openSelectInsuranceScreen()
             case .summary:
@@ -606,20 +604,6 @@ struct TerminationFlowNavigation: View {
             )
         )
     }
-
-    private var tabBarInfoView: some View {
-        InfoViewHolder(
-            title: L10n.terminationFlowCancelInfoTitle,
-            description: L10n.terminationFlowCancelInfoText,
-            type: .navigation
-        )
-        .foregroundColor(hTextColor.Opaque.primary)
-    }
-}
-
-struct TerminationFlowActionWrapper: Identifiable, Equatable {
-    var id = UUID().uuidString
-    let action: TerminationFlowActions
 }
 
 public enum TerminationFlowActions: Hashable {

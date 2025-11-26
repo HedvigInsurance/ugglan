@@ -45,7 +45,6 @@ public struct ListItem: View {
     let title: String
     let onClick: () -> Void
     @Environment(\.hListStyle) var style
-    @Environment(\.hListRowStyle) var rowStyle
     @Environment(\.hFieldSize) var fieldSize
     @State var isSelected = false
 
@@ -178,96 +177,92 @@ extension View {
     }
 }
 
-struct ListWithItems_Previews: PreviewProvider {
+#Preview("ListWithItems") {
     struct ModelForPreview: Hashable {
         let id: String
         let name: String
     }
 
-    static var previews: some View {
-        VStack(spacing: 0) {
-            ListItems<ModelForPreview>(
-                onClick: { _ in },
-                items: [
-                    (object: .init(id: "id1", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id2", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id3", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id4", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id5", name: "Label"), displayName: "Label"),
-                ]
-            )
+    return VStack(spacing: 0) {
+        ListItems<ModelForPreview>(
+            onClick: { _ in },
+            items: [
+                (object: .init(id: "id1", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id2", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id3", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id4", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id5", name: "Label"), displayName: "Label"),
+            ]
+        )
 
-            ListItems<ModelForPreview>(
-                onClick: { _ in },
-                items: [
-                    (object: .init(id: "id1", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id2", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id3", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id4", name: "Label"), displayName: "Label"),
-                    (object: .init(id: "id5", name: "Label"), displayName: "Label"),
-                ]
-            )
-            .hListRowStyle(.filled)
-        }
+        ListItems<ModelForPreview>(
+            onClick: { _ in },
+            items: [
+                (object: .init(id: "id1", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id2", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id3", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id4", name: "Label"), displayName: "Label"),
+                (object: .init(id: "id5", name: "Label"), displayName: "Label"),
+            ]
+        )
+        .hListRowStyle(.filled)
     }
 }
 
-struct Item_Previews: PreviewProvider {
+#Preview("Item") {
     struct ModelForPreview {
         let id: String
         let name: String
     }
 
-    static var previews: some View {
-        HStack {
-            VStack {
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.chevron)
-                }
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.radioOption)
-                }
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.checkBox)
-                }
+    return HStack {
+        VStack {
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.chevron)
             }
-            .hFieldSize(.large)
-
-            VStack {
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.chevron)
-                }
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.radioOption)
-                }
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.checkBox)
-                }
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.radioOption)
             }
-            .hFieldSize(.medium)
-
-            VStack {
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.chevron)
-                }
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.radioOption)
-                }
-                hSection {
-                    ListItem(title: "label", onClick: {})
-                        .hListStyle(.checkBox)
-                }
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.checkBox)
             }
-            .hFieldSize(.small)
         }
-        .hListRowStyle(.filled)
+        .hFieldSize(.large)
+
+        VStack {
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.chevron)
+            }
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.radioOption)
+            }
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.checkBox)
+            }
+        }
+        .hFieldSize(.medium)
+
+        VStack {
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.chevron)
+            }
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.radioOption)
+            }
+            hSection {
+                ListItem(title: "label", onClick: {})
+                    .hListStyle(.checkBox)
+            }
+        }
+        .hFieldSize(.small)
     }
+    .hListRowStyle(.filled)
 }

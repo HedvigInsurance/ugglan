@@ -51,10 +51,6 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel, Sendable {
     let questions: [DeflectQuestion]
     let partners: [Partner]
 
-    var isEmergencyStep: Bool {
-        id == .FlowClaimDeflectEmergencyStep
-    }
-
     public init(
         id: FlowClaimDeflectStepType,
         infoText: String?,

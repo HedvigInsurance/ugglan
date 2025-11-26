@@ -197,7 +197,8 @@ extension AgreementDisplayItem {
     ) {
         self.init(
             title: data.displayTitle,
-            value: data.displayValue
+            value: data.displayValue,
+            subtitle: data.displaySubtitle
         )
     }
 }

@@ -127,13 +127,13 @@ public class FileGridViewModel: ObservableObject {
         case let .localFile(results):
             Task { @MainActor [weak self] in
                 if let data = try? await results?.itemProvider.getData().data {
-                    self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+                    self?.fileModel = .init(type: .data(data: data, name: file.name, mimeType: file.mimeType))
                 }
             }
         case let .url(url, mimeType):
-            fileModel = .init(type: .url(url: url, mimeType: mimeType))
+            fileModel = .init(type: .url(url: url, name: file.name, mimeType: mimeType))
         case let .data(data):
-            fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+            fileModel = .init(type: .data(data: data, name: file.name, mimeType: file.mimeType))
         }
     }
 }

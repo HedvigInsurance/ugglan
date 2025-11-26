@@ -105,25 +105,24 @@ public struct DatePickerView: View {
     }
 }
 
-struct DatePickerView_Previews: PreviewProvider {
-    @State static var date = Date()
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        return VStack {
-            DatePickerView(
-                vm:
-                    .init(
-                        continueAction: {},
-                        cancelAction: {},
-                        date: $date,
-                        config: .init(
-                            placeholder: "PLACEHOLDER",
-                            title: "TITLE",
-                            showAsList: true
-                        )
+@available(iOS 17.0, *)
+#Preview("DatePickerView") {
+    @Previewable @State var date = Date()
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return VStack {
+        DatePickerView(
+            vm:
+                .init(
+                    continueAction: {},
+                    cancelAction: {},
+                    date: $date,
+                    config: .init(
+                        placeholder: "PLACEHOLDER",
+                        title: "TITLE",
+                        showAsList: true
                     )
-            )
-        }
+                )
+        )
     }
 }
 
@@ -291,30 +290,30 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
     }
 }
 
-struct hDatePickerField_Previews: PreviewProvider {
-    @State private static var dateForSmall: Date?
-    @State private static var dateForSmallWithRealDate: Date? = Date()
-    @State private static var dateForLarge: Date?
-    @State private static var dateForLargeWithRealDate: Date? = Date()
+@available(iOS 17.0, *)
+#Preview("hDatePickerField") {
+    @Previewable @State var dateForSmallWithRealDate: Date? = Date()
+    @Previewable @State var dateForSmall: Date?
+    @Previewable @State var dateForLarge: Date?
+    @Previewable @State var dateForLargeWithRealDate: Date? = Date()
 
-    private static let config =
+    let config =
         hDatePickerField
         .HDatePickerFieldConfig(
             placeholder: "Placeholder",
             title: "Departure date",
             showAsList: true
         )
-    static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 
-        return VStack {
-            hDatePickerField(config: config, selectedDate: dateForSmall)
-                .hFieldSize(.small)
-            hDatePickerField(config: config, selectedDate: dateForSmallWithRealDate)
-                .hFieldSize(.small)
-            hDatePickerField(config: config, selectedDate: dateForLarge)
-            hDatePickerField(config: config, selectedDate: dateForLargeWithRealDate)
-        }
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+    return VStack {
+        hDatePickerField(config: config, selectedDate: dateForSmall)
+            .hFieldSize(.small)
+        hDatePickerField(config: config, selectedDate: dateForSmallWithRealDate)
+            .hFieldSize(.small)
+        hDatePickerField(config: config, selectedDate: dateForLarge)
+        hDatePickerField(config: config, selectedDate: dateForLargeWithRealDate)
     }
 }
 

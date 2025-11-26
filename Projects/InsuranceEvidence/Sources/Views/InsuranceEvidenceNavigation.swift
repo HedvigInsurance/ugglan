@@ -17,7 +17,11 @@ public struct InsuranceEvidenceNavigation: View {
     public init() {}
 
     public var body: some View {
-        RouterHost(router: vm.router, tracking: self) {
+        RouterHost(
+            router: vm.router,
+            options: .extendedNavigationWidth,
+            tracking: self
+        ) {
             InsuranceEvidenceInputScreen(
                 vm: vm.insuranceEvidenceInputScreenViewModel
             )
@@ -28,7 +32,7 @@ public struct InsuranceEvidenceNavigation: View {
                     InsuranceEvidenceProcessingScreen(vm: processingViewModel)
                 }
             }
-            .withDismissButton()
+            .withAlertDismiss()
         }
         .detent(
             presented: $vm.isInfoViewPresented,

@@ -219,133 +219,131 @@ public enum PillColor {
     }
 }
 
-struct ClaimStatus_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            HStack {
-                hPill(
-                    text: "Highlight label",
-                    color: .blue
-                )
-                .hFieldSize(.large)
+#Preview {
+    VStack {
+        HStack {
+            hPill(
+                text: "Highlight label",
+                color: .blue
+            )
+            .hFieldSize(.large)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .blue
-                )
-                .hFieldSize(.medium)
+            hPill(
+                text: "Highlight label",
+                color: .blue
+            )
+            .hFieldSize(.medium)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .blue
-                )
-                .hFieldSize(.small)
-            }
-            HStack {
-                hPill(
-                    text: "Highlight label",
-                    color: .blue,
-                    colorLevel: .two
-                )
-                .hFieldSize(.large)
+            hPill(
+                text: "Highlight label",
+                color: .blue
+            )
+            .hFieldSize(.small)
+        }
+        HStack {
+            hPill(
+                text: "Highlight label",
+                color: .blue,
+                colorLevel: .two
+            )
+            .hFieldSize(.large)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .blue,
-                    colorLevel: .two
-                )
-                .hFieldSize(.medium)
+            hPill(
+                text: "Highlight label",
+                color: .blue,
+                colorLevel: .two
+            )
+            .hFieldSize(.medium)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .blue,
-                    colorLevel: .two
-                )
-                .hFieldSize(.small)
-            }
-            HStack {
-                hPill(
-                    text: "Highlight label",
-                    color: .blue,
-                    colorLevel: .three
-                )
-                .hFieldSize(.large)
+            hPill(
+                text: "Highlight label",
+                color: .blue,
+                colorLevel: .two
+            )
+            .hFieldSize(.small)
+        }
+        HStack {
+            hPill(
+                text: "Highlight label",
+                color: .blue,
+                colorLevel: .three
+            )
+            .hFieldSize(.large)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .blue,
-                    colorLevel: .three
-                )
-                .hFieldSize(.medium)
+            hPill(
+                text: "Highlight label",
+                color: .blue,
+                colorLevel: .three
+            )
+            .hFieldSize(.medium)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .blue,
-                    colorLevel: .three
-                )
-                .hFieldSize(.small)
-            }
-            HStack {
-                hPill(
-                    text: "Highlight label",
-                    color: .pink,
-                    colorLevel: .one
-                )
-                .hFieldSize(.large)
+            hPill(
+                text: "Highlight label",
+                color: .blue,
+                colorLevel: .three
+            )
+            .hFieldSize(.small)
+        }
+        HStack {
+            hPill(
+                text: "Highlight label",
+                color: .pink,
+                colorLevel: .one
+            )
+            .hFieldSize(.large)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .pink,
-                    colorLevel: .two
-                )
-                .hFieldSize(.medium)
+            hPill(
+                text: "Highlight label",
+                color: .pink,
+                colorLevel: .two
+            )
+            .hFieldSize(.medium)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .pink,
-                    colorLevel: .three
-                )
-                .hFieldSize(.small)
-            }
-            HStack {
-                hPill(
-                    text: "Highlight label",
-                    color: .grey
-                )
+            hPill(
+                text: "Highlight label",
+                color: .pink,
+                colorLevel: .three
+            )
+            .hFieldSize(.small)
+        }
+        HStack {
+            hPill(
+                text: "Highlight label",
+                color: .grey
+            )
 
-                hPill(
-                    text: "Highlight label",
-                    color: .grey
-                )
-                .hFieldSize(.medium)
+            hPill(
+                text: "Highlight label",
+                color: .grey
+            )
+            .hFieldSize(.medium)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .grey
-                )
-                .hFieldSize(.small)
-            }
-            HStack {
-                hPill(
-                    text: "Highlight label",
-                    color: .grey,
-                    colorLevel: .two
-                )
+            hPill(
+                text: "Highlight label",
+                color: .grey
+            )
+            .hFieldSize(.small)
+        }
+        HStack {
+            hPill(
+                text: "Highlight label",
+                color: .grey,
+                colorLevel: .two
+            )
 
-                hPill(
-                    text: "Highlight label",
-                    color: .grey,
-                    colorLevel: .two
-                )
-                .hFieldSize(.medium)
+            hPill(
+                text: "Highlight label",
+                color: .grey,
+                colorLevel: .two
+            )
+            .hFieldSize(.medium)
 
-                hPill(
-                    text: "Highlight label",
-                    color: .grey,
-                    colorLevel: .two
-                )
-                .hFieldSize(.small)
-            }
+            hPill(
+                text: "Highlight label",
+                color: .grey,
+                colorLevel: .two
+            )
+            .hFieldSize(.small)
         }
     }
 }

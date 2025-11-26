@@ -88,25 +88,36 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         let subtitle: String?
         let netAmount: MonetaryAmount
         let grossAmount: MonetaryAmount
-        let discounts: [Discount]
         let periods: [PeriodInfo]
-
+        let priceBreakdown: [PriceBreakdownItem]
         public init(
             id: String,
             title: String,
             subtitle: String?,
             netAmount: MonetaryAmount,
             grossAmount: MonetaryAmount,
-            discounts: [Discount],
-            periods: [PeriodInfo]
+            periods: [PeriodInfo],
+            priceBreakdown: [PriceBreakdownItem]
         ) {
             self.id = id
             self.title = title
             self.subtitle = subtitle
             self.netAmount = netAmount
             self.grossAmount = grossAmount
-            self.discounts = discounts
             self.periods = periods
+            self.priceBreakdown = priceBreakdown
+        }
+    }
+
+    public struct PriceBreakdownItem: Codable, Equatable, Identifiable, Hashable, Sendable {
+        public let id: String
+        let displayTitle: String
+        let amount: MonetaryAmount
+
+        public init(displayTitle: String, amount: MonetaryAmount) {
+            self.id = displayTitle
+            self.displayTitle = displayTitle
+            self.amount = amount
         }
     }
 

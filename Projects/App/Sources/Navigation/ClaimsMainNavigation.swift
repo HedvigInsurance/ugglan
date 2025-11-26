@@ -17,7 +17,7 @@ struct ClaimsMainNavigation: View {
     @State private var measuredHeight: CGFloat = 0
 
     var body: some View {
-        RouterHost(router: claimsRouter, tracking: self) {
+        RouterHost(router: claimsRouter, options: .extendedNavigationWidth, tracking: self) {
             honestyPledge()
                 .captureHeight(in: $measuredHeight)
                 .onDisappear {

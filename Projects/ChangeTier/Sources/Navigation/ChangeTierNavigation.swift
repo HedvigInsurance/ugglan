@@ -50,7 +50,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         useOwnNavigation = true
     }
 
-    public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
+    public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModelState {
         let service = ChangeTierService()
         let data = try await service.getTier(input: input)
         return data
@@ -207,7 +207,7 @@ public struct ChangeTierNavigation: View {
             if changeTierNavigationVm.useOwnNavigation {
                 RouterHost(
                     router: changeTierNavigationVm.router,
-                    options: [],
+                    options: .extendedNavigationWidth,
                     tracking: ChangeTierTrackingType.changeTierLandingScreen
                 ) {
                     wrapperHost
@@ -249,6 +249,7 @@ public struct ChangeTierNavigation: View {
             )
             .withDismissButton()
             .embededInNavigation(
+                options: .extendedNavigationWidth,
                 tracking: ChangeTierTrackingType.compareTier
             )
             .environmentObject(changeTierNavigationVm)

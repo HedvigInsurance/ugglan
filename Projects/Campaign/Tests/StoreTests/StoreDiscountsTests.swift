@@ -39,7 +39,6 @@ final class StoreDiscountsTests: XCTestCase {
                 )
             ],
             referralsData: .init(
-                code: "code1",
                 discountPerMember: .init(amount: "10", currency: "SEK"),
                 referrals: [
                     .init(id: "referralId", name: "name", code: nil, description: "desciption")

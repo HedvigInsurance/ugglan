@@ -232,7 +232,12 @@ extension OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation.Data: Terminati
 
 extension TerminationFlowDeflectAutoDecomModel {
     init(with data: OctopusGraphQL.FlowTerminationCarAutoDecomStepFragment) {
-        self.init()
+        self.init(
+            message: data.message,
+            title: data.title,
+            explanations: data.explanations.map({ .init(title: $0.title, text: $0.text) }),
+            info: data.info
+        )
     }
 }
 
@@ -274,7 +279,6 @@ extension TerminationFlowSurveyStepModel {
             options.append(.init(with: stepOptionFragment, subOptions: subOptions))
         }
         self.init(
-            id: data.id,
             options: options,
             subTitleType: .default
         )
@@ -311,7 +315,6 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
             let description = optionActionSuggestion.description
             return .action(
                 action: .init(
-                    id: optionActionSuggestion.id,
                     action: action,
                     description: description,
                     buttonTitle: buttonTitle,
@@ -321,7 +324,6 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
         } else if let optionRedirectSuggestion = asFlowTerminationSurveyOptionSuggestionRedirect {
             return .redirect(
                 redirect: .init(
-                    id: optionRedirectSuggestion.id,
                     url: optionRedirectSuggestion.url,
                     description: optionRedirectSuggestion.description,
                     buttonTitle: optionRedirectSuggestion.buttonTitle,
@@ -331,7 +333,6 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
         } else if let optionSuggestionInfo = asFlowTerminationSurveyOptionSuggestionInfo {
             return .suggestionInfo(
                 info: .init(
-                    id: optionSuggestionInfo.id,
                     description: optionSuggestionInfo.description,
                     type: optionSuggestionInfo.infoType.value?.asInfoType ?? .offer
                 )
@@ -361,7 +362,7 @@ extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
 
 extension OctopusGraphQL.FlowTerminationSurveyOptionFeedbackFragment {
     var asFeedback: TerminationFlowSurveyStepFeedback? {
-        .init(id: id, isRequired: isRequired)
+        .init(isRequired: isRequired)
     }
 }
 
@@ -379,7 +380,6 @@ extension TerminationFlowDateNextStepModel {
         with data: OctopusGraphQL.FlowTerminationDateStepFragment
     ) {
         self.init(
-            id: data.id,
             maxDate: data.maxDate,
             minDate: data.minDate,
             date: nil,
@@ -419,7 +419,7 @@ extension TerminationFlowFailedNextModel {
     fileprivate init(
         with data: OctopusGraphQL.FlowTerminationFailedFragment
     ) {
-        self.init(id: data.id)
+        self.init()
     }
 }
 
@@ -428,7 +428,6 @@ extension TerminationFlowDeletionNextModel {
         with data: OctopusGraphQL.FlowTerminationDeletionFragment
     ) {
         self.init(
-            id: data.id,
             extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) }
         )
     }

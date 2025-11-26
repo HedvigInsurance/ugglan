@@ -77,12 +77,14 @@ struct ChatFileView: View {
             .frame(width: 140, height: 140)
             .overlay {
                 VStack {
-                    hText("." + file.mimeType.name, style: .heading2)
-                        .foregroundColor(hTextColor.Opaque.primary)
-
-                    // we are missing name so we dont show it
-                    // hText(file.name, style: .finePrint)
-                    // .foregroundColor(hTextColor.Opaque.secondary)
+                    if !file.name.isEmpty {
+                        hText(file.name, style: .finePrint)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .padding(.padding8)
+                    } else {
+                        hText("." + file.mimeType.name, style: .heading2)
+                            .foregroundColor(hTextColor.Opaque.primary)
+                    }
                 }
             }
     }
@@ -94,14 +96,18 @@ struct ChatFileView: View {
                 Task {
                     do {
                         let data = try await results.itemProvider.getData()
-                        chatNavigationVm.isFilePresented = .data(data: data.data, mimeType: data.mimeType)
+                        chatNavigationVm.isFilePresented = .data(
+                            data: data.data,
+                            name: file.name,
+                            mimeType: data.mimeType
+                        )
                     } catch _ {}
                 }
             }
         case let .url(url, mimeType):
-            chatNavigationVm.isFilePresented = .url(url: url, mimeType: mimeType)
+            chatNavigationVm.isFilePresented = .url(url: url, name: file.name, mimeType: mimeType)
         case let .data(data):
-            chatNavigationVm.isFilePresented = .data(data: data, mimeType: file.mimeType)
+            chatNavigationVm.isFilePresented = .data(data: data, name: file.name, mimeType: file.mimeType)
         }
     }
 

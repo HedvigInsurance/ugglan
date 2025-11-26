@@ -40,7 +40,6 @@ final class CompareTierVireModelTests: XCTestCase {
                     productVariant: .init(
                         termsVersion: "",
                         typeOfContract: "",
-                        partner: nil,
                         perils: [],
                         insurableLimits: [],
                         documents: [],
@@ -95,7 +94,6 @@ final class CompareTierVireModelTests: XCTestCase {
             .init(
                 termsVersion: "",
                 typeOfContract: "",
-                partner: "",
                 perils: [peril1],
                 insurableLimits: [],
                 documents: [],
@@ -106,7 +104,6 @@ final class CompareTierVireModelTests: XCTestCase {
             .init(
                 termsVersion: "",
                 typeOfContract: "",
-                partner: "",
                 perils: [peril1],
                 insurableLimits: [],
                 documents: [],

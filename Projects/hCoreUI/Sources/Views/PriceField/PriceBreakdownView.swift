@@ -38,7 +38,8 @@ struct PriceBreakdownView: View {
     private var displayItemsView: some View {
         VStack(spacing: .padding4) {
             ForEach(model.infoButtonDisplayItems, id: \.title) { item in
-                rowItem(for: item)
+                PriceBreakdowRowItem(title: item.title, value: item.value)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
         .accessibilityElement(children: .combine)
@@ -53,14 +54,21 @@ struct PriceBreakdownView: View {
         )
         .hWithStrikeThroughPrice(setTo: .crossOldPrice)
     }
+}
 
-    private func rowItem(for item: PriceFieldModel.DisplayItem) -> some View {
+public struct PriceBreakdowRowItem: View {
+    let title: String
+    let value: String
+
+    public init(title: String, value: String) {
+        self.title = title
+        self.value = value
+    }
+    public var body: some View {
         HStack {
-            hText(item.title, style: .label)
-                .foregroundColor(hTextColor.Opaque.secondary)
+            hText(title, style: .label)
             Spacer()
-            hText(item.value, style: .label)
-                .foregroundColor(hTextColor.Opaque.secondary)
+            hText(value, style: .label)
         }
         .accessibilityElement(children: .combine)
     }

@@ -251,32 +251,16 @@ struct LoggedInNavigation: View {
                 .handleEditCoInsured(
                     with: vm.travelCertificateNavigationVm.editCoInsuredVm
                 )
-            case let .deleteAccount(memberDetails):
+            case .deleteAccount:
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
-                    memberDetails: memberDetails,
                     claimsStore: claimsStore,
                     contractsStore: contractsStore
                 )
 
                 DeleteAccountView(
-                    vm: model,
-                    dismissAction: { profileDismissAction in
-                        vm.profileNavigationVm.isDeleteAccountPresented = nil
-                        switch profileDismissAction {
-                        case .openChat:
-                            withAnimation {
-                                vm.selectedTab = 0
-                            }
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatType.newConversation
-                            )
-                        default:
-                            break
-                        }
-                    }
+                    vm: model
                 )
                 .environmentObject(vm.profileNavigationVm)
             case .pickLanguage:
@@ -289,7 +273,7 @@ struct LoggedInNavigation: View {
                     store.send(.updateLanguage)
                     // show home screen with updated langauge
                     mainNavigationVm?.loggedInVm = .init()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak mainNavigationVm, weak vm] in
                         mainNavigationVm?.hasLaunchFinished = true
                         vm?.selectedTab = 0
                     }
@@ -415,7 +399,7 @@ struct HomeTab: View {
                     .configureTitle(model.id.title)
                     .withDismissButton()
                     .embededInNavigation(
-                        options: .navigationType(type: .large),
+                        options: [.navigationType(type: .large), .extendedNavigationWidth],
                         tracking: LoggedInNavigationDetentType.submitClaimDeflect
                     )
                 }
@@ -433,7 +417,7 @@ struct HomeTab: View {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .embededInNavigation(
-                    options: .navigationType(type: .large),
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: LoggedInNavigationDetentType.firstVet
                 )
         }
@@ -679,7 +663,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 selectedTab = 2
             case .CONNECT_DIRECT_DEBIT:
-                homeNavigationVm.connectPaymentVm.set(for: nil)
+                homeNavigationVm.connectPaymentVm.set()
             case .PAYMENT_FAILED:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 selectedTab = 3
@@ -733,7 +717,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         case .forever:
             dismissAndSelectTab(2)
         case .directDebit:
-            homeNavigationVm.connectPaymentVm.set(for: nil)
+            homeNavigationVm.connectPaymentVm.set()
         case .profile:
             dismissAndSelectTab(4)
         case .insurances:
