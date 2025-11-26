@@ -148,7 +148,7 @@ public class DateService {
                 }
             case .sv_SE:
                 switch day {
-                case 11, 12: return "\(day):e"
+                case 11, 12: return ":e"
                 default:
                     switch lastDigit {
                     case 1, 2: return ":a"
