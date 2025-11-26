@@ -16,31 +16,34 @@ final class CrossSellTests: XCTestCase {
     }
 
     func testGetCrossSellSuccess() async {
-        let crossSell: [CrossSell] = [
-            .init(
-                id: "1",
-                title: "car",
-                description: "description",
-                buttonTitle: "button title",
-                imageUrl: nil,
-                buttonDescription: "button description"
-            ),
-            .init(
-                id: "2",
-                title: "pet",
-                description: "description",
-                buttonTitle: "button title",
-                imageUrl: nil,
-                buttonDescription: "button description"
-            ),
-        ]
+        let crossSell: CrossSells = .init(
+            recommended: nil,
+            others: [
+                .init(
+                    id: "1",
+                    title: "car",
+                    description: "description",
+                    buttonTitle: "button title",
+                    imageUrl: nil,
+                    buttonDescription: "button description"
+                ),
+                .init(
+                    id: "2",
+                    title: "pet",
+                    description: "description",
+                    buttonTitle: "button title",
+                    imageUrl: nil,
+                    buttonDescription: "button description"
+                ),
+            ]
+        )
 
         let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { crossSell }
+            fetchCrossSell: { _ in crossSell }
         )
         sut = mockService
 
-        let respondedCrossSell = try! await mockService.fetchCrossSell()
+        let respondedCrossSell = try! await mockService.fetchCrossSell(.insurances)
         assert(respondedCrossSell == crossSell)
     }
 

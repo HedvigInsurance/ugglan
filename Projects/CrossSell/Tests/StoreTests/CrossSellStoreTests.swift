@@ -23,13 +23,13 @@ final class CrossSellStoreTests: XCTestCase {
 
     func testFetchCrossSalesSuccess() async {
         let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { CrossSell.getDefault }
+            fetchCrossSell: { _ in CrossSell.getDefault }
         )
         let store = CrossSellStore()
         self.store = store
         await store.sendAsync(.fetchCrossSell)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells.others == CrossSell.getDefault
+            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells == CrossSell.getDefault
         }
 
         assert(mockService.events.count == 1)
@@ -38,7 +38,7 @@ final class CrossSellStoreTests: XCTestCase {
 
     func testFetchCrossSalesFailure() async throws {
         let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { throw MockContractError.fetchCrossSells }
+            fetchCrossSell: { _ in throw MockContractError.fetchCrossSells }
         )
 
         let store = CrossSellStore()
@@ -84,24 +84,34 @@ final class CrossSellStoreTests: XCTestCase {
 
 @MainActor
 extension CrossSell {
-    fileprivate static let getDefault: [CrossSell] = [
-        .init(
-            id: "1",
-            title: "car",
-            description: "description",
-            buttonTitle: "button title",
-            imageUrl: nil,
-            buttonDescription: "button description"
-        ),
-        .init(
-            id: "2",
-            title: "home",
-            description: "description",
-            buttonTitle: "button title",
-            imageUrl: nil,
-            buttonDescription: "button description"
-        ),
-    ]
+    fileprivate static let getDefault: CrossSells = .init(
+        recommended: nil,
+        others: [
+            .init(
+                id: "1",
+                title: "car",
+                description: "description",
+                buttonTitle: "button title",
+                imageUrl: nil,
+                buttonDescription: "button description"
+            ),
+            .init(
+                id: "2",
+                title: "home",
+                description: "description",
+                buttonTitle: "button title",
+                imageUrl: nil,
+                buttonDescription: "button description"
+            ),
+        ]
+    )
+}
+
+@MainActor
+extension CrossSellState {
+    fileprivate var isEmpty: Bool {
+        self.crossSells.recommended == nil && self.crossSells.others.isEmpty
+    }
 }
 
 @MainActor
