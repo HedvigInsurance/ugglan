@@ -45,12 +45,14 @@ public struct SubmitClaimChatScreen: View {
 }
 
 extension SubmitClaimChatScreen: TrackingViewNameProtocol {
-    public var nameForTracking: String { "" }
+    public var nameForTracking: String {
+        .init(describing: self)
+    }
 }
 
 extension View {
     @ViewBuilder
-    func hideToolbarBackgroundIfAvailable() -> some View {
+    fileprivate func hideToolbarBackgroundIfAvailable() -> some View {
         if #available(iOS 16.0, *) {
             self.toolbarBackground(.hidden, for: .navigationBar)
         } else {
@@ -58,7 +60,7 @@ extension View {
         }
     }
 
-    func scrollToBottom<T: Hashable>(proxy: ScrollViewProxy, id: T?, count: Int) -> some View {
+    fileprivate func scrollToBottom<T: Hashable>(proxy: ScrollViewProxy, id: T?, count: Int) -> some View {
         self
             .task(id: id) {
                 try? await Task.sleep(seconds: 0.05)
@@ -73,7 +75,7 @@ extension View {
     }
 
     @ViewBuilder
-    func hideScrollIndicators() -> some View {
+    fileprivate func hideScrollIndicators() -> some View {
         if #available(iOS 16.0, *) {
             self.scrollIndicators(.hidden)
         } else {
