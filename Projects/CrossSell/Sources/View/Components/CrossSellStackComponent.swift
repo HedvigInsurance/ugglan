@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CrosssSellStackComponent: View {
+struct CrossSellStackComponent: View {
     let crossSells: [CrossSell]
     let withHeader: Bool
     var body: some View {
@@ -27,7 +27,7 @@ struct CrosssSellStackComponent: View {
 }
 
 #Preview {
-    CrosssSellStackComponent(
+    CrossSellStackComponent(
         crossSells: [
             .init(
                 id: "id",
