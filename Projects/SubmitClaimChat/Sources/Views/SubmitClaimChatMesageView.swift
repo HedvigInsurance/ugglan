@@ -142,7 +142,6 @@ extension ClaimIntentStepHandler {
 }
 
 extension ClaimIntentStepHandler {
-
     @ViewBuilder
     var stepView: some View {
         if let viewModel = self as? SubmitClaimAudioStep {
