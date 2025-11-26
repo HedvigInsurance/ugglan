@@ -9,18 +9,15 @@ struct SubmitClaimAudioView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @StateObject var audioPlayer: AudioPlayer
     @StateObject var audioRecorder: AudioRecorder
+    @StateObject var audioRecordingVm = AudioRecorderViewModel()
+
     @State private var minutes: Int = 0
     @State private var seconds: Int = 0
     @AccessibilityFocusState private var saveAndContinueFocused: Bool
 
-    // UI + alerts
     @State private var showMicAlert = false
-    @SwiftUI.Environment(\.openURL) private var openURL
-
-    // Guard while system permission sheet is up; hint after first grant
+    @Environment(\.openURL) private var openURL
     @State private var isRequestingMicPermission = false
-
-    @StateObject var audioRecordingVm = AudioRecorderViewModel()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     init(viewModel: SubmitClaimAudioStep) {
@@ -52,19 +49,6 @@ struct SubmitClaimAudioView: View {
             .environmentObject(audioRecorder)
         }
         .sectionContainerStyle(.transparent)
-        .alert(
-            "Microphone Access Needed",
-            isPresented: $showMicAlert,
-            actions: {
-                Button("Open Settings") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        openURL(url)
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            },
-            message: { Text("Enable microphone access to record audio for your claim.") }
-        )
     }
 
     private func playRecordingButton(url: URL) -> some View {
@@ -147,23 +131,18 @@ struct SubmitClaimAudioView: View {
         if isRequestingMicPermission { return }
         isRequestingMicPermission = true
 
-        if #available(iOS 17.0, *) {
-            AVAudioApplication.requestRecordPermission { granted in
-                DispatchQueue.main.async {
-                    self.isRequestingMicPermission = false
+        Task {
+            let result = await audioRecorder.requestAndToggleRecording()
+            self.isRequestingMicPermission = false
 
-                    if granted {
-                        do {
-                            try self.configureAudioSessionForRecording()
-                            withAnimation(.spring()) { self.audioRecorder.toggleRecording() }
-                        } catch {
-                        }
-                    } else {
-                        self.showMicAlert = true
-                    }
-                }
+            switch result {
+            case .permissionDenied:
+                self.showMicAlert = true
+            case .success:
+                break
+            case .error:
+                break
             }
-        } else {
         }
     }
 
@@ -182,4 +161,48 @@ struct SubmitClaimAudioView: View {
 private func ensureParentDirectory(for fileURL: URL) throws {
     let dir = fileURL.deletingLastPathComponent()
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+}
+
+enum RecordingResult {
+    case success
+    case permissionDenied
+    case error
+}
+
+extension AudioRecorder {
+    @MainActor
+    func requestAndToggleRecording() async -> RecordingResult {
+        let granted = await withCheckedContinuation { continuation in
+            let handler: @Sendable (Bool) -> Void = { granted in
+                DispatchQueue.main.async {
+                    continuation.resume(returning: granted)
+                }
+            }
+            if #available(iOS 17.0, *) {
+                AVAudioApplication.requestRecordPermission(completionHandler: handler)
+            } else {
+                AVAudioSession.sharedInstance().requestRecordPermission(handler)
+            }
+        }
+
+        guard granted else {
+            return .permissionDenied
+        }
+
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(
+                .playAndRecord,
+                mode: .spokenAudio,
+                options: [.defaultToSpeaker, .allowBluetoothHFP]
+            )
+            try session.setActive(true, options: [])
+        } catch {
+            print("Error configuring audio session: \(error)")
+            return .error
+        }
+
+        withAnimation(.spring()) { self.toggleRecording() }
+        return .success
+    }
 }
