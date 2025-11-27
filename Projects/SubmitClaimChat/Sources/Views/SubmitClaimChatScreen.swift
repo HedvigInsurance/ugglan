@@ -6,41 +6,72 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
-
+    @Namespace var animationNamespace
     public init() {}
 
     public var body: some View {
         scrollContent
-            .hideToolbarBackgroundIfAvailable()
+        //            .hideToolbarBackgroundIfAvailable()
     }
 
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .scrollToBottom(
-                    proxy: proxy,
-                    id: viewModel.allSteps.last?.claimIntent.currentStep.id,
-                    count: viewModel.allSteps.count
-                )
+                .onChange(of: viewModel.currentStepId) { currentStepId in
+                    //                    withAnimation {
+                    proxy.scrollTo(currentStepId, anchor: .top)
+                    //                    }
+                }
         }
     }
 
     private var mainContent: some View {
-        hForm {
-            VStack(alignment: .leading, spacing: .padding16) {
-                ForEach(viewModel.allSteps, id: \.id) { step in
-                    SubmitClaimChatMesageView(viewModel: step)
+        ZStack(alignment: .bottom) {
+            GeometryReader { proxy in
+                hForm {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(viewModel.allSteps, id: \.id) { step in
+                            SubmitClaimChatMesageView(viewModel: step, animationNamespace: animationNamespace)
+                                .padding(.vertical, .padding8)
+                                .background {
+                                    GeometryReader { [weak step] proxy2 in
+                                        Color.clear
+                                            .onAppear {
+                                                viewModel.contentHeight[step?.id ?? ""] = proxy2.size.height
+                                                print("Height is 3 \(step?.id ?? "") \(proxy2.size.height)")
+                                            }
+                                            .onChange(of: proxy2.size) { value in
+                                                viewModel.contentHeight[step?.id ?? ""] = value.height
+                                                print("Height is 3 \(step?.id ?? "") \(value.height)")
+                                            }
+                                    }
+                                }
+                                .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
+                        }
+                    }
+                    .padding(.horizontal, .padding12)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+
+                    Color.clear.frame(height: max(viewModel.height - viewModel.stepsHeightSum, 0)).id("BOTTOM")
+                    Color.clear.frame(height: viewModel.completedStepsHeight).id("BOTTOM2")
                 }
-                Color.clear.frame(height: 50).id("BOTTOM")
+                .hFormContentPosition(.top)
+                .hFormBottomBackgroundColor(.aiPoweredGradient)
+                .environmentObject(viewModel)
+                .hideScrollIndicators()
+                .onAppear {
+                    viewModel.height = proxy.size.height
+                }
+                .onChange(of: proxy.size) { value in
+                    viewModel.height = value.height
+                }
             }
-            .padding(.horizontal, .padding12)
-            .padding(.vertical, .padding8)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
+            if let currentStep = viewModel.currentStep {
+                currentStep
+                    .stepView(namespace: animationNamespace)
+                    .transition(.move(edge: .bottom))
+            }
         }
-        .hFormContentPosition(.top)
-        .hFormBottomBackgroundColor(.aiPoweredGradient)
-        .environmentObject(viewModel)
-        .hideScrollIndicators()
     }
 }
 
@@ -58,20 +89,6 @@ extension View {
         } else {
             self
         }
-    }
-
-    fileprivate func scrollToBottom<T: Hashable>(proxy: ScrollViewProxy, id: T?, count: Int) -> some View {
-        self
-            .task(id: id) {
-                try? await Task.sleep(seconds: 0.05)
-                withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-            }
-            .onAppear {
-                proxy.scrollTo("BOTTOM", anchor: .bottom)
-            }
-            .onChange(of: count) { _ in
-                withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-            }
     }
 
     @ViewBuilder
@@ -93,13 +110,32 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
-    @Published var allSteps: [ClaimIntentStepHandler] = []
+    @Published var allSteps: [ClaimIntentStepHandler] = [] {
+        didSet {
+            setHeight()
+        }
+    }
+    @Published var currentStep: ClaimIntentStepHandler?
+    @Published var currentStepId: String = ""
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
     let router = Router()
+    @Published var height: CGFloat = 0
+    @Published var contentHeight: [String: CGFloat] = [:]
 
+    private func setHeight() {
+        stepsHeightSum = contentHeight.reduce(0, { $0 + $1.value })
+        completedStepsHeight = allSteps.filter({ !$0.isEnabled }).map({ $0.id })
+            .reduce(0) { partialResult, id in
+                let valueToAdd = contentHeight[id] ?? 0
+                return partialResult + valueToAdd
+            }
+        //        print("HEIGHT IS 5 \(stepsHeightSum) \(completedStepsHeight) \(contentHeight)")
+    }
+    @Published var stepsHeightSum: CGFloat = 0
+    @Published var completedStepsHeight: CGFloat = 0
     init(
         input: StartClaimInput,
         goToClaimDetails: @escaping GoToClaimDetails,
@@ -130,13 +166,43 @@ final class SubmitClaimChatViewModel: ObservableObject {
         switch claimEvent {
         case let .goToNext(claimIntent):
             let handler = getStep(for: claimIntent)
-            self.allSteps.append(handler)
+            contentHeight[handler.id] = 0
+
+            Task {
+                if !self.allSteps.isEmpty {
+                    try await Task.sleep(seconds: 2)
+                    withAnimation {
+                        currentStep = nil
+                    }
+                }
+                try await Task.sleep(seconds: 1)
+                withAnimation {
+                    self.allSteps.append(handler)
+                }
+                //                setHeight()
+                try await Task.sleep(seconds: 1)
+                withAnimation {
+                    currentStep = handler
+                }
+            }
+        //            Task {
+        //                try await Task.sleep(seconds: 1.5)
+        //                withAnimation {
+        //                    currentStepId = handler.id
+        //                }
+        //            }
         case let .regret(currentClaimIntent, newclaimIntent):
             let handler = getStep(for: newclaimIntent)
             if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
+                for item in allSteps[indexToRemove..<allSteps.count] {
+                    contentHeight.removeValue(forKey: item.id)
+                }
                 allSteps.removeSubrange((indexToRemove)..<allSteps.count)
             }
+            contentHeight[handler.id] = 0
             self.allSteps.append(handler)
+            currentStep = handler
+            currentStepId = handler.id
         case let .outcome(model):
             router.push(model)
         }
@@ -147,9 +213,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             for: claimIntent,
             service: service
         ) { [weak self] claimEvent in
-            withAnimation {
-                self?.processClaimIntent(claimEvent)
-            }
+            self?.processClaimIntent(claimEvent)
         }
     }
 }

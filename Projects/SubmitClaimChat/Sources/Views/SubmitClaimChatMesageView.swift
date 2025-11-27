@@ -4,70 +4,49 @@ import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+    let animationNamespace: Namespace.ID
 
-    @ViewBuilder
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: .padding8) {
-                hText(viewModel.claimIntent.currentStep.text)
-                senderStamp(step: viewModel)
-            }
-            Spacer()
-            if viewModel.isRegrettable && !viewModel.isEnabled {
-                regretButton
-            }
-        }
-        HStack {
-            spacing(viewModel.sender == .member)
-            VStack(alignment: .leading, spacing: .padding8) {
-                Group {
-                    viewModel.stepView
-                    if viewModel.isSkippable && viewModel.isEnabled {
-                        skipButton
+        Group {
+            VStack(spacing: 0) {
+                HStack {
+                    VStack(alignment: .leading, spacing: .padding8) {
+                        hText(viewModel.claimIntent.currentStep.text)
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                    if viewModel.isRegrettable && !viewModel.isEnabled {
+                        regretButton
                     }
                 }
-                .frame(
-                    maxWidth: viewModel.maxWidth,
-                    alignment: viewModel.alignment
-                )
+                HStack {
+                    spacing(viewModel.sender == .member)
+                    VStack(alignment: .leading, spacing: .padding8) {
+                        viewModel.stepView2(namespace: animationNamespace)
+                            .frame(
+                                maxWidth: viewModel.maxWidth,
+                                alignment: viewModel.alignment
+                            )
+                    }
+                    .disabled(!viewModel.isEnabled)
+                    .hButtonIsLoading(viewModel.isLoading)
+                    .trackError(for: $viewModel.error)
+                    .hStateViewButtonConfig(
+                        .init(
+                            actionButton: .init(
+                                buttonAction: { [weak viewModel] in
+                                    withAnimation {
+                                        viewModel?.isEnabled = true
+                                        viewModel?.error = nil
+                                        viewModel?.isLoading = false
+                                    }
+                                })
+                        )
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+                    spacing(viewModel.sender == .hedvig)
+                }
             }
-            .disabled(!viewModel.isEnabled)
-            .hButtonIsLoading(viewModel.isLoading)
-            .trackError(for: $viewModel.error)
-            .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init(
-                        buttonAction: { [weak viewModel] in
-                            withAnimation {
-                                viewModel?.isEnabled = true
-                                viewModel?.error = nil
-                                viewModel?.isLoading = false
-                            }
-                        })
-                )
-            )
-            .fixedSize(horizontal: false, vertical: true)
-            spacing(viewModel.sender == .hedvig)
-        }
-        .id(viewModel.id)
-    }
-
-    @ViewBuilder
-    private func stepContentView() -> some View {
-        if let viewModel = viewModel as? SubmitClaimAudioStep {
-            SubmitClaimAudioView(viewModel: viewModel)
-        } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
-            SubmitClaimSingleSelectView(viewModel: viewModel)
-        } else if let viewModel = viewModel as? SubmitClaimFormStep {
-            SubmitClaimFormView(viewModel: viewModel)
-        } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
-            SubmitClaimSummaryView(viewModel: viewModel)
-        } else if let viewModel = viewModel as? SubmitClaimTaskStep {
-            SubmitClaimTaskView(viewModel: viewModel)
-        } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
-            SubmitClaimFileUploadView(viewModel: viewModel)
-        } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
-            SubmitClaimUnknownView(viewModel: viewModel)
         }
     }
 
@@ -142,22 +121,46 @@ extension ClaimIntentStepHandler {
 }
 
 extension ClaimIntentStepHandler {
+    func stepView(namespace: Namespace.ID) -> some View {
+        VStack {
+            if let viewModel = self as? SubmitClaimAudioStep {
+                SubmitClaimAudioView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimSingleSelectStep {
+                SubmitClaimSingleSelectView(viewModel: viewModel, animationNamespace: namespace)
+            } else if let viewModel = self as? SubmitClaimFormStep {
+                SubmitClaimFormView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimSummaryStep {
+                SubmitClaimSummaryView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimTaskStep {
+                SubmitClaimTaskView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimFileUploadStep {
+                SubmitClaimFileUploadView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimUnknownStep {
+                SubmitClaimUnknownView(viewModel: viewModel)
+            }
+        }
+    }
+
     @ViewBuilder
-    var stepView: some View {
-        if let viewModel = self as? SubmitClaimAudioStep {
-            SubmitClaimAudioView(viewModel: viewModel)
-        } else if let viewModel = self as? SubmitClaimSingleSelectStep {
-            SubmitClaimSingleSelectView(viewModel: viewModel)
-        } else if let viewModel = self as? SubmitClaimFormStep {
-            SubmitClaimFormView(viewModel: viewModel)
-        } else if let viewModel = self as? SubmitClaimSummaryStep {
-            SubmitClaimSummaryView(viewModel: viewModel)
-        } else if let viewModel = self as? SubmitClaimTaskStep {
-            SubmitClaimTaskView(viewModel: viewModel)
-        } else if let viewModel = self as? SubmitClaimFileUploadStep {
-            SubmitClaimFileUploadView(viewModel: viewModel)
-        } else if let viewModel = self as? SubmitClaimUnknownStep {
-            SubmitClaimUnknownView(viewModel: viewModel)
+    func stepView2(namespace: Namespace.ID) -> some View {
+        if !self.isEnabled && !self.isLoading {
+            //        if let viewModel = self as? SubmitClaimAudioStep {
+            //            SubmitClaimAudioView(viewModel: viewModel)
+            //        } else
+            if let viewModel = self as? SubmitClaimSingleSelectStep {
+                SubmitClaimSingleSelectView2(viewModel: viewModel, animationNamespace: namespace)
+            }
+            //        else if let viewModel = self as? SubmitClaimFormStep {
+            //            SubmitClaimFormView(viewModel: viewModel)
+            //        } else if let viewModel = self as? SubmitClaimSummaryStep {
+            //            SubmitClaimSummaryView(viewModel: viewModel)
+            //        } else if let viewModel = self as? SubmitClaimTaskStep {
+            //            SubmitClaimTaskView(viewModel: viewModel)
+            //        } else if let viewModel = self as? SubmitClaimFileUploadStep {
+            //            SubmitClaimFileUploadView(viewModel: viewModel)
+            //        } else if let viewModel = self as? SubmitClaimUnknownStep {
+            //            SubmitClaimUnknownView(viewModel: viewModel)
+            //        }
         }
     }
 }

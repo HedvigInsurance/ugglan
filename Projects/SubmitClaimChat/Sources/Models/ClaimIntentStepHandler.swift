@@ -10,6 +10,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var sender: SubmitClaimChatMesageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
     var isRegrettable: Bool { claimIntent.isRegrettable }
+    var isDone: Bool { claimIntent.isRegrettable }
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
