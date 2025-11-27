@@ -11,7 +11,7 @@ public struct SubmitClaimChatScreen: View {
 
     public var body: some View {
         scrollContent
-        //            .hideToolbarBackgroundIfAvailable()
+            .hideToolbarBackgroundIfAvailable()
     }
 
     private var scrollContent: some View {
@@ -53,18 +53,18 @@ public struct SubmitClaimChatScreen: View {
                     .padding(.horizontal, .padding12)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                    Color.clear.frame(height: max(viewModel.height - viewModel.stepsHeightSum, 0)).id("BOTTOM")
-                    Color.clear.frame(height: viewModel.completedStepsHeight).id("BOTTOM2")
+                    Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
+                    Color.clear.frame(height: viewModel.completedStepsHeight)
                 }
                 .hFormContentPosition(.top)
                 .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .environmentObject(viewModel)
                 .hideScrollIndicators()
                 .onAppear {
-                    viewModel.height = proxy.size.height
+                    viewModel.scrollViewHeight = proxy.size.height
                 }
                 .onChange(of: proxy.size) { value in
-                    viewModel.height = value.height
+                    viewModel.scrollViewHeight = value.height
                 }
             }
             ZStack {
@@ -121,15 +121,17 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
     @Published var currentStep: ClaimIntentStepHandler?
     @Published var currentStepId: String = ""
+
+    @Published var scrollViewHeight: CGFloat = 0
+    @Published var contentHeight: [String: CGFloat] = [:]
+    @Published var stepsHeightSum: CGFloat = 0
+    @Published var completedStepsHeight: CGFloat = 0
+
     private let service: ClaimIntentService = ClaimIntentService()
     private let input: StartClaimInput
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
     let router = Router()
-    @Published var height: CGFloat = 0
-    @Published var contentHeight: [String: CGFloat] = [:]
-    @Published var stepsHeightSum: CGFloat = 0
-    @Published var completedStepsHeight: CGFloat = 0
 
     private func setHeight() {
         stepsHeightSum = contentHeight.reduce(0, { $0 + $1.value })
@@ -192,7 +194,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 allSteps.removeSubrange((indexToRemove)..<allSteps.count)
             }
             contentHeight[handler.id] = 0
-            self.allSteps.append(handler)
+            allSteps.append(handler)
             currentStep = handler
             currentStepId = handler.id
         case let .outcome(model):

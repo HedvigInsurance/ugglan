@@ -6,31 +6,31 @@ struct SubmitClaimSingleSelectView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
     let animationNamespace: Namespace.ID
     public var body: some View {
-        TagList(tags: viewModel.model.options.compactMap({ $0.id })) { tag in
-            hPill(
-                text: viewModel.model.options.first(where: { $0.id == tag })?.title ?? "",
-                color: viewModel.selectedOption == tag ? .green : .grey
-            )
-            .onTapGesture {
-                withAnimation {
-                    viewModel.selectedOption = tag
+        hSection {
+            TagList(tags: viewModel.model.options.compactMap({ $0.id })) { tag in
+                hPill(
+                    text: viewModel.model.options.first(where: { $0.id == tag })?.title ?? "",
+                    color: .grey
+                )
+                .onTapGesture {
+                    withAnimation {
+                        viewModel.selectedOption = tag
+                        Task {
+                            await viewModel.submitResponse()
+                        }
+                    }
                 }
-            }
-            .matchedGeometryEffect(id: "pill.\(tag)", in: animationNamespace)
-        }
-        hContinueButton {
-            Task {
-                await viewModel.submitResponse()
+                .matchedGeometryEffect(id: "pill.\(tag)", in: animationNamespace)
             }
         }
-        .disabled(viewModel.selectedOption == nil)
+        .sectionContainerStyle(.transparent)
     }
 }
 
 struct SubmitClaimSingleSelectResultView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
     let animationNamespace: Namespace.ID
-    public var body: some View {
+    var body: some View {
         if let tag = viewModel.selectedOption, let text = viewModel.model.options.first(where: { $0.id == tag })?.title
         {
             hPill(

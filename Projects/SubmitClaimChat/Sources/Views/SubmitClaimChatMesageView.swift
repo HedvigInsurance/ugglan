@@ -223,11 +223,12 @@ extension ClaimIntentStepHandler {
                 SubmitClaimUnknownView(viewModel: viewModel)
             }
         }
+        .disabled(!self.isEnabled)
     }
 
     @ViewBuilder
     func resultView(namespace: Namespace.ID) -> some View {
-        if !self.isEnabled && !self.isLoading {
+        if self.isStepExecuted {
             //        if let viewModel = self as? SubmitClaimAudioStep {
             //            SubmitClaimAudioView(viewModel: viewModel)
             //        } else
