@@ -38,11 +38,9 @@ public struct SubmitClaimChatScreen: View {
                                         Color.clear
                                             .onAppear {
                                                 viewModel.contentHeight[step?.id ?? ""] = proxy2.size.height
-                                                print("Height is 3 \(step?.id ?? "") \(proxy2.size.height)")
                                             }
                                             .onChange(of: proxy2.size) { value in
                                                 viewModel.contentHeight[step?.id ?? ""] = value.height
-                                                print("Height is 3 \(step?.id ?? "") \(value.height)")
                                             }
                                     }
                                 }
@@ -114,9 +112,10 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
+    // MARK: - Published UI State
     @Published var allSteps: [ClaimIntentStepHandler] = [] {
         didSet {
-            setHeight()
+            updateHeightCalculations()
         }
     }
     @Published var currentStep: ClaimIntentStepHandler?
@@ -127,27 +126,19 @@ final class SubmitClaimChatViewModel: ObservableObject {
     @Published var stepsHeightSum: CGFloat = 0
     @Published var completedStepsHeight: CGFloat = 0
 
-    private let service: ClaimIntentService = ClaimIntentService()
-    private let input: StartClaimInput
+    // MARK: - Dependencies
+    private let flowManager: ClaimIntentFlowManager
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
     let router = Router()
 
-    private func setHeight() {
-        stepsHeightSum = contentHeight.reduce(0, { $0 + $1.value })
-        completedStepsHeight = allSteps.filter({ !$0.isEnabled }).map({ $0.id })
-            .reduce(0) { partialResult, id in
-                let valueToAdd = contentHeight[id] ?? 0
-                return partialResult + valueToAdd
-            }
-    }
-
+    // MARK: - Initialization
     init(
         input: StartClaimInput,
         goToClaimDetails: @escaping GoToClaimDetails,
         openChat: @escaping () -> Void
     ) {
-        self.input = input
+        self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
         self.goToClaimDetails = goToClaimDetails
         self.openChat = openChat
         Task {
@@ -155,8 +146,18 @@ final class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
+    // MARK: - UI Height Calculations
+    private func updateHeightCalculations() {
+        stepsHeightSum = contentHeight.values.reduce(0, +)
+        completedStepsHeight =
+            allSteps
+            .filter { !$0.isEnabled }
+            .reduce(0) { $0 + (contentHeight[$1.id] ?? 0) }
+    }
+
+    // MARK: - Business Logic
     func startClaimIntent(input: StartClaimInput) async throws {
-        guard let claimIntent = try await service.startClaimIntent(input: input) else {
+        guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
             throw ClaimIntentError.invalidResponse
         }
 
@@ -171,42 +172,49 @@ final class SubmitClaimChatViewModel: ObservableObject {
     private func processClaimIntent(_ claimEvent: SubmitClaimEvent) {
         switch claimEvent {
         case let .goToNext(claimIntent):
-            let handler = getStep(for: claimIntent)
-            contentHeight[handler.id] = 0
-
-            Task { @MainActor in
-                if !self.allSteps.isEmpty {
-                    try await Task.sleep(seconds: 0.5)
-                    currentStep = nil
-                }
-                try await Task.sleep(seconds: 0.5)
-                self.allSteps.append(handler)
-                try await Task.sleep(seconds: 1)
-                currentStep = handler
-                currentStepId = handler.id
-            }
+            handleGoToNextStep(claimIntent: claimIntent)
         case let .regret(currentClaimIntent, newclaimIntent):
-            let handler = getStep(for: newclaimIntent)
-            if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
-                for item in allSteps[indexToRemove..<allSteps.count] {
-                    contentHeight.removeValue(forKey: item.id)
-                }
-                allSteps.removeSubrange((indexToRemove)..<allSteps.count)
-            }
-            contentHeight[handler.id] = 0
-            allSteps.append(handler)
-            currentStep = handler
-            currentStepId = handler.id
+            handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
         case let .outcome(model):
             router.push(model)
         }
     }
 
-    private func getStep(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
-        ClaimIntentStepHandlerFactory.createHandler(
-            for: claimIntent,
-            service: service
-        ) { [weak self] claimEvent in
+    private func handleGoToNextStep(claimIntent: ClaimIntent) {
+        let handler = createStepHandler(for: claimIntent)
+        contentHeight[handler.id] = 0
+
+        Task { @MainActor in
+            if !self.allSteps.isEmpty {
+                try await Task.sleep(seconds: 0.5)
+                currentStep = nil
+            }
+            try await Task.sleep(seconds: 0.5)
+            self.allSteps.append(handler)
+            try await Task.sleep(seconds: 1)
+            currentStep = handler
+            currentStepId = handler.id
+        }
+    }
+
+    private func handleRegretStep(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent) {
+        let handler = createStepHandler(for: newClaimIntent)
+
+        if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
+            for item in allSteps[indexToRemove..<allSteps.count] {
+                contentHeight.removeValue(forKey: item.id)
+            }
+            allSteps.removeSubrange((indexToRemove)..<allSteps.count)
+        }
+
+        contentHeight[handler.id] = 0
+        allSteps.append(handler)
+        currentStep = handler
+        currentStepId = handler.id
+    }
+
+    private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
+        flowManager.createStepHandler(for: claimIntent) { [weak self] claimEvent in
             self?.processClaimIntent(claimEvent)
         }
     }

@@ -7,29 +7,26 @@ struct SubmitClaimChatMesageView: View {
     let animationNamespace: Namespace.ID
 
     var body: some View {
-        Group {
-            VStack(spacing: 0) {
-                HStack {
-                    VStack(alignment: .leading, spacing: .padding8) {
-                        TextAnimation(text: viewModel.claimIntent.currentStep.text)
-                    }
-
-                    .fixedSize(horizontal: false, vertical: true)
-                    Spacer()
-                    if viewModel.isRegrettable && !viewModel.isEnabled {
-                        regretButton
-                    }
+        VStack(spacing: .padding8) {
+            HStack {
+                VStack(alignment: .leading, spacing: .padding8) {
+                    TextAnimation(text: viewModel.claimIntent.currentStep.text)
                 }
 
-                HStack {
-                    spacing(viewModel.sender == .member)
-                    VStack(alignment: .leading, spacing: .padding8) {
-                        viewModel.resultView(namespace: animationNamespace)
-                            .frame(
-                                maxWidth: viewModel.maxWidth,
-                                alignment: viewModel.alignment
-                            )
-                    }
+                .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                if viewModel.isRegrettable && !viewModel.isEnabled {
+                    regretButton
+                }
+            }
+
+            HStack {
+                spacing(viewModel.sender == .member)
+                viewModel.resultView(namespace: animationNamespace)
+                    .frame(
+                        maxWidth: viewModel.maxWidth,
+                        alignment: viewModel.alignment
+                    )
                     .disabled(!viewModel.isEnabled)
                     .hButtonIsLoading(viewModel.isLoading)
                     .trackError(for: $viewModel.error)
@@ -46,8 +43,7 @@ struct SubmitClaimChatMesageView: View {
                         )
                     )
                     .fixedSize(horizontal: false, vertical: true)
-                    spacing(viewModel.sender == .hedvig)
-                }
+                spacing(viewModel.sender == .hedvig)
             }
         }
     }
@@ -215,8 +211,8 @@ extension ClaimIntentStepHandler {
                 SubmitClaimFormView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimSummaryStep {
                 SubmitClaimSummaryView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimTaskStep {
-                SubmitClaimTaskView(viewModel: viewModel)
+                //            } else if let viewModel = self as? SubmitClaimTaskStep {
+                //                SubmitClaimTaskView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimUnknownStep {
