@@ -61,7 +61,13 @@ public class hPaymentClientDemo: hPaymentClient {
                 ],
                 referralDiscount: nil,
                 amountPerReferral: .sek(10),
-                paymentDetails: .init(paymentMethod: "Autogiro", account: "****124124", bank: "Handelsbanken"),
+                paymentChargeData: .init(
+                    paymentMethod: "Autogiro",
+                    bankName: "Handelsbanken",
+                    account: "****124124",
+                    mandate: "Trustly",
+                    chargingDayInTheMonth: 20
+                ),
                 addedToThePayment: nil
             ),
             [
@@ -119,7 +125,7 @@ public class hPaymentClientDemo: hPaymentClient {
                     ],
                     referralDiscount: nil,
                     amountPerReferral: .sek(10),
-                    paymentDetails: nil,
+                    paymentChargeData: nil,
                     addedToThePayment: nil
                 )
             ]
@@ -128,10 +134,15 @@ public class hPaymentClientDemo: hPaymentClient {
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
         try await Task.sleep(seconds: 1)
-        return PaymentStatusData(
+        return .init(
             status: .noNeedToConnect,
-            displayName: "Connected bank",
-            descriptor: "****1234"
+            paymentChargeData: .init(
+                paymentMethod: nil,
+                bankName: "Connected bank",
+                account: "****1234",
+                mandate: nil,
+                chargingDayInTheMonth: nil
+            )
         )
     }
 
@@ -155,7 +166,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(10),
-                        paymentDetails: nil,
+                        paymentChargeData: nil,
                         addedToThePayment: nil
                     )
                 )
@@ -180,7 +191,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(10),
-                        paymentDetails: nil,
+                        paymentChargeData: nil,
                         addedToThePayment: nil
                     )
                 )

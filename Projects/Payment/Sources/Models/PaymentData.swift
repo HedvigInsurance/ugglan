@@ -10,7 +10,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     let contracts: [ContractPaymentDetails]
     let referralDiscount: Discount?
     let amountPerReferral: MonetaryAmount
-    let paymentDetails: PaymentDetails?
+    let paymentChargeData: PaymentChargeData?
     // had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
 
@@ -21,7 +21,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         contracts: [ContractPaymentDetails],
         referralDiscount: Discount?,
         amountPerReferral: MonetaryAmount,
-        paymentDetails: PaymentDetails?,
+        paymentChargeData: PaymentChargeData?,
         addedToThePayment: [PaymentData]?
     ) {
         self.id = id
@@ -30,7 +30,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         self.contracts = contracts
         self.referralDiscount = referralDiscount
         self.amountPerReferral = amountPerReferral
-        self.paymentDetails = paymentDetails
+        self.paymentChargeData = paymentChargeData
         self.addedToThePayment = addedToThePayment
     }
 
@@ -148,28 +148,6 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         @MainActor
         var fromToDate: String {
             "\(from.displayDateShort) - \(to.displayDateShort)"
-        }
-    }
-
-    public struct PaymentDetails: Codable, Equatable, Hashable, Sendable {
-        typealias KeyValue = (key: String, value: String)
-        let paymentMethod: String
-        let account: String
-        let bank: String
-
-        public init(paymentMethod: String, account: String, bank: String) {
-            self.paymentMethod = paymentMethod
-            self.account = account
-            self.bank = bank
-        }
-
-        var getDisplayList: [KeyValue] {
-            var list: [KeyValue] = []
-            list.append((L10n.paymentsPaymentMethod, paymentMethod))
-            list.append((L10n.paymentsAccount, account))
-            list.append((L10n.myPaymentBankRowLabel, bank))
-
-            return list
         }
     }
 }
