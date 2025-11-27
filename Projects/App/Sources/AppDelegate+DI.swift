@@ -35,7 +35,7 @@ enum DI {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-        let dateService = DateService()
+        let dateService = DateService(locale: Localization.Locale.currentLocale.value)
         Dependencies.shared.add(module: Module { () -> DateService in dateService })
         if ugglanStore.state.isDemoMode {
             let featureFlagsClient = FeatureFlagsDemo()

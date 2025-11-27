@@ -74,8 +74,8 @@ struct PaymentDetailsView: View {
         list.append(("settlementAdjustment", AnyView(settlementAdjustmentView)))
         list.append(("total", AnyView(total)))
         list.append(("paymentDue", AnyView(paymentDue)))
-        if let paymentDetails = data.paymentDetails {
-            list.append(("bankDetails", AnyView(bankDetails(paymentDetails: paymentDetails))))
+        if let paymentDetails = data.paymentChargeData {
+            list.append(("bankDetails", AnyView(bankDetails(data: paymentDetails))))
         }
         return list
     }
@@ -164,18 +164,9 @@ struct PaymentDetailsView: View {
     }
 
     @ViewBuilder
-    private func bankDetails(paymentDetails: PaymentData.PaymentDetails) -> some View {
-        hSection(paymentDetails.getDisplayList, id: \.key) { item in
-            hRow {
-                HStack {
-                    hText(item.key)
-                    Spacer()
-                    hText(item.value)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-            }
-        }
-        .hWithoutHorizontalPadding([.section, .row, .divider])
+    private func bankDetails(data: PaymentChargeData) -> some View {
+        PaymentMethodView(data: data, withDate: false)
+            .hWithoutHorizontalPadding([.section, .row, .divider])
     }
 }
 
@@ -259,7 +250,13 @@ struct PaymentDetailsView: View {
                 type: .referral
             ),
         amountPerReferral: .sek(10),
-        paymentDetails: .init(paymentMethod: "bank", account: "account", bank: "bank"),
+        paymentChargeData: .init(
+            paymentMethod: "bank",
+            bankName: "bank",
+            account: "account",
+            mandate: "mandate",
+            chargingDayInTheMonth: 20
+        ),
         addedToThePayment: nil
     )
     return PaymentDetailsView(data: data)
