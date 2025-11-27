@@ -27,7 +27,7 @@ struct SubmitClaimSingleSelectView: View {
     }
 }
 
-struct SubmitClaimSingleSelectView2: View {
+struct SubmitClaimSingleSelectResultView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
     let animationNamespace: Namespace.ID
     public var body: some View {

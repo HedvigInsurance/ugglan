@@ -24,7 +24,7 @@ struct SubmitClaimChatMesageView: View {
                 HStack {
                     spacing(viewModel.sender == .member)
                     VStack(alignment: .leading, spacing: .padding8) {
-                        viewModel.stepView2(namespace: animationNamespace)
+                        viewModel.resultView(namespace: animationNamespace)
                             .frame(
                                 maxWidth: viewModel.maxWidth,
                                 alignment: viewModel.alignment
@@ -226,13 +226,13 @@ extension ClaimIntentStepHandler {
     }
 
     @ViewBuilder
-    func stepView2(namespace: Namespace.ID) -> some View {
+    func resultView(namespace: Namespace.ID) -> some View {
         if !self.isEnabled && !self.isLoading {
             //        if let viewModel = self as? SubmitClaimAudioStep {
             //            SubmitClaimAudioView(viewModel: viewModel)
             //        } else
             if let viewModel = self as? SubmitClaimSingleSelectStep {
-                SubmitClaimSingleSelectView2(viewModel: viewModel, animationNamespace: namespace)
+                SubmitClaimSingleSelectResultView(viewModel: viewModel, animationNamespace: namespace)
             }
             //        else if let viewModel = self as? SubmitClaimFormStep {
             //            SubmitClaimFormView(viewModel: viewModel)
