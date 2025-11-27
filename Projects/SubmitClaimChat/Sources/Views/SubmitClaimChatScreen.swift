@@ -18,9 +18,9 @@ public struct SubmitClaimChatScreen: View {
         ScrollViewReader { proxy in
             mainContent
                 .onChange(of: viewModel.currentStepId) { currentStepId in
-                    //                    withAnimation {
-                    proxy.scrollTo(currentStepId, anchor: .top)
-                    //                    }
+                    withAnimation {
+                        proxy.scrollTo(currentStepId, anchor: .top)
+                    }
                 }
         }
     }
@@ -46,6 +46,7 @@ public struct SubmitClaimChatScreen: View {
                                             }
                                     }
                                 }
+                                .id(step.id)
                                 .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
                         }
                     }
@@ -66,12 +67,15 @@ public struct SubmitClaimChatScreen: View {
                     viewModel.height = value.height
                 }
             }
-            if let currentStep = viewModel.currentStep {
-                currentStep
-                    .stepView(namespace: animationNamespace)
-                    .transition(.move(edge: .bottom))
+            ZStack {
+                if let currentStep = viewModel.currentStep {
+                    currentStep
+                        .stepView(namespace: animationNamespace)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
         }
+        .animation(.defaultSpring, value: viewModel.currentStep?.id)
     }
 }
 
@@ -124,6 +128,8 @@ final class SubmitClaimChatViewModel: ObservableObject {
     let router = Router()
     @Published var height: CGFloat = 0
     @Published var contentHeight: [String: CGFloat] = [:]
+    @Published var stepsHeightSum: CGFloat = 0
+    @Published var completedStepsHeight: CGFloat = 0
 
     private func setHeight() {
         stepsHeightSum = contentHeight.reduce(0, { $0 + $1.value })
@@ -132,10 +138,8 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 let valueToAdd = contentHeight[id] ?? 0
                 return partialResult + valueToAdd
             }
-        //        print("HEIGHT IS 5 \(stepsHeightSum) \(completedStepsHeight) \(contentHeight)")
     }
-    @Published var stepsHeightSum: CGFloat = 0
-    @Published var completedStepsHeight: CGFloat = 0
+
     init(
         input: StartClaimInput,
         goToClaimDetails: @escaping GoToClaimDetails,
@@ -168,29 +172,17 @@ final class SubmitClaimChatViewModel: ObservableObject {
             let handler = getStep(for: claimIntent)
             contentHeight[handler.id] = 0
 
-            Task {
+            Task { @MainActor in
                 if !self.allSteps.isEmpty {
-                    try await Task.sleep(seconds: 2)
-                    withAnimation {
-                        currentStep = nil
-                    }
+                    try await Task.sleep(seconds: 0.5)
+                    currentStep = nil
                 }
+                try await Task.sleep(seconds: 0.5)
+                self.allSteps.append(handler)
                 try await Task.sleep(seconds: 1)
-                withAnimation {
-                    self.allSteps.append(handler)
-                }
-                //                setHeight()
-                try await Task.sleep(seconds: 1)
-                withAnimation {
-                    currentStep = handler
-                }
+                currentStep = handler
+                currentStepId = handler.id
             }
-        //            Task {
-        //                try await Task.sleep(seconds: 1.5)
-        //                withAnimation {
-        //                    currentStepId = handler.id
-        //                }
-        //            }
         case let .regret(currentClaimIntent, newclaimIntent):
             let handler = getStep(for: newclaimIntent)
             if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
