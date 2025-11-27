@@ -1,0 +1,10 @@
+mutation ClaimIntentSubmitTask($input: ClaimIntentSubmitTaskInput!) {
+  claimIntentSubmitTask(input: $input) {
+    intent {
+        ...ClaimIntentFragment
+    }
+    userError {
+      message
+    }
+  }
+}

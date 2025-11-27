@@ -9,7 +9,7 @@ public struct RouterOptions: OptionSet, Sendable {
 
 extension RouterOptions {
     public static let navigationBarHidden = RouterOptions(rawValue: 1 << 0)
-    static let largeNavigationBar = RouterOptions(rawValue: 1 << 1)
+    public static let largeNavigationBar = RouterOptions(rawValue: 1 << 1)
     static let navigationBarWithProgress = RouterOptions(rawValue: 1 << 2)
     public static let extendedNavigationWidth = RouterOptions(rawValue: 1 << 3)
 

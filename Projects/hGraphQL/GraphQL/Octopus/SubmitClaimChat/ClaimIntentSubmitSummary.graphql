@@ -1,0 +1,11 @@
+mutation ClaimIntentSubmitSummary($input: ClaimIntentSubmitSummaryInput!) {
+  claimIntentSubmitSummary(input: $input) {
+    intent {
+        ...ClaimIntentFragment
+    }
+    userError {
+      message
+    }
+  }
+}
+
