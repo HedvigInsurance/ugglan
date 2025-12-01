@@ -5,7 +5,7 @@ import hCoreUI
 struct SubmitClaimTaskView: View {
     @ObservedObject var viewModel: SubmitClaimTaskStep
     var body: some View {
-        if let error = viewModel.error {
+        if viewModel.error != nil {
             hText(viewModel.taskModel.description)
         }
     }
