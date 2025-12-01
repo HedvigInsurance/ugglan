@@ -23,20 +23,17 @@ enum SubmitClaimChatMesageSender {
 public struct ClaimIntent: Sendable {
     let currentStep: ClaimIntentStep
     let id: String
-    let sourceMessages: [SourceMessage]
     let isSkippable: Bool
     let isRegrettable: Bool
 
     public init(
         currentStep: ClaimIntentStep,
         id: String,
-        sourceMessages: [SourceMessage],
         isSkippable: Bool,
         isRegrettable: Bool
     ) {
         self.currentStep = currentStep
         self.id = id
-        self.sourceMessages = sourceMessages
         self.isSkippable = isSkippable
         self.isRegrettable = isRegrettable
     }

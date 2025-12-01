@@ -8,7 +8,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -24,7 +23,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -36,7 +34,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -48,7 +45,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -61,7 +57,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 .init(
                     currentStep: .init(content: .unknown, id: "id", text: ""),
                     id: "",
-                    sourceMessages: [],
                     isSkippable: false,
                     isRegrettable: false
                 )
@@ -73,7 +68,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -85,7 +79,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -97,7 +90,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -109,7 +101,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -121,7 +112,6 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
-                sourceMessages: [],
                 isSkippable: false,
                 isRegrettable: false
             )
