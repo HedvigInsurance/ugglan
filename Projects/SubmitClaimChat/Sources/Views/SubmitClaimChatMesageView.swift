@@ -42,6 +42,7 @@ struct SubmitClaimChatMesageView: View {
                         )
                     )
                     .fixedSize(horizontal: false, vertical: true)
+                    .id("result_\(viewModel.id)")
                 spacing(viewModel.sender == .hedvig)
             }
         }
