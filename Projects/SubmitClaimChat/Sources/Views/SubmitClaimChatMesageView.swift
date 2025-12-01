@@ -48,15 +48,6 @@ struct SubmitClaimChatMesageView: View {
         }
     }
 
-    private var skipButton: some View {
-        hButton(.medium, .secondary, content: .init(title: "Skip")) {
-            Task {
-                await viewModel.skip()
-            }
-        }
-        .disabled(!viewModel.isEnabled)
-    }
-
     private var regretButton: some View {
         hCoreUIAssets.edit.view
             .onTapGesture {
@@ -217,6 +208,15 @@ extension ClaimIntentStepHandler {
                 SubmitClaimFileUploadView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimUnknownStep {
                 SubmitClaimUnknownView(viewModel: viewModel)
+            }
+            if self.isSkippable {
+                hButton(.large, .ghost, content: .init(title: "Skip")) { [weak self] in
+                    Task {
+                        await self?.skip()
+                    }
+                }
+                .disabled(!self.isEnabled)
+                .hButtonIsLoading(false)
             }
         }
         .disabled(!self.isEnabled)
