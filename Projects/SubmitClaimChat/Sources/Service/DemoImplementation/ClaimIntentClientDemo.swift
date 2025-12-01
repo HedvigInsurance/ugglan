@@ -117,4 +117,19 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             )
         )
     }
+
+    let demoFileUploadModel = SubmitClaimFileUploadStep(
+        claimIntent: .init(
+            currentStep: .init(
+                content: .fileUpload(model: .init(uploadURI: "")),
+                id: "id",
+                text: "text to display"
+            ),
+            id: "id",
+            isSkippable: true,
+            isRegrettable: true
+        ),
+        service: ClaimIntentService()
+    ) { _ in
+    }
 }

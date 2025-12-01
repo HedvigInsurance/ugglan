@@ -93,3 +93,7 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
         self.name = name
     }
 }
+
+#Preview {
+    SubmitClaimFileUploadView(viewModel: ClaimIntentClientDemo().demoFileUploadModel)
+}
