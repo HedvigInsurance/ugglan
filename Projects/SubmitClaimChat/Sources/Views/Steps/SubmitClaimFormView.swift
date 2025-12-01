@@ -48,11 +48,13 @@ struct SubmitClaimFormView: View {
             transitionType: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
+                .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
         .detent(
             item: $viewModel.isSelectItemPresented,
             transitionType: .detent(style: [.height])
         ) { [weak viewModel] model in
+            let title = viewModel?.claimIntent.currentStep.text ?? ""
             ItemPickerScreen<SingleSelectValue>(
                 config: .init(
                     items: model.values.map({ ($0, .init(title: $0.title)) }),
@@ -75,6 +77,7 @@ struct SubmitClaimFormView: View {
             )
             .hItemPickerAttributes(model.multiselect ? [] : [.singleSelect])
             .hFormContentPosition(.compact)
+            .configureTitle(title)
             .embededInNavigation(options: .largeNavigationBar, tracking: "")
         }
     }
@@ -184,6 +187,12 @@ struct SubmitClaimFormView: View {
         } else {
             hTextColor.Opaque.secondary
         }
+    }
+}
+
+extension SubmitClaimFormView: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        .init(describing: SubmitClaimFormView.self)
     }
 }
 
