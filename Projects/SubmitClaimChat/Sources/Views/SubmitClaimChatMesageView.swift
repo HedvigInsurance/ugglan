@@ -9,7 +9,10 @@ struct SubmitClaimChatMesageView: View {
         VStack(spacing: .padding8) {
             HStack {
                 VStack(alignment: .leading, spacing: .padding8) {
-                    TextAnimation(text: viewModel.claimIntent.currentStep.text)
+                    TextAnimation(
+                        text: viewModel.claimIntent.currentStep.text,
+                        showText: viewModel.claimIntent.currentStep.showText
+                    )
                 }
 
                 .fixedSize(horizontal: false, vertical: true)
@@ -92,25 +95,29 @@ struct TextAnimation: View {
     let text: String
     @State private var visibleCharacters: Int = 0
     @State private var showDot = true
+    var showText: Bool
+
     var body: some View {
-        ZStack(alignment: .leading) {
-            if showDot {
-                Circle()
-                    .fill(hSignalColor.Green.element)
-                    .frame(width: 14, height: 14)
-                    .transition(.scale.combined(with: .opacity))
-            }
-            if #available(iOS 18.0, *) {
-                hText(text)
-                    .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
-                    .onAppear {
-                        animateText()
-                    }
-            } else {
-                Text(String(text.prefix(visibleCharacters)))
-                    .onAppear {
-                        animateText()
-                    }
+        if showText {
+            ZStack(alignment: .leading) {
+                if showDot {
+                    Circle()
+                        .fill(hSignalColor.Green.element)
+                        .frame(width: 14, height: 14)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                if #available(iOS 18.0, *) {
+                    hText(text)
+                        .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
+                        .onAppear {
+                            animateText()
+                        }
+                } else {
+                    Text(String(text.prefix(visibleCharacters)))
+                        .onAppear {
+                            animateText()
+                        }
+                }
             }
         }
     }
@@ -167,7 +174,7 @@ struct AnimatedTextRenderer: TextRenderer {
 }
 
 #Preview {
-    TextAnimation(text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED")
+    TextAnimation(text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED", showText: true)
 }
 
 extension ClaimIntentStepHandler {
@@ -201,7 +208,8 @@ extension ClaimIntentStepHandler {
             } else if let viewModel = self as? SubmitClaimFormStep {
                 SubmitClaimFormView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimSummaryStep {
-                SubmitClaimSummaryView(viewModel: viewModel)
+                SubmitClaimSummaryBottomView(viewModel: viewModel)
+
                 //            } else if let viewModel = self as? SubmitClaimTaskStep {
                 //                SubmitClaimTaskView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimFileUploadStep {
@@ -224,12 +232,14 @@ extension ClaimIntentStepHandler {
 
     @ViewBuilder
     func resultView() -> some View {
-        if self.isStepExecuted {
+        if self.isStepExecuted || self is SubmitClaimSummaryStep {
             //        if let viewModel = self as? SubmitClaimAudioStep {
             //            SubmitClaimAudioView(viewModel: viewModel)
             //        } else
             if let viewModel = self as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimSummaryStep {
+                SubmitClaimSummaryView(viewModel: viewModel)
             }
             //        else if let viewModel = self as? SubmitClaimFormStep {
             //            SubmitClaimFormView(viewModel: viewModel)

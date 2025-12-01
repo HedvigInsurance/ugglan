@@ -53,7 +53,7 @@ struct SubmitClaimAudioView: View {
 
     private func playRecordingButton(url: URL) -> some View {
         VStack(spacing: .padding12) {
-            TrackPlayerView(audioPlayer: audioPlayer, withoutBackground: true)
+            TrackPlayerView(audioPlayer: audioPlayer)
                 .onAppear {
                     minutes = 0; seconds = 0
                 }

@@ -215,6 +215,7 @@ public enum hSectionContainerStyle {
     case transparent
     case opaque
     case black
+    case white
 }
 
 @MainActor
@@ -275,6 +276,11 @@ struct hSectionContainerStyleModifier: ViewModifier {
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        case .white:
+            content.background(
+                hFillColor.Opaque.negative
+            )
+            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusXL, corners: maskedCorners))
         }
     }
 }
