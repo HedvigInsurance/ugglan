@@ -22,46 +22,49 @@ struct SubmitClaimFileUploadView: View {
                 fileUploadVm.addFiles(with: files)
             }
     }
-
+    
     private var showFilesView: some View {
         Group {
             if fileUploadVm.hasFiles {
-                VStack {
-                    FilesGridView(vm: fileUploadVm.fileGridViewModel)
-                    HStack(spacing: .padding8) {
-                        hButton(
-                            .small,
-                            .secondary,
-                            content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-                            {
-                                showFileSourcePicker = true
+                hSection {
+                    VStack {
+                        FilesGridView(vm: fileUploadVm.fileGridViewModel)
+                        HStack(spacing: .padding8) {
+                            hButton(
+                                .medium,
+                                .secondary,
+                                content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
+                                {
+                                    showFileSourcePicker = true
+                                }
+                            )
+                            .hButtonIsLoading(false)
+                            hButton(.medium, .primary, content: .init(title: L10n.generalContinueButton)) {
+                                Task {
+                                    await viewModel.submitResponse()
+                                }
                             }
-                        )
-                        .hButtonIsLoading(false)
-                        hButton(.small, .primary, content: .init(title: L10n.generalContinueButton)) {
-                            Task {
-                                await viewModel.submitResponse()
-                            }
-                        }
-                        .hButtonIsLoading(false)
-                        .disabled(fileUploadVm.fileGridViewModel.files.isEmpty)
-                        .overlay {
-                            if fileUploadVm.isLoading {
-                                GeometryReader { geo in
-                                    Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
-                                        .opacity(fileUploadVm.isLoading ? 1 : 0)
-                                        .frame(width: fileUploadVm.progress * geo.size.width)
+                            .hButtonIsLoading(false)
+                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty)
+                            .overlay {
+                                if fileUploadVm.isLoading {
+                                    GeometryReader { geo in
+                                        Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
+                                            .opacity(fileUploadVm.isLoading ? 1 : 0)
+                                            .frame(width: fileUploadVm.progress * geo.size.width)
+                                    }
                                 }
                             }
                         }
                     }
+                    .hButtonTakeFullWidth(true)
                 }
             } else {
                 hSection {
                     hButton(
                         .large,
                         .primary,
-                        content: .init(title: L10n.ClaimStatusDetail.addFiles),
+                        content: .init(title:  L10n.ClaimStatusDetail.addFiles),
                         {
                             showFileSourcePicker = true
                         }
@@ -69,9 +72,9 @@ struct SubmitClaimFileUploadView: View {
                     .hButtonIsLoading(fileUploadVm.isLoading)
                     .disabled(fileUploadVm.isLoading)
                 }
-                .sectionContainerStyle(.transparent)
             }
         }
+        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -96,4 +99,12 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 
 #Preview {
     SubmitClaimFileUploadView(viewModel: ClaimIntentClientDemo().demoFileUploadModel)
+}
+
+
+struct SubmitClaimFileUploadResultView: View {
+    let viewModel: SubmitClaimFileUploadStep
+    var body: some View {
+        FilesGridView(vm: viewModel.fileUploadVm.fileGridViewModel)
+    }
 }
