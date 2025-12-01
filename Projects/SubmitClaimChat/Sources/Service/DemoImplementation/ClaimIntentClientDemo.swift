@@ -2,7 +2,7 @@ import Foundation
 
 public class ClaimIntentClientDemo: ClaimIntentClient {
     public init() {}
-
+    var claimIntentSubmitTaskCounter = 0
     public func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
         .intent(
             model: .init(
@@ -108,13 +108,43 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     }
 
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {
-        .intent(
+        try await Task.sleep(seconds: 1)
+        claimIntentSubmitTaskCounter += 1
+        return .intent(
             model: .init(
-                currentStep: .init(content: .unknown, id: "id", text: ""),
-                id: "",
+                currentStep: .init(
+                    content: .task(
+                        model: .init(
+                            description: "Text updated \(claimIntentSubmitTaskCounter)",
+                            isCompleted: claimIntentSubmitTaskCounter > 3
+                        )
+                    ),
+                    id: "id\(claimIntentSubmitTaskCounter)",
+                    text: "text \(claimIntentSubmitTaskCounter)"
+                ),
+                id: "id\(claimIntentSubmitTaskCounter)",
                 isSkippable: false,
                 isRegrettable: false
             )
         )
+    }
+    let taskDemoStep = SubmitClaimTaskStep(
+        claimIntent: .init(
+            currentStep: .init(
+                content: .task(
+                    model: .init(
+                        description: "Description",
+                        isCompleted: false
+                    )
+                ),
+                id: "id",
+                text: "Text to show"
+            ),
+            id: "id",
+            isSkippable: false,
+            isRegrettable: false
+        ),
+        service: ClaimIntentService()
+    ) { _ in
     }
 }

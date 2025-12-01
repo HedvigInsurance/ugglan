@@ -32,7 +32,7 @@ public struct SubmitClaimChatScreen: View {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(viewModel.allSteps, id: \.id) { step in
                             SubmitClaimChatMesageView(viewModel: step, animationNamespace: animationNamespace)
-                                .padding(.vertical, .padding8)
+                                .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
                                 .background {
                                     GeometryReader { [weak step] proxy2 in
                                         Color.clear

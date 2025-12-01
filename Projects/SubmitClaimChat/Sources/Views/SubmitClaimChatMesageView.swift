@@ -8,18 +8,20 @@ struct SubmitClaimChatMesageView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            HStack {
-                VStack(alignment: .leading, spacing: .padding8) {
-                    TextAnimation(text: viewModel.claimIntent.currentStep.text)
-                }
-
-                .fixedSize(horizontal: false, vertical: true)
-                Spacer()
-                if viewModel.isRegrettable && !viewModel.isEnabled {
-                    regretButton
+            if !(viewModel is SubmitClaimTaskStep) {
+                HStack {
+                    VStack(alignment: .leading, spacing: .padding8) {
+                        TextAnimation(text: viewModel.claimIntent.currentStep.text)
+                    }
+                    
+                    .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                    if viewModel.isRegrettable && !viewModel.isEnabled {
+                        regretButton
+                    }
                 }
             }
-
+            
             HStack {
                 spacing(viewModel.sender == .member)
                 viewModel.resultView(namespace: animationNamespace)
@@ -230,18 +232,22 @@ extension ClaimIntentStepHandler {
             //        } else
             if let viewModel = self as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel, animationNamespace: namespace)
+                //            }
+                //        else if let viewModel = self as? SubmitClaimFormStep {
+                //            SubmitClaimFormView(viewModel: viewModel)
+                //        } else if let viewModel = self as? SubmitClaimSummaryStep {
+                //            SubmitClaimSummaryView(viewModel: viewModel)
             }
-            //        else if let viewModel = self as? SubmitClaimFormStep {
-            //            SubmitClaimFormView(viewModel: viewModel)
-            //        } else if let viewModel = self as? SubmitClaimSummaryStep {
-            //            SubmitClaimSummaryView(viewModel: viewModel)
-            //        } else if let viewModel = self as? SubmitClaimTaskStep {
-            //            SubmitClaimTaskView(viewModel: viewModel)
             //        } else if let viewModel = self as? SubmitClaimFileUploadStep {
             //            SubmitClaimFileUploadView(viewModel: viewModel)
             //        } else if let viewModel = self as? SubmitClaimUnknownStep {
             //            SubmitClaimUnknownView(viewModel: viewModel)
             //        }
+            else if let viewModel = self as? SubmitClaimTaskStep {
+                SubmitClaimTaskResultView(viewModel: viewModel)
+            }
+        } else if let viewModel = self as? SubmitClaimTaskStep {
+            SubmitClaimTaskResultView(viewModel: viewModel)
         }
     }
 }
