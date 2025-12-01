@@ -4,7 +4,6 @@ import hCoreUI
 
 struct SubmitClaimSingleSelectView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
-    let animationNamespace: Namespace.ID
     public var body: some View {
         hSection {
             TagList(tags: viewModel.model.options.compactMap({ $0.id })) { tag in
@@ -20,7 +19,6 @@ struct SubmitClaimSingleSelectView: View {
                         }
                     }
                 }
-                .matchedGeometryEffect(id: "pill.\(tag)", in: animationNamespace)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -29,7 +27,6 @@ struct SubmitClaimSingleSelectView: View {
 
 struct SubmitClaimSingleSelectResultView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
-    let animationNamespace: Namespace.ID
     var body: some View {
         if let tag = viewModel.selectedOption, let text = viewModel.model.options.first(where: { $0.id == tag })?.title
         {
@@ -37,7 +34,6 @@ struct SubmitClaimSingleSelectResultView: View {
                 text: text,
                 color: .grey
             )
-            .matchedGeometryEffect(id: "pill.\(tag)", in: animationNamespace)
         }
     }
 }

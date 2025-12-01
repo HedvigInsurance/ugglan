@@ -6,7 +6,6 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
-    @Namespace var animationNamespace
     public init() {}
 
     public var body: some View {
@@ -17,9 +16,9 @@ public struct SubmitClaimChatScreen: View {
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .onChange(of: viewModel.currentStepId) { currentStepId in
+                .onChange(of: viewModel.scrollToStepId) { scrollToStepId in
                     withAnimation {
-                        proxy.scrollTo(currentStepId, anchor: .top)
+                        proxy.scrollTo("result_\(scrollToStepId)", anchor: .top)
                     }
                 }
         }
@@ -31,8 +30,8 @@ public struct SubmitClaimChatScreen: View {
                 hForm {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(viewModel.allSteps, id: \.id) { step in
-                            SubmitClaimChatMesageView(viewModel: step, animationNamespace: animationNamespace)
-                                .padding(.vertical, .padding8)
+                            SubmitClaimChatMesageView(viewModel: step)
+                                .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
                                 .background {
                                     GeometryReader { [weak step] proxy2 in
                                         Color.clear
@@ -68,7 +67,7 @@ public struct SubmitClaimChatScreen: View {
             ZStack {
                 if let currentStep = viewModel.currentStep {
                     currentStep
-                        .stepView(namespace: animationNamespace)
+                        .stepView()
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
@@ -119,7 +118,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
         }
     }
     @Published var currentStep: ClaimIntentStepHandler?
-    @Published var currentStepId: String = ""
+    @Published var scrollToStepId: String = ""
 
     @Published var scrollViewHeight: CGFloat = 0
     @Published var contentHeight: [String: CGFloat] = [:]
@@ -183,17 +182,15 @@ final class SubmitClaimChatViewModel: ObservableObject {
     private func handleGoToNextStep(claimIntent: ClaimIntent) {
         let handler = createStepHandler(for: claimIntent)
         contentHeight[handler.id] = 0
-
+        let previousStepId = allSteps.last?.id ?? ""
         Task { @MainActor in
             if !self.allSteps.isEmpty {
-                try await Task.sleep(seconds: 0.5)
                 currentStep = nil
             }
-            try await Task.sleep(seconds: 0.5)
             self.allSteps.append(handler)
             try await Task.sleep(seconds: 1)
             currentStep = handler
-            currentStepId = handler.id
+            scrollToStepId = previousStepId
         }
     }
 
@@ -210,7 +207,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
         contentHeight[handler.id] = 0
         allSteps.append(handler)
         currentStep = handler
-        currentStepId = handler.id
+        scrollToStepId = handler.id
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
