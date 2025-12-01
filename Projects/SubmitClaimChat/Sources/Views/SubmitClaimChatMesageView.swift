@@ -13,7 +13,7 @@ struct SubmitClaimChatMesageView: View {
                     VStack(alignment: .leading, spacing: .padding8) {
                         TextAnimation(text: viewModel.claimIntent.currentStep.text)
                     }
-                    
+
                     .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                     if viewModel.isRegrettable && !viewModel.isEnabled {
@@ -21,7 +21,7 @@ struct SubmitClaimChatMesageView: View {
                     }
                 }
             }
-            
+
             HStack {
                 spacing(viewModel.sender == .member)
                 viewModel.resultView(namespace: animationNamespace)
