@@ -262,8 +262,11 @@ struct SubmitClaimFormResultView: View {
     var body: some View {
         if viewModel.isStepExecuted {
             VStack(alignment: .trailing, spacing: .padding4) {
-                ForEach(viewModel.getAllValuesToShow()) { item in
-                    hPill(text: item, color: .grey)
+                ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
+                    VStack(alignment: .trailing, spacing: 0) {
+                        hText(item.0, style: .label)
+                        hPill(text: item.1, color: .grey)
+                    }
                 }
             }
         }
