@@ -9,7 +9,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
         let input: OctopusGraphQL.ClaimIntentStartInput = .init(
-            sourceMessageId: GraphQLNullable(optionalValue: input.sourceMessageId),
             developmentFlow: GraphQLNullable(optionalValue: input.devFlow)
         )
         let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(input))
@@ -121,9 +120,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         }
 
         let id = intentFragment?.id ?? ""
-        let sourceMessages: [SourceMessage] =
-            intentFragment?.sourceMessages?
-            .compactMap { .init(fragment: $0.fragments.claimIntentSourceMessageFragment) } ?? []
         let outcome: ClaimIntentStepOutcome? =
             .init(fragment: intentFragment?.outcome?.fragments.claimIntentOutcomeFragment)
 
@@ -139,7 +135,6 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 model: .init(
                     currentStep: .init(fragment: currentStepFragment),
                     id: id,
-                    sourceMessages: sourceMessages,
                     isSkippable: isSkippable,
                     isRegrettable: isRegrettable
                 )
@@ -334,17 +329,6 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
         case .multiSelect:
             return .multiSelect
         }
-    }
-}
-
-extension SourceMessage {
-    init(
-        fragment: OctopusGraphQL.ClaimIntentSourceMessageFragment
-    ) {
-        self.init(
-            id: fragment.id,
-            text: fragment.text
-        )
     }
 }
 

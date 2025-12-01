@@ -9,9 +9,6 @@ fragment ClaimIntentFragment on ClaimIntent {
     currentStep {
         ...ClaimIntentStepFragment
     }
-    sourceMessages {
-        ...ClaimIntentSourceMessageFragment
-    }
     outcome {
         ...ClaimIntentOutcomeFragment
     }
@@ -63,11 +60,6 @@ fragment ClaimIntentStepFragment on ClaimIntentStep {
       content {
         ...ClaimIntentStepContentFragment
       }
-}
-
-fragment ClaimIntentSourceMessageFragment on ClaimIntentSourceMessage {
-    id
-    text
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
