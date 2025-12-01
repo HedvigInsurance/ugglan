@@ -269,3 +269,9 @@ struct SubmitClaimFormResultView: View {
         }
     }
 }
+
+#Preview {
+    SubmitClaimFormView(
+        viewModel: ClaimIntentClientDemo().demoFormModel
+    )
+}
