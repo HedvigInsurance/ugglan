@@ -57,6 +57,19 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         }
         return result
     }
+
+    func getAllValuesToShow() -> [String] {
+        formModel.fields
+            .map { field in
+                let userEnteredValues = formValues[field.id]!.values
+                let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
+                if valuesToDisplay.isEmpty {
+                    return userEnteredValues.joined(separator: ", ")
+                }
+                return valuesToDisplay.joined(separator: ", ")
+            }
+            .filter({ !$0.isEmpty })
+    }
 }
 
 final class FormStepValue: ObservableObject {
