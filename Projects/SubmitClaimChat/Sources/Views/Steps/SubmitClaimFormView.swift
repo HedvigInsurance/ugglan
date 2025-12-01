@@ -76,9 +76,8 @@ struct SubmitClaimFormView: View {
                 )
             )
             .hItemPickerAttributes(model.multiselect ? [] : [.singleSelect])
-            .hFormContentPosition(.compact)
-            .configureTitle(title)
-            .embededInNavigation(options: .largeNavigationBar, tracking: "")
+            .navigationTitle(title)
+            .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
     }
 
