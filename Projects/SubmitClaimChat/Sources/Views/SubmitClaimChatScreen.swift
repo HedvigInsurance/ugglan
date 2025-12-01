@@ -6,7 +6,6 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
-    @Namespace var animationNamespace
     public init() {}
 
     public var body: some View {
@@ -31,7 +30,7 @@ public struct SubmitClaimChatScreen: View {
                 hForm {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(viewModel.allSteps, id: \.id) { step in
-                            SubmitClaimChatMesageView(viewModel: step, animationNamespace: animationNamespace)
+                            SubmitClaimChatMesageView(viewModel: step)
                                 .padding(.vertical, .padding8)
                                 .background {
                                     GeometryReader { [weak step] proxy2 in
@@ -68,7 +67,7 @@ public struct SubmitClaimChatScreen: View {
             ZStack {
                 if let currentStep = viewModel.currentStep {
                     currentStep
-                        .stepView(namespace: animationNamespace)
+                        .stepView()
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }

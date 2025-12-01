@@ -4,7 +4,6 @@ import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
-    let animationNamespace: Namespace.ID
 
     var body: some View {
         VStack(spacing: .padding8) {
@@ -22,7 +21,7 @@ struct SubmitClaimChatMesageView: View {
 
             HStack {
                 spacing(viewModel.sender == .member)
-                viewModel.resultView(namespace: animationNamespace)
+                viewModel.resultView()
                     .frame(
                         maxWidth: viewModel.maxWidth,
                         alignment: viewModel.alignment
@@ -192,12 +191,12 @@ extension ClaimIntentStepHandler {
 }
 
 extension ClaimIntentStepHandler {
-    func stepView(namespace: Namespace.ID) -> some View {
+    func stepView() -> some View {
         VStack {
             if let viewModel = self as? SubmitClaimAudioStep {
                 SubmitClaimAudioView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimSingleSelectStep {
-                SubmitClaimSingleSelectView(viewModel: viewModel, animationNamespace: namespace)
+                SubmitClaimSingleSelectView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimFormStep {
                 SubmitClaimFormView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimSummaryStep {
@@ -223,13 +222,13 @@ extension ClaimIntentStepHandler {
     }
 
     @ViewBuilder
-    func resultView(namespace: Namespace.ID) -> some View {
+    func resultView() -> some View {
         if self.isStepExecuted {
             //        if let viewModel = self as? SubmitClaimAudioStep {
             //            SubmitClaimAudioView(viewModel: viewModel)
             //        } else
             if let viewModel = self as? SubmitClaimSingleSelectStep {
-                SubmitClaimSingleSelectResultView(viewModel: viewModel, animationNamespace: namespace)
+                SubmitClaimSingleSelectResultView(viewModel: viewModel)
             }
             //        else if let viewModel = self as? SubmitClaimFormStep {
             //            SubmitClaimFormView(viewModel: viewModel)
