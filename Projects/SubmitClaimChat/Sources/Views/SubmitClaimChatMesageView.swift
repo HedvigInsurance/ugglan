@@ -232,9 +232,11 @@ extension ClaimIntentStepHandler {
             //        } else
             if let viewModel = self as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimFileUploadStep {
+                SubmitClaimFileUploadResultView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimFormStep {
+                SubmitClaimFormResultView(viewModel: viewModel)
             }
-            //        } else if let viewModel = self as? SubmitClaimFileUploadStep {
-            //            SubmitClaimFileUploadView(viewModel: viewModel)
             //        } else if let viewModel = self as? SubmitClaimUnknownStep {
             //            SubmitClaimUnknownView(viewModel: viewModel)
             //        }
