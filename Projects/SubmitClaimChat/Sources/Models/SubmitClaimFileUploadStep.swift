@@ -23,14 +23,21 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
-        let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
-        let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
+        do {
+            fileUploadVm.fileGridViewModel.update(options: [.loading])
+            let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
+            let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
+            let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
 
-        guard let result else {
-            throw ClaimIntentError.invalidResponse
+            guard let result else {
+                throw ClaimIntentError.invalidResponse
+            }
+            fileUploadVm.fileGridViewModel.update(options: [])
+            return result
+        } catch {
+            fileUploadVm.fileGridViewModel.update(options: [.add, .delete])
+            throw error
         }
-        return result
     }
 }
 
