@@ -2,15 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimTaskView: View {
-    @ObservedObject var viewModel: SubmitClaimTaskStep
-    var body: some View {
-        if viewModel.error != nil {
-            hText(viewModel.taskModel.description)
-        }
-    }
-}
-
 struct SubmitClaimTaskResultView: View {
     @ObservedObject var viewModel: SubmitClaimTaskStep
     var body: some View {

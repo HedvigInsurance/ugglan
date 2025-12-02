@@ -201,8 +201,6 @@ extension ClaimIntentStepHandler {
                 SubmitClaimFormView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimSummaryStep {
                 SubmitClaimSummaryView(viewModel: viewModel)
-                //            } else if let viewModel = self as? SubmitClaimTaskStep {
-                //                SubmitClaimTaskView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimUnknownStep {
