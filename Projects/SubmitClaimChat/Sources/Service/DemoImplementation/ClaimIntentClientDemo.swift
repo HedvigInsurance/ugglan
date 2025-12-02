@@ -117,4 +117,148 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             )
         )
     }
+
+    var demoFileUploadModel = {
+        let model = SubmitClaimFileUploadStep(
+            claimIntent: .init(
+                currentStep: .init(
+                    content: .fileUpload(model: .init(uploadURI: "")),
+                    id: "id",
+                    text: "text to display"
+                ),
+                id: "id",
+                isSkippable: true,
+                isRegrettable: true
+            ),
+            service: ClaimIntentService()
+        ) { _ in
+        }
+        model.fileUploadVm.fileGridViewModel.files.append(
+            .init(
+                id: "id1",
+                size: 0,
+                mimeType: .PNG,
+                name: "name",
+                source: .url(
+                    url: URL(
+                        string:
+                            "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F2694x1200%2F017b95ad16%2Fhander-mobiltelefon-app-hedvig-2700.jpg&w=3840&q=70"
+                    )!,
+                    mimeType: .PNG
+                )
+            )
+        )
+        model.fileUploadVm.fileGridViewModel.files.append(
+            .init(
+                id: "id2",
+                size: 0,
+                mimeType: .PNG,
+                name: "name 2",
+                source: .url(
+                    url: URL(
+                        string:
+                            "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fa.storyblok.com%2Ff%2F165473%2F1080x1080%2Fa44c261f97%2Fbetyg-konsumenternas-hedvig.png&w=3840&q=75"
+                    )!,
+                    mimeType: .PNG
+                )
+            )
+        )
+        return model
+    }()
+    @MainActor
+    let demoFormModel = SubmitClaimFormStep(
+        claimIntent: .init(
+            currentStep: .init(
+                content: .form(
+                    model: .init(
+                        fields: [
+                            .init(
+                                defaultValues: [],
+                                id: "id1",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [],
+                                suffix: "test",
+                                title: "text",
+                                type: .text
+                            ),
+                            .init(
+                                defaultValues: [],
+                                id: "id2",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [],
+                                suffix: nil,
+                                title: "number",
+                                type: .number
+                            ),
+                            .init(
+                                defaultValues: [],
+                                id: "id3",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [
+                                    .init(title: "Opt 1", value: "opt1"),
+                                    .init(title: "Opt 2", value: "opt2"),
+                                ],
+                                suffix: nil,
+                                title: "binary",
+                                type: .binary
+                            ),
+                            .init(
+                                defaultValues: [],
+                                id: "id4",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [],
+                                suffix: nil,
+                                title: "date",
+                                type: .date
+                            ),
+                            .init(
+                                defaultValues: ["opt1"],
+                                id: "id5",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [
+                                    .init(title: "Opt 1", value: "opt1"),
+                                    .init(title: "Opt 2", value: "opt2"),
+                                ],
+                                suffix: nil,
+                                title: "single select",
+                                type: .singleSelect
+                            ),
+                            .init(
+                                defaultValues: [],
+                                id: "id6",
+                                isRequired: true,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [
+                                    .init(title: "Opt 1", value: "opt1"),
+                                    .init(title: "Opt 2", value: "opt2"),
+                                ],
+                                suffix: nil,
+                                title: "multi select",
+                                type: .multiSelect
+                            ),
+                        ]
+                    )
+                ),
+                id: "id1",
+                text: "text"
+            ),
+            id: "stepId",
+            isSkippable: true,
+            isRegrettable: true
+        ),
+        service: ClaimIntentService(),
+        mainHandler: { _ in
+        }
+    )
 }
