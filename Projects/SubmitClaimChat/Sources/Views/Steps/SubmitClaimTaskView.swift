@@ -28,9 +28,5 @@ struct SubmitClaimTaskResultView: View {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demo })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let model = ClaimIntentClientDemo().taskDemoStep
-    return VStack {
-        SubmitClaimTaskResultView(viewModel: model)
-        Spacer()
-        SubmitClaimTaskView(viewModel: model)
-    }
+    return SubmitClaimTaskResultView(viewModel: model)
 }
