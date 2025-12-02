@@ -12,12 +12,19 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     @Published var uploadProgress: Double = 0
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
+    @Published var textInput: String = ""
+    @Published var inputType: AudioRecordingStepType?
 
     enum RecordingState {
         case idle
         case recording
         case recorded
         case uploading
+    }
+
+    enum AudioRecordingStepType {
+        case audio
+        case text
     }
 
     required init(
@@ -33,34 +40,41 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        guard let audioFileURL else {
-            throw ClaimIntentError.invalidResponse
-        }
-        let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
-        let multipart = MultipartFormDataRequest(url: url)
-        let data = try Data(contentsOf: audioFileURL)
-        multipart.addDataField(
-            fieldName: "files",
-            fileName: audioFileURL.lastPathComponent,
-            data: data,
-            mimeType: "audio/m4a"
-        )
-        let response: FileUploadResponseModel = try await fileUploadClient.upload(
-            url: audioFileURL,
-            multipart: multipart
-        ) { [weak self] progress in
-            Task { @MainActor in
-                withAnimation {
-                    self?.uploadProgress = progress
+        let fileId: String? = try await {
+            if inputType == .text {
+                return nil
+            }
+            guard let audioFileURL else {
+                throw ClaimIntentError.invalidResponse
+            }
+            let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
+            let multipart = MultipartFormDataRequest(url: url)
+            let data = try Data(contentsOf: audioFileURL)
+            multipart.addDataField(
+                fieldName: "files",
+                fileName: audioFileURL.lastPathComponent,
+                data: data,
+                mimeType: "audio/m4a"
+            )
+            let response: FileUploadResponseModel = try await fileUploadClient.upload(
+                url: audioFileURL,
+                multipart: multipart
+            ) { [weak self] progress in
+                Task { @MainActor in
+                    withAnimation {
+                        self?.uploadProgress = progress
+                    }
                 }
             }
-        }
-        let fileId = response.fileIds.first!
+            return response.fileIds.first!
+        }()
+
+        let freeText = inputType == .text ? textInput : nil
 
         guard
             let result = try await service.claimIntentSubmitAudio(
                 fileId: fileId,
-                freeText: nil,
+                freeText: freeText,
                 stepId: claimIntent.currentStep.id
             )
         else {
