@@ -230,10 +230,10 @@ extension ClaimIntentStepHandler {
             //        } else
             if let viewModel = self as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimFormStep {
+                SubmitClaimFormResultView(viewModel: viewModel)
             }
-            //        else if let viewModel = self as? SubmitClaimFormStep {
-            //            SubmitClaimFormView(viewModel: viewModel)
-            //        } else if let viewModel = self as? SubmitClaimSummaryStep {
+            //        else if let viewModel = self as? SubmitClaimSummaryStep {
             //            SubmitClaimSummaryView(viewModel: viewModel)
             //        } else if let viewModel = self as? SubmitClaimTaskStep {
             //            SubmitClaimTaskView(viewModel: viewModel)
