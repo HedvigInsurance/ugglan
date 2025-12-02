@@ -221,7 +221,7 @@ extension ClaimIntentStepHandler {
 
     @ViewBuilder
     func resultView() -> some View {
-        if self.isStepExecuted {
+        if self.isStepExecuted || self is SubmitClaimTaskStep {
             if let viewModel = self as? SubmitClaimAudioStep {
                 SubmitClaimAudioResultView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimSingleSelectStep {
@@ -233,8 +233,6 @@ extension ClaimIntentStepHandler {
             } else if let viewModel = self as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
             }
-        } else if let viewModel = self as? SubmitClaimTaskStep {
-            SubmitClaimTaskResultView(viewModel: viewModel)
         }
     }
 }
