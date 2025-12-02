@@ -127,7 +127,7 @@ struct SubmitClaimAudioView: View {
 
     private func playRecordingButton(url: URL) -> some View {
         VStack(spacing: .padding12) {
-            TrackPlayerView(audioPlayer: audioPlayer, withoutBackground: true)
+            TrackPlayerView(audioPlayer: audioPlayer)
                 .onAppear {
                     minutes = 0; seconds = 0
                 }
@@ -314,7 +314,7 @@ struct SubmitClaimAudioResultView: View {
     }
 
     private func playRecordingButton(url: URL) -> some View {
-        TrackPlayerView(audioPlayer: audioPlayer, withoutBackground: true)
+        TrackPlayerView(audioPlayer: audioPlayer)
             .padding(.vertical, -.padding16)
             .padding(.horizontal, -.padding16)
             .hPillStyle(color: .grey)
