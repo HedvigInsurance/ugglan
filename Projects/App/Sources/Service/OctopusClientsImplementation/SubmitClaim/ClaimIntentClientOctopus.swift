@@ -27,7 +27,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         let input = OctopusGraphQL.ClaimIntentSubmitAudioInput(
             stepId: stepId,
             audioFileId: GraphQLNullable(optionalValue: fileId),
-            freeText: GraphQLNullable(optionalValue: nil)
+            freeText: GraphQLNullable(optionalValue: freeText)
         )
 
         let mutation = OctopusGraphQL.ClaimIntentSubmitAudioMutation(input: input)
