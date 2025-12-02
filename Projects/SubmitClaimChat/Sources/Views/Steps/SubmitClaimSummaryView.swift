@@ -17,7 +17,7 @@ struct SubmitClaimSummaryView: View {
                 }
             }
         }
-        .sectionContainerStyle(.white)
+        .sectionContainerStyle(.negative)
         .hWithoutHorizontalPadding([.section])
     }
 

@@ -187,12 +187,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
             if !self.allSteps.isEmpty {
                 currentStep = nil
             }
-            switch handler.claimIntent.currentStep.content {
-            case .summary:
-                allSteps.removeAll()
-            default:
-                break
-            }
             self.allSteps.append(handler)
             try await Task.sleep(seconds: 1)
             currentStep = handler

@@ -7,18 +7,19 @@ struct SubmitClaimChatMesageView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            HStack {
-                VStack(alignment: .leading, spacing: .padding8) {
-                    TextAnimation(
-                        text: viewModel.claimIntent.currentStep.text,
-                        showText: viewModel.claimIntent.currentStep.showText
-                    )
-                }
+            if viewModel.showText {
+                HStack {
+                    VStack(alignment: .leading, spacing: .padding8) {
+                        TextAnimation(
+                            text: viewModel.claimIntent.currentStep.text
+                        )
+                    }
 
-                .fixedSize(horizontal: false, vertical: true)
-                Spacer()
-                if viewModel.isRegrettable && !viewModel.isEnabled {
-                    regretButton
+                    .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                    if viewModel.isRegrettable && !viewModel.isEnabled {
+                        regretButton
+                    }
                 }
             }
 
@@ -95,29 +96,26 @@ struct TextAnimation: View {
     let text: String
     @State private var visibleCharacters: Int = 0
     @State private var showDot = true
-    var showText: Bool
 
     var body: some View {
-        if showText {
-            ZStack(alignment: .leading) {
-                if showDot {
-                    Circle()
-                        .fill(hSignalColor.Green.element)
-                        .frame(width: 14, height: 14)
-                        .transition(.scale.combined(with: .opacity))
-                }
-                if #available(iOS 18.0, *) {
-                    hText(text)
-                        .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
-                        .onAppear {
-                            animateText()
-                        }
-                } else {
-                    Text(String(text.prefix(visibleCharacters)))
-                        .onAppear {
-                            animateText()
-                        }
-                }
+        ZStack(alignment: .leading) {
+            if showDot {
+                Circle()
+                    .fill(hSignalColor.Green.element)
+                    .frame(width: 14, height: 14)
+                    .transition(.scale.combined(with: .opacity))
+            }
+            if #available(iOS 18.0, *) {
+                hText(text)
+                    .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
+                    .onAppear {
+                        animateText()
+                    }
+            } else {
+                Text(String(text.prefix(visibleCharacters)))
+                    .onAppear {
+                        animateText()
+                    }
             }
         }
     }
@@ -174,7 +172,7 @@ struct AnimatedTextRenderer: TextRenderer {
 }
 
 #Preview {
-    TextAnimation(text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED", showText: true)
+    TextAnimation(text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED")
 }
 
 extension ClaimIntentStepHandler {
