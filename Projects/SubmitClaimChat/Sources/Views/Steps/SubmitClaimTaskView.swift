@@ -1,9 +1,32 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
-struct SubmitClaimTaskView: View {
+struct SubmitClaimTaskResultView: View {
     @ObservedObject var viewModel: SubmitClaimTaskStep
     var body: some View {
-        hText(viewModel.taskModel.description)
+        HStack {
+            hCoreUIAssets.checkmark.view
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundColor(hSignalColor.Green.element)
+                .opacity(viewModel.taskModel.isCompleted ? 1 : 0)
+                .overlay {
+                    if !viewModel.taskModel.isCompleted {
+                        ProgressView()
+                            .tint(hSignalColor.Green.element)
+                    }
+                }
+            hText(viewModel.taskModel.description, style: .label)
+        }
+        .hPillStyle(color: .grey)
     }
+}
+
+#Preview {
+    let demo = ClaimIntentClientDemo()
+    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demo })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    let model = ClaimIntentClientDemo().taskDemoStep
+    return SubmitClaimTaskResultView(viewModel: model)
 }

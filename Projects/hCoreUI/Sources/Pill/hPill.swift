@@ -32,68 +32,77 @@ public struct hPill: View {
             EmptyView()
         }
     }
+}
 
-    struct PillModifier: ViewModifier {
-        let color: PillColor
-        let colorLevel: PillColor.PillColorLevel
-        @Environment(\.hFieldSize) var fieldSize
-        func body(content: Content) -> some View {
-            content
-                .padding(.horizontal, getHorizontalPadding)
-                .padding(.top, getTopPadding)
-                .padding(.bottom, getBottomPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
-                        .fill(color.pillBackgroundColor(level: colorLevel))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
-                        .stroke(hBorderColor.primary, lineWidth: 1)
-                )
+extension View {
+    public func hPillStyle(
+        color: PillColor,
+        colorLevel: PillColor.PillColorLevel = .one
+    ) -> some View {
+        self.modifier(PillModifier(color: color, colorLevel: colorLevel))
+    }
+}
+
+fileprivate struct PillModifier: ViewModifier {
+    let color: PillColor
+    let colorLevel: PillColor.PillColorLevel
+    @Environment(\.hFieldSize) var fieldSize
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, getHorizontalPadding)
+            .padding(.top, getTopPadding)
+            .padding(.bottom, getBottomPadding)
+            .background(
+                RoundedRectangle(cornerRadius: getCornerRadius)
+                    .fill(color.pillBackgroundColor(level: colorLevel))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: getCornerRadius)
+                    .stroke(hBorderColor.primary, lineWidth: 1)
+            )
+    }
+
+    private var getHorizontalPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return .padding6
+        case .medium:
+            return .padding10
+        case .large:
+            return .padding12
         }
+    }
 
-        private var getHorizontalPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return .padding6
-            case .medium:
-                return .padding10
-            case .large:
-                return .padding12
-            }
+    private var getTopPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return 3
+        case .medium:
+            return 6.5
+        case .large:
+            return 7
         }
+    }
 
-        private var getTopPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return 3
-            case .medium:
-                return 6.5
-            case .large:
-                return 7
-            }
+    private var getBottomPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return 3
+        case .medium:
+            return 7.5
+        case .large:
+            return 9
         }
+    }
 
-        private var getBottomPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return 3
-            case .medium:
-                return 7.5
-            case .large:
-                return 9
-            }
-        }
-
-        private var getCornerRadius: CGFloat {
-            switch fieldSize {
-            case .small:
-                return .cornerRadiusXS
-            case .medium:
-                return .cornerRadiusS
-            case .large:
-                return .cornerRadiusM
-            }
+    private var getCornerRadius: CGFloat {
+        switch fieldSize {
+        case .small:
+            return .cornerRadiusXS
+        case .medium:
+            return .cornerRadiusS
+        case .large:
+            return .cornerRadiusM
         }
     }
 }
