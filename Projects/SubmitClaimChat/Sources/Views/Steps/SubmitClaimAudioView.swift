@@ -50,26 +50,6 @@ struct SubmitClaimAudioView: View {
                         textElements
                     }
                 } else {
-                    hButton(
-                        .large,
-                        .primary,
-                        content: .init(title: "Record voice note"),
-                        {
-                            withAnimation {
-                                viewModel.inputType = .audio
-                            }
-                        }
-                    )
-                    hButton(
-                        .large,
-                        .ghost,
-                        content: .init(title: "Describe with text"),
-                        {
-                            withAnimation {
-                                viewModel.inputType = .text
-                            }
-                        }
-                    )
                 }
             }
             .environmentObject(audioRecorder)
@@ -77,30 +57,57 @@ struct SubmitClaimAudioView: View {
         .sectionContainerStyle(.transparent)
     }
 
-    private var textElements: some View {
-        VStack(spacing: .padding16) {
-            textField
+    private var selectInputType: some View {
+        VStack(spacing: .padding4) {
             hButton(
                 .large,
                 .primary,
-                content: .init(title: L10n.saveAndContinueButtonLabel),
-                {
-                    UIApplication.dismissKeyboard()
-                    Task {
-                        await viewModel.submitResponse()
-                    }
-                }
-            )
-            hButton(
-                .large,
-                .ghost,
-                content: .init(title: L10n.claimsUseAudioRecording),
+                content: .init(title: "Record voice note"),
                 {
                     withAnimation {
                         viewModel.inputType = .audio
                     }
                 }
             )
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: "Describe with text"),
+                {
+                    withAnimation {
+                        viewModel.inputType = .text
+                    }
+                }
+            )
+        }
+    }
+
+    private var textElements: some View {
+        VStack(spacing: .padding16) {
+            textField
+            VStack(spacing: .padding4) {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        UIApplication.dismissKeyboard()
+                        Task {
+                            await viewModel.submitResponse()
+                        }
+                    }
+                )
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.claimsUseAudioRecording),
+                    {
+                        withAnimation {
+                            viewModel.inputType = .audio
+                        }
+                    }
+                )
+            }
         }
     }
 
