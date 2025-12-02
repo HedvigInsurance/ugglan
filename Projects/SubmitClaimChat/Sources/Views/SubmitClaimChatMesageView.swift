@@ -238,15 +238,17 @@ extension ClaimIntentStepHandler {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimSummaryStep {
                 SubmitClaimSummaryView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimFileUploadStep {
+                SubmitClaimFileUploadResultView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimFormStep {
+                SubmitClaimFormResultView(viewModel: viewModel)
             }
-            //        else if let viewModel = self as? SubmitClaimFormStep {
-            //            SubmitClaimFormView(viewModel: viewModel)
-            //        } else if let viewModel = self as? SubmitClaimSummaryStep {
+            //        else if let viewModel = self as? SubmitClaimSummaryStep {
             //            SubmitClaimSummaryView(viewModel: viewModel)
             //        } else if let viewModel = self as? SubmitClaimTaskStep {
             //            SubmitClaimTaskView(viewModel: viewModel)
-            //        } else if let viewModel = self as? SubmitClaimFileUploadStep {
-            //            SubmitClaimFileUploadView(viewModel: viewModel)
+            //        }
+
             //        } else if let viewModel = self as? SubmitClaimUnknownStep {
             //            SubmitClaimUnknownView(viewModel: viewModel)
             //        }
