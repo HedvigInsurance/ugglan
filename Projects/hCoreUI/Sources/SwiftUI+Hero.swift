@@ -7,16 +7,19 @@ public struct HeroAnimationWrapper<Content: View>: UIViewRepresentable {
     private let id: String
     private let cornerRadius: CGFloat
     private let enableTransition: Bool
+    private let color: UIColor
     public init(
         id: String,
         cornerRadius: CGFloat = .cornerRadiusL,
         enableTransition: Bool = true,
+        color: UIColor,
         content: @escaping () -> Content
     ) {
         self.content = content
         self.id = id
         self.enableTransition = enableTransition
         self.cornerRadius = cornerRadius
+        self.color = color
     }
 
     public func makeUIView(context _: Context) -> UIView {
@@ -31,8 +34,7 @@ public struct HeroAnimationWrapper<Content: View>: UIViewRepresentable {
     }
 
     public func updateUIView(_ uiView: UIView, context _: Context) {
-        uiView.backgroundColor = hSurfaceColor.Opaque.primary.colorFor(.init(.init(colorScheme))!, .base).color
-            .uiColor()
+        uiView.backgroundColor = color
     }
 }
 

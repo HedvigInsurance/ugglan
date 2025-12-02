@@ -35,20 +35,94 @@ struct SubmitClaimAudioView: View {
 
     public var body: some View {
         hSection {
-            ZStack(alignment: .bottom) {
-                Group {
-                    if let url = audioRecorder.recording?.url {
-                        playRecordingButton(url: url)
-                    } else if let url = viewModel.audioFileURL {
-                        playRecordingButton(url: url)
-                    } else {
-                        recordNewButton
+            Group {
+                if let inputType = viewModel.inputType {
+                    switch inputType {
+                    case .audio:
+                        if let url = audioRecorder.recording?.url {
+                            playRecordingButton(url: url)
+                        } else if let url = viewModel.audioFileURL {
+                            playRecordingButton(url: url)
+                        } else {
+                            recordNewButton
+                        }
+                    case .text:
+                        textElements
                     }
+                } else {
+                    selectInputType
                 }
             }
             .environmentObject(audioRecorder)
         }
         .sectionContainerStyle(.transparent)
+    }
+
+    private var selectInputType: some View {
+        VStack(spacing: .padding4) {
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: "Record voice note"),
+                {
+                    withAnimation {
+                        viewModel.inputType = .audio
+                    }
+                }
+            )
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: "Describe with text"),
+                {
+                    withAnimation {
+                        viewModel.inputType = .text
+                    }
+                }
+            )
+        }
+    }
+
+    private var textElements: some View {
+        VStack(spacing: .padding16) {
+            textField
+            VStack(spacing: .padding4) {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        UIApplication.dismissKeyboard()
+                        Task {
+                            await viewModel.submitResponse()
+                        }
+                    }
+                )
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.claimsUseAudioRecording),
+                    {
+                        withAnimation {
+                            viewModel.inputType = .audio
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var textField: some View {
+        hTextView(
+            selectedValue: viewModel.textInput,
+            placeholder: L10n.claimsTextInputPlaceholder,
+            popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
+            maxCharacters: 2000,
+            enableTransition: false
+        ) { text in
+            viewModel.textInput = text
+        }
     }
 
     private func playRecordingButton(url: URL) -> some View {
@@ -57,35 +131,31 @@ struct SubmitClaimAudioView: View {
                 .onAppear {
                     minutes = 0; seconds = 0
                 }
-
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.saveAndContinueButtonLabel),
-                {
-                    Task {
-                        do {
+            VStack(spacing: .padding4) {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        Task {
                             viewModel.audioFileURL = url
                             await viewModel.submitResponse()
-                            try FileManager.default.removeItem(at: url)
-                        } catch {
                         }
                     }
-                }
-            )
-            .disabled(audioRecordingVm.viewState == .loading)
-            .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-            .accessibilityFocused($saveAndContinueFocused)
-            .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
+                )
+                .disabled(audioRecordingVm.viewState == .loading)
+                .hButtonIsLoading(audioRecordingVm.viewState == .loading)
+                .accessibilityFocused($saveAndContinueFocused)
+                .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
 
-            hButton(
-                .large,
-                .ghost,
-                content: .init(title: L10n.embarkRecordAgain),
-                { withAnimation(.spring()) { audioRecorder.restart() } }
-            )
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.embarkRecordAgain),
+                    { withAnimation(.spring()) { audioRecorder.restart() } }
+                )
+            }
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
         .onAppear { audioPlayer.url = url }
     }
 
@@ -95,12 +165,21 @@ struct SubmitClaimAudioView: View {
                 handleRecordTap()
             }
             .frame(height: audioRecorder.isRecording ? 144 : 72)
-            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300)))
 
             if !audioRecorder.isRecording {
                 VStack(spacing: .padding4) {
                     hText(L10n.claimsStartRecordingLabel, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(title: L10n.claimsUseTextInstead),
+                        {
+                            withAnimation {
+                                viewModel.inputType = .text
+                            }
+                        }
+                    )
                 }
             } else {
                 hText(String(format: "%02d:%02d", minutes, seconds), style: .body1)
@@ -120,7 +199,6 @@ struct SubmitClaimAudioView: View {
                 }
             }
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.updatesFrequently)
         .accessibilityHint(audioRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
@@ -204,5 +282,42 @@ extension AudioRecorder {
 
         withAnimation(.spring()) { self.toggleRecording() }
         return .success
+    }
+}
+
+struct SubmitClaimAudioResultView: View {
+    @ObservedObject var viewModel: SubmitClaimAudioStep
+    @StateObject var audioPlayer: AudioPlayer = AudioPlayer(url: nil)
+
+    init(viewModel: SubmitClaimAudioStep) {
+        self.viewModel = viewModel
+    }
+
+    var body: some View {
+        if viewModel.inputType == .text {
+            hTextView(
+                selectedValue: viewModel.textInput,
+                placeholder: L10n.claimsTextInputPlaceholder,
+                popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
+                maxCharacters: 2000,
+                enableTransition: false,
+                enabled: false,
+                color: UIColor(dynamic: { trait in
+                    let style = trait.userInterfaceStyle
+                    return hSurfaceColor.Translucent.primary.colorFor(style == .dark ? .dark : .light, .base).color
+                        .uiColor()
+                })
+            )
+        } else if viewModel.inputType == .audio, let url = viewModel.audioFileURL {
+            playRecordingButton(url: url)
+        }
+    }
+
+    private func playRecordingButton(url: URL) -> some View {
+        TrackPlayerView(audioPlayer: audioPlayer, withoutBackground: true)
+            .padding(.vertical, -.padding16)
+            .padding(.horizontal, -.padding16)
+            .hPillStyle(color: .grey)
+            .onAppear { audioPlayer.url = url }
     }
 }

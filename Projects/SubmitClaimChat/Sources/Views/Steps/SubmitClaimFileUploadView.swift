@@ -22,7 +22,7 @@ struct SubmitClaimFileUploadView: View {
                 fileUploadVm.addFiles(with: files)
             }
     }
-    
+
     private var showFilesView: some View {
         Group {
             if fileUploadVm.hasFiles {
@@ -64,7 +64,7 @@ struct SubmitClaimFileUploadView: View {
                     hButton(
                         .large,
                         .primary,
-                        content: .init(title:  L10n.ClaimStatusDetail.addFiles),
+                        content: .init(title: L10n.ClaimStatusDetail.addFiles),
                         {
                             showFileSourcePicker = true
                         }
@@ -100,7 +100,6 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 #Preview {
     SubmitClaimFileUploadView(viewModel: ClaimIntentClientDemo().demoFileUploadModel)
 }
-
 
 struct SubmitClaimFileUploadResultView: View {
     let viewModel: SubmitClaimFileUploadStep
