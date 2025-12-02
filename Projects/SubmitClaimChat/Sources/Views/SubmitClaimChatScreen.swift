@@ -6,6 +6,8 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+
     public init() {}
 
     public var body: some View {
@@ -50,8 +52,10 @@ public struct SubmitClaimChatScreen: View {
                     .padding(.horizontal, .padding12)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                    Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
-                    Color.clear.frame(height: viewModel.completedStepsHeight)
+                    if verticalSizeClass == .regular {
+                        Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
+                        Color.clear.frame(height: viewModel.completedStepsHeight)
+                    }
                 }
                 .hFormContentPosition(.top)
                 .hFormBottomBackgroundColor(.aiPoweredGradient)
@@ -63,12 +67,25 @@ public struct SubmitClaimChatScreen: View {
                 .onChange(of: proxy.size) { value in
                     viewModel.scrollViewHeight = value.height
                 }
+                .hFormAttachToBottom {
+                    if verticalSizeClass == .compact {
+                        ZStack {
+                            if let currentStep = viewModel.currentStep {
+                                currentStep
+                                    .stepView()
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                            }
+                        }
+                    }
+                }
             }
-            ZStack {
-                if let currentStep = viewModel.currentStep {
-                    currentStep
-                        .stepView()
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+            if verticalSizeClass == .regular {
+                ZStack {
+                    if let currentStep = viewModel.currentStep {
+                        currentStep
+                            .stepView()
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
                 }
             }
         }
