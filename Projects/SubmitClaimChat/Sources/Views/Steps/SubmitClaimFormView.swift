@@ -271,10 +271,10 @@ struct SubmitClaimFormResultView: View {
         if viewModel.isStepExecuted {
             VStack(alignment: .trailing, spacing: .padding4) {
                 ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
-                    HStack(alignment: .center, spacing: .padding8) {
+                    VStack(alignment: .trailing, spacing: .padding2) {
                         hText(item.0, style: .label)
                             .foregroundColor(hTextColor.Opaque.accordion)
-                        hPill(text: item.1, color: .grey)
+                        hPill(text: item.skipped ? "Skipped" : item.1, color: .grey)
                     }
                 }
             }
