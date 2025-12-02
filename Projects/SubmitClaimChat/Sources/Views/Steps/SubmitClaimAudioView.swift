@@ -67,7 +67,6 @@ struct SubmitClaimAudioView: View {
                         do {
                             viewModel.audioFileURL = url
                             await viewModel.submitResponse()
-                            try FileManager.default.removeItem(at: url)
                         } catch {
                         }
                     }
@@ -204,5 +203,29 @@ extension AudioRecorder {
 
         withAnimation(.spring()) { self.toggleRecording() }
         return .success
+    }
+}
+
+struct SubmitClaimAudioResultView: View {
+    @ObservedObject var viewModel: SubmitClaimAudioStep
+    @StateObject var audioPlayer: AudioPlayer = AudioPlayer(url: nil)
+
+    init(viewModel: SubmitClaimAudioStep) {
+        self.viewModel = viewModel
+    }
+
+    var body: some View {
+        if let url = viewModel.audioFileURL {
+            playRecordingButton(url: url)
+        }
+    }
+
+    private func playRecordingButton(url: URL) -> some View {
+        TrackPlayerView(audioPlayer: audioPlayer, withoutBackground: true)
+            .padding(.vertical, -.padding16)
+            .padding(.horizontal, -.padding16)
+            .hPillStyle(color: .grey)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .onAppear { audioPlayer.url = url }
     }
 }

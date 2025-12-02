@@ -26,7 +26,7 @@ struct SubmitClaimTaskResultView: View {
                             .tint(hSignalColor.Green.element)
                     }
                 }
-            hText(viewModel.claimIntent.currentStep.text, style: .label)
+            hText(viewModel.taskModel.description, style: .label)
         }
         .hPillStyle(color: .grey)
     }

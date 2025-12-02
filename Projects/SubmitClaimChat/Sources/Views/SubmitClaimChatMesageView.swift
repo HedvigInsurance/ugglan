@@ -7,17 +7,15 @@ struct SubmitClaimChatMesageView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            if !(viewModel is SubmitClaimTaskStep) {
-                HStack {
-                    VStack(alignment: .leading, spacing: .padding8) {
-                        TextAnimation(text: viewModel.claimIntent.currentStep.text)
-                    }
+            HStack {
+                VStack(alignment: .leading, spacing: .padding8) {
+                    TextAnimation(text: viewModel.claimIntent.currentStep.text)
+                }
 
-                    .fixedSize(horizontal: false, vertical: true)
-                    Spacer()
-                    if viewModel.isRegrettable && !viewModel.isEnabled {
-                        regretButton
-                    }
+                .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                if viewModel.isRegrettable && !viewModel.isEnabled {
+                    regretButton
                 }
             }
 
@@ -28,7 +26,6 @@ struct SubmitClaimChatMesageView: View {
                         maxWidth: viewModel.maxWidth,
                         alignment: viewModel.alignment
                     )
-                    .disabled(!viewModel.isEnabled)
                     .hButtonIsLoading(viewModel.isLoading)
                     .trackError(for: $viewModel.error)
                     .hStateViewButtonConfig(
@@ -227,20 +224,15 @@ extension ClaimIntentStepHandler {
     @ViewBuilder
     func resultView() -> some View {
         if self.isStepExecuted {
-            //        if let viewModel = self as? SubmitClaimAudioStep {
-            //            SubmitClaimAudioView(viewModel: viewModel)
-            //        } else
-            if let viewModel = self as? SubmitClaimSingleSelectStep {
+            if let viewModel = self as? SubmitClaimAudioStep {
+                SubmitClaimAudioResultView(viewModel: viewModel)
+            } else if let viewModel = self as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadResultView(viewModel: viewModel)
             } else if let viewModel = self as? SubmitClaimFormStep {
                 SubmitClaimFormResultView(viewModel: viewModel)
-            }
-            //        } else if let viewModel = self as? SubmitClaimUnknownStep {
-            //            SubmitClaimUnknownView(viewModel: viewModel)
-            //        }
-            else if let viewModel = self as? SubmitClaimTaskStep {
+            } else if let viewModel = self as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
             }
         } else if let viewModel = self as? SubmitClaimTaskStep {

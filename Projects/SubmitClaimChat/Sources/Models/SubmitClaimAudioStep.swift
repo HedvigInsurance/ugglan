@@ -68,6 +68,12 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         }
         return result
     }
+
+    deinit {
+        if let audioFileURL = audioFileURL {
+            try? FileManager.default.removeItem(at: audioFileURL)
+        }
+    }
 }
 
 struct FileUploadResponseModel: Codable, Sendable {
