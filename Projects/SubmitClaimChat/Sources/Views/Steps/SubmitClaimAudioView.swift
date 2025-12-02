@@ -50,6 +50,7 @@ struct SubmitClaimAudioView: View {
                         textElements
                     }
                 } else {
+                    selectInputType
                 }
             }
             .environmentObject(audioRecorder)
@@ -130,29 +131,30 @@ struct SubmitClaimAudioView: View {
                 .onAppear {
                     minutes = 0; seconds = 0
                 }
-
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.saveAndContinueButtonLabel),
-                {
-                    Task {
-                        viewModel.audioFileURL = url
-                        await viewModel.submitResponse()
+            VStack(spacing: .padding4) {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        Task {
+                            viewModel.audioFileURL = url
+                            await viewModel.submitResponse()
+                        }
                     }
-                }
-            )
-            .disabled(audioRecordingVm.viewState == .loading)
-            .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-            .accessibilityFocused($saveAndContinueFocused)
-            .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
+                )
+                .disabled(audioRecordingVm.viewState == .loading)
+                .hButtonIsLoading(audioRecordingVm.viewState == .loading)
+                .accessibilityFocused($saveAndContinueFocused)
+                .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
 
-            hButton(
-                .large,
-                .ghost,
-                content: .init(title: L10n.embarkRecordAgain),
-                { withAnimation(.spring()) { audioRecorder.restart() } }
-            )
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.embarkRecordAgain),
+                    { withAnimation(.spring()) { audioRecorder.restart() } }
+                )
+            }
         }
         .onAppear { audioPlayer.url = url }
     }
