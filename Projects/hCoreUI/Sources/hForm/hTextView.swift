@@ -135,7 +135,7 @@ public struct hTextView: View {
         if enableTransition {
             vc.enableHero()
         }
-        vc.view.backgroundColor = .orange  //hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+        vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
 
         continueAction.execute = { [weak vc] in
             selectedValue = value
@@ -228,104 +228,102 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     }
 
     public var body: some View {
-        hForm {
-            VStack(spacing: 8) {
-                hSection {
-                    VStack(spacing: 0) {
-                        hSection {
-                            HStack {
-                                hText(title, style: .body1)
-                                Spacer()
-                                Button(
-                                    action: {
-                                        cancelAction.execute()
-                                    },
-                                    label: {
-                                        hCoreUIAssets.close.view
-                                            .resizable()
-                                            .frame(width: 24, height: 24)
-                                            .padding(12)
-                                            .foregroundColor(hFillColor.Opaque.primary)
-                                    }
-                                )
-                            }
+        VStack(spacing: 8) {
+            hSection {
+                VStack(spacing: 0) {
+                    hSection {
+                        HStack {
+                            hText(title, style: .body1)
+                            Spacer()
+                            Button(
+                                action: {
+                                    cancelAction.execute()
+                                },
+                                label: {
+                                    hCoreUIAssets.close.view
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                        .padding(12)
+                                        .foregroundColor(hFillColor.Opaque.primary)
+                                }
+                            )
                         }
-                        .padding(.bottom, -.padding8)
-                        .sectionContainerStyle(.transparent)
-                        hSection {
-                            SwiftUITextView(
-                                placeholder: placeholder,
-                                text: $value,
-                                becomeFirstResponder: true,
-                                disabled: false,
-                                height: $height,
-                                width: .constant(0),
-                                inEdit: $inEdit,
+                    }
+                    .padding(.bottom, -.padding8)
+                    .sectionContainerStyle(.transparent)
+                    hSection {
+                        SwiftUITextView(
+                            placeholder: placeholder,
+                            text: $value,
+                            becomeFirstResponder: true,
+                            disabled: false,
+                            height: $height,
+                            width: .constant(0),
+                            inEdit: $inEdit,
+                            enableTransition: enableTransition,
+                            color: color
+                        )
+                        .padding(.leading, -4)
+                        .frame(maxHeight: max(height, 100))
+                        .frame(minHeight: 100)
+                    }
+                    .sectionContainerStyle(.transparent)
+                    Spacer()
+                    hSection {
+                        HStack {
+                            Spacer()
+                            HeroAnimationWrapper(
+                                id: "counter",
+                                cornerRadius: 0,
                                 enableTransition: enableTransition,
                                 color: color
-                            )
-                            .padding(.leading, -4)
-                            .frame(maxHeight: max(height, 100))
-                            .frame(minHeight: 100)
-                        }
-                        .sectionContainerStyle(.transparent)
-                        Spacer()
-                        hSection {
-                            HStack {
-                                Spacer()
-                                HeroAnimationWrapper(
-                                    id: "counter",
-                                    cornerRadius: 0,
-                                    enableTransition: enableTransition,
-                                    color: color
-                                ) {
-                                    HStack(spacing: .padding4) {
-                                        Spacer()
-                                        if value.count > maxCharacters {
-                                            hCoreUIAssets.warningTriangleFilled.view
-                                                .resizable()
-                                                .frame(width: 20, height: 20)
-                                                .foregroundColor(hSignalColor.Amber.element)
-                                        }
-                                        hText("\(value.count)/\(maxCharacters)", style: .label)
-                                            .foregroundColor(getTextColor)
+                            ) {
+                                HStack(spacing: .padding4) {
+                                    Spacer()
+                                    if value.count > maxCharacters {
+                                        hCoreUIAssets.warningTriangleFilled.view
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(hSignalColor.Amber.element)
                                     }
+                                    hText("\(value.count)/\(maxCharacters)", style: .label)
+                                        .foregroundColor(getTextColor)
                                 }
-                                .id(UUID().uuidString)
-                                .fixedSize()
                             }
+                            .id(UUID().uuidString)
+                            .fixedSize()
                         }
-                        .sectionContainerStyle(.transparent)
                     }
-                    .padding(.bottom, .padding16)
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.opaque)
-                .colorScheme(colorScheme)
-                hSection {
-                    HStack(spacing: .padding8) {
-                        hCancelButton {
-                            cancelAction.execute()
-                        }
-                        hButton(
-                            .medium,
-                            .primary,
-                            content: .init(title: L10n.generalSaveButton),
-                            {
-                                continueAction.execute()
-                            }
-                        )
-                        .disabled(value.count > maxCharacters)
-                    }
-                    .padding(.bottom, .padding8)
-                    .hButtonTakeFullWidth(true)
-                }
-                .sectionContainerStyle(.transparent)
+                .padding(.bottom, .padding16)
             }
-            .frame(
-                maxHeight: verticalSizeClass == .compact
-                    ? nil : UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom - keyboard
-            )
+            .sectionContainerStyle(.opaque)
+            .colorScheme(colorScheme)
+            hSection {
+                HStack(spacing: .padding8) {
+                    hCancelButton {
+                        cancelAction.execute()
+                    }
+                    hButton(
+                        .medium,
+                        .primary,
+                        content: .init(title: L10n.generalSaveButton),
+                        {
+                            continueAction.execute()
+                        }
+                    )
+                    .disabled(value.count > maxCharacters)
+                }
+                .padding(.bottom, .padding8)
+                .hButtonTakeFullWidth(true)
+            }
+            .sectionContainerStyle(.transparent)
         }
+        .frame(
+            maxHeight: verticalSizeClass == .compact
+                ? nil : UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom - keyboard
+        )
         .colorScheme(.dark)
         .ignoresSafeArea(verticalSizeClass == .compact ? [] : .keyboard, edges: .bottom)
         .onReceive(keyboardHeightPublisher) { newHeight in

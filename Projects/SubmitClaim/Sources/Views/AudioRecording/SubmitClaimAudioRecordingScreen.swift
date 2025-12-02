@@ -283,7 +283,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 placeholder: L10n.claimsTextInputPlaceholder,
                 popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
                 maxCharacters: 2000,
-                enableTransition: true
+                enableTransition: false
             ) { text in
                 inputText = text
                 inputTextError = nil
