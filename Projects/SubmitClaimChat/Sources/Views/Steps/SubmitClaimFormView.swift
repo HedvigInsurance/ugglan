@@ -271,8 +271,9 @@ struct SubmitClaimFormResultView: View {
         if viewModel.isStepExecuted {
             VStack(alignment: .trailing, spacing: .padding4) {
                 ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
-                    VStack(alignment: .trailing, spacing: 0) {
+                    HStack(alignment: .center, spacing: .padding8) {
                         hText(item.0, style: .label)
+                            .foregroundColor(hTextColor.Opaque.accordion)
                         hPill(text: item.1, color: .grey)
                     }
                 }
