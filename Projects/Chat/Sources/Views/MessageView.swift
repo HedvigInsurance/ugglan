@@ -39,21 +39,28 @@ struct MessageView: View {
     @ViewBuilder
     private var messageContent: some View {
         switch message.type {
-        case .text:
-            MarkdownView(
-                config: .init(
-                    text: message.trimmedText,
-                    fontStyle: .body1,
-                    color: message.textColor,
-                    linkColor: hTextColor.Opaque.primary,
-                    linkUnderlineStyle: .thick,
-                    maxWidth: 300,
-                    onUrlClicked: { url in
-                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                    }
+        case let .text(text, action):
+            VStack {
+                MarkdownView(
+                    config: .init(
+                        text: message.trimmedText,
+                        fontStyle: .body1,
+                        color: message.textColor,
+                        linkColor: hTextColor.Opaque.primary,
+                        linkUnderlineStyle: .thick,
+                        maxWidth: 300,
+                        onUrlClicked: { url in
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        }
+                    )
                 )
-            )
-            .hEnvironmentAccessibilityLabel(message.timeStampString)
+                .hEnvironmentAccessibilityLabel(message.timeStampString)
+                if let action {
+                    hButton(.large, .primary, content: .init(title: action.buttonTitle)) {
+                        NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+                    }
+                }
+            }
         case let .file(file):
             ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
                 .accessibilityLabel(accessilityLabel(for: message))

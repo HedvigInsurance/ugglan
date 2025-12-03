@@ -83,7 +83,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
 
     var trimmedText: String {
         switch type {
-        case let .text(text):
+        case let .text(text, _):
             return text.trimmingCharacters(in: .whitespacesAndNewlines)
         default:
             return ""
@@ -105,7 +105,7 @@ enum MessageStatus: Codable, Hashable, Sendable {
 }
 
 public enum MessageType: Codable, Hashable, Sendable {
-    case text(text: String)
+    case text(text: String, action: ActionMessage?)
     case file(file: File)
     case crossSell(url: URL)
     case deepLink(url: URL)
@@ -170,7 +170,7 @@ extension Message {
         }()
         let message: String = {
             switch type {
-            case let .text(text):
+            case let .text(text, _):
                 return text
             case let .file(file):
                 if file.mimeType.isImage {

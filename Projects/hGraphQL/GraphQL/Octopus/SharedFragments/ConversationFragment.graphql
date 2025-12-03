@@ -49,4 +49,8 @@ fragment ChatMessageFileFragment on ChatMessageFile {
 
 fragment ChatMessageTextFragment on ChatMessageText {
     text
+	actions {
+	  title
+	  url
+	}
 }
