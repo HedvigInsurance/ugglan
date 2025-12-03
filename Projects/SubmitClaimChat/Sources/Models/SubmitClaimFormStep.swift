@@ -58,7 +58,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         return result
     }
 
-    func getAllValuesToShow() -> [(String, String, skipped: Bool)] {
+    func getAllValuesToShow() -> [(String, String, Bool)] {
         formModel.fields
             .map { field in
                 let userEnteredValues = formValues[field.id]!.values
