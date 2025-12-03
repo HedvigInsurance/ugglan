@@ -23,14 +23,21 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
-        let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
-        let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
+        do {
+            fileUploadVm.fileGridViewModel.update(options: [.loading])
+            let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
+            let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
+            let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
 
-        guard let result else {
-            throw ClaimIntentError.invalidResponse
+            guard let result else {
+                throw ClaimIntentError.invalidResponse
+            }
+            fileUploadVm.fileGridViewModel.update(options: [])
+            return result
+        } catch {
+            fileUploadVm.fileGridViewModel.update(options: [.add, .delete])
+            throw error
         }
-        return result
     }
 }
 
@@ -51,7 +58,7 @@ public class FilesUploadViewModel: ObservableObject {
     @Inject private var uploadClient: hSubmitClaimFileUploadClient
     let fileGridViewModel: FileGridViewModel
     private var delayTimer: AnyCancellable?
-    private var initObservers = [AnyCancellable]()
+    private var cancellables = Set<AnyCancellable>()
 
     public init(
         model: FileUploadModel
@@ -81,12 +88,12 @@ public class FilesUploadViewModel: ObservableObject {
                     self?.hasFiles = !files.isEmpty
                 }
             }
-            .store(in: &initObservers)
+            .store(in: &cancellables)
 
         $isLoading.sink { [weak self] state in
             self?.fileGridViewModel.update(options: state ? [.loading] : [.add, .delete])
         }
-        .store(in: &initObservers)
+        .store(in: &cancellables)
     }
 
     func addFiles(with files: [File]) {
@@ -168,9 +175,9 @@ public class FilesUploadViewModel: ObservableObject {
                             url: url,
                             multipart: multipart
                         ) { [weak self] progress in
-                            DispatchQueue.main.async { [weak self] in
-                                self?.uploadProgress = progress
+                            DispatchQueue.main.async {
                                 guard let self = self else { return }
+                                self.uploadProgress = progress
                                 withAnimation {
                                     self.progress = min(self.uploadProgress, self.timerProgress)
                                 }
@@ -199,6 +206,8 @@ public class FilesUploadViewModel: ObservableObject {
                 return alreadyUploadedFiles
             }
         } catch let ex {
+            delayTimer?.cancel()
+            delayTimer = nil
             withAnimation {
                 isLoading = false
             }

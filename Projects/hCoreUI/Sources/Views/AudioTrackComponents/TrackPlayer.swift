@@ -3,14 +3,11 @@ import SwiftUI
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
     @State private var width: CGFloat = 0
-    let withoutBackground: Bool
 
     init(
-        audioPlayer: AudioPlayer,
-        withoutBackground: Bool = false
+        audioPlayer: AudioPlayer
     ) {
         self.audioPlayer = audioPlayer
-        self.withoutBackground = withoutBackground
     }
 
     @ViewBuilder var image: some View {
@@ -97,20 +94,11 @@ struct TrackPlayer: View {
             .frame(height: 64)
             .background(
                 RoundedRectangle(cornerRadius: .cornerRadiusL)
-                    .fill(backgroundColor)
+                    .fill(hSurfaceColor.Opaque.primary)
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()
             }
-        }
-    }
-
-    @hColorBuilder
-    var backgroundColor: some hColor {
-        if withoutBackground {
-            hBackgroundColor.clear
-        } else {
-            hSurfaceColor.Opaque.primary
         }
     }
 }

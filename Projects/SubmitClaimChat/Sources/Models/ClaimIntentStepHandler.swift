@@ -10,10 +10,12 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var sender: SubmitClaimChatMesageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
     var isRegrettable: Bool { claimIntent.isRegrettable }
+    var showText: Bool { claimIntent.currentStep.showText }
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
     @Published var error: Error?
+    @Published var isStepExecuted = false
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
@@ -42,14 +44,16 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             isEnabled = false
         }
         defer {
-            withAnimation {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 isEnabled = self.error != nil
                 isLoading = false
             }
         }
         do {
             let result = try await executeStep()
-
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isStepExecuted = true
+            }
             switch result {
             case let .intent(model):
                 mainHandler(.goToNext(claimIntent: model))

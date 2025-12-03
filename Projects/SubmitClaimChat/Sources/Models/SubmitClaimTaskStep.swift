@@ -1,8 +1,9 @@
 import SwiftUI
+import hCore
 
 final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     override var id: String { claimIntent.currentStep.id }
-    override var sender: SubmitClaimChatMesageSender { .hedvig }
+    override var sender: SubmitClaimChatMesageSender { .member }
     override var claimIntent: ClaimIntent {
         didSet {
             if case let .task(model) = claimIntent.currentStep.content {

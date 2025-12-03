@@ -1,15 +1,15 @@
 import SwiftUI
 import TagKit
+import hCore
 import hCoreUI
 
 struct SubmitClaimFormView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
-        VStack(spacing: .padding8) {
-            VStack(alignment: .leading, spacing: .padding8) {
-                ForEach(viewModel.formModel.fields, id: \.id) { field in
-                    hText(field.title)
-                    ZStack(alignment: .topLeading) {
+        hSection {
+            VStack(spacing: .padding8) {
+                VStack(alignment: .leading, spacing: .padding8) {
+                    ForEach(viewModel.formModel.fields, id: \.id) { field in
                         switch field.type {
                         case .date:
                             dateField(for: field)
@@ -26,39 +26,35 @@ struct SubmitClaimFormView: View {
                                 suffix: field.suffix
                             )
                         case .binary:
-                            FormBinaryView(vm: viewModel.getFormStepValue(for: field.id), options: field.options)
+                            FormBinaryView(vm: viewModel.getFormStepValue(for: field.id), field: field)
                         case .singleSelect:
                             singleSelectField(for: field)
                         case .multiSelect:
                             multiSelectField(for: field)
                         }
-
-                        if !field.defaultValues.isEmpty {
-                            AiFillSparkles()
-                                .offset(x: -9, y: -4)
-                        }
                     }
+                    .hWithoutHorizontalPadding([.section])
                 }
-                .hWithoutHorizontalPadding([.section])
-            }
-            if viewModel.isEnabled {
-                hButton(.medium, .primary, content: .init(title: "Send")) {
+                hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
                     Task {
                         await viewModel.submitResponse()
                     }
                 }
             }
         }
+        .sectionContainerStyle(.transparent)
         .detent(
             item: $viewModel.isDatePickerPresented,
             transitionType: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
+                .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
         .detent(
             item: $viewModel.isSelectItemPresented,
             transitionType: .detent(style: [.height])
         ) { [weak viewModel] model in
+            let title = viewModel?.claimIntent.currentStep.text ?? ""
             ItemPickerScreen<SingleSelectValue>(
                 config: .init(
                     items: model.values.map({ ($0, .init(title: $0.title)) }),
@@ -80,23 +76,19 @@ struct SubmitClaimFormView: View {
                 )
             )
             .hItemPickerAttributes(model.multiselect ? [] : [.singleSelect])
-            .hFormContentPosition(.compact)
-            .embededInNavigation(options: .largeNavigationBar, tracking: "")
+            .navigationTitle(title)
+            .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
     }
 
     func dateField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
-        hSection {
-            hRow {
-                let date = viewModel.formValues[field.id]
-                dropDownView(
-                    message: date?.values.first ?? field.title,
-                    fieldId: field.id
-                )
-            }
-        }
-        .onTapGesture {
-            if viewModel.isEnabled {
+        let selectedValue = viewModel.getFormStepValue(for: field.id)
+        return DropdownView(
+            value: selectedValue.value,
+            placeHolder: field.title
+        ) { [weak viewModel] in
+            guard let viewModel else { return }
+            if viewModel.isEnabled == true {
                 viewModel.dateForPicker = viewModel.formValues[field.id]?.values.first?.localDateToDate ?? Date()
                 viewModel.isDatePickerPresented = .init(
                     id: field.id,
@@ -177,17 +169,6 @@ struct SubmitClaimFormView: View {
         }
     }
 
-    func dropDownView(message: String, fieldId: String) -> some View {
-        HStack(alignment: .center, spacing: .padding4) {
-            hText(message)
-                .foregroundColor(dateColor(fieldId: fieldId))
-            if viewModel.isEnabled {
-                Spacer()
-                hCoreUIAssets.chevronDown.view
-            }
-        }
-    }
-
     @hColorBuilder
     func dateColor(fieldId: String) -> some hColor {
         let hasSelectedDate = !viewModel.getFormStepValue(for: fieldId).values.isEmpty
@@ -205,6 +186,12 @@ struct SubmitClaimFormView: View {
         } else {
             hTextColor.Opaque.secondary
         }
+    }
+}
+
+extension SubmitClaimFormView: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        .init(describing: SubmitClaimFormView.self)
     }
 }
 
@@ -227,16 +214,21 @@ struct FormNumberView: View {
 
 struct FormBinaryView: View {
     @ObservedObject var vm: FormStepValue
-    let options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption]
-
+    let field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
     var body: some View {
-        TagList(tags: options.compactMap({ $0.value })) { tag in
-            hPill(text: options.first(where: { $0.value == tag })?.title ?? "", color: vm.value == tag ? .green : .grey)
+        VStack(alignment: .leading, spacing: 0) {
+            hText(field.title)
+            TagList(tags: field.options.compactMap({ $0.value })) { tag in
+                hPill(
+                    text: field.options.first(where: { $0.value == tag })?.title ?? "",
+                    color: vm.value == tag ? .green : .grey
+                )
                 .onTapGesture {
                     withAnimation { [weak vm] in
                         vm?.value = tag
                     }
                 }
+            }
         }
     }
 }
@@ -258,24 +250,6 @@ struct FormTextView: View {
     }
 }
 
-struct AiFillSparkles: View {
-    @State private var isVisible = false
-    var body: some View {
-        Image(systemName: "sparkles")
-            .foregroundColor(hSignalColor.Amber.element)
-            .font(.system(size: 14))
-            .padding(.padding4)
-            .background(Circle().fill(hSignalColor.Amber.fill))
-            .scaleEffect(isVisible ? 1.0 : 0.5)
-            .opacity(isVisible ? 1.0 : 0.0)
-            // Animate both scale and opacity
-            .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 0), value: isVisible)
-            .onAppear {
-                isVisible = true
-            }
-    }
-}
-
 enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
     static var last: SubmitClaimChatFieldType {
         SubmitClaimChatFieldType.purchasePrice
@@ -289,4 +263,27 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
     }
 
     case purchasePrice
+}
+
+struct SubmitClaimFormResultView: View {
+    @ObservedObject var viewModel: SubmitClaimFormStep
+    var body: some View {
+        if viewModel.isStepExecuted {
+            VStack(alignment: .trailing, spacing: .padding4) {
+                ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
+                    HStack(alignment: .center, spacing: .padding8) {
+                        hText(item.0, style: .label)
+                            .foregroundColor(hTextColor.Opaque.accordion)
+                        hPill(text: item.1, color: .grey)
+                    }
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    SubmitClaimFormView(
+        viewModel: ClaimIntentClientDemo().demoFormModel
+    )
 }

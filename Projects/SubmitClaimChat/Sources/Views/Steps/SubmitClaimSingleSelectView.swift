@@ -4,24 +4,36 @@ import hCoreUI
 
 struct SubmitClaimSingleSelectView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
-
     public var body: some View {
-        TagList(tags: viewModel.model.options.compactMap({ $0.id })) { tag in
-            hPill(
-                text: viewModel.model.options.first(where: { $0.id == tag })?.title ?? "",
-                color: viewModel.selectedOption == tag ? .green : .grey
-            )
-            .onTapGesture {
-                withAnimation {
-                    viewModel.selectedOption = tag
+        hSection {
+            TagList(tags: viewModel.model.options.compactMap({ $0.id })) { tag in
+                hPill(
+                    text: viewModel.model.options.first(where: { $0.id == tag })?.title ?? "",
+                    color: .grey
+                )
+                .onTapGesture {
+                    withAnimation {
+                        viewModel.selectedOption = tag
+                        Task {
+                            await viewModel.submitResponse()
+                        }
+                    }
                 }
             }
         }
-        hContinueButton {
-            Task {
-                await viewModel.submitResponse()
-            }
+        .sectionContainerStyle(.transparent)
+    }
+}
+
+struct SubmitClaimSingleSelectResultView: View {
+    @ObservedObject var viewModel: SubmitClaimSingleSelectStep
+    var body: some View {
+        if let tag = viewModel.selectedOption, let text = viewModel.model.options.first(where: { $0.id == tag })?.title
+        {
+            hPill(
+                text: text,
+                color: .grey
+            )
         }
-        .disabled(viewModel.selectedOption == nil)
     }
 }

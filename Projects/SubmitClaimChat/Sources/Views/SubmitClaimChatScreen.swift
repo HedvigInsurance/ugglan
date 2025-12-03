@@ -6,6 +6,7 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     public init() {}
 
@@ -17,30 +18,78 @@ public struct SubmitClaimChatScreen: View {
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .scrollToBottom(
-                    proxy: proxy,
-                    id: viewModel.allSteps.last?.claimIntent.currentStep.id,
-                    count: viewModel.allSteps.count
-                )
+                .onChange(of: viewModel.scrollToStepId) { scrollToStepId in
+                    withAnimation {
+                        proxy.scrollTo("result_\(scrollToStepId)", anchor: .top)
+                    }
+                }
         }
     }
 
     private var mainContent: some View {
-        hForm {
-            VStack(alignment: .leading, spacing: .padding16) {
-                ForEach(viewModel.allSteps, id: \.id) { step in
-                    SubmitClaimChatMesageView(viewModel: step)
+        ZStack(alignment: .bottom) {
+            GeometryReader { proxy in
+                hForm {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(viewModel.allSteps, id: \.id) { step in
+                            SubmitClaimChatMesageView(viewModel: step)
+                                .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
+                                .background {
+                                    GeometryReader { [weak step] proxy2 in
+                                        Color.clear
+                                            .onAppear {
+                                                viewModel.contentHeight[step?.id ?? ""] = proxy2.size.height
+                                            }
+                                            .onChange(of: proxy2.size) { value in
+                                                viewModel.contentHeight[step?.id ?? ""] = value.height
+                                            }
+                                    }
+                                }
+                                .id(step.id)
+                                .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
+                        }
+                    }
+                    .padding(.horizontal, .padding12)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+
+                    if verticalSizeClass == .regular {
+                        Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
+                        Color.clear.frame(height: viewModel.completedStepsHeight)
+                    }
                 }
-                Color.clear.frame(height: 50).id("BOTTOM")
+                .hFormContentPosition(.top)
+                .hFormBottomBackgroundColor(.aiPoweredGradient)
+                .environmentObject(viewModel)
+                .hideScrollIndicators()
+                .onAppear {
+                    viewModel.scrollViewHeight = proxy.size.height
+                }
+                .onChange(of: proxy.size) { value in
+                    viewModel.scrollViewHeight = value.height
+                }
+                .hFormAttachToBottom {
+                    if verticalSizeClass == .compact {
+                        ZStack {
+                            if let currentStep = viewModel.currentStep {
+                                currentStep
+                                    .stepView()
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                            }
+                        }
+                    }
+                }
             }
-            .padding(.horizontal, .padding12)
-            .padding(.vertical, .padding8)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
+            if verticalSizeClass == .regular {
+                ZStack {
+                    if let currentStep = viewModel.currentStep {
+                        currentStep
+                            .stepView()
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
+            }
         }
-        .hFormContentPosition(.top)
-        .hFormBottomBackgroundColor(.aiPoweredGradient)
-        .environmentObject(viewModel)
-        .hideScrollIndicators()
+        .animation(.defaultSpring, value: viewModel.currentStep?.id)
     }
 }
 
@@ -58,20 +107,6 @@ extension View {
         } else {
             self
         }
-    }
-
-    fileprivate func scrollToBottom<T: Hashable>(proxy: ScrollViewProxy, id: T?, count: Int) -> some View {
-        self
-            .task(id: id) {
-                try? await Task.sleep(seconds: 0.05)
-                withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-            }
-            .onAppear {
-                proxy.scrollTo("BOTTOM", anchor: .bottom)
-            }
-            .onChange(of: count) { _ in
-                withAnimation { proxy.scrollTo("BOTTOM", anchor: .bottom) }
-            }
     }
 
     @ViewBuilder
@@ -93,19 +128,33 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
-    @Published var allSteps: [ClaimIntentStepHandler] = []
-    private let service: ClaimIntentService = ClaimIntentService()
-    private let input: StartClaimInput
+    // MARK: - Published UI State
+    @Published var allSteps: [ClaimIntentStepHandler] = [] {
+        didSet {
+            updateHeightCalculations()
+        }
+    }
+    @Published var currentStep: ClaimIntentStepHandler?
+    @Published var scrollToStepId: String = ""
+
+    @Published var scrollViewHeight: CGFloat = 0
+    @Published var contentHeight: [String: CGFloat] = [:]
+    @Published var stepsHeightSum: CGFloat = 0
+    @Published var completedStepsHeight: CGFloat = 0
+
+    // MARK: - Dependencies
+    private let flowManager: ClaimIntentFlowManager
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
     let router = Router()
 
+    // MARK: - Initialization
     init(
         input: StartClaimInput,
         goToClaimDetails: @escaping GoToClaimDetails,
         openChat: @escaping () -> Void
     ) {
-        self.input = input
+        self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
         self.goToClaimDetails = goToClaimDetails
         self.openChat = openChat
         Task {
@@ -113,8 +162,18 @@ final class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
+    // MARK: - UI Height Calculations
+    private func updateHeightCalculations() {
+        stepsHeightSum = contentHeight.values.reduce(0, +)
+        completedStepsHeight =
+            allSteps
+            .filter { !$0.isEnabled }
+            .reduce(0) { $0 + (contentHeight[$1.id] ?? 0) }
+    }
+
+    // MARK: - Business Logic
     func startClaimIntent(input: StartClaimInput) async throws {
-        guard let claimIntent = try await service.startClaimIntent(input: input) else {
+        guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
             throw ClaimIntentError.invalidResponse
         }
 
@@ -129,27 +188,48 @@ final class SubmitClaimChatViewModel: ObservableObject {
     private func processClaimIntent(_ claimEvent: SubmitClaimEvent) {
         switch claimEvent {
         case let .goToNext(claimIntent):
-            let handler = getStep(for: claimIntent)
-            self.allSteps.append(handler)
+            handleGoToNextStep(claimIntent: claimIntent)
         case let .regret(currentClaimIntent, newclaimIntent):
-            let handler = getStep(for: newclaimIntent)
-            if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
-                allSteps.removeSubrange((indexToRemove)..<allSteps.count)
-            }
-            self.allSteps.append(handler)
+            handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
         case let .outcome(model):
             router.push(model)
         }
     }
 
-    private func getStep(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
-        ClaimIntentStepHandlerFactory.createHandler(
-            for: claimIntent,
-            service: service
-        ) { [weak self] claimEvent in
-            withAnimation {
-                self?.processClaimIntent(claimEvent)
+    private func handleGoToNextStep(claimIntent: ClaimIntent) {
+        let handler = createStepHandler(for: claimIntent)
+        contentHeight[handler.id] = 0
+        let previousStepId = allSteps.last?.id ?? ""
+        Task { @MainActor in
+            if !self.allSteps.isEmpty {
+                currentStep = nil
             }
+            self.allSteps.append(handler)
+            try await Task.sleep(seconds: 1)
+            currentStep = handler
+            scrollToStepId = previousStepId
+        }
+    }
+
+    private func handleRegretStep(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent) {
+        let handler = createStepHandler(for: newClaimIntent)
+
+        if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
+            for item in allSteps[indexToRemove..<allSteps.count] {
+                contentHeight.removeValue(forKey: item.id)
+            }
+            allSteps.removeSubrange((indexToRemove)..<allSteps.count)
+        }
+
+        contentHeight[handler.id] = 0
+        allSteps.append(handler)
+        currentStep = handler
+        scrollToStepId = handler.id
+    }
+
+    private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
+        flowManager.createStepHandler(for: claimIntent) { [weak self] claimEvent in
+            self?.processClaimIntent(claimEvent)
         }
     }
 }

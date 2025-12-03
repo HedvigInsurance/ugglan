@@ -54,6 +54,15 @@ public struct ClaimIntentStep: Sendable {
     public let id: String
     public let text: String
 
+    public var showText: Bool {
+        switch content {
+        case .summary:
+            false
+        default:
+            true
+        }
+    }
+
     public init(
         content: ClaimIntentStepContent,
         id: String,
