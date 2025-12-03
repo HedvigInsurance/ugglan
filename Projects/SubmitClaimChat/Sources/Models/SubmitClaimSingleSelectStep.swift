@@ -22,13 +22,15 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        guard
-            let result = try await service.claimIntentSubmitSelect(
-                stepId: claimIntent.currentStep.id,
-                selectedValue: selectedOption!
-            )
-        else {
-            throw ClaimIntentError.unknown
+        guard let selectedOption else {
+            throw ClaimIntentError.invalidInput
+        }
+        let result = try await service.claimIntentSubmitSelect(
+            stepId: claimIntent.currentStep.id,
+            selectedValue: selectedOption
+        )
+        guard let result else {
+            throw ClaimIntentError.invalidResponse
         }
         return result
     }
