@@ -57,6 +57,7 @@ fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentOutcomeDeflec
 fragment ClaimIntentStepFragment on ClaimIntentStep {
       id
       text
+	  isRegrettable
       content {
         ...ClaimIntentStepContentFragment
       }
@@ -68,7 +69,6 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
             ...ClaimIntentStepContentFormFieldFragment
           }
           isSkippable
-          isRegrettable
         }
         ... on ClaimIntentStepContentTask {
           description
@@ -78,12 +78,10 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
           hint
           uploadUri
           isSkippable
-          isRegrettable
         }
         ... on ClaimIntentStepContentFileUpload {
           uploadUri
           isSkippable
-          isRegrettable
         }
         ... on ClaimIntentStepContentSummary {
           items {
@@ -105,7 +103,6 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
 				title
 			  }
 			  isSkippable
-			  isRegrettable
               defaultSelectedId
 		}
 }
