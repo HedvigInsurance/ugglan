@@ -8,8 +8,8 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
         let newestMessage = Message(
             id: "id1",
             type: .text(
-                text:
-                    "I think someone took my computer"
+                text: "I think someone took my computer",
+                action: nil
             ),
             date: date.addingTimeInterval(-60 * 60 * 3)
         )
@@ -29,7 +29,10 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             newestMessage,
             .init(
                 id: "id2",
-                type: .text(text: "Hi, how may I help you?"),
+                type: .text(
+                    text: "Hi, how may I help you?",
+                    action: nil
+                ),
                 sender: .hedvig,
                 date: date.addingTimeInterval(-60 * 60 * 21 * 2),
                 disclaimer: .init(

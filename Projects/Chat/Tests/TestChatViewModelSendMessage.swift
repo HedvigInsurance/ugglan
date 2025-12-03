@@ -16,7 +16,7 @@ final class TestChatViewModelSendMessage: XCTestCase {
     }
 
     func testSendNewMessageSuccess() async {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let mockService = MockData.createMockChatService(
             sendMessage: { message in message }
         )
@@ -31,7 +31,7 @@ final class TestChatViewModelSendMessage: XCTestCase {
     }
 
     func testSendNewMessageFailure() async {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let mockService = MockData.createMockChatService(
             sendMessage: { _ in throw ChatError.sendMessageFailed }
         )

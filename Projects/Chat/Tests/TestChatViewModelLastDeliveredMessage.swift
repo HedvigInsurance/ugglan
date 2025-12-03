@@ -16,7 +16,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
     }
 
     func testSendNewMessageSuccess() async throws {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             sendMessage: { message in message }
@@ -29,7 +29,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
     }
 
     func testSendNewMessageFailure() async {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             sendMessage: { _ in throw ChatError.sendMessageFailed }
@@ -41,7 +41,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
     }
 
     func testSendMultipleMessagesSuccess() async throws {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             sendMessage: { message in message }
@@ -58,7 +58,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
     }
 
     func testSendMultipleMessagesFailure() async throws {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let firstMessage = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             sendMessage: { message in message }
