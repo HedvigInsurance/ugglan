@@ -16,6 +16,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     @Published var isEnabled: Bool = true
     @Published var error: Error?
     @Published var isStepExecuted = false
+    @Published var isSkipped = false
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
@@ -77,6 +78,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
         do {
             let result = try await service.claimIntentSkipStep(stepId: id)
+            isSkipped = true
             guard let result else {
                 throw ClaimIntentError.invalidResponse
             }

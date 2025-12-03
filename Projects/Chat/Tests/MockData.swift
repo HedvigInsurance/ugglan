@@ -29,7 +29,7 @@ struct MockData {
                 claimId: nil
             )
         },
-        sendMessage: @escaping SendMessage = { _ in .init(type: .text(text: "test")) }
+        sendMessage: @escaping SendMessage = { _ in .init(type: .text(text: "test", action: nil)) }
     ) -> MockConversationService {
         let service = MockConversationService(
             fetchNewMessages: fetchNewMessages,
