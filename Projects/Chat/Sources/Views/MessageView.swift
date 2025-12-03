@@ -97,9 +97,6 @@ struct MessageView: View {
                 vm: .init(url: url)
             )
             .accessibilityLabel(accessilityLabel(for: message))
-        case let .action(action):
-            ActionView(action: action)
-                .accessibilityLabel(accessilityLabel(for: message))
         case .unknown: Text("")
         }
     }
@@ -180,31 +177,6 @@ extension URL {
     let service = ConversationService(conversationId: "conversationId")
 
     return VStack {
-        MessageView(
-            message: .init(
-                id: "messageId",
-                sender: .hedvig,
-                sentAt: Date(),
-                type: .action(
-                    action: .init(
-                        url: URL("")!,
-                        text: "A new conversation has been created by Hedvig.",
-                        buttonTitle: "Go to conversation"
-                    )
-                ),
-                disclaimer: .init(
-                    description: "description",
-                    detailsDescription: "details",
-                    detailsTitle: "details title",
-                    title: "title",
-                    type: .information
-                ),
-                status: .failed(error: "error")
-            ),
-            conversationStatus: .open,
-            vm: .init(chatService: service),
-            showRetryOptions: false
-        )
         MessageView(
             message: .init(
                 id: "messageId2",

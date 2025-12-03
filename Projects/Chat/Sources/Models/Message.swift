@@ -110,7 +110,6 @@ public enum MessageType: Codable, Hashable, Sendable {
     case crossSell(url: URL)
     case deepLink(url: URL)
     case otherLink(url: URL)
-    case action(action: ActionMessage)
     case unknown
 }
 
@@ -185,8 +184,6 @@ extension Message {
                 return L10n.chatSentALink
             case .unknown:
                 return L10n.chatSentAMessage
-            case .action:
-                return L10n.chatSentALink
             }
         }()
         return "\(senderText): \(message)"

@@ -154,13 +154,7 @@ extension OctopusGraphQL.MessageFragment {
     }
 
     private var messageType: MessageType {
-        if let action = asChatMessageAction {
-            let urlText = action.actionUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-            if let url = URL(string: urlText), urlText.isUrl {
-                let data = ActionMessage(url: url, text: action.actionText, buttonTitle: action.actionTitle)
-                return .action(action: data)
-            }
-        } else if let chatMessage = asChatMessageText {
+        if let chatMessage = asChatMessageText {
             let urlText = chatMessage.text.trimmingCharacters(in: .whitespacesAndNewlines)
             if let url = URL(string: urlText), urlText.isUrl {
                 if urlText.isGIFURL {
