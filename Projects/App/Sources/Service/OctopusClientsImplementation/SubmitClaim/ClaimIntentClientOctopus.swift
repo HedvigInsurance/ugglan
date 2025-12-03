@@ -127,8 +127,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             intentFragment?.currentStep?.fragments.claimIntentStepFragment.content.fragments
             .claimIntentStepContentFragment.extractIsSkippable() ?? false
         let isRegrettable =
-            intentFragment?.currentStep?.fragments.claimIntentStepFragment.content.fragments
-            .claimIntentStepContentFragment.extractIsRegrettable() ?? false
+            intentFragment?.currentStep?.isRegrettable ?? false
 
         if let currentStepFragment = intentFragment?.currentStep?.fragments.claimIntentStepFragment {
             return .intent(
@@ -342,19 +341,6 @@ extension OctopusGraphQL.ClaimIntentStepContentFragment {
             return fileUpload.isSkippable
         } else if let select = asClaimIntentStepContentSelect {
             return select.isSkippable
-        }
-        return false
-    }
-
-    func extractIsRegrettable() -> Bool {
-        if let form = asClaimIntentStepContentForm {
-            return form.isRegrettable
-        } else if let audioRecording = asClaimIntentStepContentAudioRecording {
-            return audioRecording.isRegrettable
-        } else if let fileUpload = asClaimIntentStepContentFileUpload {
-            return fileUpload.isRegrettable
-        } else if let select = asClaimIntentStepContentSelect {
-            return select.isRegrettable
         }
         return false
     }
