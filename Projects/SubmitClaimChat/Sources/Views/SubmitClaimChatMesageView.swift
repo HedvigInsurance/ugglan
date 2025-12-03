@@ -240,6 +240,8 @@ extension ClaimIntentStepHandler {
             } else if let viewModel = self as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
             }
+        } else if self.isSkipped {
+            hPill(text: "Skipped", color: .grey)
         }
     }
 }
