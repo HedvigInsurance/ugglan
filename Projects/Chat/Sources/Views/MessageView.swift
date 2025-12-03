@@ -39,8 +39,8 @@ struct MessageView: View {
     @ViewBuilder
     private var messageContent: some View {
         switch message.type {
-        case let .text(text, action):
-            VStack {
+        case let .text(_, action):
+            VStack(spacing: .padding16) {
                 MarkdownView(
                     config: .init(
                         text: message.trimmedText,
@@ -56,7 +56,7 @@ struct MessageView: View {
                 )
                 .hEnvironmentAccessibilityLabel(message.timeStampString)
                 if let action {
-                    hButton(.large, .primary, content: .init(title: action.buttonTitle)) {
+                    hButton(.large, .secondary, content: .init(title: action.buttonTitle)) {
                         NotificationCenter.default.post(name: .openDeepLink, object: action.url)
                     }
                 }
@@ -179,29 +179,47 @@ extension URL {
     Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationsDemoClient() })
     let service = ConversationService(conversationId: "conversationId")
 
-    return MessageView(
-        message: .init(
-            id: "messageId",
-            sender: .hedvig,
-            sentAt: Date(),
-            type: .action(
-                action: .init(
-                    url: URL("")!,
-                    text: "A new conversation has been created by Hedvig.",
-                    buttonTitle: "Go to conversation"
-                )
+    return VStack {
+        MessageView(
+            message: .init(
+                id: "messageId",
+                sender: .hedvig,
+                sentAt: Date(),
+                type: .action(
+                    action: .init(
+                        url: URL("")!,
+                        text: "A new conversation has been created by Hedvig.",
+                        buttonTitle: "Go to conversation"
+                    )
+                ),
+                disclaimer: .init(
+                    description: "description",
+                    detailsDescription: "details",
+                    detailsTitle: "details title",
+                    title: "title",
+                    type: .information
+                ),
+                status: .failed(error: "error")
             ),
-            disclaimer: .init(
-                description: "description",
-                detailsDescription: "details",
-                detailsTitle: "details title",
-                title: "title",
-                type: .information
+            conversationStatus: .open,
+            vm: .init(chatService: service),
+            showRetryOptions: false
+        )
+        MessageView(
+            message: .init(
+                id: "messageId2",
+                sender: .hedvig,
+                sentAt: Date(),
+                type: .text(
+                    text: "text that we want to use here for the member",
+                    action: .init(url: URL("")!, text: nil, buttonTitle: "Button title")
+                ),
+                disclaimer: nil,
+                status: .received
             ),
-            status: .failed(error: "error")
-        ),
-        conversationStatus: .open,
-        vm: .init(chatService: service),
-        showRetryOptions: true
-    )
+            conversationStatus: .open,
+            vm: .init(chatService: service),
+            showRetryOptions: false
+        )
+    }
 })
