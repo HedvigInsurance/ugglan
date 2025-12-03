@@ -19,7 +19,7 @@ public struct SubmitClaimChatNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: viewModel.router, tracking: self) {
+        RouterHost(router: viewModel.router, options: [.extendedNavigationWidth], tracking: self) {
             SubmitClaimChatScreen()
                 .routerDestination(
                     for: ClaimIntentStepOutcome.self,
