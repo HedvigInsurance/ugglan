@@ -56,9 +56,16 @@ struct MessageView: View {
                 )
                 .hEnvironmentAccessibilityLabel(message.timeStampString)
                 if let action {
-                    hButton(.large, .secondary, content: .init(title: action.buttonTitle)) {
-                        NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+                    hButton(
+                        .large,
+                        .secondary,
+                        content: .init(title: action.buttonTitle)
+                    ) {
+                        NotificationCenter.default
+                            .post(name: .openDeepLink, object: action.url)
                     }
+                    .padding(.horizontal, -message.horizontalPadding)
+                    .padding(.bottom, .padding4)
                 }
             }
         case let .file(file):
