@@ -17,7 +17,7 @@ final class TestChatViewModelFetchNewMessages: XCTestCase {
     }
 
     func testFetchNewMessagesSuccess() async {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             fetchNewMessages: {
