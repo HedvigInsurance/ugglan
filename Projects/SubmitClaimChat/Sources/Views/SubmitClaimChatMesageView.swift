@@ -22,7 +22,7 @@ struct SubmitClaimChatMesageView: View {
 
             HStack {
                 spacing(viewModel.sender == .member)
-                viewModel.resultView()
+                ClaimStepResultView(viewModel: viewModel)
                     .frame(
                         maxWidth: viewModel.maxWidth,
                         alignment: viewModel.alignment
@@ -87,59 +87,63 @@ extension ClaimIntentStepHandler {
     }
 }
 
-extension ClaimIntentStepHandler {
-    func stepView() -> some View {
+struct ClaimStepView: View {
+    @ObservedObject var viewModel: ClaimIntentStepHandler
+
+    var body: some View {
         VStack {
-            if let viewModel = self as? SubmitClaimAudioStep {
+            if let viewModel = viewModel as? SubmitClaimAudioStep {
                 SubmitClaimAudioView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimSingleSelectStep {
+            } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimFormStep {
+            } else if let viewModel = viewModel as? SubmitClaimFormStep {
                 SubmitClaimFormView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimSummaryStep {
+            } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
                 SubmitClaimSummaryBottomView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimFileUploadStep {
+            } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimUnknownStep {
+            } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
                 SubmitClaimUnknownView(viewModel: viewModel)
             }
-            if self.isSkippable {
-                hButton(.large, .ghost, content: .init(title: "Skip")) { [weak self] in
+            if viewModel.isSkippable {
+                hButton(.large, .ghost, content: .init(title: "Skip")) { [weak viewModel] in
                     Task {
-                        await self?.skip()
+                        await viewModel?.skip()
                     }
                 }
-                .disabled(!self.isEnabled)
                 .hButtonIsLoading(false)
             }
         }
-        .disabled(!self.isEnabled)
+        .disabled(!viewModel.isEnabled)
     }
-
-    @ViewBuilder
-    func resultView() -> some View {
+}
+struct ClaimStepResultView: View {
+    @ObservedObject var viewModel: ClaimIntentStepHandler
+    var body: some View {
         VStack(alignment: .trailing, spacing: .padding4) {
-            if self.isSkipped {
+            if viewModel.isSkipped {
                 hPill(text: "Skipped", color: .grey)
-            } else if self.isStepExecuted || self is SubmitClaimTaskStep || self is SubmitClaimSummaryStep {
-                if let viewModel = self as? SubmitClaimAudioStep {
+            } else if viewModel.isStepExecuted || viewModel is SubmitClaimTaskStep
+                || viewModel is SubmitClaimSummaryStep
+            {
+                if let viewModel = viewModel as? SubmitClaimAudioStep {
                     SubmitClaimAudioResultView(viewModel: viewModel)
-                } else if let viewModel = self as? SubmitClaimSingleSelectStep {
+                } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
                     SubmitClaimSingleSelectResultView(viewModel: viewModel)
-                } else if let viewModel = self as? SubmitClaimSummaryStep {
+                } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
                     SubmitClaimSummaryView(viewModel: viewModel)
-                } else if let viewModel = self as? SubmitClaimFileUploadStep {
+                } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                     SubmitClaimFileUploadResultView(viewModel: viewModel)
-                } else if let viewModel = self as? SubmitClaimFormStep {
+                } else if let viewModel = viewModel as? SubmitClaimFormStep {
                     SubmitClaimFormResultView(viewModel: viewModel)
-                } else if let viewModel = self as? SubmitClaimTaskStep {
+                } else if let viewModel = viewModel as? SubmitClaimTaskStep {
                     SubmitClaimTaskResultView(viewModel: viewModel)
                 }
             }
-            if self.isRegrettable && self.isStepExecuted {
-                hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak self] in
+            if viewModel.isRegrettable && viewModel.isStepExecuted {
+                hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
                     Task {
-                        await self?.regret()
+                        await viewModel?.regret()
                     }
                 }
             }

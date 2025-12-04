@@ -83,8 +83,7 @@ public struct SubmitClaimChatScreen: View {
     private var currentStepView: some View {
         ZStack {
             if let currentStep = viewModel.currentStep {
-                currentStep
-                    .stepView()
+                ClaimStepView(viewModel: currentStep)
                     .modifier(AlertHelper(viewModel: currentStep))
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -219,11 +218,11 @@ final class SubmitClaimChatViewModel: ObservableObject {
             }
             allSteps.removeSubrange((indexToRemove)..<allSteps.count)
         }
-
+        let stepIdToScrollTo = allSteps.last?.id ?? handler.id
         contentHeight[handler.id] = 0
         allSteps.append(handler)
         currentStep = handler
-        scrollToStepId = handler.id
+        scrollToStepId = stepIdToScrollTo
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
