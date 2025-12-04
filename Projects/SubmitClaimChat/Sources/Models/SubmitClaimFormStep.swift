@@ -68,11 +68,12 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                 let userEnteredValues = formValues[field.id]!.values
                 let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
                 if valuesToDisplay.isEmpty {
-                    return (field.title, userEnteredValues.joined(separator: ", "))
+                    return (
+                        field.title, userEnteredValues.isEmpty ? "Skipped" : userEnteredValues.joined(separator: ", ")
+                    )
                 }
                 return (field.title, valuesToDisplay.joined(separator: ", "))
             }
-            .filter({ !$0.1.isEmpty })
     }
 }
 
