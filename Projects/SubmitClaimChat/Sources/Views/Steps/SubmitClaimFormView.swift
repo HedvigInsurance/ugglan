@@ -274,7 +274,7 @@ struct SubmitClaimFormResultView: View {
                     HStack(alignment: .center, spacing: .padding8) {
                         hText(item.0, style: .label)
                             .foregroundColor(hTextColor.Opaque.accordion)
-                        hPill(text: item.2 ? "Skipped" : item.1, color: .grey)
+                        hPill(text: item.1, color: .grey)
                     }
                 }
             }
