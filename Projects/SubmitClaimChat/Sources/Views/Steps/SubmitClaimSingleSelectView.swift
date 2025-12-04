@@ -34,6 +34,7 @@ struct SubmitClaimSingleSelectResultView: View {
                 text: text,
                 color: .grey
             )
+            .hFieldSize(.rounded)
         }
     }
 }

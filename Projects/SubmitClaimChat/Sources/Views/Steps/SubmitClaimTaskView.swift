@@ -20,6 +20,7 @@ struct SubmitClaimTaskResultView: View {
             hText(viewModel.taskModel.description, style: .label)
         }
         .hPillStyle(color: .grey)
+        .hFieldSize(.rounded)
     }
 }
 
