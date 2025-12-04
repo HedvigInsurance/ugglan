@@ -10,7 +10,7 @@ struct SubmitClaimChatMesageView: View {
             if viewModel.showText {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
-                        TextAnimation(
+                        RevealTextView(
                             text: viewModel.claimIntent.currentStep.text
                         )
                     }
@@ -34,15 +34,6 @@ struct SubmitClaimChatMesageView: View {
             }
         }
     }
-
-    //    private var regretButton: some View {
-    //        hCoreUIAssets.edit.view
-    //            .onTapGesture {
-    //                Task {
-    //                    await viewModel.regret()
-    //                }
-    //            }
-    //    }
 
     @ViewBuilder
     func spacing(_ addSpacing: Bool) -> some View {
@@ -73,89 +64,6 @@ struct SubmitClaimChatMesageView: View {
             .useDarkColor
             .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
     }
-}
-
-struct TextAnimation: View {
-    let text: String
-    @State private var visibleCharacters: Int = 0
-    @State private var showDot = true
-
-    var body: some View {
-        ZStack(alignment: .leading) {
-            if showDot {
-                Circle()
-                    .fill(hSignalColor.Green.element)
-                    .frame(width: 14, height: 14)
-                    .transition(.scale.combined(with: .opacity))
-            }
-            if #available(iOS 18.0, *) {
-                hText(text)
-                    .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
-                    .onAppear {
-                        animateText()
-                    }
-            } else {
-                Text(String(text.prefix(visibleCharacters)))
-                    .onAppear {
-                        animateText()
-                    }
-            }
-        }
-    }
-
-    private func animateText() {
-        visibleCharacters = 0
-        Task {
-            try? await Task.sleep(seconds: 1)
-            for index in 0...text.count {
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.03) {
-                    withAnimation(.easeIn(duration: 0.1)) {
-                        showDot = false
-                        visibleCharacters = index
-                    }
-                }
-            }
-        }
-    }
-}
-
-@available(iOS 18.0, *)
-struct AnimatedTextRenderer: TextRenderer {
-    let visibleCharacters: Int
-
-    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
-        var characterIndex = 0
-
-        for line in layout {
-            for run in line {
-                for glyph in run {
-                    var glyphContext = context
-
-                    // Calculate opacity based on proximity to visibleCharacters
-                    let opacity: Double
-                    if characterIndex < visibleCharacters - 1 {
-                        opacity = 1.0
-                    } else if characterIndex == visibleCharacters - 1 {
-                        // Animate the current character
-                        opacity = 1.0
-                    } else if characterIndex == visibleCharacters && characterIndex != 0 {
-                        // Next character starting to fade in
-                        opacity = 0.3
-                    } else {
-                        opacity = 0.0
-                    }
-
-                    glyphContext.opacity = opacity
-                    glyphContext.draw(glyph)
-                    characterIndex += 1
-                }
-            }
-        }
-    }
-}
-
-#Preview {
-    TextAnimation(text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED")
 }
 
 extension ClaimIntentStepHandler {
