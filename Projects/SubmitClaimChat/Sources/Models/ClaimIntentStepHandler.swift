@@ -90,7 +90,10 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
         do {
             let result = try await service.claimIntentSkipStep(stepId: id)
-            isSkipped = true
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isSkipped = true
+                isStepExecuted = true
+            }
             guard let result else {
                 throw ClaimIntentError.invalidResponse
             }

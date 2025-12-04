@@ -17,9 +17,6 @@ struct SubmitClaimChatMesageView: View {
 
                     .fixedSize(horizontal: false, vertical: true)
                     Spacer()
-                    if viewModel.isRegrettable && viewModel.isStepExecuted {
-                        regretButton
-                    }
                 }
             }
 
@@ -38,14 +35,14 @@ struct SubmitClaimChatMesageView: View {
         }
     }
 
-    private var regretButton: some View {
-        hCoreUIAssets.edit.view
-            .onTapGesture {
-                Task {
-                    await viewModel.regret()
-                }
-            }
-    }
+    //    private var regretButton: some View {
+    //        hCoreUIAssets.edit.view
+    //            .onTapGesture {
+    //                Task {
+    //                    await viewModel.regret()
+    //                }
+    //            }
+    //    }
 
     @ViewBuilder
     func spacing(_ addSpacing: Bool) -> some View {
@@ -213,22 +210,31 @@ extension ClaimIntentStepHandler {
 
     @ViewBuilder
     func resultView() -> some View {
-        if self.isStepExecuted || self is SubmitClaimTaskStep || self is SubmitClaimSummaryStep {
-            if let viewModel = self as? SubmitClaimAudioStep {
-                SubmitClaimAudioResultView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimSingleSelectStep {
-                SubmitClaimSingleSelectResultView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimSummaryStep {
-                SubmitClaimSummaryView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimFileUploadStep {
-                SubmitClaimFileUploadResultView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimFormStep {
-                SubmitClaimFormResultView(viewModel: viewModel)
-            } else if let viewModel = self as? SubmitClaimTaskStep {
-                SubmitClaimTaskResultView(viewModel: viewModel)
+        VStack(alignment: .trailing, spacing: .padding4) {
+            if self.isSkipped {
+                hPill(text: "Skipped", color: .grey)
+            } else if self.isStepExecuted || self is SubmitClaimTaskStep || self is SubmitClaimSummaryStep {
+                if let viewModel = self as? SubmitClaimAudioStep {
+                    SubmitClaimAudioResultView(viewModel: viewModel)
+                } else if let viewModel = self as? SubmitClaimSingleSelectStep {
+                    SubmitClaimSingleSelectResultView(viewModel: viewModel)
+                } else if let viewModel = self as? SubmitClaimSummaryStep {
+                    SubmitClaimSummaryView(viewModel: viewModel)
+                } else if let viewModel = self as? SubmitClaimFileUploadStep {
+                    SubmitClaimFileUploadResultView(viewModel: viewModel)
+                } else if let viewModel = self as? SubmitClaimFormStep {
+                    SubmitClaimFormResultView(viewModel: viewModel)
+                } else if let viewModel = self as? SubmitClaimTaskStep {
+                    SubmitClaimTaskResultView(viewModel: viewModel)
+                }
             }
-        } else if self.isSkipped {
-            hPill(text: "Skipped", color: .grey)
+            if self.isRegrettable && self.isStepExecuted {
+                hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak self] in
+                    Task {
+                        await self?.regret()
+                    }
+                }
+            }
         }
     }
 }
