@@ -5,7 +5,6 @@ import hCoreUI
 
 public struct ClaimFilesView: View {
     @ObservedObject private var vm: ClaimFilesViewModel
-    @State private var showFileSourcePicker = false
     public init(endPoint: String, files: [File], onSuccess: @escaping (_ data: [ClaimFileUploadResponse]) -> Void) {
         vm = .init(
             endPoint: endPoint,
@@ -55,8 +54,8 @@ public struct ClaimFilesView: View {
                                 .large,
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-                                {
-                                    showFileSourcePicker = true
+                                { [weak vm] in
+                                    vm?.showFileSourcePicker = true
                                 }
                             )
                             .disabled(vm.isLoading)
@@ -80,7 +79,7 @@ public struct ClaimFilesView: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .showFileSourcePicker($showFileSourcePicker) { [weak vm] files in
+        .showFileSourcePicker($vm.showFileSourcePicker) { [weak vm] files in
             for file in files {
                 vm?.add(file: file)
             }
@@ -114,6 +113,8 @@ public class ClaimFilesViewModel: ObservableObject {
     @Published var success = false
     @Published var error: String?
     @Published var progress: Double = 0
+    @Published var showFileSourcePicker = false
+
     private let endPoint: String
     let fileGridViewModel: FileGridViewModel
     private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void

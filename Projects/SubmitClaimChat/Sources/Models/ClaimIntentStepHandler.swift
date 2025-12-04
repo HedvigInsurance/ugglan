@@ -14,9 +14,14 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     @Published var isLoading: Bool = false
     @Published var isEnabled: Bool = true
-    @Published var error: Error?
+    @Published var error: Error? {
+        didSet {
+            showError = error != nil
+        }
+    }
     @Published var isStepExecuted = false
     @Published var isSkipped = false
+    @Published var showError = false
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
@@ -40,9 +45,16 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     }
 
     final func submitResponse() async {
+        UIApplication.dismissKeyboard()
+        let hasError = error != nil
         withAnimation {
             isLoading = true
             isEnabled = false
+            error = nil
+            showError = false
+        }
+        if hasError {
+            try? await Task.sleep(seconds: 0.5)
         }
         defer {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -78,7 +90,10 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
         do {
             let result = try await service.claimIntentSkipStep(stepId: id)
-            isSkipped = true
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isSkipped = true
+                isStepExecuted = true
+            }
             guard let result else {
                 throw ClaimIntentError.invalidResponse
             }
@@ -160,8 +175,20 @@ enum SubmitClaimEvent {
 }
 
 // MARK: - Errors
-enum ClaimIntentError: Error {
+public enum ClaimIntentError: Error {
     case invalidInput
     case invalidResponse
-    case unknown
+    case error(message: String)
+}
+
+extension ClaimIntentError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .invalidInput:
+            return "Make sure you fill in all the required fields."
+        case .invalidResponse:
+            return "message"
+        case let .error(message): return message
+        }
+    }
 }

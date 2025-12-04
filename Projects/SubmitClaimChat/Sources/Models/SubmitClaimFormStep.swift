@@ -34,11 +34,15 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
     override func validateInput() -> Bool {
         // Validate required fields
         for field in formModel.fields where field.isRequired {
-            guard let value = formValues[field.id], !value.values.isEmpty else {
-                return false
+            if let fieldModel = formValues[field.id] {
+                if fieldModel.values.isEmpty {
+                    fieldModel.error = "This field is required"
+                } else {
+                    fieldModel.error = nil
+                }
             }
         }
-        return true
+        return formValues.values.allSatisfy({ $0.error == nil })
     }
 
     override func executeStep() async throws -> ClaimIntentType {
@@ -64,21 +68,28 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                 let userEnteredValues = formValues[field.id]!.values
                 let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
                 if valuesToDisplay.isEmpty {
-                    return (field.title, userEnteredValues.joined(separator: ", "))
+                    return (
+                        field.title, userEnteredValues.isEmpty ? "Skipped" : userEnteredValues.joined(separator: ", ")
+                    )
                 }
                 return (field.title, valuesToDisplay.joined(separator: ", "))
             }
-            .filter({ !$0.1.isEmpty })
     }
 }
 
 final class FormStepValue: ObservableObject {
-    @Published var values: [String] = []
+    @Published var values: [String] = [] {
+        didSet {
+            error = nil
+        }
+    }
     @Published var value: String = "" {
         didSet {
             values = [value]
+            error = nil
         }
     }
+    @Published var error: String?
     init(values: [String]) {
         self.value = values.first ?? ""
         self.values = values
