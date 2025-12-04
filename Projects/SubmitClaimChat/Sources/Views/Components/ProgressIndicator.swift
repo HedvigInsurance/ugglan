@@ -17,7 +17,7 @@ struct CircularProgressView: View {
                     .trim(from: 0, to: 0.25)
                     .stroke(hSignalColor.Green.element, lineWidth: 2)
                     .rotationEffect(angle)
-                    .animation(.linear(duration: 0.25), value: angle)
+                    .animation(.linear(duration: 0.5), value: angle)
             }
             .onAppear {
                 angle += .degrees(90)
