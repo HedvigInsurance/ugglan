@@ -17,6 +17,7 @@ struct SubmitClaimTaskResultView: View {
                     }
                 }
             hText(viewModel.taskModel.description, style: .label)
+                .animation(.easeInOut, value: viewModel.taskModel)
         }
         .hPillStyle(color: .grey)
     }

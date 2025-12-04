@@ -7,9 +7,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     override var claimIntent: ClaimIntent {
         didSet {
             if case let .task(model) = claimIntent.currentStep.content {
-                withAnimation {
-                    taskModel = model
-                }
+                taskModel = model
             }
         }
     }
