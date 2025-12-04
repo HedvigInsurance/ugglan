@@ -7,7 +7,6 @@ import hCoreUI
 struct SubmitClaimFilesUploadScreen: View {
     @StateObject fileprivate var vm: FilesUploadViewModel
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
-    @State private var showFileSourcePicker = false
     init(
         claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
@@ -35,8 +34,8 @@ struct SubmitClaimFilesUploadScreen: View {
                                 .large,
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-                                {
-                                    showFileSourcePicker = true
+                                { [weak vm] in
+                                    vm?.showFileSourcePicker = true
                                 }
                             )
                             .disabled(vm.isLoading)
@@ -98,8 +97,8 @@ struct SubmitClaimFilesUploadScreen: View {
                                 .large,
                                 .primary,
                                 content: .init(title: L10n.ClaimStatusDetail.addFiles),
-                                {
-                                    showFileSourcePicker = true
+                                { [weak vm] in
+                                    vm?.showFileSourcePicker = true
                                 }
                             )
                             .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
@@ -120,7 +119,7 @@ struct SubmitClaimFilesUploadScreen: View {
                 }
             }
         }
-        .showFileSourcePicker($showFileSourcePicker) { [weak vm] files in
+        .showFileSourcePicker($vm.showFileSourcePicker) { [weak vm] files in
             vm?.addFiles(with: files)
         }
     }
@@ -161,6 +160,8 @@ public class FilesUploadViewModel: ObservableObject {
     @Published var skipPressed = false
     @Published var error: String?
     @Published var progress: Double = 0
+    @Published var showFileSourcePicker = false
+
     var uploadProgress: Double = 0
     var timerProgress: Double = 0
     let uploadDelayDuration: Float = 1.5

@@ -69,27 +69,25 @@ public struct SubmitClaimChatScreen: View {
                 }
                 .hFormAttachToBottom {
                     if verticalSizeClass == .compact {
-                        ZStack {
-                            if let currentStep = viewModel.currentStep {
-                                currentStep
-                                    .stepView()
-                                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                            }
-                        }
+                        currentStepView
                     }
                 }
             }
             if verticalSizeClass == .regular {
-                ZStack {
-                    if let currentStep = viewModel.currentStep {
-                        currentStep
-                            .stepView()
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                }
+                currentStepView
             }
         }
         .animation(.defaultSpring, value: viewModel.currentStep?.id)
+    }
+
+    private var currentStepView: some View {
+        ZStack {
+            if let currentStep = viewModel.currentStep {
+                ClaimStepView(viewModel: currentStep)
+                    .modifier(AlertHelper(viewModel: currentStep))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
     }
 }
 
@@ -220,11 +218,11 @@ final class SubmitClaimChatViewModel: ObservableObject {
             }
             allSteps.removeSubrange((indexToRemove)..<allSteps.count)
         }
-
+        let stepIdToScrollTo = allSteps.last?.id ?? handler.id
         contentHeight[handler.id] = 0
         allSteps.append(handler)
         currentStep = handler
-        scrollToStepId = handler.id
+        scrollToStepId = stepIdToScrollTo
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {

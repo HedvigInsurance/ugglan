@@ -36,7 +36,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let data = try await octopus.client.mutation(mutation: mutation)
 
             if let userError = data?.claimIntentSubmitAudio.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentSubmitAudio.intent
@@ -57,7 +57,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let data = try await octopus.client.mutation(mutation: mutation)
 
             if let userError = data?.claimIntentSubmitFileUpload.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentSubmitFileUpload.intent
@@ -80,7 +80,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
             if let userError = data?.claimIntentSubmitForm.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentSubmitForm.intent
@@ -97,13 +97,13 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
             if let userError = data?.claimIntentSubmitSummary.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentSubmitSummary.intent
             return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
-            throw SubmitClaimError.error(message: error.localizedDescription)
+            throw ClaimIntentError.error(message: error.localizedDescription)
         }
     }
 
@@ -127,8 +127,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             intentFragment?.currentStep?.fragments.claimIntentStepFragment.content.fragments
             .claimIntentStepContentFragment.extractIsSkippable() ?? false
         let isRegrettable =
-            intentFragment?.currentStep?.fragments.claimIntentStepFragment.content.fragments
-            .claimIntentStepContentFragment.extractIsRegrettable() ?? false
+            intentFragment?.currentStep?.isRegrettable ?? false
 
         if let currentStepFragment = intentFragment?.currentStep?.fragments.claimIntentStepFragment {
             return .intent(
@@ -154,7 +153,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
             if let userError = data?.claimIntentSubmitTask.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentSubmitTask.intent
@@ -170,7 +169,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
             if let userError = data?.claimIntentSkipStep.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentSkipStep.intent
@@ -186,7 +185,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
             if let userError = data?.claimIntentRegretStep.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentRegretStep.intent
@@ -215,7 +214,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
             if let userError = data?.claimIntentSubmitSelect.userError, let message = userError.message {
-                throw SubmitClaimError.error(message: message)
+                throw ClaimIntentError.error(message: message)
             }
 
             let intent = data?.claimIntentSubmitSelect.intent
@@ -232,7 +231,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             error: nil,
             attributes: nil
         )
-        return SubmitClaimError.error(message: error.localizedDescription)
+        return ClaimIntentError.error(message: error.localizedDescription)
     }
 }
 
@@ -342,19 +341,6 @@ extension OctopusGraphQL.ClaimIntentStepContentFragment {
             return fileUpload.isSkippable
         } else if let select = asClaimIntentStepContentSelect {
             return select.isSkippable
-        }
-        return false
-    }
-
-    func extractIsRegrettable() -> Bool {
-        if let form = asClaimIntentStepContentForm {
-            return form.isRegrettable
-        } else if let audioRecording = asClaimIntentStepContentAudioRecording {
-            return audioRecording.isRegrettable
-        } else if let fileUpload = asClaimIntentStepContentFileUpload {
-            return fileUpload.isRegrettable
-        } else if let select = asClaimIntentStepContentSelect {
-            return select.isRegrettable
         }
         return false
     }
