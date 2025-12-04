@@ -265,7 +265,7 @@ extension GraphQLMutation {
     }
 }
 
-enum SubmitClaimError: Error {
+fileprivate enum SubmitClaimError: Error {
     case error(message: String)
 }
 

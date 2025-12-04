@@ -17,7 +17,7 @@ struct SubmitClaimChatMesageView: View {
 
                     .fixedSize(horizontal: false, vertical: true)
                     Spacer()
-                    if viewModel.isRegrettable && !viewModel.isEnabled {
+                    if viewModel.isRegrettable && viewModel.isStepExecuted {
                         regretButton
                     }
                 }
@@ -31,19 +31,6 @@ struct SubmitClaimChatMesageView: View {
                         alignment: viewModel.alignment
                     )
                     .hButtonIsLoading(viewModel.isLoading)
-                    .trackError(for: $viewModel.error)
-                    .hStateViewButtonConfig(
-                        .init(
-                            actionButton: .init(
-                                buttonAction: { [weak viewModel] in
-                                    withAnimation {
-                                        viewModel?.isEnabled = true
-                                        viewModel?.error = nil
-                                        viewModel?.isLoading = false
-                                    }
-                                })
-                        )
-                    )
                     .fixedSize(horizontal: false, vertical: true)
                     .id("result_\(viewModel.id)")
                 spacing(viewModel.sender == .hedvig)

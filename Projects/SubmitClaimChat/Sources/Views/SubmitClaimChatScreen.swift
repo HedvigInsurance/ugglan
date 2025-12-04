@@ -69,27 +69,26 @@ public struct SubmitClaimChatScreen: View {
                 }
                 .hFormAttachToBottom {
                     if verticalSizeClass == .compact {
-                        ZStack {
-                            if let currentStep = viewModel.currentStep {
-                                currentStep
-                                    .stepView()
-                                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                            }
-                        }
+                        currentStepView
                     }
                 }
             }
             if verticalSizeClass == .regular {
-                ZStack {
-                    if let currentStep = viewModel.currentStep {
-                        currentStep
-                            .stepView()
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                }
+                currentStepView
             }
         }
         .animation(.defaultSpring, value: viewModel.currentStep?.id)
+    }
+
+    private var currentStepView: some View {
+        ZStack {
+            if let currentStep = viewModel.currentStep {
+                currentStep
+                    .stepView()
+                    .modifier(AlertHelper(viewModel: currentStep))
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
     }
 }
 
