@@ -11,7 +11,6 @@ struct CircularProgressView: View {
             .frame(width: 16, height: 16)
             .onReceive(timer) { _ in
                 angle += .degrees(90)
-                print("ANGLE IS \(angle)")
             }
             .overlay {
                 Circle()
@@ -22,7 +21,6 @@ struct CircularProgressView: View {
             }
             .onAppear {
                 angle += .degrees(90)
-                print("ANGLE IS \(angle)")
             }
     }
 }
