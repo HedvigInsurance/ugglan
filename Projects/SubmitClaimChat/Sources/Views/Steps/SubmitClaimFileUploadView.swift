@@ -7,7 +7,6 @@ import hCoreUI
 struct SubmitClaimFileUploadView: View {
     @ObservedObject var viewModel: SubmitClaimFileUploadStep
     @ObservedObject var fileUploadVm: FilesUploadViewModel
-    @State private var showFileSourcePicker = false
 
     init(
         viewModel: SubmitClaimFileUploadStep
@@ -18,7 +17,7 @@ struct SubmitClaimFileUploadView: View {
 
     var body: some View {
         showFilesView
-            .showFileSourcePicker($showFileSourcePicker) { files in
+            .showFileSourcePicker($viewModel.showFileSourcePicker) { files in
                 fileUploadVm.addFiles(with: files)
             }
     }
@@ -34,8 +33,8 @@ struct SubmitClaimFileUploadView: View {
                                 .medium,
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-                                {
-                                    showFileSourcePicker = true
+                                { [weak viewModel] in
+                                    viewModel?.showFileSourcePicker = true
                                 }
                             )
                             .hButtonIsLoading(false)
@@ -65,8 +64,8 @@ struct SubmitClaimFileUploadView: View {
                         .large,
                         .primary,
                         content: .init(title: L10n.ClaimStatusDetail.addFiles),
-                        {
-                            showFileSourcePicker = true
+                        { [weak viewModel] in
+                            viewModel?.showFileSourcePicker = true
                         }
                     )
                     .hButtonIsLoading(fileUploadVm.isLoading)

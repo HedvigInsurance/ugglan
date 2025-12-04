@@ -10,7 +10,6 @@ import hCoreUI
 public struct ClaimDetailView: View {
     @StateObject var vm: ClaimDetailViewModel
     @EnvironmentObject var router: Router
-    @State private var showFileSourcePicker = false
 
     public init(
         claim: ClaimModel?,
@@ -38,9 +37,10 @@ public struct ClaimDetailView: View {
             }
         }
         .showFileSourcePicker(
-            $showFileSourcePicker,
+            $vm.showFileSourcePicker,
             selecedFiles: { [weak vm] files in
-                vm?.showAddFiles(with: files)
+                guard let vm else { return }
+                vm.showAddFiles(with: files)
             }
         )
         .modally(item: $vm.showFilesView) { [weak vm] item in
@@ -188,7 +188,6 @@ public struct ClaimDetailView: View {
         }
     }
 
-    @ViewBuilder
     private var uploadFilesSection: some View {
         VStack(spacing: .padding8) {
             if vm.showUploadedFiles {
@@ -241,8 +240,8 @@ public struct ClaimDetailView: View {
                                 .medium,
                                 .primary,
                                 content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
-                                {
-                                    showFileSourcePicker = true
+                                { [weak vm] in
+                                    vm?.showFileSourcePicker = true
                                 }
                             )
                         }
@@ -346,6 +345,8 @@ public class ClaimDetailViewModel: ObservableObject {
             }
         }
     }
+
+    @Published var showFileSourcePicker = false
 
     private(set) var player: AudioPlayer?
     private var claimDetailsService: FetchClaimDetailsService
