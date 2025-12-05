@@ -1,3 +1,4 @@
+import Claims
 import SwiftUI
 import hCore
 import hCoreUI
@@ -14,6 +15,7 @@ struct SubmitClaimSummaryView: View {
                 ) {
                     itemView
                     audioRecordingView
+                    uploadedFilesView
                 }
             }
         }
@@ -52,6 +54,16 @@ struct SubmitClaimSummaryView: View {
                     .hWithoutHorizontalPadding([.section])
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var uploadedFilesView: some View {
+        if !viewModel.summaryModel.fileUploads.isEmpty {
+            VStack(alignment: .leading, spacing: .padding8) {
+                hText("Uploaded files")
+                FilesGridView(vm: viewModel.fileGridViewModel)
             }
         }
     }

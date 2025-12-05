@@ -271,7 +271,13 @@ extension ClaimIntentStepContent {
             self = .summary(
                 model: .init(
                     audioRecordings: summary.audioRecordings.map { .init(url: URL(string: $0.url)!) },
-                    fileUploads: summary.fileUploads.map { .init(url: URL(string: $0.url)!) },
+                    fileUploads: summary.fileUploads.map {
+                        .init(
+                            url: URL(string: $0.url)!,
+                            contentType: .findBy(mimeType: $0.contentType),
+                            fileName: $0.fileName
+                        )
+                    },
                     items: summary.items.map { .init(title: $0.title, value: $0.value) }
                 )
             )
