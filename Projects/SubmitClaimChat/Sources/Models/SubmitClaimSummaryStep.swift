@@ -1,3 +1,4 @@
+import Claims
 import SwiftUI
 import hCoreUI
 
@@ -5,7 +6,7 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
     override var sender: SubmitClaimChatMesageSender { .hedvig }
 
     let summaryModel: ClaimIntentStepContentSummary
-
+    let fileGridViewModel: FileGridViewModel
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
@@ -15,6 +16,18 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
             fatalError("SummaryStepHandler initialized with non-summary content")
         }
         self.summaryModel = model
+        self.fileGridViewModel = .init(
+            files: model.fileUploads.map({
+                .init(
+                    id: $0.url.absoluteString,
+                    size: 0,
+                    mimeType: $0.contentType,
+                    name: $0.fileName,
+                    source: .url(url: $0.url, mimeType: $0.contentType)
+                )
+            }),
+            options: []
+        )
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
