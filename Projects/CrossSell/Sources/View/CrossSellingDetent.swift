@@ -16,7 +16,7 @@ public struct CrossSellingDetent: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrossSellStackComponent(crossSells: crossSells.others, withHeader: false)
+                CrossSellStackComponent(crossSells: crossSells.others, source: crossSells.source, withHeader: false)
             }
         }
         .hFormAttachToBottom {
@@ -46,5 +46,5 @@ extension CrossSellingDetent: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingDetent(crossSells: .init(recommended: nil, others: []))
+    return CrossSellingDetent(crossSells: .init(recommended: nil, others: [], source: .insurances))
 }

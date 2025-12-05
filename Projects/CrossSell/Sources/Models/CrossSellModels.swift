@@ -5,16 +5,18 @@ public struct CrossSells: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id = UUID()
     public let recommended: CrossSell?
     public let others: [CrossSell]
-
+    public let source: CrossSellSource
     enum CodingKeys: String, CodingKey {
         case id
         case recommended
         case others
+        case source
     }
 
-    public init(recommended: CrossSell?, others: [CrossSell]) {
+    public init(recommended: CrossSell?, others: [CrossSell], source: CrossSellSource) {
         self.recommended = recommended
         self.others = others
+        self.source = source
     }
 }
 

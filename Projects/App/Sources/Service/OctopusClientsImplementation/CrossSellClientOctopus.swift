@@ -32,7 +32,7 @@ class CrossSellClientOctopus: CrossSellClient {
             return nil
         }()
 
-        return .init(recommended: recommendedCrossSell, others: otherCrossSells)
+        return .init(recommended: recommendedCrossSell, others: otherCrossSells, source: source)
     }
 
     func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {

@@ -14,7 +14,7 @@ public class CrossSellClientDemo: CrossSellClient {
                 buttonDescription: "buttonDescription"
             )
         ]
-        return .init(recommended: nil, others: crossSells)
+        return .init(recommended: nil, others: crossSells, source: .insurances)
     }
 
     public func getAddonBannerModel(source _: AddonSource) async throws -> AddonBannerModel? {

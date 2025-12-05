@@ -5,6 +5,7 @@ import hCoreUI
 
 struct CrossSellingItem: View {
     let crossSell: CrossSell
+    let source: CrossSellSource
     @State var fieldIsClicked = false
 
     func openExternal() {
@@ -51,7 +52,7 @@ struct CrossSellingItem: View {
 
                         hButton(
                             .small,
-                            .primaryAlt,
+                            source == .insurances ? .primaryAlt : .secondary,
                             content: .init(title: crossSell.buttonTitle),
                             {
                                 fieldIsClicked.toggle()
@@ -83,6 +84,6 @@ struct CrossSellingItem: View {
             buttonTitle: "Save 50%",
             imageUrl: nil,
             buttonDescription: "button description"
-        )
+        ), source: .insurances
     )
 }
