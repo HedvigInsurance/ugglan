@@ -181,10 +181,9 @@ struct FormFieldView: View {
                     color: fieldViewModel.value == tag ? .green : .grey
                 )
                 .onTapGesture {
-                    withAnimation { [weak fieldViewModel] in
-                        fieldViewModel?.value = tag
-                    }
+                    fieldViewModel.value = tag
                 }
+                .animation(.default, value: fieldViewModel.value)
             }
             if let error = fieldViewModel.error {
                 HStack {
@@ -234,14 +233,12 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 struct SubmitClaimFormResultView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
-        if viewModel.isStepExecuted {
-            VStack(alignment: .trailing, spacing: .padding4) {
-                ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
-                    HStack(alignment: .center, spacing: .padding8) {
-                        hText(item.0, style: .label)
-                            .foregroundColor(hTextColor.Opaque.accordion)
-                        hPill(text: item.1, color: .grey)
-                    }
+        VStack(alignment: .trailing, spacing: .padding4) {
+            ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
+                HStack(alignment: .center, spacing: .padding8) {
+                    hText(item.0, style: .label)
+                        .foregroundColor(hTextColor.Opaque.accordion)
+                    hPill(text: item.1, color: .grey)
                 }
             }
         }

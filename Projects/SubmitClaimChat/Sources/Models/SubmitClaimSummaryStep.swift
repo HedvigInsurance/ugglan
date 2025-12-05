@@ -16,6 +16,10 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         }
         self.summaryModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+        Task { [weak self] in
+            try await Task.sleep(seconds: 0.5)
+            self?.showResults = true
+        }
     }
 
     override func executeStep() async throws -> ClaimIntentType {

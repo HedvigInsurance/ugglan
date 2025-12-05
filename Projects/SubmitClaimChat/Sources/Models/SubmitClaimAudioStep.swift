@@ -61,9 +61,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
                 multipart: multipart
             ) { [weak self] progress in
                 Task { @MainActor in
-                    withAnimation {
-                        self?.uploadProgress = progress
-                    }
+                    self?.uploadProgress = progress
                 }
             }
             return response.fileIds.first!
