@@ -63,7 +63,6 @@ public struct SubmitClaimChatScreen: View {
                 currentStepView
             }
         }
-        .animation(.defaultSpring, value: viewModel.currentStep?.id)
     }
 
     private var currentStepView: some View {
@@ -74,6 +73,7 @@ public struct SubmitClaimChatScreen: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .animation(.default, value: viewModel.currentStep?.id)
     }
 }
 
@@ -96,7 +96,6 @@ struct StepView: View {
                 }
             }
             .id(step.id)
-            .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
     }
 }
 

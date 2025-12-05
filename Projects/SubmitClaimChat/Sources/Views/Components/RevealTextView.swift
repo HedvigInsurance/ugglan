@@ -25,6 +25,8 @@ struct RevealTextView: View {
                     }
             }
         }
+        .animation(.easeIn(duration: 0.1), value: showDot)
+        .animation(.easeIn(duration: 0.1), value: visibleCharacters)
     }
 
     private func animateText() {
@@ -33,10 +35,8 @@ struct RevealTextView: View {
             try? await Task.sleep(seconds: 1)
             for index in 0...text.count {
                 try? await Task.sleep(seconds: 0.03)
-                withAnimation(.easeIn(duration: 0.1)) {
-                    showDot = false
-                    visibleCharacters = index
-                }
+                showDot = false
+                visibleCharacters = index
             }
         }
     }

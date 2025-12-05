@@ -62,16 +62,14 @@ public struct SubmitClaimDeflectScreen: View {
                 .accessibilityElement(children: .combine)
 
                 VStack(spacing: .padding4) {
-                    withAnimation(.easeOut) {
-                        ForEach(model.questions, id: \.question) { question in
-                            InfoExpandableView(
-                                title: question.question,
-                                text: question.answer,
-                                onMarkDownClick: { url in
-                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                                }
-                            )
-                        }
+                    ForEach(model.questions, id: \.question) { question in
+                        InfoExpandableView(
+                            title: question.question,
+                            text: question.answer,
+                            onMarkDownClick: { url in
+                                NotificationCenter.default.post(name: .openDeepLink, object: url)
+                            }
+                        )
                     }
                 }
                 .padding(.top, .padding8)

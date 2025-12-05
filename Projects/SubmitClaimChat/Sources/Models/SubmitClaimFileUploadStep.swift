@@ -80,15 +80,11 @@ public class FilesUploadViewModel: ObservableObject {
         )
 
         fileGridViewModel.onDelete = { [weak self] file in
-            withAnimation {
-                self?.fileGridViewModel.files.removeAll(where: { $0.id == file.id })
-            }
+            self?.fileGridViewModel.files.removeAll(where: { $0.id == file.id })
         }
         fileGridViewModel.$files
             .sink { [weak self] files in
-                withAnimation {
-                    self?.hasFiles = !files.isEmpty
-                }
+                self?.hasFiles = !files.isEmpty
             }
             .store(in: &cancellables)
 
@@ -105,9 +101,7 @@ public class FilesUploadViewModel: ObservableObject {
     }
 
     fileprivate func uploadFiles(url: URL) async -> [String] {
-        withAnimation {
-            isLoading = true
-        }
+        isLoading = true
         do {
             let alreadyUploadedFiles = fileGridViewModel.files
                 .filter {
@@ -140,9 +134,7 @@ public class FilesUploadViewModel: ObservableObject {
                     } receiveValue: { [weak self] timeInterval in
                         guard let self = self else { return }
                         self.timerProgress = min(1, timeInterval / 2)
-                        withAnimation {
-                            self.progress = min(self.uploadProgress, self.timerProgress)
-                        }
+                        self.progress = min(self.uploadProgress, self.timerProgress)
                     }
 
                 let fileIds = try await withThrowingTaskGroup(of: TaskResult.self) { group in
@@ -180,9 +172,7 @@ public class FilesUploadViewModel: ObservableObject {
                             DispatchQueue.main.async {
                                 guard let self = self else { return }
                                 self.uploadProgress = progress
-                                withAnimation {
-                                    self.progress = min(self.uploadProgress, self.timerProgress)
-                                }
+                                self.progress = min(self.uploadProgress, self.timerProgress)
                             }
                         }
                         return .response(response)
@@ -198,9 +188,7 @@ public class FilesUploadViewModel: ObservableObject {
                 }
 
                 delayTimer = nil
-                withAnimation {
-                    self.progress = 1
-                }
+                self.progress = 1
                 isLoading = false
                 return fileIds
             } else {
@@ -210,9 +198,7 @@ public class FilesUploadViewModel: ObservableObject {
         } catch let ex {
             delayTimer?.cancel()
             delayTimer = nil
-            withAnimation {
-                isLoading = false
-            }
+            isLoading = false
         }
         return []
     }
