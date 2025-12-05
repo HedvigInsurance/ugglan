@@ -21,11 +21,14 @@ public struct CrossSellingView: View {
                     state.crossSells
                 }
             ) { crossSells in
-                if !crossSells.others.isEmpty {
-                    CrossSellStackComponent(
-                        crossSells: crossSells.others,
-                        withHeader: withHeader
-                    )
+                if let crossSells {
+                    if !crossSells.others.isEmpty {
+                        CrossSellStackComponent(
+                            crossSells: crossSells.others,
+                            discountAvailable: crossSells.discountAvailable,
+                            withHeader: withHeader
+                        )
+                    }
                 }
             }
         }
