@@ -18,6 +18,7 @@ import PresentableStore
 import Profile
 import SafariServices
 import SubmitClaim
+import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts
@@ -335,10 +336,33 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-
             options: .constant(.withoutGrabber)
         ) {
             ClaimsMainNavigation()
+                .environmentObject(homeNavigationVm)
+        }
+        .modally(
+            item: $homeNavigationVm.claimsAutomationStartInput
+        ) { input in
+            SubmitClaimChatNavigation(
+                input: input,
+                goToClaimDetails: { [weak homeNavigationVm] claimId in
+                    homeNavigationVm?.claimsAutomationStartInput = nil
+                    Task {
+                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                        await claimsStore.sendAsync(.fetchActiveClaims)
+                        if let claim = claimsStore.state.getClaimFor(id: claimId) {
+                            homeNavigationVm?.router.push(claim)
+                        }
+                    }
+                },
+                openChat: {
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.newConversation
+                    )
+                }
+            )
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
@@ -755,6 +779,8 @@ class LoggedInNavigationViewModel: ObservableObject {
         case .submitClaim:
             selectedTab = 0
             homeNavigationVm.isSubmitClaimPresented = true
+        case .claimChat:
+            handleChatClaimDeeplink(url)
         }
     }
 
@@ -773,6 +799,13 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self?.contractsNavigationVm.contractsRouter.popToRoot()
                 self?.contractsNavigationVm.contractsRouter.push(contract)
             }
+        }
+    }
+
+    private func handleChatClaimDeeplink(_ url: URL) {
+        dismissAndSelectTab(0)
+        if let messageId = url.getParameter(property: .sourceMessageId) {
+            homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: messageId)
         }
     }
 

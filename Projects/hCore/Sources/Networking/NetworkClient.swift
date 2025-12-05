@@ -38,6 +38,36 @@ public final class NetworkClient {
             throw NetworkError.parsingError(message: error.localizedDescription)
         }
     }
+    public func handleResponseForced<T>(data: Data?, response: URLResponse?, error: Error?) async throws -> T
+    where T: Decodable & Sendable {
+        if error != nil {
+            throw NetworkError.networkError(message: L10n.General.errorBody)
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse,
+            (200...299).contains(httpResponse.statusCode)
+        else {
+            if let data {
+                let responseError = try? JSONDecoder().decode(ResponseError.self, from: data)
+                if let message = responseError?.message {
+                    throw NetworkError.badRequest(message: message)
+                }
+                throw NetworkError.badRequest(message: String(data: data, encoding: .utf8))
+            }
+            throw NetworkError.badRequest(message: nil)
+        }
+
+        guard let responseData = data else {
+            throw NetworkError.badRequest(message: nil)
+        }
+
+        do {
+            let response = try JSONDecoder().decode(T.self, from: responseData)
+            return response
+        } catch {
+            throw NetworkError.parsingError(message: error.localizedDescription)
+        }
+    }
 }
 
 public enum NetworkError: Error {

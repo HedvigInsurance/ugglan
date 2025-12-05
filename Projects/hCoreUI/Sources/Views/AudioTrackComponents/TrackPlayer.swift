@@ -3,6 +3,13 @@ import SwiftUI
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
     @State private var width: CGFloat = 0
+
+    init(
+        audioPlayer: AudioPlayer
+    ) {
+        self.audioPlayer = audioPlayer
+    }
+
     @ViewBuilder var image: some View {
         Image(
             uiImage: {
