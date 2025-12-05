@@ -85,7 +85,7 @@ struct StepView: View {
         SubmitClaimChatMesageView(viewModel: step)
             .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
             .background {
-                GeometryReader { proxy2 in  //[weak step, weak viewModel] proxy2 in
+                GeometryReader { proxy2 in
                     Color.clear
                         .onAppear {
                             viewModel.contentHeight[step.id] = proxy2.size.height
