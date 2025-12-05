@@ -84,6 +84,7 @@ struct CrossSellingItem: View {
             buttonTitle: "Save 50%",
             imageUrl: nil,
             buttonDescription: "button description"
-        ), source: .insurances
+        ),
+        source: .insurances
     )
 }
