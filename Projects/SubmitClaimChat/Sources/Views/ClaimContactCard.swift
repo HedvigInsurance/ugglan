@@ -40,48 +40,55 @@ struct ClaimContactCard: View {
             }
             .padding(.horizontal, .padding16)
             .accessibilityElement(children: .combine)
-            VStack(spacing: .padding4) {
-                if let url = URL(string: model.url) {
-                    hSection {
-                        hButton(
-                            .medium,
-                            .secondaryAlt,
-                            content: .init(title: model.buttonText ?? ""),
-                            {
-                                Dependencies.urlOpener.open(url)
-                            }
-                        )
-                        .colorScheme(.light)
-                        .hButtonTakeFullWidth(true)
-                    }
-                }
-                if let phoneNumber = model.phoneNumber, let url = URL(string: "tel://" + phoneNumber) {
-                    hSection {
-                        hButton(
-                            .medium,
-                            getPhoneNumberButtonType(),
-                            content: .init(title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber)),
-                            {
-                                Dependencies.urlOpener.open(url)
-                            }
-                        )
-                        .colorScheme(getPhoneNumberSchema())
-                        .hButtonTakeFullWidth(true)
-                    }
-                }
-                if let info = model.info {
-                    hText(info, style: .label)
-                        .foregroundColor(hTextColor.Opaque.tertiary)
-                        .padding(.top, .padding16)
-                }
-            }
-            .sectionContainerStyle(.transparent)
+            ParnerButtonView(model: model)
         }
         .padding(.top, .padding32)
         .padding(.bottom, .padding16)
         .colorScheme(.dark)
     }
+}
 
+struct ParnerButtonView: View {
+    var model: Partner
+
+    var body: some View {
+        VStack(spacing: .padding4) {
+            if let url = URL(string: model.url) {
+                hSection {
+                    hButton(
+                        .medium,
+                        .secondaryAlt,
+                        content: .init(title: model.buttonText ?? ""),
+                        {
+                            Dependencies.urlOpener.open(url)
+                        }
+                    )
+                    .colorScheme(.light)
+                    .hButtonTakeFullWidth(true)
+                }
+            }
+            if let phoneNumber = model.phoneNumber, let url = URL(string: "tel://" + phoneNumber) {
+                hSection {
+                    hButton(
+                        .medium,
+                        getPhoneNumberButtonType(),
+                        content: .init(title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber)),
+                        {
+                            Dependencies.urlOpener.open(url)
+                        }
+                    )
+                    .colorScheme(getPhoneNumberSchema())
+                    .hButtonTakeFullWidth(true)
+                }
+            }
+            if let info = model.info {
+                hText(info, style: .label)
+                    .foregroundColor(hTextColor.Opaque.tertiary)
+                    .padding(.top, .padding16)
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
     private func getPhoneNumberButtonType() -> hButtonConfigurationType {
         if URL(string: model.url) == nil {
             return hCoreUI.hButtonConfigurationType.secondaryAlt
