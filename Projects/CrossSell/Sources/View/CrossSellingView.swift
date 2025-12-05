@@ -25,7 +25,7 @@ public struct CrossSellingView: View {
                     if !crossSells.others.isEmpty {
                         CrossSellStackComponent(
                             crossSells: crossSells.others,
-                            source: crossSells.source,
+                            discountAvailable: crossSells.discountAvailable,
                             withHeader: withHeader
                         )
                     }
