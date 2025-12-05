@@ -14,9 +14,7 @@ struct SubmitClaimSingleSelectView: View {
                 .onTapGesture {
                     withAnimation {
                         viewModel.selectedOption = tag
-                        Task {
-                            await viewModel.submitResponse()
-                        }
+                        viewModel.submitResponse()
                     }
                 }
             }

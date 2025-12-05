@@ -24,9 +24,9 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
         self.taskModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        Task {
+        Task { [weak self] in
             try await Task.sleep(seconds: 1)
-            await submitResponse()
+            self?.submitResponse()
         }
     }
 
@@ -44,11 +44,13 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         if taskModel.isCompleted {
             return
         } else {
-            try await Task.sleep(seconds: 0.5)
+            try Task.checkCancellation()
+            try await Task.sleep(seconds: 1)
+            try Task.checkCancellation()
             guard let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id) else {
                 throw ClaimIntentError.invalidResponse
             }
-
+            try Task.checkCancellation()
             switch claimIntent {
             case let .intent(model):
                 self.claimIntent = model
@@ -58,5 +60,8 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
 
             try await getNextStep()
         }
+    }
+
+    deinit {
     }
 }

@@ -67,9 +67,7 @@ struct SubmitClaimSummaryBottomView: View {
                 .primary,
                 content: .init(title: "Submit your claim")
             ) {
-                Task {
-                    await viewModel.submitResponse()
-                }
+                viewModel.submitResponse()
             }
         }
         .sectionContainerStyle(.transparent)
