@@ -200,6 +200,8 @@ extension hFieldSize {
             return 16
         case .medium:
             return 19
+        case .rounded:
+            return 19
         }
     }
 
@@ -210,6 +212,8 @@ extension hFieldSize {
         case .large:
             return 10
         case .medium:
+            return 11.5
+        case .rounded:
             return 11.5
         }
     }
@@ -225,6 +229,8 @@ extension hFieldSize {
         case .large:
             return 9
         case .medium:
+            return 12.5
+        case .rounded:
             return 12.5
         }
     }
