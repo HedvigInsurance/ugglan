@@ -13,6 +13,7 @@ public struct SubmitClaimChatScreen: View {
     public var body: some View {
         scrollContent
             .hideToolbarBackgroundIfAvailable()
+            .modifier(SubmitClaimChatScreenAlertHelper(viewModel: viewModel))
     }
 
     private var scrollContent: some View {
@@ -135,6 +136,12 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
+    @Published var error: Error? {
+        didSet {
+            showError = error != nil
+        }
+    }
+    @Published var showError = false
     // MARK: - Published UI State
     @Published var allSteps: [ClaimIntentStepHandler] = [] {
         didSet {
@@ -154,7 +161,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
     let router = Router()
-
+    private let input: StartClaimInput
     // MARK: - Initialization
     init(
         input: StartClaimInput,
@@ -164,9 +171,8 @@ final class SubmitClaimChatViewModel: ObservableObject {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
         self.goToClaimDetails = goToClaimDetails
         self.openChat = openChat
-        Task {
-            try? await startClaimIntent(input: input)
-        }
+        self.input = input
+        self.startClaimIntent()
     }
 
     // MARK: - UI Height Calculations
@@ -179,16 +185,22 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
 
     // MARK: - Business Logic
-    func startClaimIntent(input: StartClaimInput) async throws {
-        guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
-            throw ClaimIntentError.invalidResponse
-        }
+    func startClaimIntent() {
+        Task {
+            do {
+                guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
+                    throw ClaimIntentError.invalidResponse
+                }
 
-        switch claimIntent {
-        case let .intent(model):
-            processClaimIntent(.goToNext(claimIntent: model))
-        case let .outcome(model):
-            processClaimIntent(.outcome(model: model))
+                switch claimIntent {
+                case let .intent(model):
+                    processClaimIntent(.goToNext(claimIntent: model))
+                case let .outcome(model):
+                    processClaimIntent(.outcome(model: model))
+                }
+            } catch {
+                self.error = error
+            }
         }
     }
 
