@@ -16,7 +16,7 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
     }
 
     func testFetchPreviousMessagesSuccess() async {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             fetchNewMessages: { .init(with: [], hasPreviousMessages: true) },
@@ -64,7 +64,7 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
     }
 
     func testFetchPreviousMessagesWithInitialFailureSuccess() async {
-        let messageType = MessageType.text(text: "test")
+        let messageType = MessageType.text(text: "test", action: nil)
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             fetchNewMessages: { .init(with: [], hasPreviousMessages: true) },

@@ -20,8 +20,13 @@ final class StorePaymentStatusTests: XCTestCase {
     func testFetchPaymentStatusSuccess() async throws {
         let statusData: PaymentStatusData = .init(
             status: .active,
-            displayName: "display name",
-            descriptor: "descriptor"
+            paymentChargeData: .init(
+                paymentMethod: "method",
+                bankName: "displayName",
+                account: "descriptor",
+                mandate: "mandate",
+                chargingDayInTheMonth: 27
+            )
         )
 
         let mockService = MockPaymentData.createMockPaymentService(

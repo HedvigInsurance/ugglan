@@ -5,7 +5,7 @@ import PresentableStore
 public struct CrossSellState: StateProtocol {
     public init() {}
 
-    public var crossSells: [CrossSell] = []
+    public var crossSells: CrossSells?
     public var addonBanner: AddonBannerModel?
 
     public var hasNewOffer = false

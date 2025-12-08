@@ -5,16 +5,18 @@ public struct CrossSells: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id = UUID()
     public let recommended: CrossSell?
     public let others: [CrossSell]
-
+    public let discountAvailable: Bool
     enum CodingKeys: String, CodingKey {
         case id
         case recommended
         case others
+        case discountAvailable
     }
 
-    public init(recommended: CrossSell?, others: [CrossSell]) {
+    public init(recommended: CrossSell?, others: [CrossSell], discountAvailable: Bool) {
         self.recommended = recommended
         self.others = others
+        self.discountAvailable = discountAvailable
     }
 }
 
@@ -22,6 +24,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
     let title: String
     let description: String
+    let buttonTitle: String
     let webActionURL: String?
     let imageUrl: URL?
     let bannerText: String?
@@ -37,6 +40,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         id: String,
         title: String,
         description: String,
+        buttonTitle: String,
         webActionURL: String? = nil,
         bannerText: String? = nil,
         buttonText: String? = nil,
@@ -51,6 +55,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         self.id = id
         self.title = title
         self.description = description
+        self.buttonTitle = buttonTitle
         self.webActionURL = webActionURL
         self.imageUrl = imageUrl
         self.bannerText = bannerText

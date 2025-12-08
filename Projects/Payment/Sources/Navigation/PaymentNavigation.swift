@@ -34,6 +34,8 @@ public struct PaymentsNavigation: View {
                         CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
+                    case let .paymentMethod(data):
+                        PaymentMethodScreen(data: data)
                     }
                 }
         }
@@ -56,6 +58,7 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
+    case paymentMethod(data: PaymentChargeData)
 
     public var nameForTracking: String {
         switch self {
@@ -63,6 +66,8 @@ public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, Navigation
             return .init(describing: PaymentsDiscountsRootView.self)
         case .history:
             return .init(describing: PaymentHistoryView.self)
+        case .paymentMethod:
+            return .init(describing: PaymentMethodScreen.self)
         }
     }
 
@@ -72,6 +77,8 @@ public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, Navigation
             L10n.paymentsDiscountsSectionTitle
         case .history:
             L10n.paymentHistoryTitle
+        case .paymentMethod:
+            L10n.PaymentDetails.NavigationBar.title
         }
     }
 }

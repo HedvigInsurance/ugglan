@@ -1,23 +1,42 @@
 import Foundation
 import hCore
 
-public struct PaymentStatusData: Codable, Equatable, Sendable {
+public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public var status: PayinMethodStatus = .active
-    let displayName: String?
-    let descriptor: String?
+    public let paymentChargeData: PaymentChargeData?
 
     public init(
         status: PayinMethodStatus,
-        displayName: String?,
-        descriptor: String?
+        paymentChargeData: PaymentChargeData?
     ) {
         self.status = status
-        self.displayName = displayName
-        self.descriptor = descriptor
+        self.paymentChargeData = paymentChargeData
     }
 }
 
-public enum PayinMethodStatus: Equatable, Sendable {
+public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
+    let paymentMethod: String?
+    let bankName: String?
+    let account: String?
+    let mandate: String?
+    let chargingDayInTheMonth: Int?
+
+    public init(
+        paymentMethod: String?,
+        bankName: String?,
+        account: String?,
+        mandate: String?,
+        chargingDayInTheMonth: Int?
+    ) {
+        self.paymentMethod = paymentMethod
+        self.bankName = bankName
+        self.account = account
+        self.mandate = mandate
+        self.chargingDayInTheMonth = chargingDayInTheMonth
+    }
+}
+
+public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case active
     case noNeedToConnect
     case needsSetup
@@ -43,5 +62,3 @@ public enum PayinMethodStatus: Equatable, Sendable {
         }
     }
 }
-
-extension PayinMethodStatus: Codable {}

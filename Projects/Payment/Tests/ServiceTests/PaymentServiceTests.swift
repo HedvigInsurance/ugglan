@@ -33,7 +33,7 @@ final class PaymentServiceTests: XCTestCase {
                 contracts: [],
                 referralDiscount: nil,
                 amountPerReferral: .sek(20),
-                paymentDetails: nil,
+                paymentChargeData: nil,
                 addedToThePayment: nil
             ),
             ongoing: [
@@ -50,7 +50,7 @@ final class PaymentServiceTests: XCTestCase {
                     contracts: [],
                     referralDiscount: nil,
                     amountPerReferral: .sek(10),
-                    paymentDetails: nil,
+                    paymentChargeData: nil,
                     addedToThePayment: nil
                 )
             ]
@@ -69,10 +69,14 @@ final class PaymentServiceTests: XCTestCase {
     func testFetchPaymentStatusDataSuccess() async {
         let paymentStatusData: PaymentStatusData = .init(
             status: .active,
-            displayName: "displayName",
-            descriptor: "descriptor"
+            paymentChargeData: .init(
+                paymentMethod: "method",
+                bankName: "displayName",
+                account: "descriptor",
+                mandate: "mandate",
+                chargingDayInTheMonth: 27
+            )
         )
-
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: { paymentStatusData }
         )
