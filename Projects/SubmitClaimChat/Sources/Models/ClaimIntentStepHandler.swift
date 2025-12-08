@@ -44,37 +44,41 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         fatalError("submitResponse must be overridden")
     }
 
-    final func submitResponse() async {
-        UIApplication.dismissKeyboard()
-        let hasError = error != nil
-        withAnimation {
-            isLoading = true
-            isEnabled = false
-            error = nil
-            showError = false
-        }
-        if hasError {
-            try? await Task.sleep(seconds: 0.5)
-        }
-        defer {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isEnabled = self.error != nil
-                isLoading = false
+    private var submitTask: Task<(), Never>?
+    final func submitResponse() {
+        let submitTask = Task { [weak self] in
+            guard let self = self else { return }
+            UIApplication.dismissKeyboard()
+            let hasError = error != nil
+            withAnimation {
+                isLoading = true
+                isEnabled = false
+                error = nil
+                showError = false
             }
-        }
-        do {
-            let result = try await executeStep()
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isStepExecuted = true
+            if hasError {
+                try? await Task.sleep(seconds: 0.5)
             }
-            switch result {
-            case let .intent(model):
-                mainHandler(.goToNext(claimIntent: model))
-            case let .outcome(model):
-                mainHandler(.outcome(model: model))
+            defer {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isEnabled = self.error != nil
+                    isLoading = false
+                }
             }
-        } catch let error {
-            self.error = error
+            do {
+                let result = try await executeStep()
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isStepExecuted = true
+                }
+                switch result {
+                case let .intent(model):
+                    mainHandler(.goToNext(claimIntent: model))
+                case let .outcome(model):
+                    mainHandler(.outcome(model: model))
+                }
+            } catch let error {
+                self.error = error
+            }
         }
     }
 
@@ -139,6 +143,11 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         } catch let ex {
             self.error = ex
         }
+    }
+
+    deinit {
+        submitTask?.cancel()
+        submitTask = nil
     }
 }
 

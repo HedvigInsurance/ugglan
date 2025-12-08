@@ -93,9 +93,7 @@ struct SubmitClaimAudioView: View {
                     content: .init(title: L10n.saveAndContinueButtonLabel),
                     {
                         UIApplication.dismissKeyboard()
-                        Task {
-                            await viewModel.submitResponse()
-                        }
+                        viewModel.submitResponse()
                     }
                 )
                 hButton(
@@ -137,10 +135,8 @@ struct SubmitClaimAudioView: View {
                     .primary,
                     content: .init(title: L10n.saveAndContinueButtonLabel),
                     {
-                        Task {
-                            viewModel.audioFileURL = url
-                            await viewModel.submitResponse()
-                        }
+                        viewModel.audioFileURL = url
+                        viewModel.submitResponse()
                     }
                 )
                 .disabled(audioRecordingVm.viewState == .loading)

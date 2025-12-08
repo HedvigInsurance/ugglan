@@ -46,7 +46,7 @@ final class CrossSellStoreTests: XCTestCase {
         await store.sendAsync(.fetchCrossSell)
         try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchCrossSell] != nil)
-        assert(store.state.crossSells.others.isEmpty)
+        assert(store.state.crossSells?.others.isEmpty == true)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
@@ -76,7 +76,7 @@ final class CrossSellStoreTests: XCTestCase {
         await store.sendAsync(.fetchAddonBanner)
         try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchAddonBanner] != nil)
-        assert(store.state.crossSells.others.isEmpty)
+        assert(store.state.crossSells?.others.isEmpty == true)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getAddonBannerModel)
     }
@@ -103,14 +103,15 @@ extension CrossSell {
                 imageUrl: nil,
                 buttonDescription: "button description"
             ),
-        ]
+        ],
+        discountAvailable: true
     )
 }
 
 @MainActor
 extension CrossSellState {
     fileprivate var isEmpty: Bool {
-        self.crossSells.recommended == nil && self.crossSells.others.isEmpty
+        self.crossSells?.recommended == nil && self.crossSells?.others.isEmpty == true
     }
 }
 

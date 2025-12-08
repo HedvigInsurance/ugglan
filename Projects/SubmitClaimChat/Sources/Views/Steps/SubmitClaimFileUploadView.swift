@@ -39,9 +39,7 @@ struct SubmitClaimFileUploadView: View {
                             )
                             .hButtonIsLoading(false)
                             hButton(.medium, .primary, content: .init(title: L10n.generalContinueButton)) {
-                                Task {
-                                    await viewModel.submitResponse()
-                                }
+                                viewModel.submitResponse()
                             }
                             .hButtonIsLoading(false)
                             .disabled(fileUploadVm.fileGridViewModel.files.isEmpty)

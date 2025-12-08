@@ -32,21 +32,7 @@ public struct SubmitClaimChatScreen: View {
                 hForm {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(viewModel.allSteps, id: \.id) { step in
-                            SubmitClaimChatMesageView(viewModel: step)
-                                .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
-                                .background {
-                                    GeometryReader { [weak step] proxy2 in
-                                        Color.clear
-                                            .onAppear {
-                                                viewModel.contentHeight[step?.id ?? ""] = proxy2.size.height
-                                            }
-                                            .onChange(of: proxy2.size) { value in
-                                                viewModel.contentHeight[step?.id ?? ""] = value.height
-                                            }
-                                    }
-                                }
-                                .id(step.id)
-                                .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
+                            StepView(step: step)
                         }
                     }
                     .padding(.horizontal, .padding12)
@@ -88,6 +74,29 @@ public struct SubmitClaimChatScreen: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+    }
+}
+
+struct StepView: View {
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @ObservedObject var step: ClaimIntentStepHandler
+
+    var body: some View {
+        SubmitClaimChatMesageView(viewModel: step)
+            .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
+            .background {
+                GeometryReader { proxy2 in
+                    Color.clear
+                        .onAppear {
+                            viewModel.contentHeight[step.id] = proxy2.size.height
+                        }
+                        .onChange(of: proxy2.size) { value in
+                            viewModel.contentHeight[step.id] = value.height
+                        }
+                }
+            }
+            .id(step.id)
+            .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
     }
 }
 

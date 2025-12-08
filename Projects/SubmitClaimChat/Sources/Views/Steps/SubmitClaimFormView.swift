@@ -19,9 +19,7 @@ struct SubmitClaimFormView: View {
                     .hWithoutHorizontalPadding([.section])
                 }
                 hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
-                    Task {
-                        await viewModel.submitResponse()
-                    }
+                    viewModel.submitResponse()
                 }
             }
         }

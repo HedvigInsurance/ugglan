@@ -13,11 +13,11 @@ struct SubmitClaimTaskResultView: View {
                 .opacity(viewModel.taskModel.isCompleted ? 1 : 0)
                 .overlay {
                     if !viewModel.taskModel.isCompleted {
-                        ProgressView()
-                            .tint(hSignalColor.Green.element)
+                        CircularProgressView()
                     }
                 }
             hText(viewModel.taskModel.description, style: .label)
+                .animation(.easeInOut, value: viewModel.taskModel)
         }
         .hPillStyle(color: .grey)
         .hFieldSize(.rounded)
