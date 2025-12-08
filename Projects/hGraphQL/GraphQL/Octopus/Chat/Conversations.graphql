@@ -16,6 +16,7 @@ query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerTo
     messagePage(olderToken: $olderToken, newerToken: $newerToken) {
         ... MessagePageFragment
     }
+	responseIsBeingGenerated
     statusMessage
     createdAt
     isLegacy

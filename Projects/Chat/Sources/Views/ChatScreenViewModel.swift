@@ -34,6 +34,7 @@ public class ChatMessageViewModel: ObservableObject {
             }
         }
     }
+    @Published var responseIsBeingGenerated: Bool = false
     @Published var isFetchingPreviousMessages = false
     private var hasAutomation: Bool = false
     private(set) var firstHedvigMessageAfterAutomation: Message?
@@ -88,6 +89,7 @@ public class ChatMessageViewModel: ObservableObject {
             do {
                 let store: ChatStore = globalPresentableStoreContainer.get()
                 let chatData = try await chatService.getNewMessages()
+                responseIsBeingGenerated = chatData.responseIsBeingGenerated
                 conversationVm.conversationId = chatData.conversationId
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
                 if newMessages.contains(where: { $0.sender == .automation }) {

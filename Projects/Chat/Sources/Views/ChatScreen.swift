@@ -56,6 +56,14 @@ public struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
             LazyVStack(spacing: .padding16) {
+                if messageVm.responseIsBeingGenerated {
+                    HStack {
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 20)
+                        Spacer()
+                    }
+                }
                 let messages = messageVm.messages
                 ForEach(messages) { message in
                     messageView(for: message, conversationStatus: conversationVm.conversationStatus)

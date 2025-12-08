@@ -112,7 +112,8 @@ class ConversationClientOctopus: ConversationClient {
             isLegacy: conversation.isLegacy,
             hasClaim: hasClaim,
             claimType: conversation.claim?.claimType,
-            claimId: conversation.claim?.id
+            claimId: conversation.claim?.id,
+            responseIsBeingGenerated: true
         )
     }
 }
