@@ -5,8 +5,13 @@ import hCoreUI
 struct RevealTextView: View {
     let text: String
     @State private var visibleCharacters: Int = 0
-    @State private var showDot = true
-
+    @State private var showDot = false
+    let delay: Float
+    init(text: String, delay: Float, showDot: Bool = true) {
+        self.text = text
+        self.delay = delay
+        self._showDot = State(initialValue: showDot)
+    }
     var body: some View {
         ZStack(alignment: .leading) {
             if showDot {
@@ -30,7 +35,7 @@ struct RevealTextView: View {
     private func animateText() {
         visibleCharacters = 0
         Task {
-            try? await Task.sleep(seconds: 1)
+            try? await Task.sleep(seconds: delay)
             for index in 0...text.count {
                 try? await Task.sleep(seconds: 0.03)
                 withAnimation(.easeIn(duration: 0.1)) {
@@ -78,5 +83,8 @@ struct AnimatedTextRenderer: TextRenderer {
 }
 
 #Preview {
-    RevealTextView(text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED")
+    RevealTextView(
+        text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED",
+        delay: 0
+    )
 }
