@@ -11,56 +11,39 @@ public struct StoriesScreen: View {
     }
 
     public var body: some View {
-        hForm {
-            hSection {
-                GeometryReader { proxy in
-                    VStack(spacing: 0) {
-                        HStack(spacing: .padding4) {
-                            ForEach(vm.stories) { story in
-                                StoryProgressView(vm: vm, story: story)
-                            }
+        hSection {
+            GeometryReader { proxy in
+                VStack {
+                    Spacing(height: Float(.padding16))
+                    HStack(spacing: .padding4) {
+                        ForEach(vm.stories) { story in
+                            StoryProgressView(vm: vm, story: story)
                         }
-                        .padding(.top, .padding16)
-                        ZStack {
-                            ForEach(vm.stories) { story in
-                                StoryView(vm: vm, story: story)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .contentShape(Rectangle())
-                        .simultaneousGesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { gestureValue in
-                                    vm.gestureStart()
-                                }
-                                .onEnded { gestureValue in
-                                    vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
-                                }
-                        )
-                        .disabled(vm.gestureDisabled)
                     }
+                    Spacer()
+                    ZStack {
+                        ForEach(vm.stories) { story in
+                            StoryView(vm: vm, story: story)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { gestureValue in
+                                vm.gestureStart()
+                            }
+                            .onEnded { gestureValue in
+                                vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
+                            }
+                    )
+                    .disabled(vm.gestureDisabled)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .gradient(index: $vm.currentIndex)
-            .frame(height: 600)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .background(hBackgroundColor.primary)
         .sectionContainerStyle(.transparent)
-    }
-}
-
-extension View {
-    @ViewBuilder
-    fileprivate func gradient(index: Binding<Int>) -> some View {
-        if #available(iOS 18.0, *) {
-            ZStack {
-                MeshGradientView(index: index)
-                    .blur(radius: 20)
-                self
-            }
-        } else {
-            self
-        }
     }
 }
 
@@ -90,48 +73,43 @@ struct StoryView: View {
     @State private var showTitle = false
     @State private var showSubtitle = false
     @State private var showImage = false
+    @State private var showThankYouButton = false
 
     @State private var cancellable: Task<(), any Error>?
     @EnvironmentObject var router: Router
     var body: some View {
         VStack {
-            Group {
-                if showTitle {
-                    hText(story.title, style: .heading3)
-                        .transition(.opacity)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                } else {
-                    hText(story.title, style: .heading3)
-                        .transition(.opacity)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .opacity(0)
-                }
-
-                if showSubtitle {
-                    hText(story.subtitle)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .transition(.opacity)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
-                    hText(story.subtitle)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .transition(.opacity)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .opacity(0)
-                }
+            if showTitle {
+                hText(story.title, style: .heading3)
+                    .transition(.opacity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                hText(story.title, style: .heading3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .opacity(0)
             }
-            .fixedSize(horizontal: false, vertical: true)
+            if showSubtitle {
+                hText(story.subtitle)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .transition(.opacity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                hText(story.subtitle)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .transition(.opacity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(0)
+            }
             Spacer()
             if showImage {
                 if story.mimeType == .GIF {
                     KFAnimatedImage(story.imageUrl)
                         .targetCache(ImageCache.default)
-                        .frame(width: 250, height: 250)
+                        .frame(width: 300, height: 300)
                         .contentShape(Rectangle())
                         .transition(.opacity)
-                        .fixedSize(horizontal: false, vertical: true)
                 } else {
                     KFImage(story.imageUrl)
                         .placeholder { _ in
@@ -145,12 +123,17 @@ struct StoryView: View {
                             contentMode: .fit
                         )
                         .cornerRadius(.padding16)
-                        .frame(width: 300)
+                        .frame(width: 350)
                         .contentShape(Rectangle())
                         .transition(.opacity)
                 }
             }
             Spacer()
+            if showThankYouButton {
+                hButton(.large, .secondary, content: .init(title: "Tack!")) {
+                    router.dismiss()
+                }
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, .padding16)
@@ -166,6 +149,7 @@ struct StoryView: View {
         cancellable?.cancel()
         cancellable = Task {
             withAnimation {
+                showThankYouButton = false
                 showImage = false
             }
             try await Task.sleep(seconds: 0.2)
@@ -197,6 +181,9 @@ struct StoryView: View {
                 if vm.stories.last == story && vm.currentStory == story {
                     try await Task.sleep(seconds: 2)
                     try Task.checkCancellation()
+                    withAnimation {
+                        showThankYouButton = true
+                    }
                 }
             }
         }
@@ -212,12 +199,8 @@ class StoriesScreenViewModel: ObservableObject {
             automaticProgressTask?.cancel()
             automaticProgressTask = nil
             setNextStoryAutomatic(forDuration: 10)
-            if let index = stories.firstIndex(of: currentStory) {
-                currentIndex = index
-            }
         }
     }
-    @Published var currentIndex: Int = 0
 
     private var timeStampOfStart: Date?
     private var timeStampOfEnd: Date?
@@ -327,10 +310,8 @@ public struct Story: Identifiable, Equatable {
 }
 
 #Preview {
-    Group {
-        StoriesScreen(stories: StoriesScreen.stories)
-            .environmentObject(Router())
-    }
+    StoriesScreen(stories: StoriesScreen.stories)
+        .environmentObject(Router())
 }
 
 extension StoriesScreen {
@@ -442,53 +423,56 @@ extension StoriesScreen {
         ),
     ]
 }
-
-@available(iOS 18.0, *)
-struct MeshGradientView: View {
-    @Binding var index: Int
-    @State private var points = MeshGradientView.getPoints(for: 0)
-    @State var colors: [Color] = MeshGradientView.getColors(for: 0)
-    @Environment(\.colorScheme) var colorScheme
-    var body: some View {
-        MeshGradient(width: 3, height: 3, points: points, colors: colors)
-            .onChange(of: index) { value in
-                withAnimation(.easeInOut(duration: 2)) {
-                    colors = MeshGradientView.getColors(for: value)
-                    points = MeshGradientView.getPoints(for: value)
-                }
-            }
-            .onChange(of: colorScheme) { _ in
-                withAnimation(.easeInOut(duration: 2)) {
-                    colors = MeshGradientView.getColors(for: index)
-                    points = MeshGradientView.getPoints(for: index)
-                }
-            }
-    }
-
-    private static func getColors(for index: Int) -> [Color] {
-        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-        let mixBy = colorScheme == .dark ? 0.4 : 0.0
-        return [
-            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-        ]
-    }
-
-    private static func getPoints(for index: Int) -> [SIMD2<Float>] {
-        let value = abs(Float(sin(CGFloat(index))))
-        let opositive = 1 - value
-        print("VALUE IS  \(index) \(value)")
-        return [
-            .init(0, 0), .init(0.5, 0), .init(1, 0),
-            .init(0, value), .init(opositive, value), .init(1, 0.5),
-            .init(0, 1), .init(0.5, 1), .init(1, 1),
-        ]
-    }
-}
+//<<<<<<< HEAD
+//
+//@available(iOS 18.0, *)
+//struct MeshGradientView: View {
+//    @Binding var index: Int
+//    @State private var points = MeshGradientView.getPoints(for: 0)
+//    @State var colors: [Color] = MeshGradientView.getColors(for: 0)
+//    @Environment(\.colorScheme) var colorScheme
+//    var body: some View {
+//        MeshGradient(width: 3, height: 3, points: points, colors: colors)
+//            .onChange(of: index) { value in
+//                withAnimation(.easeInOut(duration: 2)) {
+//                    colors = MeshGradientView.getColors(for: value)
+//                    points = MeshGradientView.getPoints(for: value)
+//                }
+//            }
+//            .onChange(of: colorScheme) { _ in
+//                withAnimation(.easeInOut(duration: 2)) {
+//                    colors = MeshGradientView.getColors(for: index)
+//                    points = MeshGradientView.getPoints(for: index)
+//                }
+//            }
+//    }
+//
+//    private static func getColors(for index: Int) -> [Color] {
+//        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+//        let mixBy = colorScheme == .dark ? 0.4 : 0.0
+//        return [
+//            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
+//        ]
+//    }
+//
+//    private static func getPoints(for index: Int) -> [SIMD2<Float>] {
+//        let value = abs(Float(sin(CGFloat(index))))
+//        let opositive = 1 - value
+//        print("VALUE IS  \(index) \(value)")
+//        return [
+//            .init(0, 0), .init(0.5, 0), .init(1, 0),
+//            .init(0, value), .init(opositive, value), .init(1, 0.5),
+//            .init(0, 1), .init(0.5, 1), .init(1, 1),
+//        ]
+//    }
+//}
+//=======
+//>>>>>>> parent of e9abe07d2 (centar presentation)
