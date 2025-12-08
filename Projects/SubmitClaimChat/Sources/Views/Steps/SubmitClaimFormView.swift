@@ -122,7 +122,7 @@ struct FormFieldView: View {
             error: $fieldViewModel.error
         ) { [weak viewModel] in
             guard let viewModel else { return }
-            if viewModel.isEnabled == true {
+            if viewModel.state.isEnabled == true {
                 viewModel.dateForPicker = fieldViewModel.values.first?.localDateToDate ?? Date()
                 viewModel.isDatePickerPresented = .init(
                     id: field.id,
@@ -199,7 +199,7 @@ struct FormFieldView: View {
     @hColorBuilder
     func dateColor(fieldId: String) -> some hColor {
         let hasSelectedDate = !viewModel.getFormStepValue(for: fieldId).values.isEmpty
-        if viewModel.isEnabled && hasSelectedDate {
+        if viewModel.state.isEnabled && hasSelectedDate {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.secondary
@@ -208,7 +208,7 @@ struct FormFieldView: View {
 
     @hColorBuilder
     var binaryColor: some hColor {
-        if viewModel.isEnabled {
+        if viewModel.state.isEnabled {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.secondary
@@ -234,7 +234,7 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 struct SubmitClaimFormResultView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
-        if viewModel.isStepExecuted {
+        if viewModel.state.isStepExecuted {
             VStack(alignment: .trailing, spacing: .padding4) {
                 ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
                     HStack(alignment: .center, spacing: .padding8) {

@@ -39,7 +39,7 @@ struct SubmitClaimChatMesageView: View {
                         maxWidth: viewModel.maxWidth,
                         alignment: viewModel.alignment
                     )
-                    .hButtonIsLoading(viewModel.isLoading)
+                    .hButtonIsLoading(viewModel.state.isLoading)
                     .fixedSize(horizontal: false, vertical: true)
                     .id("result_\(viewModel.id)")
                 spacing(viewModel.sender == .hedvig)
@@ -111,16 +111,16 @@ struct ClaimStepView: View {
                 .hButtonIsLoading(false)
             }
         }
-        .disabled(!viewModel.isEnabled)
+        .disabled(!viewModel.state.isEnabled)
     }
 }
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     var body: some View {
         VStack(alignment: .trailing, spacing: .padding4) {
-            if viewModel.isSkipped {
+            if viewModel.state.isSkipped {
                 hPill(text: "Skipped", color: .grey)
-            } else if viewModel.isStepExecuted || viewModel is SubmitClaimTaskStep
+            } else if viewModel.state.isStepExecuted || viewModel is SubmitClaimTaskStep
                 || viewModel is SubmitClaimSummaryStep
             {
                 if let viewModel = viewModel as? SubmitClaimAudioStep {
@@ -137,7 +137,7 @@ struct ClaimStepResultView: View {
                     SubmitClaimTaskResultView(viewModel: viewModel)
                 }
             }
-            if viewModel.isRegrettable && viewModel.isStepExecuted {
+            if viewModel.isRegrettable && viewModel.state.isStepExecuted {
                 hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
                     Task {
                         await viewModel?.regret()

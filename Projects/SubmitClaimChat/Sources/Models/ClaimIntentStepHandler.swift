@@ -5,6 +5,16 @@ import hCoreUI
 
 @MainActor
 class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
+    struct StepUIState {
+        var isLoading = false
+        var isEnabled = true
+        var error: Error?
+        var isStepExecuted = false
+        var isSkipped = false
+        var showError = false
+    }
+
+    @Published var state = StepUIState()
     var id: String { claimIntent.currentStep.id }
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMesageSender { .member }
@@ -12,19 +22,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var isRegrettable: Bool { claimIntent.isRegrettable }
     var showText: Bool { claimIntent.currentStep.showText }
 
-    @Published var isLoading: Bool = false
-    @Published var isEnabled: Bool = true
-    @Published var error: Error? {
-        didSet {
-            showError = error != nil
-        }
-    }
-    @Published var isStepExecuted = false
-    @Published var isSkipped = false
-    @Published var showError = false
-
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
+    private var submitTask: Task<Void, Never>?
 
     required init(
         claimIntent: ClaimIntent,
@@ -44,31 +44,32 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         fatalError("submitResponse must be overridden")
     }
 
-    private var submitTask: Task<(), Never>?
     final func submitResponse() {
-        let submitTask = Task { [weak self] in
+        submitTask?.cancel()
+
+        submitTask = Task { [weak self] in
             guard let self = self else { return }
             UIApplication.dismissKeyboard()
-            let hasError = error != nil
+            let hasError = state.error != nil
             withAnimation {
-                isLoading = true
-                isEnabled = false
-                error = nil
-                showError = false
+                state.isLoading = true
+                state.isEnabled = false
+                state.error = nil
+                state.showError = false
             }
             if hasError {
                 try? await Task.sleep(seconds: 0.5)
             }
             defer {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    isEnabled = self.error != nil
-                    isLoading = false
+                    state.isEnabled = self.state.error != nil
+                    state.isLoading = false
                 }
             }
             do {
                 let result = try await executeStep()
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    isStepExecuted = true
+                    state.isStepExecuted = true
                 }
                 switch result {
                 case let .intent(model):
@@ -77,26 +78,26 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                     mainHandler(.outcome(model: model))
                 }
             } catch let error {
-                self.error = error
+                self.state.error = error
             }
         }
     }
 
     func skip() async {
         withAnimation {
-            isLoading = true
-            isEnabled = false
+            state.isLoading = true
+            state.isEnabled = false
         }
         defer {
             withAnimation {
-                isLoading = false
+                state.isLoading = false
             }
         }
         do {
             let result = try await service.claimIntentSkipStep(stepId: id)
             withAnimation(.easeInOut(duration: 0.2)) {
-                isSkipped = true
-                isStepExecuted = true
+                state.isSkipped = true
+                state.isStepExecuted = true
             }
             guard let result else {
                 throw ClaimIntentError.invalidResponse
@@ -108,19 +109,19 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 mainHandler(.outcome(model: model))
             }
         } catch let ex {
-            self.error = ex
+            self.state.error = ex
         }
     }
 
     func regret() async {
         withAnimation {
-            isLoading = true
-            isEnabled = false
+            state.isLoading = true
+            state.isEnabled = false
         }
         defer {
             withAnimation {
-                isEnabled = true
-                isLoading = false
+                state.isEnabled = true
+                state.isLoading = false
             }
         }
 
@@ -130,8 +131,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 throw ClaimIntentError.invalidResponse
             }
             withAnimation {
-                isLoading = false
-                isEnabled = false
+                state.isLoading = false
+                state.isEnabled = false
             }
 
             switch result {
@@ -141,7 +142,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 break
             }
         } catch let ex {
-            self.error = ex
+            self.state.error = ex
         }
     }
 
