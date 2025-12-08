@@ -310,10 +310,10 @@ struct SubmitClaimAudioResultView: View {
     }
 
     private func playRecordingButton(url: URL) -> some View {
-        TrackPlayerView(audioPlayer: audioPlayer)
-            .padding(.vertical, -.padding16)
-            .padding(.horizontal, -.padding16)
-            .hPillStyle(color: .grey)
-            .onAppear { audioPlayer.url = url }
+        TrackPlayerView(audioPlayer: AudioPlayer(url: audioPlayer.url))
+            .trackPlayerBackground {
+                Color.clear
+                    .hPillStyle(color: .grey)
+            }
     }
 }
