@@ -1,4 +1,5 @@
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -12,7 +13,7 @@ public struct SubmitClaimChatScreen: View {
 
     public var body: some View {
         scrollContent
-            .hideToolbarBackgroundIfAvailable()
+        //            .hideToolbarBackgroundIfAvailable()
     }
 
     private var scrollContent: some View {
@@ -39,8 +40,16 @@ public struct SubmitClaimChatScreen: View {
                     .frame(maxWidth: .infinity, alignment: .topLeading)
 
                     if verticalSizeClass == .regular {
-                        Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
-                        Color.clear.frame(height: viewModel.completedStepsHeight)
+                        //                        Color.blue.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum - viewModel.scrollViewSafeArea + 32, 0))
+                        Color.blue.frame(
+                            height: max(
+                                viewModel.scrollViewHeight - viewModel.scrollViewSafeArea + 32
+                                    - viewModel.lastStepHeight,
+                                0
+                            )
+                        )
+
+                        //                        Color.red.frame(height: viewModel.completedStepsHeight)
                     }
                 }
                 .hFormContentPosition(.top)
@@ -52,6 +61,9 @@ public struct SubmitClaimChatScreen: View {
                 }
                 .onChange(of: proxy.size) { value in
                     viewModel.scrollViewHeight = value.height
+                }
+                .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+                    viewModel.scrollViewSafeArea = scrollView.safeAreaInsets.bottom
                 }
                 .hFormAttachToBottom {
                     if verticalSizeClass == .compact {
@@ -86,7 +98,7 @@ struct StepView: View {
             .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
             .background {
                 GeometryReader { proxy2 in
-                    Color.clear
+                    Color.orange
                         .onAppear {
                             viewModel.contentHeight[step.id] = proxy2.size.height
                         }
@@ -130,24 +142,35 @@ extension View {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return SubmitClaimChatScreen()
+        .embededInNavigation(tracking: "")
+        .environmentObject(
+            SubmitClaimChatViewModel(
+                input: .init(sourceMessageId: nil),
+                goToClaimDetails: { _ in
+                },
+                openChat: {
+                }
+            )
+        )
 }
 
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - Published UI State
-    @Published var allSteps: [ClaimIntentStepHandler] = [] {
+    @Published var allSteps: [ClaimIntentStepHandler] = []
+    @Published var currentStep: ClaimIntentStepHandler?
+    @Published var scrollToStepId: String = ""
+
+    var scrollViewSafeArea: CGFloat = 0
+    var scrollViewHeight: CGFloat = 0
+    var contentHeight: [String: CGFloat] = [:] {
         didSet {
             updateHeightCalculations()
         }
     }
-    @Published var currentStep: ClaimIntentStepHandler?
-    @Published var scrollToStepId: String = ""
-
-    @Published var scrollViewHeight: CGFloat = 0
-    @Published var contentHeight: [String: CGFloat] = [:]
     @Published var stepsHeightSum: CGFloat = 0
-    @Published var completedStepsHeight: CGFloat = 0
+    @Published var lastStepHeight: CGFloat = 0
 
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
@@ -172,10 +195,14 @@ final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - UI Height Calculations
     private func updateHeightCalculations() {
         stepsHeightSum = contentHeight.values.reduce(0, +)
-        completedStepsHeight =
-            allSteps
-            .filter { !$0.isEnabled }
-            .reduce(0) { $0 + (contentHeight[$1.id] ?? 0) }
+        //        completedStepsHeight =
+        //            allSteps
+        //            .filter { !$0.isEnabled }
+        //            .reduce(0) { $0 + (contentHeight[$1.id] ?? 0) }
+        //        completedStepsHeight =
+        if let id = allSteps.last?.id {
+            lastStepHeight = contentHeight[id] ?? 0
+        }
     }
 
     // MARK: - Business Logic

@@ -46,7 +46,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     private var submitTask: Task<(), Never>?
     final func submitResponse() {
-        let submitTask = Task { [weak self] in
+        submitTask = Task { [weak self] in
             guard let self = self else { return }
             UIApplication.dismissKeyboard()
             let hasError = error != nil
