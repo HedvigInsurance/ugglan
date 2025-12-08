@@ -5,18 +5,32 @@ import hCoreUI
 struct CrossSellStackComponent: View {
     let crossSells: [CrossSell]
     let withHeader: Bool
+    let headerTitle: String
+    let discountAvailable: Bool
+    init(crossSells: [CrossSell], discountAvailable: Bool, withHeader: Bool) {
+        self.crossSells = crossSells
+        self.withHeader = withHeader
+        self.discountAvailable = discountAvailable
+        headerTitle = {
+            if discountAvailable {
+                return L10n.insuranceOffersSubheading
+            } else {
+                return L10n.InsuranceTab.CrossSells.title
+            }
+        }()
+    }
     var body: some View {
         let content = hSection {
             VStack(spacing: .padding16) {
                 ForEach(crossSells, id: \.title) { crossSell in
-                    CrossSellingItem(crossSell: crossSell)
+                    CrossSellingItem(crossSell: crossSell, discountAvailable: discountAvailable)
                         .transition(.slide)
                 }
             }
         }
         Group {
             if withHeader {
-                content.withHeader(title: L10n.insuranceOffersSubheading)
+                content.withHeader(title: headerTitle)
             } else {
                 content
             }
@@ -46,6 +60,7 @@ struct CrossSellStackComponent: View {
                 buttonDescription: "button"
             ),
         ],
+        discountAvailable: true,
         withHeader: true
     )
 }
