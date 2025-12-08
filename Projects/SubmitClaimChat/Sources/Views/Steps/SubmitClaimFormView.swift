@@ -241,7 +241,7 @@ struct SubmitClaimFormResultView: View {
                         hText(item.0, style: .label)
                             .foregroundColor(hTextColor.Opaque.accordion)
                         hPill(text: item.1, color: .grey)
-                            .hFieldSize(.rounded)
+                            .hFieldSize(.capsuleShape)
                     }
                 }
             }
