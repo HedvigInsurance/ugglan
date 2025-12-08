@@ -11,11 +11,23 @@ struct SubmitClaimChatMesageView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
                         RevealTextView(
-                            text: viewModel.claimIntent.currentStep.text
+                            text: viewModel.claimIntent.currentStep.text,
+                            delay: 1
                         )
                     }
 
                     .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                }
+            }
+
+            if let viewModel = viewModel as? SubmitClaimAudioStep {
+                HStack {
+                    RevealTextView(
+                        text: viewModel.audioRecordingModel.hint,
+                        delay: 2,
+                        showDot: false
+                    )
                     Spacer()
                 }
             }
@@ -38,21 +50,6 @@ struct SubmitClaimChatMesageView: View {
     @ViewBuilder
     func spacing(_ addSpacing: Bool) -> some View {
         if addSpacing { Spacer() }
-    }
-
-    @ViewBuilder
-    func senderStamp(step: ClaimIntentStepHandler) -> some View {
-        if step.isLoading {
-            loadingView
-        } else {
-            HStack {
-                Circle()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.Green.element)
-                hText("Hedvig AI Assistant", style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
     }
 
     private var loadingView: some View {
