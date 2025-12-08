@@ -24,9 +24,7 @@ struct SupportView: View {
                     content: .init(title: L10n.CrossSell.Info.faqChatButton),
                     {
                         router.dismiss()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            openChat()
-                        }
+                        openChat()
                     }
                 )
             }

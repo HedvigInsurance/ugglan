@@ -84,9 +84,27 @@ public enum ClaimIntentStepContent: Sendable {
     case unknown
 }
 
-public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol {
+public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     public var nameForTracking: String {
-        ""
+        switch self {
+        case .deflect:
+            return String(describing: ClaimIntentOutcomeDeflection.self)
+        case .claim:
+            return String(describing: ClaimIntentOutcomeClaim.self)
+        case .unknown:
+            return "Unknown"
+        }
+    }
+
+    public var navigationTitle: String? {
+        switch self {
+        case .deflect(let model):
+            return model.title ?? ""
+        case .claim(let model):
+            return nil
+        case .unknown:
+            return nil
+        }
     }
 
     case deflect(model: ClaimIntentOutcomeDeflection)
@@ -251,6 +269,7 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
     let infoText: String?
     let warningText: String?
     let questions: [DeflectQuestion]
+    let linkOnlyPartners: [Partner]
 
     public init(
         title: String?,
@@ -262,7 +281,8 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
     ) {
         self.title = title
         self.content = content
-        self.partners = partners
+        self.partners = partners.filter({ $0.imageUrl != nil })
+        self.linkOnlyPartners = partners.filter({ $0.imageUrl == nil })
         self.infoText = infoText
         self.warningText = warningText
         self.questions = questions
