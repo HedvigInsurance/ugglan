@@ -3,7 +3,7 @@ import SwiftUI
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
     @State private var width: CGFloat = 0
-
+    @Environment(\.trackPlayerBackground) var trackPlayerBackground
     init(
         audioPlayer: AudioPlayer
     ) {
@@ -93,8 +93,7 @@ struct TrackPlayer: View {
             .frame(maxWidth: .infinity)
             .frame(height: 64)
             .background(
-                RoundedRectangle(cornerRadius: .cornerRadiusL)
-                    .fill(hSurfaceColor.Opaque.primary)
+                trackPlayerBackground
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()
@@ -111,4 +110,24 @@ struct TrackPlayer: View {
         )
     )
     TrackPlayer(audioPlayer: audioPlayer)
+}
+@MainActor
+private struct EnvironmentTrackPlayerBackground: @preconcurrency EnvironmentKey {
+    static let defaultValue: AnyView = AnyView(
+        RoundedRectangle(cornerRadius: .cornerRadiusL)
+            .fill(hSurfaceColor.Opaque.primary)
+    )
+}
+
+extension EnvironmentValues {
+    public var trackPlayerBackground: AnyView {
+        get { self[EnvironmentTrackPlayerBackground.self] }
+        set { self[EnvironmentTrackPlayerBackground.self] = newValue }
+    }
+}
+
+extension View {
+    public func trackPlayerBackground<Content: View>(@ViewBuilder background: () -> Content) -> some View {
+        environment(\.trackPlayerBackground, AnyView(background()))
+    }
 }
