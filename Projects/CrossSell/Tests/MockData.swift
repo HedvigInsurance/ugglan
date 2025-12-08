@@ -15,7 +15,11 @@ struct MockData {
             )
         },
         fetchCrossSell: @escaping FetchCrossSell = { _ in
-            .init(recommended: nil, others: [])
+            .init(
+                recommended: nil,
+                others: [],
+                discountAvailable: true
+            )
         }
     ) -> MockCrossSellService {
         let service = MockCrossSellService(
