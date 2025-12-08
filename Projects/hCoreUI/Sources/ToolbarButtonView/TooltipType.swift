@@ -8,6 +8,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     case chat(hasUnread: Bool)
     case travelCertificate
     case insuranceEvidence
+    case yearInReview
 
     @MainActor
     private static var animateOffer = true
@@ -23,6 +24,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return 2
         case .travelCertificate, .insuranceEvidence:
             return 3
+        case .yearInReview:
+            return 4
         }
     }
 
@@ -37,6 +40,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return hCoreUIAssets.inbox.image
         case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.image
+        case .yearInReview:
+            return hCoreUIAssets.chatQuickNav.image
         }
     }
 
@@ -50,6 +55,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return L10n.Toast.newMessage
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
+        case .yearInReview:
+            return "Year in review"
         }
     }
 
@@ -76,6 +83,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return "travelCertHint"
         case .insuranceEvidence:
             return "insuranceEvidenceHint"
+        case .yearInReview:
+            return "yearInReviewHint"
         }
     }
 
@@ -93,6 +102,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return L10n.Toast.newMessage
         case .travelCertificate, .insuranceEvidence:
             return L10n.Toast.readMore
+        case .yearInReview:
+            return "Year in review"
         }
     }
 
@@ -104,6 +115,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return 60
         case .crossSell:
             return 60 * 10  // 10 minutes
+        case .yearInReview:
+            return 60 * 60 * 24 * 7
         default:
             return nil
         }
@@ -150,6 +163,18 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             }
             return true
         case .travelCertificate, .insuranceEvidence:
+            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
+                let timeIntervalSincePast = abs(
+                    pastDate.timeIntervalSince(Date())
+                )
+
+                if timeIntervalSincePast > timeInterval {
+                    return true
+                }
+                return false
+            }
+            return true
+        case .yearInReview:
             if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
                 let timeIntervalSincePast = abs(
                     pastDate.timeIntervalSince(Date())

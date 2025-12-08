@@ -38,6 +38,8 @@ extension HomeScreen {
                     navigationVm?.router.push(HomeRouterAction.inbox)
                 case .travelCertificate, .insuranceEvidence:
                     break
+                case .yearInReview:
+                    break
                 }
             }
         )

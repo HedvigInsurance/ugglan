@@ -213,6 +213,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
+        types.append(.yearInReview)
         let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
 
         if crossSellStore.state.hasNewOffer {
