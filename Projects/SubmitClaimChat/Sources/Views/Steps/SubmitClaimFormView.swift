@@ -122,7 +122,7 @@ struct FormFieldView: View {
             error: $fieldViewModel.error
         ) { [weak viewModel] in
             guard let viewModel else { return }
-            if viewModel.isEnabled == true {
+            if viewModel.state.isEnabled == true {
                 viewModel.dateForPicker = fieldViewModel.values.first?.localDateToDate ?? Date()
                 viewModel.isDatePickerPresented = .init(
                     id: field.id,

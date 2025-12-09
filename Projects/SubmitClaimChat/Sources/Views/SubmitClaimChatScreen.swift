@@ -190,7 +190,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
         stepsHeightSum = contentHeight.values.reduce(0, +)
         completedStepsHeight =
             allSteps
-            .filter { !$0.isEnabled }
+            .filter { !$0.state.isEnabled }
             .reduce(0) { $0 + (contentHeight[$1.id] ?? 0) }
     }
 

@@ -5,15 +5,15 @@ struct AlertHelper: ViewModifier {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     func body(content: Content) -> some View {
         content
-            .alert(isPresented: $viewModel.showError) {
+            .alert(isPresented: $viewModel.state.showError) {
                 Alert(
                     title: Text(L10n.somethingWentWrong),
-                    message: Text(viewModel.error?.localizedDescription ?? ""),
+                    message: Text(viewModel.state.error?.localizedDescription ?? ""),
                     primaryButton: .default(Text(L10n.generalRetry)) {
                         viewModel.submitResponse()
                     },
                     secondaryButton: .default(Text(L10n.generalCloseButton)) {
-                        viewModel.isEnabled = true
+                        viewModel.state.isEnabled = true
                     }
                 )
             }

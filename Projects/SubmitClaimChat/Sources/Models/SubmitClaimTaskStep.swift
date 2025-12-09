@@ -31,7 +31,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        showResults = true
+        state.showResults = true
         try await getNextStep()
         guard
             let result = try await service.claimIntentSubmitTask(stepId: claimIntent.currentStep.id)
