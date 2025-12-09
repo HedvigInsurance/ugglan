@@ -21,23 +21,20 @@ public struct StoriesScreen: View {
                         }
                     }
                     Spacer()
-                    ZStack {
-                        ForEach(vm.stories) { story in
-                            StoryView(vm: vm, story: story)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { gestureValue in
-                                vm.gestureStart()
-                            }
-                            .onEnded { gestureValue in
-                                vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
-                            }
-                    )
-                    .disabled(vm.gestureDisabled)
+                    StoryView(vm: vm, story: vm.currentStory)
+                        .id(vm.currentStory.id)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { gestureValue in
+                                    vm.gestureStart()
+                                }
+                                .onEnded { gestureValue in
+                                    vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
+                                }
+                        )
+                        .disabled(vm.gestureDisabled)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -79,54 +76,41 @@ struct StoryView: View {
     @EnvironmentObject var router: Router
     var body: some View {
         VStack {
-            if showTitle {
-                hText(story.title, style: .heading3)
-                    .transition(.opacity)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                hText(story.title, style: .heading3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .opacity(0)
-            }
-            if showSubtitle {
-                hText(story.subtitle)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .transition(.opacity)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-            } else {
-                hText(story.subtitle)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .transition(.opacity)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .opacity(0)
-            }
+            hText(story.title, style: .heading3)
+                .transition(.opacity)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .opacity(showTitle ? 1 : 0)
+            hText(story.subtitle)
+                .foregroundColor(hTextColor.Opaque.secondary)
+                .transition(.opacity)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .opacity(showSubtitle ? 1 : 0)
             Spacer()
-            if showImage {
-                if story.mimeType == .GIF {
-                    KFAnimatedImage(story.imageUrl)
-                        .targetCache(ImageCache.default)
-                        .frame(width: 300, height: 300)
-                        .contentShape(Rectangle())
-                        .transition(.opacity)
-                } else {
-                    KFImage(story.imageUrl)
-                        .placeholder { _ in
-                            ProgressView()
-                                .foregroundColor(hTextColor.Opaque.primary)
-                                .environment(\.colorScheme, .light)
-                        }
-                        .targetCache(ImageCache.default)
-                        .resizable()
-                        .aspectRatio(
-                            contentMode: .fit
-                        )
-                        .cornerRadius(.padding16)
-                        .frame(width: 350)
-                        .contentShape(Rectangle())
-                        .transition(.opacity)
-                }
+            if story.mimeType == .GIF {
+                KFAnimatedImage(story.imageUrl)
+                    .targetCache(ImageCache.default)
+                    .frame(width: 300, height: 300)
+                    .contentShape(Rectangle())
+                    .transition(.opacity)
+                    .opacity(showImage ? 1 : 0)
+            } else {
+                KFImage(story.imageUrl)
+                    .placeholder { _ in
+                        ProgressView()
+                            .foregroundColor(hTextColor.Opaque.primary)
+                            .environment(\.colorScheme, .light)
+                    }
+                    .targetCache(ImageCache.default)
+                    .resizable()
+                    .aspectRatio(
+                        contentMode: .fit
+                    )
+                    .cornerRadius(.padding16)
+                    .frame(width: 350)
+                    .contentShape(Rectangle())
+                    .transition(.opacity)
+                    .opacity(showImage ? 1 : 0)
             }
             Spacer()
             if showThankYouButton {
@@ -216,6 +200,11 @@ class StoriesScreenViewModel: ObservableObject {
         self.stories = stories
         self.seenStories = []
         self.currentStory = stories.first!
+
+        // Prefetch and cache all story images
+        let urls = stories.map { $0.imageUrl }
+        let prefetcher = ImagePrefetcher(urls: urls, options: [.targetCache(ImageCache.default)])
+        prefetcher.start()
     }
 
     func gestureStart() {
@@ -281,8 +270,10 @@ class StoriesScreenViewModel: ObservableObject {
             if let currentStoryIndex = stories.firstIndex(where: { $0 == currentStory }) {
                 seenStories.removeAll(where: { $0 == currentStory })
                 if currentStoryIndex > 0 {
-                    currentStory = stories[currentStoryIndex - 1]
-                    animateProgress = 0
+                    withAnimation {
+                        currentStory = stories[currentStoryIndex - 1]
+                        animateProgress = 0
+                    }
                 } else {
                     setNextStoryAutomatic(forDuration: 10)
                 }

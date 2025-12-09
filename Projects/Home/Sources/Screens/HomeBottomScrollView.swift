@@ -23,29 +23,6 @@ struct HomeBottomScrollView: View {
             vm: scrollVM,
             content: { content in
                 switch content.id {
-                case .appReview2024:
-                    InfoCard(
-                        text:
-                            "Det är dags att titta tillbaka och reflektera på allt fantastiskt som hett det senaste året!",
-                        type: .campaign
-                    )
-                    .buttons(
-                        [
-                            .init(
-                                buttonTitle: "Visa",
-                                buttonAction: {
-                                    navigationVm.showYearReview = true
-                                    UserDefaults.appReview2024visited = true
-                                }
-                            ),
-                            .init(
-                                buttonTitle: "Dölj",
-                                buttonAction: {
-                                    UserDefaults.appReview2024visited = false
-                                }
-                            ),
-                        ]
-                    )
                 case .payment:
                     ConnectPaymentCardView()
                         .environmentObject(navigationVm.connectPaymentVm)
@@ -90,7 +67,6 @@ class HomeBottomScrollViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
-        handleAppReview()
         handlePayments()
         handleMissingCoInsured()
         handleImportantMessages()
@@ -98,23 +74,6 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleTerminatedMessage()
         handleUpdateOfMemberId()
         handleUpdateContactInfo()
-    }
-
-    private func handleAppReview() {
-        if UserDefaults.appReview2024visited == nil {
-            handleItem(.appReview2024, with: true)
-        } else {
-            handleItem(.appReview2024, with: false)
-        }
-        UserDefaults.$appReview2024visited
-            .sink { [weak self] value in
-                if value == nil {
-                    self?.handleItem(.appReview2024, with: true)
-                } else {
-                    self?.handleItem(.appReview2024, with: false)
-                }
-            }
-            .store(in: &cancellables)
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -317,7 +276,6 @@ struct InfoCardView: Identifiable, Hashable {
 }
 
 enum InfoCardType: Hashable, Comparable {
-    case appReview2024
     case payment
     case missingCoInsured
     case importantMessage(message: String)

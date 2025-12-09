@@ -41,7 +41,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.image
         case .yearInReview:
-            return hCoreUIAssets.chatQuickNav.image
+            return hCoreUIAssets.yearInReview.image
         }
     }
 
@@ -116,7 +116,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         case .crossSell:
             return 60 * 10  // 10 minutes
         case .yearInReview:
-            return 60 * 60 * 24 * 7
+            return 10  //60 * 60 * 24 * 7
         default:
             return nil
         }
@@ -221,6 +221,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             hFillColor.Opaque.primary
         case .crossSell:
             hSignalColor.Green.fill
+        case .yearInReview:
+            hSignalColor.Amber.fill
         default:
             hFillColor.Opaque.secondary
         }
@@ -231,6 +233,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         switch self {
         case .crossSell:
             hSignalColor.Green.text
+        case .yearInReview:
+            hSignalColor.Amber.text
         default:
             hTextColor.Opaque.negative
         }

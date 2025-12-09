@@ -39,7 +39,7 @@ extension HomeScreen {
                 case .travelCertificate, .insuranceEvidence:
                     break
                 case .yearInReview:
-                    break
+                    navigationVm?.showYearReview = true
                 }
             }
         )
