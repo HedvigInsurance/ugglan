@@ -109,13 +109,12 @@ struct AudioPulseBackground: View {
             }
             .scaleEffect(scaleEffect)
             .onChange(of: audioRecorder.decibelScale) { _ in
-                withAnimation(.spring) {
-                    scaleEffect =
-                        audioRecorder.isRecording
-                        ? pow((audioRecorder.decibelScale.last ?? 0.0) + 0.95, 4)
-                        : 0.95
-                }
+                scaleEffect =
+                    audioRecorder.isRecording
+                    ? pow((audioRecorder.decibelScale.last ?? 0.0) + 0.95, 4)
+                    : 0.95
             }
+            .animation(.spring, value: scaleEffect)
     }
 }
 

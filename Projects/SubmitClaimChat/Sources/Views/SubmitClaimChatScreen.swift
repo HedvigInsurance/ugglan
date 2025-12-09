@@ -13,7 +13,9 @@ public struct SubmitClaimChatScreen: View {
 
     public var body: some View {
         scrollContent
-        //            .hideToolbarBackgroundIfAvailable()
+            .hideToolbarBackgroundIfAvailable()
+            .modifier(SubmitClaimChatScreenAlertHelper(viewModel: viewModel))
+            .animation(.defaultSpring, value: viewModel.outcome)
     }
 
     private var scrollContent: some View {
@@ -24,6 +26,9 @@ public struct SubmitClaimChatScreen: View {
                         proxy.scrollTo(scrollToStepId, anchor: .top)
                     }
                 }
+                .onChange(of: viewModel.outcome) { _ in
+                    proxy.scrollTo("outcome", anchor: .top)
+                }
         }
     }
 
@@ -31,25 +36,28 @@ public struct SubmitClaimChatScreen: View {
         ZStack(alignment: .bottom) {
             GeometryReader { proxy in
                 hForm {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(viewModel.allSteps, id: \.id) { step in
-                            StepView(step: step)
+                    if let outcome = viewModel.outcome {
+                        SubmitClaimOutcomeScreen(outcome: outcome)
+                            .transition(.move(edge: .bottom))
+                            .id("outcome")
+                    } else {
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(viewModel.allSteps, id: \.id) { step in
+                                StepView(step: step)
+                            }
                         }
-                    }
-                    .padding(.horizontal, .padding12)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                        .padding(.horizontal, .padding12)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                    if verticalSizeClass == .regular {
-                        //                        Color.blue.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum - viewModel.scrollViewSafeArea + 32, 0))
-                        Color.blue.frame(
-                            height: max(
-                                viewModel.scrollViewHeight - viewModel.scrollViewSafeArea + 32
-                                    - viewModel.lastStepHeight,
-                                0
+                        if verticalSizeClass == .regular {
+                            Color.clear.frame(
+                                height: max(
+                                    viewModel.scrollViewHeight - viewModel.scrollViewSafeArea + 32
+                                        - viewModel.lastStepHeight,
+                                    0
+                                )
                             )
-                        )
-
-                        //                        Color.red.frame(height: viewModel.completedStepsHeight)
+                        }
                     }
                 }
                 .hFormContentPosition(.top)
@@ -76,7 +84,6 @@ public struct SubmitClaimChatScreen: View {
                 currentStepView
             }
         }
-        .animation(.defaultSpring, value: viewModel.currentStep?.id)
     }
 
     private var currentStepView: some View {
@@ -101,6 +108,7 @@ public struct SubmitClaimChatScreen: View {
                 }
             }
         }
+        .animation(.default, value: viewModel.currentStep?.id)
     }
 }
 
@@ -112,18 +120,17 @@ struct StepView: View {
         SubmitClaimChatMesageView(viewModel: step)
             .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
             .background {
-                GeometryReader { proxy2 in
-                    Color.orange
+                GeometryReader { proxy in
+                    Color.clear
                         .onAppear {
-                            viewModel.contentHeight[step.id] = proxy2.size.height
+                            viewModel.contentHeight[step.id] = proxy.size.height
                         }
-                        .onChange(of: proxy2.size) { value in
+                        .onChange(of: proxy.size) { value in
                             viewModel.contentHeight[step.id] = value.height
                         }
                 }
             }
             .id(step.id)
-            .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
     }
 }
 
@@ -172,6 +179,12 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: NSObject, ObservableObject {
+    @Published var error: Error? {
+        didSet {
+            showError = error != nil
+        }
+    }
+    @Published var showError = false
     // MARK: - Published UI State
     @Published var allSteps: [ClaimIntentStepHandler] = []
     @Published var currentStep: ClaimIntentStepHandler?
@@ -187,13 +200,15 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     @Published var stepsHeightSum: CGFloat = 0
     @Published var lastStepHeight: CGFloat = 0
     @Published var hideBottomPart = false
+    @Published var completedStepsHeight: CGFloat = 0
+    @Published var outcome: ClaimIntentStepOutcome?
 
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
     let router = Router()
-
+    private let input: StartClaimInput
     // MARK: - Initialization
     init(
         input: StartClaimInput,
@@ -203,10 +218,9 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
         self.goToClaimDetails = goToClaimDetails
         self.openChat = openChat
+        self.input = input
         super.init()
-        Task {
-            try? await self.startClaimIntent(input: input)
-        }
+        self.startClaimIntent()
     }
 
     // MARK: - UI Height Calculations
@@ -223,16 +237,22 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     }
 
     // MARK: - Business Logic
-    func startClaimIntent(input: StartClaimInput) async throws {
-        guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
-            throw ClaimIntentError.invalidResponse
-        }
+    func startClaimIntent() {
+        Task {
+            do {
+                guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
+                    throw ClaimIntentError.invalidResponse
+                }
 
-        switch claimIntent {
-        case let .intent(model):
-            processClaimIntent(.goToNext(claimIntent: model))
-        case let .outcome(model):
-            processClaimIntent(.outcome(model: model))
+                switch claimIntent {
+                case let .intent(model):
+                    processClaimIntent(.goToNext(claimIntent: model))
+                case let .outcome(model):
+                    processClaimIntent(.outcome(model: model))
+                }
+            } catch {
+                self.error = error
+            }
         }
     }
 
@@ -243,7 +263,12 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         case let .regret(currentClaimIntent, newclaimIntent):
             handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
         case let .outcome(model):
-            router.push(model)
+            self.allSteps.removeAll()
+            self.currentStep = nil
+            Task {
+                try? await Task.sleep(seconds: 0.5)
+                self.outcome = model
+            }
         }
     }
 

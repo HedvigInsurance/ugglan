@@ -100,7 +100,7 @@ public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol
         switch self {
         case .deflect(let model):
             return model.title ?? ""
-        case .claim(let model):
+        case .claim:
             return nil
         case .unknown:
             return nil
@@ -241,9 +241,13 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
 
     public struct ClaimIntentStepContentSummaryFileUpload: Sendable {
         let url: URL
+        let contentType: MimeType
+        let fileName: String
 
-        public init(url: URL) {
+        public init(url: URL, contentType: MimeType, fileName: String) {
             self.url = url
+            self.contentType = contentType
+            self.fileName = fileName
         }
     }
 

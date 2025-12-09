@@ -35,22 +35,29 @@ struct SubmitClaimAudioView: View {
 
     public var body: some View {
         hSection {
-            Group {
-                if let inputType = viewModel.inputType {
-                    switch inputType {
-                    case .audio:
-                        if let url = audioRecorder.recording?.url {
-                            playRecordingButton(url: url)
-                        } else if let url = viewModel.audioFileURL {
-                            playRecordingButton(url: url)
-                        } else {
-                            recordNewButton
+            VStack(spacing: .padding12) {
+                Group {
+                    if let inputType = viewModel.inputType {
+                        switch inputType {
+                        case .audio:
+                            if let url = audioRecorder.recording?.url {
+                                playRecordingButton(url: url)
+                            } else if let url = viewModel.audioFileURL {
+                                playRecordingButton(url: url)
+                            } else {
+                                recordNewButton
+                            }
+                        case .text:
+                            textElements
                         }
-                    case .text:
-                        textElements
                     }
-                } else {
-                    selectInputType
+                }
+                .transition(.opacity.combined(with: .move(edge: .bottom)).animation(.default))
+                .animation(.default, value: viewModel.inputType)
+                VStack(spacing: .padding4) {
+                    buttons
+                        .transition(.opacity.animation(.default))
+                        .animation(.default, value: viewModel.inputType)
                 }
             }
             .environmentObject(audioRecorder)
@@ -58,16 +65,74 @@ struct SubmitClaimAudioView: View {
         .sectionContainerStyle(.transparent)
     }
 
-    private var selectInputType: some View {
-        VStack(spacing: .padding4) {
+    private var textElements: some View {
+        VStack(spacing: .padding16) {
+            textField
+        }
+    }
+
+    @ViewBuilder
+    private var buttons: some View {
+        switch viewModel.inputType {
+        case .audio:
+            if let url = audioRecorder.recording?.url ?? viewModel.audioFileURL {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel),
+                    {
+                        viewModel.audioFileURL = url
+                        viewModel.submitResponse()
+                    }
+                )
+                .disabled(audioRecordingVm.viewState == .loading)
+                .hButtonIsLoading(audioRecordingVm.viewState == .loading)
+                .accessibilityFocused($saveAndContinueFocused)
+                .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
+
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.embarkRecordAgain),
+                    { audioRecorder.restart() }
+                )
+            } else {
+                if !audioRecorder.isRecording {
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(title: L10n.claimsUseTextInstead),
+                        {
+                            viewModel.inputType = .text
+                        }
+                    )
+                }
+            }
+        case .text:
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: L10n.saveAndContinueButtonLabel),
+                {
+                    UIApplication.dismissKeyboard()
+                    viewModel.submitResponse()
+                }
+            )
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.claimsUseAudioRecording),
+                {
+                    viewModel.inputType = .audio
+                }
+            )
+        case nil:
             hButton(
                 .large,
                 .primary,
                 content: .init(title: "Record voice note"),
                 {
-                    withAnimation {
-                        viewModel.inputType = .audio
-                    }
+                    viewModel.inputType = .audio
                 }
             )
             hButton(
@@ -75,38 +140,9 @@ struct SubmitClaimAudioView: View {
                 .ghost,
                 content: .init(title: "Describe with text"),
                 {
-                    withAnimation {
-                        viewModel.inputType = .text
-                    }
+                    viewModel.inputType = .text
                 }
             )
-        }
-    }
-
-    private var textElements: some View {
-        VStack(spacing: .padding16) {
-            textField
-            VStack(spacing: .padding4) {
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.saveAndContinueButtonLabel),
-                    {
-                        UIApplication.dismissKeyboard()
-                        viewModel.submitResponse()
-                    }
-                )
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.claimsUseAudioRecording),
-                    {
-                        withAnimation {
-                            viewModel.inputType = .audio
-                        }
-                    }
-                )
-            }
         }
     }
 
@@ -129,28 +165,6 @@ struct SubmitClaimAudioView: View {
                 .onAppear {
                     minutes = 0; seconds = 0
                 }
-            VStack(spacing: .padding4) {
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.saveAndContinueButtonLabel),
-                    {
-                        viewModel.audioFileURL = url
-                        viewModel.submitResponse()
-                    }
-                )
-                .disabled(audioRecordingVm.viewState == .loading)
-                .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-                .accessibilityFocused($saveAndContinueFocused)
-                .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
-
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.embarkRecordAgain),
-                    { withAnimation(.spring()) { audioRecorder.restart() } }
-                )
-            }
         }
         .onAppear { audioPlayer.url = url }
     }
@@ -162,22 +176,7 @@ struct SubmitClaimAudioView: View {
             }
             .frame(height: audioRecorder.isRecording ? 144 : 72)
 
-            if !audioRecorder.isRecording {
-                VStack(spacing: .padding4) {
-                    hText(L10n.claimsStartRecordingLabel, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    hButton(
-                        .large,
-                        .ghost,
-                        content: .init(title: L10n.claimsUseTextInstead),
-                        {
-                            withAnimation {
-                                viewModel.inputType = .text
-                            }
-                        }
-                    )
-                }
-            } else {
+            if audioRecorder.isRecording {
                 hText(String(format: "%02d:%02d", minutes, seconds), style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
                     .onReceive(timer) { _ in
@@ -276,7 +275,7 @@ extension AudioRecorder {
             return .error
         }
 
-        withAnimation(.spring()) { self.toggleRecording() }
+        self.toggleRecording()
         return .success
     }
 }
@@ -310,10 +309,10 @@ struct SubmitClaimAudioResultView: View {
     }
 
     private func playRecordingButton(url: URL) -> some View {
-        TrackPlayerView(audioPlayer: audioPlayer)
-            .padding(.vertical, -.padding16)
-            .padding(.horizontal, -.padding16)
-            .hPillStyle(color: .grey)
-            .onAppear { audioPlayer.url = url }
+        TrackPlayerView(audioPlayer: AudioPlayer(url: audioPlayer.url))
+            .trackPlayerBackground {
+                Color.clear
+                    .hPillStyle(color: .grey)
+            }
     }
 }

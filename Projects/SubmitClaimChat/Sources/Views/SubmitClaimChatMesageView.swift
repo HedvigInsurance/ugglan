@@ -11,7 +11,8 @@ struct SubmitClaimChatMesageView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
                         RevealTextView(
-                            text: viewModel.claimIntent.currentStep.text
+                            text: viewModel.claimIntent.currentStep.text,
+                            delay: 1
                         )
                     }
 
@@ -20,16 +21,33 @@ struct SubmitClaimChatMesageView: View {
                 }
             }
 
+            if let viewModel = viewModel as? SubmitClaimAudioStep {
+                HStack {
+                    RevealTextView(
+                        text: viewModel.audioRecordingModel.hint,
+                        delay: 2,
+                        showDot: false
+                    )
+                    Spacer()
+                }
+            }
+
             HStack {
                 spacing(viewModel.sender == .member)
-                ClaimStepResultView(viewModel: viewModel)
-                    .frame(
-                        maxWidth: viewModel.maxWidth,
-                        alignment: viewModel.alignment
-                    )
-                    .hButtonIsLoading(viewModel.isLoading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .id("result_\(viewModel.id)")
+                VStack(alignment: .trailing, spacing: .padding4) {
+                    ClaimStepResultView(viewModel: viewModel)
+                        .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
+                }
+                .animation(.easeInOut(duration: 0.2), value: viewModel.isStepExecuted)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.isSkipped)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.showResults)
+                .frame(
+                    maxWidth: viewModel.maxWidth,
+                    alignment: viewModel.alignment
+                )
+                .hButtonIsLoading(viewModel.isLoading)
+                .fixedSize(horizontal: false, vertical: true)
+                .id("result_\(viewModel.id)")
                 spacing(viewModel.sender == .hedvig)
             }
         }
@@ -38,31 +56,6 @@ struct SubmitClaimChatMesageView: View {
     @ViewBuilder
     func spacing(_ addSpacing: Bool) -> some View {
         if addSpacing { Spacer() }
-    }
-
-    @ViewBuilder
-    func senderStamp(step: ClaimIntentStepHandler) -> some View {
-        if step.isLoading {
-            loadingView
-        } else {
-            HStack {
-                Circle()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.Green.element)
-                hText("Hedvig AI Assistant", style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
-    }
-
-    private var loadingView: some View {
-        HStack { DotsActivityIndicator(.standard) }
-            .frame(maxWidth: .infinity, maxHeight: 40, alignment: .leading)
-            .padding(.horizontal, .padding16)
-            .background(hBackgroundColor.primary.opacity(0.01))
-            .edgesIgnoringSafeArea(.top)
-            .useDarkColor
-            .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
     }
 }
 
@@ -115,36 +108,35 @@ struct ClaimStepView: View {
             }
         }
         .disabled(!viewModel.isEnabled)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.isEnabled)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.isLoading)
     }
 }
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+    @ViewBuilder
     var body: some View {
-        VStack(alignment: .trailing, spacing: .padding4) {
-            if viewModel.isSkipped {
-                hPill(text: "Skipped", color: .grey)
-            } else if viewModel.isStepExecuted || viewModel is SubmitClaimTaskStep
-                || viewModel is SubmitClaimSummaryStep
-            {
-                if let viewModel = viewModel as? SubmitClaimAudioStep {
-                    SubmitClaimAudioResultView(viewModel: viewModel)
-                } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
-                    SubmitClaimSingleSelectResultView(viewModel: viewModel)
-                } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
-                    SubmitClaimSummaryView(viewModel: viewModel)
-                } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
-                    SubmitClaimFileUploadResultView(viewModel: viewModel)
-                } else if let viewModel = viewModel as? SubmitClaimFormStep {
-                    SubmitClaimFormResultView(viewModel: viewModel)
-                } else if let viewModel = viewModel as? SubmitClaimTaskStep {
-                    SubmitClaimTaskResultView(viewModel: viewModel)
-                }
+        if viewModel.isSkipped {
+            hPill(text: "Skipped", color: .grey)
+        } else if viewModel.showResults {
+            if let viewModel = viewModel as? SubmitClaimAudioStep {
+                SubmitClaimAudioResultView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
+                SubmitClaimSingleSelectResultView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
+                SubmitClaimSummaryView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
+                SubmitClaimFileUploadResultView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimFormStep {
+                SubmitClaimFormResultView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimTaskStep {
+                SubmitClaimTaskResultView(viewModel: viewModel)
             }
-            if viewModel.isRegrettable && viewModel.isStepExecuted {
-                hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
-                    Task {
-                        await viewModel?.regret()
-                    }
+        }
+        if viewModel.isRegrettable && viewModel.isStepExecuted {
+            hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
+                Task {
+                    await viewModel?.regret()
                 }
             }
         }
