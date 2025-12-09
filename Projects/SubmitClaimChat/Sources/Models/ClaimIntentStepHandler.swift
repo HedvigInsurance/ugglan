@@ -22,7 +22,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     @Published var isStepExecuted = false
     @Published var isSkipped = false
     @Published var showError = false
-
+    @Published var showResults = false
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
 
@@ -50,26 +50,21 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             guard let self = self else { return }
             UIApplication.dismissKeyboard()
             let hasError = error != nil
-            withAnimation {
-                isLoading = true
-                isEnabled = false
-                error = nil
-                showError = false
-            }
+            isLoading = true
+            isEnabled = false
+            error = nil
+            showError = false
             if hasError {
                 try? await Task.sleep(seconds: 0.5)
             }
             defer {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isEnabled = self.error != nil
-                    isLoading = false
-                }
+                isEnabled = self.error != nil
+                isLoading = false
             }
             do {
                 let result = try await executeStep()
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isStepExecuted = true
-                }
+                isStepExecuted = true
+                showResults = true
                 switch result {
                 case let .intent(model):
                     mainHandler(.goToNext(claimIntent: model))
@@ -83,21 +78,15 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     }
 
     func skip() async {
-        withAnimation {
-            isLoading = true
-            isEnabled = false
-        }
+        isLoading = true
+        isEnabled = false
         defer {
-            withAnimation {
-                isLoading = false
-            }
+            isLoading = false
         }
         do {
             let result = try await service.claimIntentSkipStep(stepId: id)
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isSkipped = true
-                isStepExecuted = true
-            }
+            isSkipped = true
+            isStepExecuted = true
             guard let result else {
                 throw ClaimIntentError.invalidResponse
             }
@@ -113,15 +102,11 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     }
 
     func regret() async {
-        withAnimation {
-            isLoading = true
-            isEnabled = false
-        }
+        isLoading = true
+        isEnabled = false
         defer {
-            withAnimation {
-                isEnabled = true
-                isLoading = false
-            }
+            isEnabled = true
+            isLoading = false
         }
 
         do {
@@ -129,10 +114,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             guard let result else {
                 throw ClaimIntentError.invalidResponse
             }
-            withAnimation {
-                isLoading = false
-                isEnabled = false
-            }
+            isLoading = false
+            isEnabled = false
 
             switch result {
             case let .intent(model):
