@@ -3,50 +3,157 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+// MARK: - Constants
+private enum StoryConstants {
+    static let storyDuration: Float = 10.0
+    static let tapThreshold: TimeInterval = 0.1
+    static let gestureDebounce: Float = 0.05
+    static let progressUpdateInterval: UInt64 = 100_000_000  // 0.1 seconds in nanoseconds
+    static let swipeThreshold: CGFloat = 0.5
+
+    enum Animation {
+        static let fadeOutDelay: Float = 0.2
+        static let titleFadeOutDelay: Float = 0.3
+        static let initialDelay: Float = 0.5
+        static let contentFadeInDelay: Float = 1.0
+        static let finalDelay: Float = 2.0
+    }
+
+    enum Size {
+        static let imageSize: CGFloat = 300
+    }
+}
+
+// MARK: - Story Animation Coordinator
+@MainActor
+private class StoryAnimationCoordinator: ObservableObject {
+    @Published var showTitle = false
+    @Published var showSubtitle = false
+    @Published var showImage = false
+    @Published var showThankYouButton = false
+
+    private var cancellable: Task<Void, Error>?
+
+    func reset() {
+        cancellable?.cancel()
+        showTitle = false
+        showSubtitle = false
+        showImage = false
+        showThankYouButton = false
+    }
+
+    func startAnimation(for story: Story, isLastStory: Bool, currentStory: Story?) async throws {
+        reset()
+
+        // Initial delays to fade out previous content
+        try await Task.sleep(seconds: StoryConstants.Animation.fadeOutDelay)
+        try await Task.sleep(seconds: StoryConstants.Animation.titleFadeOutDelay)
+
+        guard story == currentStory else { return }
+
+        // Show content in sequence
+        try await Task.sleep(seconds: StoryConstants.Animation.initialDelay)
+        try Task.checkCancellation()
+
+        withAnimation {
+            showImage = true
+        }
+
+        try await Task.sleep(seconds: StoryConstants.Animation.contentFadeInDelay)
+        try Task.checkCancellation()
+
+        withAnimation {
+            showTitle = true
+        }
+
+        try await Task.sleep(seconds: StoryConstants.Animation.contentFadeInDelay)
+        try Task.checkCancellation()
+
+        withAnimation {
+            showSubtitle = true
+        }
+
+        if isLastStory && story == currentStory {
+            try await Task.sleep(seconds: StoryConstants.Animation.finalDelay)
+            try Task.checkCancellation()
+
+            withAnimation {
+                showThankYouButton = true
+            }
+        }
+    }
+
+    func cancel() {
+        cancellable?.cancel()
+    }
+}
+
+// MARK: - Main Screen
 public struct StoriesScreen: View {
-    @StateObject var vm: StoriesScreenViewModel
+    @StateObject private var vm: StoriesScreenViewModel
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     public init(stories: [Story]) {
         self._vm = StateObject(wrappedValue: StoriesScreenViewModel(stories: stories))
     }
 
     public var body: some View {
-        hForm {
-            hSection {
-                GeometryReader { proxy in
-                    VStack {
-                        HStack(spacing: .padding4) {
-                            ForEach(vm.stories) { story in
-                                StoryProgressView(vm: vm, story: story)
-                            }
-                        }
-                        Spacer()
-                        StoryView(vm: vm, story: vm.currentStory)
+        GeometryReader { proxy in
+            hForm {
+                hSection {
+                    StoryContentContainer(vm: vm)
+                }
+            }
+            .hFormAttachToBottom {
+                if verticalSizeClass == .regular {
+                    hSection {
+                        StoryImageView(vm: vm, story: vm.currentStory)
                             .id(vm.currentStory.id)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .contentShape(Rectangle())
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onChanged { gestureValue in
-                                        vm.gestureStart()
-                                    }
-                                    .onEnded { gestureValue in
-                                        vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
-                                    }
-                            )
-                            .disabled(vm.gestureDisabled)
                     }
                 }
+            }
+            .sectionContainerStyle(.transparent)
+            .gesture(createStoryGesture(proxy: proxy))
+        }
+    }
+    private func createStoryGesture(proxy: GeometryProxy) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { _ in vm.handleGestureStart() }
+            .onEnded { gesture in
+                let normalizedOffset = gesture.location.x / proxy.size.width
+                vm.handleGestureEnd(normalizedOffset: normalizedOffset)
+            }
+    }
+}
+
+// MARK: - Story Content Container
+private struct StoryContentContainer: View {
+    @ObservedObject var vm: StoriesScreenViewModel
+
+    var body: some View {
+        VStack {
+            StoryProgressBar(vm: vm)
+            Spacer()
+            StoryView(vm: vm, story: vm.currentStory)
+                .id(vm.currentStory.id)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .disabled(vm.gestureDisabled)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Story Progress Bar
+private struct StoryProgressBar: View {
+    @ObservedObject var vm: StoriesScreenViewModel
+
+    var body: some View {
+        HStack(spacing: .padding4) {
+            ForEach(vm.stories) { story in
+                StoryProgressView(vm: vm, story: story)
             }
         }
-        .hFormAttachToBottom {
-            hSection {
-                StoryImageView(vm: vm, story: vm.currentStory)
-                    .id(vm.currentStory.id)
-            }
-        }
-        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -70,93 +177,91 @@ struct StoryProgressView: View {
         }
     }
 }
+// MARK: - Story Content View
 struct StoryView: View {
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var vm: StoriesScreenViewModel
-    let story: Story
-    @State private var showTitle = false
-    @State private var showSubtitle = false
+    @StateObject private var animator = StoryAnimationCoordinator()
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
-    @State private var cancellable: Task<(), any Error>?
-    @EnvironmentObject var router: Router
+    let story: Story
+
     var body: some View {
-        VStack(spacing: .padding16) {
-            if let title = story.title {
-                hPill(text: title, color: .grey)
+        HStack {
+            VStack(spacing: .padding16) {
+                if let title = story.title {
+                    hPill(text: title, color: .grey)
+                        .transition(.opacity)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .opacity(animator.showTitle ? 1 : 0)
+                        .padding(.bottom)
+                }
+                Text(story.getAttributedText(schema: colorScheme))
+                    .foregroundColor(hTextColor.Opaque.secondary)
                     .transition(.opacity)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .opacity(showTitle ? 1 : 0)
-                    .padding(.bottom)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(animator.showSubtitle ? 1 : 0)
             }
-            Text(story.getAttributedText(schema: colorScheme))
-                .foregroundColor(hTextColor.Opaque.secondary)
-                .transition(.opacity)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .opacity(showSubtitle ? 1 : 0)
+            if verticalSizeClass == .compact {
+                StoryImageView(vm: vm, story: vm.currentStory)
+                    .frame(maxHeight: StoryConstants.Size.imageSize)
+                    .id(vm.currentStory.id)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, .padding16)
-        .onAppear {
-            setTask()
-        }
-        .onChange(of: vm.currentStory) { value in
-            setTask()
-        }
-    }
-
-    private func setTask() {
-        cancellable?.cancel()
-        cancellable = Task {
-            try await Task.sleep(seconds: 0.2)
-            withAnimation {
-                showSubtitle = false
-            }
-
-            try await Task.sleep(seconds: 0.3)
-            withAnimation {
-                showTitle = false
-            }
-            if vm.currentStory == story {
-                try await Task.sleep(seconds: 0.5)
-                try Task.checkCancellation()
-                try await Task.sleep(seconds: 1)
-                try Task.checkCancellation()
-                withAnimation {
-                    showTitle = true
-                }
-
-                try await Task.sleep(seconds: 1)
-                try Task.checkCancellation()
-                withAnimation {
-                    showSubtitle = true
-                }
-                if vm.stories.last == story && vm.currentStory == story {
-                    try await Task.sleep(seconds: 2)
-                    try Task.checkCancellation()
-                }
-            }
+        .task(id: vm.currentStory) {
+            try? await animator.startAnimation(
+                for: story,
+                isLastStory: vm.isLastStory(story),
+                currentStory: vm.currentStory
+            )
         }
     }
 }
 
+// MARK: - Story Image View
 struct StoryImageView: View {
     @ObservedObject var vm: StoriesScreenViewModel
-    let story: Story
-    @State private var showImage = false
-    @State private var showThankYouButton = false
-
-    @State private var cancellable: Task<(), any Error>?
+    @StateObject private var animator = StoryAnimationCoordinator()
     @EnvironmentObject var router: Router
+    let story: Story
+
     var body: some View {
         VStack(spacing: .padding8) {
+            StoryImageContent(story: story, showImage: animator.showImage)
+
+            if animator.showThankYouButton {
+                hButton(.large, .secondary, content: .init(title: "Tack!")) {
+                    router.dismiss()
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, .padding16)
+        .task(id: vm.currentStory) {
+            try? await animator.startAnimation(
+                for: story,
+                isLastStory: vm.isLastStory(story),
+                currentStory: vm.currentStory
+            )
+        }
+    }
+}
+
+// MARK: - Story Image Content
+private struct StoryImageContent: View {
+    let story: Story
+    let showImage: Bool
+
+    var body: some View {
+        Group {
             if story.mimeType == .GIF {
                 KFAnimatedImage(story.imageUrl)
                     .targetCache(ImageCache.default)
-                    .frame(width: 300, height: 300)
-                    .contentShape(Rectangle())
-                    .transition(.opacity)
-                    .opacity(showImage ? 1 : 0)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
             } else {
                 KFImage(story.imageUrl)
                     .placeholder { _ in
@@ -166,175 +271,177 @@ struct StoryImageView: View {
                     }
                     .targetCache(ImageCache.default)
                     .resizable()
-                    .aspectRatio(
-                        contentMode: .fit
-                    )
+                    .aspectRatio(contentMode: .fit)
                     .cornerRadius(.padding16)
-                    .frame(width: 350)
-                    .contentShape(Rectangle())
-                    .transition(.opacity)
-                    .opacity(showImage ? 1 : 0)
-            }
-            if showThankYouButton {
-                hButton(.large, .secondary, content: .init(title: "Tack!")) {
-                    router.dismiss()
-                }
+                    .frame(maxWidth: .infinity)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, .padding16)
-        .onAppear {
-            setTask()
-        }
-        .onChange(of: vm.currentStory) { value in
-            setTask()
-        }
-    }
-
-    private func setTask() {
-        print("canceled task")
-        cancellable?.cancel()
-        cancellable = Task {
-            withAnimation {
-                showThankYouButton = false
-                showImage = false
-            }
-            try? await Task.sleep(seconds: 0.2)
-            try? await Task.sleep(seconds: 0.3)
-            try await Task.sleep(seconds: 0.5)
-            try Task.checkCancellation()
-            withAnimation {
-                showImage = true
-            }
-            try await Task.sleep(seconds: 1)
-            try Task.checkCancellation()
-
-            try await Task.sleep(seconds: 1)
-            try Task.checkCancellation()
-            if vm.stories.last == story && vm.currentStory == story {
-                try await Task.sleep(seconds: 2)
-                try Task.checkCancellation()
-                withAnimation {
-                    showThankYouButton = true
-                }
-            }
-        }
+        .contentShape(Rectangle())
+        .transition(.opacity)
+        .opacity(showImage ? 1 : 0)
     }
 }
 
+// MARK: - View Model
 @MainActor
 class StoriesScreenViewModel: ObservableObject {
-    var stories: [Story]
-    var seenStories: [Story]
+    // MARK: - Published Properties
+    @Published private(set) var stories: [Story]
+    @Published private(set) var seenStories: [Story] = []
     @Published var currentStory: Story! {
         didSet {
-            automaticProgressTask?.cancel()
-            automaticProgressTask = nil
-            setNextStoryAutomatic(forDuration: 10)
+            resetProgress()
+            startAutomaticProgress()
+        }
+    }
+    @Published private(set) var animateProgress: Double = 0
+    @Published private(set) var gestureDisabled = false
+
+    // MARK: - Private Properties
+    private var gestureStartTime: Date?
+    private var automaticProgressTask: Task<Void, Error>?
+
+    // MARK: - Initialization
+    init(stories: [Story]) {
+        self.stories = stories
+        self.currentStory = stories.first
+        prefetchImages()
+    }
+
+    // MARK: - Public Methods
+    func isLastStory(_ story: Story) -> Bool {
+        story == stories.last
+    }
+
+    func handleGestureStart() {
+        guard gestureStartTime == nil else { return }
+        gestureStartTime = Date()
+        automaticProgressTask?.cancel()
+    }
+
+    func handleGestureEnd(normalizedOffset: CGFloat) {
+        defer {
+            gestureStartTime = nil
+        }
+
+        guard let startTime = gestureStartTime else { return }
+
+        let duration = Date().timeIntervalSince(startTime)
+
+        if duration < StoryConstants.tapThreshold {
+            if normalizedOffset < StoryConstants.swipeThreshold {
+                navigateToPreviousStory()
+            } else {
+                navigateToNextStory()
+            }
+        } else {
+            resumeProgress()
         }
     }
 
-    private var timeStampOfStart: Date?
-    private var timeStampOfEnd: Date?
-
-    @Published var currentStoryProgress: Float = 0
-    @Published var gestureDisabled = false
-    @Published var animateProgress: Double = 0
-    private var automaticProgressTask: Task<(), any Error>?
-
-    var currentProgressTask: Task<Void, Never>?
-
-    init(stories: [Story]) {
-        self.stories = stories
-        self.seenStories = []
-        self.currentStory = stories.first!
-
-        // Prefetch and cache all story images
+    // MARK: - Private Methods
+    private func prefetchImages() {
         let urls = stories.map { $0.imageUrl }
-        let prefetcher = ImagePrefetcher(urls: urls, options: [.targetCache(ImageCache.default)])
+        let prefetcher = ImagePrefetcher(
+            urls: urls,
+            options: [.targetCache(ImageCache.default)]
+        )
         prefetcher.start()
     }
 
-    func gestureStart() {
-        if timeStampOfStart == nil {
-            timeStampOfStart = Date()
-            automaticProgressTask?.cancel()
+    private func resetProgress() {
+        automaticProgressTask?.cancel()
+        automaticProgressTask = nil
+    }
+
+    private func startAutomaticProgress() {
+        startAutomaticProgress(duration: StoryConstants.storyDuration)
+    }
+
+    private func startAutomaticProgress(duration: Float) {
+        automaticProgressTask = Task { [weak self] in
+            guard let self else { return }
+
+            let startProgress = Int(self.animateProgress * 100)
+            let totalSteps = 100
+
+            for step in startProgress...totalSteps {
+                try Task.checkCancellation()
+                await MainActor.run {
+                    self.animateProgress = Double(step) / 100.0
+                }
+                try await Task.sleep(nanoseconds: StoryConstants.progressUpdateInterval)
+            }
+
+            try Task.checkCancellation()
+            if !isLastStory(currentStory) {
+                self.navigateToNextStory()
+            }
         }
     }
 
-    func gestureEnded(withOffset: CGFloat) {
-        timeStampOfEnd = Date()
-        if let timeStampOfStart, let timeStampOfEnd {
-            let diff = timeStampOfEnd.timeIntervalSince(timeStampOfStart)
-            if diff < 0.1 {
-                if withOffset < 0.5 {
-                    goToPreviousStory()
-                } else {
-                    goToNextStory()
+    private func resumeProgress() {
+        let remainingDuration = StoryConstants.storyDuration * Float(1 - animateProgress)
+        startAutomaticProgress(duration: remainingDuration)
+    }
+
+    private func navigateToNextStory() {
+        guard let currentIndex = currentStoryIndex else { return }
+
+        setGestureDisabled(true)
+
+        Task {
+            defer { setGestureDisabled(false) }
+
+            if currentIndex < stories.count - 1 {
+                seenStories.append(currentStory)
+                withAnimation {
+                    currentStory = stories[currentIndex + 1]
+                    animateProgress = 0
                 }
             } else {
-                let duration = 10 - animateProgress * 10
-                setNextStoryAutomatic(forDuration: Float(duration))
+                resumeProgress()
             }
-            self.timeStampOfStart = nil
-            self.timeStampOfEnd = nil
+
+            try? await Task.sleep(seconds: StoryConstants.gestureDebounce)
         }
     }
 
-    private func setNextStoryAutomatic(forDuration: Float) {
-        automaticProgressTask = Task { [weak self] in
-            try Task.checkCancellation()
-            let from = Int(100 - forDuration * 10)
-            for i in from...100 {
-                try Task.checkCancellation()
-                self?.animateProgress = Double(i) / 100
-                try await Task.sleep(nanoseconds: 100_000_000)
-            }
-            try Task.checkCancellation()
-            self?.goToNextStory()
-        }
-    }
+    private func navigateToPreviousStory() {
+        guard let currentIndex = currentStoryIndex else { return }
 
-    func goToNextStory() {
-        gestureDisabled = true
+        setGestureDisabled(true)
+
         Task {
-            if let currentStoryIndex = stories.firstIndex(where: { $0 == currentStory }) {
-                if currentStoryIndex < stories.count - 1 {
-                    seenStories.append(currentStory)
-                    withAnimation {
-                        currentStory = stories[currentStoryIndex + 1]
-                        animateProgress = 0
-                    }
-                } else {
-                    let duration = 10 - animateProgress * 10
-                    setNextStoryAutomatic(forDuration: Float(duration))
+            defer { setGestureDisabled(false) }
+
+            seenStories.removeAll { $0 == currentStory }
+
+            if currentIndex > 0 {
+                withAnimation {
+                    currentStory = stories[currentIndex - 1]
+                    animateProgress = 0
                 }
+            } else {
+                startAutomaticProgress()
             }
-            try await Task.sleep(seconds: 0.05)
-            gestureDisabled = false
+
+            try? await Task.sleep(seconds: StoryConstants.gestureDebounce)
         }
     }
 
-    func goToPreviousStory() {
-        gestureDisabled = true
-        Task {
-            if let currentStoryIndex = stories.firstIndex(where: { $0 == currentStory }) {
-                seenStories.removeAll(where: { $0 == currentStory })
-                if currentStoryIndex > 0 {
-                    withAnimation {
-                        currentStory = stories[currentStoryIndex - 1]
-                        animateProgress = 0
-                    }
-                } else {
-                    setNextStoryAutomatic(forDuration: 10)
-                }
-            }
-            try await Task.sleep(seconds: 0.05)
-            gestureDisabled = false
+    private func setGestureDisabled(_ disabled: Bool) {
+        Task { @MainActor in
+            gestureDisabled = disabled
         }
+    }
+
+    private var currentStoryIndex: Int? {
+        stories.firstIndex { $0 == currentStory }
     }
 }
 
+// MARK: - Story Model
 public struct Story: Identifiable, Equatable {
     public let id: String
     let title: String?
@@ -343,8 +450,14 @@ public struct Story: Identifiable, Equatable {
     let imageUrl: URL
     let mimeType: MimeType
 
-    public init(id: String, title: String?, startText: String, restOfTheText: String, imageUrl: URL, mimeType: MimeType)
-    {
+    public init(
+        id: String,
+        title: String?,
+        startText: String,
+        restOfTheText: String,
+        imageUrl: URL,
+        mimeType: MimeType
+    ) {
         self.id = id
         self.title = title
         self.startText = startText
@@ -355,22 +468,27 @@ public struct Story: Identifiable, Equatable {
 
     @MainActor
     func getAttributedText(schema: ColorScheme) -> AttributedString {
+        let colorSchemeType: SwiftUI.ColorScheme = schema == .light ? .light : .dark
+
         var startText = AttributedString(startText)
-        startText.foregroundColor = hTextColor.Opaque.primary.colorFor(schema == .light ? .light : .dark, .base).color
+        startText.foregroundColor = hTextColor.Opaque.primary.colorFor(colorSchemeType, .base).color
         startText.font = Fonts.fontFor(style: .body2)
+
         var subtitleText = AttributedString(" " + restOfTheText)
-        subtitleText.foregroundColor =
-            hTextColor.Opaque.secondary.colorFor(schema == .light ? .light : .dark, .base).color
+        subtitleText.foregroundColor = hTextColor.Opaque.secondary.colorFor(colorSchemeType, .base).color
         subtitleText.font = Fonts.fontFor(style: .body2)
+
         return startText + subtitleText
     }
 }
 
+// MARK: - Preview
 #Preview {
     StoriesScreen(stories: StoriesScreen.stories)
         .environmentObject(Router())
 }
 
+// MARK: - Preview Data
 extension StoriesScreen {
     public static let stories: [Story] = [
         .init(
@@ -486,56 +604,3 @@ extension StoriesScreen {
         ),
     ]
 }
-//<<<<<<< HEAD
-//
-//@available(iOS 18.0, *)
-//struct MeshGradientView: View {
-//    @Binding var index: Int
-//    @State private var points = MeshGradientView.getPoints(for: 0)
-//    @State var colors: [Color] = MeshGradientView.getColors(for: 0)
-//    @Environment(\.colorScheme) var colorScheme
-//    var body: some View {
-//        MeshGradient(width: 3, height: 3, points: points, colors: colors)
-//            .onChange(of: index) { value in
-//                withAnimation(.easeInOut(duration: 2)) {
-//                    colors = MeshGradientView.getColors(for: value)
-//                    points = MeshGradientView.getPoints(for: value)
-//                }
-//            }
-//            .onChange(of: colorScheme) { _ in
-//                withAnimation(.easeInOut(duration: 2)) {
-//                    colors = MeshGradientView.getColors(for: index)
-//                    points = MeshGradientView.getPoints(for: index)
-//                }
-//            }
-//    }
-//
-//    private static func getColors(for index: Int) -> [Color] {
-//        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-//        let mixBy = colorScheme == .dark ? 0.4 : 0.0
-//        return [
-//            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Blue.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Green.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Red.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//            hSignalColor.Amber.fill.colorFor(colorScheme, .base).color.mix(with: .black, by: mixBy),
-//        ]
-//    }
-//
-//    private static func getPoints(for index: Int) -> [SIMD2<Float>] {
-//        let value = abs(Float(sin(CGFloat(index))))
-//        let opositive = 1 - value
-//        print("VALUE IS  \(index) \(value)")
-//        return [
-//            .init(0, 0), .init(0.5, 0), .init(1, 0),
-//            .init(0, value), .init(opositive, value), .init(1, 0.5),
-//            .init(0, 1), .init(0.5, 1), .init(1, 1),
-//        ]
-//    }
-//}
-//=======
-//>>>>>>> parent of e9abe07d2 (centar presentation)
