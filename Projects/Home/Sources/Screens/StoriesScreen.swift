@@ -11,35 +11,41 @@ public struct StoriesScreen: View {
     }
 
     public var body: some View {
-        hSection {
-            GeometryReader { proxy in
-                VStack {
-                    Spacing(height: Float(.padding16))
-                    HStack(spacing: .padding4) {
-                        ForEach(vm.stories) { story in
-                            StoryProgressView(vm: vm, story: story)
+        hForm {
+            hSection {
+                GeometryReader { proxy in
+                    VStack {
+                        HStack(spacing: .padding4) {
+                            ForEach(vm.stories) { story in
+                                StoryProgressView(vm: vm, story: story)
+                            }
                         }
+                        Spacer()
+                        StoryView(vm: vm, story: vm.currentStory)
+                            .id(vm.currentStory.id)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .contentShape(Rectangle())
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { gestureValue in
+                                        vm.gestureStart()
+                                    }
+                                    .onEnded { gestureValue in
+                                        vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
+                                    }
+                            )
+                            .disabled(vm.gestureDisabled)
                     }
-                    Spacer()
-                    StoryView(vm: vm, story: vm.currentStory)
-                        .id(vm.currentStory.id)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .contentShape(Rectangle())
-                        .gesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { gestureValue in
-                                    vm.gestureStart()
-                                }
-                                .onEnded { gestureValue in
-                                    vm.gestureEnded(withOffset: gestureValue.location.x / proxy.size.width)
-                                }
-                        )
-                        .disabled(vm.gestureDisabled)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(hBackgroundColor.primary)
+        .hFormAttachToBottom {
+            hSection {
+                StoryImageView(vm: vm, story: vm.currentStory)
+                    .id(vm.currentStory.id)
+            }
+        }
         .sectionContainerStyle(.transparent)
     }
 }
@@ -65,28 +71,85 @@ struct StoryProgressView: View {
     }
 }
 struct StoryView: View {
+    @Environment(\.colorScheme) var colorScheme
     @ObservedObject var vm: StoriesScreenViewModel
     let story: Story
     @State private var showTitle = false
     @State private var showSubtitle = false
+
+    @State private var cancellable: Task<(), any Error>?
+    @EnvironmentObject var router: Router
+    var body: some View {
+        VStack(spacing: .padding16) {
+            if let title = story.title {
+                hPill(text: title, color: .grey)
+                    .transition(.opacity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .opacity(showTitle ? 1 : 0)
+                    .padding(.bottom)
+            }
+            Text(story.getAttributedText(schema: colorScheme))
+                .foregroundColor(hTextColor.Opaque.secondary)
+                .transition(.opacity)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .opacity(showSubtitle ? 1 : 0)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, .padding16)
+        .onAppear {
+            setTask()
+        }
+        .onChange(of: vm.currentStory) { value in
+            setTask()
+        }
+    }
+
+    private func setTask() {
+        cancellable?.cancel()
+        cancellable = Task {
+            try await Task.sleep(seconds: 0.2)
+            withAnimation {
+                showSubtitle = false
+            }
+
+            try await Task.sleep(seconds: 0.3)
+            withAnimation {
+                showTitle = false
+            }
+            if vm.currentStory == story {
+                try await Task.sleep(seconds: 0.5)
+                try Task.checkCancellation()
+                try await Task.sleep(seconds: 1)
+                try Task.checkCancellation()
+                withAnimation {
+                    showTitle = true
+                }
+
+                try await Task.sleep(seconds: 1)
+                try Task.checkCancellation()
+                withAnimation {
+                    showSubtitle = true
+                }
+                if vm.stories.last == story && vm.currentStory == story {
+                    try await Task.sleep(seconds: 2)
+                    try Task.checkCancellation()
+                }
+            }
+        }
+    }
+}
+
+struct StoryImageView: View {
+    @ObservedObject var vm: StoriesScreenViewModel
+    let story: Story
     @State private var showImage = false
     @State private var showThankYouButton = false
 
     @State private var cancellable: Task<(), any Error>?
     @EnvironmentObject var router: Router
     var body: some View {
-        VStack {
-            hText(story.title, style: .heading3)
-                .transition(.opacity)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .opacity(showTitle ? 1 : 0)
-            hText(story.subtitle)
-                .foregroundColor(hTextColor.Opaque.secondary)
-                .transition(.opacity)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .opacity(showSubtitle ? 1 : 0)
-            Spacer()
+        VStack(spacing: .padding8) {
             if story.mimeType == .GIF {
                 KFAnimatedImage(story.imageUrl)
                     .targetCache(ImageCache.default)
@@ -112,7 +175,6 @@ struct StoryView: View {
                     .transition(.opacity)
                     .opacity(showImage ? 1 : 0)
             }
-            Spacer()
             if showThankYouButton {
                 hButton(.large, .secondary, content: .init(title: "Tack!")) {
                     router.dismiss()
@@ -130,44 +192,30 @@ struct StoryView: View {
     }
 
     private func setTask() {
+        print("canceled task")
         cancellable?.cancel()
         cancellable = Task {
             withAnimation {
                 showThankYouButton = false
                 showImage = false
             }
-            try await Task.sleep(seconds: 0.2)
+            try? await Task.sleep(seconds: 0.2)
+            try? await Task.sleep(seconds: 0.3)
+            try await Task.sleep(seconds: 0.5)
+            try Task.checkCancellation()
             withAnimation {
-                showSubtitle = false
+                showImage = true
             }
+            try await Task.sleep(seconds: 1)
+            try Task.checkCancellation()
 
-            try await Task.sleep(seconds: 0.3)
-            withAnimation {
-                showTitle = false
-            }
-            if vm.currentStory == story {
-                try await Task.sleep(seconds: 0.5)
+            try await Task.sleep(seconds: 1)
+            try Task.checkCancellation()
+            if vm.stories.last == story && vm.currentStory == story {
+                try await Task.sleep(seconds: 2)
                 try Task.checkCancellation()
                 withAnimation {
-                    showImage = true
-                }
-                try await Task.sleep(seconds: 1)
-                try Task.checkCancellation()
-                withAnimation {
-                    showTitle = true
-                }
-
-                try await Task.sleep(seconds: 1)
-                try Task.checkCancellation()
-                withAnimation {
-                    showSubtitle = true
-                }
-                if vm.stories.last == story && vm.currentStory == story {
-                    try await Task.sleep(seconds: 2)
-                    try Task.checkCancellation()
-                    withAnimation {
-                        showThankYouButton = true
-                    }
+                    showThankYouButton = true
                 }
             }
         }
@@ -257,6 +305,9 @@ class StoriesScreenViewModel: ObservableObject {
                         currentStory = stories[currentStoryIndex + 1]
                         animateProgress = 0
                     }
+                } else {
+                    let duration = 10 - animateProgress * 10
+                    setNextStoryAutomatic(forDuration: Float(duration))
                 }
             }
             try await Task.sleep(seconds: 0.05)
@@ -286,17 +337,32 @@ class StoriesScreenViewModel: ObservableObject {
 
 public struct Story: Identifiable, Equatable {
     public let id: String
-    let title: String
-    let subtitle: String
+    let title: String?
+    let startText: String
+    let restOfTheText: String
     let imageUrl: URL
     let mimeType: MimeType
 
-    public init(id: String, title: String, subtitle: String, imageUrl: URL, mimeType: MimeType) {
+    public init(id: String, title: String?, startText: String, restOfTheText: String, imageUrl: URL, mimeType: MimeType)
+    {
         self.id = id
         self.title = title
-        self.subtitle = subtitle
+        self.startText = startText
+        self.restOfTheText = restOfTheText
         self.imageUrl = imageUrl
         self.mimeType = mimeType
+    }
+
+    @MainActor
+    func getAttributedText(schema: ColorScheme) -> AttributedString {
+        var startText = AttributedString(startText)
+        startText.foregroundColor = hTextColor.Opaque.primary.colorFor(schema == .light ? .light : .dark, .base).color
+        startText.font = Fonts.fontFor(style: .body2)
+        var subtitleText = AttributedString(" " + restOfTheText)
+        subtitleText.foregroundColor =
+            hTextColor.Opaque.secondary.colorFor(schema == .light ? .light : .dark, .base).color
+        subtitleText.font = Fonts.fontFor(style: .body2)
+        return startText + subtitleText
     }
 }
 
@@ -310,8 +376,9 @@ extension StoriesScreen {
         .init(
             id: "first",
             title: "Höjdpunkter från året som gått – Hedvig 2024",
-            subtitle:
-                "Året börjar lida mot sitt slut. För att runda av 2024 har vi på Hedvig sammanfattat några höjdpunkter och kuriosa från året som gått.",
+            startText: "Året börjar lida mot sitt slut.",
+            restOfTheText:
+                "För att runda av 2024 har vi på Hedvig sammanfattat några höjdpunkter och kuriosa från året som gått.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1326x884%2Fa6e90a2901%2Flogo-hedvig-hojdpunkter-2024.png&w=3840&q=70&dpl=dpl_3BjzrAa6PjJHiJgTXAHjEbRABFka"
@@ -321,7 +388,8 @@ extension StoriesScreen {
         .init(
             id: "second",
             title: "Här växte vi mest",
-            subtitle: "Hedvig växer i bland annat Ånge, men flest antal nya medlemmar har vi fått i Stockholm. ",
+            startText: "Hedvig växer i bland annat Ånge,",
+            restOfTheText: "men flest antal nya medlemmar har vi fått i Stockholm.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1080x1080%2F4a1d0a6e6d%2Fanimation-stader.gif&w=3840&q=70&dpl=dpl_3BjzrAa6PjJHiJgTXAHjEbRABFka"
@@ -331,7 +399,8 @@ extension StoriesScreen {
         .init(
             id: "third",
             title: "Antal hanterade skador",
-            subtitle: "Vi hjälpte till med 29 125 skador under 2024. Hela 2 000 fler än förra året.",
+            startText: "Vi hjälpte till med 29 125 skador under 2024.",
+            restOfTheText: "Hela 2 000 fler än förra året.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1080x1080%2Fceecba5143%2Fanimation-antal-skador.gif&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"
@@ -341,8 +410,8 @@ extension StoriesScreen {
         .init(
             id: "fourth",
             title: "Flest försäkringar på en person",
-            subtitle:
-                "En medlem har skaffat försäkring för sina 8 katter, vilket hittills är flest försäkringar tecknade av en person hos Hedvig.",
+            startText: "En medlem har skaffat försäkring för sina 8 katter,",
+            restOfTheText: "vilket hittills är flest försäkringar tecknade av en person hos Hedvig.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1500x1500%2Facdaefca75%2Fkatt-selfie-hedvig-1500.jpg&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"
@@ -352,8 +421,8 @@ extension StoriesScreen {
         .init(
             id: "fifth",
             title: "Årets otursdagar",
-            subtitle:
-                "De datum flest angett som skadetillfälle är 1 juli, 1 mars och 1 januari. Är den 1:a den nya 13:e?",
+            startText: "De datum flest angett som skadetillfälle är 1 juli, 1 mars och 1 januari.",
+            restOfTheText: "Är den 1:a den nya 13:e?",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1080x1080%2Fd2530910de%2Fanimation-otursdagar.gif&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"
@@ -363,8 +432,8 @@ extension StoriesScreen {
         .init(
             id: "sixth",
             title: "Antal försäkrade husdjur",
-            subtitle:
-                "Nu försäkrar vi 21 024 hundar och katter över hela landet. Det är nästan en fördubbling mot förra året.",
+            startText: "Nu försäkrar vi 21 024 hundar och katter över hela landet.",
+            restOfTheText: "Det är nästan en fördubbling mot förra året.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1080x1080%2F5c0e698822%2Fanimation-antal-husdjur.gif&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"
@@ -374,8 +443,8 @@ extension StoriesScreen {
         .init(
             id: "seventh",
             title: "Tredje bästa",
-            subtitle:
-                "Vi har blivit utsedda till Sveriges tredje mest välansedda försäkringsbolag av Trust & Reputation.",
+            startText: "Vi har blivit utsedda till Sveriges tredje mest välansedda försäkringsbolag",
+            restOfTheText: "av Trust & Reputation.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1080x1080%2F75123e2961%2Ftre-stjarna.png&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"
@@ -385,7 +454,8 @@ extension StoriesScreen {
         .init(
             id: "eight",
             title: "Årets snabbaste claim",
-            subtitle: "Vår snabbaste skadeanmälan i år var på 123 sekunder från anmäld skada till utbetald ersättning.",
+            startText: "Vår snabbaste skadeanmälan i år var på 123 sekunder",
+            restOfTheText: "från anmäld skada till utbetald ersättning.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1080x1080%2F050f68dbf0%2Fanimation-tidtagning.gif&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"
@@ -395,7 +465,8 @@ extension StoriesScreen {
         .init(
             id: "ninth",
             title: "Årets mest försäkrade bil",
-            subtitle: "Den bilmodell som vi har försäkrat allra mest under året är Volkswagen Golf. En klassiker.",
+            startText: "Den bilmodell som vi har försäkrat allra mest under året är Volkswagen Golf.",
+            restOfTheText: "En klassiker.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1920x1080%2F99e0d1b868%2Fsummercar-bottom.jpg&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"
@@ -405,7 +476,8 @@ extension StoriesScreen {
         .init(
             id: "tenth",
             title: "Djur-vabb",
-            subtitle: "Under året har 71 procent fler valt Djurförsäkring Premium, där ersättning för djur-vabb ingår.",
+            startText: "Under året har 71 procent fler valt Djurförsäkring Premium,",
+            restOfTheText: "där ersättning för djur-vabb ingår.",
             imageUrl: URL(
                 string:
                     "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F1080x1080%2Fbe939841d2%2Fhund-springer.png&w=3840&q=70&dpl=dpl_BBoqyXLnXvbtcYAVwg4of4Gr4UoK"

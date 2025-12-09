@@ -465,11 +465,7 @@ struct HomeTab: View {
                 )
             }
         )
-        .detent(
-            presented: $homeNavigationVm.showYearReview,
-            transitionType: .detent(style: [.large]),
-            options: .constant(.withoutGrabber)
-        ) {
+        .modally(presented: $homeNavigationVm.showYearReview) {
             StoriesScreen(stories: StoriesScreen.stories)
                 .embededInNavigation(options: .navigationBarHidden, tracking: "App Review")
         }
