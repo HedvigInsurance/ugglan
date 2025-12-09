@@ -21,7 +21,7 @@ public struct SubmitClaimChatScreen: View {
             mainContent
                 .onChange(of: viewModel.scrollToStepId) { scrollToStepId in
                     withAnimation {
-                        proxy.scrollTo("result_\(scrollToStepId)", anchor: .top)
+                        proxy.scrollTo(scrollToStepId, anchor: .top)
                     }
                 }
         }
@@ -64,6 +64,7 @@ public struct SubmitClaimChatScreen: View {
                 }
                 .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
                     viewModel.scrollViewSafeArea = scrollView.safeAreaInsets.bottom
+                    scrollView.delegate = viewModel
                 }
                 .hFormAttachToBottom {
                     if verticalSizeClass == .compact {
@@ -81,9 +82,23 @@ public struct SubmitClaimChatScreen: View {
     private var currentStepView: some View {
         ZStack {
             if let currentStep = viewModel.currentStep {
-                ClaimStepView(viewModel: currentStep)
-                    .modifier(AlertHelper(viewModel: currentStep))
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                if viewModel.hideBottomPart {
+                    hButton(
+                        .medium,
+                        .primary,
+                        content: .init(title: "Scroll")
+                    ) {
+                        viewModel.scrollToStepId = currentStep.id
+                        Task {
+                            try? await Task.sleep(seconds: 0.1)
+                            viewModel.scrollToStepId = "nil"
+                        }
+                    }
+                } else {
+                    ClaimStepView(viewModel: currentStep)
+                        .modifier(AlertHelper(viewModel: currentStep))
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
         }
     }
@@ -156,7 +171,7 @@ extension View {
 
 // MARK: - Main Model
 @MainActor
-final class SubmitClaimChatViewModel: ObservableObject {
+final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     // MARK: - Published UI State
     @Published var allSteps: [ClaimIntentStepHandler] = []
     @Published var currentStep: ClaimIntentStepHandler?
@@ -171,6 +186,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
     @Published var stepsHeightSum: CGFloat = 0
     @Published var lastStepHeight: CGFloat = 0
+    @Published var hideBottomPart = false
 
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
@@ -187,8 +203,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
         self.goToClaimDetails = goToClaimDetails
         self.openChat = openChat
+        super.init()
         Task {
-            try? await startClaimIntent(input: input)
+            try? await self.startClaimIntent(input: input)
         }
     }
 
@@ -241,7 +258,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             self.allSteps.append(handler)
             try await Task.sleep(seconds: 1)
             currentStep = handler
-            scrollToStepId = previousStepId
+            scrollToStepId = "result_\(previousStepId)"
         }
     }
 
@@ -265,5 +282,23 @@ final class SubmitClaimChatViewModel: ObservableObject {
         flowManager.createStepHandler(for: claimIntent) { [weak self] claimEvent in
             self?.processClaimIntent(claimEvent)
         }
+    }
+}
+
+extension SubmitClaimChatViewModel: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        print(
+            "SCROLL \(scrollView.contentSize.height) \(scrollView.frame.size.height) \(scrollView.contentOffset.y + scrollView.safeAreaInsets.top) \(lastStepHeight)"
+        )
+
+        let contentHeight = scrollView.contentSize.height
+        let scrollViewHeight = scrollView.frame.size.height
+        let scrollOffset = scrollView.contentOffset.y
+        let bottomOffset = contentHeight - scrollViewHeight - scrollOffset
+        print("SCROLL \(bottomOffset)")
+        hideBottomPart = bottomOffset > 100
+        //        if bottomOffset > 100 {
+        //            print("User scrolled more than 100pt from the bottom: \(bottomOffset)pt")
+        //        }
     }
 }
