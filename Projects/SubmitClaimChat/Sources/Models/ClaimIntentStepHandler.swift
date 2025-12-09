@@ -8,7 +8,11 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     struct StepUIState {
         var isLoading = false
         var isEnabled = true
-        var error: Error?
+        var error: Error? {
+            didSet {
+                showError = error != nil
+            }
+        }
         var isStepExecuted = false
         var isSkipped = false
         var showError = false
