@@ -88,6 +88,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
             title
             value
           }
+		  freeTexts
           audioRecordings {
             url
           }
