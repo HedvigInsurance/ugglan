@@ -11,11 +11,23 @@ struct SubmitClaimChatMesageView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
                         RevealTextView(
-                            text: viewModel.claimIntent.currentStep.text
+                            text: viewModel.claimIntent.currentStep.text,
+                            delay: 1
                         )
                     }
 
                     .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                }
+            }
+
+            if let viewModel = viewModel as? SubmitClaimAudioStep {
+                HStack {
+                    RevealTextView(
+                        text: viewModel.audioRecordingModel.hint,
+                        delay: 2,
+                        showDot: false
+                    )
                     Spacer()
                 }
             }
