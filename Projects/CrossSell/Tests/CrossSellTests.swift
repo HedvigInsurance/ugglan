@@ -35,7 +35,8 @@ final class CrossSellTests: XCTestCase {
                     imageUrl: nil,
                     buttonDescription: "button description"
                 ),
-            ]
+            ],
+            discountAvailable: true
         )
 
         let mockService = MockData.createMockCrossSellService(
