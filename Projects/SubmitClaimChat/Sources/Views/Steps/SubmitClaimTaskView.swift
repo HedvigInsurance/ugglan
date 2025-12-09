@@ -19,8 +19,10 @@ struct SubmitClaimTaskResultView: View {
             hText(viewModel.taskModel.description, style: .label)
                 .animation(.easeInOut, value: viewModel.taskModel)
         }
+        .clipped()
         .hPillStyle(color: .grey)
         .hFieldSize(.capsuleShape)
+        .animation(.easeInOut, value: viewModel.taskModel)
     }
 }
 

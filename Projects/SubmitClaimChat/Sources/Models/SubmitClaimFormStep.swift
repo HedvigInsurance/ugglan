@@ -32,15 +32,9 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
     }
 
     override func validateInput() -> Bool {
-        // Validate required fields
         for field in formModel.fields where field.isRequired {
-            if let fieldModel = formValues[field.id] {
-                if fieldModel.values.isEmpty {
-                    fieldModel.error = "This field is required"
-                } else {
-                    fieldModel.error = nil
-                }
-            }
+            guard let fieldModel = formValues[field.id] else { continue }
+            fieldModel.validateField(field)
         }
         return formValues.values.allSatisfy({ $0.error == nil })
     }
@@ -93,5 +87,64 @@ final class FormStepValue: ObservableObject {
     init(values: [String]) {
         self.value = values.first ?? ""
         self.values = values
+    }
+}
+
+//MARK: VALIDATION
+extension FormStepValue {
+    fileprivate func validateField(_ field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
+        let finalValue = self.values.joined(separator: ",")
+
+        guard !finalValue.isEmpty else {
+            self.error = "This field is required"
+            return
+        }
+
+        let errors = collectValidationErrors(for: field, value: finalValue)
+        self.error = errors.isEmpty ? nil : errors.joined(separator: "\n")
+    }
+
+    private func collectValidationErrors(
+        for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField,
+        value: String
+    ) -> [String] {
+        switch field.type {
+        case .text:
+            return validateTextField(value: value, field: field)
+        case .number:
+            return validateNumberField(value: value, field: field)
+        default:
+            return []
+        }
+    }
+
+    private func validateTextField(
+        value: String,
+        field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
+    ) -> [String] {
+        var errors: [String] = []
+        if let minValue = field.minValue, value.count < Int(minValue) ?? 0 {
+            errors.append("Value must be at least \(minValue) characters long")
+        }
+        if let maxValue = field.maxValue, value.count > Int(maxValue) ?? 0 {
+            errors.append("Value must be at most \(maxValue) characters long")
+        }
+        return errors
+    }
+
+    private func validateNumberField(
+        value: String,
+        field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
+    ) -> [String] {
+        var errors: [String] = []
+        guard let numericValue = Int(value) else { return errors }
+
+        if let minValue = field.minValue, let minInt = Int(minValue), numericValue < minInt {
+            errors.append("Value must be at least \(minValue)")
+        }
+        if let maxValue = field.maxValue, let maxInt = Int(maxValue), numericValue > maxInt {
+            errors.append("Value must be at most \(maxValue)")
+        }
+        return errors
     }
 }

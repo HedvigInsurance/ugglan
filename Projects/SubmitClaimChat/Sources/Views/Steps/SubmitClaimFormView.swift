@@ -77,17 +77,17 @@ struct FormFieldView: View {
     var body: some View {
         switch field.type {
         case .date:
-            dateField()
+            dateField
         case .number:
             numberView
         case .text:
             textView
         case .binary:
-            binaryField(for: field)
+            binaryField
         case .singleSelect:
-            singleSelectField(for: field)
+            singleSelectField
         case .multiSelect:
-            multiSelectField(for: field)
+            multiSelectField
         }
     }
 
@@ -115,7 +115,7 @@ struct FormFieldView: View {
         )
     }
 
-    func dateField() -> some View {
+    private var dateField: some View {
         DropdownView(
             value: fieldViewModel.value,
             placeHolder: field.title,
@@ -135,13 +135,18 @@ struct FormFieldView: View {
                         viewModel?.isDatePickerPresented = nil
                     },
                     date: $viewModel.dateForPicker,
-                    config: .init(placeholder: "placeholder", title: "Select date")
+                    config: .init(
+                        minDate: field.minValue?.localDateToDate,
+                        maxDate: field.maxValue?.localDateToDate,
+                        placeholder: "placeholder",
+                        title: "Select date",
+                    )
                 )
             }
         }
     }
 
-    func singleSelectField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+    private var singleSelectField: some View {
         let selectedValue = viewModel.getFormStepValue(for: field.id)
         let selectedOption = field.options.first(where: { selectedValue.values.contains($0.value) })
         return DropdownView(
@@ -156,7 +161,7 @@ struct FormFieldView: View {
         }
     }
 
-    func multiSelectField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+    private var multiSelectField: some View {
         let selectedValue = viewModel.getFormStepValue(for: field.id)
         let selectedOption = field.options.filter({ selectedValue.values.contains($0.value) })
 
@@ -172,7 +177,7 @@ struct FormFieldView: View {
         }
     }
 
-    func binaryField(for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) -> some View {
+    private var binaryField: some View {
         VStack(alignment: .leading, spacing: 0) {
             hText(field.title)
             TagList(tags: field.options.compactMap({ $0.value })) { tag in
@@ -181,10 +186,9 @@ struct FormFieldView: View {
                     color: fieldViewModel.value == tag ? .green : .grey
                 )
                 .onTapGesture {
-                    withAnimation { [weak fieldViewModel] in
-                        fieldViewModel?.value = tag
-                    }
+                    fieldViewModel.value = tag
                 }
+                .animation(.default, value: fieldViewModel.value)
             }
             if let error = fieldViewModel.error {
                 HStack {
@@ -193,25 +197,6 @@ struct FormFieldView: View {
                 }
                 .padding(.leading, .padding16)
             }
-        }
-    }
-
-    @hColorBuilder
-    func dateColor(fieldId: String) -> some hColor {
-        let hasSelectedDate = !viewModel.getFormStepValue(for: fieldId).values.isEmpty
-        if viewModel.state.isEnabled && hasSelectedDate {
-            hTextColor.Opaque.primary
-        } else {
-            hTextColor.Opaque.secondary
-        }
-    }
-
-    @hColorBuilder
-    var binaryColor: some hColor {
-        if viewModel.state.isEnabled {
-            hTextColor.Opaque.primary
-        } else {
-            hTextColor.Opaque.secondary
         }
     }
 }
@@ -234,15 +219,12 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 struct SubmitClaimFormResultView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
-        if viewModel.state.isStepExecuted {
-            VStack(alignment: .trailing, spacing: .padding4) {
-                ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
-                    HStack(alignment: .center, spacing: .padding8) {
-                        hText(item.0, style: .label)
-                            .foregroundColor(hTextColor.Opaque.accordion)
-                        hPill(text: item.1, color: .grey)
-                            .hFieldSize(.capsuleShape)
-                    }
+        VStack(alignment: .trailing, spacing: .padding4) {
+            ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
+                HStack(alignment: .center, spacing: .padding8) {
+                    hText(item.0, style: .label)
+                        .foregroundColor(hTextColor.Opaque.accordion)
+                    hPill(text: item.1, color: .grey)
                 }
             }
         }

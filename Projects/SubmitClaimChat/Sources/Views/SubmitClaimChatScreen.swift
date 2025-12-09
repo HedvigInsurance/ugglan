@@ -14,6 +14,7 @@ public struct SubmitClaimChatScreen: View {
         scrollContent
             .hideToolbarBackgroundIfAvailable()
             .modifier(SubmitClaimChatScreenAlertHelper(viewModel: viewModel))
+            .animation(.defaultSpring, value: viewModel.outcome)
     }
 
     private var scrollContent: some View {
@@ -24,6 +25,9 @@ public struct SubmitClaimChatScreen: View {
                         proxy.scrollTo("result_\(scrollToStepId)", anchor: .top)
                     }
                 }
+                .onChange(of: viewModel.outcome) { _ in
+                    proxy.scrollTo("outcome", anchor: .top)
+                }
         }
     }
 
@@ -31,17 +35,23 @@ public struct SubmitClaimChatScreen: View {
         ZStack(alignment: .bottom) {
             GeometryReader { proxy in
                 hForm {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(viewModel.allSteps, id: \.id) { step in
-                            StepView(step: step)
+                    if let outcome = viewModel.outcome {
+                        SubmitClaimOutcomeScreen(outcome: outcome)
+                            .transition(.move(edge: .bottom))
+                            .id("outcome")
+                    } else {
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(viewModel.allSteps, id: \.id) { step in
+                                StepView(step: step)
+                            }
                         }
-                    }
-                    .padding(.horizontal, .padding12)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                        .padding(.horizontal, .padding12)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                    if verticalSizeClass == .regular {
-                        Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
-                        Color.clear.frame(height: viewModel.completedStepsHeight)
+                        if verticalSizeClass == .regular {
+                            Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
+                            Color.clear.frame(height: viewModel.completedStepsHeight)
+                        }
                     }
                 }
                 .hFormContentPosition(.top)
@@ -64,7 +74,6 @@ public struct SubmitClaimChatScreen: View {
                 currentStepView
             }
         }
-        .animation(.defaultSpring, value: viewModel.currentStep?.id)
     }
 
     private var currentStepView: some View {
@@ -75,6 +84,7 @@ public struct SubmitClaimChatScreen: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .animation(.default, value: viewModel.currentStep?.id)
     }
 }
 
@@ -97,7 +107,6 @@ struct StepView: View {
                 }
             }
             .id(step.id)
-            .transition(.opacity.combined(with: .move(edge: .leading)).animation(.defaultSpring))
     }
 }
 
@@ -155,6 +164,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     @Published var contentHeight: [String: CGFloat] = [:]
     @Published var stepsHeightSum: CGFloat = 0
     @Published var completedStepsHeight: CGFloat = 0
+    @Published var outcome: ClaimIntentStepOutcome?
 
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
@@ -211,7 +221,12 @@ final class SubmitClaimChatViewModel: ObservableObject {
         case let .regret(currentClaimIntent, newclaimIntent):
             handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
         case let .outcome(model):
-            router.push(model)
+            self.allSteps.removeAll()
+            self.currentStep = nil
+            Task {
+                try? await Task.sleep(seconds: 0.5)
+                self.outcome = model
+            }
         }
     }
 
