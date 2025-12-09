@@ -58,7 +58,11 @@ public struct ChatScreen: View {
             LazyVStack(spacing: .padding16) {
                 if messageVm.responseIsBeingGenerated {
                     HStack {
-                        AnimatedDotView()
+                        DotsActivityIndicator(.standard)
+                            .colorScheme(.dark)
+                            .padding(.padding10)
+                            .background(hSurfaceColor.Opaque.primary)
+                            .clipShape(Capsule())
                         Spacer()
                     }
                 }
