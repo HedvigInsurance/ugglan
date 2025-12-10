@@ -7,14 +7,20 @@ public struct SubmitClaimChatScreen: View {
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     @Environment(\.verticalSizeClass) var verticalSizeClass
+    @StateObject var alertVm = SubmitClaimChatScreenAlertViewModel()
 
     public init() {}
 
     public var body: some View {
         scrollContent
             .hideToolbarBackgroundIfAvailable()
-            .modifier(SubmitClaimChatScreenAlertHelper(viewModel: viewModel))
+            .submitClaimChatScreenAlert(alertVm)
             .animation(.defaultSpring, value: viewModel.outcome)
+            .onChange(of: viewModel.showError) { value in
+                if value {
+                    alertVm.alertIsPresented = .global(model: viewModel)
+                }
+            }
     }
 
     private var scrollContent: some View {
@@ -75,18 +81,32 @@ public struct SubmitClaimChatScreen: View {
             }
         }
     }
-
+    
     private var currentStepView: some View {
         ZStack {
             if let currentStep = viewModel.currentStep {
-                ClaimStepView(viewModel: currentStep)
-                    .modifier(AlertHelper(viewModel: currentStep))
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                CurrentStepView(step: currentStep, alertVm: alertVm)
             }
         }
         .animation(.default, value: viewModel.currentStep?.id)
     }
 }
+
+private struct CurrentStepView: View {
+    @ObservedObject var step: ClaimIntentStepHandler
+    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
+
+    var body: some View {
+        ClaimStepView(viewModel: step)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .onChange(of: step.state.showError) { value in
+                if value {
+                    alertVm.alertIsPresented = .step(model: step)
+                }
+            }
+    }
+}
+
 
 struct StepView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
