@@ -28,7 +28,7 @@ public struct ConversationMessagesData {
     let hasClaim: Bool
     let claimType: String?
     let claimId: String?
-
+    let responseIsBeingGenerated: Bool
     public init(
         messages: [Message],
         banner: Markdown?,
@@ -39,7 +39,8 @@ public struct ConversationMessagesData {
         isLegacy: Bool,
         hasClaim: Bool,
         claimType: String?,
-        claimId: String?
+        claimId: String?,
+        responseIsBeingGenerated: Bool
     ) {
         self.messages = messages
         self.banner = banner
@@ -51,6 +52,7 @@ public struct ConversationMessagesData {
         self.hasClaim = hasClaim
         self.claimType = claimType
         self.claimId = claimId
+        self.responseIsBeingGenerated = responseIsBeingGenerated
     }
 
     var screenTitle: String {

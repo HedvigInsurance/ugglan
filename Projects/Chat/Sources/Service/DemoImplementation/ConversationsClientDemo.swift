@@ -85,7 +85,8 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             isLegacy: false,
             hasClaim: false,
             claimType: nil,
-            claimId: nil
+            claimId: nil,
+            responseIsBeingGenerated: false
         )
     }
 
