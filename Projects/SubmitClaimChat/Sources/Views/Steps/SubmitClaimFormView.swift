@@ -220,13 +220,25 @@ struct SubmitClaimFormResultView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
         VStack(alignment: .trailing, spacing: .padding4) {
-            ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
-                HStack(alignment: .center, spacing: .padding8) {
-                    hText(item.0, style: .label)
+            ForEach(viewModel.getAllValuesToShow(), id: \.key) { item in
+                VStack(alignment: .trailing, spacing: 0) {
+                    hText(item.key, style: .label)
                         .foregroundColor(hTextColor.Opaque.accordion)
-                    hPill(text: item.1, color: .grey)
+                    hText(item.value)
+                        .foregroundColor(fieldTextColor(for: item))
+                        .hPillStyle(color: .grey)
+                        .hFieldSize(.capsuleShape)
                 }
             }
+        }
+    }
+
+    @hColorBuilder
+    private func fieldTextColor(for item: SubmitClaimFormStep.ResultDisplayItem) -> some hColor {
+        if item.skipped {
+            hTextColor.Translucent.secondary
+        } else {
+            hTextColor.Opaque.primary
         }
     }
 }
