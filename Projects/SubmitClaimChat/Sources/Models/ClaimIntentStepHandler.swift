@@ -59,14 +59,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             state.isLoading = true
             state.isEnabled = false
             state.error = nil
-            state.showError = false
 
             if hasError {
                 try? await Task.sleep(seconds: 0.5)
-            }
-            defer {
-                state.isEnabled = self.state.error != nil
-                state.isLoading = false
             }
             do {
                 try Task.checkCancellation()
@@ -80,8 +75,18 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 case let .outcome(model):
                     mainHandler(.outcome(model: model))
                 }
+                state.isLoading = false
             } catch let error {
-                self.state.error = error
+                if let error = error as? ClaimIntentError {
+                    switch error {
+                    case .invalidInput:
+                        state.isEnabled = true
+                    default:
+                        self.state.error = error
+                    }
+                } else {
+                    self.state.error = error
+                }
             }
         }
     }

@@ -20,7 +20,15 @@ public struct SubmitClaimChatScreen: View {
             .animation(.defaultSpring, value: viewModel.outcome)
             .onChange(of: viewModel.showError) { value in
                 if value {
-                    alertVm.alertIsPresented = .global(model: viewModel)
+                    alertVm.alertModel = .init(
+                        message: viewModel.error?.localizedDescription ?? "",
+                        action: {
+                            viewModel.startClaimIntent()
+                        },
+                        onClose: {
+                            viewModel.router.dismiss()
+                        }
+                    )
                 }
             }
     }
@@ -153,7 +161,12 @@ private struct CurrentStepView: View {
             .transition(.move(edge: .bottom).combined(with: .opacity))
             .onChange(of: step.state.showError) { value in
                 if value {
-                    alertVm.alertIsPresented = .step(model: step)
+                    alertVm.alertModel = .init(
+                        message: step.state.error?.localizedDescription ?? "",
+                        action: {
+                            step.submitResponse()
+                        }
+                    )
                 }
             }
     }
