@@ -6,10 +6,28 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     public func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
         .intent(
             model: .init(
-                currentStep: .init(content: .unknown, id: "id", text: ""),
-                id: "",
-                isSkippable: false,
-                isRegrettable: false
+                currentStep: .init(
+                    content: .singleSelect(
+                        model: .init(
+                            defaultSelectedId: nil,
+                            options: [
+                                .init(
+                                    id: "id1",
+                                    title: "Option 1"
+                                ),
+                                .init(
+                                    id: "id2",
+                                    title: "Option 2"
+                                ),
+                            ]
+                        )
+                    ),
+                    id: "1",
+                    text: "Select one"
+                ),
+                id: UUID().uuidString,
+                isSkippable: true,
+                isRegrettable: true
             )
         )
     }
@@ -43,8 +61,12 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     public func claimIntentSubmitForm(fields: [FieldValue], stepId: String) async throws -> ClaimIntentType? {
         .intent(
             model: .init(
-                currentStep: .init(content: .unknown, id: "id", text: ""),
-                id: "",
+                currentStep: .init(
+                    content: .task(model: .init(description: "Processing....", isCompleted: false)),
+                    id: UUID().uuidString,
+                    text: "Task Step"
+                ),
+                id: UUID().uuidString,
                 isSkippable: false,
                 isRegrettable: false
             )
@@ -77,10 +99,71 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     public func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntentType? {
         .intent(
             model: .init(
-                currentStep: .init(content: .unknown, id: "id", text: ""),
-                id: "",
-                isSkippable: false,
-                isRegrettable: false
+                currentStep: .init(
+                    content: .form(
+                        model: .init(
+                            fields: [
+                                .init(
+                                    defaultValues: ["text"],
+                                    id: "1",
+                                    isRequired: false,
+                                    maxValue: nil,
+                                    minValue: nil,
+                                    options: [],
+                                    suffix: nil,
+                                    title: "Text field",
+                                    type: .text
+                                ),
+                                .init(
+                                    defaultValues: ["22"],
+                                    id: "2",
+                                    isRequired: false,
+                                    maxValue: nil,
+                                    minValue: nil,
+                                    options: [],
+                                    suffix: nil,
+                                    title: "Number field",
+                                    type: .number
+                                ),
+                                .init(
+                                    defaultValues: ["1"],
+                                    id: "3",
+                                    isRequired: false,
+                                    maxValue: nil,
+                                    minValue: nil,
+                                    options: [
+                                        .init(title: "Option 1", value: "1"),
+                                        .init(title: "Option 2", value: "2"),
+                                        .init(title: "Option 3", value: "3"),
+                                    ],
+                                    suffix: nil,
+                                    title: "Single select",
+                                    type: .singleSelect
+                                ),
+                                .init(
+                                    defaultValues: ["1", "2"],
+                                    id: "4",
+                                    isRequired: false,
+                                    maxValue: nil,
+                                    minValue: nil,
+                                    options: [
+                                        .init(title: "Option 1", value: "1"),
+                                        .init(title: "Option 2", value: "2"),
+                                        .init(title: "Option 3", value: "3"),
+                                    ],
+                                    suffix: nil,
+                                    title: "Multi select",
+                                    type: .multiSelect
+                                ),
+                            ]
+                        )
+                    ),
+                    id: UUID().uuidString,
+                    text: "Form"
+                ),
+                id: UUID().uuidString,
+                isSkippable: true,
+                isRegrettable: true
             )
         )
     }

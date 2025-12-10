@@ -100,7 +100,7 @@ public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol
         switch self {
         case .deflect(let model):
             return model.title ?? ""
-        case .claim(let model):
+        case .claim:
             return nil
         case .unknown:
             return nil

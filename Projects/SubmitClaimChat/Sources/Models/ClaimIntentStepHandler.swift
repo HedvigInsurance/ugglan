@@ -51,7 +51,6 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     final func submitResponse() {
         submitTask?.cancel()
-
         submitTask = Task { [weak self] in
             guard let self = self else { return }
             UIApplication.dismissKeyboard()
@@ -70,7 +69,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 state.isLoading = false
             }
             do {
+                try Task.checkCancellation()
                 let result = try await executeStep()
+                try Task.checkCancellation()
                 state.isStepExecuted = true
                 state.showResults = true
                 switch result {

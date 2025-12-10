@@ -1,4 +1,6 @@
+import Combine
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -26,9 +28,9 @@ public struct SubmitClaimChatScreen: View {
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .onChange(of: viewModel.scrollToStepId) { scrollToStepId in
+                .onChange(of: viewModel.scrollTarget) { scrollTarget in
                     withAnimation {
-                        proxy.scrollTo("result_\(scrollToStepId)", anchor: .top)
+                        proxy.scrollTo(scrollTarget.id, anchor: scrollTarget.anchor)
                     }
                 }
                 .onChange(of: viewModel.outcome) { _ in
@@ -54,9 +56,10 @@ public struct SubmitClaimChatScreen: View {
                         .padding(.horizontal, .padding16)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                        if verticalSizeClass == .regular {
-                            Color.clear.frame(height: max(viewModel.scrollViewHeight - viewModel.stepsHeightSum, 0))
-                            Color.clear.frame(height: viewModel.completedStepsHeight)
+                        if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
+                            Color.clear.frame(
+                                height: viewModel.calculatePaddingHeight()
+                            )
                         }
                     }
                 }
@@ -70,13 +73,20 @@ public struct SubmitClaimChatScreen: View {
                 .onChange(of: proxy.size) { value in
                     viewModel.scrollViewHeight = value.height
                 }
+                .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+                    viewModel.scrollViewBottomInset = scrollView.safeAreaInsets.bottom
+                    if scrollView != viewModel.scrollView {
+                        viewModel.scrollView = scrollView
+                    }
+                }
                 .hFormAttachToBottom {
-                    if verticalSizeClass == .compact {
+                    if verticalSizeClass == .compact || viewModel.shouldMergeInputWithContent {
                         currentStepView
                     }
                 }
             }
-            if verticalSizeClass == .regular {
+            .ignoresSafeArea(.keyboard, edges: viewModel.shouldMergeInputWithContent ? [] : .all)
+            if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
                 currentStepView
             }
         }
@@ -85,10 +95,52 @@ public struct SubmitClaimChatScreen: View {
     private var currentStepView: some View {
         ZStack {
             if let currentStep = viewModel.currentStep {
-                CurrentStepView(step: currentStep, alertVm: alertVm)
+                if viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                    && !viewModel.shouldMergeInputWithContent
+                {
+                    ScrollToBottomButton(scrollAction: scrollToBottom)
+                } else {
+                    CurrentStepView(step: currentStep, alertVm: alertVm)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        viewModel.currentStepInputHeight = proxy.size.height
+                                    }
+                                    .onChange(of: proxy.size) { value in
+                                        viewModel.currentStepInputHeight = value.height
+                                    }
+                            }
+                        }
+                }
             }
         }
         .animation(.default, value: viewModel.currentStep?.id)
+        .animation(.easeInOut(duration: 0.5), value: viewModel.isInputScrolledOffScreen)
+    }
+
+    private func scrollToBottom() {
+        viewModel.scrollToBottom()
+    }
+}
+
+struct ScrollToBottomButton: View {
+    let scrollAction: () -> Void
+
+    var body: some View {
+        hCoreUIAssets.arrowDown.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .padding(.padding8)
+            .background(hFillColor.Opaque.negative)
+            .clipShape(Circle())
+            .contentShape(Circle())
+            .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+            .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+            .onTapGesture {
+                scrollAction()
+            }
+            .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 
@@ -115,13 +167,13 @@ struct StepView: View {
         SubmitClaimChatMesageView(viewModel: step)
             .padding(.vertical, .padding8)
             .background {
-                GeometryReader { proxy2 in
+                GeometryReader { proxy in
                     Color.clear
                         .onAppear {
-                            viewModel.contentHeight[step.id] = proxy2.size.height
+                            viewModel.stepHeights[step.id] = proxy.size.height
                         }
-                        .onChange(of: proxy2.size) { value in
-                            viewModel.contentHeight[step.id] = value.height
+                        .onChange(of: proxy.size) { value in
+                            viewModel.stepHeights[step.id] = value.height
                         }
                 }
             }
@@ -159,11 +211,26 @@ extension View {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return SubmitClaimChatScreen()
+        .embededInNavigation(tracking: "")
+        .environmentObject(
+            SubmitClaimChatViewModel(
+                input: .init(sourceMessageId: nil),
+                goToClaimDetails: { _ in
+                },
+                openChat: {
+                }
+            )
+        )
 }
 
 // MARK: - Main Model
 @MainActor
-final class SubmitClaimChatViewModel: ObservableObject {
+final class SubmitClaimChatViewModel: NSObject, ObservableObject {
+    // MARK: - Constants
+    private let inputHeightThreshold: CGFloat = 0.6
+    private let topPadding: CGFloat = 32
+    private let minimumSpacing: CGFloat = 10
+
     @Published var error: Error? {
         didSet {
             showError = error != nil
@@ -173,16 +240,64 @@ final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - Published UI State
     @Published var allSteps: [ClaimIntentStepHandler] = [] {
         didSet {
-            updateHeightCalculations()
+            isInputScrolledOffScreen = false
         }
     }
     @Published var currentStep: ClaimIntentStepHandler?
-    @Published var scrollToStepId: String = ""
+    @Published var scrollTarget: ScrollTarget = .init(id: "", anchor: .bottom)
 
-    @Published var scrollViewHeight: CGFloat = 0
-    @Published var contentHeight: [String: CGFloat] = [:]
-    @Published var stepsHeightSum: CGFloat = 0
-    @Published var completedStepsHeight: CGFloat = 0
+    var scrollViewBottomInset: CGFloat = 0
+    var scrollViewHeight: CGFloat = 0
+    var stepHeights: [String: CGFloat] = [:] {
+        didSet {
+            recalculateStepHeights()
+        }
+    }
+    private var scrollCancellable: AnyCancellable?
+
+    func scrollToBottom() {
+        if let scrollView {
+            let bottomOffset = CGPoint(
+                x: 0,
+                y: scrollView.contentSize.height - scrollView.bounds.size.height + scrollView.contentInset.bottom + 40
+            )
+            scrollView.setContentOffset(bottomOffset, animated: true)
+        }
+    }
+
+    func calculatePaddingHeight() -> CGFloat {
+        let height = scrollViewHeight - scrollViewBottomInset + topPadding - lastStepContentHeight
+        return max(
+            height,
+            currentStepInputHeight + minimumSpacing
+        )
+    }
+    var scrollView: UIScrollView? {
+        didSet {
+            scrollCancellable = scrollView?.publisher(for: \.contentOffset)
+                .throttle(for: .milliseconds(100), scheduler: DispatchQueue.main, latest: true)
+                .removeDuplicates()
+                .sink(receiveValue: { [weak self] value in
+                    guard let self, let scrollView = self.scrollView else { return }
+                    // if current step bottom input part is huge, just merge it with the form
+                    if self.currentStepInputHeight / scrollView.frame.size.height > self.inputHeightThreshold {
+                        self.shouldMergeInputWithContent = true
+                        return
+                    }
+                    self.shouldMergeInputWithContent = false
+                    let visibleHeight = scrollView.frame.size.height - self.currentStepInputHeight
+                    let totalContentHeight = self.totalStepsHeight - scrollView.contentOffset.y + 30
+                    self.isInputScrolledOffScreen = visibleHeight < totalContentHeight
+                })
+        }
+    }
+
+    var totalStepsHeight: CGFloat = 0
+    @Published var lastStepContentHeight: CGFloat = 0
+    @Published var currentStepInputHeight: CGFloat = 0
+    @Published var shouldMergeInputWithContent = false
+
+    @Published var isInputScrolledOffScreen = false
     @Published var outcome: ClaimIntentStepOutcome?
 
     // MARK: - Dependencies
@@ -201,16 +316,16 @@ final class SubmitClaimChatViewModel: ObservableObject {
         self.goToClaimDetails = goToClaimDetails
         self.openChat = openChat
         self.input = input
+        super.init()
         self.startClaimIntent()
     }
 
     // MARK: - UI Height Calculations
-    private func updateHeightCalculations() {
-        stepsHeightSum = contentHeight.values.reduce(0, +)
-        completedStepsHeight =
-            allSteps
-            .filter { !$0.state.isEnabled }
-            .reduce(0) { $0 + (contentHeight[$1.id] ?? 0) }
+    private func recalculateStepHeights() {
+        totalStepsHeight = stepHeights.values.reduce(0, +)
+        if let id = allSteps.last?.id {
+            lastStepContentHeight = stepHeights[id] ?? 0
+        }
     }
 
     // MARK: - Business Logic
@@ -251,7 +366,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
     private func handleGoToNextStep(claimIntent: ClaimIntent) {
         let handler = createStepHandler(for: claimIntent)
-        contentHeight[handler.id] = 0
+        stepHeights[handler.id] = 0
         let previousStepId = allSteps.last?.id ?? ""
         Task { @MainActor in
             if !self.allSteps.isEmpty {
@@ -260,7 +375,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             self.allSteps.append(handler)
             try await Task.sleep(seconds: 1)
             currentStep = handler
-            scrollToStepId = previousStepId
+            scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
         }
     }
 
@@ -269,20 +384,25 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
         if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
             for item in allSteps[indexToRemove..<allSteps.count] {
-                contentHeight.removeValue(forKey: item.id)
+                stepHeights.removeValue(forKey: item.id)
             }
             allSteps.removeSubrange((indexToRemove)..<allSteps.count)
         }
         let stepIdToScrollTo = allSteps.last?.id ?? handler.id
-        contentHeight[handler.id] = 0
+        stepHeights[handler.id] = 0
         allSteps.append(handler)
         currentStep = handler
-        scrollToStepId = stepIdToScrollTo
+        scrollTarget = .init(id: stepIdToScrollTo, anchor: .top)
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
         flowManager.createStepHandler(for: claimIntent) { [weak self] claimEvent in
             self?.processClaimIntent(claimEvent)
         }
+    }
+
+    struct ScrollTarget: Equatable {
+        let id: String
+        let anchor: UnitPoint
     }
 }
