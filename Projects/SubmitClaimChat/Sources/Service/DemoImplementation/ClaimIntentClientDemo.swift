@@ -142,7 +142,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 ),
                                 .init(
                                     defaultValues: ["1", "2"],
-                                    id: "3",
+                                    id: "4",
                                     isRequired: false,
                                     maxValue: nil,
                                     minValue: nil,
@@ -161,7 +161,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                     id: UUID().uuidString,
                     text: "Form"
                 ),
-                id: "",
+                id: UUID().uuidString,
                 isSkippable: true,
                 isRegrettable: true
             )

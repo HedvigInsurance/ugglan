@@ -21,7 +21,7 @@ public struct SubmitClaimChatScreen: View {
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .onChange(of: viewModel.scrollToStepId) { scrollToStepId in
+                .onChange(of: viewModel.scrollTo) { scrollToStepId in
                     withAnimation {
                         proxy.scrollTo(scrollToStepId, anchor: .top)
                     }
@@ -89,38 +89,8 @@ public struct SubmitClaimChatScreen: View {
     private var currentStepView: some View {
         ZStack {
             if let currentStep = viewModel.currentStep {
-                if viewModel.hideBottomPart {
-                    //                    hButton(
-                    //                        .medium,
-                    //                        .primary,
-                    //                        content: .init(title: "Scroll")
-                    //                    ) {
-                    //                        viewModel.scrollToStepId = currentStep.id
-                    //                        Task {
-                    //                            try? await Task.sleep(seconds: 0.1)
-                    //                            viewModel.scrollToStepId = "nil"
-                    //                        }
-                    //                    }
-                    hCoreUIAssets.arrowDown.view
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .padding(.padding8)
-                        .background {
-                            hFillColor.Opaque.negative
-                        }
-                        .clipShape(Circle())
-                        .contentShape(Circle())
-                        .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
-                        .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
-                        .onTapGesture {
-                            viewModel.scrollToStepId = currentStep.id
-                            Task {
-                                try? await Task.sleep(seconds: 0.1)
-                                viewModel.scrollToStepId = "nil"
-                            }
-                        }
-
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                if viewModel.isCurrentStepScrolledOffScreen && verticalSizeClass == .regular {
+                    ScrollDownButton(stepId: currentStep.id, scrollAction: scrollToCurrentStep)
                 } else {
                     ClaimStepView(viewModel: currentStep)
                         .modifier(AlertHelper(viewModel: currentStep))
@@ -129,10 +99,10 @@ public struct SubmitClaimChatScreen: View {
                             GeometryReader { proxy in
                                 Color.clear
                                     .onAppear {
-                                        viewModel.bottomHeight = proxy.size.height
+                                        viewModel.currentStepHeight = proxy.size.height
                                     }
                                     .onChange(of: proxy.size) { value in
-                                        viewModel.bottomHeight = value.height
+                                        viewModel.currentStepHeight = value.height
                                     }
                             }
                         }
@@ -140,7 +110,36 @@ public struct SubmitClaimChatScreen: View {
             }
         }
         .animation(.default, value: viewModel.currentStep?.id)
-        .animation(.easeInOut(duration: 0.5), value: viewModel.hideBottomPart)
+        .animation(.easeInOut(duration: 0.5), value: viewModel.isCurrentStepScrolledOffScreen)
+    }
+
+    private func scrollToCurrentStep(stepId: String) {
+        viewModel.scrollTo = stepId
+        Task {
+            try? await Task.sleep(seconds: 0.1)
+            viewModel.scrollTo = "nil"
+        }
+    }
+}
+
+struct ScrollDownButton: View {
+    let stepId: String
+    let scrollAction: (String) -> Void
+
+    var body: some View {
+        hCoreUIAssets.arrowDown.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .padding(.padding8)
+            .background(hFillColor.Opaque.negative)
+            .clipShape(Circle())
+            .contentShape(Circle())
+            .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+            .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+            .onTapGesture {
+                scrollAction(stepId)
+            }
+            .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 
@@ -220,7 +219,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     // MARK: - Published UI State
     @Published var allSteps: [ClaimIntentStepHandler] = []
     @Published var currentStep: ClaimIntentStepHandler?
-    @Published var scrollToStepId: String = ""
+    @Published var scrollTo: String = ""
 
     var scrollViewSafeArea: CGFloat = 0
     var scrollViewHeight: CGFloat = 0
@@ -231,9 +230,9 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     }
     var stepsHeightSum: CGFloat = 0
     @Published var lastStepHeight: CGFloat = 0
-    @Published var bottomHeight: CGFloat = 0
+    @Published var currentStepHeight: CGFloat = 0
 
-    @Published var hideBottomPart = false
+    @Published var isCurrentStepScrolledOffScreen = false
     @Published var outcome: ClaimIntentStepOutcome?
 
     // MARK: - Dependencies
@@ -311,7 +310,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             self.allSteps.append(handler)
             try await Task.sleep(seconds: 1)
             currentStep = handler
-            scrollToStepId = "result_\(previousStepId)"
+            scrollTo = "result_\(previousStepId)"
         }
     }
 
@@ -328,7 +327,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         contentHeight[handler.id] = 0
         allSteps.append(handler)
         currentStep = handler
-        scrollToStepId = stepIdToScrollTo
+        scrollTo = stepIdToScrollTo
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
@@ -340,9 +339,8 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
 extension SubmitClaimChatViewModel: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let shouldHide =
-            scrollView.frame.size.height - bottomHeight < stepsHeightSum - scrollView.contentOffset.y
-            + scrollView.safeAreaInsets.top
-        hideBottomPart = shouldHide
+        let visibleHeight = scrollView.frame.size.height - currentStepHeight
+        let totalContentHeight = stepsHeightSum - scrollView.contentOffset.y + scrollView.safeAreaInsets.top
+        isCurrentStepScrolledOffScreen = visibleHeight < totalContentHeight
     }
 }
