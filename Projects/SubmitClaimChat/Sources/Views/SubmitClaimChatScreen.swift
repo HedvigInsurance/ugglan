@@ -56,7 +56,7 @@ public struct SubmitClaimChatScreen: View {
                         .padding(.horizontal, .padding16)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                        if verticalSizeClass == .regular {
+                        if verticalSizeClass == .regular && !viewModel.mergeWithContent {
                             Color.clear.frame(
                                 height: max(
                                     viewModel.scrollViewHeight - viewModel.scrollViewSafeArea + 32
@@ -67,7 +67,6 @@ public struct SubmitClaimChatScreen: View {
                         }
                     }
                 }
-                .ignoresSafeArea(.keyboard, edges: .all)
                 .hFormContentPosition(.top)
                 .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .environmentObject(viewModel)
@@ -85,13 +84,13 @@ public struct SubmitClaimChatScreen: View {
                     }
                 }
                 .hFormAttachToBottom {
-                    if verticalSizeClass == .compact {
+                    if verticalSizeClass == .compact || viewModel.mergeWithContent {
                         currentStepView
                     }
                 }
             }
-            .ignoresSafeArea(.keyboard, edges: .all)
-            if verticalSizeClass == .regular {
+            .ignoresSafeArea(.keyboard, edges: viewModel.mergeWithContent ? [] : .all)
+            if verticalSizeClass == .regular && !viewModel.mergeWithContent {
                 currentStepView
             }
         }
@@ -100,7 +99,9 @@ public struct SubmitClaimChatScreen: View {
     private var currentStepView: some View {
         ZStack {
             if let currentStep = viewModel.currentStep {
-                if viewModel.isCurrentStepScrolledOffScreen && verticalSizeClass == .regular {
+                if viewModel.isCurrentStepScrolledOffScreen && verticalSizeClass == .regular
+                    && !viewModel.mergeWithContent
+                {
                     ScrollDownButton(stepId: currentStep.id, scrollAction: scrollToCurrentStep)
                 } else {
                     CurrentStepView(step: currentStep, alertVm: alertVm)
@@ -264,11 +265,15 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] value in
-                    print("SCROLLED \(value)")
                     guard let self, let scrollView = self.scrollView else { return }
+                    // if current step bottom input part is huge, just merge it with the form
+                    if self.currentStepHeight / scrollView.frame.size.height > 0.6 {
+                        self.mergeWithContent = true
+                        return
+                    }
+                    self.mergeWithContent = false
                     let visibleHeight = scrollView.frame.size.height - self.currentStepHeight
-                    let totalContentHeight =
-                        self.stepsHeightSum - scrollView.contentOffset.y + scrollView.safeAreaInsets.top
+                    let totalContentHeight = self.stepsHeightSum - scrollView.contentOffset.y + 30
                     self.isCurrentStepScrolledOffScreen = visibleHeight < totalContentHeight
                 })
         }
@@ -277,6 +282,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     var stepsHeightSum: CGFloat = 0
     @Published var lastStepHeight: CGFloat = 0
     @Published var currentStepHeight: CGFloat = 0
+    @Published var mergeWithContent = false
 
     @Published var isCurrentStepScrolledOffScreen = false
     @Published var outcome: ClaimIntentStepOutcome?
