@@ -219,11 +219,12 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 struct SubmitClaimFormResultView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
-        VStack(alignment: .trailing, spacing: .padding4) {
+        VStack(alignment: .trailing, spacing: .padding6) {
             ForEach(viewModel.getAllValuesToShow(), id: \.key) { item in
-                VStack(alignment: .trailing, spacing: 0) {
+                VStack(alignment: .trailing, spacing: .padding2) {
                     hText(item.key, style: .label)
                         .foregroundColor(hTextColor.Opaque.accordion)
+                        .padding(.trailing, .padding4)
                     hText(item.value)
                         .foregroundColor(fieldTextColor(for: item))
                         .hPillStyle(color: .grey)
