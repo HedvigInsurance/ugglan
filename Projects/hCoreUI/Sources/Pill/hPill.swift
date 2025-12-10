@@ -19,7 +19,7 @@ public struct hPill: View {
 
     public var body: some View {
         if !ProcessInfo.processInfo.arguments.contains("-UITestExcludeHPill") {
-            hText(text, style: fieldSize == .large ? .body1 : .label)
+            hText(text, style: getFontStyle)
                 .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                 .foregroundColor(color.pillTextColor(level: colorLevel))
                 .modifier(
@@ -30,6 +30,15 @@ public struct hPill: View {
                 )
         } else {
             EmptyView()
+        }
+    }
+
+    private var getFontStyle: HFontTextStyle {
+        switch fieldSize {
+        case .large, .capsuleShape:
+            return .body1
+        default:
+            return .label
         }
     }
 }
