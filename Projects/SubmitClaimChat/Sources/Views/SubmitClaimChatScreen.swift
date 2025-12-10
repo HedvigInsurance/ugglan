@@ -45,7 +45,7 @@ public struct SubmitClaimChatScreen: View {
                                 StepView(step: step)
                             }
                         }
-                        .padding(.horizontal, .padding12)
+                        .padding(.horizontal, .padding16)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
 
                         if verticalSizeClass == .regular {
