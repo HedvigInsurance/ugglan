@@ -165,6 +165,9 @@ private struct CurrentStepView: View {
                         message: step.state.error?.localizedDescription ?? "",
                         action: {
                             step.submitResponse()
+                        },
+                        onClose: {
+                            step.state.isEnabled = true
                         }
                     )
                 }
