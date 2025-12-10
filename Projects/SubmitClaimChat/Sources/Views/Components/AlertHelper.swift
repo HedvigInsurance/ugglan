@@ -3,11 +3,11 @@ import hCore
 
 class SubmitClaimChatScreenAlertViewModel: ObservableObject {
     @Published var alertIsPresented: SubmitClaimAlertState?
-    
+
     enum SubmitClaimAlertState: Identifiable {
         case global(model: SubmitClaimChatViewModel)
         case step(model: ClaimIntentStepHandler)
-        
+
         var id: ObjectIdentifier {
             switch self {
             case let .global(model):
@@ -16,7 +16,7 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
                 return ObjectIdentifier(model)
             }
         }
-        
+
         @MainActor
         var alert: Alert {
             switch self {
@@ -50,7 +50,7 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
 
 struct SubmitClaimChatScreenAlertHelper: ViewModifier {
     @ObservedObject var viewModel: SubmitClaimChatScreenAlertViewModel
-    
+
     func body(content: Content) -> some View {
         content
             .alert(item: $viewModel.alertIsPresented) { alertState in
@@ -64,4 +64,3 @@ extension View {
         self.modifier(SubmitClaimChatScreenAlertHelper(viewModel: viewModel))
     }
 }
-
