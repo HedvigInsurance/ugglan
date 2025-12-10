@@ -104,7 +104,6 @@ public struct SubmitClaimChatScreen: View {
                     ScrollDownButton(stepId: currentStep.id, scrollAction: scrollToCurrentStep)
                 } else {
                     CurrentStepView(step: currentStep, alertVm: alertVm)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
                         .background {
                             GeometryReader { proxy in
                                 Color.clear
