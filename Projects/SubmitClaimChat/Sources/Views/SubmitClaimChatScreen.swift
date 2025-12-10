@@ -81,7 +81,7 @@ public struct SubmitClaimChatScreen: View {
             }
         }
     }
-    
+
     private var currentStepView: some View {
         ZStack {
             if let currentStep = viewModel.currentStep {
@@ -106,7 +106,6 @@ private struct CurrentStepView: View {
             }
     }
 }
-
 
 struct StepView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
