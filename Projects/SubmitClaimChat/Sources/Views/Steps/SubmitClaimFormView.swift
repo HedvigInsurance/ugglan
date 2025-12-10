@@ -185,6 +185,7 @@ struct FormFieldView: View {
                     text: field.options.first(where: { $0.value == tag })?.title ?? "",
                     color: fieldViewModel.value == tag ? .green : .grey
                 )
+                .hFieldSize(.capsuleShape)
                 .onTapGesture {
                     fieldViewModel.value = tag
                 }
