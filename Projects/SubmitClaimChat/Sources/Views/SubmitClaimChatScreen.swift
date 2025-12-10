@@ -28,9 +28,9 @@ public struct SubmitClaimChatScreen: View {
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .onChange(of: viewModel.scrollTo) { scrollToStepId in
+                .onChange(of: viewModel.scrollTo) { scrollTo in
                     withAnimation {
-                        proxy.scrollTo(scrollToStepId, anchor: .top)
+                        proxy.scrollTo(scrollTo.id, anchor: scrollTo.anchor)
                     }
                 }
                 .onChange(of: viewModel.outcome) { _ in
@@ -58,11 +58,7 @@ public struct SubmitClaimChatScreen: View {
 
                         if verticalSizeClass == .regular && !viewModel.mergeWithContent {
                             Color.clear.frame(
-                                height: max(
-                                    viewModel.scrollViewHeight - viewModel.scrollViewSafeArea + 32
-                                        - viewModel.lastStepHeight,
-                                    0
-                                )
+                                height: viewModel.getScrollViewEmptySpace()
                             )
                         }
                     }
@@ -124,11 +120,7 @@ public struct SubmitClaimChatScreen: View {
     }
 
     private func scrollToCurrentStep(stepId: String) {
-        viewModel.scrollTo = stepId
-        Task {
-            try? await Task.sleep(seconds: 0.1)
-            viewModel.scrollTo = "nil"
-        }
+        viewModel.scrollToBottom()
     }
 }
 
@@ -248,7 +240,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         }
     }
     @Published var currentStep: ClaimIntentStepHandler?
-    @Published var scrollTo: String = ""
+    @Published var scrollTo: ScrollTo = .init(id: "", anchor: .bottom)
 
     var scrollViewSafeArea: CGFloat = 0
     var scrollViewHeight: CGFloat = 0
@@ -259,6 +251,23 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     }
     private var scrollCancellable: AnyCancellable?
 
+    func scrollToBottom() {
+        if let scrollView {
+            let bottomOffset = CGPoint(
+                x: 0,
+                y: scrollView.contentSize.height - scrollView.bounds.size.height + scrollView.contentInset.bottom
+            )
+            scrollView.setContentOffset(bottomOffset, animated: true)
+        }
+    }
+
+    func getScrollViewEmptySpace() -> CGFloat {
+        let height = scrollViewHeight - scrollViewSafeArea + 32 - lastStepHeight
+        return max(
+            height,
+            currentStepHeight + 10
+        )
+    }
     var scrollView: UIScrollView? {
         didSet {
             scrollCancellable = scrollView?.publisher(for: \.contentOffset)
@@ -362,7 +371,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             self.allSteps.append(handler)
             try await Task.sleep(seconds: 1)
             currentStep = handler
-            scrollTo = "result_\(previousStepId)"
+            scrollTo = .init(id: "result_\(previousStepId)", anchor: .top)
         }
     }
 
@@ -379,12 +388,17 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         contentHeight[handler.id] = 0
         allSteps.append(handler)
         currentStep = handler
-        scrollTo = stepIdToScrollTo
+        scrollTo = .init(id: stepIdToScrollTo, anchor: .top)
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
         flowManager.createStepHandler(for: claimIntent) { [weak self] claimEvent in
             self?.processClaimIntent(claimEvent)
         }
+    }
+
+    struct ScrollTo: Equatable {
+        let id: String
+        let anchor: UnitPoint
     }
 }
