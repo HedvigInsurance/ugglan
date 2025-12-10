@@ -80,7 +80,16 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                     mainHandler(.outcome(model: model))
                 }
             } catch let error {
-                self.state.error = error
+                if let error = error as? ClaimIntentError {
+                    switch error {
+                    case .invalidInput:
+                        break
+                    default:
+                        self.state.error = error
+                    }
+                } else {
+                    self.state.error = error
+                }
             }
         }
     }
