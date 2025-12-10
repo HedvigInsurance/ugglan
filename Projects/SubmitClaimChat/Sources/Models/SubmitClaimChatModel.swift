@@ -220,15 +220,18 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
     let audioRecordings: [ClaimIntentStepContentSummaryAudioRecording]
     let fileUploads: [ClaimIntentStepContentSummaryFileUpload]
     let items: [ClaimIntentStepContentSummaryItem]
+    let freeTexts: [String]
 
     public init(
         audioRecordings: [ClaimIntentStepContentSummaryAudioRecording],
         fileUploads: [ClaimIntentStepContentSummaryFileUpload],
-        items: [ClaimIntentStepContentSummaryItem]
+        items: [ClaimIntentStepContentSummaryItem],
+        freeTexts: [String]
     ) {
         self.audioRecordings = audioRecordings
         self.fileUploads = fileUploads
         self.items = items
+        self.freeTexts = freeTexts
     }
 
     public struct ClaimIntentStepContentSummaryAudioRecording: Sendable {

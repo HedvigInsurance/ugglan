@@ -31,7 +31,7 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task { [weak self] in
             try await Task.sleep(seconds: 0.5)
-            self?.showResults = true
+            self?.state.showResults = true
         }
     }
 

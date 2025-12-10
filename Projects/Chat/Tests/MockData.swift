@@ -14,7 +14,8 @@ struct MockData {
                 conversationStatus: nil,
                 title: nil,
                 subtitle: nil,
-                claimId: nil
+                claimId: nil,
+                responseIsBeingGenerated: false
             )
         },
         fetchPreviousMessages: @escaping FetchPreviousMessages = {
@@ -26,7 +27,8 @@ struct MockData {
                 conversationStatus: nil,
                 title: nil,
                 subtitle: nil,
-                claimId: nil
+                claimId: nil,
+                responseIsBeingGenerated: false
             )
         },
         sendMessage: @escaping SendMessage = { _ in .init(type: .text(text: "test", action: nil)) }
@@ -69,7 +71,8 @@ extension ChatData {
             conversationStatus: conversationStatus,
             title: title,
             subtitle: subtitle,
-            claimId: claimId
+            claimId: claimId,
+            responseIsBeingGenerated: false
         )
     }
 }

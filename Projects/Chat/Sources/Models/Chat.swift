@@ -10,4 +10,5 @@ public struct ChatData: Sendable {
     let title: String?
     let subtitle: String?
     let claimId: String?
+    let responseIsBeingGenerated: Bool
 }

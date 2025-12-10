@@ -90,25 +90,57 @@ public struct SubmitClaimChatScreen: View {
         ZStack {
             if let currentStep = viewModel.currentStep {
                 if viewModel.hideBottomPart {
-                    hButton(
-                        .medium,
-                        .primary,
-                        content: .init(title: "Scroll")
-                    ) {
-                        viewModel.scrollToStepId = currentStep.id
-                        Task {
-                            try? await Task.sleep(seconds: 0.1)
-                            viewModel.scrollToStepId = "nil"
+                    //                    hButton(
+                    //                        .medium,
+                    //                        .primary,
+                    //                        content: .init(title: "Scroll")
+                    //                    ) {
+                    //                        viewModel.scrollToStepId = currentStep.id
+                    //                        Task {
+                    //                            try? await Task.sleep(seconds: 0.1)
+                    //                            viewModel.scrollToStepId = "nil"
+                    //                        }
+                    //                    }
+                    hCoreUIAssets.arrowDown.view
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .padding(.padding8)
+                        .background {
+                            hFillColor.Opaque.negative
                         }
-                    }
+                        .clipShape(Circle())
+                        .contentShape(Circle())
+                        .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+                        .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+                        .onTapGesture {
+                            viewModel.scrollToStepId = currentStep.id
+                            Task {
+                                try? await Task.sleep(seconds: 0.1)
+                                viewModel.scrollToStepId = "nil"
+                            }
+                        }
+
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 } else {
                     ClaimStepView(viewModel: currentStep)
                         .modifier(AlertHelper(viewModel: currentStep))
                         .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        viewModel.bottomHeight = proxy.size.height
+                                    }
+                                    .onChange(of: proxy.size) { value in
+                                        viewModel.bottomHeight = value.height
+                                    }
+                            }
+                        }
                 }
             }
         }
         .animation(.default, value: viewModel.currentStep?.id)
+        .animation(.easeInOut(duration: 0.5), value: viewModel.hideBottomPart)
     }
 }
 
@@ -197,10 +229,11 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             updateHeightCalculations()
         }
     }
-    @Published var stepsHeightSum: CGFloat = 0
+    var stepsHeightSum: CGFloat = 0
     @Published var lastStepHeight: CGFloat = 0
+    @Published var bottomHeight: CGFloat = 0
+
     @Published var hideBottomPart = false
-    @Published var completedStepsHeight: CGFloat = 0
     @Published var outcome: ClaimIntentStepOutcome?
 
     // MARK: - Dependencies
@@ -226,11 +259,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     // MARK: - UI Height Calculations
     private func updateHeightCalculations() {
         stepsHeightSum = contentHeight.values.reduce(0, +)
-        //        completedStepsHeight =
-        //            allSteps
-        //            .filter { !$0.isEnabled }
-        //            .reduce(0) { $0 + (contentHeight[$1.id] ?? 0) }
-        //        completedStepsHeight =
         if let id = allSteps.last?.id {
             lastStepHeight = contentHeight[id] ?? 0
         }
@@ -312,18 +340,9 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
 extension SubmitClaimChatViewModel: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        print(
-            "SCROLL \(scrollView.contentSize.height) \(scrollView.frame.size.height) \(scrollView.contentOffset.y + scrollView.safeAreaInsets.top) \(lastStepHeight)"
-        )
-
-        let contentHeight = scrollView.contentSize.height
-        let scrollViewHeight = scrollView.frame.size.height
-        let scrollOffset = scrollView.contentOffset.y
-        let bottomOffset = contentHeight - scrollViewHeight - scrollOffset
-        print("SCROLL \(bottomOffset)")
-        hideBottomPart = bottomOffset > 100
-        //        if bottomOffset > 100 {
-        //            print("User scrolled more than 100pt from the bottom: \(bottomOffset)pt")
-        //        }
+        let shouldHide =
+            scrollView.frame.size.height - bottomHeight < stepsHeightSum - scrollView.contentOffset.y
+            + scrollView.safeAreaInsets.top
+        hideBottomPart = shouldHide
     }
 }

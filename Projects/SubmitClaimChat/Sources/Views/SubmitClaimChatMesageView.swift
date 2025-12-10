@@ -38,14 +38,14 @@ struct SubmitClaimChatMesageView: View {
                     ClaimStepResultView(viewModel: viewModel)
                         .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
                 }
-                .animation(.easeInOut(duration: 0.2), value: viewModel.isStepExecuted)
-                .animation(.easeInOut(duration: 0.2), value: viewModel.isSkipped)
-                .animation(.easeInOut(duration: 0.2), value: viewModel.showResults)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.state.isStepExecuted)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.state.isSkipped)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.state.showResults)
                 .frame(
                     maxWidth: viewModel.maxWidth,
                     alignment: viewModel.alignment
                 )
-                .hButtonIsLoading(viewModel.isLoading)
+                .hButtonIsLoading(viewModel.state.isLoading)
                 .fixedSize(horizontal: false, vertical: true)
                 .id("result_\(viewModel.id)")
                 spacing(viewModel.sender == .hedvig)
@@ -107,18 +107,18 @@ struct ClaimStepView: View {
                 .hButtonIsLoading(false)
             }
         }
-        .disabled(!viewModel.isEnabled)
-        .animation(.easeInOut(duration: 0.2), value: viewModel.isEnabled)
-        .animation(.easeInOut(duration: 0.2), value: viewModel.isLoading)
+        .disabled(!viewModel.state.isEnabled)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.state.isEnabled)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.state.isLoading)
     }
 }
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @ViewBuilder
     var body: some View {
-        if viewModel.isSkipped {
+        if viewModel.state.isSkipped {
             hPill(text: "Skipped", color: .grey)
-        } else if viewModel.showResults {
+        } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
                 SubmitClaimAudioResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
@@ -133,7 +133,7 @@ struct ClaimStepResultView: View {
                 SubmitClaimTaskResultView(viewModel: viewModel)
             }
         }
-        if viewModel.isRegrettable && viewModel.isStepExecuted {
+        if viewModel.isRegrettable && viewModel.state.isStepExecuted {
             hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
                 Task {
                     await viewModel?.regret()
