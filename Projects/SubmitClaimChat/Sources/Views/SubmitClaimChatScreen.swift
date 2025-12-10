@@ -259,7 +259,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         if let scrollView {
             let bottomOffset = CGPoint(
                 x: 0,
-                y: scrollView.contentSize.height - scrollView.bounds.size.height + scrollView.contentInset.bottom
+                y: scrollView.contentSize.height - scrollView.bounds.size.height + scrollView.contentInset.bottom + 40
             )
             scrollView.setContentOffset(bottomOffset, animated: true)
         }
@@ -275,7 +275,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     var scrollView: UIScrollView? {
         didSet {
             scrollCancellable = scrollView?.publisher(for: \.contentOffset)
-                .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
+                .throttle(for: .milliseconds(100), scheduler: DispatchQueue.main, latest: true)
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] value in
                     guard let self, let scrollView = self.scrollView else { return }
