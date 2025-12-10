@@ -15,6 +15,7 @@ struct SubmitClaimSummaryView: View {
                 ) {
                     itemView
                     audioRecordingView
+                    freeTextsView
                     uploadedFilesView
                 }
             }
@@ -67,6 +68,22 @@ struct SubmitClaimSummaryView: View {
             }
         }
     }
+
+    @ViewBuilder
+    var freeTextsView: some View {
+        if !viewModel.summaryModel.freeTexts.isEmpty {
+            VStack(alignment: .leading, spacing: .padding8) {
+                hText("Other information")
+                ForEach(viewModel.summaryModel.freeTexts, id: \.self) { freeText in
+                    HStack {
+                        hText(freeText)
+                            .hPillStyle(color: .grey)
+                    }
+                }
+                .foregroundColor(hTextColor.Opaque.secondary)
+            }
+        }
+    }
 }
 
 struct SubmitClaimSummaryBottomView: View {
@@ -103,6 +120,9 @@ struct SubmitClaimSummaryBottomView: View {
                             .init(title: "Brand", value: "iPhone"),
                             .init(title: "Model", value: "iPhone 14 Pro"),
                             .init(title: "Purchase date", value: "2023-11-26"),
+                        ],
+                        freeTexts: [
+                            "Free Text"
                         ]
                     )
                 ),

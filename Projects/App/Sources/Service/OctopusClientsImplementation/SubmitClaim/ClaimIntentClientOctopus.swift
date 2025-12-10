@@ -270,7 +270,9 @@ extension ClaimIntentStepContent {
         } else if let summary = fragment.asClaimIntentStepContentSummary {
             self = .summary(
                 model: .init(
-                    audioRecordings: summary.audioRecordings.map { .init(url: URL(string: $0.url)!) },
+                    audioRecordings: summary.audioRecordings.map {
+                        .init(url: URL(string: $0.url)!)
+                    },
                     fileUploads: summary.fileUploads.map {
                         .init(
                             url: URL(string: $0.url)!,
@@ -278,7 +280,10 @@ extension ClaimIntentStepContent {
                             fileName: $0.fileName
                         )
                     },
-                    items: summary.items.map { .init(title: $0.title, value: $0.value) }
+                    items: summary.items.map {
+                        .init(title: $0.title, value: $0.value)
+                    },
+                    freeTexts: summary.freeTexts
                 )
             )
         } else if let singleStep = fragment.asClaimIntentStepContentSelect {
