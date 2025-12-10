@@ -94,7 +94,7 @@ struct StepView: View {
 
     var body: some View {
         SubmitClaimChatMesageView(viewModel: step)
-            .padding(.vertical, !(step is SubmitClaimTaskStep) ? .padding8 : 0)
+            .padding(.vertical, .padding8)
             .background {
                 GeometryReader { proxy2 in
                     Color.clear
