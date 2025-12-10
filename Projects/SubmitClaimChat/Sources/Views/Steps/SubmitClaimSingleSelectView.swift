@@ -11,6 +11,7 @@ struct SubmitClaimSingleSelectView: View {
                     text: viewModel.model.options.first(where: { $0.id == tag })?.title ?? "",
                     color: .grey
                 )
+                .hFieldSize(.capsuleShape)
                 .onTapGesture {
                     viewModel.selectedOption = tag
                     viewModel.submitResponse()

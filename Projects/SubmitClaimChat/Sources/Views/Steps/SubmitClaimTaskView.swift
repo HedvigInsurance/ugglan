@@ -16,7 +16,7 @@ struct SubmitClaimTaskResultView: View {
                         CircularProgressView()
                     }
                 }
-            hText(viewModel.taskModel.description, style: .label)
+            hText(viewModel.taskModel.description, style: .body1)
                 .animation(.easeInOut, value: viewModel.taskModel)
         }
         .clipped()

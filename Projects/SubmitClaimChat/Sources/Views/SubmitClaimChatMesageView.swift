@@ -118,6 +118,7 @@ struct ClaimStepResultView: View {
     var body: some View {
         if viewModel.state.isSkipped {
             hPill(text: "Skipped", color: .grey)
+                .hFieldSize(.capsuleShape)
         } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
                 SubmitClaimAudioResultView(viewModel: viewModel)
