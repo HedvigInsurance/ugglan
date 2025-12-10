@@ -19,6 +19,9 @@ struct SubmitClaimFileUploadView: View {
         showFilesView
             .showFileSourcePicker($viewModel.showFileSourcePicker) { files in
                 fileUploadVm.addFiles(with: files)
+                if fileUploadVm.hasFiles {
+                    viewModel.disableSkip()
+                }
             }
     }
 

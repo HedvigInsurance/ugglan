@@ -17,6 +17,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var isSkipped = false
         var showError = false
         var showResults = false
+        var disableSkip = false
     }
 
     @Published var state = StepUIState()
@@ -39,6 +40,10 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         self.claimIntent = claimIntent
         self.service = service
         self.mainHandler = mainHandler
+    }
+
+    func disableSkip() {
+        state.disableSkip = true
     }
 
     func validateInput() -> Bool {
