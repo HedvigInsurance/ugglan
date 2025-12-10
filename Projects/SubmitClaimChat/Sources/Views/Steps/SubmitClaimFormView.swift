@@ -219,14 +219,27 @@ enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
 struct SubmitClaimFormResultView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
-        VStack(alignment: .trailing, spacing: .padding4) {
-            ForEach(viewModel.getAllValuesToShow(), id: \.0) { item in
-                HStack(alignment: .center, spacing: .padding8) {
-                    hText(item.0, style: .label)
+        VStack(alignment: .trailing, spacing: .padding6) {
+            ForEach(viewModel.getAllValuesToShow(), id: \.key) { item in
+                VStack(alignment: .trailing, spacing: .padding2) {
+                    hText(item.key, style: .label)
                         .foregroundColor(hTextColor.Opaque.accordion)
-                    hPill(text: item.1, color: .grey)
+                        .padding(.trailing, .padding4)
+                    hText(item.value)
+                        .foregroundColor(fieldTextColor(for: item))
+                        .hPillStyle(color: .grey)
+                        .hFieldSize(.capsuleShape)
                 }
             }
+        }
+    }
+
+    @hColorBuilder
+    private func fieldTextColor(for item: SubmitClaimFormStep.ResultDisplayItem) -> some hColor {
+        if item.skipped {
+            hTextColor.Translucent.secondary
+        } else {
+            hTextColor.Opaque.primary
         }
     }
 }

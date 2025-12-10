@@ -56,18 +56,25 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         return result
     }
 
-    func getAllValuesToShow() -> [(String, String)] {
+    func getAllValuesToShow() -> [ResultDisplayItem] {
         formModel.fields
             .map { field in
                 let userEnteredValues = formValues[field.id]!.values
                 let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
-                if valuesToDisplay.isEmpty {
-                    return (
-                        field.title, userEnteredValues.isEmpty ? "Skipped" : userEnteredValues.joined(separator: ", ")
-                    )
+                if !valuesToDisplay.isEmpty {
+                    let valueToDisplay = valuesToDisplay.joined(separator: ", ")
+                    return .init(key: field.title, value: valueToDisplay, skipped: false)
                 }
-                return (field.title, valuesToDisplay.joined(separator: ", "))
+                let valueToDisplay = userEnteredValues.joined(separator: ", ")
+                let isSkipped = userEnteredValues.isEmpty
+                return .init(key: field.title, value: isSkipped ? "Skipped" : valueToDisplay, skipped: isSkipped)
             }
+    }
+
+    struct ResultDisplayItem {
+        let key: String
+        let value: String
+        let skipped: Bool
     }
 }
 
