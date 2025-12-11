@@ -42,8 +42,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         self.mainHandler = mainHandler
     }
 
-    func disableSkip() {
-        state.disableSkip = true
+    func setDisableSkip(to disabled: Bool) {
+        state.disableSkip = disabled
     }
 
     func validateInput() -> Bool {
