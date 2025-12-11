@@ -9,41 +9,12 @@ fragment ClaimIntentFragment on ClaimIntent {
     currentStep {
         ...ClaimIntentStepFragment
     }
-    outcome {
-        ...ClaimIntentOutcomeFragment
-    }
+	createdClaim {
+			...ClaimFragment
+	}
 }
 
-fragment ClaimIntentOutcomeFragment on ClaimIntentOutcome {
-    ...  on ClaimIntentOutcomeClaim {
-        claim {
-            ...ClaimFragment
-        }
-        claimId
-    }
-    ... on ClaimIntentOutcomeDeflection {
-        infoText
-        warningText
-        partnersInfo {
-            title
-            description
-        }
-        content {
-            description
-            title
-        }
-        faq {
-            title
-            description
-        }
-        title
-        partners {
-            ...ClaimIntentOutcomeDeflectionPartnerFragment
-        }
-    }
-}
-
-fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentOutcomeDeflectionPartner {
+fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentStepContentDeflectionPartner {
     id
     imageUrl
     phoneNumber
@@ -64,48 +35,68 @@ fragment ClaimIntentStepFragment on ClaimIntentStep {
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
-        ... on ClaimIntentStepContentForm {
-          fields {
-            ...ClaimIntentStepContentFormFieldFragment
-          }
-          isSkippable
-        }
-        ... on ClaimIntentStepContentTask {
-          description
-          isCompleted
-        }
-        ... on ClaimIntentStepContentAudioRecording {
-          hint
-          uploadUri
-          isSkippable
-        }
-        ... on ClaimIntentStepContentFileUpload {
-          uploadUri
-          isSkippable
-        }
-        ... on ClaimIntentStepContentSummary {
-          items {
-            title
-            value
-          }
-		  freeTexts
-          audioRecordings {
-            url
-          }
-          fileUploads {
-            url
-            contentType
-            fileName
-          }
-        }
-		... on ClaimIntentStepContentSelect {
-			  options {
-				id
-				title
-			  }
-			  isSkippable
-              defaultSelectedId
+	... on ClaimIntentStepContentDeflection {
+		infoText
+		warningText
+		partnersInfo {
+			title
+			description
 		}
+		content {
+			description
+			title
+		}
+		faq {
+			title
+			description
+		}
+		title
+		partners {
+			...ClaimIntentOutcomeDeflectionPartnerFragment
+		}
+	}
+	... on ClaimIntentStepContentForm {
+		fields {
+			...ClaimIntentStepContentFormFieldFragment
+		}
+		isSkippable
+	}
+	... on ClaimIntentStepContentTask {
+		description
+		isCompleted
+	}
+	... on ClaimIntentStepContentAudioRecording {
+		hint
+		uploadUri
+		isSkippable
+	}
+	... on ClaimIntentStepContentFileUpload {
+		uploadUri
+		isSkippable
+	}
+	... on ClaimIntentStepContentSummary {
+		items {
+			title
+			value
+		}
+		freeTexts
+		audioRecordings {
+			url
+		}
+		fileUploads {
+			url
+			contentType
+			fileName
+		}
+	}
+	... on ClaimIntentStepContentSelect {
+		options {
+			id
+			title
+		}
+		isSkippable
+		defaultSelectedId
+	}
 }
 
 fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {
