@@ -9,19 +9,33 @@ fragment ClaimIntentFragment on ClaimIntent {
     currentStep {
         ...ClaimIntentStepFragment
     }
-    outcome {
-        ...ClaimIntentOutcomeFragment
+    createdClaim {
+        ...ClaimFragment
     }
 }
 
-fragment ClaimIntentOutcomeFragment on ClaimIntentOutcome {
-    ...  on ClaimIntentOutcomeClaim {
-        claim {
-            ...ClaimFragment
-        }
-        claimId
+fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentStepContentDeflectionPartner {
+    id
+    imageUrl
+    phoneNumber
+    title
+    description
+    info
+    url
+    urlButtonTitle
+}
+
+fragment ClaimIntentStepFragment on ClaimIntentStep {
+    id
+    text
+    isRegrettable
+    content {
+        ...ClaimIntentStepContentFragment
     }
-    ... on ClaimIntentOutcomeDeflection {
+}
+
+fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
+    ... on ClaimIntentStepContentDeflection {
         infoText
         warningText
         partnersInfo {
@@ -41,84 +55,61 @@ fragment ClaimIntentOutcomeFragment on ClaimIntentOutcome {
             ...ClaimIntentOutcomeDeflectionPartnerFragment
         }
     }
-}
-
-fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentOutcomeDeflectionPartner {
-    id
-    imageUrl
-    phoneNumber
-    title
-    description
-    info
-    url
-    urlButtonTitle
-}
-
-fragment ClaimIntentStepFragment on ClaimIntentStep {
-      id
-      text
-	  isRegrettable
-      content {
-        ...ClaimIntentStepContentFragment
-      }
-}
-
-fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
-        ... on ClaimIntentStepContentForm {
-          fields {
+    ... on ClaimIntentStepContentForm {
+        fields {
             ...ClaimIntentStepContentFormFieldFragment
-          }
-          isSkippable
         }
-        ... on ClaimIntentStepContentTask {
-          description
-          isCompleted
-        }
-        ... on ClaimIntentStepContentAudioRecording {
-          hint
-          uploadUri
-          isSkippable
-        }
-        ... on ClaimIntentStepContentFileUpload {
-          uploadUri
-          isSkippable
-        }
-        ... on ClaimIntentStepContentSummary {
-          items {
+        isSkippable
+    }
+    ... on ClaimIntentStepContentTask {
+        description
+        isCompleted
+    }
+    ... on ClaimIntentStepContentAudioRecording {
+        hint
+        uploadUri
+        isSkippable
+    }
+    ... on ClaimIntentStepContentFileUpload {
+        uploadUri
+        isSkippable
+    }
+    ... on ClaimIntentStepContentSummary {
+        items {
             title
             value
-          }
-		  freeTexts
-          audioRecordings {
+        }
+        freeTexts
+        audioRecordings {
             url
-          }
-          fileUploads {
+        }
+        fileUploads {
             url
             contentType
             fileName
-          }
         }
-		... on ClaimIntentStepContentSelect {
-			  options {
-				id
-				title
-			  }
-			  isSkippable
-              defaultSelectedId
-		}
+    }
+    ... on ClaimIntentStepContentSelect {
+        options {
+            id
+            title
+        }
+        isSkippable
+        defaultSelectedId
+    }
 }
 
 fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {
-	id
-	type
-	title
-	suffix
-	isRequired
-	options {
-		title
-		value
-	}
-	defaultValues
-	minValue
-	maxValue
+    id
+    type
+    title
+    suffix
+    isRequired
+    options {
+        title
+        value
+    }
+    defaultValues
+    minValue
+    maxValue
 }
