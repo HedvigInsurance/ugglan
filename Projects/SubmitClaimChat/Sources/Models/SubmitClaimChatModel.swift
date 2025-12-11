@@ -81,33 +81,11 @@ public enum ClaimIntentStepContent: Sendable {
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
     case singleSelect(model: ClaimIntentStepContentSelect)
+    case deflect(model: ClaimIntentOutcomeDeflection)
     case unknown
 }
 
-public enum ClaimIntentStepOutcome: Sendable, Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
-    public var nameForTracking: String {
-        switch self {
-        case .deflect:
-            return String(describing: ClaimIntentOutcomeDeflection.self)
-        case .claim:
-            return String(describing: ClaimIntentOutcomeClaim.self)
-        case .unknown:
-            return "Unknown"
-        }
-    }
-
-    public var navigationTitle: String? {
-        switch self {
-        case .deflect(let model):
-            return model.title ?? ""
-        case .claim:
-            return nil
-        case .unknown:
-            return nil
-        }
-    }
-
-    case deflect(model: ClaimIntentOutcomeDeflection)
+public enum ClaimIntentStepOutcome: Sendable, Hashable {
     case claim(model: ClaimIntentOutcomeClaim)
     case unknown
 }
