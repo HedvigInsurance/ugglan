@@ -93,7 +93,10 @@ public struct SubmitClaimChatScreen: View {
                     }
                 }
             }
-            .ignoresSafeArea(.keyboard, edges: viewModel.shouldMergeInputWithContent ? [] : .all)
+            .ignoresSafeArea(
+                .keyboard,
+                edges: viewModel.shouldMergeInputWithContent || viewModel.outcome != nil ? [] : .all
+            )
             if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
                 currentStepView
             }
