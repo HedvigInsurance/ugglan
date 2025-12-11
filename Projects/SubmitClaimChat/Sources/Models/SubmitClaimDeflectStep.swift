@@ -12,7 +12,7 @@ final class SubmitClaimDeflectStep: ClaimIntentStepHandler {
         mainHandler: @escaping (SubmitClaimEvent) -> Void
     ) {
         guard case .deflect(let model) = claimIntent.currentStep.content else {
-            fatalError("SummaryStepHandler initialized with non-summary content")
+            fatalError("DeflectStepHandler initialized with non-deflect content")
         }
         self.deflectModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)

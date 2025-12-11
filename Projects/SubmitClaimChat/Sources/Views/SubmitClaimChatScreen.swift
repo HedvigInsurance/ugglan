@@ -123,6 +123,7 @@ public struct SubmitClaimChatScreen: View {
                 }
             }
         }
+        .environmentObject(viewModel)
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: viewModel.isInputScrolledOffScreen)
     }

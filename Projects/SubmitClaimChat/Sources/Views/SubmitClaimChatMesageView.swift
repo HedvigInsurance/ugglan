@@ -114,6 +114,7 @@ struct ClaimStepView: View {
 }
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+    @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
     @ViewBuilder
     var body: some View {
         if viewModel.state.isSkipped {
@@ -134,13 +135,14 @@ struct ClaimStepResultView: View {
                 SubmitClaimTaskResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
                 SubmitClaimDeflectScreen(model: viewModel.deflectModel) {
+                    chatViewModel.openChat()
                 }
             }
-        }
-        if viewModel.isRegrettable && viewModel.state.isStepExecuted {
-            hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
-                Task {
-                    await viewModel?.regret()
+            if viewModel.isRegrettable && viewModel.state.isStepExecuted {
+                hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
+                    Task {
+                        await viewModel?.regret()
+                    }
                 }
             }
         }
