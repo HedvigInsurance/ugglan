@@ -94,7 +94,10 @@ struct SubmitClaimAudioView: View {
                     .large,
                     .ghost,
                     content: .init(title: L10n.embarkRecordAgain),
-                    { audioRecorder.restart() }
+                    {
+                        audioRecorder.restart()
+                        viewModel.inputType = .none
+                    }
                 )
             } else {
                 if !audioRecorder.isRecording {
@@ -133,6 +136,7 @@ struct SubmitClaimAudioView: View {
                 content: .init(title: "Record voice note"),
                 {
                     viewModel.inputType = .audio
+                    handleRecordTap()
                 }
             )
             hButton(
