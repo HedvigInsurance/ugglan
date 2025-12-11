@@ -121,7 +121,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         let id = intentFragment?.id ?? ""
         let outcome: ClaimIntentStepOutcome? =
-            .init(fragment: intentFragment?.outcome?.fragments.claimIntentOutcomeFragment)
+            .init(fragment: intentFragment?.createdClaim)
 
         let isSkippable =
             intentFragment?.currentStep?.fragments.claimIntentStepFragment.content.fragments
@@ -299,6 +299,20 @@ extension ClaimIntentStepContent {
                     uploadURI: fileUpload.uploadUri
                 )
             )
+        } else if let deflect = fragment.asClaimIntentStepContentDeflection {
+            self = .deflect(
+                model:
+                    .init(
+                        title: deflect.title,
+                        content: .init(title: deflect.content.title, description: deflect.content.description),
+                        partners: deflect.partners.map {
+                            .init(fragment: $0.fragments.claimIntentOutcomeDeflectionPartnerFragment)
+                        },
+                        infoText: deflect.infoText,
+                        warningText: deflect.warningText,
+                        questions: deflect.faq.map { .init(question: $0.title, answer: $0.description) }
+                    )
+            )
         } else {
             self = .unknown
         }
@@ -360,29 +374,13 @@ extension OctopusGraphQL.ClaimIntentStepContentFragment {
 @MainActor
 extension ClaimIntentStepOutcome {
     init?(
-        fragment: OctopusGraphQL.ClaimIntentOutcomeFragment?
+        fragment: OctopusGraphQL.ClaimIntentFragment.CreatedClaim?
     ) {
         guard let fragment else { return nil }
-        if let claim = fragment.asClaimIntentOutcomeClaim {
-            self = .claim(
-                model: .init(claimId: claim.claimId, claim: .init(claim: claim.claim.fragments.claimFragment))
-            )
-        } else if let deflect = fragment.asClaimIntentOutcomeDeflection {
-            self = .deflect(
-                model: .init(
-                    title: deflect.title,
-                    content: .init(title: deflect.content.title, description: deflect.content.description),
-                    partners: deflect.partners.map {
-                        .init(fragment: $0.fragments.claimIntentOutcomeDeflectionPartnerFragment)
-                    },
-                    infoText: deflect.infoText,
-                    warningText: deflect.warningText,
-                    questions: deflect.faq.map { .init(question: $0.title, answer: $0.description) }
-                )
-            )
-        } else {
-            self = .unknown
-        }
+
+        self = .claim(
+            model: .init(claimId: fragment.id, claim: .init(claim: fragment.fragments.claimFragment))
+        )
     }
 }
 

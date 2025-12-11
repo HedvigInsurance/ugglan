@@ -15,36 +15,39 @@ struct ClaimContactCard: View {
     }
 
     private var sectionContent: some View {
-        VStack(spacing: 24) {
-            if let imageUrl = URL(string: model.imageUrl) {
-                KFImage(imageUrl)
-                    .setProcessor(SVGImageProcessor())
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: CGFloat(model.preferredImageHeight ?? 40))
-                    .foregroundColor(hTextColor.Opaque.negative)
-                    .accessibilityHidden(true)
-                    .padding(.bottom, .padding8)
-            }
-            VStack(spacing: 0) {
-                if let title = model.title {
-                    hText(title)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.Opaque.primary)
+        hRow {
+            VStack(spacing: 24) {
+                if let imageUrl = URL(string: model.imageUrl) {
+                    KFImage(imageUrl)
+                        .setProcessor(SVGImageProcessor())
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: CGFloat(model.preferredImageHeight ?? 40))
+                        .foregroundColor(hTextColor.Opaque.negative)
+                        .accessibilityHidden(true)
+                        .padding(.bottom, .padding8)
                 }
-                if let description = model.description {
-                    hText(description)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                VStack(spacing: 0) {
+                    if let title = model.title {
+                        hText(title)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(hTextColor.Opaque.primary)
+                    }
+                    if let description = model.description {
+                        hText(description)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
                 }
+                .padding(.horizontal, .padding16)
+                .accessibilityElement(children: .combine)
+                ParnerButtonView(model: model)
             }
-            .padding(.horizontal, .padding16)
-            .accessibilityElement(children: .combine)
-            ParnerButtonView(model: model)
+            .padding(.top, .padding32)
+            .padding(.bottom, .padding16)
+            .colorScheme(.dark)
         }
-        .padding(.top, .padding32)
-        .padding(.bottom, .padding16)
-        .colorScheme(.dark)
+        .verticalPadding(0)
     }
 }
 

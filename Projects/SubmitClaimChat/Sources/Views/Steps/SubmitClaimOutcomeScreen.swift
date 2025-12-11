@@ -15,13 +15,6 @@ public struct SubmitClaimOutcomeScreen: View {
 
     public var body: some View {
         switch outcome {
-        case let .deflect(model):
-            SubmitClaimDeflectScreen(
-                model: model,
-                openChat: { [weak navigationVm] in
-                    navigationVm?.openChat()
-                }
-            )
         case let .claim(model):
             SubmitClaimSuccessView(model: model)
         case .unknown:
