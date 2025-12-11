@@ -292,21 +292,25 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     var scrollView: UIScrollView? {
         didSet {
             scrollCancellable = scrollView?.publisher(for: \.contentOffset)
-                .throttle(for: .milliseconds(100), scheduler: DispatchQueue.main, latest: true)
+                .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] value in
-                    guard let self, let scrollView = self.scrollView else { return }
-                    // if current step bottom input part is huge, just merge it with the form
-                    if self.currentStepInputHeight / scrollView.frame.size.height > self.inputHeightThreshold {
-                        self.shouldMergeInputWithContent = true
-                        return
-                    }
-                    self.shouldMergeInputWithContent = false
-                    let visibleHeight = scrollView.frame.size.height - self.currentStepInputHeight
-                    let totalContentHeight = self.totalStepsHeight - scrollView.contentOffset.y + 30
-                    self.isInputScrolledOffScreen = visibleHeight < totalContentHeight
+                    self?.checkForScrollOffset()
                 })
         }
+    }
+
+    private func checkForScrollOffset() {
+        guard let scrollView else { return }
+        // if current step bottom input part is huge, just merge it with the form
+        if self.currentStepInputHeight / scrollView.frame.size.height > self.inputHeightThreshold {
+            self.shouldMergeInputWithContent = true
+            return
+        }
+        self.shouldMergeInputWithContent = false
+        let visibleHeight = scrollView.frame.size.height - self.currentStepInputHeight
+        let totalContentHeight = self.totalStepsHeight - scrollView.contentOffset.y + 30
+        self.isInputScrolledOffScreen = visibleHeight < totalContentHeight
     }
 
     var totalStepsHeight: CGFloat = 0
@@ -339,6 +343,10 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     // MARK: - UI Height Calculations
     private func recalculateStepHeights() {
+        Task {
+            try? await Task.sleep(seconds: 0.1)
+            checkForScrollOffset()
+        }
         totalStepsHeight = stepHeights.values.reduce(0, +)
         if let id = allSteps.last?.id {
             lastStepContentHeight = stepHeights[id] ?? 0

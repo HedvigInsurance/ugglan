@@ -283,28 +283,43 @@ extension AudioRecorder {
 struct SubmitClaimAudioResultView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @StateObject var audioPlayer: AudioPlayer = AudioPlayer(url: nil)
-
+    @State var expended = false
     init(viewModel: SubmitClaimAudioStep) {
         self.viewModel = viewModel
     }
 
     var body: some View {
-        if viewModel.inputType == .text {
-            hTextView(
-                selectedValue: viewModel.textInput,
-                placeholder: L10n.claimsTextInputPlaceholder,
-                popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
-                maxCharacters: 2000,
-                enableTransition: false,
-                enabled: false,
-                color: UIColor(dynamic: { trait in
-                    let style = trait.userInterfaceStyle
-                    return hSurfaceColor.Translucent.primary.colorFor(style == .dark ? .dark : .light, .base).color
-                        .uiColor()
-                })
-            )
-        } else if viewModel.inputType == .audio, let url = viewModel.audioFileURL {
-            playRecordingButton(url: url)
+        VStack {
+            if !expended {
+                HStack {
+                    hCoreUIAssets.checkmark.view
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(hSignalColor.Green.element)
+                    hText(viewModel.inputType?.title ?? "", style: .body1)
+                }
+                .hPillStyle(color: .grey)
+                .hFieldSize(.capsuleShape)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            } else {
+                if viewModel.inputType == .text {
+                    HStack {
+                        hText(viewModel.textInput)
+                            .frame(alignment: .topLeading)
+                        Spacer()
+                    }
+                    .hPillStyle(color: .grey)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                } else if viewModel.inputType == .audio, let url = viewModel.audioFileURL {
+                    playRecordingButton(url: url)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+            }
+        }
+        .onTapGesture {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                expended.toggle()
+            }
         }
     }
 
@@ -314,5 +329,49 @@ struct SubmitClaimAudioResultView: View {
                 Color.clear
                     .hPillStyle(color: .grey)
             }
+    }
+}
+
+extension View {
+    func mat(id: String, namespace: Namespace.ID) -> some View {
+        if #available(iOS 18.0, *) {
+            return matchedTransitionSource(id: id, in: namespace)
+        } else {
+            return self
+        }
+    }
+}
+#Preview {
+    let viewModel = SubmitClaimAudioStep(
+        claimIntent: .init(
+            currentStep: .init(
+                content: .audioRecording(
+                    model: .init(
+                        hint: "",
+                        uploadURI: ""
+                    )
+                ),
+                id: "id1",
+                text: "Text"
+            ),
+            id: "id",
+            isSkippable: false,
+            isRegrettable: false
+        ),
+        service: .init(),
+        mainHandler: { _ in
+        }
+    )
+    viewModel.inputType = .text
+    viewModel.textInput = """
+        asdasdas
+        sadadsasdadsasd
+        asddasdas
+        asadsasd
+        """
+    return ScrollView {
+        SubmitClaimAudioResultView(
+            viewModel: viewModel
+        )
     }
 }

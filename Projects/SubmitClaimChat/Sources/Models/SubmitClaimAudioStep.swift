@@ -25,6 +25,15 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     enum AudioRecordingStepType {
         case audio
         case text
+
+        var title: String {
+            switch self {
+            case .audio:
+                return "Voice recording"
+            case .text:
+                return "Written description"
+            }
+        }
     }
 
     required init(
