@@ -1,0 +1,13 @@
+query CurrentMemberPhoneNumber {
+  currentMember {
+	phoneNumber
+  }
+}
+
+mutation MemberUpdatePhoneNumber($input: MemberUpdatePhoneNumberInput!) {
+  memberUpdatePhoneNumber(input: $input) {
+	userError {
+	  message
+	}
+  }
+}

@@ -16,12 +16,7 @@ public struct SubmitClaimOutcomeScreen: View {
     public var body: some View {
         switch outcome {
         case let .claim(model):
-            VStack(spacing: .padding16) {
-                hText("Your claim was submitted successfully")
-                hButton(.medium, .secondary, content: .init(title: "Go to claim")) { [weak navigationVm] in
-                    navigationVm?.goToClaimDetails(model.claimId)
-                }
-            }
+            SubmitClaimSuccessView(model: model)
         case .unknown:
             EmptyView()
         }
