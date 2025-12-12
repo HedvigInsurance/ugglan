@@ -30,6 +30,7 @@ struct SubmitClaimFileUploadView: View {
             hSection {
                 VStack {
                     FilesGridView(vm: fileUploadVm.fileGridViewModel)
+                        .hFileGridAlignment(alignment: .leading)
                     VStack(spacing: .padding8) {
                         hButton(
                             .large,

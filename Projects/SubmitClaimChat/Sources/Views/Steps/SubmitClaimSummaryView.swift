@@ -65,6 +65,7 @@ struct SubmitClaimSummaryView: View {
             VStack(alignment: .leading, spacing: .padding8) {
                 hText("Uploaded files")
                 FilesGridView(vm: viewModel.fileGridViewModel)
+                    .hFileGridAlignment(alignment: .leading)
             }
         }
     }
