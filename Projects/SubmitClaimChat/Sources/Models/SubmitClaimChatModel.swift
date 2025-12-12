@@ -178,10 +178,14 @@ public struct ClaimIntentStepContentTask: Sendable, Equatable {
 public struct ClaimIntentStepContentAudioRecording: Sendable {
     let hint: String
     let uploadURI: String
+    let freeTextMinLength: Int
+    let freeTextMaxLength: Int
 
-    public init(hint: String, uploadURI: String) {
+    public init(hint: String, uploadURI: String, freeTextMinLength: Int, freeTextMaxLength: Int) {
         self.hint = hint
         self.uploadURI = uploadURI
+        self.freeTextMinLength = freeTextMinLength
+        self.freeTextMaxLength = freeTextMaxLength
     }
 }
 
