@@ -8,6 +8,20 @@ struct SingleItemModel: Equatable, Identifiable {
     let id: String
     let values: [SingleSelectValue]
     let multiselect: Bool
+
+    var attributes: [ItemPickerAttribute] {
+        var result: [ItemPickerAttribute] = []
+
+        if !multiselect {
+            result.append(.singleSelect)
+        }
+
+        if values.count > 5 {
+            result.append(.alwaysAttachToBottom)
+        }
+
+        return result
+    }
 }
 
 struct SingleSelectValue: Hashable {
