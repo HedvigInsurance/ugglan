@@ -137,38 +137,38 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
                         )
                     )
 
-                //                model?.fileUploadVm.fileGridViewModel.files
-                //                    .append(
-                //                        .init(
-                //                            id: "idd2",
-                //                            size: 0,
-                //                            mimeType: .PNG,
-                //                            name: "name 2",
-                //                            source: .url(
-                //                                url: URL(
-                //                                    string:
-                //                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/1168/fuji-70-300-review-00011.webp"
-                //                                )!,
-                //                                mimeType: .PNG
-                //                            )
-                //                        )
-                //                    )
-                //                model?.fileUploadVm.fileGridViewModel.files
-                //                    .append(
-                //                        .init(
-                //                            id: "idd5",
-                //                            size: 0,
-                //                            mimeType: .PNG,
-                //                            name: "name 3",
-                //                            source: .url(
-                //                                url: URL(
-                //                                    string:
-                //                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/964/XH2S1419-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
-                //                                )!,
-                //                                mimeType: .PNG
-                //                            )
-                //                        )
-                //                    )
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd2",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name 2",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/1168/fuji-70-300-review-00011.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
+                        )
+                    )
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd5",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name 3",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/964/XH2S1419-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
+                        )
+                    )
             }
         SubmitClaimFileUploadResultView(viewModel: model.fileUploadVm.fileGridViewModel)
     }
