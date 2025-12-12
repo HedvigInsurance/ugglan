@@ -98,7 +98,7 @@ struct ClaimStepView: View {
             } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
                 SubmitClaimUnknownView(viewModel: viewModel)
             }
-            if viewModel.isSkippable {
+            if viewModel.isSkippable && !viewModel.state.disableSkip {
                 hButton(.large, .ghost, content: .init(title: "Skip")) { [weak viewModel] in
                     Task {
                         await viewModel?.skip()
