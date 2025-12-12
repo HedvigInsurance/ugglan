@@ -156,7 +156,8 @@ struct SubmitClaimAudioView: View {
             selectedValue: viewModel.textInput,
             placeholder: L10n.claimsTextInputPlaceholder,
             popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
-            maxCharacters: 2000,
+            minCharacters: viewModel.audioRecordingModel.freeTextMinLength,
+            maxCharacters: viewModel.audioRecordingModel.freeTextMaxLength,
             enableTransition: false
         ) { text in
             viewModel.textInput = text
@@ -352,7 +353,9 @@ extension View {
                 content: .audioRecording(
                     model: .init(
                         hint: "",
-                        uploadURI: ""
+                        uploadURI: "",
+                        freeTextMinLength: 5,
+                        freeTextMaxLength: 100
                     )
                 ),
                 id: "id1",
