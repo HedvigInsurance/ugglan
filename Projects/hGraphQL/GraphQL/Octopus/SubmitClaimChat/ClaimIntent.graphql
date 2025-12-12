@@ -1,0 +1,115 @@
+query ClaimIntent($claimIntentId: ID!) {
+  claimIntent(id: $claimIntentId) {
+    ...ClaimIntentFragment
+  }
+}
+
+fragment ClaimIntentFragment on ClaimIntent {
+    id
+    currentStep {
+        ...ClaimIntentStepFragment
+    }
+    createdClaim {
+        ...ClaimFragment
+    }
+}
+
+fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentStepContentDeflectionPartner {
+    id
+    imageUrl
+    phoneNumber
+    title
+    description
+    info
+    url
+    urlButtonTitle
+}
+
+fragment ClaimIntentStepFragment on ClaimIntentStep {
+    id
+    text
+    isRegrettable
+    content {
+        ...ClaimIntentStepContentFragment
+    }
+}
+
+fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
+    ... on ClaimIntentStepContentDeflection {
+        infoText
+        warningText
+        partnersInfo {
+            title
+            description
+        }
+        content {
+            description
+            title
+        }
+        faq {
+            title
+            description
+        }
+        title
+        partners {
+            ...ClaimIntentOutcomeDeflectionPartnerFragment
+        }
+    }
+    ... on ClaimIntentStepContentForm {
+        fields {
+            ...ClaimIntentStepContentFormFieldFragment
+        }
+        isSkippable
+    }
+    ... on ClaimIntentStepContentTask {
+        description
+        isCompleted
+    }
+    ... on ClaimIntentStepContentAudioRecording {
+        hint
+        uploadUri
+        isSkippable
+    }
+    ... on ClaimIntentStepContentFileUpload {
+        uploadUri
+        isSkippable
+    }
+    ... on ClaimIntentStepContentSummary {
+        items {
+            title
+            value
+        }
+        freeTexts
+        audioRecordings {
+            url
+        }
+        fileUploads {
+            url
+            contentType
+            fileName
+        }
+    }
+    ... on ClaimIntentStepContentSelect {
+        options {
+            id
+            title
+        }
+        isSkippable
+        defaultSelectedId
+    }
+}
+
+fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {
+    id
+    type
+    title
+    suffix
+    isRequired
+    options {
+        title
+        value
+    }
+    defaultValues
+    minValue
+    maxValue
+}

@@ -24,6 +24,20 @@ public class hClaimFileUploadService {
             throw error
         }
     }
+
+    public func uploadClaimsChatFile(
+        endPoint: String,
+        files: [File],
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
+    ) async throws -> [String] {
+        log.info("hClaimFileUploadService: upload claims chat file", error: nil, attributes: nil)
+        do {
+            return try await client.uploadClaimsChatFile(endPoint: endPoint, files: files, withProgress: withProgress)
+        } catch {
+            log.error("hClaimFileUploadService: upload claims chat file", error: error, attributes: [:])
+            throw error
+        }
+    }
 }
 
 public struct ClaimFileUploadResponse: Codable, Sendable {

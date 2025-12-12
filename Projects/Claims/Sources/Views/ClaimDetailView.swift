@@ -36,35 +36,13 @@ public struct ClaimDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $vm.showImagePicker) {
-            ImagePicker { images in
-                vm.showAddFiles(with: images)
-            }
-            .ignoresSafeArea()
-        }
-        .sheet(isPresented: $vm.showFilePicker) {
-            FileImporterView { files in
+        .showFileSourcePicker(
+            $vm.showFileSourcePicker,
+            selecedFiles: { [weak vm] files in
+                guard let vm else { return }
                 vm.showAddFiles(with: files)
             }
-            .ignoresSafeArea()
-        }
-        .sheet(isPresented: $vm.showCamera) {
-            CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 0.9)
-                else { return }
-                let file = File(
-                    id: UUID().uuidString,
-                    size: Double(data.count),
-                    mimeType: .JPEG,
-                    name: "image_\(Date()).jpeg",
-                    source: .data(data: data)
-                )
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    vm.showAddFiles(with: [file])
-                }
-            }
-            .ignoresSafeArea()
-        }
+        )
         .modally(item: $vm.showFilesView) { [weak vm] item in
             ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
                 let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -210,7 +188,6 @@ public struct ClaimDetailView: View {
         }
     }
 
-    @ViewBuilder
     private var uploadFilesSection: some View {
         VStack(spacing: .padding8) {
             if vm.showUploadedFiles {
@@ -264,7 +241,7 @@ public struct ClaimDetailView: View {
                                 .primary,
                                 content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
                                 { [weak vm] in
-                                    vm?.showFilePickerAlert()
+                                    vm?.showFileSourcePicker = true
                                 }
                             )
                         }
@@ -369,6 +346,8 @@ public class ClaimDetailViewModel: ObservableObject {
         }
     }
 
+    @Published var showFileSourcePicker = false
+
     private(set) var player: AudioPlayer?
     private var claimDetailsService: FetchClaimDetailsService
     @Published var fetchFilesError: String?
@@ -377,10 +356,6 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat(hasUnread: false)]
-
-    @Published var showImagePicker = false
-    @Published var showFilePicker = false
-    @Published var showCamera = false
 
     let fileGridViewModel: FileGridViewModel
     let type: ClaimDetailsType
@@ -490,32 +465,6 @@ public class ClaimDetailViewModel: ObservableObject {
 
     var canAddFiles: Bool {
         claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
-    }
-
-    fileprivate func showFilePickerAlert() {
-        FilePicker.showAlert { [weak self] selected in
-            Task { @MainActor in
-                switch selected {
-                case .camera:
-                    self?.showCamera = true
-                case .imagePicker:
-                    let access = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
-                    switch access {
-                    case .notDetermined, .restricted, .denied:
-                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                            return
-                        }
-                        Dependencies.urlOpener.open(settingsUrl)
-                    case .authorized, .limited:
-                        self?.showImagePicker = true
-                    @unknown default:
-                        self?.showImagePicker = true
-                    }
-                case .filePicker:
-                    self?.showFilePicker = true
-                }
-            }
-        }
     }
 }
 
