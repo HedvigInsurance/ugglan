@@ -33,7 +33,10 @@ struct SubmitClaimFormView: View {
         }
         .detent(
             item: $viewModel.isSelectItemPresented,
-            transitionType: .detent(style: viewModel.isSelectItemPresented?.attributes.contains(.alwaysAttachToBottom) == true ? [.large] : [.height])
+            transitionType: .detent(
+                style: viewModel.isSelectItemPresented?.attributes.contains(.alwaysAttachToBottom) == true
+                    ? [.large] : [.height]
+            )
         ) { [weak viewModel] model in
             let title = viewModel?.claimIntent.currentStep.text ?? ""
             ItemPickerScreen<SingleSelectValue>(
