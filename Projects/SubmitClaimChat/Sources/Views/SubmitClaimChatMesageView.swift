@@ -128,7 +128,7 @@ struct ClaimStepResultView: View {
             } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
                 SubmitClaimSummaryView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
-                SubmitClaimFileUploadResultView(viewModel: viewModel)
+                SubmitClaimFileUploadResultView(viewModel: viewModel.fileUploadVm.fileGridViewModel)
             } else if let viewModel = viewModel as? SubmitClaimFormStep {
                 SubmitClaimFormResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimTaskStep {
