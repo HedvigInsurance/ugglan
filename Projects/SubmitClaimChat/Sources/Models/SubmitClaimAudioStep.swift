@@ -34,9 +34,9 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         var title: String {
             switch self {
             case .audio:
-                return "Voice recording"
+                return L10n.claimChatAudioRecordingLabel
             case .text:
-                return "Written description"
+                return L10n.claimChatFreeTextLabel
             }
         }
     }

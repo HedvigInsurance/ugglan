@@ -198,9 +198,9 @@ extension ClaimIntentError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidInput:
-            return "Make sure you fill in all the required fields."
+            return L10n.claimChatErrorMessage
         case .invalidResponse:
-            return "message"
+            return ""
         case let .error(message): return message
         }
     }

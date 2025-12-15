@@ -134,7 +134,7 @@ struct SubmitClaimAudioView: View {
             hButton(
                 .large,
                 .primary,
-                content: .init(title: "Record voice note"),
+                content: .init(title: L10n.claimChatUseAudio),
                 {
                     viewModel.inputType = .audio
                     handleRecordTap()
@@ -143,7 +143,7 @@ struct SubmitClaimAudioView: View {
             hButton(
                 .large,
                 .ghost,
-                content: .init(title: "Describe with text"),
+                content: .init(title: L10n.claimChatUseTextInput),
                 {
                     viewModel.inputType = .text
                 }
