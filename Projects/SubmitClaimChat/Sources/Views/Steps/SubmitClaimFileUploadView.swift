@@ -180,19 +180,8 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 
 struct SubmitClaimFileUploadResultView: View {
     @ObservedObject var viewModel: FileGridViewModel
-    @State var showGrid = false
     var body: some View {
         VStack(alignment: .trailing) {
-            mainView
-        }
-        .sectionContainerStyle(.transparent)
-    }
-
-    @ViewBuilder
-    private var mainView: some View {
-        if showGrid {
-            FilesGridView(vm: viewModel)
-        } else {
             CardStack(viewModel.files) { file in
                 FileView(file: file) {}
                     .frame(width: 150, height: 174)
@@ -204,5 +193,6 @@ struct SubmitClaimFileUploadResultView: View {
                     .contentShape(Rectangle())
             }
         }
+        .sectionContainerStyle(.transparent)
     }
 }
