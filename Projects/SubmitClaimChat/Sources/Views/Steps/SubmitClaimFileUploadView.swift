@@ -173,6 +173,40 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
                             )
                         )
                     )
+
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd6",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name 3",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/964/XH2S1419-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
+                        )
+                    )
+
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd7",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name 3",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/964/XH2S1419-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
+                        )
+                    )
             }
         SubmitClaimFileUploadResultView(viewModel: model.fileUploadVm.fileGridViewModel)
     }
@@ -184,91 +218,165 @@ struct SubmitClaimFileUploadResultView: View {
     var body: some View {
         VStack(alignment: .trailing) {
             mainView
-            if viewModel.hasMoreFiles {
-                hButton(
-                    .small,
-                    .secondaryAlt,
-                    content: .init(title: showGrid ? "Collapse" : "Expand"),
-                    {
-                        withAnimation {
-                            showGrid.toggle()
-                        }
-                    }
-                )
-            }
         }
         .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder
     private var mainView: some View {
-        if showGrid || !viewModel.hasMoreFiles {
+        if showGrid {
             FilesGridView(vm: viewModel)
         } else {
-            StackedFilesView(vm: viewModel)
-        }
-    }
-}
-
-struct StackedFilesView: View {
-    @ObservedObject var vm: FileGridViewModel
-    var body: some View {
-        ZStack(alignment: .center) {
-            ForEach(Array(vm.getFilesToShow().enumerated()), id: \.element.id) { (index, element) in
-                FileView(file: element) {}
+            CardStack(viewModel.files) { file in
+                FileView(file: file) {}
                     .frame(width: 100, height: 116)
                     .background {
                         hBackgroundColor.primary
                     }
                     .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-
                     .cornerRadius(.padding12)
-                    .offset(x: CGFloat(index * 10), y: CGFloat(index * -10))
-
-                    .rotationEffect(.degrees(Double(index) * 7.34), anchor: .bottomTrailing)
-
                     .contentShape(Rectangle())
             }
         }
-        .padding(.top, vm.additionalHeight)
-        .padding(.trailing, vm.additionalWidth)
-        .fixedSize(horizontal: true, vertical: true)
-        .rotationEffect(vm.angle, anchor: .top)
     }
 }
 
-extension FileGridViewModel {
-    fileprivate func getFilesToShow() -> [File] {
-        if files.count <= 3 {
-            return files
-        }
-        return Array(files.prefix(3))
+public struct CardStack<Data, Content>: View
+where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
+    @State private var currentIndex: Double = 0.0
+    @State private var previousIndex: Double = 0.0
+    @State private var swippingLeft = false
+    private let data: Data
+    @ViewBuilder private let content: (Data.Element) -> Content
+    @Binding var finalCurrentIndex: Int
+
+    /// Creates a stack with the given content
+    /// - Parameters:
+    ///   - data: The identifiable data for computing the list.
+    ///   - currentIndex: The index of the topmost card in the stack
+    ///   - content: A view builder that creates the view for a single card
+    public init(
+        _ data: Data,
+        currentIndex: Binding<Int> = .constant(0),
+        @ViewBuilder content: @escaping (Data.Element) -> Content
+    ) {
+        self.data = data
+        self.content = content
+        _finalCurrentIndex = currentIndex
     }
 
-    fileprivate var angle: Angle {
-        switch files.count {
-        case 3...: return .init(degrees: -7.34)
-        default: return .init(degrees: 0)
+    public var body: some View {
+        ZStack {
+            ForEach(Array(data.enumerated()), id: \.element.id) { (index, element) in
+                content(element)
+                    .zIndex(zIndex(for: index))
+                    .offset(x: xOffset(for: index), y: 0)
+                    .scaleEffect(scale(for: index), anchor: .center)
+                    .rotationEffect(.degrees(rotationDegrees(for: index)))
+            }
+        }
+        .highPriorityGesture(dragGesture)
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                swippingLeft = value.translation.width < 0
+                withAnimation(.interactiveSpring()) {
+                    let x = (value.translation.width / 300) - previousIndex
+                    self.currentIndex = -x
+                }
+            }
+            .onEnded { value in
+                self.snapToNearestAbsoluteIndex(value.predictedEndTranslation)
+                self.previousIndex = self.currentIndex
+            }
+    }
+
+    private func snapToNearestAbsoluteIndex(_ predictedEndTranslation: CGSize) {
+        withAnimation(.interpolatingSpring(stiffness: 300, damping: 40)) {
+            let translation = predictedEndTranslation.width
+            if abs(translation) > 200 {
+                if translation > 0 {
+                    self.goTo(round(self.previousIndex) - 1)
+                } else {
+                    self.goTo(round(self.previousIndex) + 1)
+                }
+            } else {
+                self.currentIndex = round(currentIndex)
+            }
         }
     }
 
-    fileprivate var additionalHeight: CGFloat {
-        switch files.count {
-        case 3...: return 2 * 10
-        case 2: return 10
-        default: return 0
+    private func goTo(_ index: Double) {
+        let maxIndex = Double(data.count - 1)
+        if index < 0 {
+            self.currentIndex = 0
+        } else if index > maxIndex {
+            self.currentIndex = maxIndex
+        } else {
+            self.currentIndex = index
+        }
+        self.finalCurrentIndex = Int(index)
+    }
+
+    private func zIndex(for index: Int) -> Double {
+        var value: Double = {
+            if swippingLeft {
+                if (Double(index) + 0.5) < currentIndex {
+                    return -Double(data.count - index)
+                } else {
+                    return Double(data.count - index)
+                }
+            } else {
+                if (Double(index) + 0.5) < currentIndex {
+                    return -Double(data.count - index)
+                } else {
+                    return Double(data.count - index)
+                }
+            }
+        }()
+
+        print("INDEX \(value) for \(index) \(currentIndex) \(swippingLeft)")
+
+        return value
+    }
+
+    private func xOffset(for index: Int) -> CGFloat {
+        if swippingLeft {
+            let topCardProgress = currentPosition(for: index)
+            let padding = 40.0
+            let x = ((CGFloat(index) - currentIndex) * padding)
+            if topCardProgress > 0 && topCardProgress < 0.99 && index < (data.count - 1) {
+                let value = x * swingOutMultiplier(topCardProgress)
+                return value
+            }
+            return x
+        } else {
+            let topCardProgress = currentPosition(for: index)
+            let padding = 40.0
+            let x = ((CGFloat(index) - currentIndex) * padding)
+            if topCardProgress > -1 && topCardProgress < 0 && index < (data.count) {
+                let value = x * swingOutMultiplier(topCardProgress)
+                return -value
+            }
+            return x
         }
     }
 
-    fileprivate var additionalWidth: CGFloat {
-        switch files.count {
-        case 3...: return 50
-        case 2: return 10
-        default: return 0
-        }
+    private func scale(for index: Int) -> CGFloat {
+        1.0 - (0.1 * abs(currentPosition(for: index)))
     }
 
-    fileprivate var hasMoreFiles: Bool {
-        files.count > 1
+    private func rotationDegrees(for index: Int) -> Double {
+        -currentPosition(for: index) * 2
+    }
+
+    private func currentPosition(for index: Int) -> Double {
+        currentIndex - Double(index)
+    }
+
+    private func swingOutMultiplier(_ progress: Double) -> Double {
+        sin(Double.pi * progress) * 5
     }
 }
