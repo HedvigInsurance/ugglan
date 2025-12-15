@@ -258,7 +258,7 @@ private struct PriceSummarySection: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .withDismissAlert(isPresented: $isCancelAlertPresented)
+        .withAlertDismiss()
     }
 }
 
