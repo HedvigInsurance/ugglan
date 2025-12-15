@@ -27,54 +27,52 @@ struct SubmitClaimFileUploadView: View {
 
     private var showFilesView: some View {
         Group {
-            if fileUploadVm.hasFiles {
-                hSection {
-                    VStack {
-                        FilesGridView(vm: fileUploadVm.fileGridViewModel)
-                        HStack(spacing: .padding8) {
+            hSection {
+                VStack {
+                    FilesGridView(vm: fileUploadVm.fileGridViewModel)
+                        .hFileGridAlignment(alignment: .leading)
+                    VStack(spacing: .padding8) {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(
+                                title: fileUploadVm.hasFiles ? "Send files" : L10n.ClaimStatusDetail.addFiles
+                            )
+                        ) {
+                            if fileUploadVm.hasFiles {
+                                viewModel.submitResponse()
+                            } else {
+                                viewModel.showFileSourcePicker = true
+                            }
+                        }
+                        .overlay {
+                            if fileUploadVm.isLoading {
+                                GeometryReader { geo in
+                                    Rectangle()
+                                        .fill(hGrayscaleTranslucent.greyScaleTranslucent800)
+                                        .opacity(fileUploadVm.progress)
+                                        .frame(width: fileUploadVm.progress * geo.size.width)
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                            }
+                        }
+                        if fileUploadVm.hasFiles {
                             hButton(
-                                .medium,
+                                .large,
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
                                 { [weak viewModel] in
                                     viewModel?.showFileSourcePicker = true
                                 }
                             )
-                            .hButtonIsLoading(false)
-                            hButton(.medium, .primary, content: .init(title: L10n.generalContinueButton)) {
-                                viewModel.submitResponse()
-                            }
-                            .hButtonIsLoading(false)
-                            .disabled(fileUploadVm.fileGridViewModel.files.isEmpty)
-                            .overlay {
-                                if fileUploadVm.isLoading {
-                                    GeometryReader { geo in
-                                        Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
-                                            .opacity(fileUploadVm.isLoading ? 1 : 0)
-                                            .frame(width: fileUploadVm.progress * geo.size.width)
-                                    }
-                                }
-                            }
+                            .transition(.offset(x: 0, y: 100).combined(with: .opacity))
                         }
                     }
-                    .hButtonTakeFullWidth(true)
-                }
-            } else {
-                hSection {
-                    hButton(
-                        .large,
-                        .primary,
-                        content: .init(title: L10n.ClaimStatusDetail.addFiles),
-                        { [weak viewModel] in
-                            viewModel?.showFileSourcePicker = true
-                        }
-                    )
-                    .hButtonIsLoading(fileUploadVm.isLoading)
-                    .disabled(fileUploadVm.isLoading)
+                    .hButtonIsLoading(false)
                 }
             }
         }
-        .transition(.opacity.animation(.default))
+        .disabled(fileUploadVm.isLoading)
         .sectionContainerStyle(.transparent)
         .animation(.default, value: fileUploadVm.hasFiles)
         .animation(.default, value: fileUploadVm.isLoading)
@@ -104,48 +102,173 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 #Preview {
     let model = ClaimIntentClientDemo().demoFileUploadModel
 
-    return SubmitClaimFileUploadView(viewModel: model)
-        .task { [weak model] in
-            try? await Task.sleep(seconds: 1)
-            model?.fileUploadVm.fileGridViewModel.files
-                .append(
-                    .init(
-                        id: "id1",
-                        size: 0,
-                        mimeType: .PNG,
-                        name: "name",
-                        source: .url(
-                            url: URL(
-                                string:
-                                    "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F2694x1200%2F017b95ad16%2Fhander-mobiltelefon-app-hedvig-2700.jpg&w=3840&q=70"
-                            )!,
-                            mimeType: .PNG
+    return VStack {
+        Spacer()
+        SubmitClaimFileUploadView(viewModel: model)
+            .task { [weak model] in
+                try? await Task.sleep(seconds: 1)
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd1",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/970/XH2S1833-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
                         )
                     )
-                )
-            try? await Task.sleep(seconds: 2)
-            model?.fileUploadVm.fileGridViewModel.files
-                .append(
-                    .init(
-                        id: "id2",
-                        size: 0,
-                        mimeType: .PNG,
-                        name: "name 2",
-                        source: .url(
-                            url: URL(
-                                string:
-                                    "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fa.storyblok.com%2Ff%2F165473%2F1080x1080%2Fa44c261f97%2Fbetyg-konsumenternas-hedvig.png&w=3840&q=75"
-                            )!,
-                            mimeType: .PNG
+
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd3",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name 3",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/10085/xhs2-fuji-70-300-Amazilia-Hummingbird.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
                         )
                     )
-                )
-        }
+
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd2",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name 2",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/1168/fuji-70-300-review-00011.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
+                        )
+                    )
+                model?.fileUploadVm.fileGridViewModel.files
+                    .append(
+                        .init(
+                            id: "idd5",
+                            size: 0,
+                            mimeType: .PNG,
+                            name: "name 3",
+                            source: .url(
+                                url: URL(
+                                    string:
+                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/964/XH2S1419-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
+                                )!,
+                                mimeType: .PNG
+                            )
+                        )
+                    )
+            }
+        SubmitClaimFileUploadResultView(viewModel: model.fileUploadVm.fileGridViewModel)
+    }
 }
 
 struct SubmitClaimFileUploadResultView: View {
-    let viewModel: SubmitClaimFileUploadStep
+    @ObservedObject var viewModel: FileGridViewModel
+    @State var showGrid = false
     var body: some View {
-        FilesGridView(vm: viewModel.fileUploadVm.fileGridViewModel)
+        VStack(alignment: .trailing) {
+            mainView
+            if viewModel.hasMoreFiles {
+                hButton(
+                    .small,
+                    .secondaryAlt,
+                    content: .init(title: showGrid ? "Collapse" : "Expand"),
+                    {
+                        withAnimation {
+                            showGrid.toggle()
+                        }
+                    }
+                )
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private var mainView: some View {
+        if showGrid || !viewModel.hasMoreFiles {
+            FilesGridView(vm: viewModel)
+        } else {
+            StackedFilesView(vm: viewModel)
+        }
+    }
+}
+
+struct StackedFilesView: View {
+    @ObservedObject var vm: FileGridViewModel
+    var body: some View {
+        ZStack(alignment: .center) {
+            ForEach(Array(vm.getFilesToShow().enumerated()), id: \.element.id) { (index, element) in
+                FileView(file: element) {}
+                    .frame(width: 100, height: 116)
+                    .background {
+                        hBackgroundColor.primary
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+
+                    .cornerRadius(.padding12)
+                    .offset(x: CGFloat(index * 10), y: CGFloat(index * -10))
+
+                    .rotationEffect(.degrees(Double(index) * 7.34), anchor: .bottomTrailing)
+
+                    .contentShape(Rectangle())
+            }
+        }
+        .padding(.top, vm.additionalHeight)
+        .padding(.trailing, vm.additionalWidth)
+        .fixedSize(horizontal: true, vertical: true)
+        .rotationEffect(vm.angle, anchor: .top)
+    }
+}
+
+extension FileGridViewModel {
+    fileprivate func getFilesToShow() -> [File] {
+        if files.count <= 3 {
+            return files
+        }
+        return Array(files.prefix(3))
+    }
+
+    fileprivate var angle: Angle {
+        switch files.count {
+        case 3...: return .init(degrees: -7.34)
+        default: return .init(degrees: 0)
+        }
+    }
+
+    fileprivate var additionalHeight: CGFloat {
+        switch files.count {
+        case 3...: return 2 * 10
+        case 2: return 10
+        default: return 0
+        }
+    }
+
+    fileprivate var additionalWidth: CGFloat {
+        switch files.count {
+        case 3...: return 50
+        case 2: return 10
+        default: return 0
+        }
+    }
+
+    fileprivate var hasMoreFiles: Bool {
+        files.count > 1
     }
 }
