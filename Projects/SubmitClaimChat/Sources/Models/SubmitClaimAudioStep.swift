@@ -15,6 +15,11 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     @Published var textInput: String = ""
     @Published var inputType: AudioRecordingStepType?
 
+    var characterMismatch: Bool {
+        textInput.count < audioRecordingModel.freeTextMinLength
+            || textInput.count > audioRecordingModel.freeTextMaxLength
+    }
+
     enum RecordingState {
         case idle
         case recording

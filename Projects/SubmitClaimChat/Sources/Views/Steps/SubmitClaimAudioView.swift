@@ -121,6 +121,7 @@ struct SubmitClaimAudioView: View {
                     viewModel.submitResponse()
                 }
             )
+            .disabled(viewModel.characterMismatch)
             hButton(
                 .large,
                 .ghost,
