@@ -7,6 +7,7 @@ import hCoreUI
 
 public struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
+    @Environment(\.hFileGridAlignment) var alignment
 
     public init(
         vm: FileGridViewModel
@@ -18,7 +19,9 @@ public struct FilesGridView: View {
         VStack(alignment: .trailing, spacing: .padding4) {
             ForEach(Array(stride(from: 0, to: vm.files.count, by: 3)), id: \.self) { rowIndex in
                 HStack(spacing: .padding4) {
-                    Spacer()
+                    if alignment == .trailing {
+                        Spacer()
+                    }
                     ForEach(Array(stride(from: rowIndex, to: min(rowIndex + 3, vm.files.count), by: 1)), id: \.self) {
                         index in
                         let file = vm.files[index]
@@ -26,7 +29,7 @@ public struct FilesGridView: View {
                             FileView(file: file) {
                                 vm.show(file: file)
                             }
-                            .frame(width: 100, height: 100)
+                            .frame(maxWidth: 100, maxHeight: 100)
                             .aspectRatio(1, contentMode: .fit)
                             .cornerRadius(.padding12)
                             .contentShape(Rectangle())
@@ -59,6 +62,9 @@ public struct FilesGridView: View {
                             }
                         }
                         .transition(.scale.combined(with: .opacity))
+                    }
+                    if alignment == .leading {
+                        Spacer()
                     }
                 }
             }
@@ -163,6 +169,24 @@ public class FileGridViewModel: ObservableObject {
         case let .data(data):
             fileModel = .init(type: .data(data: data, name: file.name, mimeType: file.mimeType))
         }
+    }
+}
+
+@MainActor
+private struct FileGridAlignment: @preconcurrency EnvironmentKey {
+    static let defaultValue: HorizontalAlignment = .trailing
+}
+
+extension EnvironmentValues {
+    public var hFileGridAlignment: HorizontalAlignment {
+        get { self[FileGridAlignment.self] }
+        set { self[FileGridAlignment.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFileGridAlignment(alignment: HorizontalAlignment) -> some View {
+        environment(\.hFileGridAlignment, alignment)
     }
 }
 
