@@ -173,40 +173,6 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
                             )
                         )
                     )
-
-                model?.fileUploadVm.fileGridViewModel.files
-                    .append(
-                        .init(
-                            id: "idd6",
-                            size: 0,
-                            mimeType: .PNG,
-                            name: "name 3",
-                            source: .url(
-                                url: URL(
-                                    string:
-                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/964/XH2S1419-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
-                                )!,
-                                mimeType: .PNG
-                            )
-                        )
-                    )
-
-                model?.fileUploadVm.fileGridViewModel.files
-                    .append(
-                        .init(
-                            id: "idd7",
-                            size: 0,
-                            mimeType: .PNG,
-                            name: "name 3",
-                            source: .url(
-                                url: URL(
-                                    string:
-                                        "https://fujiframe.com/assets/images/_3000x2000_fit_center-center_85_none/964/XH2S1419-Fujifilm-Fujinon-XF70-300mmF4-5.6-R-LM-OIS-WR.webp"
-                                )!,
-                                mimeType: .PNG
-                            )
-                        )
-                    )
             }
         SubmitClaimFileUploadResultView(viewModel: model.fileUploadVm.fileGridViewModel)
     }
@@ -229,7 +195,7 @@ struct SubmitClaimFileUploadResultView: View {
         } else {
             CardStack(viewModel.files) { file in
                 FileView(file: file) {}
-                    .frame(width: 100, height: 116)
+                    .frame(width: 150, height: 174)
                     .background {
                         hBackgroundColor.primary
                     }
@@ -238,145 +204,5 @@ struct SubmitClaimFileUploadResultView: View {
                     .contentShape(Rectangle())
             }
         }
-    }
-}
-
-public struct CardStack<Data, Content>: View
-where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
-    @State private var currentIndex: Double = 0.0
-    @State private var previousIndex: Double = 0.0
-    @State private var swippingLeft = false
-    private let data: Data
-    @ViewBuilder private let content: (Data.Element) -> Content
-    @Binding var finalCurrentIndex: Int
-
-    /// Creates a stack with the given content
-    /// - Parameters:
-    ///   - data: The identifiable data for computing the list.
-    ///   - currentIndex: The index of the topmost card in the stack
-    ///   - content: A view builder that creates the view for a single card
-    public init(
-        _ data: Data,
-        currentIndex: Binding<Int> = .constant(0),
-        @ViewBuilder content: @escaping (Data.Element) -> Content
-    ) {
-        self.data = data
-        self.content = content
-        _finalCurrentIndex = currentIndex
-    }
-
-    public var body: some View {
-        ZStack {
-            ForEach(Array(data.enumerated()), id: \.element.id) { (index, element) in
-                content(element)
-                    .zIndex(zIndex(for: index))
-                    .offset(x: xOffset(for: index), y: 0)
-                    .scaleEffect(scale(for: index), anchor: .center)
-                    .rotationEffect(.degrees(rotationDegrees(for: index)))
-            }
-        }
-        .highPriorityGesture(dragGesture)
-    }
-
-    private var dragGesture: some Gesture {
-        DragGesture()
-            .onChanged { value in
-                swippingLeft = value.translation.width < 0
-                withAnimation(.interactiveSpring()) {
-                    let x = (value.translation.width / 300) - previousIndex
-                    self.currentIndex = -x
-                }
-            }
-            .onEnded { value in
-                self.snapToNearestAbsoluteIndex(value.predictedEndTranslation)
-                self.previousIndex = self.currentIndex
-            }
-    }
-
-    private func snapToNearestAbsoluteIndex(_ predictedEndTranslation: CGSize) {
-        withAnimation(.interpolatingSpring(stiffness: 300, damping: 40)) {
-            let translation = predictedEndTranslation.width
-            if abs(translation) > 200 {
-                if translation > 0 {
-                    self.goTo(round(self.previousIndex) - 1)
-                } else {
-                    self.goTo(round(self.previousIndex) + 1)
-                }
-            } else {
-                self.currentIndex = round(currentIndex)
-            }
-        }
-    }
-
-    private func goTo(_ index: Double) {
-        let maxIndex = Double(data.count - 1)
-        if index < 0 {
-            self.currentIndex = 0
-        } else if index > maxIndex {
-            self.currentIndex = maxIndex
-        } else {
-            self.currentIndex = index
-        }
-        self.finalCurrentIndex = Int(index)
-    }
-
-    private func zIndex(for index: Int) -> Double {
-        var value: Double = {
-            if swippingLeft {
-                if (Double(index) + 0.5) < currentIndex {
-                    return -Double(data.count - index)
-                } else {
-                    return Double(data.count - index)
-                }
-            } else {
-                if (Double(index) + 0.5) < currentIndex {
-                    return -Double(data.count - index)
-                } else {
-                    return Double(data.count - index)
-                }
-            }
-        }()
-
-        print("INDEX \(value) for \(index) \(currentIndex) \(swippingLeft)")
-
-        return value
-    }
-
-    private func xOffset(for index: Int) -> CGFloat {
-        if swippingLeft {
-            let topCardProgress = currentPosition(for: index)
-            let padding = 40.0
-            let x = ((CGFloat(index) - currentIndex) * padding)
-            if topCardProgress > 0 && topCardProgress < 0.99 && index < (data.count - 1) {
-                let value = x * swingOutMultiplier(topCardProgress)
-                return value
-            }
-            return x
-        } else {
-            let topCardProgress = currentPosition(for: index)
-            let padding = 40.0
-            let x = ((CGFloat(index) - currentIndex) * padding)
-            if topCardProgress > -1 && topCardProgress < 0 && index < (data.count) {
-                let value = x * swingOutMultiplier(topCardProgress)
-                return -value
-            }
-            return x
-        }
-    }
-
-    private func scale(for index: Int) -> CGFloat {
-        1.0 - (0.1 * abs(currentPosition(for: index)))
-    }
-
-    private func rotationDegrees(for index: Int) -> Double {
-        -currentPosition(for: index) * 2
-    }
-
-    private func currentPosition(for index: Int) -> Double {
-        currentIndex - Double(index)
-    }
-
-    private func swingOutMultiplier(_ progress: Double) -> Double {
-        sin(Double.pi * progress) * 5
     }
 }
