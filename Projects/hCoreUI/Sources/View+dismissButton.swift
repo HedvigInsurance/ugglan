@@ -6,19 +6,20 @@ import hCore
 extension View {
     public func withDismissButton() -> some View {
         modifier(
-            DismissButton(withAlert: false)
+            DismissButton(withAlert: false, message: nil)
         )
     }
 
-    public func withAlertDismiss() -> some View {
+    public func withAlertDismiss(message: String? = nil) -> some View {
         modifier(
-            DismissButton(withAlert: true)
+            DismissButton(withAlert: true, message: message)
         )
     }
 }
 
 private struct DismissButton: ViewModifier {
     let withAlert: Bool
+    let message: String?
     @EnvironmentObject var router: Router
     @State var isAlertPresented = false
     func body(content: Content) -> some View {
@@ -42,13 +43,13 @@ private struct DismissButton: ViewModifier {
                     .accessibilityAddTraits(.isButton)
                 }
             }
-            .withDismissAlert(isPresented: $isAlertPresented)
+            .withDismissAlert(message: message, isPresented: $isAlertPresented)
     }
 }
 
 extension View {
-    public func withDismissAlert(isPresented: Binding<Bool>) -> some View {
-        modifier(DismissAlertPopup(isPresented: isPresented))
+    public func withDismissAlert(message: String? = nil, isPresented: Binding<Bool>) -> some View {
+        modifier(DismissAlertPopup(message: message, isPresented: isPresented))
     }
 }
 
