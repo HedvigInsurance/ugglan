@@ -26,7 +26,7 @@ public struct FilesGridView: View {
                             FileView(file: file) {
                                 vm.show(file: file)
                             }
-                            .frame(width: 100, height: 100)
+                            .frame(maxWidth: 100, maxHeight: 100)
                             .aspectRatio(1, contentMode: .fit)
                             .cornerRadius(.padding12)
                             .contentShape(Rectangle())
