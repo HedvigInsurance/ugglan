@@ -7,11 +7,11 @@ struct SubmitClaimChatMesageView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            if viewModel.showText {
+            if let text = viewModel.claimIntent.currentStep.text {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
                         RevealTextView(
-                            text: viewModel.claimIntent.currentStep.text,
+                            text: text,
                             delay: 1
                         )
                     }
