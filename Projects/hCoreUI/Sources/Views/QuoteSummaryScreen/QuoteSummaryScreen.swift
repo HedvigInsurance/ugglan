@@ -204,7 +204,8 @@ private struct ContractCardView: View {
 
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
-    @State private var isCancelAlertPresented = false
+    @EnvironmentObject var router: Router
+    
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
@@ -252,7 +253,7 @@ private struct PriceSummarySection: View {
                     )
 
                     hCancelButton {
-                        isCancelAlertPresented = true
+                        router.dismiss()
                     }
                 }
             }
