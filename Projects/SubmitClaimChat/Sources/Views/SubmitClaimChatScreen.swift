@@ -358,6 +358,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     // MARK: - Business Logic
     func startClaimIntent() {
+        self.error = nil
         Task {
             do {
                 guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
@@ -371,6 +372,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
                     processClaimIntent(.outcome(model: model))
                 }
             } catch {
+                try await Task.sleep(seconds: 0.5)
                 self.error = error
             }
         }
