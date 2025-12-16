@@ -128,18 +128,28 @@ public struct hTextView: View {
             .OBJC_ASSOCIATION_RETAIN_NONATOMIC
         )
 
-        vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+        vc.view.backgroundColor = .clear
         continueAction.execute = { [weak vc] in
             selectedValue = value
             value = value
             onContinue(value)
-            UIApplication.dismissKeyboard()
+            UIView.animate(withDuration: 0.1) {
+                vc?.view.backgroundColor = .clear
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 vc?.dismiss(animated: true)
             }
         }
+        Task { [weak vc] in
+            try await Task.sleep(seconds: 0.2)
+            UIView.animate(withDuration: 0.2) {
+                vc?.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+            }
+        }
         cancelAction.execute = { [weak vc] in
-            UIApplication.dismissKeyboard()
+            UIView.animate(withDuration: 0.1) {
+                vc?.view.backgroundColor = .clear
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 vc?.dismiss(animated: true)
             }
