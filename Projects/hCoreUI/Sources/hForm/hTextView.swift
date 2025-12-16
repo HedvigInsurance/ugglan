@@ -116,37 +116,37 @@ public struct hTextView: View {
         .hTextFieldError(errorMessage)
 
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
-        vc.modalPresentationStyle = .overFullScreen
-        vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+        vc.modalPresentationStyle = .custom
+        let transitionDelegate = ModalTransitionDelegate(duration: 0.2)
+        vc.transitioningDelegate = transitionDelegate
 
+        // Store the transition delegate to prevent deallocation
+        objc_setAssociatedObject(
+            vc,
+            &AssociatedKeys.transitionDelegate,
+            transitionDelegate,
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
+
+        vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
         continueAction.execute = { [weak vc] in
             selectedValue = value
             value = value
             onContinue(value)
+            UIApplication.dismissKeyboard()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                UIView.animate(withDuration: 0.2) {
-                    vc?.view.alpha = 0
-                } completion: { _ in
-                    vc?.dismiss(animated: false)
-                }
+                vc?.dismiss(animated: true)
             }
         }
         cancelAction.execute = { [weak vc] in
-            UIView.animate(withDuration: 0.2) {
-                vc?.view.alpha = 0
-            } completion: { _ in
-                vc?.dismiss(animated: false)
+            UIApplication.dismissKeyboard()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                vc?.dismiss(animated: true)
             }
         }
         let topVC = UIApplication.shared.getTopViewController()
         if let topVC {
-            vc.view.alpha = 0
-            topVC.present(vc, animated: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                UIView.animate(withDuration: 0.2) {
-                    vc.view.alpha = 1
-                }
-            }
+            topVC.present(vc, animated: true)
         }
     }
 }
@@ -283,7 +283,11 @@ private struct FreeTextInputView: View {
             .colorScheme(colorScheme)
             hSection {
                 HStack(spacing: .padding8) {
-                    hCancelButton {
+                    hButton(
+                        .medium,
+                        .secondary,
+                        content: .init(title: L10n.generalCancelButton)
+                    ) {
                         cancelAction.execute()
                     }
                     hButton(
@@ -296,13 +300,13 @@ private struct FreeTextInputView: View {
                     )
                     .disabled(value.count > maxCharacters)
                 }
-                .padding(.bottom, .padding8)
+                .padding(.vertical, .padding8)
                 .hButtonTakeFullWidth(true)
+                .colorScheme(.dark)
             }
             .layoutPriority(1)
             .sectionContainerStyle(.transparent)
         }
-        .colorScheme(.dark)
     }
 
     @hColorBuilder
@@ -415,10 +419,7 @@ private class TextView: UITextView, UITextViewDelegate {
         placeholderView.isHidden = inputText.wrappedValue != ""
         placeholderView.delegate = self
         if becomeFirstResponder {
-            Task {
-                try await Task.sleep(seconds: 0.2)
-                self.becomeFirstResponder()
-            }
+            self.becomeFirstResponder()
         } else {
             isEditable = false
             let gesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
