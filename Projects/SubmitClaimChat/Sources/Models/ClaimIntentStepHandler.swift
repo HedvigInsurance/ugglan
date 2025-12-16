@@ -26,7 +26,6 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var sender: SubmitClaimChatMesageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
     var isRegrettable: Bool { claimIntent.isRegrettable }
-    var showText: Bool { claimIntent.currentStep.showText }
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
