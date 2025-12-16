@@ -292,7 +292,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             currentStepInputHeight + minimumSpacing
         )
     }
-    var scrollView: UIScrollView? {
+    weak var scrollView: UIScrollView? {
         didSet {
             scrollCancellable = scrollView?.publisher(for: \.contentOffset)
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
@@ -358,6 +358,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     // MARK: - Business Logic
     func startClaimIntent() {
+        self.error = nil
         Task {
             do {
                 guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
@@ -371,6 +372,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
                     processClaimIntent(.outcome(model: model))
                 }
             } catch {
+                try await Task.sleep(seconds: 0.5)
                 self.error = error
             }
         }

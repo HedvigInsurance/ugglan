@@ -36,7 +36,8 @@ struct SubmitClaimFileUploadView: View {
                             .large,
                             .primary,
                             content: .init(
-                                title: fileUploadVm.hasFiles ? "Send files" : L10n.ClaimStatusDetail.addFiles
+                                title: fileUploadVm.hasFiles
+                                    ? L10n.claimChatFileUploadSendButton : L10n.ClaimStatusDetail.addFiles
                             )
                         ) {
                             if fileUploadVm.hasFiles {
