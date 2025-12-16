@@ -180,19 +180,41 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 
 struct SubmitClaimFileUploadResultView: View {
     @ObservedObject var viewModel: FileGridViewModel
+    @State private var fileModel: FileUrlModel?
     var body: some View {
         VStack(alignment: .trailing) {
             CardStack(viewModel.files) { file in
-                FileView(file: file) {}
-                    .frame(width: 150, height: 174)
-                    .background {
-                        hBackgroundColor.primary
+                FileView(file: file) {
+                    switch file.source {
+                    case let .localFile(results):
+                        Task { @MainActor in
+                            if let data = try? await results?.itemProvider.getData().data {
+                                self.fileModel = .init(
+                                    type: .data(data: data, name: file.name, mimeType: file.mimeType)
+                                )
+                            }
+                        }
+                    case let .url(url, mimeType):
+                        fileModel = .init(type: .url(url: url, name: file.name, mimeType: mimeType))
+                    case let .data(data):
+                        fileModel = .init(type: .data(data: data, name: file.name, mimeType: file.mimeType))
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                    .cornerRadius(.padding12)
-                    .contentShape(Rectangle())
+                }
+                .frame(width: 150, height: 174)
+                .background {
+                    hBackgroundColor.primary
+                }
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                .cornerRadius(.padding12)
+                .contentShape(Rectangle())
             }
         }
         .sectionContainerStyle(.transparent)
+        .detent(
+            item: $fileModel,
+            transitionType: .detent(style: [.large])
+        ) { model in
+            DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
+        }
     }
 }
