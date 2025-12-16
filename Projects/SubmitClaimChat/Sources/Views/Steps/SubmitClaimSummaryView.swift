@@ -47,7 +47,7 @@ struct SubmitClaimSummaryView: View {
     var audioRecordingView: some View {
         if viewModel.summaryModel.audioRecordings.count != 0 {
             VStack(alignment: .leading, spacing: .padding8) {
-                hText("Recording")
+                hText(L10n.claimChatRecordingTitle)
                 ForEach(viewModel.summaryModel.audioRecordings, id: \.url) { audioPlayer in
                     hSection {
                         TrackPlayerView(audioPlayer: AudioPlayer(url: audioPlayer.url))
@@ -63,7 +63,7 @@ struct SubmitClaimSummaryView: View {
     var uploadedFilesView: some View {
         if !viewModel.summaryModel.fileUploads.isEmpty {
             VStack(alignment: .leading, spacing: .padding8) {
-                hText("Uploaded files")
+                hText(L10n.claimChatFileTitle)
                 FilesGridView(vm: viewModel.fileGridViewModel)
                     .hFileGridAlignment(alignment: .leading)
             }
@@ -74,7 +74,7 @@ struct SubmitClaimSummaryView: View {
     var freeTextsView: some View {
         if !viewModel.summaryModel.freeTexts.isEmpty {
             VStack(alignment: .leading, spacing: .padding8) {
-                hText("Other information")
+                hText(L10n.claimChatOtherTitle)
                 ForEach(viewModel.summaryModel.freeTexts, id: \.self) { freeText in
                     HStack {
                         hText(freeText)
@@ -95,7 +95,7 @@ struct SubmitClaimSummaryBottomView: View {
             hButton(
                 .large,
                 .primary,
-                content: .init(title: "Submit your claim")
+                content: .init(title: L10n.claimChatSubmitClaim)
             ) {
                 viewModel.submitResponse()
             }
