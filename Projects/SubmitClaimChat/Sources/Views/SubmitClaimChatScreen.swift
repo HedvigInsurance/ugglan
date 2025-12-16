@@ -292,7 +292,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             currentStepInputHeight + minimumSpacing
         )
     }
-    var scrollView: UIScrollView? {
+    weak var scrollView: UIScrollView? {
         didSet {
             scrollCancellable = scrollView?.publisher(for: \.contentOffset)
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
