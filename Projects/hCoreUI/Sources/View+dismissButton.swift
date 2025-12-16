@@ -24,7 +24,7 @@ extension View {
 private struct DismissButton: ViewModifier {
     let reducedTopSpacing: Int
     let withAlert: Bool
-    let message: String? = nil
+    let message: String?
     @EnvironmentObject var router: Router
     @State var isAlertPresented = false
 
@@ -35,6 +35,7 @@ private struct DismissButton: ViewModifier {
     ) {
         self.reducedTopSpacing = reducedTopSpacing
         self.withAlert = withAlert
+        self.message = message
     }
 
     func body(content: Content) -> some View {
@@ -69,7 +70,7 @@ extension View {
 
 private struct DismissAlertPopup: ViewModifier {
     let title: String
-    let message: String?
+    let message: String
     let confirmButton: String
     let cancelButton: String
 
@@ -84,7 +85,7 @@ private struct DismissAlertPopup: ViewModifier {
         isPresented: Binding<Bool>
     ) {
         self.title = title
-        self.message = message
+        self.message = message ?? L10n.General.progressWillBeLostAlert
         self.confirmButton = confirmButton
         self.cancelButton = cancelButton
         self._isPresented = isPresented
