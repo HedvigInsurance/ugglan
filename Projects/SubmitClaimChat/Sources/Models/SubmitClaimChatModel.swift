@@ -66,21 +66,12 @@ public struct SourceMessage: Sendable {
 public struct ClaimIntentStep: Sendable {
     public let content: ClaimIntentStepContent
     public let id: String
-    public let text: String
-
-    public var showText: Bool {
-        switch content {
-        case .summary:
-            false
-        default:
-            true
-        }
-    }
+    public let text: String?
 
     public init(
         content: ClaimIntentStepContent,
         id: String,
-        text: String
+        text: String?
     ) {
         self.content = content
         self.id = id
