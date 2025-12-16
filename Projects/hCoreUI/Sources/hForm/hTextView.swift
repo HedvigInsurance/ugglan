@@ -116,18 +116,7 @@ public struct hTextView: View {
         .hTextFieldError(errorMessage)
 
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
-        vc.modalPresentationStyle = .custom
-        let transitionDelegate = ModalTransitionDelegate(duration: 0.2)
-        vc.transitioningDelegate = transitionDelegate
-
-        // Store the transition delegate to prevent deallocation
-        objc_setAssociatedObject(
-            vc,
-            &AssociatedKeys.transitionDelegate,
-            transitionDelegate,
-            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-        )
-
+        vc.modalPresentationStyle = .overFullScreen
         vc.view.backgroundColor = .clear
         continueAction.execute = { [weak vc] in
             selectedValue = value
@@ -141,9 +130,9 @@ public struct hTextView: View {
             }
         }
         Task { [weak vc] in
-            try await Task.sleep(seconds: 0.2)
+            try await Task.sleep(seconds: 0.4)
             UIView.animate(withDuration: 0.2) {
-                vc?.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+                vc?.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.light, .base).color.uiColor()
             }
         }
         cancelAction.execute = { [weak vc] in
