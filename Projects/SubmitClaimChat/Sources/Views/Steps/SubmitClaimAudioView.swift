@@ -156,8 +156,7 @@ struct SubmitClaimAudioView: View {
             selectedValue: viewModel.textInput,
             placeholder: L10n.claimsTextInputPlaceholder,
             popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
-            maxCharacters: 2000,
-            enableTransition: false
+            maxCharacters: 2000
         ) { text in
             viewModel.textInput = text
         }
