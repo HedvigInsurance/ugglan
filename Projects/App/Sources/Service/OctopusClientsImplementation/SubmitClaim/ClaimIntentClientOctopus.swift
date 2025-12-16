@@ -264,7 +264,9 @@ extension ClaimIntentStepContent {
             self = .audioRecording(
                 model: .init(
                     hint: audioRecording.hint,
-                    uploadURI: audioRecording.uploadUri
+                    uploadURI: audioRecording.uploadUri,
+                    freeTextMinLength: audioRecording.freeTextMinLength,
+                    freeTextMaxLength: audioRecording.freeTextMaxLength
                 )
             )
         } else if let summary = fragment.asClaimIntentStepContentSummary {

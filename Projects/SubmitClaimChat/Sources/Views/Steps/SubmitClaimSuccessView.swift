@@ -37,8 +37,8 @@ public struct SubmitClaimSuccessView: View {
                     }
                 )
                 .hButtonIsLoading(vm.state == .loading)
-                hText("Your claim was submitted successfully")
-                hButton(.medium, .secondary, content: .init(title: "Go to claim")) {
+                hText(L10n.claimChatSuccessMessage)
+                hButton(.medium, .secondary, content: .init(title: L10n.claimChatSuccessGoToClaim)) {
                     navigationVm.goToClaimDetails(model.claimId)
                 }
             }
@@ -68,7 +68,7 @@ private class SubmitClaimSuccessViewModel: ObservableObject {
     @Published var phoneNumber = ""
     @Published var type: ClaimsFlowContactType? = nil
     @Published var phoneNumberError: String?
-    @Published var titleText = "Make sure we have right phone number in the case we need to contact you"
+    @Published var titleText = L10n.claimChatPhoneNumberUpdate
     init() {
         Task {
             await fetchMemberPhone()
@@ -82,9 +82,9 @@ private class SubmitClaimSuccessViewModel: ObservableObject {
             let phoneNumber = try await memberClient.fetchPhoneNumber()
             if let phoneNumber {
                 self.phoneNumber = phoneNumber
-                titleText = "Make sure we have right phone number in the case we need to contact you"
+                titleText = L10n.claimChatPhoneNumberUpdate
             } else {
-                titleText = "Please provide phone number in the case we need to contact you"
+                titleText = L10n.claimChatPhoneNumberMissing
             }
             state = .success
         } catch {

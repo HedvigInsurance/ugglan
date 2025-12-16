@@ -121,6 +121,7 @@ struct SubmitClaimAudioView: View {
                     viewModel.submitResponse()
                 }
             )
+            .disabled(viewModel.characterMismatch)
             hButton(
                 .large,
                 .ghost,
@@ -133,7 +134,7 @@ struct SubmitClaimAudioView: View {
             hButton(
                 .large,
                 .primary,
-                content: .init(title: "Record voice note"),
+                content: .init(title: L10n.claimChatUseAudio),
                 {
                     viewModel.inputType = .audio
                     handleRecordTap()
@@ -142,7 +143,7 @@ struct SubmitClaimAudioView: View {
             hButton(
                 .large,
                 .ghost,
-                content: .init(title: "Describe with text"),
+                content: .init(title: L10n.claimChatUseTextInput),
                 {
                     viewModel.inputType = .text
                 }
@@ -156,7 +157,8 @@ struct SubmitClaimAudioView: View {
             selectedValue: viewModel.textInput,
             placeholder: L10n.claimsTextInputPlaceholder,
             popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
-            maxCharacters: 2000
+            minCharacters: viewModel.audioRecordingModel.freeTextMinLength,
+            maxCharacters: viewModel.audioRecordingModel.freeTextMaxLength,
         ) { text in
             viewModel.textInput = text
         }
@@ -351,7 +353,9 @@ extension View {
                 content: .audioRecording(
                     model: .init(
                         hint: "",
-                        uploadURI: ""
+                        uploadURI: "",
+                        freeTextMinLength: 5,
+                        freeTextMaxLength: 100
                     )
                 ),
                 id: "id1",

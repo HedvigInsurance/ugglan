@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct SubmitClaimUnknownView: View {
@@ -6,7 +7,7 @@ struct SubmitClaimUnknownView: View {
 
     var body: some View {
         VStack(spacing: .padding16) {
-            hText("UNKNOWN STEP")
+            hText(L10n.claimChatUnknownStep)
         }
     }
 }
