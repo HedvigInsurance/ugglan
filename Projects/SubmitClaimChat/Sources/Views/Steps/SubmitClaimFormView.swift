@@ -142,8 +142,8 @@ struct FormFieldView: View {
                     config: .init(
                         minDate: field.minValue?.localDateToDate,
                         maxDate: field.maxValue?.localDateToDate,
-                        placeholder: "placeholder",
-                        title: "Select date",
+                        placeholder: "",
+                        title: field.title,
                     )
                 )
             }

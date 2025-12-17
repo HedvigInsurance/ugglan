@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 final class SubmitClaimFormStep: ClaimIntentStepHandler {
@@ -67,7 +68,11 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                 }
                 let valueToDisplay = userEnteredValues.joined(separator: ", ")
                 let isSkipped = userEnteredValues.isEmpty
-                return .init(key: field.title, value: isSkipped ? "Skipped" : valueToDisplay, skipped: isSkipped)
+                return .init(
+                    key: field.title,
+                    value: isSkipped ? L10n.claimChatSkippedStep : valueToDisplay,
+                    skipped: isSkipped
+                )
             }
     }
 
@@ -103,7 +108,7 @@ extension FormStepValue {
         let finalValue = self.values.joined(separator: ",")
 
         guard !finalValue.isEmpty else {
-            self.error = "This field is required"
+            self.error = L10n.claimChatFormRequiredField
             return
         }
 
@@ -130,11 +135,11 @@ extension FormStepValue {
         field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
     ) -> [String] {
         var errors: [String] = []
-        if let minValue = field.minValue, value.count < Int(minValue) ?? 0 {
-            errors.append("Value must be at least \(minValue) characters long")
+        if let minValue = field.minValue, let minValueInt = Int(minValue), value.count < minValueInt {
+            errors.append(L10n.claimChatFormTextMinChar(minValueInt))
         }
-        if let maxValue = field.maxValue, value.count > Int(maxValue) ?? 0 {
-            errors.append("Value must be at most \(maxValue) characters long")
+        if let maxValue = field.maxValue, let maxValueInt = Int(maxValue), value.count > maxValueInt {
+            errors.append(L10n.claimChatFormTextMaxChar(maxValueInt))
         }
         return errors
     }
@@ -147,10 +152,10 @@ extension FormStepValue {
         guard let numericValue = Int(value) else { return errors }
 
         if let minValue = field.minValue, let minInt = Int(minValue), numericValue < minInt {
-            errors.append("Value must be at least \(minValue)")
+            errors.append(L10n.claimChatFormNumberMinChar(minInt))
         }
         if let maxValue = field.maxValue, let maxInt = Int(maxValue), numericValue > maxInt {
-            errors.append("Value must be at most \(maxValue)")
+            errors.append(L10n.claimChatFormNumberMaxChar(maxInt))
         }
         return errors
     }

@@ -5,6 +5,7 @@ import hCore
 public struct hTextView: View {
     private let placeholder: String
     private let popupPlaceholder: String
+    private let minCharacters: Int
     private let maxCharacters: Int
     @State private var height: CGFloat = 100
     @State private var width: CGFloat = 0
@@ -19,6 +20,7 @@ public struct hTextView: View {
         selectedValue: String,
         placeholder: String,
         popupPlaceholder: String,
+        minCharacters: Int? = 0,
         maxCharacters: Int,
         enabled: Bool = true,
         color: UIColor = UIColor { trait in
@@ -31,6 +33,7 @@ public struct hTextView: View {
         self.placeholder = placeholder
         self.popupPlaceholder = popupPlaceholder
         self.onContinue = onContinue
+        self.minCharacters = minCharacters ?? 0
         self.maxCharacters = maxCharacters
         self.enabled = enabled
         self.color = color
@@ -109,6 +112,7 @@ public struct hTextView: View {
             value: $value,
             title: placeholder,
             placeholder: popupPlaceholder,
+            minCharacters: minCharacters,
             maxCharacters: maxCharacters,
             height: $popoverHeight,
             color: color
@@ -171,6 +175,7 @@ public struct hTextView: View {
                                         selectedValue: valuee,
                                         placeholder: "Placeholder LONG ONE PLACE H O L D E R THAT NEEDS more rows",
                                         popupPlaceholder: "title",
+                                        minCharacters: 5,
                                         maxCharacters: 2000,
                                         enabled: true
                                     ) { value in
@@ -191,6 +196,7 @@ public struct hTextView: View {
 private struct FreeTextInputView: View {
     fileprivate let title: String
     fileprivate let placeholder: String
+    fileprivate let minCharacters: Int
     fileprivate let maxCharacters: Int
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
@@ -208,6 +214,7 @@ private struct FreeTextInputView: View {
         value: Binding<String>,
         title: String,
         placeholder: String,
+        minCharacters: Int,
         maxCharacters: Int,
         height: Binding<CGFloat>,
         color: UIColor
@@ -217,6 +224,7 @@ private struct FreeTextInputView: View {
         self.cancelAction = cancelAction
         _value = value
         self.placeholder = placeholder
+        self.minCharacters = minCharacters
         self.maxCharacters = maxCharacters
         //        _height = height
         self.color = color
@@ -267,7 +275,7 @@ private struct FreeTextInputView: View {
                             Spacer()
                             HStack(spacing: .padding4) {
                                 Spacer()
-                                if value.count > maxCharacters {
+                                if hasCharacterMismatch {
                                     hCoreUIAssets.warningTriangleFilled.view
                                         .resizable()
                                         .frame(width: 20, height: 20)
@@ -301,7 +309,7 @@ private struct FreeTextInputView: View {
                             continueAction.execute()
                         }
                     )
-                    .disabled(value.count > maxCharacters)
+                    .disabled(hasCharacterMismatch)
                 }
                 .padding(.vertical, .padding8)
                 .hButtonTakeFullWidth(true)
@@ -314,11 +322,15 @@ private struct FreeTextInputView: View {
 
     @hColorBuilder
     var getTextColor: some hColor {
-        if value.count < maxCharacters {
+        if !hasCharacterMismatch {
             hTextColor.Opaque.tertiary
         } else {
             hSignalColor.Red.element
         }
+    }
+
+    var hasCharacterMismatch: Bool {
+        value.count > maxCharacters || value.count < minCharacters
     }
 }
 
