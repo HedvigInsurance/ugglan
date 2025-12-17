@@ -305,8 +305,7 @@ struct TerminationFlowSurveyStepFeedBackView: View {
             selectedValue: vm.text,
             placeholder: L10n.terminationSurveyFeedbackHint,
             popupPlaceholder: L10n.terminationSurveyFeedbackPopoverHint,
-            maxCharacters: 2000,
-            enableTransition: false
+            maxCharacters: 2000
         ) { [weak vm] text in
             guard let vm else { return }
             vm.error = vm.required && text.isEmpty ? L10n.terminationSurveyFeedbackInfo : nil
