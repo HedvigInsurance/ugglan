@@ -159,7 +159,6 @@ struct SubmitClaimAudioView: View {
             popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
             minCharacters: viewModel.audioRecordingModel.freeTextMinLength,
             maxCharacters: viewModel.audioRecordingModel.freeTextMaxLength,
-            enableTransition: false
         ) { text in
             viewModel.textInput = text
         }

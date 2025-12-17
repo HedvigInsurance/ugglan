@@ -1,5 +1,4 @@
 import Foundation
-import Hero
 import SwiftUI
 import hCore
 
@@ -15,7 +14,6 @@ public struct hTextView: View {
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
     private let onContinue: (_ text: String) -> Void
-    private let enableTransition: Bool
     private let enabled: Bool
     private let color: UIColor
     public init(
@@ -24,7 +22,6 @@ public struct hTextView: View {
         popupPlaceholder: String,
         minCharacters: Int? = 0,
         maxCharacters: Int,
-        enableTransition: Bool,
         enabled: Bool = true,
         color: UIColor = UIColor { trait in
             let style = trait.userInterfaceStyle
@@ -36,7 +33,6 @@ public struct hTextView: View {
         self.placeholder = placeholder
         self.popupPlaceholder = popupPlaceholder
         self.onContinue = onContinue
-        self.enableTransition = enableTransition
         self.minCharacters = minCharacters ?? 0
         self.maxCharacters = maxCharacters
         self.enabled = enabled
@@ -56,7 +52,6 @@ public struct hTextView: View {
                             height: $height,
                             width: $width,
                             inEdit: .constant(false),
-                            enableTransition: enableTransition,
                             onBeginEditing: {
                                 if enabled {
                                     showFreeTextField()
@@ -68,21 +63,12 @@ public struct hTextView: View {
                         .frame(height: height)
                         .padding(.bottom, enabled ? 0 : .padding12)
                         if enabled {
-                            HeroAnimationWrapper(
-                                id: "counter",
-                                cornerRadius: 0,
-                                enableTransition: enableTransition,
-                                color: color
-                            ) {
-                                HStack(spacing: .padding4) {
-                                    Spacer()
-                                    hText("\(value.count)/\(maxCharacters)", style: .label)
-                                        .foregroundColor(hTextColor.Opaque.tertiary)
-                                }
-                                .fixedSize()
+                            HStack(spacing: .padding4) {
+                                Spacer()
+                                hText("\(value.count)/\(maxCharacters)", style: .label)
+                                    .foregroundColor(hTextColor.Opaque.tertiary)
                             }
                             .fixedSize()
-                            .id(UUID().uuidString)
                             .padding(.bottom, .padding12)
                         }
                     }
@@ -129,28 +115,41 @@ public struct hTextView: View {
             minCharacters: minCharacters,
             maxCharacters: maxCharacters,
             height: $popoverHeight,
-            enableTransition: enableTransition,
             color: color
         )
         .hTextFieldError(errorMessage)
 
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
         vc.modalPresentationStyle = .overFullScreen
-        if enableTransition {
-            vc.enableHero()
-        }
-        vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
-
+        vc.view.backgroundColor = .clear
         continueAction.execute = { [weak vc] in
             selectedValue = value
             value = value
             onContinue(value)
+            UIView.animate(withDuration: 0.1) {
+                vc?.view.backgroundColor = .clear
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 vc?.dismiss(animated: true)
             }
         }
+        Task { [weak vc] in
+            let color = UIColor(
+                light: hGrayscaleOpaqueColor.white.colorFor(.light, .base).color.uiColor(),
+                dark: hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+            )
+            try await Task.sleep(seconds: 0.3)
+            UIView.animate(withDuration: 0.2) {
+                vc?.view.backgroundColor = color
+            }
+        }
         cancelAction.execute = { [weak vc] in
-            vc?.dismiss(animated: true)
+            UIView.animate(withDuration: 0.1) {
+                vc?.view.backgroundColor = .clear
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                vc?.dismiss(animated: true)
+            }
         }
         let topVC = UIApplication.shared.getTopViewController()
         if let topVC {
@@ -178,7 +177,6 @@ public struct hTextView: View {
                                         popupPlaceholder: "title",
                                         minCharacters: 5,
                                         maxCharacters: 2000,
-                                        enableTransition: false,
                                         enabled: true
                                     ) { value in
                                         valuee = value
@@ -195,18 +193,16 @@ public struct hTextView: View {
     return PreviewWrapper()
 }
 
-private struct FreeTextInputView: View, KeyboardReadableHeight {
+private struct FreeTextInputView: View {
     fileprivate let title: String
     fileprivate let placeholder: String
     fileprivate let minCharacters: Int
     fileprivate let maxCharacters: Int
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
-    fileprivate let enableTransition: Bool
     @Binding fileprivate var value: String
-    @Binding private var height: CGFloat
+    @State var height: CGFloat = 0
     @Environment(\.safeAreaInsets) private var safeAreaInsets
-    @State var keyboard: CGFloat = 303.99
     @State private var inEdit: Bool = false
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -220,7 +216,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         minCharacters: Int,
         maxCharacters: Int,
         height: Binding<CGFloat>,
-        enableTransition: Bool,
         color: UIColor
     ) {
         self.title = title
@@ -230,13 +225,11 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         self.placeholder = placeholder
         self.minCharacters = minCharacters
         self.maxCharacters = maxCharacters
-        self.enableTransition = enableTransition
-        _height = height
         self.color = color
     }
 
     public var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 0) {
             hSection {
                 VStack(spacing: 0) {
                     hSection {
@@ -251,7 +244,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                     hCoreUIAssets.close.view
                                         .resizable()
                                         .frame(width: 24, height: 24)
-                                        .padding(12)
+                                        .padding(.vertical, .padding12)
                                         .foregroundColor(hFillColor.Opaque.primary)
                                 }
                             )
@@ -268,49 +261,42 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                             height: $height,
                             width: .constant(0),
                             inEdit: $inEdit,
-                            enableTransition: enableTransition,
                             color: color
                         )
                         .padding(.leading, -4)
                         .frame(maxHeight: max(height, 100))
-                        .frame(minHeight: 100)
                     }
                     .sectionContainerStyle(.transparent)
                     Spacer()
                     hSection {
                         HStack {
                             Spacer()
-                            HeroAnimationWrapper(
-                                id: "counter",
-                                cornerRadius: 0,
-                                enableTransition: enableTransition,
-                                color: color
-                            ) {
-                                HStack(spacing: .padding4) {
-                                    Spacer()
-                                    if hasCharacterMismatch {
-                                        hCoreUIAssets.warningTriangleFilled.view
-                                            .resizable()
-                                            .frame(width: 20, height: 20)
-                                            .foregroundColor(hSignalColor.Amber.element)
-                                    }
-                                    hText("\(value.count)/\(maxCharacters)", style: .label)
-                                        .foregroundColor(getTextColor)
+                            HStack(spacing: .padding4) {
+                                Spacer()
+                                if hasCharacterMismatch {
+                                    hCoreUIAssets.warningTriangleFilled.view
+                                        .resizable()
+                                        .frame(width: 20, height: 20)
+                                        .foregroundColor(hSignalColor.Amber.element)
                                 }
+                                hText("\(value.count)/\(maxCharacters)", style: .label)
+                                    .foregroundColor(getTextColor)
                             }
-                            .id(UUID().uuidString)
-                            .fixedSize()
                         }
+                        .padding(.bottom, .padding8)
                     }
                     .sectionContainerStyle(.transparent)
                 }
-                .padding(.bottom, .padding16)
             }
             .sectionContainerStyle(.opaque)
             .colorScheme(colorScheme)
             hSection {
                 HStack(spacing: .padding8) {
-                    hCancelButton {
+                    hButton(
+                        .medium,
+                        .secondary,
+                        content: .init(title: L10n.generalCancelButton)
+                    ) {
                         cancelAction.execute()
                     }
                     hButton(
@@ -323,30 +309,12 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                     )
                     .disabled(hasCharacterMismatch)
                 }
-                .padding(.bottom, .padding8)
+                .padding(.vertical, .padding8)
                 .hButtonTakeFullWidth(true)
+                .colorScheme(.dark)
             }
+            .layoutPriority(1)
             .sectionContainerStyle(.transparent)
-        }
-        .frame(
-            maxHeight: verticalSizeClass == .compact
-                ? nil : UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom - keyboard
-        )
-        .colorScheme(.dark)
-        .ignoresSafeArea(verticalSizeClass == .compact ? [] : .keyboard, edges: .bottom)
-        .onReceive(keyboardHeightPublisher) { newHeight in
-            if let newHeight {
-                keyboard = newHeight - 44 + 12
-            }
-        }
-        .onChange(of: inEdit) { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                if keyboard == 303.99 {
-                    withAnimation {
-                        keyboard = 0
-                    }
-                }
-            }
         }
     }
 
@@ -374,7 +342,6 @@ private struct SwiftUITextView: UIViewRepresentable {
     @Binding var inEdit: Bool
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.hTextFieldError) var errorMessage
-    let enableTransition: Bool
     var onBeginEditing: (() -> Void)?
     let color: UIColor?
     func makeUIView(context _: Context) -> UITextView {
@@ -391,9 +358,6 @@ private struct SwiftUITextView: UIViewRepresentable {
         textView.setText(text: text)
         textView.colorSchema = colorScheme
         textView.updateHeight()
-        textView.hero.isEnabled = enableTransition
-        textView.hero.id = "textViewHeroId"
-        textView.heroModifiers = [.spring(stiffness: 450, damping: 35)]
 
         return textView
     }
