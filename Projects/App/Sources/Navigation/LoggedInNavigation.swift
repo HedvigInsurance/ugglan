@@ -387,7 +387,7 @@ struct HomeTab: View {
     }
 }
 
-private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
+enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .submitClaimDeflect:

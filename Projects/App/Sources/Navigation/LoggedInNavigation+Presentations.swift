@@ -1,14 +1,20 @@
+import Addons
 import ChangeTier
+import Contracts
 import CrossSell
 import EditCoInsured
 import Forever
 import Foundation
+import Home
 import InsuranceEvidence
 import MoveFlow
+import PresentableStore
+import Profile
 import SubmitClaim
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
+import hCore
 import hCoreUI
 
 extension View {
