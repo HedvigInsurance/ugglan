@@ -274,9 +274,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             progress = data.progress
         }
 
-        // Update the model BEFORE routing to ensure it's set when the view is created
         updateStepModel(for: data.step)
-        stepHandler.route(step: data.step, to: router)
+        _ = stepHandler.route(step: data.step, to: router)
     }
 
     private func updateStepModel(for step: TerminationContractStep) {
