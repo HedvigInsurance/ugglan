@@ -201,7 +201,6 @@ private struct FreeTextInputView: View {
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var value: String
-    //    @Binding private var height: CGFloat
     @State var height: CGFloat = 0
     @Environment(\.safeAreaInsets) private var safeAreaInsets
     @State private var inEdit: Bool = false
@@ -226,7 +225,6 @@ private struct FreeTextInputView: View {
         self.placeholder = placeholder
         self.minCharacters = minCharacters
         self.maxCharacters = maxCharacters
-        //        _height = height
         self.color = color
     }
 
