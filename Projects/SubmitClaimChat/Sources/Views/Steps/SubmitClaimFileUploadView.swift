@@ -181,95 +181,41 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 
 struct SubmitClaimFileUploadResultView: View {
     @ObservedObject var viewModel: FileGridViewModel
-    @State var showGrid = false
+    @State private var fileModel: FileUrlModel?
     var body: some View {
         VStack(alignment: .trailing) {
-            mainView
-            if viewModel.hasMoreFiles {
-                hButton(
-                    .small,
-                    .secondaryAlt,
-                    content: .init(title: showGrid ? "Collapse" : "Expand"),
-                    {
-                        withAnimation {
-                            showGrid.toggle()
+            CardStack(viewModel.files) { file in
+                FileView(file: file) {
+                    switch file.source {
+                    case let .localFile(results):
+                        Task { @MainActor in
+                            if let data = try? await results?.itemProvider.getData().data {
+                                self.fileModel = .init(
+                                    type: .data(data: data, name: file.name, mimeType: file.mimeType)
+                                )
+                            }
                         }
+                    case let .url(url, mimeType):
+                        fileModel = .init(type: .url(url: url, name: file.name, mimeType: mimeType))
+                    case let .data(data):
+                        fileModel = .init(type: .data(data: data, name: file.name, mimeType: file.mimeType))
                     }
-                )
+                }
+                .frame(width: 150, height: 174)
+                .background {
+                    hBackgroundColor.primary
+                }
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                .cornerRadius(.padding12)
+                .contentShape(Rectangle())
             }
         }
         .sectionContainerStyle(.transparent)
-    }
-
-    @ViewBuilder
-    private var mainView: some View {
-        if showGrid || !viewModel.hasMoreFiles {
-            FilesGridView(vm: viewModel)
-        } else {
-            StackedFilesView(vm: viewModel)
+        .detent(
+            item: $fileModel,
+            transitionType: .detent(style: [.large])
+        ) { model in
+            DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
         }
-    }
-}
-
-struct StackedFilesView: View {
-    @ObservedObject var vm: FileGridViewModel
-    var body: some View {
-        ZStack(alignment: .center) {
-            ForEach(Array(vm.getFilesToShow().enumerated()), id: \.element.id) { (index, element) in
-                FileView(file: element) {}
-                    .frame(width: 100, height: 116)
-                    .background {
-                        hBackgroundColor.primary
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-
-                    .cornerRadius(.padding12)
-                    .offset(x: CGFloat(index * 10), y: CGFloat(index * -10))
-
-                    .rotationEffect(.degrees(Double(index) * 7.34), anchor: .bottomTrailing)
-
-                    .contentShape(Rectangle())
-            }
-        }
-        .padding(.top, vm.additionalHeight)
-        .padding(.trailing, vm.additionalWidth)
-        .fixedSize(horizontal: true, vertical: true)
-        .rotationEffect(vm.angle, anchor: .top)
-    }
-}
-
-extension FileGridViewModel {
-    fileprivate func getFilesToShow() -> [File] {
-        if files.count <= 3 {
-            return files
-        }
-        return Array(files.prefix(3))
-    }
-
-    fileprivate var angle: Angle {
-        switch files.count {
-        case 3...: return .init(degrees: -7.34)
-        default: return .init(degrees: 0)
-        }
-    }
-
-    fileprivate var additionalHeight: CGFloat {
-        switch files.count {
-        case 3...: return 2 * 10
-        case 2: return 10
-        default: return 0
-        }
-    }
-
-    fileprivate var additionalWidth: CGFloat {
-        switch files.count {
-        case 3...: return 50
-        case 2: return 10
-        default: return 0
-        }
-    }
-
-    fileprivate var hasMoreFiles: Bool {
-        files.count > 1
     }
 }
