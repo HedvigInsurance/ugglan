@@ -130,9 +130,13 @@ public struct hTextView: View {
             }
         }
         Task { [weak vc] in
-            try await Task.sleep(seconds: 0.4)
+            let color = UIColor(
+                light: hGrayscaleOpaqueColor.white.colorFor(.light, .base).color.uiColor(),
+                dark: hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+            )
+            try await Task.sleep(seconds: 0.3)
             UIView.animate(withDuration: 0.2) {
-                vc?.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.light, .base).color.uiColor()
+                vc?.view.backgroundColor = color
             }
         }
         cancelAction.execute = { [weak vc] in
