@@ -7,7 +7,7 @@ struct SubmitClaimChatMesageView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            if let text = viewModel.claimIntent.currentStep.text {
+            if let text = viewModel.getText() {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
                         RevealTextView(
@@ -15,19 +15,7 @@ struct SubmitClaimChatMesageView: View {
                             delay: 1
                         )
                     }
-
                     .fixedSize(horizontal: false, vertical: true)
-                    Spacer()
-                }
-            }
-
-            if let viewModel = viewModel as? SubmitClaimAudioStep {
-                HStack {
-                    RevealTextView(
-                        text: viewModel.audioRecordingModel.hint,
-                        delay: 2,
-                        showDot: false
-                    )
                     Spacer()
                 }
             }
