@@ -63,7 +63,7 @@ private struct DismissButton: ViewModifier {
 }
 
 extension View {
-    fileprivate func configureAlert(message: String? = nil, isPresented: Binding<Bool>) -> some View {
+    func configureAlert(message: String? = nil, isPresented: Binding<Bool>) -> some View {
         modifier(DismissAlertPopup(message: message, isPresented: isPresented))
     }
 }
