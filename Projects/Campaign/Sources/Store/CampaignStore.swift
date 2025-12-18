@@ -13,7 +13,7 @@ public final class CampaignStore: LoadingStateStore<CampaignState, CampaignActio
         case .fetchDiscountsData:
             do {
                 let data = try await campaignService.getPaymentDiscountsData()
-                send(.setDiscountsData(data: data))
+                await sendAsync(.setDiscountsData(data: data))
             } catch {
                 setError(L10n.General.errorBody, for: .getDiscountsData)
             }

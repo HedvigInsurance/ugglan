@@ -13,9 +13,9 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case .fetchContracts:
             do {
                 let data = try await fetchContractsService.getContracts()
-                send(.setActiveContracts(contracts: data.activeContracts))
-                send(.setTerminatedContracts(contracts: data.terminatedContracts))
-                send(.setPendingContracts(contracts: data.pendingContracts))
+                await sendAsync(.setActiveContracts(contracts: data.activeContracts))
+                await sendAsync(.setTerminatedContracts(contracts: data.terminatedContracts))
+                await sendAsync(.setPendingContracts(contracts: data.pendingContracts))
             } catch {
                 setError(error.localizedDescription, for: .fetchContracts)
             }
