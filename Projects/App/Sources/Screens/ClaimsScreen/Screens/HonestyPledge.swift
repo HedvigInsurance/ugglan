@@ -147,6 +147,7 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @EnvironmentObject var router: Router
+    @InjectObservableObject private var featureFlags: FeatureFlags
     let onConfirmAction: ((_ action: HonestyPledgeAction) -> Void)?
 
     init(
@@ -170,22 +171,20 @@ struct HonestyPledge: View {
                 }
 
                 SlideToConfirm(onConfirmAction: {
-                    onConfirmAction?(.submitClaim)
+                    if Environment.current == .staging && featureFlags.isNewClaimFlowEnabled {
+                        onConfirmAction?(.automationSubmitClaim)
+                    } else {
+                        onConfirmAction?(.submitClaim)
+                    }
                 })
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
 
-                if Environment.current == .staging {
-                    HStack {
-                        hButton(.medium, .secondaryAlt, content: .init(title: "AI claim")) {
-                            onConfirmAction?(.automationSubmitClaim)
-                        }
-                        .withGradientBorder(shape: RoundedRectangle(cornerRadius: .padding8))
-                        hButton(.medium, .secondaryAlt, content: .init(title: "Dev AI claim")) {
-                            onConfirmAction?(.devAutomationSubmitClaim)
-                        }
-                        .withGradientBorder(shape: RoundedRectangle(cornerRadius: .padding8))
+                if Environment.current == .staging && featureFlags.isNewClaimFlowEnabled {
+                    hButton(.medium, .secondaryAlt, content: .init(title: "Dev AI claim")) {
+                        onConfirmAction?(.devAutomationSubmitClaim)
                     }
+                    .withGradientBorder(shape: RoundedRectangle(cornerRadius: .padding8))
                     .hButtonTakeFullWidth(true)
                 }
 
