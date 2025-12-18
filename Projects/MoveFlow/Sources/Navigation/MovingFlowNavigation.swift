@@ -351,7 +351,6 @@ public struct MovingFlowNavigation: View {
         let model = movingFlowNavigationVm.quoteSummaryViewModel!
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
             .navigationTitle(L10n.changeAddressSummaryTitle)
-            .withAlertDismiss()
     }
 
     func openProcessingView(confirmVm: MovingFlowConfirmViewModel) -> some View {

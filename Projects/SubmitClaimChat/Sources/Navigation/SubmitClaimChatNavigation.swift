@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 public struct SubmitClaimChatNavigation: View {
@@ -26,9 +27,9 @@ public struct SubmitClaimChatNavigation: View {
                     options: [.hidesBottomBarWhenPushed, .hidesBackButton]
                 ) { outcome in
                     SubmitClaimOutcomeScreen(outcome: outcome)
-                        .withDismissButton()
+                        .addDismissClaimChatFlow()
                 }
-                .withDismissButton()
+                .addDismissClaimChatFlow()
         }
         .environmentObject(viewModel)
     }
@@ -37,5 +38,11 @@ public struct SubmitClaimChatNavigation: View {
 extension SubmitClaimChatNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
         .init(describing: SubmitClaimChatScreen.self)
+    }
+}
+
+extension View {
+    func addDismissClaimChatFlow() -> some View {
+        withAlertDismiss(message: L10n.claimChatEditExplanation)
     }
 }
