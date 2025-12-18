@@ -76,7 +76,9 @@ public struct SubmitClaimDeflectScreen: View {
                 }
                 .padding(.top, .padding8)
                 ForEach(model.linkOnlyPartners, id: \.id) { partner in
-                    ParnerButtonView(model: partner)
+                    hRow {
+                        ParnerButtonView(model: partner, overrideColorSchema: false)
+                    }
                 }
                 SupportView(openChat: openChat)
                     .padding(.top, .padding56)

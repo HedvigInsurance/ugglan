@@ -41,7 +41,7 @@ struct ClaimContactCard: View {
                 }
                 .padding(.horizontal, .padding16)
                 .accessibilityElement(children: .combine)
-                ParnerButtonView(model: model)
+                ParnerButtonView(model: model, overrideColorSchema: true)
             }
             .padding(.top, .padding32)
             .padding(.bottom, .padding16)
@@ -53,6 +53,8 @@ struct ClaimContactCard: View {
 
 struct ParnerButtonView: View {
     var model: Partner
+    let overrideColorSchema: Bool
+    @Environment(\.colorScheme) var colorSchema
 
     var body: some View {
         VStack(spacing: .padding4) {
@@ -60,13 +62,13 @@ struct ParnerButtonView: View {
                 hSection {
                     hButton(
                         .medium,
-                        .secondaryAlt,
+                        overrideColorSchema ? .secondaryAlt : .primary,
                         content: .init(title: model.buttonText ?? ""),
                         {
                             Dependencies.urlOpener.open(url)
                         }
                     )
-                    .colorScheme(.light)
+                    .colorScheme(overrideColorSchema ? .light : colorSchema)
                     .hButtonTakeFullWidth(true)
                 }
             }
@@ -80,7 +82,7 @@ struct ParnerButtonView: View {
                             Dependencies.urlOpener.open(url)
                         }
                     )
-                    .colorScheme(getPhoneNumberSchema())
+                    .colorScheme(overrideColorSchema ? getPhoneNumberSchema() : colorSchema)
                     .hButtonTakeFullWidth(true)
                 }
             }
