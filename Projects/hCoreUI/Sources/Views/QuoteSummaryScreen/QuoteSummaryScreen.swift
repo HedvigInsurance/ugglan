@@ -205,7 +205,7 @@ private struct ContractCardView: View {
 private struct PriceSummarySection: View {
     @ObservedObject var vm: QuoteSummaryViewModel
     @State private var isCancelAlertPresented = false
-    
+
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
