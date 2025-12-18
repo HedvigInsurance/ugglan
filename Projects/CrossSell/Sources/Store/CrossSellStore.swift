@@ -13,6 +13,7 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
                 let crossSells = try await crossSellService.getCrossSell(source: .insurances)
                 send(.setCrossSells(crossSells: crossSells))
             } catch {
+                send(.setCrossSells(crossSells: .init(recommended: nil, others: [], discountAvailable: false)))
                 setError(error.localizedDescription, for: .fetchCrossSell)
             }
         case .fetchAddonBanner:
@@ -22,6 +23,7 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
                     send(.setAddonBannerData(addonBanner: addonBanner))
                 }
             } catch {
+                send(.setCrossSells(crossSells: .init(recommended: nil, others: [], discountAvailable: false)))
                 send(.setAddonBannerData(addonBanner: nil))
                 setError(error.localizedDescription, for: .fetchAddonBanner)
             }
