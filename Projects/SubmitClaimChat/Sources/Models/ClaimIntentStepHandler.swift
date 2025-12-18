@@ -53,6 +53,16 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         fatalError("submitResponse must be overridden")
     }
 
+    func getText() -> String? {
+        if let text = claimIntent.currentStep.text {
+            if case let ClaimIntentStepContent.audioRecording(model) = claimIntent.currentStep.content {
+                return text + "\n\n" + model.hint
+            }
+            return text
+        }
+        return nil
+    }
+
     final func submitResponse() {
         submitTask?.cancel()
         submitTask = Task { [weak self] in

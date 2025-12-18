@@ -4,7 +4,7 @@ import hCoreUI
 
 struct RevealTextView: View {
     let text: String
-    @State private var visibleCharacters: Int = 0
+    @State private var visibleCharacters: [Int: Double] = [:]
     @State private var showDot = false
     let delay: Float
     init(text: String, delay: Float, showDot: Bool = true) {
@@ -24,10 +24,7 @@ struct RevealTextView: View {
                         animateText()
                     }
             } else {
-                Text(String(text.prefix(visibleCharacters)))
-                    .onAppear {
-                        animateText()
-                    }
+                Text(String(text))
             }
         }
         .animation(.easeIn(duration: 0.1), value: showDot)
@@ -35,13 +32,62 @@ struct RevealTextView: View {
     }
 
     private func animateText() {
-        visibleCharacters = 0
         Task {
             try? await Task.sleep(seconds: delay)
-            for index in 0...text.count {
-                try? await Task.sleep(seconds: 0.03)
-                showDot = false
-                visibleCharacters = index
+            showDot = false
+
+            var characterIndex = 0
+            var elapsedTime: Float = 0
+            let slowModeThreshold: Float = 2.0
+
+            for textIndex in 0..<text.count {
+                let character = getCharacter(at: textIndex)
+                let isSlowMode = elapsedTime < slowModeThreshold
+
+                // Render character (skip newlines)
+                if character != "\n" {
+                    startCharacterFadeIn(at: characterIndex)
+                    characterIndex += 1
+                }
+
+                // Calculate and apply delay
+                let sleepDuration = calculateDelay(for: character, slowMode: isSlowMode)
+                try? await Task.sleep(seconds: sleepDuration)
+
+                if isSlowMode {
+                    elapsedTime += sleepDuration
+                }
+            }
+        }
+    }
+
+    private func calculateDelay(for character: String, slowMode: Bool) -> Float {
+        let isPunctuationOrNewline = [".", "?", "!", "\n"].contains(character)
+
+        if slowMode {
+            let punctuationDelay: Float = isPunctuationOrNewline ? 0.2 : 0
+            let baseDelay: Float = 0.02
+            return punctuationDelay + baseDelay
+        } else {
+            let punctuationDelay: Float = isPunctuationOrNewline ? 0.05 : 0
+            let baseDelay: Float = 0.01
+            return punctuationDelay + baseDelay
+        }
+    }
+
+    private func getCharacter(at index: Int) -> String {
+        let start = text.index(text.startIndex, offsetBy: index)
+        return String(text[start...start])
+    }
+
+    private func startCharacterFadeIn(at index: Int) {
+        let opacitySteps = 20
+        let stepDuration: Float = 0.03
+
+        Task {
+            for step in 0...opacitySteps {
+                try? await Task.sleep(seconds: stepDuration)
+                visibleCharacters[index] = Double(step) / Double(opacitySteps)
             }
         }
     }
@@ -49,7 +95,7 @@ struct RevealTextView: View {
 
 @available(iOS 18.0, *)
 struct AnimatedTextRenderer: TextRenderer {
-    let visibleCharacters: Int
+    let visibleCharacters: [Int: Double]
 
     func draw(layout: Text.Layout, in context: inout GraphicsContext) {
         var characterIndex = 0
@@ -59,20 +105,12 @@ struct AnimatedTextRenderer: TextRenderer {
                 for glyph in run {
                     var glyphContext = context
 
-                    // Calculate opacity based on proximity to visibleCharacters
                     let opacity: Double
-                    if characterIndex < visibleCharacters - 1 {
-                        opacity = 1.0
-                    } else if characterIndex == visibleCharacters - 1 {
-                        // Animate the current character
-                        opacity = 1.0
-                    } else if characterIndex == visibleCharacters && characterIndex != 0 {
-                        // Next character starting to fade in
-                        opacity = 0.3
+                    if let item = visibleCharacters[characterIndex] {
+                        opacity = item
                     } else {
-                        opacity = 0.0
+                        opacity = 0
                     }
-
                     glyphContext.opacity = opacity
                     glyphContext.draw(glyph)
                     characterIndex += 1
@@ -84,7 +122,11 @@ struct AnimatedTextRenderer: TextRenderer {
 
 #Preview {
     RevealTextView(
-        text: "TEXT WE WANT TO SEE ANIMATED ANIMATED ANIMATE ANIMTED",
+        text: """
+            Hedvig förenklar sin bolagsstruktur och samlar hela koncernens verksamhet i bolaget Hedvig Försäkring AB.
+
+            Hedvigs Hemförsäkring Max med tillägget Reseskydd Plus belönas med ett av de högsta poängen när Konsumenternas Försäkringsbyrå jämför skyddet hos olika försäkringsbolag. Se hela jämförelsen på konsumenternas.se.
+            """,
         delay: 0
     )
 }
