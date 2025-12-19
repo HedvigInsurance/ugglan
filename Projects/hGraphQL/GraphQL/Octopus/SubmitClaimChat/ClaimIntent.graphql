@@ -54,6 +54,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         partners {
             ...ClaimIntentOutcomeDeflectionPartnerFragment
         }
+        buttonTitle
     }
     ... on ClaimIntentStepContentForm {
         fields {

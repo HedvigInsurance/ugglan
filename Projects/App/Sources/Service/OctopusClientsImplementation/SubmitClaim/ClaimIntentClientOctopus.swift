@@ -312,7 +312,8 @@ extension ClaimIntentStepContent {
                         },
                         infoText: deflect.infoText,
                         warningText: deflect.warningText,
-                        questions: deflect.faq.map { .init(question: $0.title, answer: $0.description) }
+                        questions: deflect.faq.map { .init(question: $0.title, answer: $0.description) },
+                        buttonTitle: deflect.buttonTitle
                     )
             )
         } else {

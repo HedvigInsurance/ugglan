@@ -70,6 +70,7 @@ extension ClaimIntentStepHandler {
 
 struct ClaimStepView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+    @EnvironmentObject var submitClaimChatViewModel: SubmitClaimChatViewModel
 
     var body: some View {
         VStack {
@@ -83,8 +84,12 @@ struct ClaimStepView: View {
                 SubmitClaimSummaryBottomView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
+                SubmitClaimHonestyPledgeView(submitClaimChatViewModel: submitClaimChatViewModel, viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
                 SubmitClaimUnknownView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
+                SubmitClaimDeflectStepView(model: viewModel.deflectModel)
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
                 hButton(.large, .ghost, content: .init(title: L10n.claimChatSkippedStep)) { [weak viewModel] in
@@ -122,10 +127,8 @@ struct ClaimStepResultView: View {
                 SubmitClaimFormResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
-                SubmitClaimDeflectScreen(model: viewModel.deflectModel) {
-                    chatViewModel.openChat()
-                }
+            } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
+                SubmitClaimHonestyPledgeResultView()
             }
             if viewModel.isRegrettable && viewModel.state.isStepExecuted {
                 hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in

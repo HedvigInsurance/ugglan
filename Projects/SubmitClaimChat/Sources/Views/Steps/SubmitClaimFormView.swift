@@ -87,7 +87,7 @@ struct FormFieldView: View {
         case .text:
             textView
         case .phoneNumber:
-            textView
+            phoneNumberView
         case .binary:
             binaryField
         case .singleSelect:

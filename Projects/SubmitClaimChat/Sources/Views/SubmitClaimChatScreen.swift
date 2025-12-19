@@ -341,7 +341,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         self.openChat = openChat
         self.input = input
         super.init()
-        self.startClaimIntent()
+        self.showHonestyPledge()
     }
 
     // MARK: - UI Height Calculations
@@ -354,6 +354,22 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         if let id = allSteps.last?.id {
             lastStepContentHeight = stepHeights[id] ?? 0
         }
+    }
+
+    func showHonestyPledge() {
+        let honestyIntent = ClaimIntent(
+            currentStep: .init(
+                content: .honestyPledge,
+                id: "honestyPledge",
+                text:
+                    "För att vi ska kunna hjälpa dig på bästa sätt ber vi dig berätta om din skada precis som det hände.\n\nVår försäkring bygger på tillit. Man tar den ersättning man har rätt till, varken mer eller mindre, och därför är din beskrivning avgörande för att vi ska kunna hantera ärendet korrekt och snabbt."
+            ),
+            id: "honestyPledge",
+            isSkippable: false,
+            isRegrettable: false
+        )
+
+        processClaimIntent(.goToNext(claimIntent: honestyIntent))
     }
 
     // MARK: - Business Logic
