@@ -171,7 +171,7 @@ struct HonestyPledge: View {
                 }
 
                 SlideToConfirm(onConfirmAction: {
-                    if Environment.current == .staging && featureFlags.isNewClaimFlowEnabled {
+                    if featureFlags.isNewClaimFlowEnabled {
                         onConfirmAction?(.automationSubmitClaim)
                     } else {
                         onConfirmAction?(.submitClaim)
@@ -180,7 +180,7 @@ struct HonestyPledge: View {
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
 
-                if Environment.current == .staging && featureFlags.isNewClaimFlowEnabled {
+                if featureFlags.isNewClaimFlowEnabled {
                     hButton(.medium, .secondaryAlt, content: .init(title: "Dev AI claim")) {
                         onConfirmAction?(.devAutomationSubmitClaim)
                     }
