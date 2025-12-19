@@ -195,6 +195,7 @@ enum ClaimIntentStepHandlerFactory {
 enum SubmitClaimEvent {
     case goToNext(claimIntent: ClaimIntent)
     case regret(currentClaimIntent: ClaimIntent, newclaimIntent: ClaimIntent)
+    case removeStep(id: String)
     case outcome(model: ClaimIntentStepOutcome)
 }
 

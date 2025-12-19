@@ -22,6 +22,7 @@ struct SubmitClaimTaskResultView: View {
         .clipped()
         .hPillStyle(color: .grey)
         .hFieldSize(.capsuleShape)
+        .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)
     }
 }

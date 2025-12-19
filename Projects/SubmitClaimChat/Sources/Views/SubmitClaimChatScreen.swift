@@ -380,7 +380,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
                 guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
                     throw ClaimIntentError.invalidResponse
                 }
-
                 switch claimIntent {
                 case let .intent(model):
                     processClaimIntent(.goToNext(claimIntent: model))
@@ -396,6 +395,10 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     private func processClaimIntent(_ claimEvent: SubmitClaimEvent) {
         switch claimEvent {
+        case let .removeStep(id):
+            withAnimation {
+                self.allSteps.removeAll(where: { $0.id == id })
+            }
         case let .goToNext(claimIntent):
             handleGoToNextStep(claimIntent: claimIntent)
         case let .regret(currentClaimIntent, newclaimIntent):
