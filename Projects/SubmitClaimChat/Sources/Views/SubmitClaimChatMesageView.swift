@@ -127,10 +127,6 @@ struct ClaimStepResultView: View {
                 SubmitClaimFormResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
-                SubmitClaimDeflectScreen(model: viewModel.deflectModel) {
-                    chatViewModel.openChat()
-                }
             } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
                 SubmitClaimHonestyPledgeResultView()
             }
