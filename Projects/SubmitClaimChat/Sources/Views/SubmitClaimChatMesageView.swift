@@ -98,6 +98,7 @@ struct ClaimStepView: View {
         .disabled(!viewModel.state.isEnabled)
         .animation(.easeInOut(duration: 0.2), value: viewModel.state.isEnabled)
         .animation(.easeInOut(duration: 0.2), value: viewModel.state.isLoading)
+        .id("step_\(viewModel.id)")
     }
 }
 struct ClaimStepResultView: View {
