@@ -637,11 +637,12 @@ struct HomeTab: View {
             ClaimsMainNavigation()
                 .environmentObject(homeNavigationVm)
         }
-        .modally(
-            item: $homeNavigationVm.claimsAutomationStartInput
+        .detent(
+            item: $homeNavigationVm.claimsAutomationStartInput,
+            options: .constant(.withoutGrabber)
         ) { input in
-            SubmitClaimChatNavigation(
-                input: input,
+            SubmitClaimChatSelectNavigation(
+                sourceMessageId: input.sourceMessageId,
                 goToClaimDetails: { [weak homeNavigationVm] claimId in
                     homeNavigationVm?.claimsAutomationStartInput = nil
                     Task {

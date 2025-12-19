@@ -234,11 +234,13 @@ extension View {
         .embededInNavigation(tracking: "")
         .environmentObject(
             SubmitClaimChatViewModel(
-                input: .init(sourceMessageId: nil),
-                goToClaimDetails: { _ in
-                },
-                openChat: {
-                }
+                startInput: .init(
+                    input: .init(sourceMessageId: nil),
+                    goToClaimDetails: { _ in
+                    },
+                    openChat: {
+                    }
+                )
             )
         )
 }
@@ -332,14 +334,12 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     private let input: StartClaimInput
     // MARK: - Initialization
     init(
-        input: StartClaimInput,
-        goToClaimDetails: @escaping GoToClaimDetails,
-        openChat: @escaping () -> Void
+        startInput: SubmiClaimChatInput
     ) {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
-        self.goToClaimDetails = goToClaimDetails
-        self.openChat = openChat
-        self.input = input
+        self.goToClaimDetails = startInput.goToClaimDetails
+        self.openChat = startInput.openChat
+        self.input = startInput.input
         super.init()
         self.showHonestyPledge()
     }

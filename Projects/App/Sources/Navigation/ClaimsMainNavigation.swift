@@ -70,19 +70,12 @@ struct ClaimsMainNavigation: View {
     }
 
     func honestyPledge() -> some View {
-        HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] action in
-            switch action {
-            case .automationSubmitClaim:
-                homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
-            case .devAutomationSubmitClaim:
-                homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil, devFlow: true)
-            case .submitClaim:
-                let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                if profileStore.state.pushNotificationCurrentStatus() != .authorized {
-                    claimsRouter?.push(SubmitClaimRouterActionsWithoutBackButton.askForPushNotifications)
-                } else {
-                    claimsNavigationVm?.isClaimsFlowPresented = true
-                }
+        HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] in
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
+                claimsRouter?.push(SubmitClaimRouterActionsWithoutBackButton.askForPushNotifications)
+            } else {
+                claimsNavigationVm?.isClaimsFlowPresented = true
             }
         })
     }

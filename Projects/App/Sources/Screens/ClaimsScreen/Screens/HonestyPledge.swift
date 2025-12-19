@@ -147,11 +147,10 @@ struct SlideToConfirm: View {
 
 struct HonestyPledge: View {
     @EnvironmentObject var router: Router
-    @InjectObservableObject private var featureFlags: FeatureFlags
-    let onConfirmAction: ((_ action: HonestyPledgeAction) -> Void)?
+    let onConfirmAction: (() -> Void)?
 
     init(
-        onConfirmAction: ((_ action: HonestyPledgeAction) -> Void)?
+        onConfirmAction: (() -> Void)?
     ) {
         self.onConfirmAction = onConfirmAction
     }
@@ -171,22 +170,10 @@ struct HonestyPledge: View {
                 }
 
                 SlideToConfirm(onConfirmAction: {
-                    if featureFlags.isNewClaimFlowEnabled {
-                        onConfirmAction?(.automationSubmitClaim)
-                    } else {
-                        onConfirmAction?(.submitClaim)
-                    }
+                    onConfirmAction?()
                 })
                 .frame(maxHeight: 50)
                 .padding(.bottom, 20)
-
-                if featureFlags.isNewClaimFlowEnabled {
-                    hButton(.medium, .secondaryAlt, content: .init(title: "Dev AI claim")) {
-                        onConfirmAction?(.devAutomationSubmitClaim)
-                    }
-                    .withGradientBorder(shape: RoundedRectangle(cornerRadius: .padding8))
-                    .hButtonTakeFullWidth(true)
-                }
 
                 hCancelButton {
                     router.dismiss()
@@ -199,12 +186,6 @@ struct HonestyPledge: View {
     }
 }
 
-enum HonestyPledgeAction {
-    case submitClaim
-    case automationSubmitClaim
-    case devAutomationSubmitClaim
-}
-
 #Preview {
-    HonestyPledge { _ in }
+    HonestyPledge {}
 }
