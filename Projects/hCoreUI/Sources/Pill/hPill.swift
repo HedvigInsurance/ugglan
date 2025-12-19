@@ -19,7 +19,7 @@ public struct hPill: View {
 
     public var body: some View {
         if !ProcessInfo.processInfo.arguments.contains("-UITestExcludeHPill") {
-            hText(text, style: fieldSize == .large ? .body1 : .label)
+            hText(text, style: getFontStyle)
                 .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                 .foregroundColor(color.pillTextColor(level: colorLevel))
                 .modifier(
@@ -33,67 +33,89 @@ public struct hPill: View {
         }
     }
 
-    struct PillModifier: ViewModifier {
-        let color: PillColor
-        let colorLevel: PillColor.PillColorLevel
-        @Environment(\.hFieldSize) var fieldSize
-        func body(content: Content) -> some View {
-            content
-                .padding(.horizontal, getHorizontalPadding)
-                .padding(.top, getTopPadding)
-                .padding(.bottom, getBottomPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
-                        .fill(color.pillBackgroundColor(level: colorLevel))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
-                        .stroke(hBorderColor.primary, lineWidth: 1)
-                )
+    private var getFontStyle: HFontTextStyle {
+        switch fieldSize {
+        case .large, .capsuleShape:
+            return .body1
+        default:
+            return .label
         }
+    }
+}
 
-        private var getHorizontalPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return .padding6
-            case .medium:
-                return .padding10
-            case .large:
-                return .padding12
-            }
+extension View {
+    public func hPillStyle(
+        color: PillColor,
+        colorLevel: PillColor.PillColorLevel = .one
+    ) -> some View {
+        self.modifier(PillModifier(color: color, colorLevel: colorLevel))
+    }
+}
+
+fileprivate struct PillModifier: ViewModifier {
+    let color: PillColor
+    let colorLevel: PillColor.PillColorLevel
+    @Environment(\.hFieldSize) var fieldSize
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, getHorizontalPadding)
+            .padding(.top, getTopPadding)
+            .padding(.bottom, getBottomPadding)
+            .background(
+                RoundedRectangle(cornerRadius: getCornerRadius)
+                    .fill(color.pillBackgroundColor(level: colorLevel))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: getCornerRadius)
+                    .stroke(hBorderColor.primary, lineWidth: 1)
+            )
+    }
+
+    private var getHorizontalPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return .padding6
+        case .medium:
+            return .padding10
+        case .large:
+            return .padding12
+        case .capsuleShape:
+            return .padding14
         }
+    }
 
-        private var getTopPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return 3
-            case .medium:
-                return 6.5
-            case .large:
-                return 7
-            }
+    private var getTopPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return 3
+        case .medium:
+            return 6.5
+        case .large, .capsuleShape:
+            return 7
         }
+    }
 
-        private var getBottomPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return 3
-            case .medium:
-                return 7.5
-            case .large:
-                return 9
-            }
+    private var getBottomPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return 3
+        case .medium:
+            return 7.5
+        case .large, .capsuleShape:
+            return 9
         }
+    }
 
-        private var getCornerRadius: CGFloat {
-            switch fieldSize {
-            case .small:
-                return .cornerRadiusXS
-            case .medium:
-                return .cornerRadiusS
-            case .large:
-                return .cornerRadiusM
-            }
+    private var getCornerRadius: CGFloat {
+        switch fieldSize {
+        case .small:
+            return .cornerRadiusXS
+        case .medium:
+            return .cornerRadiusS
+        case .large:
+            return .cornerRadiusM
+        case .capsuleShape:
+            return 100
         }
     }
 }

@@ -52,6 +52,12 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
+                        case .aiPoweredGradient:
+                            hCoreUIAssets.submitClaimBg.view
+                                .resizable()
+                                .scaledToFill()
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
                         case .default:
                             if contentPosition == .compact, isLiquidGlassEnabled {
                                 Color.clear
@@ -88,6 +94,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                             Group {
                                 if contentPosition == .compact, isLiquidGlassEnabled {
                                     Color.clear
+                                } else if case .aiPoweredGradient = bottomBackgroundStyle {
+                                    Color.clear
                                 } else {
                                     hBackgroundColor.primary
                                 }
@@ -107,16 +115,19 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 guard let vm else { return }
                 if scrollView != vm.scrollView {
                     vm.scrollView = scrollView
-                    vm.keyboardCancellable = keyboardPublisher.sink { _ in
-                    } receiveValue: { [weak vm] keyboardHeight in
-                        if vm?.vc?.presentedViewController == nil {
-                            vm?.keyboardVisible = keyboardHeight != nil
-                            ignoreKeyboard = false
-                        } else {
-                            vm?.keyboardVisible = false
-                            ignoreKeyboard = true
+                    vm.keyboardCancellable =
+                        keyboardPublisher
+                        .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
+                        .sink { _ in
+                        } receiveValue: { [weak vm] keyboardHeight in
+                            if vm?.vc?.presentedViewController == nil {
+                                vm?.keyboardVisible = keyboardHeight != nil
+                                ignoreKeyboard = false
+                            } else {
+                                vm?.keyboardVisible = false
+                                ignoreKeyboard = true
+                            }
                         }
-                    }
                 }
             }
             .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
@@ -390,6 +401,7 @@ extension View {
 public enum hFormBottomBackgroundStyle {
     case `default`
     case gradient(from: any hColor, to: any hColor)
+    case aiPoweredGradient
 }
 
 @MainActor

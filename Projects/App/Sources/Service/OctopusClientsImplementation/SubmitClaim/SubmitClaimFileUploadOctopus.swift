@@ -81,14 +81,59 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
         observation?.invalidate()
         return response
     }
+
+    public func uploadClaimsChatFile(
+        endPoint: String,
+        files: [File],
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
+    ) async throws -> [String] {
+        let request = try await ClaimsRequest.uploadFile(endPoint: endPoint, files: files, fromClaimsChat: true)
+            .asRequest()
+        var observation: NSKeyValueObservation?
+
+        let fileIds = try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<[String], Error>) in
+            let task = self.sessionClient.dataTask(with: request) { [weak self] data, response, error in
+                Task {
+                    do {
+                        guard let self else {
+                            inCont.resume(throwing: NetworkError.badRequest(message: "NetworkClient deallocated"))
+                            return
+                        }
+
+                        let responseWrapper: ClaimChatFileUploadResponse? =
+                            try await self
+                            .handleResponse(data: data, response: response, error: error)
+
+                        let ids = responseWrapper?.fileIds ?? []
+                        inCont.resume(returning: ids)
+                    } catch {
+                        inCont.resume(throwing: error)
+                    }
+                }
+            }
+
+            observation = task.progress.observe(\.fractionCompleted) { progress, _ in
+                withProgress?(progress.fractionCompleted)
+            }
+            task.resume()
+        }
+
+        observation?.invalidate()
+        return fileIds
+    }
 }
 
 @MainActor
 private enum ClaimsRequest {
-    case uploadFile(endPoint: String, files: [File])
+    case uploadFile(endPoint: String, files: [File], fromClaimsChat: Bool? = false)
 
     private var baseUrl: URL {
         Environment.current.claimsApiURL
+    }
+
+    private var claimsChatBaseUrl: URL {
+        URL(string: "https://gateway.test.hedvig.com")!
     }
 
     private var methodType: String {
@@ -101,8 +146,8 @@ private enum ClaimsRequest {
     func asRequest() async throws -> URLRequest {
         var request: URLRequest!
         switch self {
-        case let .uploadFile(endPoint, files):
-            var baseUrlString = baseUrl.absoluteString
+        case let .uploadFile(endPoint, files, fromClaimsChat):
+            var baseUrlString = fromClaimsChat ?? false ? claimsChatBaseUrl.absoluteString : baseUrl.absoluteString
             baseUrlString.append(endPoint)
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
@@ -136,4 +181,8 @@ private enum ClaimsRequest {
         }
         return request
     }
+}
+
+public struct ClaimChatFileUploadResponse: Decodable, Sendable {
+    public let fileIds: [String]
 }
