@@ -29,6 +29,15 @@ public struct SubmitClaimChatNavigation: View {
                     SubmitClaimOutcomeScreen(outcome: outcome)
                         .addDismissClaimChatFlow()
                 }
+                .routerDestination(
+                    for: ClaimIntentOutcomeDeflection.self,
+                    destination: { model in
+                        SubmitClaimDeflectScreen(model: model) { [weak viewModel] in
+                            viewModel?.openChat()
+                        }
+                        .addDismissClaimChatFlow()
+                    }
+                )
                 .addDismissClaimChatFlow()
         }
         .environmentObject(viewModel)
@@ -44,5 +53,15 @@ extension SubmitClaimChatNavigation: TrackingViewNameProtocol {
 extension View {
     func addDismissClaimChatFlow() -> some View {
         withAlertDismiss(message: L10n.claimChatEditExplanation)
+    }
+}
+
+extension ClaimIntentOutcomeDeflection: TrackingViewNameProtocol, NavigationTitleProtocol {
+    public var navigationTitle: String? {
+        title
+    }
+
+    public var nameForTracking: String {
+        String(describing: SubmitClaimDeflectScreen.self)
     }
 }

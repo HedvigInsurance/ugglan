@@ -151,6 +151,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         case text
         case date
         case number
+        case phoneNumber
         case singleSelect
         case multiSelect
         case binary
@@ -261,6 +262,7 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
     let warningText: String?
     let questions: [DeflectQuestion]
     let linkOnlyPartners: [Partner]
+    let buttonTitle: String
 
     public init(
         title: String?,
@@ -268,7 +270,8 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
         partners: [Partner],
         infoText: String?,
         warningText: String?,
-        questions: [DeflectQuestion]
+        questions: [DeflectQuestion],
+        buttonTitle: String
     ) {
         self.title = title
         self.content = content
@@ -277,6 +280,7 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
         self.infoText = infoText
         self.warningText = warningText
         self.questions = questions
+        self.buttonTitle = buttonTitle
     }
 
     public struct ClaimIntentOutcomeDeflectionInfoBlock: Sendable, Hashable {

@@ -88,6 +88,8 @@ struct ClaimStepView: View {
                 SubmitClaimHonestyPledgeView(submitClaimChatViewModel: submitClaimChatViewModel, viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
                 SubmitClaimUnknownView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
+                SubmitClaimDeflectStepView(model: viewModel.deflectModel)
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
                 hButton(.large, .ghost, content: .init(title: L10n.claimChatSkippedStep)) { [weak viewModel] in
@@ -101,6 +103,7 @@ struct ClaimStepView: View {
         .disabled(!viewModel.state.isEnabled)
         .animation(.easeInOut(duration: 0.2), value: viewModel.state.isEnabled)
         .animation(.easeInOut(duration: 0.2), value: viewModel.state.isLoading)
+        .id("step_\(viewModel.id)")
     }
 }
 struct ClaimStepResultView: View {

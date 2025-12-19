@@ -12,6 +12,7 @@ public enum MaskType {
     case birthDate(minAge: Int)
     case birthDateCoInsured(minAge: Int)
     case digits
+    case phoneNumber
     case euroBonus
     case firstName
     case lastName
@@ -52,6 +53,10 @@ public struct Masking {
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .none: return true
         case .disabledSuggestion: return true
+        case .phoneNumber:
+            let phoneRegEx = "^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$"
+            let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegEx)
+            return phonePredicate.evaluate(with: text)
         case .euroBonus: return text.count > 3
         case .firstName, .lastName:
             let invalidChars = CharacterSet.whitespaces.union(.letters).union(CharacterSet(charactersIn: "-")).inverted
@@ -68,7 +73,7 @@ public struct Masking {
         case .personalNumber: return text.replacingOccurrences(of: "-", with: "")
         case .postalCode: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .birthDate: return text
-        case .email, .digits: return text
+        case .email, .digits, .phoneNumber: return text
         case .none: return text
         case .address: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .disabledSuggestion: return text
@@ -134,6 +139,7 @@ public struct Masking {
             .postalCode, .digits, .birthDateCoInsured:
             return .numberPad
         case .email: return .emailAddress
+        case .phoneNumber: return .phonePad
         case .none: return .default
         case .address: return .default
         case .disabledSuggestion: return .default
@@ -147,6 +153,7 @@ public struct Masking {
         case .email: return .emailAddress
         case .address: return .streetAddressLine1
         case .disabledSuggestion: return .oneTimeCode
+        case .phoneNumber: return .telephoneNumber
         default: return nil
         }
     }
@@ -168,6 +175,8 @@ public struct Masking {
             return nil
         case .email:
             return L10n.emailPlaceholder
+        case .phoneNumber:
+            return nil
         case .birthDate, .birthDateCoInsured:
             return nil
         case .digits:
@@ -195,6 +204,8 @@ public struct Masking {
             return nil
         case .email:
             return L10n.emailRowTitle
+        case .phoneNumber:
+            return nil
         case .birthDate, .birthDateCoInsured:
             return nil
         case .digits:
@@ -297,6 +308,7 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
         case .digits: return text.filter(\.isDigit)
         case .email: return text
+        case .phoneNumber: return text
         case .none: return text
         case .address: return text
         case .disabledSuggestion: return text
