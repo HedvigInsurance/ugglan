@@ -153,11 +153,13 @@ private class SubmitClaimSuccessViewModel: ObservableObject {
     )
     .environmentObject(
         SubmitClaimChatViewModel.init(
-            input: .init(sourceMessageId: nil),
-            goToClaimDetails: { _ in
-            },
-            openChat: {
-            }
+            startInput: .init(
+                input: .init(sourceMessageId: nil),
+                goToClaimDetails: { _ in
+                },
+                openChat: {
+                }
+            )
         )
     )
 }
