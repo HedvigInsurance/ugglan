@@ -348,6 +348,8 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
             return .date
         case .number:
             return .number
+        case .phoneNumber:
+            return .phoneNumber
         case .singleSelect:
             return .singleSelect
         case .binary:

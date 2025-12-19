@@ -86,6 +86,8 @@ struct FormFieldView: View {
             numberView
         case .text:
             textView
+        case .phoneNumber:
+            textView
         case .binary:
             binaryField
         case .singleSelect:
@@ -110,6 +112,18 @@ struct FormFieldView: View {
     var textView: some View {
         hFloatingTextField(
             masking: .init(type: .none),
+            value: $fieldViewModel.value,
+            equals: .constant(nil),
+            focusValue: SubmitClaimChatFieldType.purchasePrice,
+            placeholder: field.title,
+            suffix: field.suffix,
+            error: $fieldViewModel.error
+        )
+    }
+
+    var phoneNumberView: some View {
+        hFloatingTextField(
+            masking: .init(type: .phoneNumber),
             value: $fieldViewModel.value,
             equals: .constant(nil),
             focusValue: SubmitClaimChatFieldType.purchasePrice,
