@@ -150,6 +150,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         case text
         case date
         case number
+        case phoneNumber
         case singleSelect
         case multiSelect
         case binary
