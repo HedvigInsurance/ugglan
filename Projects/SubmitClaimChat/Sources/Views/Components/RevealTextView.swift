@@ -13,7 +13,7 @@ struct RevealTextView: View {
         self._showDot = State(initialValue: showDot)
     }
     var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: .topLeading) {
             if showDot {
                 AnimatedDotView()
             }
