@@ -82,3 +82,5 @@ gym_derived_data
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+LocalModules/AutomaticLog/Package.resolved
