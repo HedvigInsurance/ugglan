@@ -153,6 +153,7 @@ public struct Masking {
         case .email: return .emailAddress
         case .address: return .streetAddressLine1
         case .disabledSuggestion: return .oneTimeCode
+        case .phoneNumber: return .telephoneNumber
         default: return nil
         }
     }
