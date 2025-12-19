@@ -2,6 +2,29 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+public struct SubmitClaimDeflectStepView: View {
+    private let model: ClaimIntentOutcomeDeflection
+    @EnvironmentObject var router: Router
+    public init(
+        model: ClaimIntentOutcomeDeflection,
+    ) {
+        self.model = model
+    }
+
+    public var body: some View {
+        hSection {
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: model.buttonTitle)
+            ) {
+                router.push(model)
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
+}
+
 public struct SubmitClaimDeflectScreen: View {
     private let model: ClaimIntentOutcomeDeflection
     private let openChat: () -> Void
@@ -15,78 +38,80 @@ public struct SubmitClaimDeflectScreen: View {
     }
 
     public var body: some View {
-        hSection {
-            VStack(spacing: .padding16) {
-                if let warningText = model.warningText {
-                    hRow {
-                        InfoCard(text: warningText, type: .attention)
-                            .accessibilitySortPriority(2)
+        hForm {
+            hSection {
+                VStack(spacing: .padding16) {
+                    if let warningText = model.warningText {
+                        hRow {
+                            InfoCard(text: warningText, type: .attention)
+                                .accessibilitySortPriority(2)
+                        }
+                        .verticalPadding(0)
                     }
-                    .verticalPadding(0)
-                }
 
-                hRow {
-                    VStack(spacing: .padding16) {
-                        if let infoViewTitle = model.title, let infoViewText = model.infoText {
-                            let title =
-                                model.partners.count == 1
-                                ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
-                            hSection {
-                                HStack {
-                                    hText(title)
-                                    Spacer()
-                                    InfoViewHolder(
-                                        title: infoViewTitle,
-                                        description: infoViewText
+                    hRow {
+                        VStack(spacing: .padding16) {
+                            if let infoViewTitle = model.title, let infoViewText = model.infoText {
+                                let title =
+                                    model.partners.count == 1
+                                    ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
+                                hSection {
+                                    HStack {
+                                        hText(title)
+                                        Spacer()
+                                        InfoViewHolder(
+                                            title: infoViewTitle,
+                                            description: infoViewText
+                                        )
+                                    }
+                                }
+                                .sectionContainerStyle(.transparent)
+                            }
+                            VStack(spacing: .padding8) {
+                                ForEach(model.partners, id: \.id) { partner in
+                                    ClaimContactCard(
+                                        model: partner
                                     )
                                 }
                             }
-                            .sectionContainerStyle(.transparent)
-                        }
-                        VStack(spacing: .padding8) {
-                            ForEach(model.partners, id: \.id) { partner in
-                                ClaimContactCard(
-                                    model: partner
-                                )
-                            }
                         }
                     }
-                }
-                .verticalPadding(0)
-                hRow {
-                    VStack(alignment: .leading, spacing: 8) {
-                        hText(model.content.title)
-                        hText(model.content.description)
-                            .foregroundColor(hTextColor.Opaque.secondary)
+                    .verticalPadding(0)
+                    hRow {
+                        VStack(alignment: .leading, spacing: 8) {
+                            hText(model.content.title)
+                            hText(model.content.description)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                        }
+                        .padding(.top, .padding8)
+                        .accessibilityElement(children: .combine)
+                    }
+                    .verticalPadding(0)
+                    VStack(spacing: .padding4) {
+                        ForEach(model.questions, id: \.question) { question in
+                            InfoExpandableView(
+                                title: question.question,
+                                text: question.answer,
+                                onMarkDownClick: { url in
+                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                                }
+                            )
+                        }
                     }
                     .padding(.top, .padding8)
-                    .accessibilityElement(children: .combine)
-                }
-                .verticalPadding(0)
-                VStack(spacing: .padding4) {
-                    ForEach(model.questions, id: \.question) { question in
-                        InfoExpandableView(
-                            title: question.question,
-                            text: question.answer,
-                            onMarkDownClick: { url in
-                                NotificationCenter.default.post(name: .openDeepLink, object: url)
-                            }
-                        )
+                    ForEach(model.linkOnlyPartners, id: \.id) { partner in
+                        hRow {
+                            ParnerButtonView(model: partner, overrideColorSchema: false)
+                        }
                     }
+                    SupportView(openChat: openChat)
+                        .padding(.top, .padding56)
                 }
                 .padding(.top, .padding8)
-                ForEach(model.linkOnlyPartners, id: \.id) { partner in
-                    hRow {
-                        ParnerButtonView(model: partner, overrideColorSchema: false)
-                    }
-                }
-                SupportView(openChat: openChat)
-                    .padding(.top, .padding56)
             }
-            .padding(.top, .padding8)
+            .sectionContainerStyle(.negative)
+            .hWithoutHorizontalPadding([.section])
         }
-        .sectionContainerStyle(.negative)
-        .hWithoutHorizontalPadding([.section])
     }
 }
 
@@ -117,7 +142,8 @@ public struct SubmitClaimDeflectScreen: View {
         questions: [
             .init(question: "question 1", answer: "answer 1"),
             .init(question: "question 2", answer: "answer 2"),
-        ]
+        ],
+        buttonTitle: "Open deflect"
     )
 
     return SubmitClaimDeflectScreen(model: model, openChat: {})
