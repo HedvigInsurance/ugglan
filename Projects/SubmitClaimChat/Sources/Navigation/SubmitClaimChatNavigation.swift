@@ -7,78 +7,26 @@ public struct SubmiClaimChatInput: Equatable, Identifiable {
     let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
 
+    public init(
+        input: StartClaimInput,
+        goToClaimDetails: @escaping GoToClaimDetails,
+        openChat: @escaping () -> Void
+    ) {
+        self.input = input
+        self.goToClaimDetails = goToClaimDetails
+        self.openChat = openChat
+    }
+
     public var id = UUID().uuidString
     public static func == (lhs: SubmiClaimChatInput, rhs: SubmiClaimChatInput) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-private class SubmitClaimChatSelectNavigationViewModel: ObservableObject {
-    @Published var isClaimsFlowPresented: SubmiClaimChatInput?
-}
-
-public struct SubmitClaimChatSelectNavigation: View {
-    @StateObject private var claimsSelectNavigationVm = SubmitClaimChatSelectNavigationViewModel()
-    @StateObject var claimsRouter = Router()
-    @State private var measuredHeight: CGFloat = 0
-    @State var shouldHideSelectFlow = false
-    let sourceMessageId: String?
-    let goToClaimDetails: GoToClaimDetails
-    var openChat: () -> Void
-
-    public init(
-        sourceMessageId: String?,
-        goToClaimDetails: @escaping GoToClaimDetails,
-        openChat: @escaping () -> Void
-    ) {
-        self.sourceMessageId = sourceMessageId
-        self.goToClaimDetails = goToClaimDetails
-        self.openChat = openChat
-    }
-
-    public var body: some View {
-        RouterHost(router: claimsRouter, options: [.extendedNavigationWidth], tracking: self) {
-            SubmitClaimSelectFlowScreen { claimAction in
-                presentClaimsFlow(withDevFlow: claimAction == .devAutomationSubmitClaim)
-            }
-            .hidden($shouldHideSelectFlow)
-        }
-        .modally(
-            item: $claimsSelectNavigationVm.isClaimsFlowPresented
-        ) { startInput in
-            SubmitClaimChatNavigation(startInput: startInput)
-                .onAppear {
-                    shouldHideSelectFlow = true
-                }
-        }
-        .onChange(of: claimsSelectNavigationVm.isClaimsFlowPresented) { presented in
-            if presented == nil {
-                claimsRouter.dismiss()
-            }
-        }
-    }
-
-    private func presentClaimsFlow(withDevFlow: Bool) {
-        DispatchQueue.main.async { [weak claimsSelectNavigationVm] in
-            claimsSelectNavigationVm?.isClaimsFlowPresented = .init(
-                input: .init(sourceMessageId: sourceMessageId, devFlow: withDevFlow),
-                goToClaimDetails: goToClaimDetails,
-                openChat: openChat
-            )
-        }
-    }
-}
-
-extension SubmitClaimChatSelectNavigation: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        .init(describing: SubmitClaimSelectFlowScreen.self)
-    }
-}
-
-struct SubmitClaimChatNavigation: View {
+public struct SubmitClaimChatNavigation: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
 
-    init(
+    public init(
         startInput: SubmiClaimChatInput
     ) {
         _viewModel = StateObject(
@@ -86,7 +34,7 @@ struct SubmitClaimChatNavigation: View {
         )
     }
 
-    var body: some View {
+    public var body: some View {
         RouterHost(router: viewModel.router, options: [.extendedNavigationWidth], tracking: self) {
             SubmitClaimChatScreen()
                 .routerDestination(

@@ -637,28 +637,30 @@ struct HomeTab: View {
             ClaimsMainNavigation()
                 .environmentObject(homeNavigationVm)
         }
-        .detent(
+        .modally(
             item: $homeNavigationVm.claimsAutomationStartInput,
             options: .constant(.withoutGrabber)
         ) { input in
-            SubmitClaimChatSelectNavigation(
-                sourceMessageId: input.sourceMessageId,
-                goToClaimDetails: { [weak homeNavigationVm] claimId in
-                    homeNavigationVm?.claimsAutomationStartInput = nil
-                    Task {
-                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                        await claimsStore.sendAsync(.fetchActiveClaims)
-                        if let claim = claimsStore.state.getClaimFor(id: claimId) {
-                            homeNavigationVm?.router.push(claim)
+            SubmitClaimChatNavigation(
+                startInput: .init(
+                    input: input,
+                    goToClaimDetails: { [weak homeNavigationVm] claimId in
+                        homeNavigationVm?.claimsAutomationStartInput = nil
+                        Task {
+                            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                            await claimsStore.sendAsync(.fetchActiveClaims)
+                            if let claim = claimsStore.state.getClaimFor(id: claimId) {
+                                homeNavigationVm?.router.push(claim)
+                            }
                         }
+                    },
+                    openChat: {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.newConversation
+                        )
                     }
-                },
-                openChat: {
-                    NotificationCenter.default.post(
-                        name: .openChat,
-                        object: ChatType.newConversation
-                    )
-                }
+                )
             )
         }
         .modally(
