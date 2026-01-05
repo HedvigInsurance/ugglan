@@ -92,7 +92,7 @@ struct ClaimStepView: View {
                 SubmitClaimDeflectStepView(model: viewModel.deflectModel)
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
-                hButton(.large, .ghost, content: .init(title: L10n.claimChatSkippedStep)) { [weak viewModel] in
+                hButton(.large, .ghost, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
                     Task {
                         await viewModel?.skip()
                     }
@@ -112,7 +112,7 @@ struct ClaimStepResultView: View {
     @ViewBuilder
     var body: some View {
         if viewModel.state.isSkipped {
-            hPill(text: "Skipped", color: .grey)
+            hPill(text: L10n.claimChatSkippedLabel, color: .grey)
                 .hFieldSize(.capsuleShape)
         } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
