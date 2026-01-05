@@ -15,7 +15,6 @@ public struct SubmitClaimChatScreen: View {
 
     public var body: some View {
         scrollContent
-            .hideToolbarBackgroundIfAvailable()
             .submitClaimChatScreenAlert(alertVm)
             .animation(.defaultSpring, value: viewModel.outcome)
             .onChange(of: viewModel.showError) { value in
@@ -104,28 +103,33 @@ public struct SubmitClaimChatScreen: View {
     }
 
     private var currentStepView: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             if let currentStep = viewModel.currentStep {
                 if viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
                     && !viewModel.shouldMergeInputWithContent
                 {
                     ScrollToBottomButton(scrollAction: scrollToBottom)
-                } else {
-                    CurrentStepView(step: currentStep, alertVm: alertVm)
-                        .background {
-                            GeometryReader { proxy in
-                                Color.clear
-                                    .onAppear {
-                                        viewModel.currentStepInputHeight = proxy.size.height
-                                    }
-                                    .onChange(of: proxy.size) { value in
-                                        viewModel.currentStepInputHeight = value.height
-                                    }
-                            }
-                        }
                 }
+                CurrentStepView(step: currentStep, alertVm: alertVm)
+                    .background {
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear {
+                                    viewModel.currentStepInputHeight = proxy.size.height
+                                }
+                                .onChange(of: proxy.size) { value in
+                                    viewModel.currentStepInputHeight = value.height
+                                }
+                        }
+                    }
+                    .offset(
+                        x: 0,
+                        y: viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                            && !viewModel.shouldMergeInputWithContent ? 1000 : 0
+                    )
             }
         }
+        .padding(.bottom, .padding8)
         .environmentObject(viewModel)
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: viewModel.isInputScrolledOffScreen)
@@ -210,15 +214,6 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
 }
 
 extension View {
-    @ViewBuilder
-    fileprivate func hideToolbarBackgroundIfAvailable() -> some View {
-        if #available(iOS 16.0, *) {
-            self.toolbarBackground(.hidden, for: .navigationBar)
-        } else {
-            self
-        }
-    }
-
     @ViewBuilder
     fileprivate func hideScrollIndicators() -> some View {
         if #available(iOS 16.0, *) {
@@ -313,9 +308,11 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             return
         }
         self.shouldMergeInputWithContent = false
-        let visibleHeight = scrollView.frame.size.height - self.currentStepInputHeight
-        let totalContentHeight = self.totalStepsHeight - scrollView.contentOffset.y - scrollView.safeAreaInsets.bottom
-        self.isInputScrolledOffScreen = visibleHeight < totalContentHeight
+        let neededHeight = self.currentStepInputHeight + 8
+        let availableHeight =
+            scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y - totalStepsHeight
+            + scrollView.adjustedContentInset.top
+        self.isInputScrolledOffScreen = neededHeight > availableHeight
     }
 
     var totalStepsHeight: CGFloat = 0
