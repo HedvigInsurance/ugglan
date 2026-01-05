@@ -5,12 +5,18 @@ import hCoreUI
 struct RevealTextView: View {
     let text: String
     @State private var visibleCharacters: [Int: Double] = [:]
-    @State private var showDot = false
+    @State private var showDot = true
+
     let delay: Float
-    init(text: String, delay: Float, showDot: Bool = true) {
+    private var onTextAnimationDone: (() -> Void)
+    init(
+        text: String,
+        delay: Float,
+        onTextAnimationDone: @escaping (() -> Void)
+    ) {
         self.text = text
         self.delay = delay
-        self._showDot = State(initialValue: showDot)
+        self.onTextAnimationDone = onTextAnimationDone
     }
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -32,20 +38,19 @@ struct RevealTextView: View {
     }
 
     private func animateText() {
-        Task {
+        Task(priority: .userInitiated) {
             try? await Task.sleep(seconds: delay)
             showDot = false
 
             var characterIndex = 0
             var elapsedTime: Float = 0
-            let slowModeThreshold: Float = 2.0
+            let slowModeThreshold: Float = 1.0
 
             for textIndex in 0..<text.count {
                 let character = getCharacter(at: textIndex)
                 let isSlowMode = elapsedTime < slowModeThreshold
-
                 // Render character (skip newlines)
-                if character != "\n" {
+                if !character.contains(where: { $0.isNewline }) {
                     startCharacterFadeIn(at: characterIndex)
                     characterIndex += 1
                 }
@@ -58,6 +63,7 @@ struct RevealTextView: View {
                     elapsedTime += sleepDuration
                 }
             }
+            onTextAnimationDone()
         }
     }
 
@@ -69,8 +75,8 @@ struct RevealTextView: View {
             let baseDelay: Float = 0.02
             return punctuationDelay + baseDelay
         } else {
-            let punctuationDelay: Float = isPunctuationOrNewline ? 0.05 : 0
-            let baseDelay: Float = 0.01
+            let punctuationDelay: Float = isPunctuationOrNewline ? 0.1 : 0
+            let baseDelay: Float = 0.008
             return punctuationDelay + baseDelay
         }
     }
@@ -127,6 +133,7 @@ struct AnimatedTextRenderer: TextRenderer {
 
             Hedvigs Hemförsäkring Max med tillägget Reseskydd Plus belönas med ett av de högsta poängen när Konsumenternas Försäkringsbyrå jämför skyddet hos olika försäkringsbolag. Se hela jämförelsen på konsumenternas.se.
             """,
-        delay: 0
+        delay: 0,
+        onTextAnimationDone: {}
     )
 }

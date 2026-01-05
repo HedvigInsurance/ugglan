@@ -12,7 +12,12 @@ struct SubmitClaimChatMesageView: View {
                     VStack(alignment: .leading, spacing: .padding8) {
                         RevealTextView(
                             text: text,
-                            delay: 1
+                            delay: 1,
+                            onTextAnimationDone: {
+                                withAnimation {
+                                    viewModel.state.showInput = true
+                                }
+                            }
                         )
                     }
                     .fixedSize(horizontal: false, vertical: true)
@@ -109,8 +114,8 @@ struct ClaimStepView: View {
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
-    @ViewBuilder
-    var body: some View {
+
+    @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
             hPill(text: L10n.claimChatSkippedLabel, color: .grey)
                 .hFieldSize(.capsuleShape)
@@ -130,11 +135,11 @@ struct ClaimStepResultView: View {
             } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
                 SubmitClaimHonestyPledgeResultView()
             }
-            if viewModel.isRegrettable && viewModel.state.isStepExecuted {
-                hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
-                    Task {
-                        await viewModel?.regret()
-                    }
+        }
+        if viewModel.isRegrettable && viewModel.state.isStepExecuted {
+            hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
+                Task {
+                    await viewModel?.regret()
                 }
             }
         }

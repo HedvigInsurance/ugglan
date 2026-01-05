@@ -160,22 +160,24 @@ private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
     @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
-    var body: some View {
-        ClaimStepView(viewModel: step)
-            .transition(.move(edge: .bottom).combined(with: .opacity))
-            .onChange(of: step.state.showError) { value in
-                if value {
-                    alertVm.alertModel = .init(
-                        message: step.state.error?.localizedDescription ?? "",
-                        action: {
-                            step.submitResponse()
-                        },
-                        onClose: {
-                            step.state.isEnabled = true
-                        }
-                    )
+    @ViewBuilder var body: some View {
+        if step.state.showInput {
+            ClaimStepView(viewModel: step)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .onChange(of: step.state.showError) { value in
+                    if value {
+                        alertVm.alertModel = .init(
+                            message: step.state.error?.localizedDescription ?? "",
+                            action: {
+                                step.submitResponse()
+                            },
+                            onClose: {
+                                step.state.isEnabled = true
+                            }
+                        )
+                    }
                 }
-            }
+        }
     }
 }
 
@@ -312,7 +314,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         }
         self.shouldMergeInputWithContent = false
         let visibleHeight = scrollView.frame.size.height - self.currentStepInputHeight
-        let totalContentHeight = self.totalStepsHeight - scrollView.contentOffset.y + 30
+        let totalContentHeight = self.totalStepsHeight - scrollView.contentOffset.y - scrollView.safeAreaInsets.bottom
         self.isInputScrolledOffScreen = visibleHeight < totalContentHeight
     }
 
