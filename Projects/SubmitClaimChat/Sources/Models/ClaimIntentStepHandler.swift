@@ -18,6 +18,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var showError = false
         var showResults = false
         var disableSkip = false
+        var showInput = false
     }
 
     @Published var state = StepUIState()
@@ -39,6 +40,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         self.claimIntent = claimIntent
         self.service = service
         self.mainHandler = mainHandler
+        if getText() == nil {
+            state.showInput = true
+        }
     }
 
     func setDisableSkip(to disabled: Bool) {
