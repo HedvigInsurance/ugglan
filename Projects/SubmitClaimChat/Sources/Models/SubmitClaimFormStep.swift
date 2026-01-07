@@ -67,7 +67,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                     return .init(key: field.title, value: valueToDisplay, skipped: false)
                 }
                 let valueToDisplay = userEnteredValues.joined(separator: ", ")
-                let isSkipped = userEnteredValues.isEmpty
+                let isSkipped = userEnteredValues.isEmpty || userEnteredValues.contains(where: { $0 == "" })
                 return .init(
                     key: field.title,
                     value: isSkipped ? L10n.claimChatSkippedStep : valueToDisplay,
