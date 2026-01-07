@@ -246,7 +246,7 @@ struct SubmitClaimFormResultView: View {
                         .padding(.trailing, .padding4)
                     hText(item.value)
                         .foregroundColor(fieldTextColor(for: item))
-                        .hPillStyle(color: .grey)
+                        .hPillStyle(color: .grey, colorLevel: .two)
                         .hFieldSize(.capsuleShape)
                 }
             }
