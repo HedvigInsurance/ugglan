@@ -16,7 +16,7 @@ public struct DeleteRequestLoadingView: View {
         self.dismissAction = dismissAction
     }
 
-    public enum ScreenState {
+    public enum ScreenState: Hashable {
         case tryToDelete(with: MemberDetails)
         case success
         case error(errorMessage: String)
