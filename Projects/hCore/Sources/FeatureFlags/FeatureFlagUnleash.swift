@@ -88,6 +88,7 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             isClaimHistoryEnabled: unleashClient.isEnabled(
                 name: "enable_claim_history"
             ),
+            isNewClaimFlowEnabled: unleashClient.isEnabled(name: "enable_claim_history"),
         )
         featureDataPublisher.send(data)
     }

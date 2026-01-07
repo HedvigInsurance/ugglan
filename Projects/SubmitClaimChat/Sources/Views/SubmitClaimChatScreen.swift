@@ -229,11 +229,13 @@ extension View {
         .embededInNavigation(tracking: "")
         .environmentObject(
             SubmitClaimChatViewModel(
-                input: .init(sourceMessageId: nil),
-                goToClaimDetails: { _ in
-                },
-                openChat: {
-                }
+                startInput: .init(
+                    input: .init(sourceMessageId: nil),
+                    goToClaimDetails: { _ in
+                    },
+                    openChat: {
+                    }
+                )
             )
         )
 }
@@ -244,7 +246,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     // MARK: - Constants
     private let inputHeightThreshold: CGFloat = 0.6
     private let topPadding: CGFloat = 32
-    private let minimumSpacing: CGFloat = 10
 
     @Published var error: Error? {
         didSet {
@@ -284,7 +285,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         let height = scrollViewHeight - scrollViewBottomInset + topPadding - lastStepContentHeight
         return max(
             height,
-            currentStepInputHeight + minimumSpacing
+            currentStepInputHeight + topPadding
         )
     }
     weak var scrollView: UIScrollView? {
@@ -306,7 +307,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             return
         }
         self.shouldMergeInputWithContent = false
-        let neededHeight = self.currentStepInputHeight + 8
+        let neededHeight = self.currentStepInputHeight
         let availableHeight =
             scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y - totalStepsHeight
             + scrollView.adjustedContentInset.top
@@ -329,14 +330,12 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     private let input: StartClaimInput
     // MARK: - Initialization
     init(
-        input: StartClaimInput,
-        goToClaimDetails: @escaping GoToClaimDetails,
-        openChat: @escaping () -> Void
+        startInput: SubmiClaimChatInput
     ) {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
-        self.goToClaimDetails = goToClaimDetails
-        self.openChat = openChat
-        self.input = input
+        self.goToClaimDetails = startInput.goToClaimDetails
+        self.openChat = startInput.openChat
+        self.input = startInput.input
         super.init()
         self.showHonestyPledge()
     }

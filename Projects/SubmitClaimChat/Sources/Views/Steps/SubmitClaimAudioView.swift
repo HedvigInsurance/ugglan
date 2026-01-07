@@ -162,6 +162,7 @@ struct SubmitClaimAudioView: View {
         ) { text in
             viewModel.textInput = text
         }
+        .hTextFieldError(viewModel.textInputError)
     }
 
     private func playRecordingButton(url: URL) -> some View {
