@@ -113,7 +113,7 @@ public struct StateView: View {
                 if let actionButton = buttonConfig?.actionButtonAttachedToBottom {
                     hButton(
                         .large,
-                        .primary,
+                        actionButton.buttonStyle ?? .primary,
                         content: .init(title: actionButton.buttonTitle ?? ""),
                         {
                             actionButton.buttonAction()
@@ -205,10 +205,16 @@ public struct StateViewButtonConfig {
 
     public struct StateViewButton {
         let buttonTitle: String?
+        let buttonStyle: hButtonConfigurationType?
         let buttonAction: () -> Void
 
-        public init(buttonTitle: String? = nil, buttonAction: @escaping () -> Void) {
+        public init(
+            buttonTitle: String? = nil,
+            buttonStyle: hButtonConfigurationType? = nil,
+            buttonAction: @escaping () -> Void
+        ) {
             self.buttonTitle = buttonTitle
+            self.buttonStyle = buttonStyle
             self.buttonAction = buttonAction
         }
     }
