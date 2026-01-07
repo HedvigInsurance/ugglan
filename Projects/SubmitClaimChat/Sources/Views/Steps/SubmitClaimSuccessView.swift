@@ -15,8 +15,8 @@ public struct SubmitClaimSuccessView: View {
 
     public var body: some View {
         SuccessScreen(
-            title: L10n.claimChatClaimSumittedTitle,
-            subtitle: L10n.claimChatClaimSumittedSubtitle,
+            title: L10n.claimsSuccessTitle,
+            subtitle: L10n.claimsSuccessLabel,
             formPosition: .center
         )
         .hStateViewButtonConfig(
