@@ -247,7 +247,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     // MARK: - Constants
     private let inputHeightThreshold: CGFloat = 0.6
     private let topPadding: CGFloat = 32
-    private let minimumSpacing: CGFloat = 10
 
     @Published var error: Error? {
         didSet {
@@ -287,7 +286,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         let height = scrollViewHeight - scrollViewBottomInset + topPadding - lastStepContentHeight
         return max(
             height,
-            currentStepInputHeight + minimumSpacing
+            currentStepInputHeight + topPadding
         )
     }
     weak var scrollView: UIScrollView? {
@@ -309,7 +308,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             return
         }
         self.shouldMergeInputWithContent = false
-        let neededHeight = self.currentStepInputHeight + 8
+        let neededHeight = self.currentStepInputHeight
         let availableHeight =
             scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y - totalStepsHeight
             + scrollView.adjustedContentInset.top
