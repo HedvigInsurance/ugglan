@@ -12,7 +12,13 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     @Published var uploadProgress: Double = 0
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
-    @Published var textInput: String = ""
+    @Published var textInput: String = "" {
+        didSet {
+            textInputError =
+                characterMismatch ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
+        }
+    }
+    @Published var textInputError: String?
     @Published var inputType: AudioRecordingStepType?
 
     var characterMismatch: Bool {

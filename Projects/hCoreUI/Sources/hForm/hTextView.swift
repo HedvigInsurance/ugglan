@@ -273,14 +273,8 @@ private struct FreeTextInputView: View {
                             Spacer()
                             HStack(spacing: .padding4) {
                                 Spacer()
-                                if hasCharacterMismatch {
-                                    hCoreUIAssets.warningTriangleFilled.view
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(hSignalColor.Amber.element)
-                                }
                                 hText("\(value.count)/\(maxCharacters)", style: .label)
-                                    .foregroundColor(getTextColor)
+                                    .foregroundColor(hTextColor.Opaque.tertiary)
                             }
                         }
                         .padding(.bottom, .padding8)
@@ -307,28 +301,13 @@ private struct FreeTextInputView: View {
                             continueAction.execute()
                         }
                     )
-                    .disabled(hasCharacterMismatch)
                 }
                 .padding(.vertical, .padding8)
                 .hButtonTakeFullWidth(true)
-                .colorScheme(.dark)
             }
             .layoutPriority(1)
             .sectionContainerStyle(.transparent)
         }
-    }
-
-    @hColorBuilder
-    var getTextColor: some hColor {
-        if !hasCharacterMismatch {
-            hTextColor.Opaque.tertiary
-        } else {
-            hSignalColor.Red.element
-        }
-    }
-
-    var hasCharacterMismatch: Bool {
-        value.count > maxCharacters || value.count < minCharacters
     }
 }
 
