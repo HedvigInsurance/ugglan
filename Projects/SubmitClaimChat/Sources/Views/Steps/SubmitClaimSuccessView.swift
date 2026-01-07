@@ -23,6 +23,7 @@ public struct SubmitClaimSuccessView: View {
             .init(
                 actionButtonAttachedToBottom: .init(
                     buttonTitle: L10n.generalDoneButton,
+                    buttonStyle: .secondary,
                     buttonAction: {
                         navigationVm.goToClaimDetails(
                             model.claimId
