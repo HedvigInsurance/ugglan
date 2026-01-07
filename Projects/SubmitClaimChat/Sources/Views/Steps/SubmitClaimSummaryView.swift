@@ -78,8 +78,9 @@ struct SubmitClaimSummaryView: View {
                 ForEach(viewModel.summaryModel.freeTexts, id: \.self) { freeText in
                     HStack {
                         hText(freeText)
-                            .hPillStyle(color: .grey)
+                        Spacer()
                     }
+                    .hPillStyle(color: .grey)
                 }
                 .foregroundColor(hTextColor.Opaque.secondary)
             }
@@ -123,7 +124,15 @@ struct SubmitClaimSummaryBottomView: View {
                             .init(title: "Purchase date", value: "2023-11-26"),
                         ],
                         freeTexts: [
-                            "Free Text"
+                            """
+                            It is a long 
+                            text
+                            that goes in more lines
+                            and should take full width
+                            """,
+                            """
+                            One long text that should be shown nicely in the view and take full width of the screen
+                            """,
                         ]
                     )
                 ),
