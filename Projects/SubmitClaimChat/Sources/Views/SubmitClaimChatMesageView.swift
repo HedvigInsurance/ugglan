@@ -40,9 +40,10 @@ struct SubmitClaimChatMesageView: View {
                 )
                 .hButtonIsLoading(viewModel.state.isLoading)
                 .fixedSize(horizontal: false, vertical: true)
-                .id("result_\(viewModel.id)")
                 spacing(viewModel.sender == .hedvig)
             }
+            .padding(.top, .padding4)
+            .id("result_\(viewModel.id)")
         }
     }
 
