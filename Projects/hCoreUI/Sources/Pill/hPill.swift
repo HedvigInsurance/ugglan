@@ -4,33 +4,41 @@ public struct hPill: View {
     public init(
         text: String,
         color: PillColor,
-        colorLevel: PillColor.PillColorLevel? = .one
+        colorLevel: PillColor.PillColorLevel? = .one,
+        onTap: (() -> Void)? = nil
     ) {
         self.text = text
         self.color = color
         self.colorLevel = colorLevel ?? .one
+        self.onTap = onTap
     }
 
     public let text: String
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
+    private let onTap: (() -> Void)?
     @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.hPillAttributes) var attributes
 
     public var body: some View {
-        if !ProcessInfo.processInfo.arguments.contains("-UITestExcludeHPill") {
-            hText(text, style: getFontStyle)
-                .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
-                .foregroundColor(color.pillTextColor(level: colorLevel))
-                .modifier(
-                    PillModifier(
-                        color: color,
-                        colorLevel: colorLevel
-                    )
-                )
-        } else {
-            EmptyView()
+        Button {
+            onTap?()
+        } label: {
+            HStack(spacing: .padding6) {
+                hText(text, style: getFontStyle)
+                    .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
+                    .foregroundColor(color.pillTextColor(level: colorLevel))
+
+                if attributes.contains(.withChevron) {
+                    hCoreUIAssets.chevronDown.view
+                        .foregroundColor(hFillColor.Translucent.tertiary)
+                }
+            }
+            .contentShape(Rectangle())
         }
+        .disabled(onTap == nil)
+        .modifier(PillModifier(color: color, colorLevel: colorLevel))
     }
 
     private var getFontStyle: HFontTextStyle {
@@ -238,6 +246,27 @@ public enum PillColor {
         case one
         case two
         case three
+    }
+}
+
+public enum hPillAttrubutes {
+    case withChevron
+}
+
+private struct EnvironmentHPillAttributes: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: [hPillAttrubutes] = []
+}
+
+extension EnvironmentValues {
+    public var hPillAttributes: [hPillAttrubutes] {
+        get { self[EnvironmentHPillAttributes.self] }
+        set { self[EnvironmentHPillAttributes.self] = newValue }
+    }
+}
+
+extension View {
+    public func hPillAttributes(attributes: [hPillAttrubutes]) -> some View {
+        environment(\.hPillAttributes, attributes)
     }
 }
 
