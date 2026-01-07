@@ -14,22 +14,28 @@ public struct SubmitClaimChatScreen: View {
     public init() {}
 
     public var body: some View {
-        scrollContent
-            .submitClaimChatScreenAlert(alertVm)
-            .animation(.defaultSpring, value: viewModel.outcome)
-            .onChange(of: viewModel.showError) { value in
-                if value {
-                    alertVm.alertModel = .init(
-                        message: viewModel.error?.localizedDescription ?? "",
-                        action: {
-                            viewModel.startClaimIntent()
-                        },
-                        onClose: {
-                            viewModel.router.dismiss()
-                        }
-                    )
+        if let outcome = viewModel.outcome {
+            SubmitClaimOutcomeScreen(outcome: outcome)
+                .hFormBottomBackgroundColor(.aiPoweredGradient)
+                .animation(.defaultSpring, value: viewModel.outcome)
+        } else {
+            scrollContent
+                .submitClaimChatScreenAlert(alertVm)
+                .animation(.defaultSpring, value: viewModel.outcome)
+                .onChange(of: viewModel.showError) { value in
+                    if value {
+                        alertVm.alertModel = .init(
+                            message: viewModel.error?.localizedDescription ?? "",
+                            action: {
+                                viewModel.startClaimIntent()
+                            },
+                            onClose: {
+                                viewModel.router.dismiss()
+                            }
+                        )
+                    }
                 }
-            }
+        }
     }
 
     private var scrollContent: some View {
@@ -40,9 +46,6 @@ public struct SubmitClaimChatScreen: View {
                         proxy.scrollTo(scrollTarget.id, anchor: scrollTarget.anchor)
                     }
                 }
-                .onChange(of: viewModel.outcome) { _ in
-                    proxy.scrollTo("outcome", anchor: .top)
-                }
         }
     }
 
@@ -50,24 +53,18 @@ public struct SubmitClaimChatScreen: View {
         ZStack(alignment: .bottom) {
             GeometryReader { proxy in
                 hForm {
-                    if let outcome = viewModel.outcome {
-                        SubmitClaimOutcomeScreen(outcome: outcome)
-                            .transition(.move(edge: .bottom))
-                            .id("outcome")
-                    } else {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(viewModel.allSteps, id: \.id) { step in
-                                StepView(step: step)
-                            }
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(viewModel.allSteps, id: \.id) { step in
+                            StepView(step: step)
                         }
-                        .padding(.horizontal, .padding16)
-                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                    }
+                    .padding(.horizontal, .padding16)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                        if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
-                            Color.clear.frame(
-                                height: viewModel.calculatePaddingHeight()
-                            )
-                        }
+                    if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
+                        Color.clear.frame(
+                            height: viewModel.calculatePaddingHeight()
+                        )
                     }
                 }
                 .hFormContentPosition(.top)
@@ -408,7 +405,9 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             self.currentStep = nil
             Task {
                 try? await Task.sleep(seconds: 0.5)
-                self.outcome = model
+                withAnimation {
+                    self.outcome = model
+                }
             }
         }
     }
