@@ -26,12 +26,10 @@ public protocol ClaimIntentClient {
 public struct StartClaimInput: Equatable, Identifiable {
     public let id: String
     public let sourceMessageId: String?
-    public let devFlow: Bool
 
-    public init(sourceMessageId: String?, devFlow: Bool = false) {
+    public init(sourceMessageId: String?) {
         self.id = UUID().uuidString
         self.sourceMessageId = sourceMessageId
-        self.devFlow = devFlow
     }
 }
 

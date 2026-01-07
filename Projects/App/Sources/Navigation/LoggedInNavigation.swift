@@ -638,26 +638,29 @@ struct HomeTab: View {
                 .environmentObject(homeNavigationVm)
         }
         .modally(
-            item: $homeNavigationVm.claimsAutomationStartInput
+            item: $homeNavigationVm.claimsAutomationStartInput,
+            options: .constant(.withoutGrabber)
         ) { input in
             SubmitClaimChatNavigation(
-                input: input,
-                goToClaimDetails: { [weak homeNavigationVm] claimId in
-                    homeNavigationVm?.claimsAutomationStartInput = nil
-                    Task {
-                        let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                        await claimsStore.sendAsync(.fetchActiveClaims)
-                        if let claim = claimsStore.state.getClaimFor(id: claimId) {
-                            homeNavigationVm?.router.push(claim)
+                startInput: .init(
+                    input: input,
+                    goToClaimDetails: { [weak homeNavigationVm] claimId in
+                        homeNavigationVm?.claimsAutomationStartInput = nil
+                        Task {
+                            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                            await claimsStore.sendAsync(.fetchActiveClaims)
+                            if let claim = claimsStore.state.getClaimFor(id: claimId) {
+                                homeNavigationVm?.router.push(claim)
+                            }
                         }
+                    },
+                    openChat: {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.newConversation
+                        )
                     }
-                },
-                openChat: {
-                    NotificationCenter.default.post(
-                        name: .openChat,
-                        object: ChatType.newConversation
-                    )
-                }
+                )
             )
         }
         .modally(
