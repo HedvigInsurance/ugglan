@@ -289,14 +289,14 @@ extension AudioRecorder {
 struct SubmitClaimAudioResultView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @StateObject var audioPlayer: AudioPlayer = AudioPlayer(url: nil)
-    @State var expended = false
+    @State var expanded = false
     init(viewModel: SubmitClaimAudioStep) {
         self.viewModel = viewModel
     }
 
     var body: some View {
         VStack {
-            if !expended {
+            if !expanded {
                 HStack {
                     hCoreUIAssets.checkmark.view
                         .resizable()
@@ -324,7 +324,7 @@ struct SubmitClaimAudioResultView: View {
         }
         .onTapGesture {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                expended.toggle()
+                expanded.toggle()
             }
         }
     }

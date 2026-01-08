@@ -101,24 +101,24 @@ struct RevealTextView: View {
             .color.uiColor()
     )
     private func startCharacterFadeIn(at index: Int) async {
-        let opacitySteps = 20
+        let opacitySteps = 10
         let stepDuration: Float = 0.03
         let characterIndex = text.index(text.startIndex, offsetBy: index)
         let range = characterIndex...characterIndex
-        Task {
-            for step in 0...opacitySteps {
-                try? await Task.sleep(seconds: stepDuration)
-                let opacity = Double(step) / Double(opacitySteps)
-
-                await MainActor.run {
-                    var updatedText = attributedText
-                    if let attributedRange = Range(range, in: updatedText) {
-                        updatedText[attributedRange].foregroundColor = textColor.withAlphaComponent(opacity)
-                        attributedText = updatedText
+        Task.detached(
+            priority: .low,
+            operation: {
+                for step in 0...opacitySteps {
+                    try? await Task.sleep(seconds: stepDuration)
+                    let opacity = Double(step) / Double(opacitySteps)
+                    await MainActor.run {
+                        if let attributedRange = Range(range, in: attributedText) {
+                            attributedText[attributedRange].foregroundColor = textColor.withAlphaComponent(opacity)
+                        }
                     }
                 }
             }
-        }
+        )
     }
 }
 
