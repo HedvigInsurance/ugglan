@@ -3,11 +3,3 @@ query CurrentMemberPhoneNumber {
 	phoneNumber
   }
 }
-
-mutation MemberUpdatePhoneNumber($input: MemberUpdatePhoneNumberInput!) {
-  memberUpdatePhoneNumber(input: $input) {
-	userError {
-	  message
-	}
-  }
-}
