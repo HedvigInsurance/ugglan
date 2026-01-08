@@ -3,8 +3,16 @@ import hCore
 import hCoreUI
 
 final class SubmitClaimFormStep: ClaimIntentStepHandler {
-    @Published var isDatePickerPresented: DatePickerViewModel?
-    @Published var isSelectItemPresented: SingleItemModel?
+    @Published var isDatePickerPresented: DatePickerViewModel? {
+        willSet {
+            UIApplication.dismissKeyboard()
+        }
+    }
+    @Published var isSelectItemPresented: SingleItemModel? {
+        willSet {
+            UIApplication.dismissKeyboard()
+        }
+    }
     @Published var dateForPicker: Date = Date()
     @Published var formValues: [String: FormStepValue] = [:]
 
