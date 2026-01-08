@@ -4,6 +4,7 @@ import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
     var body: some View {
         VStack(spacing: .padding8) {
@@ -28,7 +29,7 @@ struct SubmitClaimChatMesageView: View {
             HStack {
                 spacing(viewModel.sender == .member)
                 VStack(alignment: .trailing, spacing: .padding6) {
-                    ClaimStepResultView(viewModel: viewModel)
+                    ClaimStepResultView(viewModel: viewModel, alertVm: alertVm)
                         .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
                 }
                 .animation(.easeInOut(duration: 0.2), value: viewModel.state.isStepExecuted)
@@ -115,6 +116,7 @@ struct ClaimStepView: View {
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
+    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
@@ -143,9 +145,19 @@ struct ClaimStepResultView: View {
                 color: .grey
             )
             .onTapGesture { [weak viewModel] in
-                Task {
-                    await viewModel?.regret()
-                }
+                alertVm.alertModel = .init(
+                    type: .edit,
+                    message: L10n.claimChatEditExplanation,
+                    action: {
+                        Task {
+                            await viewModel?.regret()
+                            alertVm.alertModel = nil
+                        }
+                    },
+                    onClose: {
+                        alertVm.alertModel = nil
+                    }
+                )
             }
             .hFieldSize(.capsuleShape)
             .hPillAttributes(attributes: [.withChevron])

@@ -7,6 +7,7 @@ public enum hButtonConfigurationType: Sendable, CaseIterable {
     case secondaryAlt
     case ghost
     case alert
+    case destructive
 
     @MainActor
     var hButtonColorSet: hButtonColor {
@@ -16,6 +17,7 @@ public enum hButtonConfigurationType: Sendable, CaseIterable {
         case .secondary: return Secondary()
         case .secondaryAlt: return SecondaryAlt()
         case .ghost: return Ghost()
+        case .destructive: return Secondary()
         case .alert: fatalError("Alert type should not be passed to regularBackgroundColor.")
         }
     }

@@ -320,6 +320,7 @@ public enum hFieldSize: Hashable, Sendable {
     case large
     case medium
     case capsuleShape
+    case button
 
     var horizontalPadding: CGFloat {
         switch self {
@@ -329,7 +330,7 @@ public enum hFieldSize: Hashable, Sendable {
             return .padding16
         case .medium:
             return .padding16
-        case .capsuleShape:
+        case .capsuleShape, .button:
             return 100
         }
     }
@@ -420,7 +421,7 @@ extension hFieldSize {
         case .small: return -13
         case .medium: return -14
         case .large: return -15
-        case .capsuleShape: return -14
+        case .capsuleShape, .button: return -14
         }
     }
 
@@ -434,6 +435,7 @@ extension hFieldSize {
         case .medium: return .body1
         case .large: return .body2
         case .capsuleShape: return .body1
+        case .button: return .body1
         }
     }
 }

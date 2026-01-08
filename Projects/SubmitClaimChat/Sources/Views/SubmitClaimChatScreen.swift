@@ -25,6 +25,7 @@ public struct SubmitClaimChatScreen: View {
                 .onChange(of: viewModel.showError) { value in
                     if value {
                         alertVm.alertModel = .init(
+                            type: .error,
                             message: viewModel.error?.localizedDescription ?? "",
                             action: {
                                 viewModel.startClaimIntent()
@@ -55,7 +56,7 @@ public struct SubmitClaimChatScreen: View {
                 hForm {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(viewModel.allSteps, id: \.id) { step in
-                            StepView(step: step)
+                            StepView(step: step, alertVm: alertVm)
                         }
                     }
                     .padding(.horizontal, .padding16)
@@ -168,6 +169,7 @@ private struct CurrentStepView: View {
                 .onChange(of: step.state.showError) { value in
                     if value {
                         alertVm.alertModel = .init(
+                            type: .error,
                             message: step.state.error?.localizedDescription ?? "",
                             action: {
                                 step.submitResponse()
@@ -185,9 +187,10 @@ private struct CurrentStepView: View {
 struct StepView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @ObservedObject var step: ClaimIntentStepHandler
+    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
     var body: some View {
-        SubmitClaimChatMesageView(viewModel: step)
+        SubmitClaimChatMesageView(viewModel: step, alertVm: alertVm)
             .background {
                 GeometryReader { proxy in
                     Color.clear
