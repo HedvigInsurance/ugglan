@@ -141,7 +141,8 @@ struct ClaimStepResultView: View {
             hPill(
                 text: L10n.General.edit,
                 color: .grey
-            ) { [weak viewModel] in
+            )
+            .onTapGesture { [weak viewModel] in
                 Task {
                     await viewModel?.regret()
                 }

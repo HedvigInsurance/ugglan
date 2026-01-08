@@ -4,40 +4,31 @@ public struct hPill: View {
     public init(
         text: String,
         color: PillColor,
-        colorLevel: PillColor.PillColorLevel? = .one,
-        onTap: (() -> Void)? = nil
+        colorLevel: PillColor.PillColorLevel? = .one
     ) {
         self.text = text
         self.color = color
         self.colorLevel = colorLevel ?? .one
-        self.onTap = onTap
     }
 
     public let text: String
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
-    private let onTap: (() -> Void)?
     @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
     @Environment(\.hPillAttributes) var attributes
 
     public var body: some View {
-        Button {
-            onTap?()
-        } label: {
-            HStack(spacing: .padding6) {
-                hText(text, style: getFontStyle)
-                    .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
-                    .foregroundColor(color.pillTextColor(level: colorLevel))
+        HStack(spacing: .padding6) {
+            hText(text, style: getFontStyle)
+                .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
+                .foregroundColor(color.pillTextColor(level: colorLevel))
 
-                if attributes.contains(.withChevron) {
-                    hCoreUIAssets.chevronDown.view
-                        .foregroundColor(hFillColor.Translucent.tertiary)
-                }
+            if attributes.contains(.withChevron) {
+                hCoreUIAssets.chevronDown.view
+                    .foregroundColor(hFillColor.Translucent.tertiary)
             }
-            .contentShape(Rectangle())
         }
-        .disabled(onTap == nil)
         .modifier(PillModifier(color: color, colorLevel: colorLevel))
     }
 
