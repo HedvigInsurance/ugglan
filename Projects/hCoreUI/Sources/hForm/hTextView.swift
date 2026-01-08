@@ -10,7 +10,7 @@ public struct hTextView: View {
     @State private var height: CGFloat = 100
     @State private var width: CGFloat = 0
     @Environment(\.hTextFieldError) var errorMessage
-    @State private var value: String = ""
+    @State private var value: String
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
     private let onContinue: (_ text: String) -> Void
@@ -30,6 +30,7 @@ public struct hTextView: View {
         onContinue: @escaping (_ text: String) -> Void = { _ in }
     ) {
         self.selectedValue = selectedValue
+        self.value = selectedValue
         self.placeholder = placeholder
         self.popupPlaceholder = popupPlaceholder
         self.onContinue = onContinue
