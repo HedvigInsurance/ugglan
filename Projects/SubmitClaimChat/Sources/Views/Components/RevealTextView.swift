@@ -5,7 +5,7 @@ import hCoreUI
 struct RevealTextView: View {
     let text: String
     @State private var visibleCharacters: [Int: Double] = [:]
-    @State private var showDot = false
+    @State private var showDot = true
     let delay: Float
     private var onTextAnimationDone: (() -> Void)
     init(
