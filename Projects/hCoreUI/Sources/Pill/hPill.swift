@@ -16,22 +16,20 @@ public struct hPill: View {
     private let colorLevel: PillColor.PillColorLevel
     @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.hPillAttributes) var attributes
 
     public var body: some View {
-        if !ProcessInfo.processInfo.arguments.contains("-UITestExcludeHPill") {
+        HStack(spacing: .padding6) {
             hText(text, style: getFontStyle)
                 .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                 .foregroundColor(color.pillTextColor(level: colorLevel))
-                .modifier(
-                    PillModifier(
-                        color: color,
-                        colorLevel: colorLevel,
-                        withBorder: true
-                    )
-                )
-        } else {
-            EmptyView()
+
+            if attributes.contains(.withChevron) {
+                hCoreUIAssets.chevronDown.view
+                    .foregroundColor(hFillColor.Translucent.tertiary)
+            }
         }
+        .modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: true))
     }
 
     private var getFontStyle: HFontTextStyle {
@@ -254,6 +252,27 @@ public enum PillColor {
         case one
         case two
         case three
+    }
+}
+
+public enum hPillAttrubutes {
+    case withChevron
+}
+
+private struct EnvironmentHPillAttributes: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: [hPillAttrubutes] = []
+}
+
+extension EnvironmentValues {
+    public var hPillAttributes: [hPillAttrubutes] {
+        get { self[EnvironmentHPillAttributes.self] }
+        set { self[EnvironmentHPillAttributes.self] = newValue }
+    }
+}
+
+extension View {
+    public func hPillAttributes(attributes: [hPillAttrubutes]) -> some View {
+        environment(\.hPillAttributes, attributes)
     }
 }
 

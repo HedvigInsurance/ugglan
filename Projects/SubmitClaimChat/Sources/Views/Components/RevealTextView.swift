@@ -4,10 +4,9 @@ import hCoreUI
 
 struct RevealTextView: View {
     let text: String
-    @State private var attributedText = AttributedString()
+    @State private var visibleCharacters: [Int: Double] = [:]
     @State private var showDot = true
     let delay: Float
-
     private var onTextAnimationDone: (() -> Void)
     init(
         text: String,
@@ -23,36 +22,42 @@ struct RevealTextView: View {
             if showDot {
                 AnimatedDotView()
             }
-            Text(attributedText)
-                .onAppear {
-                    animateText()
-                }
+            if #available(iOS 18.0, *) {
+                hText(text, style: .heading1)
+                    .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
+                    .onAppear {
+                        animateText()
+                    }
+            } else {
+                hText(text)
+            }
         }
         .animation(.easeIn(duration: 0.1), value: showDot)
+        .animation(.easeIn(duration: 0.1), value: visibleCharacters)
     }
 
     private func animateText() {
-        Task(priority: .userInitiated) {
+        Task {
             try? await Task.sleep(seconds: delay)
             showDot = false
-            var currentText = AttributedString(text)
-            currentText.font = Fonts.fontFor(style: .heading1)
+
+            var characterIndex = 0
             var elapsedTime: Float = 0
             let slowModeThreshold: Float = 1.0
-
-            // Initially set all characters to transparent
-            for run in currentText.runs {
-                currentText[run.range].foregroundColor = textColor.withAlphaComponent(0)
-            }
-            attributedText = currentText
 
             for textIndex in 0..<text.count {
                 let character = getCharacter(at: textIndex)
                 let isSlowMode = elapsedTime < slowModeThreshold
 
-                // Render character
-                if !character.contains(where: { $0.isNewline }) {
-                    await startCharacterFadeIn(at: textIndex)
+                // Render character (skip newlines)
+                if character != "\n" {
+                    // based on Linguistics and TextRendered, it treats tt as one glyph
+                    // in this case we should skip fade to avoid odd fade next to the punctuationOrNewline
+                    if textIndex > 0 && character == "t" && getCharacter(at: textIndex - 1) == "t" {
+                    } else {
+                        startCharacterFadeIn(at: characterIndex)
+                        characterIndex += 1
+                    }
                 }
 
                 // Calculate and apply delay
@@ -69,7 +74,6 @@ struct RevealTextView: View {
 
     private func calculateDelay(for character: String, slowMode: Bool) -> Float {
         let isPunctuationOrNewline = [".", "?", "!", "\n"].contains(character)
-
         if slowMode {
             let punctuationDelay: Float = isPunctuationOrNewline ? 0.2 : 0
             let baseDelay: Float = 0.02
@@ -86,36 +90,40 @@ struct RevealTextView: View {
         return String(text[start...start])
     }
 
-    private let textColor = UIColor.init(
-        light: hTextColor.Opaque.primary
-            .colorFor(
-                .light,
-                .base
-            )
-            .color.uiColor(),
-        dark: hTextColor.Opaque.primary
-            .colorFor(
-                .dark,
-                .base
-            )
-            .color.uiColor()
-    )
-    private func startCharacterFadeIn(at index: Int) async {
+    private func startCharacterFadeIn(at index: Int) {
         let opacitySteps = 20
         let stepDuration: Float = 0.03
-        let characterIndex = text.index(text.startIndex, offsetBy: index)
-        let range = characterIndex...characterIndex
+
         Task {
             for step in 0...opacitySteps {
                 try? await Task.sleep(seconds: stepDuration)
-                let opacity = Double(step) / Double(opacitySteps)
+                visibleCharacters[index] = Double(step) / Double(opacitySteps)
+            }
+        }
+    }
+}
 
-                await MainActor.run {
-                    var updatedText = attributedText
-                    if let attributedRange = Range(range, in: updatedText) {
-                        updatedText[attributedRange].foregroundColor = textColor.withAlphaComponent(opacity)
-                        attributedText = updatedText
+@available(iOS 18.0, *)
+struct AnimatedTextRenderer: TextRenderer {
+    let visibleCharacters: [Int: Double]
+
+    func draw(layout: Text.Layout, in context: inout GraphicsContext) {
+        var characterIndex = 0
+
+        for line in layout {
+            for run in line {
+                for glyph in run {
+                    var glyphContext = context
+
+                    let opacity: Double
+                    if let item = visibleCharacters[characterIndex] {
+                        opacity = item
+                    } else {
+                        opacity = 0
                     }
+                    glyphContext.opacity = opacity
+                    glyphContext.draw(glyph)
+                    characterIndex += 1
                 }
             }
         }

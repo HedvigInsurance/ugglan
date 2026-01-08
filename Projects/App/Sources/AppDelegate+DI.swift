@@ -107,7 +107,6 @@ enum DI {
             let crossSellClient = CrossSellClientOctopus()
             let insuranceEvidenceClient = InsuranceEvidenceClientOctopus()
             let claimIntentClient = ClaimIntentClientOctopus()
-            let claimIntentMemberClient = ClaimIntentMemberClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
@@ -138,7 +137,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
                 Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> ClaimIntentMemberClient in claimIntentMemberClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -168,7 +166,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
                 Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> ClaimIntentMemberClient in claimIntentMemberClient })
             }
         }
     }
