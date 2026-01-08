@@ -1,5 +1,0 @@
-query CurrentMemberPhoneNumber {
-  currentMember {
-	phoneNumber
-  }
-}
