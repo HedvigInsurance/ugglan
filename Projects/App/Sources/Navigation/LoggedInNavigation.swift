@@ -577,9 +577,9 @@ struct LoggedInNavigation: View {
                 } onCancel: { [weak profileNavigationVm = vm.profileNavigationVm] in
                     profileNavigationVm?.isLanguagePickerPresented = false
                 }
-            case .deleteRequestLoading:
+            case let .deleteRequestLoading(state):
                 DeleteRequestLoadingView(
-                    screenState: .success,
+                    screenState: state,
                     dismissAction: { [weak vm] profileDismissAction in
                         switch profileDismissAction {
                         case .makeHomeTabActiveAndOpenChat:
@@ -590,7 +590,7 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
-                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
+                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading(state: state))
             }
         }
         .tabItem {

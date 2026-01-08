@@ -1,3 +1,4 @@
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,10 +7,12 @@ public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel
     @StateObject var router = Router()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
-
+    let memberDetails: MemberDetails?
     public init(
         vm: DeleteAccountViewModel
     ) {
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        self.memberDetails = store.state.memberDetails
         self.vm = vm
     }
 
@@ -54,7 +57,7 @@ public struct DeleteAccountView: View {
                                 .alert,
                                 content: .init(title: L10n.profileDeleteAccountConfirmDeletion),
                                 {
-                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                                    profileNavigationVm.isDeleteAccountRequestedPresented = memberDetails
                                 }
                             )
                         }
