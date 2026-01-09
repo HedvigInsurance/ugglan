@@ -5,19 +5,6 @@ import XCTest
 class AccessibilityTests: XCTestCase {
     let XCUIAccessibilityAuditIssuesKey = "XCUIAccessibilityAuditIssuesKey"
 
-    //    func testContrastIssuesIgnoringHPill() throws {
-    //        let app = XCUIApplication()
-    //        app.launchArguments = ["-UITestExcludeHPill"]
-    //        app.launch()
-    //
-    //        do {
-    //            try app.performAccessibilityAudit(for: [.contrast])
-    //        } catch {
-    //            // Log the failure but note that hPill may be included
-    //            print("Contrast audit failed (ignoring known hPill false positives): \(error)")
-    //        }
-    //    }
-
     func testDynamicTypeIssues() throws {
         let app = XCUIApplication()
         app.launch()

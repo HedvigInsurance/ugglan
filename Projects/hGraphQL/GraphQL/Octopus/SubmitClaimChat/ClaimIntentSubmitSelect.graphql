@@ -1,0 +1,10 @@
+mutation ClaimIntentSubmitSelect($input: ClaimIntentSubmitSelectInput!) {
+  claimIntentSubmitSelect(input: $input) {
+      intent {
+          ...ClaimIntentFragment
+      }
+      userError {
+          message
+      }
+  }
+}

@@ -1,7 +1,9 @@
 import Claims
+import Home
 import PresentableStore
 import Profile
 import SubmitClaim
+import SubmitClaimChat
 import SwiftUI
 import hCore
 import hCoreUI
@@ -15,6 +17,7 @@ struct ClaimsMainNavigation: View {
     @StateObject private var claimsNavigationVm = ClaimsMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false
     @State private var measuredHeight: CGFloat = 0
+    @EnvironmentObject var homeNavigationVm: HomeNavigationViewModel
 
     var body: some View {
         RouterHost(router: claimsRouter, options: .extendedNavigationWidth, tracking: self) {

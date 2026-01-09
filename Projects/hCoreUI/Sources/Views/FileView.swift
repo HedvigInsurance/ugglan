@@ -107,7 +107,7 @@ public struct FileView: View {
                 )
         } else {
             Rectangle().fill(.clear)
-                .aspectRatio(1, contentMode: .fill)
+                .scaledToFill()
                 .background(
                     KFImage(
                         source: Kingfisher.Source.network(

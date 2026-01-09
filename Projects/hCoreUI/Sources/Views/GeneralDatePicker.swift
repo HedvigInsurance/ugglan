@@ -165,11 +165,13 @@ public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @
     }
 
     public init(
+        id: String? = nil,
         continueAction: @escaping () -> Void,
         cancelAction: @escaping () -> Void,
         date: Binding<Date>,
         config: hDatePickerField.HDatePickerFieldConfig
     ) {
+        self.id = id
         self.continueAction = .init(execute: {
             continueAction()
         })
