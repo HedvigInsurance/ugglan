@@ -331,6 +331,8 @@ struct SubmitClaimAudioResultView: View {
                 expanded.toggle()
             }
         }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint(expanded ? L10n.voiceoverCollapsed : L10n.voiceoverExpanded)
     }
 
     private func playRecordingButton(url: URL) -> some View {
