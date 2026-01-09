@@ -30,6 +30,7 @@ public struct hPill: View {
             }
         }
         .modifier(PillModifier(color: color, colorLevel: colorLevel))
+        .accessibilityElement(children: .combine)
     }
 
     private var getFontStyle: HFontTextStyle {
@@ -68,6 +69,7 @@ fileprivate struct PillModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: getCornerRadius)
                     .stroke(hBorderColor.primary, lineWidth: 1)
             )
+            .accessibilityElement(children: .combine)
     }
 
     private var getHorizontalPadding: CGFloat {

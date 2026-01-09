@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct CircularProgressView: View {
@@ -18,6 +19,9 @@ struct CircularProgressView: View {
             .onAppear {
                 isAnimating = true
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(L10n.embarkLoading)
+            .accessibilityAddTraits(.updatesFrequently)
     }
 }
 

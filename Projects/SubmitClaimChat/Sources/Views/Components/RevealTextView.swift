@@ -34,6 +34,9 @@ struct RevealTextView: View {
         }
         .animation(.easeIn(duration: 0.1), value: showDot)
         .animation(.easeIn(duration: 0.1), value: visibleCharacters)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(text)
+        .accessibilityAddTraits(.isStaticText)
     }
 
     private func animateText() {
