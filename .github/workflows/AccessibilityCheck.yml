@@ -1,0 +1,58 @@
+name: Accessibility Check
+
+on:
+  pull_request:
+    branches: ["*"]
+    paths:
+      - '**.swift'
+
+jobs:
+  accessibility-check:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          base_sha: ${{ github.event.pull_request.base.sha }}
+          sha: ${{ github.event.pull_request.head.sha }}
+          files: |
+            **/*.swift
+
+      - name: Run Accessibility Check
+        id: check
+        run: |
+          chmod +x scripts/check-accessibility.sh
+          scripts/check-accessibility.sh "${{ steps.changed-files.outputs.all_changed_files }}"
+        continue-on-error: true
+
+      - name: Comment PR with Results
+        if: steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('accessibility-report.md', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
+      - name: Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: accessibility-report.md
+          if-no-files-found: ignore
