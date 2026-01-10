@@ -80,7 +80,7 @@ struct SubmitClaimSummaryView: View {
                         hText(freeText)
                         Spacer()
                     }
-                    .hPillStyle(color: .grey)
+                    .hPillStyle(color: .grey, colorLevel: .two)
                 }
                 .foregroundColor(hTextColor.Opaque.secondary)
             }

@@ -304,7 +304,7 @@ struct SubmitClaimAudioResultView: View {
                         .foregroundColor(hSignalColor.Green.element)
                     hText(viewModel.inputType?.title ?? "", style: .body1)
                 }
-                .hPillStyle(color: .grey)
+                .hPillStyle(color: .grey, colorLevel: .two)
                 .hFieldSize(.capsuleShape)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
             } else {
@@ -314,7 +314,7 @@ struct SubmitClaimAudioResultView: View {
                             .frame(alignment: .topLeading)
                         Spacer()
                     }
-                    .hPillStyle(color: .grey)
+                    .hPillStyle(color: .grey, colorLevel: .two)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 } else if viewModel.inputType == .audio, let url = viewModel.audioFileURL {
                     playRecordingButton(url: url)
@@ -333,8 +333,9 @@ struct SubmitClaimAudioResultView: View {
         TrackPlayerView(audioPlayer: AudioPlayer(url: url))
             .trackPlayerBackground {
                 Color.clear
-                    .hPillStyle(color: .grey)
+                    .hPillStyle(color: .grey, colorLevel: .two)
             }
+            .hFieldSize(.extraLarge)
     }
 }
 

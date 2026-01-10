@@ -20,7 +20,7 @@ struct SubmitClaimTaskResultView: View {
                 .animation(.easeInOut, value: viewModel.taskModel)
         }
         .clipped()
-        .hPillStyle(color: .grey)
+        .hPillStyle(color: .grey, colorLevel: .two)
         .hFieldSize(.capsuleShape)
         .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)
