@@ -243,8 +243,10 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
 }
 
 #Preview {
-    HelpCenterStartView(
+    Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
+    return HelpCenterStartView(
         onQuickAction: { _ in
         }
     )
+    .environmentObject(Router())
 }

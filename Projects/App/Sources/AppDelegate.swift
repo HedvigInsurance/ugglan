@@ -162,6 +162,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        UserDefaults.standard.removeObject(forKey: "appReview2024visited")
         ApolloClient.bundle = Bundle.main
         setLiquidGlassStatus()
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
