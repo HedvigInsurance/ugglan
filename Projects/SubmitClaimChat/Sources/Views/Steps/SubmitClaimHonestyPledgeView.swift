@@ -30,6 +30,7 @@ struct SubmitClaimHonestyPledgeResultView: View {
             color: .grey
         )
         .hFieldSize(.capsuleShape)
+        .accessibilityLabel(L10n.claimsPledgeSlideLabel)
     }
 }
 

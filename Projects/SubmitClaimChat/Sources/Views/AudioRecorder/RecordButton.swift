@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 public struct RecordButton: View {
@@ -29,6 +30,7 @@ public struct RecordButton: View {
             } label: {
             }
             .buttonStyle(RecordButtonStyle(isRecording: isRecording))
+            .accessibilityLabel(isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
         }
     }
 }

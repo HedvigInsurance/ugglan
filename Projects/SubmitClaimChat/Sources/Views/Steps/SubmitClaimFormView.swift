@@ -198,16 +198,23 @@ struct FormFieldView: View {
     private var binaryField: some View {
         VStack(alignment: .leading, spacing: 0) {
             hText(field.title)
+                .accessibilityAddTraits(.isHeader)
             TagList(tags: field.options.compactMap({ $0.value })) { tag in
+                let optionTitle = field.options.first(where: { $0.value == tag })?.title ?? ""
+                let isSelected = fieldViewModel.value == tag
                 hPill(
-                    text: field.options.first(where: { $0.value == tag })?.title ?? "",
-                    color: fieldViewModel.value == tag ? .green : .grey
+                    text: optionTitle,
+                    color: isSelected ? .green : .grey
                 )
                 .hFieldSize(.capsuleShape)
                 .onTapGesture {
                     fieldViewModel.value = tag
                 }
                 .animation(.default, value: fieldViewModel.value)
+                .accessibilityLabel(optionTitle)
+                .accessibilityAddTraits(.isButton)
+                .accessibilityValue(isSelected ? L10n.voiceoverOptionSelected : "")
+                .accessibilityHint(L10n.voiceoverDoubleClickTo)
             }
             if let error = fieldViewModel.error {
                 HStack {
@@ -215,6 +222,7 @@ struct FormFieldView: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
                 .padding(.leading, .padding16)
+                .accessibilityLabel(error)
             }
         }
     }
@@ -229,6 +237,7 @@ struct SubmitClaimFormResultView: View {
                     .foregroundColor(fieldTextColor(for: item))
                     .hPillStyle(color: .grey)
                     .hFieldSize(.capsuleShape)
+                    .accessibilityLabel(item.value)
             }
         }
     }

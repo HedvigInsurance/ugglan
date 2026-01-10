@@ -29,6 +29,7 @@ struct SubmitClaimSummaryView: View {
         if viewModel.summaryModel.items.count != 0 {
             VStack(alignment: .leading, spacing: .padding8) {
                 hText(L10n.ClaimStatus.ClaimDetails.title)
+                    .accessibilityAddTraits(.isHeader)
                 VStack {
                     ForEach(viewModel.summaryModel.items, id: \.title) { item in
                         HStack {
@@ -37,6 +38,8 @@ struct SubmitClaimSummaryView: View {
                             hText(item.value)
                         }
                         .foregroundColor(hTextColor.Opaque.secondary)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("\(item.title): \(item.value)")
                     }
                 }
             }
@@ -48,6 +51,7 @@ struct SubmitClaimSummaryView: View {
         if viewModel.summaryModel.audioRecordings.count != 0 {
             VStack(alignment: .leading, spacing: .padding8) {
                 hText(L10n.claimChatRecordingTitle)
+                    .accessibilityAddTraits(.isHeader)
                 ForEach(viewModel.summaryModel.audioRecordings, id: \.url) { audioPlayer in
                     hSection {
                         TrackPlayerView(audioPlayer: AudioPlayer(url: audioPlayer.url))
@@ -64,6 +68,7 @@ struct SubmitClaimSummaryView: View {
         if !viewModel.summaryModel.fileUploads.isEmpty {
             VStack(alignment: .leading, spacing: .padding8) {
                 hText(L10n.claimChatFileTitle)
+                    .accessibilityAddTraits(.isHeader)
                 FilesGridView(vm: viewModel.fileGridViewModel)
                     .hFileGridAlignment(alignment: .leading)
             }
@@ -75,12 +80,15 @@ struct SubmitClaimSummaryView: View {
         if !viewModel.summaryModel.freeTexts.isEmpty {
             VStack(alignment: .leading, spacing: .padding8) {
                 hText(L10n.claimChatOtherTitle)
+                    .accessibilityAddTraits(.isHeader)
                 ForEach(viewModel.summaryModel.freeTexts, id: \.self) { freeText in
                     HStack {
                         hText(freeText)
                         Spacer()
                     }
                     .hPillStyle(color: .grey)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(freeText)
                 }
                 .foregroundColor(hTextColor.Opaque.secondary)
             }

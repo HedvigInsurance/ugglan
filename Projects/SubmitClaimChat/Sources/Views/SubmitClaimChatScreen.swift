@@ -154,6 +154,9 @@ struct ScrollToBottomButton: View {
                 scrollAction()
             }
             .transition(.move(edge: .bottom).combined(with: .opacity))
+            .accessibilityLabel(L10n.generalContinueButton)
+            .accessibilityHint(L10n.voiceoverDoubleClickTo)
+            .accessibilityAddTraits(.isButton)
     }
 }
 
