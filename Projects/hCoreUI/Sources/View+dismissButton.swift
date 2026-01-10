@@ -102,7 +102,7 @@ private struct DismissAlertPopup: ViewModifier {
                     }
                 }
             } message: {
-                hText(message ?? "")
+                hText(message)
             }
     }
 }
