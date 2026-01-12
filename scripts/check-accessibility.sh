@@ -25,7 +25,6 @@ NC='\033[0m' # No Color
 
 echo "🔍 Checking accessibility in changed Swift files..."
 
-# Function to check a single file
 check_file() {
     local file=$1
     local file_issues=0
@@ -44,54 +43,46 @@ check_file() {
 
     local issues=()
 
-    # ---- Scan target: strip PreviewProvider blocks to avoid false positives from previews ----
+    # Strip PreviewProvider blocks to avoid false positives
     local scan_file="$file"
     local tmp_scan_file=""
 
     if grep -q "PreviewProvider" "$file"; then
         tmp_scan_file="$(mktemp)"
-        # Drop everything from the first line containing PreviewProvider to EOF
         awk 'BEGIN{skip=0} /PreviewProvider/{skip=1} !skip{print}' "$file" > "$tmp_scan_file"
         scan_file="$tmp_scan_file"
     fi
-    # ---------------------------------------------------------------------------------------
 
     # Check 1: onTapGesture without accessibility traits
     if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits" > /dev/null 2>&1; then
-        local lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
-        if [[ -n "$lines" ]]; then
-            # Check if accessibility traits are added within next 5 lines
-            for line_num in ${lines//,/ }; do
-                local end_line=$((line_num + 5))
-                if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits"; then
-                    issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
-                    ((file_issues++))
-                fi
-            done
-        fi
+        local lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
+        for line_num in $lines; do
+            local end_line=$((line_num + 5))
+            if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits"; then
+                issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
+                ((file_issues++))
+            fi
+        done
     fi
 
-    # Check 2: Warn only for "icon-only" Buttons (Image without Text/label)
+    # Check 2: Icon-only Buttons
     if grep -n "Button.*{" "$scan_file" > /dev/null 2>&1; then
         local lines=$(grep -n "Button.*{" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 20))
             local block=$(sed -n "${line_num},${end_line}p" "$scan_file")
 
-            # Skip plain Button("Title") { ... }
             local button_line=$(sed -n "${line_num}p" "$scan_file")
             if [[ "$button_line" =~ Button\([[:space:]]*\".*\"[[:space:]]*\) ]]; then
                 continue
             fi
 
-            # If there's already an accessibilityLabel nearby, OK
             if echo "$block" | grep -q "accessibilityLabel"; then
                 continue
             fi
 
-            # Warn only if Image is used but no Text is present (likely icon-only button)
             if echo "$block" | grep -q "Image(" && ! echo "$block" | grep -q "Text("; then
-                issues+=("💡 Line $line_num: Icon-only \`Button\` should add \`.accessibilityLabel()\` (or include a \`Text\` label)")
+                issues+=("💡 Line $line_num: Icon-only \`Button\` should add \`.accessibilityLabel()\`")
                 ((file_issues++))
             fi
         done
@@ -109,14 +100,14 @@ check_file() {
         done
     fi
 
-    # Check 4: hFloatingTextField without accessibility hint (for dropdowns/special fields)
+    # Check 4: Dropdowns without accessibility hint
     if grep -q "hFloatingField\|DropdownView" "$scan_file"; then
         if ! grep -q "accessibilityHint" "$scan_file"; then
             issues+=("💡 File may contain dropdowns without accessibility hints")
         fi
     fi
 
-    # Check 5: Custom gestures (LongPressGesture, DragGesture) without accessibility
+    # Check 5: Custom gestures without accessibilityAction
     if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | grep -v "accessibilityAction" > /dev/null 2>&1; then
         local lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
         if [[ -n "$lines" ]]; then
@@ -125,47 +116,7 @@ check_file() {
         fi
     fi
 
-    # Check 6: Suggest .accessibilityElement(children: .combine) only for complex, interactive ForEach rows
-    # Heuristics (to reduce false positives):
-    # - Look locally around each ForEach block (next ~80 lines)
-    # - Require an interactive element in that block (Button/onTapGesture/NavigationLink)
-    # - Require "complex" content: >= 2 Text(...) OR (Text(...) + Image(...)) in the same block
-    # - Skip if the block already uses accessibilityElement(children: .combine) or has an opt-out comment:
-    #     // a11y:ignore-combine
-    if grep -q "ForEach.*{" "$scan_file"; then
-        local lines=$(grep -n "ForEach.*{" "$scan_file" | cut -d: -f1)
-        for line_num in $lines; do
-            local end_line=$((line_num + 80))
-            local block
-            block=$(sed -n "${line_num},${end_line}p" "$scan_file")
-
-            # Allow explicit opt-out near the ForEach
-            if echo "$block" | grep -q "a11y:ignore-combine"; then
-                continue
-            fi
-
-            # Already combined/grouped? then skip
-            if echo "$block" | grep -q "accessibilityElement([^)]*children:[[:space:]]*\.combine"; then
-                continue
-            fi
-
-            # Must be interactive to matter
-            if ! echo "$block" | grep -q "Button\|\.onTapGesture\|NavigationLink"; then
-                continue
-            fi
-
-            # Determine "complexity"
-            local text_count image_count
-            text_count=$(echo "$block" | grep -o "Text(" | wc -l | tr -d ' ')
-            image_count=$(echo "$block" | grep -o "Image(" | wc -l | tr -d ' ')
-
-            # Complex if: 2+ Text, OR at least 1 Text and 1 Image
-            if [[ "$text_count" -ge 2 ]] || ([[ "$text_count" -ge 1 ]] && [[ "$image_count" -ge 1 ]]); then
-                issues+=("💡 Line $line_num: Complex list items may benefit from \`.accessibilityElement(children: .combine)\`")
-            fi
-        done
-    fi
-
+    # Check 6 REMOVED (ForEach + combine heuristic was too noisy)
 
     # Check 7: Progress indicators without labels
     if grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | grep -v "accessibilityLabel\|accessibilityValue" > /dev/null 2>&1; then
@@ -187,12 +138,11 @@ check_file() {
         done
     fi
 
-    # Cleanup temp scan file if created
+    # Cleanup
     if [[ -n "$tmp_scan_file" ]] && [[ -f "$tmp_scan_file" ]]; then
         rm -f "$tmp_scan_file"
     fi
 
-    # Report issues for this file
     if [[ ${#issues[@]} -gt 0 ]]; then
         echo >> "$REPORT_FILE"
         echo "### 📄 \`$file\`" >> "$REPORT_FILE"
@@ -206,55 +156,9 @@ check_file() {
     return $file_issues
 }
 
-# Check all changed files
 if [[ -z "$CHANGED_FILES" ]]; then
     echo "No files to check"
     exit 0
 fi
 
 for file in $CHANGED_FILES; do
-    check_file "$file" || true
-done
-
-# Add summary to report
-if [[ $ISSUES_FOUND -gt 0 ]]; then
-    cat >> "$REPORT_FILE" << EOF
-
----
-
-### 📋 Summary
-
-Found **$ISSUES_FOUND potential accessibility issues** in the changed files.
-
-#### ✅ Best Practices Checklist:
-
-- [ ] Interactive elements have \`.accessibilityLabel()\`
-- [ ] Tappable views have \`.accessibilityAddTraits(.isButton)\`
-- [ ] Images have \`.accessibilityLabel()\` or \`.accessibilityHidden(true)\`
-- [ ] Custom gestures use \`.accessibilityAction()\`
-- [ ] Progress indicators have labels and values
-- [ ] Complex views use \`.accessibilityElement(children: .combine)\`
-- [ ] Dropdowns and pickers have \`.accessibilityHint()\`
-
----
-*Generated by Accessibility Check Workflow*
-EOF
-    echo -e "${YELLOW}⚠️  Found $ISSUES_FOUND potential accessibility issues${NC}"
-    cat "$REPORT_FILE"
-    exit 1
-else
-    cat >> "$REPORT_FILE" << EOF
-
----
-
-### ✅ No Issues Found
-
-All checked files appear to follow accessibility best practices!
-
----
-*Generated by Accessibility Check Workflow*
-EOF
-    echo -e "${GREEN}✅ No accessibility issues found!${NC}"
-    cat "$REPORT_FILE"
-    exit 0
-fi
