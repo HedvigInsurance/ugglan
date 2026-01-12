@@ -183,7 +183,7 @@ struct hFieldLabel: View {
         switch size {
         case .small, .medium, .capsuleShape, .button:
             return .body1
-        case .large:
+        case .large, .extraLarge:
             return .body2
         }
     }

@@ -55,6 +55,10 @@ struct SubmitClaimFileUploadView: View {
                                         .frame(width: fileUploadVm.progress * geo.size.width)
                                 }
                                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                                .accessibilityElement(children: .ignore)
+                                .accessibilityLabel(L10n.ClaimStatusDetail.addFiles)
+                                .accessibilityValue(String(format: "%.0f%%", fileUploadVm.progress * 100))
+                                .accessibilityAddTraits(.updatesFrequently)
                             }
                         }
                         if fileUploadVm.hasFiles {

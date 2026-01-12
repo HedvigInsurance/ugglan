@@ -198,6 +198,8 @@ extension hFieldSize {
             return 15
         case .large:
             return 16
+        case .extraLarge:
+            return 20
         case .medium:
             return 19
         case .capsuleShape:
@@ -211,7 +213,7 @@ extension hFieldSize {
         switch self {
         case .small:
             return 8.5
-        case .large:
+        case .large, .extraLarge:
             return 10
         case .medium:
             return 11.5
@@ -230,7 +232,7 @@ extension hFieldSize {
         switch self {
         case .small:
             return 7.5
-        case .large:
+        case .large, .extraLarge:
             return 9
         case .medium:
             return 12.5

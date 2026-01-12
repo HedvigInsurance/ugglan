@@ -20,10 +20,13 @@ struct SubmitClaimTaskResultView: View {
                 .animation(.easeInOut, value: viewModel.taskModel)
         }
         .clipped()
-        .hPillStyle(color: .grey)
+        .hPillStyle(color: .grey, colorLevel: .two)
         .hFieldSize(.capsuleShape)
         .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(viewModel.taskModel.description)
+        .accessibilityValue(viewModel.taskModel.isCompleted ? L10n.voiceoverAccepted : L10n.embarkLoading)
     }
 }
 

@@ -88,7 +88,7 @@ struct SubmitClaimAudioView: View {
                 .disabled(audioRecordingVm.viewState == .loading)
                 .hButtonIsLoading(audioRecordingVm.viewState == .loading)
                 .accessibilityFocused($saveAndContinueFocused)
-                .accessibilityLabel(Text(L10n.saveAndContinueButtonLabel))
+                .accessibilityLabel(L10n.saveAndContinueButtonLabel)
 
                 hButton(
                     .large,
@@ -188,6 +188,7 @@ struct SubmitClaimAudioView: View {
                     .onReceive(timer) { _ in
                         if (seconds % 59) == 0, seconds != 0 { minutes += 1; seconds = 0 } else { seconds += 1 }
                     }
+                    .accessibilityLabel(String(format: "%02d:%02d", minutes, seconds))
             }
         }
         .onChange(of: audioRecorder.isRecording) { isRecording in
@@ -202,7 +203,6 @@ struct SubmitClaimAudioView: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.updatesFrequently)
-        .accessibilityHint(audioRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
     }
 
     @MainActor
@@ -289,24 +289,24 @@ extension AudioRecorder {
 struct SubmitClaimAudioResultView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @StateObject var audioPlayer: AudioPlayer = AudioPlayer(url: nil)
-    @State var expanded = false
+
     init(viewModel: SubmitClaimAudioStep) {
         self.viewModel = viewModel
     }
 
     var body: some View {
         VStack {
-            if !expanded {
+            if viewModel.inputType == .text {
                 HStack {
-                    hCoreUIAssets.checkmark.view
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(hSignalColor.Green.element)
-                    hText(viewModel.inputType?.title ?? "", style: .body1)
+                    hText(viewModel.textInput)
+                        .frame(alignment: .topLeading)
+                    Spacer()
                 }
-                .hPillStyle(color: .grey)
+                .hPillStyle(color: .grey, colorLevel: .two)
                 .hFieldSize(.capsuleShape)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(viewModel.inputType?.title ?? "")
             } else {
                 if viewModel.inputType == .text {
                     HStack {
@@ -316,25 +316,24 @@ struct SubmitClaimAudioResultView: View {
                     }
                     .hPillStyle(color: .grey)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(viewModel.textInput)
                 } else if viewModel.inputType == .audio, let url = viewModel.audioFileURL {
                     playRecordingButton(url: url)
                         .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 }
             }
         }
-        .onTapGesture {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                expanded.toggle()
-            }
-        }
+        .accessibilityAddTraits(.isButton)
     }
 
     private func playRecordingButton(url: URL) -> some View {
         TrackPlayerView(audioPlayer: AudioPlayer(url: url))
             .trackPlayerBackground {
                 Color.clear
-                    .hPillStyle(color: .grey)
+                    .hPillStyle(color: .grey, colorLevel: .two)
             }
+            .hFieldSize(.extraLarge)
     }
 }
 

@@ -155,6 +155,9 @@ struct ScrollToBottomButton: View {
                 scrollAction()
             }
             .transition(.move(edge: .bottom).combined(with: .opacity))
+            .accessibilityLabel(L10n.generalContinueButton)
+            .accessibilityHint(L10n.voiceoverDoubleClickTo)
+            .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -191,6 +194,7 @@ struct StepView: View {
 
     var body: some View {
         SubmitClaimChatMesageView(viewModel: step, alertVm: alertVm)
+            .padding(.top, .padding16)
             .background {
                 GeometryReader { proxy in
                     Color.clear
@@ -311,13 +315,19 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         let neededHeight = self.currentStepInputHeight
         let availableHeight =
             scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y - totalStepsHeight
-            + scrollView.adjustedContentInset.top
+            + scrollView.adjustedContentInset.top + topPadding
         self.isInputScrolledOffScreen = neededHeight > availableHeight
     }
 
     var totalStepsHeight: CGFloat = 0
     @Published var lastStepContentHeight: CGFloat = 0
-    @Published var currentStepInputHeight: CGFloat = 0
+    @Published var currentStepInputHeight: CGFloat = 0 {
+        didSet {
+            if currentStepInputHeight != oldValue {
+                checkForScrollOffset()
+            }
+        }
+    }
     @Published var shouldMergeInputWithContent = false
 
     @Published var isInputScrolledOffScreen = false

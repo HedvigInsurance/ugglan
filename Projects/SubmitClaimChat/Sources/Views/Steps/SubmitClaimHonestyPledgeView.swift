@@ -27,9 +27,12 @@ struct SubmitClaimHonestyPledgeResultView: View {
     var body: some View {
         hPill(
             text: L10n.claimsPledgeSlideLabel,
-            color: .grey
+            color: .grey,
+            colorLevel: .two,
+            withBorder: false
         )
         .hFieldSize(.capsuleShape)
+        .accessibilityLabel(L10n.claimsPledgeSlideLabel)
     }
 }
 

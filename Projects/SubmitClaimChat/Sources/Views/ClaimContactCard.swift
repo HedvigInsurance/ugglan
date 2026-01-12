@@ -39,6 +39,7 @@ struct ClaimContactCard: View {
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, .padding16)
                 .accessibilityElement(children: .combine)
                 ParnerButtonView(model: model, overrideColorSchema: true)

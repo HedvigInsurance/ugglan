@@ -318,6 +318,7 @@ private struct EnvironmentHFieldSize: EnvironmentKey {
 public enum hFieldSize: Hashable, Sendable {
     case small
     case large
+    case extraLarge
     case medium
     case capsuleShape
     case button
@@ -327,6 +328,8 @@ public enum hFieldSize: Hashable, Sendable {
         case .small:
             return .padding14
         case .large:
+            return .padding16
+        case .extraLarge:
             return .padding16
         case .medium:
             return .padding16
@@ -422,6 +425,7 @@ extension hFieldSize {
         case .medium: return -14
         case .large: return -15
         case .capsuleShape, .button: return -14
+        case .extraLarge: return -15
         }
     }
 
@@ -434,6 +438,7 @@ extension hFieldSize {
         case .small: return .body1
         case .medium: return .body1
         case .large: return .body2
+        case .extraLarge: return .body2
         case .capsuleShape: return .body1
         case .button: return .body1
         }
