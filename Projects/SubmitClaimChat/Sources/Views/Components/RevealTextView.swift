@@ -34,6 +34,9 @@ struct RevealTextView: View {
                     }
             } else {
                 hText(text)
+                    .onAppear {
+                        onTextAnimationDone()
+                    }
             }
         }
         .animation(.easeIn(duration: 0.1), value: showDot)
