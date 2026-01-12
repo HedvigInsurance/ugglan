@@ -29,6 +29,14 @@ We use swift-format for formatting, it's ran on all staged files automatically i
    
    sh `scripts/install-swift-format.sh`
    
+## Localisation Update
+1. Add LOKALIZE_TOKEN
+  echo 'export LOKALIZE_TOKEN="your_token_value_here"' >> ~/.zshrc
+  
+2. After adding it, reload your shell config:
+
+3. run scripts/translations.sh
+   
 ## How to release
 
 ### Before release 
