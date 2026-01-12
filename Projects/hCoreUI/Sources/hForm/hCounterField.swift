@@ -181,7 +181,7 @@ extension hFieldSize {
         switch self {
         case .small:
             return 10
-        case .large:
+        case .large, .extraLarge:
             return 15
         case .medium:
             return 15

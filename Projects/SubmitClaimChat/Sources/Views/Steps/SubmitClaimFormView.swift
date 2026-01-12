@@ -232,7 +232,7 @@ struct SubmitClaimFormResultView: View {
             }
         }
     }
-
+    
     @hColorBuilder
     private func fieldTextColor(for item: SubmitClaimFormStep.ResultDisplayItem) -> some hColor {
         if item.skipped {

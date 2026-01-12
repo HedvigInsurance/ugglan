@@ -29,7 +29,7 @@ public struct hPill: View {
                     .foregroundColor(hFillColor.Translucent.tertiary)
             }
         }
-        .modifier(PillModifier(color: color, colorLevel: colorLevel))
+        .modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: true))
     }
 
     private var getFontStyle: HFontTextStyle {
@@ -45,29 +45,42 @@ public struct hPill: View {
 extension View {
     public func hPillStyle(
         color: PillColor,
-        colorLevel: PillColor.PillColorLevel = .one
+        colorLevel: PillColor.PillColorLevel = .one,
+        withBorder: Bool = false
     ) -> some View {
-        self.modifier(PillModifier(color: color, colorLevel: colorLevel))
+        self.modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder))
     }
 }
 
 fileprivate struct PillModifier: ViewModifier {
     let color: PillColor
     let colorLevel: PillColor.PillColorLevel
+    let withBorder: Bool
     @Environment(\.hFieldSize) var fieldSize
     func body(content: Content) -> some View {
-        content
-            .padding(.horizontal, getHorizontalPadding)
-            .padding(.top, getTopPadding)
-            .padding(.bottom, getBottomPadding)
-            .background(
-                RoundedRectangle(cornerRadius: getCornerRadius)
-                    .fill(color.pillBackgroundColor(level: colorLevel))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: getCornerRadius)
-                    .stroke(hBorderColor.primary, lineWidth: 1)
-            )
+        if withBorder {
+            content
+                .padding(.horizontal, getHorizontalPadding)
+                .padding(.top, getTopPadding)
+                .padding(.bottom, getBottomPadding)
+                .background(
+                    RoundedRectangle(cornerRadius: getCornerRadius)
+                        .fill(color.pillBackgroundColor(level: colorLevel))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: getCornerRadius)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                )
+        } else {
+            content
+                .padding(.horizontal, getHorizontalPadding)
+                .padding(.top, getTopPadding)
+                .padding(.bottom, getBottomPadding)
+                .background(
+                    RoundedRectangle(cornerRadius: getCornerRadius)
+                        .fill(color.pillBackgroundColor(level: colorLevel))
+                )
+        }
     }
 
     private var getHorizontalPadding: CGFloat {
@@ -76,7 +89,7 @@ fileprivate struct PillModifier: ViewModifier {
             return .padding6
         case .medium:
             return .padding10
-        case .large:
+        case .large, .extraLarge:
             return .padding12
         case .capsuleShape:
             return .padding14
@@ -89,7 +102,7 @@ fileprivate struct PillModifier: ViewModifier {
             return 3
         case .medium:
             return 6.5
-        case .large, .capsuleShape:
+        case .large, .capsuleShape, .extraLarge:
             return 7
         }
     }
@@ -100,7 +113,7 @@ fileprivate struct PillModifier: ViewModifier {
             return 3
         case .medium:
             return 7.5
-        case .large, .capsuleShape:
+        case .large, .capsuleShape, .extraLarge:
             return 9
         }
     }
@@ -113,6 +126,8 @@ fileprivate struct PillModifier: ViewModifier {
             return .cornerRadiusS
         case .large:
             return .cornerRadiusM
+        case .extraLarge:
+            return .cornerRadiusXL
         case .capsuleShape:
             return 100
         }
