@@ -1,4 +1,4 @@
-name: FetchLocalization
+name: UpdateLocalization
 
 on:
   workflow_dispatch:
