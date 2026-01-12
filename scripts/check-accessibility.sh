@@ -44,14 +44,26 @@ check_file() {
 
     local issues=()
 
+    # ---- Scan target: strip PreviewProvider blocks to avoid false positives from previews ----
+    local scan_file="$file"
+    local tmp_scan_file=""
+
+    if grep -q "PreviewProvider" "$file"; then
+        tmp_scan_file="$(mktemp)"
+        # Drop everything from the first line containing PreviewProvider to EOF
+        awk 'BEGIN{skip=0} /PreviewProvider/{skip=1} !skip{print}' "$file" > "$tmp_scan_file"
+        scan_file="$tmp_scan_file"
+    fi
+    # ---------------------------------------------------------------------------------------
+
     # Check 1: onTapGesture without accessibility traits
-    if grep -n "\.onTapGesture" "$file" | grep -v "accessibilityAddTraits" > /dev/null 2>&1; then
-        local lines=$(grep -n "\.onTapGesture" "$file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
+    if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits" > /dev/null 2>&1; then
+        local lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
         if [[ -n "$lines" ]]; then
             # Check if accessibility traits are added within next 5 lines
             for line_num in ${lines//,/ }; do
                 local end_line=$((line_num + 5))
-                if ! sed -n "${line_num},${end_line}p" "$file" | grep -q "accessibilityAddTraits"; then
+                if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits"; then
                     issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
                     ((file_issues++))
                 fi
@@ -60,14 +72,14 @@ check_file() {
     fi
 
     # Check 2: Warn only for "icon-only" Buttons (Image without Text/label)
-    if grep -n "Button.*{" "$file" > /dev/null 2>&1; then
-        local lines=$(grep -n "Button.*{" "$file" | cut -d: -f1)
+    if grep -n "Button.*{" "$scan_file" > /dev/null 2>&1; then
+        local lines=$(grep -n "Button.*{" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 20))
-            local block=$(sed -n "${line_num},${end_line}p" "$file")
+            local block=$(sed -n "${line_num},${end_line}p" "$scan_file")
 
             # Skip plain Button("Title") { ... }
-            local button_line=$(sed -n "${line_num}p" "$file")
+            local button_line=$(sed -n "${line_num}p" "$scan_file")
             if [[ "$button_line" =~ Button\([[:space:]]*\".*\"[[:space:]]*\) ]]; then
                 continue
             fi
@@ -86,11 +98,11 @@ check_file() {
     fi
 
     # Check 3: Image without accessibility handling
-    if grep -n "Image(" "$file" | grep -v "accessibilityLabel\|accessibilityHidden" > /dev/null 2>&1; then
-        local lines=$(grep -n "Image(" "$file" | cut -d: -f1)
+    if grep -n "Image(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden" > /dev/null 2>&1; then
+        local lines=$(grep -n "Image(" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
-            if ! sed -n "${line_num},${end_line}p" "$file" | grep -q "accessibilityLabel\|accessibilityHidden"; then
+            if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel\|accessibilityHidden"; then
                 issues+=("🖼️  Line $line_num: \`Image\` without \`.accessibilityLabel()\` or \`.accessibilityHidden(true)\`")
                 ((file_issues++))
             fi
@@ -98,15 +110,15 @@ check_file() {
     fi
 
     # Check 4: hFloatingTextField without accessibility hint (for dropdowns/special fields)
-    if grep -q "hFloatingField\|DropdownView" "$file"; then
-        if ! grep -q "accessibilityHint" "$file"; then
+    if grep -q "hFloatingField\|DropdownView" "$scan_file"; then
+        if ! grep -q "accessibilityHint" "$scan_file"; then
             issues+=("💡 File may contain dropdowns without accessibility hints")
         fi
     fi
 
     # Check 5: Custom gestures (LongPressGesture, DragGesture) without accessibility
-    if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$file" | grep -v "accessibilityAction" > /dev/null 2>&1; then
-        local lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
+    if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | grep -v "accessibilityAction" > /dev/null 2>&1; then
+        local lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
         if [[ -n "$lines" ]]; then
             issues+=("⚠️  Lines $lines: Custom gestures should include \`.accessibilityAction()\`")
             ((file_issues++))
@@ -114,35 +126,29 @@ check_file() {
     fi
 
     # Check 6: ForEach rows that look like complex, interactive items should consider accessibility grouping
-    # Heuristics:
-    # - Skip preview files (PreviewProvider)
-    # - Look locally around each ForEach block (next ~40 lines)
-    # - Only warn if the row contains layout stacks AND an interactive element
-    if grep -q "ForEach.*{" "$file"; then
-        # Skip previews
-        if ! grep -q "PreviewProvider" "$file"; then
-            local lines=$(grep -n "ForEach.*{" "$file" | cut -d: -f1)
-            for line_num in $lines; do
-                local end_line=$((line_num + 40))
-                local block=$(sed -n "${line_num},${end_line}p" "$file")
+    # (Previews are already stripped from scan_file above.)
+    if grep -q "ForEach.*{" "$scan_file"; then
+        local lines=$(grep -n "ForEach.*{" "$scan_file" | cut -d: -f1)
+        for line_num in $lines; do
+            local end_line=$((line_num + 40))
+            local block=$(sed -n "${line_num},${end_line}p" "$scan_file")
 
-                # Must look like a row layout
-                if echo "$block" | grep -q "HStack\|VStack"; then
-                    # Must be interactive to matter
-                    if echo "$block" | grep -q "Button\|\.onTapGesture\|NavigationLink"; then
-                        # If no combine nearby, suggest it
-                        if ! echo "$block" | grep -q "accessibilityElement([^)]*children:[[:space:]]*\.combine"; then
-                            issues+=("💡 Line $line_num: Complex ForEach row may benefit from \`.accessibilityElement(children: .combine)\`")
-                        fi
+            # Must look like a row layout
+            if echo "$block" | grep -q "HStack\|VStack"; then
+                # Must be interactive to matter
+                if echo "$block" | grep -q "Button\|\.onTapGesture\|NavigationLink"; then
+                    # If no combine nearby, suggest it
+                    if ! echo "$block" | grep -q "accessibilityElement([^)]*children:[[:space:]]*\.combine"; then
+                        issues+=("💡 Line $line_num: Complex ForEach row may benefit from \`.accessibilityElement(children: .combine)\`")
                     fi
                 fi
-            done
-        fi
+            fi
+        done
     fi
 
     # Check 7: Progress indicators without labels
-    if grep -n "ProgressView\|\.progress\|CircularProgress" "$file" | grep -v "accessibilityLabel\|accessibilityValue" > /dev/null 2>&1; then
-        local lines=$(grep -n "ProgressView\|\.progress\|CircularProgress" "$file" | cut -d: -f1 | head -3 | tr '\n' ',' | sed 's/,$//')
+    if grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | grep -v "accessibilityLabel\|accessibilityValue" > /dev/null 2>&1; then
+        local lines=$(grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | cut -d: -f1 | head -3 | tr '\n' ',' | sed 's/,$//')
         if [[ -n "$lines" ]]; then
             issues+=("⚠️  Lines $lines: Progress indicators need \`.accessibilityLabel()\` and \`.accessibilityValue()\`")
             ((file_issues++))
@@ -150,14 +156,19 @@ check_file() {
     fi
 
     # Check 8: Toggle/Picker without accessibility labels
-    if grep -n "Toggle(\|Picker(" "$file" | grep -v "accessibilityLabel" > /dev/null 2>&1; then
-        local lines=$(grep -n "Toggle(\|Picker(" "$file" | cut -d: -f1)
+    if grep -n "Toggle(\|Picker(" "$scan_file" | grep -v "accessibilityLabel" > /dev/null 2>&1; then
+        local lines=$(grep -n "Toggle(\|Picker(" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
-            if ! sed -n "${line_num},${end_line}p" "$file" | grep -q "accessibilityLabel"; then
+            if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel"; then
                 issues+=("💡 Line $line_num: \`Toggle\`/\`Picker\` may need explicit \`.accessibilityLabel()\`")
             fi
         done
+    fi
+
+    # Cleanup temp scan file if created
+    if [[ -n "$tmp_scan_file" ]] && [[ -f "$tmp_scan_file" ]]; then
+        rm -f "$tmp_scan_file"
     fi
 
     # Report issues for this file
