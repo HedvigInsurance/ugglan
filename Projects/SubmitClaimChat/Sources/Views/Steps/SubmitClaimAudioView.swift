@@ -302,7 +302,8 @@ struct SubmitClaimAudioResultView: View {
                         .frame(alignment: .topLeading)
                     Spacer()
                 }
-                .hPillStyle(color: .grey)
+                .hPillStyle(color: .grey, colorLevel: .two)
+                .hFieldSize(.capsuleShape)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(viewModel.inputType?.title ?? "")
@@ -330,8 +331,9 @@ struct SubmitClaimAudioResultView: View {
         TrackPlayerView(audioPlayer: AudioPlayer(url: url))
             .trackPlayerBackground {
                 Color.clear
-                    .hPillStyle(color: .grey)
+                    .hPillStyle(color: .grey, colorLevel: .two)
             }
+            .hFieldSize(.extraLarge)
     }
 }
 

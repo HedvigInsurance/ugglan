@@ -86,7 +86,7 @@ struct SubmitClaimSummaryView: View {
                         hText(freeText)
                         Spacer()
                     }
-                    .hPillStyle(color: .grey)
+                    .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(freeText)
                 }

@@ -204,7 +204,9 @@ struct FormFieldView: View {
                 let isSelected = fieldViewModel.value == tag
                 hPill(
                     text: optionTitle,
-                    color: isSelected ? .green : .grey
+                    color: isSelected ? .green : .grey,
+                    colorLevel: .two,
+                    withBorder: false
                 )
                 .hFieldSize(.capsuleShape)
                 .onTapGesture {
@@ -235,13 +237,13 @@ struct SubmitClaimFormResultView: View {
             ForEach(viewModel.getAllValuesToShow(), id: \.key) { item in
                 hText(item.value)
                     .foregroundColor(fieldTextColor(for: item))
-                    .hPillStyle(color: .grey)
+                    .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                     .hFieldSize(.capsuleShape)
                     .accessibilityLabel(item.value)
             }
         }
     }
-
+    
     @hColorBuilder
     private func fieldTextColor(for item: SubmitClaimFormStep.ResultDisplayItem) -> some hColor {
         if item.skipped {

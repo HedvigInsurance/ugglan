@@ -56,7 +56,7 @@ struct SubmitClaimChatMesageView: View {
 extension ClaimIntentStepHandler {
     var maxWidth: CGFloat {
         switch claimIntent.currentStep.content {
-        case .summary, .singleSelect, .deflect:
+        case .summary, .singleSelect, .deflect, .audioRecording:
             return .infinity
         default:
             return 300
@@ -120,7 +120,7 @@ struct ClaimStepResultView: View {
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
-            hPill(text: L10n.claimChatSkippedLabel, color: .grey)
+            hPill(text: L10n.claimChatSkippedLabel, color: .grey, colorLevel: .two, withBorder: false)
                 .hFieldSize(.capsuleShape)
                 .accessibilityLabel(L10n.claimChatSkippedLabel)
         } else if viewModel.state.showResults {
@@ -143,7 +143,9 @@ struct ClaimStepResultView: View {
         if viewModel.isRegrettable && viewModel.state.isStepExecuted {
             hPill(
                 text: L10n.General.edit,
-                color: .grey
+                color: .grey,
+                colorLevel: .two,
+                withBorder: false
             )
             .onTapGesture { [weak viewModel] in
                 Task {

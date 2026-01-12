@@ -13,7 +13,9 @@ struct SubmitClaimSingleSelectView: View {
                     let optionTitle = viewModel.model.options.first(where: { $0.id == tag })?.title ?? ""
                     hPill(
                         text: optionTitle,
-                        color: .grey
+                        color: .grey,
+                        colorLevel: .two,
+                        withBorder: false
                     )
                     .hFieldSize(.capsuleShape)
                     .transition(
@@ -48,7 +50,9 @@ struct SubmitClaimSingleSelectResultView: View {
         {
             hPill(
                 text: text,
-                color: .grey
+                color: .grey,
+                colorLevel: .two,
+                withBorder: false
             )
             .hFieldSize(.capsuleShape)
             .accessibilityLabel(text)
