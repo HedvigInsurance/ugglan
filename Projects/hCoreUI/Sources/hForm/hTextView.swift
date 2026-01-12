@@ -10,7 +10,7 @@ public struct hTextView: View {
     @State private var height: CGFloat = 100
     @State private var width: CGFloat = 0
     @Environment(\.hTextFieldError) var errorMessage
-    @State private var value: String
+    @State private var value: String = ""
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
     private let onContinue: (_ text: String) -> Void
@@ -30,7 +30,6 @@ public struct hTextView: View {
         onContinue: @escaping (_ text: String) -> Void = { _ in }
     ) {
         self.selectedValue = selectedValue
-        self.value = selectedValue
         self.placeholder = placeholder
         self.popupPlaceholder = popupPlaceholder
         self.onContinue = onContinue
@@ -66,7 +65,7 @@ public struct hTextView: View {
                         if enabled {
                             HStack(spacing: .padding4) {
                                 Spacer()
-                                hText("\(value.count)/\(maxCharacters)", style: .label)
+                                hText("\(selectedValue.count)/\(maxCharacters)", style: .label)
                                     .foregroundColor(hTextColor.Opaque.tertiary)
                             }
                             .fixedSize()
@@ -125,7 +124,6 @@ public struct hTextView: View {
         vc.view.backgroundColor = .clear
         continueAction.execute = { [weak vc] in
             selectedValue = value
-            value = value
             onContinue(value)
             UIView.animate(withDuration: 0.1) {
                 vc?.view.backgroundColor = .clear
