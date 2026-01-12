@@ -5,38 +5,14 @@ import hCoreUI
 
 struct PaymentMethodScreen: View {
     let data: PaymentChargeData
-    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
+
     var body: some View {
         hForm {
             PaymentMethodView(data: data, withDate: true)
                 .hWithoutHorizontalPadding([.row, .divider])
         }
         .hFormAttachToBottom {
-            PresentableStoreLens(
-                PaymentStore.self,
-                getter: { state in
-                    state.paymentStatusData
-                }
-            ) { statusData in
-                if let statusData, !statusData.status.showConnectPayment {
-                    hSection {
-                        VStack(spacing: .padding16) {
-                            if statusData.status == .pending {
-                                InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                            }
-                            hButton(
-                                .large,
-                                .secondary,
-                                content: .init(title: statusData.status.connectButtonTitle),
-                                {
-                                    paymentNavigationVm.connectPaymentVm.set()
-                                }
-                            )
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-                }
-            }
+            ConnectPaymentBottomView(alwaysShowButton: true)
         }
     }
 }
