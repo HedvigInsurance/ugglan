@@ -28,11 +28,6 @@ struct HomeBottomScrollView: View {
                         .environmentObject(navigationVm.connectPaymentVm)
                 case .renewal:
                     RenewalCardView()
-                case .deletedView:
-                    InfoCard(
-                        text: L10n.hometabAccountDeletionNotification,
-                        type: .attention
-                    )
                 case let .importantMessage(id):
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     if let importantMessage = store.state.getImportantMessage(with: id) {
@@ -71,7 +66,6 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleImportantMessages()
         handleRenewalCardView()
         handleTerminatedMessage()
-        handleUpdateOfMemberId()
         handleUpdateContactInfo()
     }
 
@@ -187,30 +181,6 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleItem(.renewal, with: homeStore.state.upcomingRenewalContracts.count > 0)
     }
 
-    private func handleUpdateOfMemberId() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.stateSignal
-            .compactMap { $0.memberInfo?.id }
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { memberId in
-                self.handleDeleteRequests(memberId: memberId)
-            }
-            .store(in: &cancellables)
-    }
-
-    private func handleDeleteRequests(memberId: String) {
-        Task {
-            let members = ApolloClient.retreiveMembersWithDeleteRequests()
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            handleItem(
-                .deletedView,
-                with: members.contains(memberId)
-                    && (store.state.activeContracts.count == 0 && store.state.pendingContracts.count == 0)
-            )
-        }
-    }
-
     private func handleMissingCoInsured() {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal
@@ -279,7 +249,6 @@ enum InfoCardType: Hashable, Comparable {
     case missingCoInsured
     case importantMessage(message: String)
     case renewal
-    case deletedView
     case terminated
     case updateContactInfo
 }

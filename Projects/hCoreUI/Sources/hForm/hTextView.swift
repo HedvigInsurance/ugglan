@@ -65,7 +65,7 @@ public struct hTextView: View {
                         if enabled {
                             HStack(spacing: .padding4) {
                                 Spacer()
-                                hText("\(value.count)/\(maxCharacters)", style: .label)
+                                hText("\(selectedValue.count)/\(maxCharacters)", style: .label)
                                     .foregroundColor(hTextColor.Opaque.tertiary)
                             }
                             .fixedSize()
@@ -124,7 +124,6 @@ public struct hTextView: View {
         vc.view.backgroundColor = .clear
         continueAction.execute = { [weak vc] in
             selectedValue = value
-            value = value
             onContinue(value)
             UIView.animate(withDuration: 0.1) {
                 vc?.view.backgroundColor = .clear
