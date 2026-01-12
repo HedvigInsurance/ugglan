@@ -115,6 +115,7 @@ public struct PaymentsView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 20, height: 20)
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .accessibilityHidden(true)
                     }
                     .foregroundColor(.primary)
                     hText(paymentData.payment.date.displayDate)
