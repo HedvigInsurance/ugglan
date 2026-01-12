@@ -2,7 +2,7 @@ import Foundation
 import hCore
 
 public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
-    public var status: PayinMethodStatus = .active
+    public var status: PayinMethodStatus
     public let paymentChargeData: PaymentChargeData?
 
     public init(

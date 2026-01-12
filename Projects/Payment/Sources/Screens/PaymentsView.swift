@@ -171,23 +171,25 @@ public struct PaymentsView: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentStatusData?.status
+                state.paymentStatusData
             }
         ) { statusData in
-            if let statusData, !statusData.showConnectPayment {
+            if let statusData, !statusData.status.showConnectPayment {
                 hSection {
                     VStack(spacing: .padding16) {
-                        if statusData == .pending {
+                        if statusData.status == .pending {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
-                        hButton(
-                            .large,
-                            .secondary,
-                            content: .init(title: statusData.connectButtonTitle),
-                            {
-                                paymentNavigationVm.connectPaymentVm.set()
-                            }
-                        )
+                        if statusData.paymentChargeData == nil {
+                            hButton(
+                                .large,
+                                .secondary,
+                                content: .init(title: statusData.status.connectButtonTitle),
+                                {
+                                    paymentNavigationVm.connectPaymentVm.set()
+                                }
+                            )
+                        }
                     }
                 }
                 .sectionContainerStyle(.transparent)
