@@ -113,12 +113,30 @@ check_file() {
         fi
     fi
 
-    # Check 6: List or ForEach without proper accessibility grouping for complex items
-    if grep -n "ForEach.*{" "$file" > /dev/null 2>&1; then
-        if grep -q "HStack\|VStack" "$file"; then
-            if ! grep -q "accessibilityElement.*combine" "$file"; then
-                issues+=("💡 Complex list items may benefit from \`.accessibilityElement(children: .combine)\`")
-            fi
+    # Check 6: ForEach rows that look like complex, interactive items should consider accessibility grouping
+    # Heuristics:
+    # - Skip preview files (PreviewProvider)
+    # - Look locally around each ForEach block (next ~40 lines)
+    # - Only warn if the row contains layout stacks AND an interactive element
+    if grep -q "ForEach.*{" "$file"; then
+        # Skip previews
+        if ! grep -q "PreviewProvider" "$file"; then
+            local lines=$(grep -n "ForEach.*{" "$file" | cut -d: -f1)
+            for line_num in $lines; do
+                local end_line=$((line_num + 40))
+                local block=$(sed -n "${line_num},${end_line}p" "$file")
+
+                # Must look like a row layout
+                if echo "$block" | grep -q "HStack\|VStack"; then
+                    # Must be interactive to matter
+                    if echo "$block" | grep -q "Button\|\.onTapGesture\|NavigationLink"; then
+                        # If no combine nearby, suggest it
+                        if ! echo "$block" | grep -q "accessibilityElement([^)]*children:[[:space:]]*\.combine"; then
+                            issues+=("💡 Line $line_num: Complex ForEach row may benefit from \`.accessibilityElement(children: .combine)\`")
+                        fi
+                    fi
+                fi
+            done
         fi
     fi
 
