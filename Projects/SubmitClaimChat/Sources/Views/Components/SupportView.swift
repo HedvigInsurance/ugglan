@@ -28,6 +28,7 @@ struct SupportView: View {
                     }
                 )
             }
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.top, .padding32)
             .padding(.bottom, .padding56)
         }
