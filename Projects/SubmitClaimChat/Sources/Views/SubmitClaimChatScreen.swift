@@ -315,7 +315,13 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     var totalStepsHeight: CGFloat = 0
     @Published var lastStepContentHeight: CGFloat = 0
-    @Published var currentStepInputHeight: CGFloat = 0
+    @Published var currentStepInputHeight: CGFloat = 0 {
+        didSet {
+            if currentStepInputHeight != oldValue {
+                checkForScrollOffset()
+            }
+        }
+    }
     @Published var shouldMergeInputWithContent = false
 
     @Published var isInputScrolledOffScreen = false

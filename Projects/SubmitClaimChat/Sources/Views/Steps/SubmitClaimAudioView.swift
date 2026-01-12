@@ -289,42 +289,24 @@ extension AudioRecorder {
 struct SubmitClaimAudioResultView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @StateObject var audioPlayer: AudioPlayer = AudioPlayer(url: nil)
-    @State var expanded = false
+
     init(viewModel: SubmitClaimAudioStep) {
         self.viewModel = viewModel
     }
 
     var body: some View {
         VStack {
-            if !expanded {
+            if viewModel.inputType == .text {
                 HStack {
-                    hCoreUIAssets.checkmark.view
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(hSignalColor.Green.element)
-                    hText(viewModel.inputType?.title ?? "", style: .body1)
+                    hText(viewModel.textInput)
+                        .frame(alignment: .topLeading)
+                    Spacer()
                 }
                 .hPillStyle(color: .grey)
-                .hFieldSize(.capsuleShape)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
-            } else {
-                if viewModel.inputType == .text {
-                    HStack {
-                        hText(viewModel.textInput)
-                            .frame(alignment: .topLeading)
-                        Spacer()
-                    }
-                    .hPillStyle(color: .grey)
+            } else if viewModel.inputType == .audio, let url = viewModel.audioFileURL {
+                playRecordingButton(url: url)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
-                } else if viewModel.inputType == .audio, let url = viewModel.audioFileURL {
-                    playRecordingButton(url: url)
-                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
-                }
-            }
-        }
-        .onTapGesture {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                expanded.toggle()
             }
         }
     }
