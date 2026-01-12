@@ -5,7 +5,7 @@
 
 set -e
 
-CHANGED_FILES=$1
+CHANGED_FILES=${1:-}
 REPORT_FILE="accessibility-report.md"
 ISSUES_FOUND=0
 
@@ -25,6 +25,7 @@ NC='\033[0m' # No Color
 
 echo "🔍 Checking accessibility in changed Swift files..."
 
+# Function to check a single file
 check_file() {
     local file=$1
     local file_issues=0
@@ -49,13 +50,15 @@ check_file() {
 
     if grep -q "PreviewProvider" "$file"; then
         tmp_scan_file="$(mktemp)"
+        # Drop everything from the first line containing PreviewProvider to EOF
         awk 'BEGIN{skip=0} /PreviewProvider/{skip=1} !skip{print}' "$file" > "$tmp_scan_file"
         scan_file="$tmp_scan_file"
     fi
 
     # Check 1: onTapGesture without accessibility traits
     if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits" > /dev/null 2>&1; then
-        local lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
+        local lines
+        lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits"; then
@@ -65,22 +68,28 @@ check_file() {
         done
     fi
 
-    # Check 2: Icon-only Buttons
+    # Check 2: Icon-only Buttons (Image without Text/label)
     if grep -n "Button.*{" "$scan_file" > /dev/null 2>&1; then
-        local lines=$(grep -n "Button.*{" "$scan_file" | cut -d: -f1)
+        local lines
+        lines=$(grep -n "Button.*{" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 20))
-            local block=$(sed -n "${line_num},${end_line}p" "$scan_file")
+            local block
+            block=$(sed -n "${line_num},${end_line}p" "$scan_file")
 
-            local button_line=$(sed -n "${line_num}p" "$scan_file")
+            # Skip plain Button("Title") { ... }
+            local button_line
+            button_line=$(sed -n "${line_num}p" "$scan_file")
             if [[ "$button_line" =~ Button\([[:space:]]*\".*\"[[:space:]]*\) ]]; then
                 continue
             fi
 
+            # If there's already an accessibilityLabel nearby, OK
             if echo "$block" | grep -q "accessibilityLabel"; then
                 continue
             fi
 
+            # Warn only if Image is used but no Text is present
             if echo "$block" | grep -q "Image(" && ! echo "$block" | grep -q "Text("; then
                 issues+=("💡 Line $line_num: Icon-only \`Button\` should add \`.accessibilityLabel()\`")
                 ((file_issues++))
@@ -90,7 +99,8 @@ check_file() {
 
     # Check 3: Image without accessibility handling
     if grep -n "Image(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden" > /dev/null 2>&1; then
-        local lines=$(grep -n "Image(" "$scan_file" | cut -d: -f1)
+        local lines
+        lines=$(grep -n "Image(" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel\|accessibilityHidden"; then
@@ -107,9 +117,10 @@ check_file() {
         fi
     fi
 
-    # Check 5: Custom gestures without accessibilityAction
+    # Check 5: Custom gestures (LongPressGesture, DragGesture) without accessibility
     if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | grep -v "accessibilityAction" > /dev/null 2>&1; then
-        local lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
+        local lines
+        lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
         if [[ -n "$lines" ]]; then
             issues+=("⚠️  Lines $lines: Custom gestures should include \`.accessibilityAction()\`")
             ((file_issues++))
@@ -120,7 +131,8 @@ check_file() {
 
     # Check 7: Progress indicators without labels
     if grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | grep -v "accessibilityLabel\|accessibilityValue" > /dev/null 2>&1; then
-        local lines=$(grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | cut -d: -f1 | head -3 | tr '\n' ',' | sed 's/,$//')
+        local lines
+        lines=$(grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | cut -d: -f1 | head -3 | tr '\n' ',' | sed 's/,$//')
         if [[ -n "$lines" ]]; then
             issues+=("⚠️  Lines $lines: Progress indicators need \`.accessibilityLabel()\` and \`.accessibilityValue()\`")
             ((file_issues++))
@@ -129,7 +141,8 @@ check_file() {
 
     # Check 8: Toggle/Picker without accessibility labels
     if grep -n "Toggle(\|Picker(" "$scan_file" | grep -v "accessibilityLabel" > /dev/null 2>&1; then
-        local lines=$(grep -n "Toggle(\|Picker(" "$scan_file" | cut -d: -f1)
+        local lines
+        lines=$(grep -n "Toggle(\|Picker(" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel"; then
@@ -138,11 +151,12 @@ check_file() {
         done
     fi
 
-    # Cleanup
+    # Cleanup temp scan file if created
     if [[ -n "$tmp_scan_file" ]] && [[ -f "$tmp_scan_file" ]]; then
         rm -f "$tmp_scan_file"
     fi
 
+    # Report issues for this file
     if [[ ${#issues[@]} -gt 0 ]]; then
         echo >> "$REPORT_FILE"
         echo "### 📄 \`$file\`" >> "$REPORT_FILE"
@@ -156,9 +170,66 @@ check_file() {
     return $file_issues
 }
 
-if [[ -z "$CHANGED_FILES" ]]; then
-    echo "No files to check"
+# Check all changed files
+if [[ -z "${CHANGED_FILES// }" ]]; then
+    cat >> "$REPORT_FILE" << EOF
+
+---
+
+### ✅ Nothing to Check
+
+No Swift files were detected in this PR (based on the changed-files output), so the accessibility scan did not run.
+
+---
+*Generated by Accessibility Check Workflow*
+EOF
+    echo -e "${GREEN}✅ No Swift files to check.${NC}"
+    cat "$REPORT_FILE"
     exit 0
 fi
 
 for file in $CHANGED_FILES; do
+    check_file "$file" || true
+done
+
+# Add summary to report
+if [[ $ISSUES_FOUND -gt 0 ]]; then
+    cat >> "$REPORT_FILE" << EOF
+
+---
+
+### 📋 Summary
+
+Found **$ISSUES_FOUND potential accessibility issues** in the changed files.
+
+#### ✅ Best Practices Checklist:
+
+- [ ] Interactive elements have \`.accessibilityLabel()\`
+- [ ] Tappable views have \`.accessibilityAddTraits(.isButton)\`
+- [ ] Images have \`.accessibilityLabel()\` or \`.accessibilityHidden(true)\`
+- [ ] Custom gestures use \`.accessibilityAction()\`
+- [ ] Progress indicators have labels and values
+- [ ] Dropdowns and pickers have \`.accessibilityHint()\`
+
+---
+*Generated by Accessibility Check Workflow*
+EOF
+    echo -e "${YELLOW}⚠️  Found $ISSUES_FOUND potential accessibility issues${NC}"
+    cat "$REPORT_FILE"
+    exit 1
+else
+    cat >> "$REPORT_FILE" << EOF
+
+---
+
+### ✅ No Issues Found
+
+All checked files appear to follow accessibility best practices!
+
+---
+*Generated by Accessibility Check Workflow*
+EOF
+    echo -e "${GREEN}✅ No accessibility issues found!${NC}"
+    cat "$REPORT_FILE"
+    exit 0
+fi
