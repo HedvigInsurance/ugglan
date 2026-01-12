@@ -27,7 +27,7 @@ struct SubmitClaimChatMesageView: View {
 
             HStack {
                 spacing(viewModel.sender == .member)
-                VStack(alignment: .trailing, spacing: .padding4) {
+                VStack(alignment: .trailing, spacing: .padding6) {
                     ClaimStepResultView(viewModel: viewModel)
                         .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
                 }
@@ -42,7 +42,7 @@ struct SubmitClaimChatMesageView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 spacing(viewModel.sender == .hedvig)
             }
-            .padding(.top, .padding4)
+            .padding(.top, .padding16)
             .id("result_\(viewModel.id)")
         }
     }
@@ -138,11 +138,17 @@ struct ClaimStepResultView: View {
             }
         }
         if viewModel.isRegrettable && viewModel.state.isStepExecuted {
-            hButton(.small, .ghost, content: .init(title: L10n.General.edit)) { [weak viewModel] in
+            hPill(
+                text: L10n.General.edit,
+                color: .grey
+            )
+            .onTapGesture { [weak viewModel] in
                 Task {
                     await viewModel?.regret()
                 }
             }
+            .hFieldSize(.capsuleShape)
+            .hPillAttributes(attributes: [.withChevron])
         }
     }
 }

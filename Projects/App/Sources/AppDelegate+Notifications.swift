@@ -55,10 +55,10 @@ extension AppDelegate {
 
 extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
     @MainActor
-    fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
+    fileprivate func performPushAction(notificationType: PushNotificationType?, userInfo: [AnyHashable: Any]) {
         NotificationCenter.default.post(
             name: .handlePushNotification,
-            object: PushNotificationType(rawValue: notificationType.uppercased()),
+            object: notificationType,
             userInfo: userInfo
         )
     }
@@ -69,7 +69,7 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        guard let notificationType = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) else { return }
+        guard let notificationType = getNotificationType(from: userInfo) else { return }
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             Task {
@@ -80,22 +80,34 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         completionHandler()
     }
 
+    private func getNotificationType(from userInfo: [AnyHashable: Any]) -> PushNotificationType? {
+        if let type = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) {
+            return PushNotificationType(rawValue: type.uppercased())
+        }
+        return nil
+    }
+
     func userNotificationCenter(
         _: UNUserNotificationCenter,
-        willPresent _: UNNotification
+        willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
         let shouldShowNotification: Bool = {
-            if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
-                let listToCheck: [String] = [
-                    String(describing: HomeScreen.self),
-                    .init(describing: ClaimDetailView.self),
-                    .init(describing: InboxView.self),
-                    .init(describing: ChatScreen.self),
-                ]
-                let shouldShow = !listToCheck.contains(where: { $0 == topPresentedVCDescription })
-                return shouldShow
+            guard let notificationType = getNotificationType(from: notification.request.content.userInfo) else {
+                return true
             }
-            return true
+            guard let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription else {
+                return true
+            }
+
+            if notificationType != .NEW_MESSAGE { return true }
+            let listToCheck: [String] = [
+                String(describing: HomeScreen.self),
+                .init(describing: ClaimDetailView.self),
+                .init(describing: InboxView.self),
+                .init(describing: ChatScreen.self),
+            ]
+            let shouldShow = !listToCheck.contains(where: { $0 == topPresentedVCDescription })
+            return shouldShow
         }()
 
         return shouldShowNotification ? [.badge, .banner, .sound] : []

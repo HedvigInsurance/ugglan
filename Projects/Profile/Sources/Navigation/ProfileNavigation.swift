@@ -9,6 +9,7 @@ import hCoreUI
 @MainActor
 public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isDeleteAccountPresented: MemberDetails?
+    @Published var isDeleteAccountRequestedPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
     @Published public var isLanguagePickerPresented = false
     @Published public var isConfirmEmailPreferencesPresented = false
@@ -90,7 +91,6 @@ public struct ProfileNavigation<Content: View>: View {
         .environmentObject(profileNavigationViewModel)
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
-
             options: .constant(.withoutGrabber)
         ) { memberDetails in
             redirect(
@@ -113,10 +113,17 @@ public struct ProfileNavigation<Content: View>: View {
         )
         .modally(
             presented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented,
-            tracking: ProfileRedirectType.deleteRequestLoading
+            tracking: ProfileRedirectType.deleteRequestLoading(state: .success)
         ) {
-            redirect(.deleteRequestLoading)
+            redirect(.deleteRequestLoading(state: .success))
         }
+        .modally(
+            item: $profileNavigationViewModel.isDeleteAccountRequestedPresented,
+            tracking: ProfileRedirectType.deleteRequestLoading(state: .success),
+            content: { item in
+                redirect(.deleteRequestLoading(state: .tryToDelete(with: item)))
+            }
+        )
         .modally(presented: $profileNavigationViewModel.isCreateInsuranceEvidencePresented) {
             InsuranceEvidenceNavigation()
         }
@@ -207,7 +214,7 @@ extension ProfileRouterTypeWithHiddenBottomBar: TrackingViewNameProtocol {
 
 public enum ProfileRedirectType: Hashable {
     case deleteAccount(memberDetails: MemberDetails)
-    case deleteRequestLoading
+    case deleteRequestLoading(state: DeleteRequestLoadingView.ScreenState)
     case pickLanguage
     case travelCertificate
 }
