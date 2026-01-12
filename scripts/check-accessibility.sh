@@ -125,26 +125,47 @@ check_file() {
         fi
     fi
 
-    # Check 6: ForEach rows that look like complex, interactive items should consider accessibility grouping
-    # (Previews are already stripped from scan_file above.)
+    # Check 6: Suggest .accessibilityElement(children: .combine) only for complex, interactive ForEach rows
+    # Heuristics (to reduce false positives):
+    # - Look locally around each ForEach block (next ~80 lines)
+    # - Require an interactive element in that block (Button/onTapGesture/NavigationLink)
+    # - Require "complex" content: >= 2 Text(...) OR (Text(...) + Image(...)) in the same block
+    # - Skip if the block already uses accessibilityElement(children: .combine) or has an opt-out comment:
+    #     // a11y:ignore-combine
     if grep -q "ForEach.*{" "$scan_file"; then
         local lines=$(grep -n "ForEach.*{" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
-            local end_line=$((line_num + 40))
-            local block=$(sed -n "${line_num},${end_line}p" "$scan_file")
+            local end_line=$((line_num + 80))
+            local block
+            block=$(sed -n "${line_num},${end_line}p" "$scan_file")
 
-            # Must look like a row layout
-            if echo "$block" | grep -q "HStack\|VStack"; then
-                # Must be interactive to matter
-                if echo "$block" | grep -q "Button\|\.onTapGesture\|NavigationLink"; then
-                    # If no combine nearby, suggest it
-                    if ! echo "$block" | grep -q "accessibilityElement([^)]*children:[[:space:]]*\.combine"; then
-                        issues+=("💡 Line $line_num: Complex ForEach row may benefit from \`.accessibilityElement(children: .combine)\`")
-                    fi
-                fi
+            # Allow explicit opt-out near the ForEach
+            if echo "$block" | grep -q "a11y:ignore-combine"; then
+                continue
+            fi
+
+            # Already combined/grouped? then skip
+            if echo "$block" | grep -q "accessibilityElement([^)]*children:[[:space:]]*\.combine"; then
+                continue
+            fi
+
+            # Must be interactive to matter
+            if ! echo "$block" | grep -q "Button\|\.onTapGesture\|NavigationLink"; then
+                continue
+            fi
+
+            # Determine "complexity"
+            local text_count image_count
+            text_count=$(echo "$block" | grep -o "Text(" | wc -l | tr -d ' ')
+            image_count=$(echo "$block" | grep -o "Image(" | wc -l | tr -d ' ')
+
+            # Complex if: 2+ Text, OR at least 1 Text and 1 Image
+            if [[ "$text_count" -ge 2 ]] || ([[ "$text_count" -ge 1 ]] && [[ "$image_count" -ge 1 ]]); then
+                issues+=("💡 Line $line_num: Complex list items may benefit from \`.accessibilityElement(children: .combine)\`")
             fi
         done
     fi
+
 
     # Check 7: Progress indicators without labels
     if grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | grep -v "accessibilityLabel\|accessibilityValue" > /dev/null 2>&1; then
