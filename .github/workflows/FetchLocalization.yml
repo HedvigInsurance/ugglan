@@ -1,0 +1,26 @@
+name: FetchLocalization
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  fetch-localization:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch translations
+        run: scripts/translations.sh
+        env:
+          LOKALIZE_TOKEN: ${{ secrets.LOKALIZE_TOKEN }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: "Update localizations"
+          title: "Update localizations"
+          body: "This PR was created automatically to update localizations from Lokalise."
+          branch: "update-localizations"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
