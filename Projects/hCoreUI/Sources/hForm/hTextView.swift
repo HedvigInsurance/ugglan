@@ -10,7 +10,7 @@ public struct hTextView: View {
     @State private var height: CGFloat = 100
     @State private var width: CGFloat = 0
     @Environment(\.hTextFieldError) var errorMessage
-    @State private var value: String
+    @State private var value: String = ""
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
     private let onContinue: (_ text: String) -> Void
@@ -30,7 +30,6 @@ public struct hTextView: View {
         onContinue: @escaping (_ text: String) -> Void = { _ in }
     ) {
         self.selectedValue = selectedValue
-        self.value = selectedValue
         self.placeholder = placeholder
         self.popupPlaceholder = popupPlaceholder
         self.onContinue = onContinue
@@ -55,6 +54,7 @@ public struct hTextView: View {
                             inEdit: .constant(false),
                             onBeginEditing: {
                                 if enabled {
+                                    ImpactGenerator.soft()
                                     showFreeTextField()
                                 }
                             },
@@ -66,7 +66,7 @@ public struct hTextView: View {
                         if enabled {
                             HStack(spacing: .padding4) {
                                 Spacer()
-                                hText("\(value.count)/\(maxCharacters)", style: .label)
+                                hText("\(selectedValue.count)/\(maxCharacters)", style: .label)
                                     .foregroundColor(hTextColor.Opaque.tertiary)
                             }
                             .fixedSize()
@@ -121,36 +121,23 @@ public struct hTextView: View {
         .hTextFieldError(errorMessage)
 
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
-        vc.modalPresentationStyle = .overFullScreen
+        let backgroundColor = UIColor(
+            light: hGrayscaleOpaqueColor.white.colorFor(.light, .base).color.uiColor(),
+            dark: hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+        )
+        let transitioningDelegate = AnimatedBackgroundTransitioningDelegate(
+            backgroundColor: backgroundColor
+        )
+        transitioningDelegate.apply(to: vc)
         vc.view.backgroundColor = .clear
+
         continueAction.execute = { [weak vc] in
             selectedValue = value
-            value = value
             onContinue(value)
-            UIView.animate(withDuration: 0.1) {
-                vc?.view.backgroundColor = .clear
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                vc?.dismiss(animated: true)
-            }
-        }
-        Task { [weak vc] in
-            let color = UIColor(
-                light: hGrayscaleOpaqueColor.white.colorFor(.light, .base).color.uiColor(),
-                dark: hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
-            )
-            try await Task.sleep(seconds: 0.3)
-            UIView.animate(withDuration: 0.2) {
-                vc?.view.backgroundColor = color
-            }
+            vc?.dismiss(animated: true)
         }
         cancelAction.execute = { [weak vc] in
-            UIView.animate(withDuration: 0.1) {
-                vc?.view.backgroundColor = .clear
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                vc?.dismiss(animated: true)
-            }
+            vc?.dismiss(animated: true)
         }
         let topVC = UIApplication.shared.getTopViewController()
         if let topVC {

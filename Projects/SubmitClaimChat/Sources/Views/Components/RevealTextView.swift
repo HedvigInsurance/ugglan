@@ -5,7 +5,9 @@ import hCoreUI
 struct RevealTextView: View {
     let text: String
     @State private var visibleCharacters: [Int: Double] = [:]
-    @State private var showDot = true
+    @State private var showDot = false
+    @State private var animationCompleted = false
+
     let delay: Float
     private var onTextAnimationDone: (() -> Void)
     init(
@@ -26,10 +28,15 @@ struct RevealTextView: View {
                 hText(text, style: .heading1)
                     .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
                     .onAppear {
-                        animateText()
+                        if !animationCompleted {
+                            animateText()
+                        }
                     }
             } else {
                 hText(text)
+                    .onAppear {
+                        onTextAnimationDone()
+                    }
             }
         }
         .animation(.easeIn(duration: 0.1), value: showDot)
@@ -72,6 +79,7 @@ struct RevealTextView: View {
                 }
             }
             onTextAnimationDone()
+            animationCompleted = true
         }
     }
 

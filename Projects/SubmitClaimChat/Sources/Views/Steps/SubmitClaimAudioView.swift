@@ -289,23 +289,20 @@ extension AudioRecorder {
 struct SubmitClaimAudioResultView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @StateObject var audioPlayer: AudioPlayer = AudioPlayer(url: nil)
-    @State var expanded = false
+
     init(viewModel: SubmitClaimAudioStep) {
         self.viewModel = viewModel
     }
 
     var body: some View {
         VStack {
-            if !expanded {
+            if viewModel.inputType == .text {
                 HStack {
-                    hCoreUIAssets.checkmark.view
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(hSignalColor.Green.element)
-                    hText(viewModel.inputType?.title ?? "", style: .body1)
+                    hText(viewModel.textInput)
+                        .frame(alignment: .topLeading)
+                    Spacer()
                 }
                 .hPillStyle(color: .grey)
-                .hFieldSize(.capsuleShape)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(viewModel.inputType?.title ?? "")
@@ -326,13 +323,7 @@ struct SubmitClaimAudioResultView: View {
                 }
             }
         }
-        .onTapGesture {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                expanded.toggle()
-            }
-        }
         .accessibilityAddTraits(.isButton)
-        .accessibilityHint(expanded ? L10n.voiceoverCollapsed : L10n.voiceoverExpanded)
     }
 
     private func playRecordingButton(url: URL) -> some View {

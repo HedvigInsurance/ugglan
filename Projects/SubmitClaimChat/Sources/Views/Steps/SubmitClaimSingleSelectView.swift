@@ -23,6 +23,7 @@ struct SubmitClaimSingleSelectView: View {
                         )
                     )
                     .onTapGesture {
+                        ImpactGenerator.soft()
                         viewModel.selectedOption = tag
                         viewModel.submitResponse()
                     }
