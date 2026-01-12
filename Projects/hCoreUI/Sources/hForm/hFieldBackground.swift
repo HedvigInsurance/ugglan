@@ -181,7 +181,7 @@ struct hFieldLabel: View {
 
     private var font: HFontTextStyle {
         switch size {
-        case .small, .medium, .capsuleShape, .button:
+        case .small, .medium, .capsuleShape:
             return .body1
         case .large, .extraLarge:
             return .body2

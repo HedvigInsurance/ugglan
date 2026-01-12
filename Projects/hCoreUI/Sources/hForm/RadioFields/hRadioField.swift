@@ -204,8 +204,6 @@ extension hFieldSize {
             return 19
         case .capsuleShape:
             return 19
-        case .button:
-            return 13
         }
     }
 
@@ -219,8 +217,6 @@ extension hFieldSize {
             return 11.5
         case .capsuleShape:
             return 11.5
-        case .button:
-            return 13
         }
     }
 
@@ -238,8 +234,6 @@ extension hFieldSize {
             return 12.5
         case .capsuleShape:
             return 12.5
-        case .button:
-            return 13
         }
     }
 }

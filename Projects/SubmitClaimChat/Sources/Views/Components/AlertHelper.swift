@@ -91,20 +91,41 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
     @ObservedObject var viewModel: SubmitClaimChatScreenAlertViewModel
 
     func body(content: Content) -> some View {
-        content
-            .detent(
-                presented: $viewModel.alertPresented,
-                transitionType: .center
-            ) {
-                if let alertModel = viewModel.alertModel {
-                    switch alertModel.type {
-                    case .edit:
-                        editAlert(model: alertModel)
-                    case .error:
+
+        switch viewModel.alertModel?.type {
+        case .edit:
+            content
+                .alert(isPresented: $viewModel.alertPresented) {
+                    Alert(
+                        title: Text(viewModel.alertModel?.title ?? "").font(.system(size: 17, weight: .semibold)),
+                        message: Text(viewModel.alertModel?.message ?? "").font(.system(size: 17, weight: .regular)),
+                        primaryButton: .destructive(
+                            Text(L10n.claimChatEditAnswerButton).font(.system(size: 17, weight: .medium)),
+                            action: {
+                                viewModel.alertModel?.action()
+                            }
+                        ),
+                        secondaryButton: .default(
+                            Text(L10n.embarkGoBackButton).font(.system(size: 17, weight: .medium)),
+                            action: {
+                                viewModel.alertModel?.action()
+                            }
+                        )
+                    )
+                }
+        case .error:
+            content
+                .detent(
+                    presented: $viewModel.alertPresented,
+                    transitionType: .center
+                ) {
+                    if let alertModel = viewModel.alertModel {
                         errorAlert(model: alertModel)
                     }
                 }
-            }
+        case .none:
+            content
+        }
     }
 
     private func errorAlert(model: SubmitClaimChatScreenAlertViewModel.AlertModel) -> some View {
@@ -131,46 +152,6 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                     viewModel.handleTryAgain()
                 }
             }
-        }
-        .hFormContentPosition(.center)
-        .sectionContainerStyle(.transparent)
-    }
-
-    private func editAlert(model: SubmitClaimChatScreenAlertViewModel.AlertModel) -> some View {
-        hForm {
-            hSection {
-                VStack(alignment: .leading, spacing: .padding10) {
-                    Text(model.title)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .font(.system(size: 17, weight: .semibold))
-                    Text(model.message)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .font(.system(size: 17, weight: .regular))
-                        .padding(.bottom, .padding24)
-
-                    Text(L10n.claimChatEditAnswerButton)
-                        .foregroundColor(hSignalColor.Red.element)
-                        .font(.system(size: 17, weight: .medium))
-                        .frame(maxWidth: .infinity)
-                        .hPillStyle(color: .grey, colorLevel: .two)
-                        .hFieldSize(.button)
-                        .onTapGesture {
-                            model.action()
-                        }
-
-                    Text(L10n.embarkGoBackButton)
-                        .frame(maxWidth: .infinity)
-                        .font(.system(size: 17, weight: .medium))
-                        .hPillStyle(color: .grey)
-                        .hFieldSize(.button)
-                        .onTapGesture {
-                            model.onClose()
-                        }
-                }
-            }
-            .padding(.vertical, .padding14)
-            .padding(.top, .padding8)
-            .accessibilityElement(children: .combine)
         }
         .hFormContentPosition(.center)
         .sectionContainerStyle(.transparent)

@@ -187,8 +187,6 @@ extension hFieldSize {
             return 15
         case .capsuleShape:
             return 15
-        case .button:
-            return 15
         }
     }
 

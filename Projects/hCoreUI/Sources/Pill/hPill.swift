@@ -89,8 +89,6 @@ fileprivate struct PillModifier: ViewModifier {
             return .padding12
         case .capsuleShape:
             return .padding14
-        case .button:
-            return .padding14
         }
     }
 
@@ -102,8 +100,6 @@ fileprivate struct PillModifier: ViewModifier {
             return 6.5
         case .large, .capsuleShape, .extraLarge:
             return 7
-        case .button:
-            return 13
         }
     }
 
@@ -115,8 +111,6 @@ fileprivate struct PillModifier: ViewModifier {
             return 7.5
         case .large, .capsuleShape, .extraLarge:
             return 9
-        case .button:
-            return 13
         }
     }
 
@@ -128,7 +122,7 @@ fileprivate struct PillModifier: ViewModifier {
             return .cornerRadiusS
         case .large:
             return .cornerRadiusM
-        case .capsuleShape, .button:
+        case .capsuleShape:
             return 100
         case .extraLarge:
             return .cornerRadiusXL
