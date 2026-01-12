@@ -54,6 +54,7 @@ public struct hTextView: View {
                             inEdit: .constant(false),
                             onBeginEditing: {
                                 if enabled {
+                                    ImpactGenerator.soft()
                                     showFreeTextField()
                                 }
                             },
