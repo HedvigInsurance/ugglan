@@ -25,8 +25,4 @@ curl -o $TMPDIR/swiftgen.zip -L https://github.com/SwiftGen/SwiftGen/releases/do
 
 unzip $TMPDIR/swiftgen.zip -d $TMPDIR
 
-if [ -n "$1" ]; then
-    $TMPDIR/bin/swiftgen config $1.yml
-else
-    $TMPDIR/bin/swiftgen
-fi
+$TMPDIR/bin/swiftgen
