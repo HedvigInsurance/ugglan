@@ -4,16 +4,19 @@ public struct hPill: View {
     public init(
         text: String,
         color: PillColor,
-        colorLevel: PillColor.PillColorLevel? = .one
+        colorLevel: PillColor.PillColorLevel? = .one,
+        withBorder: Bool = true
     ) {
         self.text = text
         self.color = color
         self.colorLevel = colorLevel ?? .one
+        self.withBorder = withBorder
     }
 
     public let text: String
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
+    let withBorder: Bool
     @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
     @Environment(\.hPillAttributes) var attributes
@@ -29,7 +32,8 @@ public struct hPill: View {
                     .foregroundColor(hFillColor.Translucent.tertiary)
             }
         }
-        .modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: true))
+        .modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder))
+        .accessibilityElement(children: .combine)
     }
 
     private var getFontStyle: HFontTextStyle {
@@ -58,29 +62,21 @@ fileprivate struct PillModifier: ViewModifier {
     let withBorder: Bool
     @Environment(\.hFieldSize) var fieldSize
     func body(content: Content) -> some View {
-        if withBorder {
-            content
-                .padding(.horizontal, getHorizontalPadding)
-                .padding(.top, getTopPadding)
-                .padding(.bottom, getBottomPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
-                        .fill(color.pillBackgroundColor(level: colorLevel))
-                )
-                .overlay(
+        content
+            .padding(.horizontal, getHorizontalPadding)
+            .padding(.top, getTopPadding)
+            .padding(.bottom, getBottomPadding)
+            .background(
+                RoundedRectangle(cornerRadius: getCornerRadius)
+                    .fill(color.pillBackgroundColor(level: colorLevel))
+            )
+            .overlay {
+                if withBorder {
                     RoundedRectangle(cornerRadius: getCornerRadius)
                         .stroke(hBorderColor.primary, lineWidth: 1)
-                )
-        } else {
-            content
-                .padding(.horizontal, getHorizontalPadding)
-                .padding(.top, getTopPadding)
-                .padding(.bottom, getBottomPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
-                        .fill(color.pillBackgroundColor(level: colorLevel))
-                )
-        }
+                }
+            }
+            .accessibilityElement(children: .combine)
     }
 
     private var getHorizontalPadding: CGFloat {

@@ -104,6 +104,8 @@ struct ClaimStepView: View {
                     }
                 }
                 .hButtonIsLoading(false)
+                .accessibilityLabel(L10n.claimChatSkipStep)
+                .accessibilityHint(L10n.generalContinueButton)
             }
         }
         .disabled(!viewModel.state.isEnabled)
@@ -118,8 +120,9 @@ struct ClaimStepResultView: View {
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
-            hPill(text: L10n.claimChatSkippedLabel, color: .grey)
+            hPill(text: L10n.claimChatSkippedLabel, color: .grey, colorLevel: .two, withBorder: false)
                 .hFieldSize(.capsuleShape)
+                .accessibilityLabel(L10n.claimChatSkippedLabel)
         } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
                 SubmitClaimAudioResultView(viewModel: viewModel)
@@ -140,7 +143,9 @@ struct ClaimStepResultView: View {
         if viewModel.isRegrettable && viewModel.state.isStepExecuted {
             hPill(
                 text: L10n.General.edit,
-                color: .grey
+                color: .grey,
+                colorLevel: .two,
+                withBorder: false
             )
             .onTapGesture { [weak viewModel] in
                 Task {
@@ -149,6 +154,9 @@ struct ClaimStepResultView: View {
             }
             .hFieldSize(.capsuleShape)
             .hPillAttributes(attributes: [.withChevron])
+            .accessibilityLabel(L10n.General.edit)
+            .accessibilityHint(L10n.voiceoverEdit)
+            .accessibilityAddTraits(.isButton)
         }
     }
 }

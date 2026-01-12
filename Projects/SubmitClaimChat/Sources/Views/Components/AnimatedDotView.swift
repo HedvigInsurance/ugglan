@@ -15,5 +15,6 @@ struct AnimatedDotView: View {
                 show.toggle()
             }
             .transition(.opacity)
+            .accessibilityHidden(true)
     }
 }

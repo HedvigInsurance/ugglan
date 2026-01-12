@@ -10,9 +10,12 @@ struct SubmitClaimSingleSelectView: View {
         hSection {
             TagList(tags: viewModel.model.options.compactMap({ $0.id })) { tag in
                 if showPills {
+                    let optionTitle = viewModel.model.options.first(where: { $0.id == tag })?.title ?? ""
                     hPill(
-                        text: viewModel.model.options.first(where: { $0.id == tag })?.title ?? "",
-                        color: .grey
+                        text: optionTitle,
+                        color: .grey,
+                        colorLevel: .two,
+                        withBorder: false
                     )
                     .hFieldSize(.capsuleShape)
                     .transition(
@@ -26,6 +29,9 @@ struct SubmitClaimSingleSelectView: View {
                         viewModel.selectedOption = tag
                         viewModel.submitResponse()
                     }
+                    .accessibilityLabel(optionTitle)
+                    .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverOptionSelected)
+                    .accessibilityAddTraits(.isButton)
                 }
             }
         }
@@ -44,9 +50,12 @@ struct SubmitClaimSingleSelectResultView: View {
         {
             hPill(
                 text: text,
-                color: .grey
+                color: .grey,
+                colorLevel: .two,
+                withBorder: false
             )
             .hFieldSize(.capsuleShape)
+            .accessibilityLabel(text)
         }
     }
 }
