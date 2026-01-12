@@ -18,4 +18,4 @@ mv ./bin/lokalise2 /tmp/lokalise2
 
 runLokalise
 
-scripts/swiftgen.sh "swiftgenLocalization"
+scripts/swiftgen.sh
