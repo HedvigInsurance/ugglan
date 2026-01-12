@@ -59,18 +59,28 @@ check_file() {
         fi
     fi
 
-    # Check 2: Button without explicit accessibility label when using custom content
-    if grep -n "Button.*{" "$file" | grep -v "accessibilityLabel" > /dev/null 2>&1; then
+    # Check 2: Warn only for "icon-only" Buttons (Image without Text/label)
+    if grep -n "Button.*{" "$file" > /dev/null 2>&1; then
         local lines=$(grep -n "Button.*{" "$file" | cut -d: -f1)
         for line_num in $lines; do
-            # Check if it's a standard button with simple text (which is OK)
+            local end_line=$((line_num + 20))
+            local block=$(sed -n "${line_num},${end_line}p" "$file")
+
+            # Skip plain Button("Title") { ... }
             local button_line=$(sed -n "${line_num}p" "$file")
-            if [[ ! "$button_line" =~ Button\([[:space:]]*\".*\"[[:space:]]*\) ]]; then
-                # Custom button content - check for accessibility label nearby
-                local end_line=$((line_num + 10))
-                if ! sed -n "${line_num},${end_line}p" "$file" | grep -q "accessibilityLabel"; then
-                    issues+=("💡 Line $line_num: Custom \`Button\` may need explicit \`.accessibilityLabel()\`")
-                fi
+            if [[ "$button_line" =~ Button\([[:space:]]*\".*\"[[:space:]]*\) ]]; then
+                continue
+            fi
+
+            # If there's already an accessibilityLabel nearby, OK
+            if echo "$block" | grep -q "accessibilityLabel"; then
+                continue
+            fi
+
+            # Warn only if Image is used but no Text is present (likely icon-only button)
+            if echo "$block" | grep -q "Image(" && ! echo "$block" | grep -q "Text("; then
+                issues+=("💡 Line $line_num: Icon-only \`Button\` should add \`.accessibilityLabel()\` (or include a \`Text\` label)")
+                ((file_issues++))
             fi
         done
     fi
