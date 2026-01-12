@@ -9,6 +9,7 @@ function runLokalise() {
 if [[ -f $TMPDIR/lokalise2 ]]
 then
     runLokalise
+    scripts/swiftgen.sh
     exit 0
 fi
 
@@ -17,5 +18,3 @@ curl -sfL https://raw.githubusercontent.com/lokalise/lokalise-cli-2-go/master/in
 mv ./bin/lokalise2 /tmp/lokalise2
 
 runLokalise
-
-scripts/swiftgen.sh
