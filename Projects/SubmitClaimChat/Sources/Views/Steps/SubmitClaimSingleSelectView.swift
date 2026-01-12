@@ -1,5 +1,6 @@
 import SwiftUI
 import TagKit
+import hCore
 import hCoreUI
 
 struct SubmitClaimSingleSelectView: View {
@@ -21,6 +22,7 @@ struct SubmitClaimSingleSelectView: View {
                         )
                     )
                     .onTapGesture {
+                        ImpactGenerator.soft()
                         viewModel.selectedOption = tag
                         viewModel.submitResponse()
                     }

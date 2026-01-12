@@ -54,6 +54,7 @@ public struct hTextView: View {
                             inEdit: .constant(false),
                             onBeginEditing: {
                                 if enabled {
+                                    ImpactGenerator.soft()
                                     showFreeTextField()
                                 }
                             },
@@ -120,35 +121,23 @@ public struct hTextView: View {
         .hTextFieldError(errorMessage)
 
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
-        vc.modalPresentationStyle = .overFullScreen
+        let backgroundColor = UIColor(
+            light: hGrayscaleOpaqueColor.white.colorFor(.light, .base).color.uiColor(),
+            dark: hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
+        )
+        let transitioningDelegate = AnimatedBackgroundTransitioningDelegate(
+            backgroundColor: backgroundColor
+        )
+        transitioningDelegate.apply(to: vc)
         vc.view.backgroundColor = .clear
+
         continueAction.execute = { [weak vc] in
             selectedValue = value
             onContinue(value)
-            UIView.animate(withDuration: 0.1) {
-                vc?.view.backgroundColor = .clear
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                vc?.dismiss(animated: true)
-            }
-        }
-        Task { [weak vc] in
-            let color = UIColor(
-                light: hGrayscaleOpaqueColor.white.colorFor(.light, .base).color.uiColor(),
-                dark: hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
-            )
-            try await Task.sleep(seconds: 0.3)
-            UIView.animate(withDuration: 0.2) {
-                vc?.view.backgroundColor = color
-            }
+            vc?.dismiss(animated: true)
         }
         cancelAction.execute = { [weak vc] in
-            UIView.animate(withDuration: 0.1) {
-                vc?.view.backgroundColor = .clear
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                vc?.dismiss(animated: true)
-            }
+            vc?.dismiss(animated: true)
         }
         let topVC = UIApplication.shared.getTopViewController()
         if let topVC {
