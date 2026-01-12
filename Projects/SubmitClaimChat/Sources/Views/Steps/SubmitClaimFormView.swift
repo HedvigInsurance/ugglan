@@ -102,7 +102,7 @@ struct FormFieldView: View {
             masking: .init(type: .digits),
             value: $fieldViewModel.value,
             equals: .constant(nil),
-            focusValue: SubmitClaimChatFieldType.purchasePrice,
+            focusValue: false,
             placeholder: field.title,
             suffix: field.suffix,
             error: $fieldViewModel.error
@@ -114,7 +114,7 @@ struct FormFieldView: View {
             masking: .init(type: .none),
             value: $fieldViewModel.value,
             equals: .constant(nil),
-            focusValue: SubmitClaimChatFieldType.purchasePrice,
+            focusValue: false,
             placeholder: field.title,
             suffix: field.suffix,
             error: $fieldViewModel.error
@@ -126,7 +126,7 @@ struct FormFieldView: View {
             masking: .init(type: .phoneNumber),
             value: $fieldViewModel.value,
             equals: .constant(nil),
-            focusValue: SubmitClaimChatFieldType.purchasePrice,
+            focusValue: false,
             placeholder: field.title,
             suffix: field.suffix,
             error: $fieldViewModel.error
@@ -218,21 +218,6 @@ struct FormFieldView: View {
             }
         }
     }
-}
-
-enum SubmitClaimChatFieldType: hTextFieldFocusStateCompliant {
-    static var last: SubmitClaimChatFieldType {
-        SubmitClaimChatFieldType.purchasePrice
-    }
-
-    var next: SubmitClaimChatFieldType? {
-        switch self {
-        case .purchasePrice:
-            return nil
-        }
-    }
-
-    case purchasePrice
 }
 
 struct SubmitClaimFormResultView: View {
