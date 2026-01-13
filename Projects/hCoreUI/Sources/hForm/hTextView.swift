@@ -238,8 +238,10 @@ private struct FreeTextInputView: View {
                             )
                         }
                     }
-                    .padding(.bottom, -.padding8)
-                    .sectionContainerStyle(.transparent)
+                    hRowDivider()
+                        .padding(.vertical, .padding10)
+                        .padding(.top, -.padding8)
+                        .sectionContainerStyle(.transparent)
                     hSection {
                         SwiftUITextView(
                             placeholder: placeholder,
