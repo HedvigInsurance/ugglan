@@ -196,9 +196,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_TEXT_INSTEAD" = "Beskriv i text";
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Röstinspelning";
-"CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Redigera svar";
+"CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Ändra svar";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Om du ändrar det här svaret kommer allt du fyllt i efter det att rensas. Du behöver gå igenom de stegen igen.";
-"CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att återställas";
+"CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer rensas";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Dubbelkolla att du fyllt i alla obligatoriska fält";
 "CLAIM_CHAT_FILE_TITLE" = "Uppladdade filer";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Ladda upp filer";
