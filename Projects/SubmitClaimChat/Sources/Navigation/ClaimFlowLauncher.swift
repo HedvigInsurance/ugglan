@@ -22,7 +22,10 @@ struct ClaimFlowLauncher: ViewModifier {
                         submitClaimInput = startInput
                         startInput = nil
                     }
-                    .embededInNavigation(tracking: self)
+                    .embededInNavigation(
+                        options: .navigationBarHidden,
+                        tracking: self
+                    )
                 }
             )
             .modally(

@@ -28,6 +28,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .padding(.top, .padding32)
         }
         .hFormContentPosition(.compact)
     }
