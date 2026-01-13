@@ -5,10 +5,14 @@ import hCoreUI
 
 struct PaymentMethodScreen: View {
     let data: PaymentChargeData
+
     var body: some View {
         hForm {
             PaymentMethodView(data: data, withDate: true)
                 .hWithoutHorizontalPadding([.row, .divider])
+        }
+        .hFormAttachToBottom {
+            ConnectPaymentBottomView(alwaysShowButton: true)
         }
     }
 }

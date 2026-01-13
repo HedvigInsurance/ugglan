@@ -1,0 +1,1008 @@
+"A11Y_AUDIO_RECORDING" = "Lydopptak";
+"A11Y_CLOSE" = "";
+/* Pause action for a video, an audio recording etc. */
+"A11Y_PAUSE" = "";
+/* Play action for a video, an audio recording etc. */
+"A11Y_PLAY" = "";
+"ACTIVATE_NOTIFICATIONS_TITLE" = "Bli varslet";
+"ADDON_ADD_COVERAGE" = "Legg til dekning";
+"ADDON_FLOW_CONFIRMATION_BUTTON" = "";
+"ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "";
+"ADDON_FLOW_CONFIRMATION_TITLE" = "";
+"ADDON_FLOW_COVER_BUTTON" = "";
+"ADDON_FLOW_LEARN_MORE_BUTTON" = "";
+"ADDON_FLOW_PRICE_LABEL" = "+%@/mnd";
+"ADDON_FLOW_SEE_PRICE_BUTTON" = "";
+/* Figma */
+"ADDON_FLOW_SELECT_BUTTON" = "";
+"ADDON_FLOW_SELECT_DAYS_PLACEHOLDER" = "";
+"ADDON_FLOW_SELECT_INSURANCE_SUBTITLE" = "";
+"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "";
+"ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE" = "";
+"ADDON_FLOW_SELECT_SUBOPTION_TITLE" = "";
+"ADDON_FLOW_SUBTITLE" = "";
+/* Your updates will be effective from tomorrow. */
+"ADDON_FLOW_SUCCESS_SUBTITLE" = "";
+"ADDON_FLOW_SUCCESS_TITLE" = "";
+"ADDON_FLOW_SUMMARY_ACTIVE_FROM" = "Aktiverer %1$@";
+"ADDON_FLOW_SUMMARY_CONFIRM_BUTTON" = "";
+"ADDON_FLOW_SUMMARY_INFO_TEXT" = "";
+"ADDON_FLOW_SUMMARY_PRICE_SUBTITLE" = "";
+"ADDON_FLOW_TITLE" = "";
+"ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "";
+"ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "";
+"ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "";
+"ADDON_LEARN_MORE_LABEL" = "Se hva som er inkludert";
+"ADDON_REMOVE_CANCEL_BUTTON" = "";
+"ADDON_REMOVE_CONFIRM_BUTTON" = "";
+"ADDON_REMOVE_DESCRIPTION" = "";
+"ADDON_REMOVE_TITLE" = "";
+"ADDON_TRAVEL_DISPLAY_NAME" = "";
+"ALERT_CANCEL" = "Avbryt";
+"AUTHENTICATION_BANKID_LOGIN_ERROR" = "";
+"AUTHENTICATION_BANKID_LOGIN_LABEL" = "Åpne BankID-appen på telefonen eller skann QR-koden for å logge inn";
+"AUTHENTICATION_BANKID_LOGIN_TITLE" = "Logg inn med BankID";
+"AUTHENTICATION_BANKID_OPEN_BUTTON" = "Åpne BankID";
+"AUTH_OTP_YOUR_EMAIL" = "din epost";
+"BANKID_FAILED_MESSAGE" = "";
+"BANKID_FAILED_TITLE" = "";
+"BANKID_LOGIN_TITLE" = "Logg inn";
+"BANKID_ON_ANOTHER_DEVICE" = "BankID på en annen enhet";
+"BANKID_USER_CANCEL_MESSAGE" = "";
+"BANKID_USER_CANCEL_TITLE" = "";
+"BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE" = "";
+"BUSINESS_MODEL_CARD_TEXT" = "Hedvig tar bare 25%% av det du betaler i måneden for å utvikle og forbedre vår tjeneste. Resten, 75%%, går til en felles skadepott for alle våre medlemmer. Er det penger igjen i den på slutten av året, gis disse videre til Milkywire.";
+"BUTTON_LOGIN_ALTERNATIVE_METHOD" = "";
+"CERTIFICATES.CREATE_CERTIFICATE" = "";
+"CERTIFICATES.DOWNLOAD" = "Laste ned";
+"CERTIFICATES.EMAIL_SENT" = "";
+"CERTIFICATES.GENERATING" = "Genererer";
+"CERTIFICATES.VERIFY_EMAIL" = "";
+"CHANGE_ADDRESS_ACCEPT_OFFER" = "Godkjenn endringer";
+"CHANGE_ADDRESS_ACTIVATION_DATE" = "Aktiverer %1$@";
+"CHANGE_ADDRESS_ADD_BUILDING" = "Legg til bygning";
+"CHANGE_ADDRESS_ANCILLARY_AREA_ERROR" = "Skriv inn biarial";
+"CHANGE_ADDRESS_ANCILLARY_AREA_LABEL" = "Biarial";
+"CHANGE_ADDRESS_APARTMENT_OWN_LABEL" = "Leilighet";
+"CHANGE_ADDRESS_APARTMENT_RENT_LABEL" = "Leieforhold";
+"CHANGE_ADDRESS_BATHROOMS_ERROR" = "Vennligst skriv inn antall bad";
+"CHANGE_ADDRESS_BATHROOMS_LABEL" = "Antall bad";
+"CHANGE_ADDRESS_COVERAGE_INFO_TEXT" = "";
+"CHANGE_ADDRESS_CO_INSURED_LABEL" = "Antall personer";
+"CHANGE_ADDRESS_DETAILS" = "Detaljer";
+"CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE" = "Skriv inn adressen til ditt nye hjem";
+"CHANGE_ADDRESS_EXTRA_BUILDINGS_LABEL" = "Øvrige bygninger";
+"CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL" = "Koblet til vann";
+"CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_LABEL" = "Innlagt vann?";
+"CHANGE_ADDRESS_EXTRA_BUILDING_CONTAINER_TITLE" = "Type bygning";
+"CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_ERROR" = "Angi størrelsen på den ekstra bygningen";
+"CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL" = "Størrelse";
+"CHANGE_ADDRESS_EXTRA_BUILDING_TYPE_ERROR" = "Velg type bygning";
+"CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE" = "Informasjon om ditt nye hus";
+"CHANGE_ADDRESS_LIVING_SPACE_ERROR" = "Vennligst skriv inn kvadratmeter";
+"CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_WITH_INPUT_ERROR" = "Boareal for stort. Maksimal boareal er %d%@.";
+"CHANGE_ADDRESS_MAKING_CHANGES" = "Gjør endringer...";
+"CHANGE_ADDRESS_MOVING_DATE_ERROR" = "Vennligst velg en flyttedato";
+"CHANGE_ADDRESS_MOVING_DATE_LABEL" = "Tilgangsdato";
+"CHANGE_ADDRESS_NEW_ADDRESS_LABEL" = "Adresse";
+"CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL" = "Boareal";
+"CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL" = "Postnummer";
+"CHANGE_ADDRESS_NO_FIND" = "Finner du ikke det du leter etter?";
+"CHANGE_ADDRESS_ONLY_YOU" = "Bare meg";
+"CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT" = "";
+"CHANGE_ADDRESS_POSTAL_CODE_ERROR" = "Vennligst skriv inn postnummeret";
+"CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE" = "Hvilken type bolig skal du flytte til?";
+"CHANGE_ADDRESS_SIZE_SUFFIX" = "m²";
+"CHANGE_ADDRESS_STREET_ERROR" = "Vennligst skriv inn adressen";
+"CHANGE_ADDRESS_STUDENT_LABEL" = "Student";
+"CHANGE_ADDRESS_SUBLET_LABEL" = "Do you rent out the house or parts of it?";
+"CHANGE_ADDRESS_SUCCESS_SUBTITLE" = "Ditt nye hjem vil være forsikret fra %1@";
+"CHANGE_ADDRESS_SUCCESS_TITLE" = "Adressen er oppdatert";
+"CHANGE_ADDRESS_SUMMARY_TITLE" = "Sammendrag";
+"CHANGE_ADDRESS_VILLA_LABEL" = "Hus";
+"CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Angi byggeår";
+"CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggeår";
+"CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
+"CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktiver notifikationer for å sikre at du mottar alle meldingene våre.";
+"CHAT_CONVERSATION_CLAIM_TITLE" = "";
+"CHAT_CONVERSATION_CLOSED" = "Lukket";
+"CHAT_CONVERSATION_CLOSED_INFO" = "The conversation is closed. If you need more help with this specific matter, please write here to reopen it.";
+"CHAT_CONVERSATION_HISTORY_TITLE" = "Conversation history";
+"CHAT_CONVERSATION_INBOX" = "Inbox";
+"CHAT_CONVERSATION_QUESTION_TITLE" = "Support";
+"CHAT_CONVERSATION_TERMINATE_CONTRACT" = "Avsluta %1$@";
+"CHAT_DELIVERED_MESSAGE" = "Levert";
+/* When a message/picture/file is sent through chat, it may fail to be delivered, most likely due to the internet connection being bad.
+A message is then appended under the image next to the timestamp to indicate that it did not get delivered */
+"CHAT_FAILED_TO_SEND" = "Melding ikke sendt. Prøv igjen";
+"CHAT_INPUT_PLACEHOLDER" = "Skriv her...";
+"CHAT_MISSING_IMAGES_PERMISSION_SUBTITLE" = "";
+"CHAT_NEW_CONVERSATION_SUBTITLE" = "Write to start the conversation";
+"CHAT_NEW_CONVERSATION_TITLE" = "New message";
+"CHAT_NEW_MESSAGE" = "New message";
+"CHAT_OPEN_APP_SETTINGS_BUTTON" = "Gå til Innstillinger";
+"CHAT_SENDER_HEDVIG" = "Hedvig";
+"CHAT_SENDER_MEMBER" = "You";
+"CHAT_SENT_A_FILE" = "Sent a document";
+"CHAT_SENT_A_LINK" = "Sent a link";
+"CHAT_SENT_A_MESSAGE" = "Sent a message";
+"CHAT_SENT_A_PHOTO" = "Sent a photo";
+"CHAT_TITLE" = "Meldinger";
+"CHAT_TOAST_PUSH_NOTIFICATIONS_TITLE" = "Push-varsler";
+"CHAT_UPLOAD_PRESEND" = "Send";
+"CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Aktiver notifikationer så vi kan holde deg oppdatert om din erende.";
+"CLAIMS_ACTIVATE_NOTIFICATIONS_CTA" = "Aktiver varsler";
+"CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS" = "Hopp over";
+"CLAIMS_CASE" = "\nSaken";
+"CLAIMS_CHECKOUT_COUNT_TITLE" = "Slik beregnet vi";
+"CLAIMS_CHECKOUT_NOTICE" = "Pengene utbetales til bankkontoen du har knyttet til oss innen 1-3 virkedager";
+"CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT" = "Kompensasjonen er basert på eventuelle fradrag gjort på grunn av alderen på telefonen din. Du finner tabellen for full aldersfradrag i dine fullstendige vilkår og betingelser.";
+"CLAIMS_CHECKOUT_PAYOUT_TEXT" = "Betalingen vil bli gjort til kontoen du har koblet til som betalingsmåte.";
+"CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT" = "Vi baserer reparasjonskostnadene på informasjonen som er tilgjengelig på produsentens nettside.";
+"CLAIMS_CHECKOUT_REPAIR_INFO_TEXT" = "Basert på informasjonen du har oppgitt, virker det som om telefonen din kan repareres. Ta kontakt med en valgfri reparatør for å få den fikset.";
+"CLAIMS_CHECKOUT_REPAIR_TITLE" = "Reparasjonskostnad ( %@ )";
+"CLAIMS_CHOOSE_BRAND_TITLE" = "Velg merke";
+"CLAIMS_CHOOSE_MODEL_TITLE" = "Velg din modell";
+"CLAIMS_COMPLEMENT_ CLAIM" = "Du kan enkelt supplere kravet ditt med filer, bilder og andre detaljer etter at du har sendt det til oss.";
+"CLAIMS_CONFIRM_NUMBER_TITLE" = "Bekreft telefonnummeret ditt";
+"CLAIMS_DAMAGES" = "";
+"CLAIMS_DATE_NOT_SURE_NOTICE_LABEL" = "Hvis du ikke vet en nøyaktig dato, fyll ut omtrent når den skjedde.";
+"CLAIMS_FILE_UPLOAD_INFO" = "";
+"CLAIMS_FILE_UPLOAD_REMOVE_CANCEL" = "";
+"CLAIMS_FILE_UPLOAD_REMOVE_CONFIRM" = "";
+"CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE" = "Vil du fjerne filen fra kravet ditt?";
+"CLAIMS_FILE_UPLOAD_TITLE" = "Last opp dokumenter, kvitteringer eller bilder";
+"CLAIMS_LOCATON_OCCURANCE_TITLE" = "Når og hvor skjedde det?";
+"CLAIMS_PAYOUT_HEDVIG_LABEL" = "";
+"CLAIMS_PAYOUT_PROGRES_LABEL" = "Behandler utbetaling...";
+"CLAIMS_PAYOUT_SUCCESS_LABEL" = "Pengene er sendt og vises på kontoen din innen 1-3 dager";
+"CLAIMS_PLEDGE_SLIDE_LABEL" = "Jeg lover";
+"CLAIMS_SELECT_CATEGORY" = "Velg en kategori";
+"CLAIMS_SINGLE_ITEM_DETAILS" = "Fyll inn detaljer om varen din";
+"CLAIMS_SINGLE_ITEM_NOTICE_LABEL" = "Hvis du ikke husker kjøpesum eller kjøpsdato, trenger du ikke fylle ut noe.";
+"CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL" = "Hvis du ikke husker, trenger du ikke fylle ut noe.";
+"CLAIMS_START_RECORDING_LABEL" = "Start opptak";
+"CLAIMS_SUCCESS_LABEL" = "Har du noen spørsmål? Send oss en melding her i appen.";
+"CLAIMS_SUCCESS_TITLE" = "Varsel sendt";
+"CLAIMS_SUMMARY_DETAIL_INFO" = "";
+"CLAIMS_SUMMARY_WHAT_IS_ABOUT" = "";
+"CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR" = "";
+"CLAIMS_TEXT_INPUT_PLACEHOLDER" = "Beskriv ditt ærend...";
+"CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER" = "";
+"CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "Hva har skjedd?";
+"CLAIMS_TRIAGING_WHAT_ITEM_TITLE" = "Hvilken vare gjelder det?";
+"CLAIMS_USE_AUDIO_RECORDING" = "Lag lydopptak";
+"CLAIMS_USE_TEXT_INSTEAD" = "Beskriv i tekst";
+"CLAIMS_YOUR_CLAIM" = "Din skadebehandling";
+"CLAIM_TRIAGING_ABOUT_TITILE" = "Vilken forsikring gjelder det?";
+"CLAIM_TRIAGING_NAVIGATION_TITLE" = "Hvem eller hva har blitt skadet?";
+"COINSURED_EDIT_TITLE" = "Forsikrede mennesker";
+"COINSURED_ENTER_MANUALLY_BUTTON" = "Angi manuelt";
+"COINSURED_SSN_NOT_FOUND" = "SSN ikke funnet";
+/* When we send fetch request for the coinsured SSN and get null as an result, we should automatically switch toggle on and show this info at the bottom of the sheet. */
+"COINSURED_WITHOUT_SSN_INFO" = "";
+"COMMON_CLAIM_BUTTON" = "Bestill nå";
+"COMMON_CLAIM_EMERGENCY_TITLE" = "Syk i utlandet";
+"CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Dokumenter";
+"CONFIRM_CHANGES_SUBTITLE" = "";
+"CONFIRM_CHANGES_TITLE" = "";
+"CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Gyldig til %1$@";
+"CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Gjelder til i morgen";
+"CONTRACT_ADD_COINSURED" = "Legg til medforsikret";
+"CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Aktiverer %1$@";
+"CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Aktiv til %1$@";
+"CONTRACT_ADD_COINSURED_CONFIRM_CHANGES" = "Godkjenn endringer";
+"CONTRACT_ADD_COINSURED_NO_SSN" = "Legg til uten personnummer";
+"CONTRACT_ADD_COINSURED_PROCESSING" = "Gjør endringer...";
+"CONTRACT_ADD_COINSURED_REVIEW_INFO" = "Du må legge til informasjon om alle medforsikrede for å fortsette.";
+"CONTRACT_ADD_COINSURED_STARTS_FROM" = "Starter den %1$@";
+"CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Forsikringen din vil bli oppdatert %1$@ .";
+"CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Medforsikret oppdatert";
+"CONTRACT_ADD_CONISURED_INFO" = "";
+"CONTRACT_BIRTH_DATE" = "Fødselsdato";
+"CONTRACT_CHANGE_INFORMATION_TITLE" = "Hva vil du redigere?";
+"CONTRACT_COINSURED" = "Medforsikret";
+"CONTRACT_COINSURED_ADD_PERSONAL_INFO" = "Du må legge til personlig informasjon til de medforsikrede";
+"CONTRACT_COINSURED_MISSING_ADD_INFO" = "Legg til informasjon";
+"CONTRACT_COINSURED_MISSING_INFORMATION_LABEL" = "Vi mangler viktig informasjon om din medforsikrede. Legg den til så snart som mulig.";
+"CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Legg til mer informasjon om din medforsikrede for bedre hjelp";
+"CONTRACT_COINSURED_MISSING_LATER" = "Gjør det senere";
+"CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Forsikringen din vil bli oppdatert og dekker deg + %1$d personer fra og med %2$@";
+"CONTRACT_COVERAGE_MORE_INFO" = "Mer informasjon";
+"CONTRACT_EDIT_COINSURED" = "Rediger medforsikrede";
+"CONTRACT_EDIT_INFO" = "Rediger";
+"CONTRACT_EDIT_INFO_LABEL" = "";
+"CONTRACT_FIRST_NAME" = "Fornavn";
+"CONTRACT_LAST_NAME" = "Etternavn";
+"CONTRACT_NO_INFORMATION" = "Ingen informasjon tilgjengelig";
+"CONTRACT_PERSONAL_IDENTITY" = "Personnummer";
+"CONTRACT_REMOVE_COINSURED_CONFIRMATION" = "Er du sikker på at du vil\nfjerne medforsikrede?";
+"CONTRACT_SSN_FETCH_INFO" = "Hent informasjon";
+"CONTRACT_STATUS_ACTIVE_IN_FUTURE" = "Aktiveres den %1$@";
+"CONTRACT_STATUS_PENDING" = "Venter på startdato";
+"CONTRACT_STATUS_TERMINATED" = "Avsluttet";
+"CONTRACT_STATUS_TERMINATED_TODAY" = "Avsluttes etter i dag";
+"CONTRACT_STATUS_TO_BE_TERMINATED" = "Avsluttes %1$@";
+"CONTRACT_TERMINATED_ON" = "Avsluttet %1$@";
+"CONTRACT_VIEW_CERTIFICATE_BUTTON" = "Se sertifikat";
+"CROSS_SELL_BANNER_TEXT" = "";
+"CROSS_SELL_BUTTON" = "";
+"CROSS_SELL_SUBTITLE" = "";
+"DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Aktiv";
+/* Figma */
+"DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "Skal oppdateres %1$@";
+"DASHBOARD_RENEWAL_PROMPTER_BODY" = "Om %1$li dagar kommer forsikringen din til å fornyes. Les den oppdaterte versjonen av forsikringssertifikatet ditt her.";
+"DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Les forsikringsbrev";
+"DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Forsikringen din fornyes i morgen. Les ditt oppdaterte forsikringsbevis her.";
+"DEEP_LINK_CONTRACT" = "Kontrakt";
+/* Figma */
+"DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Er du sikker på at du vil slette kontoen din?";
+/* Figma */
+"DELETE_ACCOUNT.CONFIRM_BUTTON" = "Slett konto";
+/* Figma */
+"DELETE_ACCOUNT.DELETED_DATA_DESCRIPTION" = "Dette vil permanent slette kontoen din sammen med din personlige informasjon. På grunn av lokale regler vil informasjon knyttet til tidligere krav og forsikringer bli oppbevart i 10 år.";
+"DELETE_ACCOUNT.DELETE_ACCOUNT_DESCRIPTION" = "Som forsikringsselskap er Hedvig forpliktet til å lagre forsikringsavtalen og tilhørende opplysninger så lenge det er mulig å kreve forsikringserstatning. Denne perioden kan variere avhengig av type forsikring, men er minst 10 år etter at forsikringen er avsluttet. \n\n Hvis du ønsker at vi skal slette informasjonen vi ikke er lovpålagt å lagre, kan du bruke knappen nedenfor. \n\n [Her](https://www.hedvig.com/se-en/hedvig/privacy-policy) kan du lese om hvordan Hedvig håndterer dine personopplysninger.";
+"DELETE_ACCOUNT.DELETE_ACCOUNT_TITLE" = "Viktig informasjon";
+/* Figma */
+"DELETE_ACCOUNT.ONGOING_CLAIMS_DESCRIPTION" = "Vi kan ikke slette kontoen din så lenge du har pågående saker eller aktive forsikringer. Trenger du hjelp med dette? Si fra til vårt service-team i chaten.";
+/* Figma */
+"DELETE_ACCOUNT.ONGOING_CLAIMS_TITLE" = "Du er ikke helt ferdig ennå";
+/* Figma */
+"DELETE_ACCOUNT.PROCESSED_BUTTON" = "Tilbake til profilen";
+/* Figma */
+"DELETE_ACCOUNT.PROCESSED_DESCRIPTION" = "Vi vil sende deg en bekreftelse på epost så snart kontoen din har blitt slettet. Din konto vil være aktiv frem til da.";
+/* Figma */
+"DELETE_ACCOUNT.PROCESSED_TITLE" = "Kontoen din vil bli slettet";
+/* Figma */
+"DELETE_ACCOUNT.PROCESSING_FOOTER" = "After sending a request we will delete your data within 30 days and send you an email to confirm the deletion once done. This action is permanent and non-revocable.";
+"DELETE_ACCOUNT.YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION" = "Ettersom vi bruker appen vår til skadebehandling, anbefaler vi at du holder kontoen din aktiv til kravet ditt er ferdigbehandlet.";
+"DELETE_ACCOUNT.YOU_HAVE_ACTIVE_CLAIM_TITLE" = "Du har en aktiv skade";
+"DELETE_ACCOUNT.YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION" = "Siden du har en aktiv forsikring hos oss, kan vi ikke slette kontoen din. Hvis du ønsker å avslutte forsikringen din, kan du gjøre det [her](https://link.hedvig.com/terminate-contract).";
+"DELETE_ACCOUNT.YOU_HAVE_ACTIVE_INSURANCE_TITLE" = "Du har en aktiv forsikring";
+"DEMO_MODE_CANCEL" = "Avbryt";
+"DEMO_MODE_START" = "Statt demo-modus";
+"DETAILS_TABLE_INSURANCE_PREMIUM" = "Pris";
+"DISCOUNTS_ACTIVE_FROM" = "Aktiverer %1$@";
+"DISCOUNTS_LABEL_ACTIVE" = "";
+"DISCOUNTS_LABEL_PENDING" = "";
+"DISCOUNT_REDEEM_SUCCESS_BUTTON" = "OK";
+"DOCUMENT_PDF_LABEL" = "PDF";
+"Direct_Debit_Connected" = "%1$@/mnd - Betales med AvtaleGiro";
+"Direct_Debit_Not_Connected" = "%1$@/mnd - Betalingsmetode mangler";
+"EMAIL_PLACEHOLDER" = "email@domain.com";
+"EMAIL_ROW_TITLE" = "E-post";
+"EMBARK_EXIT_BUTTON" = "Avslutte";
+"EMBARK_GO_BACK_BUTTON" = "Gå tilbake";
+"EMBARK_LOADING" = "Laster inn...";
+/* Secondary button to re-record audio */
+"EMBARK_RECORD_AGAIN" = "Spill inn på nytt";
+/* Content description text for recording button (in play state) */
+"EMBARK_STOP_RECORDING" = "Stopp opptak";
+/* Primary button in record audio passage */
+"EMBARK_SUBMIT_CLAIM" = "Meld din skade";
+"EMBARK_UPDATE_APP_BODY" = "Appen din er utdatert og må oppdateres før du kan fortsette.";
+"EMBARK_UPDATE_APP_BUTTON" = "Oppdater nå";
+"EMBARK_UPDATE_APP_TITLE" = "Oppdater app";
+"FILE_UPLOAD_IS_UPLOADING" = "Laster opp...";
+"FORCE_LOGOUT_MESSAGE_SUBTITLE" = "Logg inn igjen";
+"FORCE_LOGOUT_MESSAGE_TITLE" = "Du har blitt logget av";
+"FOREVER.REFERRAL.INVITED_YOU" = "";
+"FOREVER_REFERRAL_LIST_LABEL" = "Inviterte venner";
+"FOREVER_TAB_MONTHLY_DISCOUNT" = "Månedlig rabatt";
+"FULL_NAME_TEXT" = "Fullt navn";
+"GENERAL.ARE_YOU_SURE" = "Er du sikker?";
+"GENERAL.CHAT_BUTTON" = "Sende melding";
+"GENERAL.COPIED" = "Kopiert";
+"GENERAL.DEFAULT_ERROR" = "Vi kunne ikke laste denne informasjonen.";
+"GENERAL.ERROR_BODY" = "Vi kunne ikke laste denne informasjonen. Sjekk internettforbindelsen din og prøv igjen.";
+"GENERAL.NO" = "Nei";
+"GENERAL.PROGRESS_WILL_BE_LOST_ALERT" = "Hvis du slutter nå, må du begynne på nytt.";
+"GENERAL.REMOVE" = "";
+"GENERAL.SUBSCRIBED" = "Subscribed";
+"GENERAL.UNSUBSCRIBED" = "Unsubscribed";
+"GENERAL.YES" = "Ja";
+"GENERAL_ADD_BUTTON" = "Legg til";
+"GENERAL_ADD_INFO_BUTTON" = "Legg til info";
+"GENERAL_ADD_NEW" = "Legg til ny";
+"GENERAL_CONFIRM" = "Confirm";
+"GENERAL_CONTACT_US_TITLE" = "Contact our service team";
+"GENERAL_GO_TO" = "Gå til %1$@";
+"GENERAL_NOT_SURE" = "Vet ikke";
+"GENERAL_RETRY" = "Prøv igjen";
+"GENERAL_SAVE_CHANGES_BUTTON" = "Lagre endringer";
+"GENERAL_TODAY" = "Today";
+"GENERAL_YESTERDAY" = "Yesterday";
+"GENERIC_UNKNOWN" = "Ukjent";
+"HC_ALL_QUESTION_TITLE" = "";
+"HC_ANSWER_TITLE" = "";
+"HC_CHAT_ANSWER" = "";
+"HC_CHAT_GO_TO_INBOX" = "Go to inbox";
+"HC_CHAT_QUESTION" = "";
+"HC_COMMON_QUESTIONS_TITLE" = "";
+"HC_COMMON_TOPICS_TITLE" = "";
+"HC_HOME_VIEW_ANSWER" = "";
+"HC_HOME_VIEW_QUESTION" = "";
+"HC_QUESTIONS_TITLE" = "";
+"HC_QUESTION_TITLE" = "";
+"HC_QUICK_ACTIONS_CANCELLATION_TITLE" = "Kansellering";
+"HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE" = "Oppdater til ny hjemmeadresse";
+"HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE" = "";
+"HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE" = "Rediger medforsikrede";
+"HC_QUICK_ACTIONS_CO_INSURED_TITLE" = "Medforsikret";
+"HC_QUICK_ACTIONS_EDIT_COINSURED" = "";
+"HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE" = "";
+"HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE" = "";
+"HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE" = "";
+"HC_QUICK_ACTIONS_FIRSTVET_TITLE" = "";
+"HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE" = "Endre betalingsmetode";
+"HC_QUICK_ACTIONS_PAYMENTS_TITLE" = "Betalinger";
+"HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE" = "";
+"HC_QUICK_ACTIONS_SICK_ABROAD_TITLE" = "";
+"HC_QUICK_ACTIONS_TERMINATION_SUBTITLE" = "Ingen bindingstid, kanseller når som helst";
+"HC_QUICK_ACTIONS_TERMINATION_TITLE" = "Kansellering";
+"HC_QUICK_ACTIONS_TITLE" = "";
+"HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE" = "Reisebevis";
+"HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE" = "";
+"HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE" = "";
+"HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE" = "";
+"HC_RELATED_QUESTIONS_TITLE" = "";
+"HC_TITLE" = "";
+"HOMETAB_ACCOUNT_DELETION_NOTIFICATION" = "";
+"HONESTY_PLEDGE_DESCRIPTION" = "Hedvig er basert på tillit. Det fungerer ved at alle medlemmer trekker erstatningen de har krav på fra felles erstatningspool, verken mer eller mindre. Vi ber deg derfor fortelle om hva som skjedde akkurat slik det var, slik at vi kan hjelpe deg på best mulig måte.";
+"HONESTY_PLEDGE_TITLE" = "Før vi starter";
+"INSURANCE_EVIDENCE.DOCUMENT_TITLE" = "";
+"INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION" = "";
+"INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION" = "";
+"INSURANCE_EVIDENCE.READ_MORE_TITLE" = "";
+"INSURELY_BANKID_ENTER_WORDS" = "Skriv inn disse ordene i BankID";
+"INSURELY_BANKID_NO_OPEN_BANKID" = "Fortsett med BankID for å logge inn";
+"KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE" = "Forsikringen din dekker";
+"KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Forsikringen din dekker ikke";
+"KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "Først prøver vi selvfølgelig å reparere, men om din %1$@ skulle behøve å erstattes helt (f. eks. om den er blitt stjålet), erstattes du med *%2$li%%* av innkjøpsprisen *%3$@*, alltså *%4$@*.";
+"KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Verdivurdering";
+"LOGIN_LANGUAGE_PREFERENCES" = "";
+"LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
+"LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";
+"LOGOUT_ALERT_TITLE" = "Er du sikker på at du vil logge ut?";
+"LOGOUT_BUTTON" = "Logg ut";
+"MANUAL_INPUT_LIST_OTHER" = "Andre";
+"MARKETING_GET_HEDVIG" = "Få et prisforslag";
+"MISSING_CONTACT_INFO_CARD_BUTTON" = "";
+"MISSING_CONTACT_INFO_CARD_TEXT" = "";
+"MONTH_ABBREVIATION_LABEL" = "mo";
+/* Generic error message if we fail to move insurance. */
+"MOVEINTENT_GENERIC_ERROR" = "Noe gikk galt. Prøv igjen eller kontakt oss.";
+"MOVING_FLOW_BODY" = "";
+"MOVING_FLOW_SUCCESS_TOAST" = "Adresseendring sendt";
+"MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION" = "";
+"MY_DOCUMENTS_INSURANCE_CERTIFICATE" = "Forsikringsbrev";
+"MY_INFO_EMAIL_EMPTY_ERROR" = "Du glemte å angi en e-postadresse.";
+"MY_INFO_EMAIL_MALFORMED_ERROR" = "E-postadressen virker ikke riktig";
+"MY_INFO_PHONE_NUMBER_EMPTY_ERROR" = "Du har ikke oppgitt noe telefonnummer";
+"MY_INFO_PHONE_NUMBER_MALFORMED_ERROR" = "Kontroller at telefonnummeret du har oppgitt stemmer";
+"MY_PAYMENT_BANK_ROW_LABEL" = "Bank";
+"MY_PAYMENT_DIRECT_DEBIT_BUTTON" = "Koble bankkonto";
+"MY_PAYMENT_DIRECT_DEBIT_REPLACE_BUTTON" = "Endre kort";
+"MY_PAYMENT_TITLE" = "Payments";
+"MY_PAYMENT_UPDATING_MESSAGE" = "Du har akkurat lagt til eller endret bankkontoen. Den nye bankkontoen din kommer til å vises her etter at banken din har akseptert autogiroen i løpet av to arbeidsdager.";
+"NEW_MESSAGE_BUTTON" = "New message";
+/* Description text above bundle selector on offer page. */
+"OFFER_BUNDLE_SELECTOR_DESCRIPTION" = "Velg forsikringsplanen som passer deg best. Forsikringen dekker deg og alle medforsikrede. Du kan alltids legge til ulykkesforsikringen på et senere tidspunkt. ";
+/* Title above bundle selector on offer page. */
+"OFFER_BUNDLE_SELECTOR_TITLE" = "Forsikringspakken din";
+"OFFER_HOUSE_SUMMARY_DESC" = "Her er en oversikt over informasjonen du har gitt oss om boligen din.";
+"OFFER_SAVE_START_DATE_ERROR_ALERT_MESSAGE" = "";
+"OFFER_SAVE_START_DATE_ERROR_ALERT_TITLE" = "";
+"OFFER_SCREEN_COVERAGE_TITLE" = "Dekningen";
+"OFFER_SWITCHER_EXPLANATION_FOOTER" = "";
+"OFFER_SWITCHER_NO_DATE" = "";
+"OFFER_UPDATE_SUMMARY_TITLE" = "Sammendrag";
+"ONBOARDING_CONNECT_DD_BODY" = "Så morsomt at du har blitt medlem. For å begynne å bruke din nye forsikring må du:";
+"ONBOARDING_CONNECT_DD_CTA" = "Legg inn ditt bankkort - aktiver Hedvig";
+"ONBOARDING_CONNECT_DD_HEADLINE" = "bare to ting igjen å gjøre";
+"OS_VERSION_TOO_LOW_BODY" = "%@ støttes ikke. Oppdater til siste operativsystem for å bruke Hedvig-appen.";
+"OS_VERSION_TOO_LOW_TITLE" = "Operativsystemet ditt må oppdateres";
+"PAYMENTS_ACCOUNT" = "Konto";
+"PAYMENTS_ADD_CAMPAIGN_CODE" = "Legg til kode";
+"PAYMENTS_AUTOGIRO_LABEL" = "Avtalegiro";
+"PAYMENTS_CODE_REMOVED" = "Koden fjernet";
+"PAYMENTS_CONFIRM_CODE_REMOVE" = "Ja, slett";
+"PAYMENTS_DISCOUNTS_SECTION_TITLE" = "Rabatter";
+"PAYMENTS_DISCOUNT_ADDED" = "Rabatt lagt til";
+"PAYMENTS_EXPIRED_DATE" = "Utløpt %1$@";
+"PAYMENTS_HISTORY_INFO" = "For informasjon om betalinger eldre enn 12 måneder, vennligst kontakt oss i chatten.";
+"PAYMENTS_INVITE_FRIENDS" = "Invitere venner";
+"PAYMENTS_IN_PROGRESS" = "Betaling pågår. Det kan ta 1 til 3 dager før beløpet vises på kontoen din.";
+"PAYMENTS_MISSED_PAYMENT" = "Betalingen for perioden %1$@ – %2$@ gikk ikke som forventet. Beløpet er lagt til denne betalingen.";
+"PAYMENTS_NO_HISTORY_DATA" = "Du har ingen betalingshistorikk";
+"PAYMENTS_NO_PAYMENTS_IN_PROGRESS" = "Du har ingen betalinger på gang";
+"PAYMENTS_OUTSTANDING_PAYMENT" = "Manglende betaling";
+"PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION" = "Den månedlige betalingen din behandles ved hjelp av digital direkte debit gjennom vår betalingspartner Trustly. Prisen din er basert på flere faktorer, inkludert aspekter knyttet til deg, dine eiendeler, din livsstil og hvor du bor.";
+"PAYMENTS_PAYMENT_DUE" = "Betalingen forfaller";
+"PAYMENTS_PAYMENT_FAILED" = "Denne betalingen mislyktes og ble lagt til betalingen din %1$@ .";
+"PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL" = "Betalingshistorikk";
+"PAYMENTS_PAYMENT_METHOD" = "Betalingsmetode";
+"PAYMENTS_PAYMENT_SUCCESSFUL" = "Betalingen var vellykket";
+"PAYMENTS_PERIOD_DAYS" = "%1$@ dager";
+"PAYMENTS_PERIOD_FULL" = "Hele perioden";
+"PAYMENTS_PROCESSING_PAYMENT" = "";
+"PAYMENTS_REFERRALS_INFO_TITLE" = "Hedvig Forever";
+"PAYMENTS_REFERRAL_DISCOUNT" = "Rabatt via invitasjoner";
+"PAYMENTS_REMOVE_CODE_TITLE" = "Er du sikker på at du vil fjerne rabatten?";
+"PAYMENTS_SUBTOTAL" = "Delsum";
+"PAYMENTS_UPCOMING_PAYMENT" = "Kommende betaling";
+"PAYMENTS_VALID_UNTIL" = "Gyldig til %1$@";
+"PAYMENTS_VIEW_PAYMENT" = "Se betaling";
+"PAYMENT_HISTORY_TITLE" = "Betalingshistorikk";
+/* Label that hints the user to slide up in order to reveal more info */
+"PERIL_DETAIL.MORE_INFO" = "Les mer";
+"PER_MONTH_SHORT" = "/mnd";
+"PHONE_NUMBER_ROW_TITLE" = "Telefonnummer";
+"PLACEHOLDER_CONTRACT_DISPLAY_NAME_DK_HOME_CONTENTS" = "";
+"PRICE_DETAILS_TITLE" = "";
+"PRICE_NEW_PRICE" = "";
+"PRICE_PREVIOUS_PRICE" = "";
+"PROFILE_ABOUT_APP_MEMBER_ID" = "Member ID";
+"PROFILE_ABOUT_APP_VERSION" = "Version";
+"PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL" = "Tillat at varsler blir varslet når vi har nye oppdateringer angående kravet ditt";
+"PROFILE_APP_INFO" = "App info";
+"PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION" = "Slett kontoen min";
+"PROFILE_MY_INFO_REVIEW_INFO_CARD" = "";
+"PROFILE_MY_INFO_ROW_TITLE" = "Kontaktinformasjon";
+"PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY" = "Endringer lagret";
+"PROFILE_MY_INFO_TITLE" = "Kontaktinformasjon";
+"PROFILE_NOTIFICATIONS_STATUS_OFF" = "Slått av";
+"PROFILE_NOTIFICATIONS_STATUS_ON" = "Skrudd på";
+"PROFILE_TITLE" = "Profil";
+"PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW" = "Ikke nå";
+"PUSH_NOTIFICATIONS_ALERT_ACTION_OK" = "Slå på ";
+"PUSH_NOTIFICATIONS_ALERT_TITLE" = "Varsler";
+"REFERRAL_ADDCOUPON_INPUTPLACEHOLDER" = "Rabattkode";
+"REFERRAL_PENDING_STATUS_LABEL" = "Avventer...";
+"REFERRAL_SMS_MESSAGE" = "Hei! Skaff Hedvig med min tipslink så får vi begge %1$@ rabatt på månedskostnaden. Følg linken %2$@";
+"REFERRAL_TERMINATED_STATUS_LABEL" = "Avbrutt";
+"REMOVE_CONFIRMATION_BUTTON" = "Ja, slett";
+"RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "";
+"RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "";
+"SAVE_AND_CONTINUE_BUTTON_LABEL" = "Lagre og fortsett";
+/* Placeholder for search bar in the Help center */
+"SEARCH_PLACEHOLDER" = "Søk";
+"SETTINGS_LANGUAGE_TITLE" = "Språk";
+"SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE" = "";
+/* Figma */
+"SETTINGS_SCREEN.DELETE_ACCOUNT_BUTTON" = "Slett konto";
+"SETTINGS_SCREEN.EMAIL_PREFERENCES" = "Email preferences";
+"SETTINGS_SCREEN.SUBSCRIBED_MESSAGE" = "";
+"SETTINGS_SCREEN.SUBSCRIBE_BUTTON" = "Yes, I confirm";
+"SETTINGS_SCREEN.SUBSCRIBE_DESCRIPTION" = "You will receive promotional emails from us";
+"SETTINGS_SCREEN.SUBSCRIBE_TITLE" = "Confirm subscription";
+"SETTINGS_SCREEN.UNSUBSCRIBED_MESSAGE" = "";
+"SETTINGS_SCREEN.UNSUBSCRIBE_DESCRIPTION" = "You will no longer receive offers and campaigns from us";
+"SET_TERMINATION_DATE_TEXT" = "Vennligst angi oppsigelsesdato for forsikringen din.";
+"SIMPLE_SIGN_FAILED_MESSAGE" = "Vær så snill, prøv på nytt. Hvis dette ikke er første gang du får en Hedvig-forsikring, vennligst kontakt oss i chatten eller send en e-post til hedvig@hedvig.com for å hjelpe deg.";
+"SIMPLE_SIGN_FAILED_TITLE" = "Vi kunne ikke registrere deg";
+"SINGLE_ITEM_INFO_BRAND" = "Merke";
+"SUBMIT_CLAIM_ PURCHASE_PRICE_TITLE" = "Fyll inn kjøpesummen din";
+"SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON" = "";
+"SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT" = "";
+"SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE" = "";
+"SUBMIT_CLAIM_CAR_TITLE" = "";
+"SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL" = "Samtalene er gratis, men skal kun brukes i nødstilfeller. Hvis vi kan gi kompensasjon, utbetales den uten at du trenger å betale egenandel.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE" = "Hva koster det?";
+"SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL" = "Yes, your home insurance travel coverage has a base deductible. The amount of your deductible is stated in your insurance letter.\nThe deductible is the portion of the claim amount that you must pay yourself for each claim. If your claim costs are lower than the deductible, the insurance cannot cover them. If your claim costs exceed the deductible, the insurance can cover the amount above the deductible, and Hedvig has the right to reclaim the deductible from you if necessary.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE" = "Is there a deductible?";
+"SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL" = "Hedvig Global Assistance (SOS International) er Hedvigs beredskapssenter for akutt sykdom, ulykker og nødsituasjoner i utlandet. Kontakter du dem kan du for eksempel få en anbefaling om nærmeste legekontor, hjelp til å booke om fly ved behov og en legeresept. Hvis du er på reise og trenger pleie eller medisinsk hjelp, bør du kontakte dem så snart du kan.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE" = "Hvem er Hedvig Global Assistance?";
+"SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL" = "Ta kontakt med Hedvig Global Assistance (SOS International) så fort du kan for medisinsk hjelp og mer informasjon, de kan avgjøre hvilken hjelp og kompensasjon du kan ha krav på. Husk at du må oppsøke lege på stedet og/eller kontakte Hedvig Global Assistance for at forsikringen skal være gyldig.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE" = "Jeg er for syk til å gå til lege. Hva gjør jeg?";
+"SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL" = "Hvis det er en uventet og plutselig endring i helsetilstanden din eller en ulykke du trenger legehjelp for, anses det generelt som akutt.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE" = "Hvordan vet jeg om det teller som akutt eller ikke?";
+"SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL" = "Ta kontakt med Hedvig Global Assistance (SOS International) så snart du kan for medisinsk hjelp og ytterligere informasjon. De kan avgjøre om du er kvalifisert for kompensasjon for en ny hjemreise og i så fall hjelpe deg med å bestille den. Husk at det kreves forhåndsgodkjenning fra SOS International eller Hedvig for at du skal ha rett til kompensasjon for den nye reisen.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE" = "Jeg kan ikke fly hjem som planlagt, hva gjør jeg?";
+"SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL" = "Forsikringen kan ikke dekke deg for bestemte aktiviteter, utflukter eller kostnader du ikke har benyttet deg av. Men dersom du har vært innlagt på sykehus, foreskrevet innendørs sengeleie av lege på stedet eller må reise hjem tidlig (krever forhåndsgodkjenning fra SOS International eller Hedvig), har du krav på standardkompensasjon for ubrukte reisekostnader. Dette søker du om i etterkant, direkte via Hedvig.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE" = "Jeg kommer til å gå glipp av en forhåndsbestilt aktivitet på grunn av sykdommen min. Er det dekket?";
+"SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL" = "If you have the Travel Protection Plus add-on as a complement to your home insurance, you can receive compensation for a new trip, up to a maximum of 50 000 kr. This applies if you or your travel companion become acutely ill or suffer an accidental injury and are hospitalized or prescribed bed rest indoors at the destination.\n\nThe condition is that the hospital stay or prescribed bed rest exceeds more than half the number of the total travel days, and you must be able to provide a certificate from a qualified doctor at the destination or through a doctor via Hedvig Global Assistance (SOS International). Read your terms and conditions for  more information about your protection.";
+"SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE" = "Can I get a new trip?";
+"SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_LABEL" = "Få hjelp til å finne et sykehus eller veiledning til den medisinske behandlingen du trenger, uansett hvor du er.";
+"SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_TITLE" = "Global assistanse";
+"SUBMIT_CLAIM_EMERGENCY_INFO_LABEL" = "Ring alltid ditt lokale nødnummer hvis du eller noen andre er i alvorlig fare";
+"SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL" = "Vi dekker kostnader ved akutt sykdom, skade og akutt tannskade i utlandet. Om du behøver akutt helsehjelp utenlands må du først kontakte Hedvig Global Assistance.";
+"SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE" = "Forsikringen dekker";
+"SUBMIT_CLAIM_EMERGENCY_TITLE" = "Er du på tur og trenger akutt medisinsk hjelp eller assistanse?";
+"SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL" = "Kom raskt i gang ved å kontakte et verksted. Vi samarbeider med Carglass og Ryds Bilglas, som holder til over hele landet.\n\nMen du kan selvfølgelig velge et annet verksted som passer deg.";
+"SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL" = "Du må kontakte et bilverksted for å få ytterligere hjelp";
+"SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON" = "Bestill nå";
+"SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL" = "Online bestilling mulig";
+"SUBMIT_CLAIM_GLASS_DAMAGE_TITLE" = "Glassskade";
+"SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL" = "Ring %1$@";
+"SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE" = "Tilgjengelig 24/7 ∙ Ingen kostnader påløper";
+"SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL" = "";
+"SUBMIT_CLAIM_HOW_IT_WORKS_TITLE" = "Hvordan det fungerer";
+"SUBMIT_CLAIM_ID_PROTECTION_TITLE" = "";
+"SUBMIT_CLAIM_NEED_HELP_LABEL" = "We’re here 08–22, Mon–Fri\nand weekends 10–22";
+"SUBMIT_CLAIM_NEED_HELP_TITLE" = "Trenger du hjelp til noe annet?";
+"SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE" = "Vår partner";
+"SUBMIT_CLAIM_PARTNER_TITLE" = "Våre partnere";
+"SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON" = "Kontakta Nomor (Rentokil)";
+"SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL" = "Kundeservice tilgjengelig man–fre, 7–17";
+"SUBMIT_CLAIM_PESTS_HOW_IT_WORKS_LABEL" = "Nomor er vår partner for skadedyrproblemer. Kontakt Nomor direkte for å få umiddelbar hjelp med kravet ditt. Den enkleste måten å gjøre dette på er å trykke på knappen ovenfor.";
+"SUBMIT_CLAIM_PESTS_INFO_LABEL" = "Du behöver kontakta Nomor för att få ytterligare hjälp med ditt ärende";
+"SUBMIT_CLAIM_PESTS_TITLE" = "Hussvamp och skadedjur";
+"SUBMIT_CLAIM_TOWING_A1" = "";
+"SUBMIT_CLAIM_TOWING_A2" = "";
+"SUBMIT_CLAIM_TOWING_A3" = "";
+"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "";
+"SUBMIT_CLAIM_TOWING_INFO_LABEL" = "";
+"SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "";
+"SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL" = "";
+"SUBMIT_CLAIM_TOWING_Q1" = "";
+"SUBMIT_CLAIM_TOWING_Q2" = "";
+"SUBMIT_CLAIM_TOWING_Q3" = "";
+"SUBMIT_CLAIM_TOWING_TITLE" = "";
+"SUMMARY_SCREEN_COVERAGE" = "Dekningen";
+"SUMMARY_SCREEN_OVERVIEW" = "Din info";
+"SUMMARY_TOTAL_PRICE_SUBTITLE" = "";
+"SWITCHER_AUTO_CARD_DESCRIPTION" = "Når du har signert sier vi opp din gamle forsikring og aktiverer din nye forsikring hos Hedvig samme dag som den gamle utløper.";
+"SWITCHER_AUTO_CARD_TITLE" = "Automatisk bytte";
+"SWITCHER_MANUAL_CARD_DESCRIPTION" = "Ditt nåværende forsikringsselskap tillater ikke at vi sier opp din forsikring for deg. Du må selv si opp og etterpå angi en startdato for din nye forsikring i Hedvig-appen.";
+"SWITCHER_MANUAL_CARD_TITLE" = "";
+/* Figma page iOS Release 1 */
+"TAB_HOME_TITLE" = "Hjem";
+/* Figma page iOS Release 1 */
+"TAB_INSURANCES_TITLE" = "Forsikringer";
+"TAB_PAYMENTS_TITLE" = "Betalinger";
+"TAB_PROFILE_TITLE" = "Profil";
+"TAB_REFERRALS_TITLE" = "Forever";
+"TERMINATE_CONTRACT_COMMON_QUESTIONS" = "Vanlige spørsmål";
+"TERMINATE_CONTRACT_TERMINATING_PROGRESS" = "Fullfører...";
+"TERMINATE_CONTRACT_TERMINATION_COMPLETE" = "Forsikringen din ble kansellert før aktiveringsdatoen. Du vil ikke bli belastet noe.";
+"TERMINATION_ADDON_COVERAGE_TITLE" = "";
+"TERMINATION_A_01" = "";
+"TERMINATION_A_02" = "";
+"TERMINATION_A_03" = "";
+"TERMINATION_BUTTON" = "Si opp forsikringen";
+"TERMINATION_DATE_TEXT" = "Sluttdato";
+"TERMINATION_FLOW_BODY" = "Velg forsikringen du vil si opp";
+"TERMINATION_FLOW_CANCELLATION_TITLE" = "Kansellering";
+"TERMINATION_FLOW_CANCEL_INFO_TEXT" = "Du kan si opp forsikringen når som helst. Du vil kun bli belastet for den tiden du har vært aktivt medlem. Når forsikringen er sagt opp kan du se din siste betaling under fanen \"Betalinger\" her i appen.";
+"TERMINATION_FLOW_CANCEL_INFO_TITLE" = "Si opp forsikringen din";
+"TERMINATION_FLOW_CONFIRMATION" = "Forsikringen din vil bli kansellert direkte";
+/* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23280&mode=design&t=EIJ94dApw3spZjum-4 */
+"TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Forsikringen din vil bli kansellert %@";
+/* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
+"TERMINATION_FLOW_CONFIRM_BUTTON" = "Ja, slett";
+"TERMINATION_FLOW_CONFIRM_INFORMATION" = "Bekreft informasjonen din";
+"TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER" = "Velg dato...";
+"TERMINATION_FLOW_DATE_FIELD_TEXT" = "Sluttdato";
+"TERMINATION_FLOW_DELETION_INFO_CARD" = "Siden denne forsikringen ikke er aktiv ennå, vil den bli kansellert og fjernet i dag. Du vil ikke bli belastet noe.";
+"TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT" = "Hvis det er et hull i forsikringen din, kan det hende du ikke får fremtidig hjelp eller erstatning. Sørg for at du alltid har en aktiv forsikring.";
+"TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE" = "Viktig informasjon";
+"TERMINATION_FLOW_I_UNDERSTAND_TEXT" = "Jeg forstår";
+/* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23367&mode=design&t=EIJ94dApw3spZjum-4 */
+"TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE" = "Forsikringen din vil bli kansellert %@ . Vi sender deg en e-post med alle detaljer.";
+"TERMINATION_FLOW_SUCCESS_TITLE" = "Forsikringen kansellert";
+"TERMINATION_FLOW_SUMMARY_SUBTITLE" = "";
+"TERMINATION_FLOW_TITLE" = "Si opp forsikringen";
+"TERMINATION_FLOW_TODAY" = "I dag";
+"TERMINATION_KEEP_INSURANCE_BUTTON" = "";
+"TERMINATION_NOT_SUCCESSFUL_TITLE" = "Kanselleringen mislyktes";
+/* slack: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1727943801522449 */
+"TERMINATION_NO_TIER_QUOTES_SUBTITLE" = "";
+"TERMINATION_Q_01" = "";
+"TERMINATION_Q_02" = "Kan jeg sende inn et krav etter at jeg har avsluttet forsikringen min?";
+"TERMINATION_Q_03" = "";
+/* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-5262&mode=design&t=FVhMmBVrcHIW9bWu-4 */
+"TERMINATION_SURVEY_FEEDBACK_HINT" = "";
+/* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-5952&mode=design&t=FVhMmBVrcHIW9bWu-4 */
+"TERMINATION_SURVEY_FEEDBACK_INFO" = "Skriv inn tilbakemeldingen din";
+"TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT" = "";
+"TERMINATION_SURVEY_GENERIC_SUBTITLE" = "";
+/* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-4382&mode=design&t=L2ZbV2ozR8FTfDu4-0 */
+"TERMINATION_SURVEY_SUBTITLE" = "Hvorfor vil du si opp forsikringen?";
+"TIER_COMPARISON_SUBTITLE" = "";
+"TIER_COMPARISON_TITLE" = "";
+/* Your updates will be effective from tomorrow. */
+"TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION" = "";
+"TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION" = "Endringene dine har ikke blitt brukt. Vennligst prøv igjen.";
+"TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE" = "Gjør endringer...";
+"TIER_FLOW_COMMIT_PROCESSING_TITLE" = "Endringer vellykket";
+"TIER_FLOW_COMPARE_BUTTON" = "";
+"TIER_FLOW_COVERAGE_LABEL" = "";
+"TIER_FLOW_COVERAGE_PLACEHOLDER" = "";
+/* Deductible */
+"TIER_FLOW_DEDUCTIBLE_LABEL" = "";
+"TIER_FLOW_DEDUCTIBLE_PLACEHOLDER" = "";
+/* as per Julia's comment here, this bottom sheet info would better be very generic instead, to cover different scenarios.
+figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#959034027 */
+"TIER_FLOW_LOCKED_INFO_DESCRIPTION" = "";
+"TIER_FLOW_PREVIOUS_PRICE" = "";
+"TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY" = "Fra %@/mnd";
+"TIER_FLOW_PROCESSING" = "";
+"TIER_FLOW_SELECT_COVERAGE_SUBTITLE" = "";
+"TIER_FLOW_SELECT_COVERAGE_TITLE" = "";
+"TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE" = "";
+"TIER_FLOW_SELECT_DEDUCTIBLE_TITLE" = "";
+"TIER_FLOW_SELECT_INSURANCE_SUBTITLE" = "";
+/* button on Summary screen */
+"TIER_FLOW_SHOW_COVERAGE" = "";
+"TIER_FLOW_SUBTITLE" = "";
+"TIER_FLOW_TITLE" = "";
+"TIER_FLOW_TOTAL" = "Totalt";
+"TOAST.NEW_MESSAGE" = "Ny melding";
+"TOAST.NEW_OFFER" = "";
+"TOAST.READ_MORE" = "";
+"TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION" = "OK";
+"TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "For å kunne logge inn i nettbanken din må du ha BankID-appen installert.";
+"TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "Du mangler BankID på denne enheten";
+"Third_Party_Connected" = "%1$@ /mnd - betalt med tredjepartsleverandør";
+"VOICEOVER_ACCEPTED" = "";
+"VOICEOVER_ADD_INFORMATION" = "";
+"VOICEOVER_AUDIO_RECORDING_PLAY" = "";
+"VOICEOVER_CHAT_CAMERA" = "";
+"VOICEOVER_CHAT_CAMERAROLL" = "";
+"VOICEOVER_CHAT_FILE" = "";
+"VOICEOVER_CHAT_FILES" = "";
+"VOICEOVER_CHAT_IMAGE" = "";
+"VOICEOVER_CHAT_SEND_MESSAGE_BUTTON" = "";
+"VOICEOVER_COLLAPSED" = "";
+"VOICEOVER_CURRENT_PRICE" = "";
+"VOICEOVER_CURRENT_TIER" = "";
+"VOICEOVER_CURRENT_VALUE" = "";
+"VOICEOVER_DELETE_COINSURED_BUTTON" = "";
+"VOICEOVER_DOUBLE_CLICK_TO" = "";
+"VOICEOVER_EDIT" = "";
+"VOICEOVER_EXPANDED" = "";
+"VOICEOVER_HONESTYPLEDGE_SLIDER" = "";
+"VOICEOVER_INCLUDED" = "";
+"VOICEOVER_MORE_INFO" = "";
+"VOICEOVER_NEW_VALUE" = "";
+"VOICEOVER_NOTIFICATION_ALERT" = "";
+"VOICEOVER_NOT_ACCEPTED" = "";
+"VOICEOVER_NOT_INCLUDED" = "";
+"VOICEOVER_OPTION_SELECTED" = "";
+"VOICEOVER_PICKER_INFO" = "";
+"VOICEOVER_PICKER_INFO_MULTIPLE" = "";
+"VOICEOVER_PRESS_TO" = "";
+"VOICEOVER_PRICE_BREAKDOWN" = "";
+"VOICEOVER_REMOVE" = "";
+"VOICEOVER_SEGMENTEDCONTROL_SELECTED_TAB" = "";
+"VOICEOVER_SEGMENTEDCONTROL_SWITCH_TAB" = "";
+"VOICEOVER_SELECT_LANGUAGE" = "";
+"VOICEOVER_SUBMIT_CLAIMS_TRIAGING_INFO" = "";
+"VOICEOVER_TIER_COMPARISION_CLICK" = "";
+"VOICE_OVER_COPY_CODE" = "";
+"VOICE_OVER_INFO_HELPCENTER" = "";
+"ZIGNSEC_COULDNT_START" = "Kunne ikke starte pålogging, sjekk ditt identitetsnummer.";
+"ZIGNSEC_LOGIN_FAILED" = "Noe gikk galt. Prøv igjen eller kontakt oss.";
+"ZIGNSEC_OPENING_BROWSER" = "Åpner Safari for å fortsette påloggingsprosessen..";
+"ZIGNSEC_WAITING_FOR_RESPONSE" = "Venter på svar fra BankID...";
+"app_info.device_id_label" = "Enhets-ID";
+/* Text on the button which allows member to send us a bug report directly.
+We want members to submit a bug report to us directly instead of writing bad reviews. For this we are adding a new button in the app. */
+"app_info.submit_bug.button" = "Rapporter teknisk problem";
+"app_info.submit_bug.prefilled_letter_body" = "Jeg støtt på et teknisk problem i Hedvig-appen!\n\nBeskrivelse av det tekniske problemet:\n(Hold det kort og enkelt)\n\nLegg ved skjermbilde:\n(Har du et skjermbilde? Legg det ved denne e-posten)\n\nInformasjon til utviklere (Ikke endre)\nMITT: %@\nDID: %@\nAVC: %@\nSV: %@";
+/* Prefilled letter subject text (sent from our app to email client app when member wants to report a bug in our app). "Bug report" or something like that? */
+"app_info.submit_bug.prefilled_letter_subject" = "Teknisk problem";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports.  */
+"app_info.submit_bug.warning" = "Vær oppmerksom på at du kun kan rapportere tekniske problemer angående Hedvig-appen. For kravrelaterte spørsmål, vennligst bruk chat-funksjonen.";
+/* Link to the App Store page for the Hedvig app */
+"app_update_needed.hedvig_app_store_link" = "itms-apps://apple.com/app/id1303668531";
+/* Figma */
+"bankid_missing_login.email_button" = "Logg inn med e-post";
+/* Figma */
+"claim.casetype.insurance_case" = "Forsikringssak";
+/* Figma */
+"claim.decision.not_compensated" = "Ikke kompensert";
+/* Figma */
+"claim.decision.not_covered" = "Dekkes ikke";
+/* Figma */
+"claim.decision.paid" = "Betalt";
+"claim.decision.unresponsive" = "";
+"claim.location.choose" = "Velg";
+/* Figma */
+"claim.status_bar.being_handled" = "Blir håndtert";
+/* Figma */
+"claim.status_bar.closed" = "Lukket";
+/* Figma */
+"claim.status_bar.submitted" = "Sendt inn";
+"claim_history.empty_state.body" = "";
+"claim_history.empty_state.title" = "";
+"claim_outcome_unresponsive_support_text" = "";
+/* Figma */
+"claim_status.being_handled.support_text" = "Saken din blir gjennomgått av en av våre forsikringsspesialister. Vi kommer snart tilbake til deg med en oppdatering.";
+/* Figma */
+"claim_status.being_handled_reopened.support_text" = "Vi har gjenåpnet din sak og en av våre forsikringsspesialister gjennomgår den. Vi kommer tilbake til deg snart med en oppdatering.";
+"claim_status.claim_details.button" = "Show details";
+"claim_status.claim_details.info_text" = "Er det noe som mangler? Send oss en melding her i appen.";
+"claim_status.claim_details.submitted" = "Sendt inn";
+"claim_status.claim_details.title" = "Detaljer om kravet";
+"claim_status.claim_hide_details.button" = "";
+/* Figma */
+"claim_status.contact.generic.subtitle" = "Spørsmål?";
+/* Figma */
+"claim_status.contact.generic.title" = "Kontakt oss i chatten";
+"claim_status.missingReceipt.support_text" = "To proceed with your claim we need a receipt for the item(s) you are seeking reimbursement for.";
+/* Figma */
+"claim_status.not_compensated.support_text" = "Kravet ditt ble dekket, men dessverre er kompensasjonen lik eller mindre enn egenandelen. \n\nÅpne chatten for detaljer om hvordan vi har beregnet din sak.";
+"claim_status.not_covered.support_text" = "Kravet ditt ble dessverre ikke dekket. Vennligst åpne chatten for mer informasjon om beslutningen.";
+/* Figma */
+"claim_status.paid.support_text" = "Dette dekker vi. Du skal ha mottatt betalingen nå. \n\nÅpne chatten for detaljer om hvordan vi beregnet kompensasjonen din.";
+/* Figma */
+"claim_status.submitted.support_text" = "Vi har mottatt skademeldingen din og vil begynne å gjennomgå den snart.";
+/* Figma */
+"claim_status.title" = "Kravstatus";
+"claim_status.uploaded_files.upload_button" = "Last opp filer";
+"claim_status.uploaded_files.upload_text" = "Last opp bilder, kvitteringer eller andre dokumenter knyttet til kravet ditt";
+"claim_status_appeal_instruction_link_text" = "";
+"claim_status_detail.add_files" = "Legg til filer";
+"claim_status_detail.add_more_files" = "Legg til flere filer";
+"claim_status_detail.added_files" = "Lagt til filer";
+"claim_status_detail.documents.title" = "";
+/* Figma */
+"claim_status_detail.info_error.body" = "Den innspilte skademeldingen din kunne ikke lastes ned. Prøv på nytt for å kunne lytte til den.";
+/* Figma */
+"claim_status_detail.info_error.button" = "Prøv igjen";
+"claim_status_detail.message_view.body" = "";
+/* Figma */
+"claim_status_detail.submitted" = "Sendt inn";
+"claim_status_detail.submitted_message" = "Din beskjed";
+"claim_status_detail.uploaded_files" = "Opplastede filer";
+"claims.alert.body" = "Hvis du avslutter, vil du bli returnert til hjemmesiden og informasjonen du har skrevet vil gå tapt.";
+"claims.edit.screen.title" = "Rediger informasjonen";
+"claims.incident.screen.date.of.incident" = "Når skjedde det?";
+"claims.incident.screen.header" = "Hendelseinfo";
+"claims.incident.screen.location" = "Hvor skjedde det?";
+"claims.item.enter.model.name" = "Skriv inn modellnavn";
+"claims.item.screen.damage.button" = "Type skade";
+"claims.item.screen.date.of.incident.button" = "Hendelsesdato";
+"claims.item.screen.date.of.purchase.button" = "Kjøpsdato";
+"claims.item.screen.model.button" = "";
+"claims.item.screen.purchase.price.button" = "Anskaffelsekostnad";
+"claims.item.screen.title" = "";
+"claims.location.screen.title" = "Plass";
+"claims.payout.age.deductable" = "Egenandel";
+"claims.payout.age.deduction" = "Aldersfradrag";
+"claims.payout.button.label" = "Utbetaling %1$@";
+"claims.payout.summary.method" = "Utbetaling til";
+"claims.payout.summary.title" = "Kasse";
+"claims.summary.screen.title" = "Sammendrag";
+"cross_sell.info.faq_chat_button" = "Chat med oss";
+"cross_sell_get_price" = "Få pris";
+/* Figma */
+"dashboard_multiple_renewals_prompter_button" = "Les nye sertifikater";
+"edit_coinsured_ssn_placeholder" = "DDMMÅÅXXXXX";
+/* Figma */
+"embark_onboarding_more_options.settings_label" = "Innstillinger";
+"file_upload_choose_files" = "Andre filer";
+"file_upload_files_added" = "Lagt til filer lagret";
+"file_upload_photo_library" = "Dine bilder";
+"file_upload_take_photo" = "Ta bilde";
+"file_upload_upload_files" = "Last opp filer";
+"general_cancel_button" = "Avbryt";
+"general_close_button" = "Lukk";
+"general_continue_button" = "Fortsett";
+"general_done_button" = "Ferdig";
+"general_error" = "Feil";
+"general_next_button" = "Neste";
+"general_previous_button" = "Tidligere";
+"general_save_button" = "Lagre";
+"general_select_button" = "Velg";
+/* Figma */
+"home.claim_card.pill.claim" = "Sak";
+/* Figma */
+"home.claim_card.pill.reopened" = "Gjenåpnet";
+"home_tab.active_in_future_info" = "Forsikringen din blir aktivert %1$@. Hvis du har spørsmål, ta kontakt med oss via chatten.";
+/* Figma page iOS Release 2 */
+"home_tab.chat_hint_text" = "Har du spørsmål? Skriv til oss";
+/* Figma page iOS Release 1 */
+"home_tab.claim_button_text" = "Melde en skade";
+"home_tab.get_help" = "";
+/* Figma */
+"home_tab.moving_action_sheet.open_offer_button" = "Gå til ventende tilbud";
+"home_tab.pending_nonswitchable_info" = "Ikke glem å si opp din tidligere forsikring. Hvis du har spørsmål, vennligst kontakt oss via chatten.";
+"home_tab.pending_switchable_info" = "Vi holder bare nå på kontakt med ditt tidligere forsikringsbolag for å implementere bytet till Hedvig. Har du spørsmål? Skriv til oss i chatten.";
+/* Figma page iOS Release 1 */
+"home_tab.terminated_body" = "Du har for ingen aktiv forsikring med Hedvig. Du kan fortsatt melde skader som har skjedd under den aktive perioden for din avsluttede forsikring.";
+/* The big text in the home screen, presented if we do not have a first name to show */
+"home_tab.welcome_title_without_name" = "Hei, hvordan kan vi hjelpe deg?";
+/* Figma */
+"housing_info_list.address_label" = "";
+/* Figma */
+"housing_info_list.ancillary_area_label" = "Tilhørende område";
+/* Figma */
+"housing_info_list.baths_label" = "";
+/* Figma */
+"housing_info_list.construction_year_label" = "";
+/* Figma */
+"housing_info_list.contract_button" = "";
+/* Figma */
+"housing_info_list.expand_button" = "";
+/* Figma */
+"housing_info_list.extra_buildings_subheadline" = "Ekstra bygninger";
+/* Figma */
+"housing_info_list.housing_type_label" = "";
+/* Figma */
+"housing_info_list.insured_people_label" = "";
+/* Figma */
+"housing_info_list.insured_people_value_multiple" = "Du + %1$li";
+/* Figma */
+"housing_info_list.insured_people_value_single" = "";
+/* Figma */
+"housing_info_list.living_space_label" = "Boareal";
+/* Figma */
+"housing_info_list.postal_code_label" = "";
+/* Figma */
+"housing_info_list.size_label" = "";
+/* Figma */
+"housing_info_list.size_value" = "%1$@ m2";
+/* Figma */
+"housing_info_list.sublet_label" = "";
+"important_message.hide" = "Skjule";
+"important_message.read_more" = "Les mer";
+/* Figma page iOS Release 1 */
+"info_card_missing_payment.body" = "For at forsikringen din skal være aktiv, må du koble til en betalingsmetode";
+"info_card_missing_payment.missing_payments_body" = "Forsikringen din vil bli avsluttet på grunn av flere mislykkede betalingsforsøk. Send en melding via appen før %1$@ for å unngå oppsigelse.";
+"insurance_certificate_title" = "Forsikringsbrev";
+/* Figma */
+"insurance_details.change_address_button" = "Endre adresse";
+"insurance_details.change_coverage" = "";
+"insurance_details.move_button" = "";
+/* Figma */
+"insurance_details.update_details_sheet_title" = "Kommende endringer";
+/* Figma page Release 3 (Insurance Tab) */
+"insurance_details_view.tab_1_title" = "Din info";
+/* Figma page Release 3 (Insurance Tab) */
+"insurance_details_view.tab_2_title" = "Dekning";
+/* Figma page Release 3 (Insurance Tab) */
+"insurance_details_view.tab_3_title" = "Dokumenter";
+/* Figma */
+"insurance_tab.cross_sells.title" = "Oppdag mer dekning";
+"insurances_tab.cancelled_insurances_label" = "Kansellerte forsikringer (%1$@)";
+"insurances_tab.cancelled_insurances_title" = "Kansellerte forsikringer";
+"insurances_tab.contact_us_to_edit_co_insured" = "Du må kontakte oss i chatten for å endre beløpet for medforsikret på forsikringen din";
+/* Figma page iOS Release 1 */
+"insurances_tab.title" = "Forsikringer";
+"insurances_tab.view_details" = "Vis detaljer";
+"insurances_tab.your_insurance_will_be_updated" = "Forsikringen din vil bli oppdatert %1$@ .";
+"insurances_tab.your_insurance_will_be_updated_with_info" = "Forsikringen din vil bli oppdatert %1$@ . Hvis du ønsker å avbryte eller gjøre endringer, må du kontakte vårt serviceteam.";
+"insurances_tab_moving_flow_info_button_title" = "Get a price quote";
+"insurances_tab_moving_flow_info_title" = "Are you moving? See if we can offer you a better price on your new home.";
+/* Figma */
+"insurely_se_ssn.assistive_text" = "";
+/* Figma */
+"login.code_input.error_msg.code_not_valid" = "";
+/* Figma */
+"login.enter_your_email_address" = "Vennligst skriv inn din epost. Påloggingsalternativ kun tilgjengelig for medlemmer av Hedvig Sverige.";
+/* Figma */
+"login.medium_button.inactive.resend_code_in" = "";
+/* Figma */
+"login.open_email_app_button" = "";
+/* Figma */
+"login.smedium_button.active.resend_code" = "";
+"login.snackbar.code_resent" = "";
+/* Figma */
+"login.subtitle.verification_code_email" = "Klikk på påloggingsknappen i e-posten eller skriv inn den 6-sifrede koden vi har sendt til %@ .";
+/* Figma */
+"login.text_input.email_error_not_valid" = "";
+/* Figma */
+"login.title.check_your_email" = "Sjekk e-posten.";
+"market_language_screen.choose_language_label" = "Velg ditt språk";
+/* Figma page Implementation */
+"market_language_screen.continue_button_text" = "Fortsett";
+/* Figma page Implementation */
+"market_language_screen.title" = "Velkommen til Hedvig.";
+/* Figma */
+"moving_embark_title" = "Bytt adresse";
+/* Figma */
+"moving_summary_scroll.Details" = "Detaljer";
+/* Figma page App iOS */
+"nav_bar.skip" = "Hoppe over";
+/* Figma */
+"offer.add_discount_button" = "Legg til rabattkode";
+/* Figma */
+"offer.discount_added_toastbar" = "Rabatt lagt til";
+/* Figma */
+"offer.discount_error_alert_body" = "Kontroller at du har stavet koden riktig.";
+/* Figma */
+"offer.remove_discount_button" = "Fjern rabatt";
+"offer.remove_discount_error_alert_body" = "Prøv på nytt.";
+"offer.remove_discount_error_alert_title" = "Kunne ikke fjerne rabatten";
+/* This text key is to describe the actions for accessibility reasons. */
+"open_chat" = "Åpne chatten";
+/* Figma page Pay-In Flow */
+"pay_in_confirmation.continue_button" = "Fortsett";
+/* Figma page Pay-In Flow */
+"pay_in_confirmation.headline" = "Betalingsmåte koblet til!";
+/* Figma page Pay-In Flow */
+"pay_in_error.headline" = "Noe gikk galt...";
+/* Figma page Pay-In Flow */
+"pay_in_error.retry_button" = "Forsøk en gang til";
+/* Figma page Pay-In Flow */
+"pay_in_error_direct_debit.body" = "";
+/* Figma page Pay-In Flow */
+"pay_in_explainer.button_text" = "Legg til betalingsmetode";
+/* Figma page Pay-In Flow */
+"pay_in_iframe_in_app.connect_payment" = "Endre betalingsmåte";
+/* Figma page Pay-In Flow */
+"pay_in_iframe_in_app_cancel_alert.body" = "For at forsikringen din skal forbli aktiv, må du koble til en betalingsmetode.";
+/* Figma page Pay-In Flow */
+"pay_in_iframe_in_app_cancel_alert.dismiss_button" = "Avvise";
+/* Figma page Pay-In Flow */
+"pay_in_iframe_in_app_cancel_alert.proceed_button" = "Ja, avbryt";
+/* Figma page Pay-In Flow */
+"pay_in_iframe_in_app_cancel_alert.title" = "Er du sikker?";
+/* Figma page Pay-In Flow */
+"pay_in_iframe_post_sign.skip_button" = "Hopp over";
+/* Figma page Pay-In Flow */
+"pay_in_iframe_post_sign.title" = "Koble til betaling";
+/* Figma */
+"payment_details.navigation_bar.title" = "Betalingsinformasjon";
+/* Figma */
+"payment_details.receipt_card.total" = "Total";
+"payments_carried_adjustment" = "Justering";
+"payments_carried_adjustment_info" = "Du har en balanse hos oss. Vi har trukket dette beløpet fra din månedlige betaling.";
+"payments_settlement_adjustment" = "Oppgjørsjustering";
+"payments_settlement_adjustment_info" = "Du har en utestående saldo hos oss. Vi har brukt en del av det beløpet til å justere betalingen for denne måneden.";
+"profile.appSettingsSection.row.headline" = "Innstillinger";
+"profile.appSettingsSection.row.subheadline" = "Språk, tema, informasjon";
+"profile.appSettingsSection.title" = "Appinnstillinger";
+"profile.certificates.title" = "";
+"profile.claim_history.title" = "";
+"profile_tab.title" = "Profil";
+/* Figma page App iOS */
+"referalls_#invitee_states.invited_you" = "Inviterte deg";
+/* Figma page App iOS */
+"referrals_#active.your.new.price.title" = "Din nye pris";
+/* Figma page App iOS */
+"referrals_#active_+_toast.text" = "Kode kopiert";
+/* Figma page App iOS */
+"referrals_#allow_push_notification_sheet.allow.button" = "Tillate";
+"referrals_#change.change_code" = "Endre kode";
+"referrals_#change.code_changed" = "Koden endret";
+/* Figma page App iOS */
+"referrals_#empty.body" = "Når noen skaffer Hedvig via linken din eller med koden din, får dere begge en %1$@-rabatt per måned. ";
+/* Figma page App iOS */
+"referrals_#empty.code.headline" = "Din unike kode";
+/* Figma page App iOS */
+"referrals_#empty.share_code_button" = "Del kode";
+/* Figma page App iOS */
+"referrals_#info_sheet.body" = "Når noen skaffer Hedvig via linken din eller med koden din, får dere begge %1$@ rabatt per måned. En såkalt win-win. Rabatten gjelder så lenge dere begge blir medlemmer, forhåpentligvis forever. \n\nDette gjelder inntil forsikringen din er gratis. Lykke til!";
+/* Figma page App iOS */
+"referrals_#info_sheet.headline" = "Hedvig Forever";
+"sas_integration.change_eurobonus_number" = "Endre EuroBonus-nummer";
+"sas_integration.connect_eurobonus" = "Koble til EuroBonus";
+"sas_integration.enter_your_number" = "Skriv inn ditt nummer";
+"sas_integration.eurobonus_connected" = "EuroBonus tilkoblet";
+"sas_integration.eurobonus_info" = "Du må koble ditt EuroBonus-nummer til kontoen din for å tjene poeng";
+"sas_integration.incorrect_number" = "Nummeret er feil, prøv igjen";
+"sas_integration.not_connected" = "Ikke tilkoblet";
+"sas_integration.title" = "EuroBonus";
+/* Figma */
+"select_insurance.navigation_bar.center_element.title" = "Velg forsikring";
+/* Figma */
+"settings.alert_change_market_onboarding_description" = "Du behøver å starte på nytt.";
+/* Figma */
+"settings.alert_change_market_onboarding_title" = "Ønsker du å bytte land?";
+/* Figma */
+"settings.alert_restart_onboarding_description" = "All informasjon du har lagt inn vil bli slettet.";
+/* Figma */
+"settings.alert_restart_onboarding_title" = "Ønsker du å starte på nytt?";
+"something_went_wrong" = "Noe gikk galt";
+"travel_certificate.active" = "";
+"travel_certificate.card_title" = "Reisebevis";
+"travel_certificate.coinsured_error_label" = "Spesifiser hvem som skal dekkes";
+"travel_certificate.create_new_certificate" = "";
+"travel_certificate.download_recommendation" = "Vi anbefaler at du skriver ut sertifikatet slik at du enkelt kan ta det med deg overalt.";
+"travel_certificate.empty_list_message" = "";
+"travel_certificate.expired" = "";
+"travel_certificate.info.subtitle" = "";
+"travel_certificate.info.title" = "";
+"travel_certificate.missing_coinsured_button" = "Registrer deg nå";
+"travel_certificate.missing_coinsured_info" = "For å inkludere en medforsikret person på forsikringsbeviset må du registrere vedkommendes opplysninger.";
+"travel_certificate.personalNumber" = "Personnummer";
+"travel_certificate.select_contract_title" = "Hva er din primære adresse som skal skrives på reisebeviset?";
+"travel_certificate.start_date_info" = "Reisebeviset er gyldig i %1$d dager fra avreisedatoen.";
+"travel_certificate.start_date_title" = "Avreisedato";
+"travel_certificate.we_have_sent_copy_to_your_email" = "Reisebeviset har fått tilsendt din e-post.";
+"travel_certificate.when_is_your_trip" = "Når er turen din?";
+"travel_certificate.who_is_traveling" = "Hvem reiser?";

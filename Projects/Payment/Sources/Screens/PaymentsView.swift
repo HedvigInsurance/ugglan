@@ -115,6 +115,7 @@ public struct PaymentsView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 20, height: 20)
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .accessibilityHidden(true)
                     }
                     .foregroundColor(.primary)
                     hText(paymentData.payment.date.displayDate)
@@ -168,31 +169,7 @@ public struct PaymentsView: View {
     }
 
     private var bottomPart: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentStatusData?.status
-            }
-        ) { statusData in
-            if let statusData, !statusData.showConnectPayment {
-                hSection {
-                    VStack(spacing: .padding16) {
-                        if statusData == .pending {
-                            InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                        }
-                        hButton(
-                            .large,
-                            .secondary,
-                            content: .init(title: statusData.connectButtonTitle),
-                            {
-                                paymentNavigationVm.connectPaymentVm.set()
-                            }
-                        )
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-            }
-        }
+        ConnectPaymentBottomView(alwaysShowButton: false)
     }
 }
 

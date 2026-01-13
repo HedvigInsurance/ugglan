@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>A11Y_NUMBER_OF_ELIGIBLE_INSURANCES</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Du har %li berättigad försäkring.</string>
+        <key>other</key>
+        <string>Du har %li berättigade försäkringar.</string>
+      </dict>
+    </dict>
+    <key>FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li vän inbjuden</string>
+        <key>other</key>
+        <string>%li vänner inbjudna</string>
+      </dict>
+    </dict>
+    <key>home.claim.closed.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Hej %1$@, vi har stängt din skadeanmälan.</string>
+        <key>other</key>
+        <string>Hej %1$@, vi har stängt dina skadeanmälningar.</string>
+      </dict>
+    </dict>
+    <key>home.claim.open.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Hej %1$@, här är ditt öppna skadeanmälan.</string>
+        <key>other</key>
+        <string>Hej %1$@, här är dina öppna skadeanmälningar.</string>
+      </dict>
+    </dict>
+    <key>home.claim.reopened.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Hej %1$@, vi har återöppnat din skadeanmälan.</string>
+        <key>other</key>
+        <string>Hej %1$@, vi har återöppnat dina skadeanmälningar.</string>
+      </dict>
+    </dict>
+    <key>insurances_tab.terminated_insurance_subtitile</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Avslutad försäkring (%1$d)</string>
+        <key>other</key>
+        <string>Avslutade försäkringar (%1$d)</string>
+      </dict>
+    </dict>
+    <key>offer.switcher_title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Din nuvarande försäkring</string>
+        <key>other</key>
+        <string>Dina nuvarande försäkringar</string>
+      </dict>
+    </dict>
+    <key>payment_screen.free_month_discount_label</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%1$li månad gratis</string>
+        <key>other</key>
+        <string>%1$li månader gratis</string>
+      </dict>
+    </dict>
+    <key>payment_screen.percentage_discount_label</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%1$li %% rabatt i %2$li månad</string>
+        <key>other</key>
+        <string>%1$li %% rabatt i %2$li månader</string>
+      </dict>
+    </dict>
+    <key>payments.toast.receipt_exported_text</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string></string>
+        <key>other</key>
+        <string></string>
+      </dict>
+    </dict>
+    <key>payments_screen.late_payments_title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Missad betalning</string>
+        <key>other</key>
+        <string>Missade betalningar</string>
+      </dict>
+    </dict>
+  </dict>
+</plist>

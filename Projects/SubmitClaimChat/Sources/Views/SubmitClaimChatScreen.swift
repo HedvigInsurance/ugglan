@@ -191,6 +191,7 @@ struct StepView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @ObservedObject var step: ClaimIntentStepHandler
     @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
+    @AccessibilityFocusState var isAccessibilityFocused: String?
 
     var body: some View {
         SubmitClaimChatMesageView(viewModel: step, alertVm: alertVm)
@@ -207,6 +208,10 @@ struct StepView: View {
                 }
             }
             .id(step.id)
+            .accessibilityFocused($isAccessibilityFocused, equals: step.id)
+            .onChange(of: viewModel.currentStep?.id) { id in
+                isAccessibilityFocused = id
+            }
     }
 }
 
@@ -236,8 +241,6 @@ extension View {
             SubmitClaimChatViewModel(
                 startInput: .init(
                     input: .init(sourceMessageId: nil),
-                    goToClaimDetails: { _ in
-                    },
                     openChat: {
                     }
                 )
@@ -335,7 +338,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
-    let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
     let router = Router()
     private let input: StartClaimInput
@@ -344,7 +346,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         startInput: SubmiClaimChatInput
     ) {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
-        self.goToClaimDetails = startInput.goToClaimDetails
         self.openChat = startInput.openChat
         self.input = startInput.input
         super.init()

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li friend invited</string>
+        <key>other</key>
+        <string>%li friends invited</string>
+      </dict>
+    </dict>
+    <key>home.claim.closed.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Hi %1$@, we've closed your claim.</string>
+        <key>other</key>
+        <string>Hi %1$@, we've closed your claims.</string>
+      </dict>
+    </dict>
+    <key>home.claim.open.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Hi %1$@, here’s your open claim.</string>
+        <key>other</key>
+        <string>Hi %1$@, here’s your open claims.</string>
+      </dict>
+    </dict>
+    <key>home.claim.reopened.title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Hi %1$@, we've reopened your claim.</string>
+        <key>other</key>
+        <string>Hi %1$@, we've reopened your claims.</string>
+      </dict>
+    </dict>
+    <key>insurances_tab.terminated_insurance_subtitile</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%1$d terminated insurance</string>
+        <key>other</key>
+        <string>%1$d terminated insurances</string>
+      </dict>
+    </dict>
+    <key>offer.switcher_title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Your current insurance</string>
+        <key>other</key>
+        <string>Your current insurances</string>
+      </dict>
+    </dict>
+    <key>payment_screen.free_month_discount_label</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%1$li month free</string>
+        <key>other</key>
+        <string>%1$li months free</string>
+      </dict>
+    </dict>
+    <key>payment_screen.percentage_discount_label</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%1$li%% discount for %2$li month</string>
+        <key>other</key>
+        <string>%1$li%% discount for %2$li months</string>
+      </dict>
+    </dict>
+    <key>payments.toast.receipt_exported_text</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Receipts exported</string>
+        <key>other</key>
+        <string>Receipt exported</string>
+      </dict>
+    </dict>
+    <key>payments_screen.late_payments_title</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Missed payment</string>
+        <key>other</key>
+        <string>Missed payments</string>
+      </dict>
+    </dict>
+  </dict>
+</plist>

@@ -644,16 +644,6 @@ struct HomeTab: View {
             SubmitClaimChatNavigation(
                 startInput: .init(
                     input: input,
-                    goToClaimDetails: { [weak homeNavigationVm] claimId in
-                        homeNavigationVm?.claimsAutomationStartInput = nil
-                        Task {
-                            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            await claimsStore.sendAsync(.fetchActiveClaims)
-                            if let claim = claimsStore.state.getClaimFor(id: claimId) {
-                                homeNavigationVm?.router.push(claim)
-                            }
-                        }
-                    },
                     openChat: {
                         NotificationCenter.default.post(
                             name: .openChat,
