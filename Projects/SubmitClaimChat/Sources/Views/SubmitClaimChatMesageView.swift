@@ -4,7 +4,6 @@ import hCoreUI
 
 struct SubmitClaimChatMesageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
-    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
     var body: some View {
         VStack(spacing: .padding8) {
@@ -29,7 +28,7 @@ struct SubmitClaimChatMesageView: View {
             HStack {
                 spacing(viewModel.sender == .member)
                 VStack(alignment: .trailing, spacing: .padding6) {
-                    ClaimStepResultView(viewModel: viewModel, alertVm: alertVm)
+                    ClaimStepResultView(viewModel: viewModel)
                         .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
                 }
                 .animation(.easeInOut(duration: 0.2), value: viewModel.state.isStepExecuted)
@@ -118,7 +117,7 @@ struct ClaimStepView: View {
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
-    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
+    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {

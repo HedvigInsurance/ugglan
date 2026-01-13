@@ -11,7 +11,7 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
     }
     @Published var alertPresented = false {
         didSet {
-            if alertPresented == false {
+            if alertPresented == false, alertModel?.type != .edit {
                 self.handleClose()
             }
         }
@@ -106,10 +106,7 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                             }
                         ),
                         secondaryButton: .default(
-                            Text(L10n.embarkGoBackButton).font(.system(size: 17, weight: .medium)),
-                            action: {
-                                viewModel.alertModel?.action()
-                            }
+                            Text(L10n.embarkGoBackButton).font(.system(size: 17, weight: .medium))
                         )
                     )
                 }

@@ -56,7 +56,7 @@ public struct SubmitClaimChatScreen: View {
                 hForm {
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(viewModel.allSteps, id: \.id) { step in
-                            StepView(step: step, alertVm: alertVm)
+                            StepView(step: step)
                         }
                     }
                     .padding(.horizontal, .padding16)
@@ -71,6 +71,7 @@ public struct SubmitClaimChatScreen: View {
                 .hFormContentPosition(.top)
                 .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .environmentObject(viewModel)
+                .environmentObject(alertVm)
                 .hideScrollIndicators()
                 .onAppear {
                     viewModel.scrollViewHeight = proxy.size.height
@@ -108,7 +109,7 @@ public struct SubmitClaimChatScreen: View {
                 {
                     ScrollToBottomButton(scrollAction: scrollToBottom)
                 }
-                CurrentStepView(step: currentStep, alertVm: alertVm)
+                CurrentStepView(step: currentStep)
                     .background {
                         GeometryReader { proxy in
                             Color.clear
@@ -163,7 +164,7 @@ struct ScrollToBottomButton: View {
 
 private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
-    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
+    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
     @ViewBuilder var body: some View {
         if step.state.showInput {
@@ -190,11 +191,10 @@ private struct CurrentStepView: View {
 struct StepView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @ObservedObject var step: ClaimIntentStepHandler
-    @ObservedObject var alertVm: SubmitClaimChatScreenAlertViewModel
     @AccessibilityFocusState var isAccessibilityFocused: String?
 
     var body: some View {
-        SubmitClaimChatMesageView(viewModel: step, alertVm: alertVm)
+        SubmitClaimChatMesageView(viewModel: step)
             .padding(.top, .padding16)
             .background {
                 GeometryReader { proxy in
