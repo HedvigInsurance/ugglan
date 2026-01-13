@@ -7,7 +7,7 @@ xcassets:
           enumName: hCoreUIAssets
           publicAccess: true
 strings:
-  inputs: 
+  inputs:
     - Projects/hCore/Resources/en.lproj
   outputs:
     templatePath: swiftgen/localization.stencil
