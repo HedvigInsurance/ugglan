@@ -218,6 +218,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Submit your claim";
 "CLAIM_CHAT_SUCCESS_GO_TO_CLAIM" = "Go to claim";
 "CLAIM_CHAT_SUCCESS_MESSAGE" = "Your claim was submitted successfully";
+"CLAIM_CHAT_TITLE" = "Claim";
 "CLAIM_CHAT_UNKNOWN_STEP" = "Unknown step";
 "CLAIM_CHAT_USE_AUDIO" = "Record voice note";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Describe with text";
