@@ -17,10 +17,10 @@ struct ConnectPaymentBottomView: View {
             if let statusData, !statusData.status.showConnectPayment {
                 hSection {
                     VStack(spacing: .padding16) {
-                        if statusData.status == .pending {
-                            InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                        }
                         if alwaysShowButton || statusData.paymentChargeData == nil {
+                            if statusData.status == .pending {
+                                InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                            }
                             hButton(
                                 .large,
                                 .secondary,
