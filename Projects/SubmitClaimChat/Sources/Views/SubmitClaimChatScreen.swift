@@ -188,6 +188,7 @@ private struct CurrentStepView: View {
 struct StepView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @ObservedObject var step: ClaimIntentStepHandler
+    @AccessibilityFocusState var isAccessibilityFocused: String?
 
     var body: some View {
         SubmitClaimChatMesageView(viewModel: step)
@@ -204,6 +205,10 @@ struct StepView: View {
                 }
             }
             .id(step.id)
+            .accessibilityFocused($isAccessibilityFocused, equals: step.id)
+            .onChange(of: viewModel.currentStep?.id) { id in
+                isAccessibilityFocused = id
+            }
     }
 }
 
