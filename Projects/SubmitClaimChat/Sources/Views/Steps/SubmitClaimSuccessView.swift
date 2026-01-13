@@ -6,7 +6,7 @@ import hCoreUI
 public struct SubmitClaimSuccessView: View {
     private let model: ClaimIntentOutcomeClaim
     @EnvironmentObject var navigationVm: SubmitClaimChatViewModel
-
+    @EnvironmentObject var router: Router
     public init(
         model: ClaimIntentOutcomeClaim,
     ) {
@@ -25,9 +25,7 @@ public struct SubmitClaimSuccessView: View {
                     buttonTitle: L10n.generalDoneButton,
                     buttonStyle: .secondary,
                     buttonAction: {
-                        navigationVm.goToClaimDetails(
-                            model.claimId
-                        )
+                        router.dismiss()
                     }
                 )
             )
@@ -64,8 +62,6 @@ public struct SubmitClaimSuccessView: View {
         SubmitClaimChatViewModel.init(
             startInput: .init(
                 input: .init(sourceMessageId: nil),
-                goToClaimDetails: { _ in
-                },
                 openChat: {
                 }
             )

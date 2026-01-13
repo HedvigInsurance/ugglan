@@ -1,8 +1,6 @@
 import SwiftUI
 import hCoreUI
 
-public typealias GoToClaimDetails = (String) -> Void
-
 public struct SubmitClaimOutcomeScreen: View {
     let outcome: ClaimIntentStepOutcome
     @EnvironmentObject var navigationVm: SubmitClaimChatViewModel

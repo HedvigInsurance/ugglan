@@ -4,16 +4,13 @@ import hCoreUI
 
 public struct SubmiClaimChatInput: Equatable, Identifiable {
     let input: StartClaimInput
-    let goToClaimDetails: GoToClaimDetails
     let openChat: () -> Void
 
     public init(
         input: StartClaimInput,
-        goToClaimDetails: @escaping GoToClaimDetails,
         openChat: @escaping () -> Void
     ) {
         self.input = input
-        self.goToClaimDetails = goToClaimDetails
         self.openChat = openChat
     }
 
