@@ -90,8 +90,6 @@ struct ClaimStepView: View {
                 SubmitClaimSummaryBottomView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
-                SubmitClaimHonestyPledgeView(submitClaimChatViewModel: submitClaimChatViewModel, viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
                 SubmitClaimUnknownView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
@@ -136,8 +134,6 @@ struct ClaimStepResultView: View {
                 SubmitClaimFormResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
-                SubmitClaimHonestyPledgeResultView()
             }
         }
         if viewModel.isRegrettable && viewModel.state.isStepExecuted {

@@ -188,8 +188,6 @@ enum ClaimIntentStepHandlerFactory {
             return SubmitClaimFileUploadStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .deflect:
             return SubmitClaimDeflectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        case .honestyPledge:
-            return SubmitClaimHonestyPledgeStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .unknown:
             return SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }

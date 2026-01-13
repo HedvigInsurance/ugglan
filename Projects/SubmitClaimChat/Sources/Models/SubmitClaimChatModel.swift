@@ -87,7 +87,6 @@ public enum ClaimIntentStepContent: Sendable {
     case summary(model: ClaimIntentStepContentSummary)
     case singleSelect(model: ClaimIntentStepContentSelect)
     case deflect(model: ClaimIntentOutcomeDeflection)
-    case honestyPledge
     case unknown
 }
 

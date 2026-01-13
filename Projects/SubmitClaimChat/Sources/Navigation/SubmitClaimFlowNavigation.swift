@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct SubmiClaimChatInput: Equatable, Identifiable {
+public struct SubmitClaimChatInput: Equatable, Identifiable {
     let input: StartClaimInput
     let openChat: () -> Void
 
@@ -15,16 +15,16 @@ public struct SubmiClaimChatInput: Equatable, Identifiable {
     }
 
     public var id = UUID().uuidString
-    public static func == (lhs: SubmiClaimChatInput, rhs: SubmiClaimChatInput) -> Bool {
+    public static func == (lhs: SubmitClaimChatInput, rhs: SubmitClaimChatInput) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-public struct SubmitClaimChatNavigation: View {
+struct SubmitClaimFlowNavigation: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
 
-    public init(
-        startInput: SubmiClaimChatInput
+    init(
+        startInput: SubmitClaimChatInput
     ) {
         _viewModel = StateObject(
             wrappedValue: .init(startInput: startInput)
@@ -56,7 +56,7 @@ public struct SubmitClaimChatNavigation: View {
     }
 }
 
-extension SubmitClaimChatNavigation: TrackingViewNameProtocol {
+extension SubmitClaimFlowNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
         .init(describing: SubmitClaimChatScreen.self)
     }
