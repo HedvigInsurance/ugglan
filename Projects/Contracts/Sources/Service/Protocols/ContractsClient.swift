@@ -4,7 +4,7 @@ import Foundation
 @MainActor
 public protocol FetchContractsClient {
     func getContracts() async throws -> ContractsStack
-    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel?
+    func getAddonBannerModel(source: AddonSource) async throws -> [AddonBannerModel]
 }
 
 public struct ContractsStack: Sendable {
