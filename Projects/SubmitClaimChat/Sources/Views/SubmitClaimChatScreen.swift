@@ -167,7 +167,7 @@ private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
-    @ViewBuilder var body: some View {
+    var body: some View {
         if step.state.showInput {
             ClaimStepView(viewModel: step)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -209,6 +209,13 @@ struct StepView: View {
                 }
             }
             .id(step.id)
+            .transition(
+                .asymmetric(
+                    insertion: .offset(x: 0, y: 100).combined(with: .opacity).animation(.default),
+                    removal: .opacity.animation(.easeInOut(duration: 0.1))
+                )
+
+            )
             .accessibilityFocused($isAccessibilityFocused, equals: step.id)
             .onChange(of: viewModel.currentStep?.id) { id in
                 isAccessibilityFocused = id
@@ -445,19 +452,27 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     private func handleRegretStep(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent) {
         let handler = createStepHandler(for: newClaimIntent)
-
-        if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
-            for item in allSteps[indexToRemove..<allSteps.count] {
-                stepHeights.removeValue(forKey: item.id)
-            }
-            allSteps.removeSubrange((indexToRemove)..<allSteps.count)
-        }
-        let stepIdToScrollTo = allSteps.last?.id ?? handler.id
-        stepHeights[handler.id] = 0
-        allSteps.append(handler)
-        currentStep = handler
         self.progress = newClaimIntent.progress
-        scrollTarget = .init(id: stepIdToScrollTo, anchor: .top)
+        Task { @MainActor in
+            if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
+                currentStep?.state.showInput = false
+                if allSteps.count > 1 {
+                    let stepIdToScrollTo = allSteps[indexToRemove - 1].id
+                    scrollTarget = .init(id: "result_\(stepIdToScrollTo)", anchor: .top)
+                    try await Task.sleep(seconds: 0.4)
+                }
+                for item in allSteps[indexToRemove..<allSteps.count] {
+                    stepHeights.removeValue(forKey: item.id)
+                }
+                allSteps.removeSubrange((indexToRemove)..<allSteps.count)
+            }
+            stepHeights[handler.id] = 0
+            allSteps.append(handler)
+            currentStep = handler
+            if allSteps.count == 1 {
+                scrollTarget = .init(id: handler.id, anchor: .top)
+            }
+        }
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {

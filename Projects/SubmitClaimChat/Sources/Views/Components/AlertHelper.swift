@@ -6,16 +6,22 @@ import hCoreUI
 class SubmitClaimChatScreenAlertViewModel: ObservableObject {
     var alertModel: AlertModel? {
         didSet {
-            alertPresented = alertModel != nil
+            switch alertModel?.type {
+            case .edit: systemAlertPresented = true
+            case .error: alertPresented = true
+            case .none: alertPresented = false
+            }
         }
     }
-    @Published var alertPresented = false {
+    @Published fileprivate var alertPresented = false {
         didSet {
-            if alertPresented == false, alertModel?.type != .edit {
+            if alertPresented == false {
                 self.handleClose()
             }
         }
     }
+
+    @Published fileprivate var systemAlertPresented = false
 
     struct AlertModel {
         let type: AlertType
@@ -91,38 +97,30 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
     @ObservedObject var viewModel: SubmitClaimChatScreenAlertViewModel
 
     func body(content: Content) -> some View {
-
-        switch viewModel.alertModel?.type {
-        case .edit:
-            content
-                .alert(isPresented: $viewModel.alertPresented) {
-                    Alert(
-                        title: Text(viewModel.alertModel?.title ?? "").font(.system(size: 17, weight: .semibold)),
-                        message: Text(viewModel.alertModel?.message ?? "").font(.system(size: 17, weight: .regular)),
-                        primaryButton: .destructive(
-                            Text(L10n.claimChatEditAnswerButton).font(.system(size: 17, weight: .medium)),
-                            action: {
-                                viewModel.alertModel?.action()
-                            }
-                        ),
-                        secondaryButton: .default(
-                            Text(L10n.embarkGoBackButton).font(.system(size: 17, weight: .medium))
-                        )
+        content
+            .detent(
+                presented: $viewModel.alertPresented,
+                transitionType: .center
+            ) {
+                if let alertModel = viewModel.alertModel {
+                    errorAlert(model: alertModel)
+                }
+            }
+            .alert(isPresented: $viewModel.systemAlertPresented) {
+                Alert(
+                    title: Text(viewModel.alertModel?.title ?? "").font(.system(size: 17, weight: .semibold)),
+                    message: Text(viewModel.alertModel?.message ?? "").font(.system(size: 17, weight: .regular)),
+                    primaryButton: .destructive(
+                        Text(L10n.claimChatEditAnswerButton).font(.system(size: 17, weight: .medium)),
+                        action: {
+                            viewModel.alertModel?.action()
+                        }
+                    ),
+                    secondaryButton: .default(
+                        Text(L10n.embarkGoBackButton).font(.system(size: 17, weight: .medium))
                     )
-                }
-        case .error:
-            content
-                .detent(
-                    presented: $viewModel.alertPresented,
-                    transitionType: .center
-                ) {
-                    if let alertModel = viewModel.alertModel {
-                        errorAlert(model: alertModel)
-                    }
-                }
-        case .none:
-            content
-        }
+                )
+            }
     }
 
     private func errorAlert(model: SubmitClaimChatScreenAlertViewModel.AlertModel) -> some View {
