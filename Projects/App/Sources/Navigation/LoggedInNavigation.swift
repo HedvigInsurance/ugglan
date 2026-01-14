@@ -172,6 +172,7 @@ class PushNotificationHandler {
             }
             viewModel?.isAddonPresented = .init(
                 addonSource: .deeplink,
+                type: bannerData.first?.type ?? .travel,
                 contractConfigs: addonConfigs
             )
         } catch {

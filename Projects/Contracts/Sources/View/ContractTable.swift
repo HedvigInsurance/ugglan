@@ -60,6 +60,7 @@ struct ContractTable: View {
                                 openAddon: {
                                     contractsNavigationVm.isAddonPresented = .init(
                                         addonSource: .insurances,
+                                        type: banner.type,
                                         contractConfigs: addonConfigs
                                     )
                                 },

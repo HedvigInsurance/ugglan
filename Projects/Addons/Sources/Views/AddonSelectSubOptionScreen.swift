@@ -166,6 +166,7 @@ struct AddonSelectSubOptionScreen: View {
         changeAddonNavigationVm: .init(
             input: .init(
                 addonSource: .insurances,
+                type: .travel,
                 contractConfigs: [.init(contractId: "contractId", exposureName: "exposure", displayName: "displayName")]
             )
 

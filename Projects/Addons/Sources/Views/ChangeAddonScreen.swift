@@ -6,6 +6,8 @@ struct ChangeAddonScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var changeAddonVm: ChangeAddonViewModel
 
+    @State var selectedQuote: AddonQuote?
+
     init(
         changeAddonVm: ChangeAddonViewModel
     ) {
@@ -91,17 +93,19 @@ struct ChangeAddonScreen: View {
                         .padding(.top, .padding8)
                 }
 
-                DropdownView(
-                    value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
-                    placeHolder: L10n.addonFlowSelectDaysPlaceholder
-                ) {
-                    changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
-                }
-                .disabled(changeAddonVm.disableDropDown)
-                .padding(.top, .padding16)
-                .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
-                .hWithoutHorizontalPadding([.section])
-                .accessibilityHidden(false)
+                selectionView(addonOffer: addonOffer)
+
+                //                DropdownView(
+                //                    value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
+                //                    placeHolder: L10n.addonFlowSelectDaysPlaceholder
+                //                ) {
+                //                    changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
+                //                }
+                //                .disabled(changeAddonVm.disableDropDown)
+                //                .padding(.top, .padding16)
+                //                .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
+                //                .hWithoutHorizontalPadding([.section])
+                //                .accessibilityHidden(false)
             }
             .accessibilityElement(children: .combine)
             .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
@@ -109,6 +113,62 @@ struct ChangeAddonScreen: View {
                 changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
             }
             .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder
+    private func selectionView(addonOffer: AddonOffer) -> some View {
+        switch changeAddonNavigationVm.input.type {
+        case .travel:
+            DropdownView(
+                value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
+                placeHolder: L10n.addonFlowSelectDaysPlaceholder
+            ) {
+                changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
+            }
+            .disabled(changeAddonVm.disableDropDown)
+            .padding(.top, .padding16)
+            .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
+            .hWithoutHorizontalPadding([.section])
+            .accessibilityHidden(false)
+        case .car:
+            VStack {
+                ForEach(addonOffer.quotes, id: \.self) { quote in
+                    hRadioField(
+                        id: quote,
+                        leftView: {
+                            leftView(for: quote, addonOffer: addonOffer)
+                                .asAnyView
+                        },
+                        selected: $selectedQuote,
+                        useAnimation: true
+                    )
+                    .hUseCheckbox
+                    .hFieldLeftAttachedView
+                }
+            }
+            .padding(.top, .padding16)
+        }
+    }
+
+    private func leftView(for quote: AddonQuote, addonOffer: AddonOffer) -> some View {
+        VStack(alignment: .leading, spacing: .padding8) {
+            HStack {
+                hText(quote.displayName ?? "")
+                Spacer()
+                hPill(
+                    text: L10n.addonFlowPriceLabel(
+                        addonOffer
+                            .getTotalPrice(selectedQuote: quote)?
+                            .formattedAmount ?? ""
+                    ),
+                    color: .grey,
+                    colorLevel: .one
+                )
+                .hFieldSize(.small)
+            }
+            hText("subtitle", style: .label)
+                .foregroundColor(hTextColor.Opaque.secondary)
         }
     }
 
@@ -148,5 +208,5 @@ struct ChangeAddonScreen: View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(changeAddonVm: .init(contractId: "id", addonSource: .insurances))
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+        .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances, type: .travel)))
 }

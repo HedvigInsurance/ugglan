@@ -91,6 +91,7 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
         changeAddonNavigationVm: ChangeAddonNavigationViewModel(
             input: .init(
                 addonSource: .insurances,
+                type: .travel,
                 contractConfigs: [
                     .init(contractId: "1", exposureName: "1", displayName: "1"),
                     .init(contractId: "2", exposureName: "2", displayName: "2"),

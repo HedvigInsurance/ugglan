@@ -78,6 +78,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
         let bannerData = [
             AddonBannerModel(
                 contractIds: [],
+                type: .travel, /* TODO: GET FROM BE */
                 titleDisplayName: "Travel Plus",
                 descriptionDisplayName:
                     "Extended travel insurance with extra coverage for your travels",
