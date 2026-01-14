@@ -28,7 +28,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 ),
                 id: UUID().uuidString,
                 isSkippable: true,
-                isRegrettable: true
+                isRegrettable: true,
+                progress: 0
             )
         )
     }
@@ -43,7 +44,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
                 isSkippable: false,
-                isRegrettable: false
+                isRegrettable: false,
+                progress: 0
             )
         )
     }
@@ -54,7 +56,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
                 isSkippable: false,
-                isRegrettable: false
+                isRegrettable: false,
+                progress: 0
             )
         )
     }
@@ -69,7 +72,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 ),
                 id: UUID().uuidString,
                 isSkippable: false,
-                isRegrettable: false
+                isRegrettable: false,
+                progress: 0
             )
         )
     }
@@ -81,7 +85,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                     currentStep: .init(content: .unknown, id: "id", text: ""),
                     id: "",
                     isSkippable: false,
-                    isRegrettable: false
+                    isRegrettable: false,
+                    progress: 0
                 )
         )
     }
@@ -92,7 +97,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
                 isSkippable: false,
-                isRegrettable: false
+                isRegrettable: false,
+                progress: 0
             )
         )
     }
@@ -164,7 +170,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 ),
                 id: UUID().uuidString,
                 isSkippable: true,
-                isRegrettable: true
+                isRegrettable: true,
+                progress: 0
             )
         )
     }
@@ -175,7 +182,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
                 isSkippable: false,
-                isRegrettable: false
+                isRegrettable: false,
+                progress: 0
             )
         )
     }
@@ -186,7 +194,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 currentStep: .init(content: .unknown, id: "id", text: ""),
                 id: "",
                 isSkippable: false,
-                isRegrettable: false
+                isRegrettable: false,
+                progress: 0
             )
         )
     }
@@ -208,7 +217,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 ),
                 id: "id\(claimIntentSubmitTaskCounter)",
                 isSkippable: false,
-                isRegrettable: false
+                isRegrettable: false,
+                progress: 0
             )
         )
     }
@@ -226,7 +236,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             ),
             id: "id",
             isSkippable: false,
-            isRegrettable: false
+            isRegrettable: false,
+            progress: 0
         ),
         service: ClaimIntentService()
     ) { _ in
@@ -242,7 +253,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 ),
                 id: "id",
                 isSkippable: true,
-                isRegrettable: true
+                isRegrettable: true,
+                progress: 0
             ),
             service: ClaimIntentService()
         ) { _ in
@@ -339,7 +351,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
             ),
             id: "stepId",
             isSkippable: true,
-            isRegrettable: true
+            isRegrettable: true,
+            progress: 0
         ),
         service: ClaimIntentService(),
         mainHandler: { _ in

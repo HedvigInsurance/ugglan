@@ -132,7 +132,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                     currentStep: .init(fragment: currentStepFragment),
                     id: id,
                     isSkippable: isSkippable,
-                    isRegrettable: isRegrettable
+                    isRegrettable: isRegrettable,
+                    progress: intentFragment?.progress ?? 0
                 )
             )
         } else if let outcome {
