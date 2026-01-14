@@ -72,7 +72,6 @@ public struct SubmitClaimChatScreen: View {
                 .hFormContentPosition(.top)
                 .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .environmentObject(viewModel)
-                .environmentObject(alertVm)
                 .hideScrollIndicators()
                 .onAppear {
                     viewModel.scrollViewHeight = proxy.size.height
@@ -100,6 +99,7 @@ public struct SubmitClaimChatScreen: View {
                 currentStepView
             }
         }
+        .environmentObject(alertVm)
     }
 
     private var currentStepView: some View {
