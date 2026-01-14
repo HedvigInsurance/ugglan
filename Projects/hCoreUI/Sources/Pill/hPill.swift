@@ -122,10 +122,10 @@ fileprivate struct PillModifier: ViewModifier {
             return .cornerRadiusS
         case .large:
             return .cornerRadiusM
-        case .extraLarge:
-            return .cornerRadiusXL
         case .capsuleShape:
             return 100
+        case .extraLarge:
+            return .cornerRadiusXL
         }
     }
 }

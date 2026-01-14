@@ -117,6 +117,7 @@ struct ClaimStepView: View {
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
+    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
@@ -148,9 +149,19 @@ struct ClaimStepResultView: View {
                 withBorder: false
             )
             .onTapGesture { [weak viewModel] in
-                Task {
-                    await viewModel?.regret()
-                }
+                alertVm.alertModel = .init(
+                    type: .edit,
+                    message: L10n.claimChatEditExplanation,
+                    action: {
+                        Task {
+                            await viewModel?.regret()
+                            alertVm.alertModel = nil
+                        }
+                    },
+                    onClose: {
+                        alertVm.alertModel = nil
+                    }
+                )
             }
             .hFieldSize(.capsuleShape)
             .hPillAttributes(attributes: [.withChevron])
