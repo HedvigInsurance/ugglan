@@ -19,7 +19,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     id: "id2",
                                     title: "Option 2"
                                 ),
-                            ]
+                            ],
+                            style: .pill
                         )
                     ),
                     id: "1",

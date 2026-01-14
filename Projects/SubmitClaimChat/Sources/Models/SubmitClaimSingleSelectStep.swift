@@ -1,7 +1,7 @@
 import SwiftUI
 
 final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
-    @Published var selectedOption: String?
+    @Published var selectedOptionId: String?
     let model: ClaimIntentStepContentSelect
 
     required init(
@@ -18,16 +18,16 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     }
 
     private func initializeSelectValues() {
-        selectedOption = model.defaultSelectedId
+        selectedOptionId = model.defaultSelectedId
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        guard let selectedOption else {
+        guard let selectedOptionId else {
             throw ClaimIntentError.invalidInput
         }
         let result = try await service.claimIntentSubmitSelect(
             stepId: claimIntent.currentStep.id,
-            selectedValue: selectedOption
+            selectedValue: selectedOptionId
         )
         guard let result else {
             throw ClaimIntentError.invalidResponse
@@ -37,12 +37,12 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
 
     override func skip() async {
         await super.skip()
-        selectedOption = nil
+        selectedOptionId = nil
     }
 }
 
-public struct ClaimIntentContentSelectOption: Sendable {
-    let id: String
+public struct ClaimIntentContentSelectOption: Sendable, Identifiable {
+    public let id: String
     let title: String
 
     public init(id: String, title: String) {

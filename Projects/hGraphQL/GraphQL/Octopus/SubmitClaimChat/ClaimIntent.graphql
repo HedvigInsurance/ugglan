@@ -99,6 +99,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         }
         isSkippable
         defaultSelectedId
+        style
     }
 }
 
