@@ -423,8 +423,8 @@ extension hFieldSize {
         case .small: return -13
         case .medium: return -14
         case .large: return -15
-        case .extraLarge: return -15
         case .capsuleShape: return -14
+        case .extraLarge: return -15
         }
     }
 

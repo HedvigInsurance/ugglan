@@ -34,6 +34,7 @@ struct SubmitClaimFlowNavigation: View {
     public var body: some View {
         RouterHost(router: viewModel.router, options: [.extendedNavigationWidth], tracking: self) {
             SubmitClaimChatScreen()
+                .configureTitle(L10n.claimChatTitle)
                 .routerDestination(
                     for: ClaimIntentStepOutcome.self,
                     options: [.hidesBottomBarWhenPushed, .hidesBackButton]
