@@ -102,13 +102,17 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
     private var audioElements: some View {
         hSection {
-            if let url = audioRecorder.recording?.url ?? claimsNavigationVm.audioRecordingModel?.getUrl() {
-                playRecordingButton(url: url)
-            } else {
-                recordNewButton
+            ZStack(alignment: .bottom) {
+                Group {
+                    if let url = audioRecorder.recording?.url ?? claimsNavigationVm.audioRecordingModel?.getUrl() {
+                        playRecordingButton(url: url)
+                    } else {
+                        recordNewButton
+                    }
+                }
             }
+            .environmentObject(audioRecorder)
         }
-        .environmentObject(audioRecorder)
         .sectionContainerStyle(.transparent)
     }
 

@@ -55,7 +55,7 @@ struct SubmitClaimSingleSelectView: View {
                 }
             }
         }
-        .padding(.horizontal, 32)
+        .padding(.horizontal, 16)
     }
 
     private func selectOption(id: String) {
