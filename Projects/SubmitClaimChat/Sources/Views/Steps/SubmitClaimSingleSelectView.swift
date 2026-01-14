@@ -9,11 +9,9 @@ struct SubmitClaimSingleSelectView: View {
 
     public var body: some View {
         hSection {
-            Group {
-                switch viewModel.model.style {
-                case .pill: pillInputView
-                case .binary: binaryInputView
-                }
+            switch viewModel.model.style {
+            case .pill: pillInputView
+            case .binary: binaryInputView
             }
         }
         .sectionContainerStyle(.transparent)
