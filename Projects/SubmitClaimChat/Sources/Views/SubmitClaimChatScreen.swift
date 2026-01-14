@@ -47,6 +47,7 @@ public struct SubmitClaimChatScreen: View {
                     }
                 }
         }
+        .navigationBarProgress($viewModel.progress)
     }
 
     private var mainContent: some View {
@@ -332,6 +333,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     @Published var isInputScrolledOffScreen = false
     @Published var outcome: ClaimIntentStepOutcome?
+    @Published var progress: Double = 0
 
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
@@ -395,6 +397,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         case let .outcome(model):
             self.allSteps.removeAll()
             self.currentStep = nil
+            self.progress = 1.0
             Task {
                 try? await Task.sleep(seconds: 0.5)
                 withAnimation {
@@ -408,6 +411,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         let handler = createStepHandler(for: claimIntent)
         stepHeights[handler.id] = 0
         let previousStepId = allSteps.last?.id ?? ""
+        self.progress = claimIntent.progress
         Task { @MainActor in
             if !self.allSteps.isEmpty {
                 currentStep = nil
@@ -432,6 +436,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         stepHeights[handler.id] = 0
         allSteps.append(handler)
         currentStep = handler
+        self.progress = newClaimIntent.progress
         scrollTarget = .init(id: stepIdToScrollTo, anchor: .top)
     }
 

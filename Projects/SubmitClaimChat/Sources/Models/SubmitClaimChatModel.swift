@@ -39,17 +39,20 @@ public struct ClaimIntent: Sendable {
     let id: String
     let isSkippable: Bool
     let isRegrettable: Bool
+    let progress: Double
 
     public init(
         currentStep: ClaimIntentStep,
         id: String,
         isSkippable: Bool,
-        isRegrettable: Bool
+        isRegrettable: Bool,
+        progress: Double
     ) {
         self.currentStep = currentStep
         self.id = id
         self.isSkippable = isSkippable
         self.isRegrettable = isRegrettable
+        self.progress = progress
     }
 }
 
