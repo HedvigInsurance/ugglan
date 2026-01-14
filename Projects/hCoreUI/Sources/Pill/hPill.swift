@@ -130,6 +130,35 @@ fileprivate struct PillModifier: ViewModifier {
     }
 }
 
+extension View {
+    public func hWrapInPill(
+        color: PillColor,
+        colorLevel: PillColor.PillColorLevel = .one,
+        withBorder: Bool = false
+    ) -> some View {
+        modifier(PillWrapperModifier(color: color, colorLevel: colorLevel, withBorder: false))
+    }
+}
+fileprivate struct PillWrapperModifier: ViewModifier {
+    let color: PillColor
+    let colorLevel: PillColor.PillColorLevel
+    let withBorder: Bool
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: .infinity)
+                    .fill(color.pillBackgroundColor(level: colorLevel))
+            )
+            .overlay {
+                if withBorder {
+                    RoundedRectangle(cornerRadius: .infinity)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                }
+            }
+            .accessibilityElement(children: .combine)
+    }
+}
+
 @MainActor
 public enum PillColor {
     case green
