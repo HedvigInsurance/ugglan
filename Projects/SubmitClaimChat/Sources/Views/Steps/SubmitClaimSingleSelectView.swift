@@ -5,6 +5,7 @@ import hCoreUI
 
 struct SubmitClaimSingleSelectView: View {
     @ObservedObject var viewModel: SubmitClaimSingleSelectStep
+    @State private var showOptions = false
 
     public var body: some View {
         hSection {
@@ -16,42 +17,44 @@ struct SubmitClaimSingleSelectView: View {
             }
         }
         .sectionContainerStyle(.transparent)
+        .task {
+            try? await Task.sleep(seconds: 0.2)
+            showOptions = true
+        }
     }
 
     private var pillInputView: some View {
         TagList(tags: viewModel.model.options.map { $0.id }) { optionId in
             let option = viewModel.model.options.first(where: { $0.id == optionId })!
-
-            hPill(
-                text: option.title,
-                color: .grey,
-                colorLevel: .two,
-                withBorder: false
-            )
-            .hFieldSize(.capsuleShape)
-            .transition(
-                .scale.animation(
-                    .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
-                        .delay(Double.random(in: 0.3...0.6))
+            if showOptions {
+                hPill(
+                    text: option.title,
+                    color: .grey,
+                    colorLevel: .two,
+                    withBorder: false
                 )
-            )
-            .onTapGesture { selectOption(id: option.id) }
-            .optionAccessibility(label: option.title)
+                .hFieldSize(.capsuleShape)
+                .transition(.submitClaimOptionAppear)
+                .onTapGesture { selectOption(id: option.id) }
+                .optionAccessibility(label: option.title)
+            }
         }
     }
 
     private var binaryInputView: some View {
         HStack(spacing: 8) {
             ForEach(viewModel.model.options) { option in
-                hButton(
-                    .small,
-                    .ghost,
-                    content: .init(title: option.title)
-                ) { selectOption(id: option.id) }
-                .hButtonTakeFullWidth(true)
-                .hPillStyle(color: .grey, colorLevel: .two)
-                .hFieldSize(.capsuleShape)
-                .optionAccessibility(label: option.title)
+                if showOptions {
+                    hButton(
+                        .medium,
+                        .ghost,
+                        content: .init(title: option.title)
+                    ) { selectOption(id: option.id) }
+                    .hButtonTakeFullWidth(true)
+                    .hWrapInPill(color: .grey, colorLevel: .two)
+                    .optionAccessibility(label: option.title)
+                    .transition(.submitClaimOptionAppear)
+                }
             }
         }
         .padding(.horizontal, 32)
@@ -69,6 +72,15 @@ extension View {
         self.accessibilityLabel(label)
             .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverOptionSelected)
             .accessibilityAddTraits(.isButton)
+    }
+}
+
+extension AnyTransition {
+    fileprivate static var submitClaimOptionAppear: AnyTransition {
+        .scale.animation(
+            .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
+                .delay(Double.random(in: 0.3...0.6))
+        )
     }
 }
 
