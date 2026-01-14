@@ -21,18 +21,20 @@ class FetchContractsClientOctopus: FetchContractsClient {
         )
     }
 
-    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+    func getAddonBannerModel(source: AddonSource) async throws -> [AddonBannerModel] {
         let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(flow: .case(source.getSource))
         let data = try await octopus.client.fetch(query: query)
         let bannerData = data.currentMember.upsellTravelAddonBanner
 
         if let bannerData, !bannerData.contractIds.isEmpty {
-            return AddonBannerModel(
-                contractIds: bannerData.contractIds,
-                titleDisplayName: bannerData.titleDisplayName,
-                descriptionDisplayName: bannerData.descriptionDisplayName,
-                badges: bannerData.badges
-            )
+            return [
+                AddonBannerModel(
+                    contractIds: bannerData.contractIds,
+                    titleDisplayName: bannerData.titleDisplayName,
+                    descriptionDisplayName: bannerData.descriptionDisplayName,
+                    badges: bannerData.badges
+                )
+            ]
         } else {
             throw AddonsError.missingContracts
         }
