@@ -110,7 +110,8 @@ struct SubmitClaimSingleSelectResultView: View {
             ),
             id: "intent1",
             isSkippable: true,
-            isRegrettable: false
+            isRegrettable: false,
+            progress: 0
         ),
         service: .init(),
         mainHandler: { _ in }
@@ -140,7 +141,8 @@ struct SubmitClaimSingleSelectResultView: View {
             ),
             id: "intent1",
             isSkippable: false,
-            isRegrettable: false
+            isRegrettable: false,
+            progress: 0
         ),
         service: .init(),
         mainHandler: { _ in }
