@@ -363,7 +363,8 @@ extension View {
             ),
             id: "id",
             isSkippable: false,
-            isRegrettable: false
+            isRegrettable: false,
+            progress: 0
         ),
         service: .init(),
         mainHandler: { _ in
