@@ -195,10 +195,21 @@ public struct ClaimIntentStepContentFileUpload: Sendable {
 public struct ClaimIntentStepContentSelect: Sendable {
     let defaultSelectedId: String?
     let options: [ClaimIntentContentSelectOption]
+    let style: ClaimIntentStepContentSelectStyle
 
-    public init(defaultSelectedId: String?, options: [ClaimIntentContentSelectOption]) {
+    public enum ClaimIntentStepContentSelectStyle: Sendable {
+        case pill
+        case binary
+    }
+
+    public init(
+        defaultSelectedId: String?,
+        options: [ClaimIntentContentSelectOption],
+        style: ClaimIntentStepContentSelectStyle
+    ) {
         self.defaultSelectedId = defaultSelectedId
         self.options = options
+        self.style = style
     }
 }
 

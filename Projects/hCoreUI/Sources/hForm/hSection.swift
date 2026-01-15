@@ -138,6 +138,18 @@ public struct RowViewBuilder {
             )
         )
     }
+
+    public static func buildEither<TrueContent: View, FalseContent: View>(
+        first: TrueContent
+    ) -> _ConditionalContent<TrueContent, FalseContent> {
+        ViewBuilder.buildEither(first: first)
+    }
+
+    public static func buildEither<TrueContent: View, FalseContent: View>(
+        second: FalseContent
+    ) -> _ConditionalContent<TrueContent, FalseContent> {
+        ViewBuilder.buildEither(second: second)
+    }
 }
 
 private struct hShadowModifier: ViewModifier {
