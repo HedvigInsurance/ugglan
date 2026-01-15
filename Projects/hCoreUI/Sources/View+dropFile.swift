@@ -13,20 +13,16 @@ struct OnFileDropModifier: ViewModifier {
     let onFileDrop: (File) -> Void
 
     func body(content: Content) -> some View {
-        if #available(iOS 16.0, *) {
-            content
-                .onDrop(of: [UTType.item], isTargeted: $isTargetedForDropdown) { providers in
-                    for item in providers {
-                        Task {
-                            if let file = await item.getFile() {
-                                onFileDrop(file)
-                            }
+        content
+            .onDrop(of: [UTType.item], isTargeted: $isTargetedForDropdown) { providers in
+                for item in providers {
+                    Task {
+                        if let file = await item.getFile() {
+                            onFileDrop(file)
                         }
                     }
-                    return true
                 }
-        } else {
-            content
-        }
+                return true
+            }
     }
 }

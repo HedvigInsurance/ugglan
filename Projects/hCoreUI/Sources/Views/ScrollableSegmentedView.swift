@@ -387,14 +387,7 @@ public struct PageModel: Identifiable {
 extension View {
     @MainActor
     func setDisabledScroll() -> some View {
-        if #available(iOS 16.0, *) {
-            return self.scrollDisabled(true)
-        } else {
-            return introspect(.scrollView, on: .iOS(.v13...)) { view in
-                view.isScrollEnabled = false
-                view.isUserInteractionEnabled = false
-            }
-        }
+        self.scrollDisabled(true)
     }
 }
 

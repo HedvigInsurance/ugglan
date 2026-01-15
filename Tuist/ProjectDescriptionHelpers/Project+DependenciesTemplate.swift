@@ -233,7 +233,7 @@ extension Project {
                     destinations: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTargets: .iOS("15.0"),
+                    deploymentTargets: .iOS("16.0"),
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
