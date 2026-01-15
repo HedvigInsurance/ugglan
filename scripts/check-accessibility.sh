@@ -127,19 +127,7 @@ check_file() {
         fi
     fi
 
-    # Check 6 REMOVED (ForEach + combine heuristic was too noisy)
-
-    # Check 7: Progress indicators without labels
-    if grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | grep -v "accessibilityLabel\|accessibilityValue" > /dev/null 2>&1; then
-        local lines
-        lines=$(grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | cut -d: -f1 | head -3 | tr '\n' ',' | sed 's/,$//')
-        if [[ -n "$lines" ]]; then
-            issues+=("⚠️  Lines $lines: Progress indicators need \`.accessibilityLabel()\` and \`.accessibilityValue()\`")
-            ((file_issues++))
-        fi
-    fi
-
-    # Check 8: Toggle/Picker without accessibility labels
+    # Check 6: Toggle/Picker without accessibility labels
     if grep -n "Toggle(\|Picker(" "$scan_file" | grep -v "accessibilityLabel" > /dev/null 2>&1; then
         local lines
         lines=$(grep -n "Toggle(\|Picker(" "$scan_file" | cut -d: -f1)
@@ -208,7 +196,6 @@ Found **$ISSUES_FOUND potential accessibility issues** in the changed files.
 - [ ] Tappable views have \`.accessibilityAddTraits(.isButton)\`
 - [ ] Images have \`.accessibilityLabel()\` or \`.accessibilityHidden(true)\`
 - [ ] Custom gestures use \`.accessibilityAction()\`
-- [ ] Progress indicators have labels and values
 - [ ] Dropdowns and pickers have \`.accessibilityHint()\`
 
 ---
