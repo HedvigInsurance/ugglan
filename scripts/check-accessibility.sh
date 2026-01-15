@@ -57,14 +57,14 @@ check_file() {
 
     # Check 1: onTapGesture without accessibility traits
     # Also recognizes custom modifiers ending with "Accessibility"
-    # Skip if the view has .accessibilityAction nearby (parent container accessibility)
+    # Skip if the view has .accessibilityAction or .accessibilityHidden nearby (parent container accessibility)
     if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits\|Accessibility(\|accessibilityAction" > /dev/null 2>&1; then
         local lines
         lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
             local start_line=$((line_num > 10 ? line_num - 10 : 1))
             local end_line=$((line_num + 100))
-            if ! sed -n "${start_line},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits\|Accessibility(\|accessibilityAction"; then
+            if ! sed -n "${start_line},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits\|Accessibility(\|accessibilityAction\|accessibilityHidden"; then
                 issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
                 ((file_issues++))
             fi
@@ -101,10 +101,11 @@ check_file() {
     fi
 
     # Check 3: Image without accessibility handling
-    # Exclude UIImage (UIKit) - only check SwiftUI Image and KFImage
-    if grep -n "Image(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden\|UIImage(" > /dev/null 2>&1; then
+    # Exclude UIImage (UIKit), method calls containing "Image", and SwiftUI.Image
+    # Only check actual SwiftUI Image(...) and KFImage(...) view initializers
+    if grep -nE "^[[:space:]]*(KF)?Image\(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden\|UIImage(" > /dev/null 2>&1; then
         local lines
-        lines=$(grep -n "Image(" "$scan_file" | grep -v "UIImage(" | cut -d: -f1)
+        lines=$(grep -nE "^[[:space:]]*(KF)?Image\(" "$scan_file" | grep -v "UIImage(" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 15))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel\|accessibilityHidden"; then
