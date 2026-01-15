@@ -53,7 +53,7 @@ struct ContractTable: View {
                     CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
-                    if let banner = vm.addonBannerModel {
+                    ForEach(vm.addonBannerModel, id: \.self) { banner in
                         hSection {
                             let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
                             AddonCardView(
@@ -190,7 +190,7 @@ public class ContractTableViewModel: ObservableObject {
     @PresentableStore var store: ContractStore
     @Published var loadingCancellable: AnyCancellable?
     @Inject var service: FetchContractsClient
-    @Published var addonBannerModel: AddonBannerModel?
+    @Published var addonBannerModel: [AddonBannerModel] = []
     private var addonAddedObserver: NSObjectProtocol?
 
     init() {
@@ -237,7 +237,7 @@ public class ContractTableViewModel: ObservableObject {
             }
         } catch {
             withAnimation {
-                self.addonBannerModel = nil
+                self.addonBannerModel = []
             }
         }
     }

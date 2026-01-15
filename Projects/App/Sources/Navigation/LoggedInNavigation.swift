@@ -50,7 +50,7 @@ class PushNotificationHandler {
         case .CHANGE_TIER:
             handleChangeTierNotification(notification)
         case .ADDON_TRAVEL:
-            Task { await handleTravelAddon() }
+            Task { await handleAddon() }
         case .OPEN_CLAIM, .CLAIM_CLOSED:
             handleClaimNotification(notification)
         case .INSURANCE_EVIDENCE:
@@ -143,29 +143,37 @@ class PushNotificationHandler {
         }
     }
 
-    func handleTravelAddon() async {
+    func handleAddon() async {
         do {
             let client: FetchContractsClient = Dependencies.shared.resolve()
-            if let bannerData = try await client.getAddonBannerModel(source: .deeplink) {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                let addonContracts = bannerData.contractIds.compactMap {
+            let bannerData = try await client.getAddonBannerModel(source: .deeplink)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+            var addonConfigs: [AddonConfig] = []
+
+            for addon in bannerData {
+                let addonContracts = addon.contractIds.compactMap {
                     contractStore.state.contractForId($0)
                 }
+
                 guard !addonContracts.isEmpty else {
                     throw AddonsError.missingContracts
                 }
-                let addonConfigs: [AddonConfig] = addonContracts.map {
-                    .init(
-                        contractId: $0.id,
-                        exposureName: $0.exposureDisplayName,
-                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                    )
-                }
-                viewModel?.isAddonPresented = .init(
-                    addonSource: .deeplink,
-                    contractConfigs: addonConfigs
+
+                addonConfigs.append(
+                    contentsOf: addonContracts.map {
+                        .init(
+                            contractId: $0.id,
+                            exposureName: $0.exposureDisplayName,
+                            displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                        )
+                    }
                 )
             }
+            viewModel?.isAddonPresented = .init(
+                addonSource: .deeplink,
+                contractConfigs: addonConfigs
+            )
         } catch {
             viewModel?.isAddonErrorPresented = error.localizedDescription
         }
@@ -981,7 +989,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     func handleTravelAddon() async {
-        await pushNotificationHandler.handleTravelAddon()
+        await pushNotificationHandler.handleAddon()
     }
 
     func handleInsuranceEvidence() {
