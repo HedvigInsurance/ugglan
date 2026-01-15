@@ -21,10 +21,10 @@ struct ClaimContactCard: View {
                     KFImage(imageUrl)
                         .setProcessor(SVGImageProcessor())
                         .resizable()
+                        .accessibilityHidden(true)
                         .aspectRatio(contentMode: .fit)
                         .frame(height: CGFloat(model.preferredImageHeight ?? 40))
                         .foregroundColor(hTextColor.Opaque.negative)
-                        .accessibilityHidden(true)
                         .padding(.bottom, .padding8)
                 }
                 VStack(spacing: 0) {

@@ -144,6 +144,11 @@ struct ClaimStepResultView: View {
                 colorLevel: .two,
                 withBorder: false
             )
+            .hFieldSize(.capsuleShape)
+            .hPillAttributes(attributes: [.withChevron])
+            .accessibilityLabel(L10n.General.edit)
+            .accessibilityHint(L10n.voiceoverEdit)
+            .accessibilityAddTraits(.isButton)
             .onTapGesture { [weak viewModel] in
                 alertVm.alertModel = .init(
                     type: .edit,
@@ -159,11 +164,6 @@ struct ClaimStepResultView: View {
                     }
                 )
             }
-            .hFieldSize(.capsuleShape)
-            .hPillAttributes(attributes: [.withChevron])
-            .accessibilityLabel(L10n.General.edit)
-            .accessibilityHint(L10n.voiceoverEdit)
-            .accessibilityAddTraits(.isButton)
         }
     }
 }
