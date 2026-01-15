@@ -197,7 +197,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Röstinspelning";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Ändra svar";
-"CLAIM_CHAT_EDIT_EXPLANATION" = "Om du ändrar det här svaret kommer allt du fyllt i efter det att rensas. Du behöver gå igenom de stegen igen.";
+"CLAIM_CHAT_EDIT_EXPLANATION" = "Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.";
 "CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att rensas";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Dubbelkolla att du fyllt i alla obligatoriska fält";
 "CLAIM_CHAT_FILE_TITLE" = "Uppladdade filer";
@@ -232,7 +232,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 /* When we send fetch request for the coinsured SSN and get null as an result, we should automatically switch toggle on and show this info at the bottom of the sheet. */
 "COINSURED_WITHOUT_SSN_INFO" = "Vi kunde inte hämta informationen kopplat till personnumret. Ange det manuellt.";
 "COMMON_CLAIM_BUTTON" = "Boka nu";
-"COMMON_CLAIM_EMERGENCY_BUTTON_TITLE" = "Sjuk utomlands";
+"COMMON_CLAIM_EMERGENCY_BUTTON_TITLE" = "Hur du får hjälp utomlands";
 "COMMON_CLAIM_EMERGENCY_TITLE" = "Sjuk utomlands";
 "CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Dokument";
 "CONFIRM_CHANGES_SUBTITLE" = "Notera att dina ändringar börjar gälla från och med %@.";
@@ -572,7 +572,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SIMPLE_SIGN_FAILED_TITLE" = "Vi kunde inte registrera dig";
 "SINGLE_ITEM_INFO_BRAND" = "Märke";
 "SUBMIT_CLAIM_ PURCHASE_PRICE_TITLE" = "Fyll i ditt inköpspris";
-"SUBMIT_CLAIM_CAR_BUTTON_TITLE" = "Bilskada";
+"SUBMIT_CLAIM_CAR_BUTTON_TITLE" = "Fortsätt";
 "SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON" = "Anmäl skada";
 "SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT" = "Vi vet att det kan vara jobbigt med en skada och vi ska göra allt vi kan för att processen skall gå så snabbt och smidigt som möjligt för dig. \n\nJu mer uppgifter du har möjlighet att ge desto snabbare kan vi hjälpa till. När vi fått alla uppgifterna kommer vi att kontakta dig via mail. \n\nFör det här ärendet kan du inte kontakta oss i appen.  Efter att skadan är inskickad kommer all kommunikation ske via mail.";
 "SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE" = "Anmäl din skada";
@@ -599,7 +599,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL" = "Vi täcker kostnader som uppstår om du blir akut sjuk, skadar dig eller får akuta tandskador i utlandet. Behöver du akut vård utomlands ska du kontakta Hedvig Global Assistance (SOS International).";
 "SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE" = "Vad din försäkring täcker";
 "SUBMIT_CLAIM_EMERGENCY_TITLE" = "Är du på en resa och behöver akut vård eller assistans?";
-"SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE" = "Glasskada";
+"SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE" = "Se våra partners";
 "SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL" = "Du kan enkelt boka en reparation hos Ryds Bilglas eller Carglass online. De finns på många orter runtom i landet.\n\nMen du kan självklart välja en annan verkstad om det passar dig bättre.";
 "SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL" = "Du behöver kontakta en bilverkstad för att få hjälp med din reparation";
 "SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON" = "Boka nu";
@@ -609,13 +609,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE" = "Tillgänglig 24/7 ∙ Ingen avgift";
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL" = "Anmäl online";
 "SUBMIT_CLAIM_HOW_IT_WORKS_TITLE" = "Så funkar det";
-"SUBMIT_CLAIM_ID_PROTECTION_BUTTON_TITLE" = "ID-skydd";
+"SUBMIT_CLAIM_ID_PROTECTION_BUTTON_TITLE" = "Läs mer";
 "SUBMIT_CLAIM_ID_PROTECTION_TITLE" = "ID-skydd";
 "SUBMIT_CLAIM_NEED_HELP_LABEL" = "Vi finns här vardagar 08–22\noch helger 10–22";
 "SUBMIT_CLAIM_NEED_HELP_TITLE" = "Behöver du hjälp med något annat?";
 "SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE" = "Vår partner";
 "SUBMIT_CLAIM_PARTNER_TITLE" = "Våra partners";
-"SUBMIT_CLAIM_PESTS_BUTTON_TITLE" = "Hussvamp och skadedjur";
+"SUBMIT_CLAIM_PESTS_BUTTON_TITLE" = "Läs mer";
 "SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON" = "Kontakta Nomor (Rentokil)";
 "SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL" = "Kundtjänst tillgänglig mån–fre, 7–17";
 "SUBMIT_CLAIM_PESTS_HOW_IT_WORKS_LABEL" = "Om ditt hus drabbas av skadedjur kan du få ersättning för sanering och reparation. Skyddet gäller husbock, hästmyra, getingar, möss och andra bostadsinsekter, samt om ett vilt djur tar sig in och orsakar skada i ditt hem.\nDe kan även hjälpa dig med äkta hussvamps-skador.";
@@ -624,7 +624,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_TOWING_A1" = "Du kan få hjälp med att bärga bilen om den skadats eller drabbats av ett driftstopp, som till exempel motorstopp eller punktering.";
 "SUBMIT_CLAIM_TOWING_A2" = "Så länge skadan täcks av försäkringsvillkoren så betalar du endast självrisken på 1750 kr direkt till Assistancekåren.";
 "SUBMIT_CLAIM_TOWING_A3" = "Du får såklart använda den bärgningstjänst som passar dig bäst. Men förloppet blir oftast snabbare och enklare om du vänder dig direkt till Assistancekåren.";
-"SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Bärgning";
+"SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Läs mer";
 "SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till 010–45 99 222. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.";
 "SUBMIT_CLAIM_TOWING_INFO_LABEL" = "Du behöver kontakta Assistancekåren direkt för att få hjälp med din bärgning";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "Ring nu";
