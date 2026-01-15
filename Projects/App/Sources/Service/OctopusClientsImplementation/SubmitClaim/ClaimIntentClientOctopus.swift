@@ -290,7 +290,8 @@ extension ClaimIntentStepContent {
             self = .singleSelect(
                 model: .init(
                     defaultSelectedId: singleStep.defaultSelectedId,
-                    options: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) })
+                    options: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) }),
+                    style: singleStep.style.asSelectStyle
                 )
             )
         } else if let fileUpload = fragment.asClaimIntentStepContentFileUpload {
@@ -355,6 +356,22 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
             return .binary
         case .multiSelect:
             return .multiSelect
+        }
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ClaimIntentStepContentSelectStyle> {
+    public var asSelectStyle: ClaimIntentStepContentSelect.ClaimIntentStepContentSelectStyle {
+        switch self {
+        case .case(let style):
+            switch style {
+            case .pill:
+                return .pill
+            case .binary:
+                return .binary
+            }
+        case .unknown:
+            return .pill
         }
     }
 }
