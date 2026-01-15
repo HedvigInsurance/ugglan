@@ -8,7 +8,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
     let onConfirm: () -> Void
     var body: some View {
         hForm {
-            VStack(spacing: .padding8) {
+            VStack(spacing: .padding16) {
                 ImportantInformationView(
                     title: L10n.honestyPledgeTitle,
                     subtitle: L10n.honestyPledgeDescription,
