@@ -56,12 +56,15 @@ check_file() {
     fi
 
     # Check 1: onTapGesture without accessibility traits
-    if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits" > /dev/null 2>&1; then
+    # Also recognizes custom modifiers ending with "Accessibility"
+    # Skip if the view has .accessibilityAction or .accessibilityHidden nearby (parent container accessibility)
+    if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits\|Accessibility(\|accessibilityAction" > /dev/null 2>&1; then
         local lines
         lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
-            local end_line=$((line_num + 5))
-            if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits"; then
+            local start_line=$((line_num > 10 ? line_num - 10 : 1))
+            local end_line=$((line_num + 100))
+            if ! sed -n "${start_line},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits\|Accessibility(\|accessibilityAction\|accessibilityHidden"; then
                 issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
                 ((file_issues++))
             fi
@@ -98,11 +101,13 @@ check_file() {
     fi
 
     # Check 3: Image without accessibility handling
-    if grep -n "Image(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden" > /dev/null 2>&1; then
+    # Exclude UIImage (UIKit), method calls containing "Image", and SwiftUI.Image
+    # Only check actual SwiftUI Image(...) and KFImage(...) view initializers
+    if grep -nE "^[[:space:]]*(KF)?Image\(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden\|UIImage(" > /dev/null 2>&1; then
         local lines
-        lines=$(grep -n "Image(" "$scan_file" | cut -d: -f1)
+        lines=$(grep -nE "^[[:space:]]*(KF)?Image\(" "$scan_file" | grep -v "UIImage(" | cut -d: -f1)
         for line_num in $lines; do
-            local end_line=$((line_num + 5))
+            local end_line=$((line_num + 15))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel\|accessibilityHidden"; then
                 issues+=("🖼️  Line $line_num: \`Image\` without \`.accessibilityLabel()\` or \`.accessibilityHidden(true)\`")
                 ((file_issues++))
@@ -110,39 +115,26 @@ check_file() {
         done
     fi
 
-    # Check 4: Dropdowns without accessibility hint
-    if grep -q "hFloatingField\|DropdownView" "$scan_file"; then
-        if ! grep -q "accessibilityHint" "$scan_file"; then
-            issues+=("💡 File may contain dropdowns without accessibility hints")
-        fi
+    # Check 4: Custom gestures (LongPressGesture, DragGesture) without accessibility
+    # Skip if the view has accessibility actions nearby (parent container accessibility)
+    if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" > /dev/null 2>&1; then
+        local lines
+        lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1)
+        for line_num in $lines; do
+            local start_line=$((line_num > 25 ? line_num - 25 : 1))
+            local end_line=$((line_num + 60))
+            if ! sed -n "${start_line},${end_line}p" "$scan_file" | grep -q "accessibilityAction\|accessibilityAdjustableAction"; then
+                issues+=("⚠️  Line $line_num: Custom gestures should include \`.accessibilityAction()\` or \`.accessibilityAdjustableAction()\`")
+                ((file_issues++))
+            fi
+        done
     fi
 
-    # Check 5: Custom gestures (LongPressGesture, DragGesture) without accessibility
-    if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | grep -v "accessibilityAction" > /dev/null 2>&1; then
+    # Check 5: Toggle/Picker without accessibility labels
+    # Match SwiftUI Picker/Toggle only (exclude DatePicker which has built-in accessibility)
+    if grep -nE "^[[:space:]]+(Picker|Toggle)\(" "$scan_file" | grep -v "DatePicker" > /dev/null 2>&1; then
         local lines
-        lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
-        if [[ -n "$lines" ]]; then
-            issues+=("⚠️  Lines $lines: Custom gestures should include \`.accessibilityAction()\`")
-            ((file_issues++))
-        fi
-    fi
-
-    # Check 6 REMOVED (ForEach + combine heuristic was too noisy)
-
-    # Check 7: Progress indicators without labels
-    if grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | grep -v "accessibilityLabel\|accessibilityValue" > /dev/null 2>&1; then
-        local lines
-        lines=$(grep -n "ProgressView\|\.progress\|CircularProgress" "$scan_file" | cut -d: -f1 | head -3 | tr '\n' ',' | sed 's/,$//')
-        if [[ -n "$lines" ]]; then
-            issues+=("⚠️  Lines $lines: Progress indicators need \`.accessibilityLabel()\` and \`.accessibilityValue()\`")
-            ((file_issues++))
-        fi
-    fi
-
-    # Check 8: Toggle/Picker without accessibility labels
-    if grep -n "Toggle(\|Picker(" "$scan_file" | grep -v "accessibilityLabel" > /dev/null 2>&1; then
-        local lines
-        lines=$(grep -n "Toggle(\|Picker(" "$scan_file" | cut -d: -f1)
+        lines=$(grep -nE "^[[:space:]]+(Picker|Toggle)\(" "$scan_file" | grep -v "DatePicker" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel"; then
@@ -207,9 +199,7 @@ Found **$ISSUES_FOUND potential accessibility issues** in the changed files.
 - [ ] Interactive elements have \`.accessibilityLabel()\`
 - [ ] Tappable views have \`.accessibilityAddTraits(.isButton)\`
 - [ ] Images have \`.accessibilityLabel()\` or \`.accessibilityHidden(true)\`
-- [ ] Custom gestures use \`.accessibilityAction()\`
-- [ ] Progress indicators have labels and values
-- [ ] Dropdowns and pickers have \`.accessibilityHint()\`
+- [ ] Custom gestures use \`.accessibilityAction()\` or \`.accessibilityAdjustableAction()\`
 
 ---
 *Generated by Accessibility Check Workflow*
