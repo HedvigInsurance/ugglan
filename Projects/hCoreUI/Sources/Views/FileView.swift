@@ -40,6 +40,7 @@ public struct FileView: View {
                             .aspectRatio(
                                 contentMode: .fill
                             )
+                            .accessibilityHidden(true)
                         )
                 }
             } else {
@@ -96,6 +97,7 @@ public struct FileView: View {
                 .aspectRatio(
                     contentMode: .fill
                 )
+                .accessibilityHidden(true)
             )
     }
 
@@ -107,6 +109,7 @@ public struct FileView: View {
                 .background(
                     KFAnimatedImage(url)
                         .scaledToFit()
+                        .accessibilityHidden(true)
                 )
         } else {
             Rectangle().fill(.clear)
@@ -124,6 +127,7 @@ public struct FileView: View {
                     .aspectRatio(
                         contentMode: .fill
                     )
+                    .accessibilityHidden(true)
                 )
         }
     }
