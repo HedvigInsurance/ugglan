@@ -31,6 +31,17 @@ where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
         }
         .highPriorityGesture(dragGesture)
         .padding(.horizontal, getPadding())
+        .accessibilityElement(children: .contain)
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment:
+                goTo(round(currentIndex) + 1)
+            case .decrement:
+                goTo(round(currentIndex) - 1)
+            @unknown default:
+                break
+            }
+        }
     }
 
     private func getPadding() -> CGFloat {

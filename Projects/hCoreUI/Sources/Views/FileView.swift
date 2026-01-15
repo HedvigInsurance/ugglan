@@ -67,6 +67,9 @@ public struct FileView: View {
         .onTapGesture {
             onTap()
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(file.name)
     }
 
     private var fileImage: Image {

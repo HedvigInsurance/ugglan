@@ -58,6 +58,10 @@ struct SubmitClaimFilesUploadScreen: View {
                                         Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
                                             .opacity(vm.isLoading ? 1 : 0)
                                             .frame(width: vm.progress * geo.size.width)
+                                            .accessibilityElement(children: .ignore)
+                                            .accessibilityLabel(L10n.ClaimStatusDetail.addFiles)
+                                            .accessibilityValue(String(format: "%.0f%%", vm.progress * 100))
+                                            .accessibilityAddTraits(.updatesFrequently)
                                     }
                                 }
                             }

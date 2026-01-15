@@ -95,6 +95,8 @@ public struct ClaimFilesView: View {
                     ProgressView(value: vm.progress)
                         .frame(width: proxy.size.width * 0.53)
                         .progressViewStyle(hProgressViewStyle())
+                        .accessibilityLabel(L10n.fileUploadIsUploading)
+                        .accessibilityValue("\(Int(vm.progress * 100))%")
                     Spacer()
                 }
             }
