@@ -637,22 +637,7 @@ struct HomeTab: View {
             ClaimsMainNavigation()
                 .environmentObject(homeNavigationVm)
         }
-        .modally(
-            item: $homeNavigationVm.claimsAutomationStartInput,
-            options: .constant(.withoutGrabber)
-        ) { input in
-            SubmitClaimChatNavigation(
-                startInput: .init(
-                    input: input,
-                    openChat: {
-                        NotificationCenter.default.post(
-                            name: .openChat,
-                            object: ChatType.newConversation
-                        )
-                    }
-                )
-            )
-        }
+        .handleClaimFlow(startInput: $homeNavigationVm.claimsAutomationStartInput)
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
         ) {
