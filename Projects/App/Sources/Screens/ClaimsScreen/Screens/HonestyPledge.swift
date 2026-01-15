@@ -53,6 +53,7 @@ struct SlideToConfirm: View {
             }
             Image(uiImage: updateUIForFinished ? hCoreUIAssets.checkmark.image : hCoreUIAssets.chevronRight.image)
                 .foregroundColor(hTextColor.Opaque.negative)
+                .accessibilityHidden(true)
                 .frame(width: 50, height: 50)
                 .background(getIconBackgroundColor)
                 .colorScheme(.light)
@@ -60,7 +61,6 @@ struct SlideToConfirm: View {
                 .scaleEffect(bounceSliderButton ? 0.8 : 1)
                 .offset(x: max(0, min(progress, width - 58)))
                 .padding(.horizontal, 4)
-                .accessibilityHidden(true)
                 .gesture(
                     DragGesture()
                         .onChanged { gesture in

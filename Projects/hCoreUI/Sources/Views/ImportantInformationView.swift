@@ -79,15 +79,15 @@ public struct ImportantInformationView: View {
                     .colorScheme(.light)
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(accessibilityLabel)
+            .accessibilityAddTraits(.isButton)
             .onTapGesture {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isConfirmed.toggle()
                 }
             }
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(accessibilityLabel)
-        .accessibilityAddTraits(.isButton)
     }
 
     private var accessibilityLabel: String {

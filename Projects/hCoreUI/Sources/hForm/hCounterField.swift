@@ -81,6 +81,7 @@ public struct hCounterField: View {
         }
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
+        .accessibilityAddTraits(.isButton)
         .onTapGesture {
             startAnimation()
         }

@@ -119,6 +119,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 startAnimation(currentValue)
             }
         }
+        .accessibilityAddTraits(.isButton)
         .onTapGesture {
             equals = focusValue
             vm.textField?.becomeFirstResponder()

@@ -124,10 +124,10 @@ public struct FileView: View {
                     .targetCache(ImageCache.default)
                     .setProcessor(processor)
                     .resizable()
+                    .accessibilityHidden(true)
                     .aspectRatio(
                         contentMode: .fill
                     )
-                    .accessibilityHidden(true)
                 )
         }
     }

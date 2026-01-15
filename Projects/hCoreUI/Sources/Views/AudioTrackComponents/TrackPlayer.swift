@@ -26,12 +26,12 @@ struct TrackPlayer: View {
                 }
             }()
         )
+        .accessibilityHidden(true)
         .foregroundColor(hFillColor.Opaque.primary)
         .background {
             Circle().fill(hSurfaceColor.Translucent.secondary)
                 .frame(width: 32, height: 32)
         }
-        .accessibilityHidden(true)
     }
 
     var body: some View {
