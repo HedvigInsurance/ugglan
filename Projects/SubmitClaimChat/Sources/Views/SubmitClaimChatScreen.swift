@@ -214,7 +214,7 @@ struct StepView: View {
                     insertion: step.state.animateText
                         ? .offset(x: 0, y: 100).combined(with: .opacity).animation(.default)
                         : .opacity.animation(.easeInOut(duration: 0)),
-                    removal: .opacity.animation(.easeInOut(duration: 0))
+                    removal: .opacity.animation(.easeInOut(duration: 0.1))
                 )
 
             )
