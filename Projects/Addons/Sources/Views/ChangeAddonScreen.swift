@@ -94,18 +94,6 @@ struct ChangeAddonScreen: View {
                 }
 
                 selectionView(addonOffer: addonOffer)
-
-                //                DropdownView(
-                //                    value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
-                //                    placeHolder: L10n.addonFlowSelectDaysPlaceholder
-                //                ) {
-                //                    changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
-                //                }
-                //                .disabled(changeAddonVm.disableDropDown)
-                //                .padding(.top, .padding16)
-                //                .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
-                //                .hWithoutHorizontalPadding([.section])
-                //                .accessibilityHidden(false)
             }
             .accessibilityElement(children: .combine)
             .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
