@@ -17,6 +17,7 @@ struct ClaimFlowLauncher: ViewModifier {
             .detent(
                 item: $startInput,
                 transitionType: .detent(style: [.height]),
+                options: .constant(.withoutGrabber),
                 content: { input in
                     SubmitClaimChatHonestyPledgeScreen() {
                         submitClaimInput = startInput
