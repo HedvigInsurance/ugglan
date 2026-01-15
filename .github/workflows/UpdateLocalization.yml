@@ -36,13 +36,11 @@ jobs:
       - name: Build project
         if: steps.changes.outputs.has_changes == 'true'
         run: xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro' CODE_SIGNING_ALLOWED=NO
-      - name: Create Pull Request
+      - name: Commit changes
         if: steps.changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v3
-        with:
-          commit-message: "Update localizations"
-          title: "Update localizations"
-          body: "This PR was created automatically to update localizations from Lokalise."
-          branch: "update-localizations"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Update localizations"
+          git push
