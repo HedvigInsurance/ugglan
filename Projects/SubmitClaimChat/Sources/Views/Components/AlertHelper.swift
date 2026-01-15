@@ -8,22 +8,21 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
         didSet {
             switch alertModel?.type {
             case .edit: systemAlertPresented = true
-            case .error: alertPresented = true
-            case .none: alertPresented = false
-            }
-        }
-    }
-    @Published fileprivate var alertPresented = false {
-        didSet {
-            if alertPresented == false {
-                self.handleClose()
+            case .error: alertPresentationModel = alertModel
+            case .none: break
             }
         }
     }
 
+    @Published fileprivate var alertPresentationModel: AlertModel?
     @Published fileprivate var systemAlertPresented = false
 
-    struct AlertModel {
+    struct AlertModel: Identifiable, Equatable {
+        public static func == (lhs: AlertModel, rhs: AlertModel) -> Bool {
+            lhs.id == rhs.id
+        }
+
+        let id: String
         let type: AlertType
         let message: String
         let action: () -> Void
@@ -35,6 +34,7 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
             action: @escaping () -> Void,
             onClose: @escaping () -> Void = {}
         ) {
+            self.id = UUID().uuidString
             self.type = type
             self.message = message
             self.action = action
@@ -77,20 +77,6 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
         case global(model: SubmitClaimChatViewModel)
         case step(model: ClaimIntentStepHandler)
     }
-
-    func handleTryAgain() {
-        if let alertModel = alertModel {
-            alertModel.action()
-            self.alertModel = nil
-        }
-    }
-
-    func handleClose() {
-        if let alertModel = alertModel {
-            alertModel.onClose()
-            self.alertModel = nil
-        }
-    }
 }
 
 struct SubmitClaimChatScreenAlertHelper: ViewModifier {
@@ -99,12 +85,13 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
     func body(content: Content) -> some View {
         content
             .detent(
-                presented: $viewModel.alertPresented,
-                transitionType: .center
-            ) {
-                if let alertModel = viewModel.alertModel {
-                    errorAlert(model: alertModel)
+                item: $viewModel.alertPresentationModel,
+                transitionType: .center,
+                onUserDismiss: {
+                    viewModel.alertPresentationModel?.onClose()
                 }
+            ) { alertModel in
+                errorAlert(model: alertModel)
             }
             .alert(isPresented: $viewModel.systemAlertPresented) {
                 Alert(
@@ -144,7 +131,8 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
         .hFormAttachToBottom {
             hSection {
                 hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
-                    viewModel.handleTryAgain()
+                    self.viewModel.alertPresentationModel = nil
+                    model.action()
                 }
             }
         }

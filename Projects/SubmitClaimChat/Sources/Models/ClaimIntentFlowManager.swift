@@ -14,11 +14,13 @@ class ClaimIntentFlowManager {
 
     func createStepHandler(
         for claimIntent: ClaimIntent,
+        alertVm: SubmitClaimChatScreenAlertViewModel,
         mainHandler: @escaping (SubmitClaimEvent) -> Void
     ) -> ClaimIntentStepHandler {
         ClaimIntentStepHandlerFactory.createHandler(
             for: claimIntent,
             service: service,
+            alertVm: alertVm,
             mainHandler: mainHandler
         )
     }
