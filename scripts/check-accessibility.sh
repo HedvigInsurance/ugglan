@@ -56,12 +56,15 @@ check_file() {
     fi
 
     # Check 1: onTapGesture without accessibility traits
-    if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits" > /dev/null 2>&1; then
+    # Also recognizes custom modifiers ending with "Accessibility"
+    # Skip if the view has .accessibilityAction nearby (parent container accessibility)
+    if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits\|Accessibility(\|accessibilityAction" > /dev/null 2>&1; then
         local lines
         lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
-            local end_line=$((line_num + 5))
-            if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits"; then
+            local start_line=$((line_num > 5 ? line_num - 5 : 1))
+            local end_line=$((line_num + 30))
+            if ! sed -n "${start_line},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits\|Accessibility(\|accessibilityAction"; then
                 issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
                 ((file_issues++))
             fi
@@ -98,9 +101,10 @@ check_file() {
     fi
 
     # Check 3: Image without accessibility handling
-    if grep -n "Image(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden" > /dev/null 2>&1; then
+    # Exclude UIImage (UIKit) - only check SwiftUI Image
+    if grep -n "Image(" "$scan_file" | grep -v "accessibilityLabel\|accessibilityHidden\|UIImage(" > /dev/null 2>&1; then
         local lines
-        lines=$(grep -n "Image(" "$scan_file" | cut -d: -f1)
+        lines=$(grep -n "Image(" "$scan_file" | grep -v "UIImage(" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel\|accessibilityHidden"; then
@@ -118,19 +122,25 @@ check_file() {
     fi
 
     # Check 5: Custom gestures (LongPressGesture, DragGesture) without accessibility
-    if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | grep -v "accessibilityAction" > /dev/null 2>&1; then
+    # Skip if the view has accessibility actions nearby (parent container accessibility)
+    if grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" > /dev/null 2>&1; then
         local lines
-        lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1 | tr '\n' ',' | sed 's/,$//')
-        if [[ -n "$lines" ]]; then
-            issues+=("⚠️  Lines $lines: Custom gestures should include \`.accessibilityAction()\`")
-            ((file_issues++))
-        fi
+        lines=$(grep -n "LongPressGesture\|DragGesture\|\.gesture(" "$scan_file" | cut -d: -f1)
+        for line_num in $lines; do
+            local start_line=$((line_num > 5 ? line_num - 5 : 1))
+            local end_line=$((line_num + 60))
+            if ! sed -n "${start_line},${end_line}p" "$scan_file" | grep -q "accessibilityAction\|accessibilityAdjustableAction"; then
+                issues+=("⚠️  Line $line_num: Custom gestures should include \`.accessibilityAction()\` or \`.accessibilityAdjustableAction()\`")
+                ((file_issues++))
+            fi
+        done
     fi
 
     # Check 6: Toggle/Picker without accessibility labels
-    if grep -n "Toggle(\|Picker(" "$scan_file" | grep -v "accessibilityLabel" > /dev/null 2>&1; then
+    # Match SwiftUI Picker/Toggle only (exclude DatePicker which has built-in accessibility)
+    if grep -nE "^[[:space:]]+(Picker|Toggle)\(" "$scan_file" | grep -v "DatePicker" > /dev/null 2>&1; then
         local lines
-        lines=$(grep -n "Toggle(\|Picker(" "$scan_file" | cut -d: -f1)
+        lines=$(grep -nE "^[[:space:]]+(Picker|Toggle)\(" "$scan_file" | grep -v "DatePicker" | cut -d: -f1)
         for line_num in $lines; do
             local end_line=$((line_num + 5))
             if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityLabel"; then
