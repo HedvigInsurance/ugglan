@@ -439,7 +439,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         Task { @MainActor in
             if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
                 currentStep?.state.showInput = false
-                if allSteps.count > 1 {
+                if indexToRemove > 0 {
                     let stepIdToScrollTo = allSteps[indexToRemove - 1].id
                     scrollTarget = .init(id: "result_\(stepIdToScrollTo)", anchor: .top)
                     try await Task.sleep(seconds: 0.4)
