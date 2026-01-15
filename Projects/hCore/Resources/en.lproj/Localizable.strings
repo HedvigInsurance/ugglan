@@ -197,7 +197,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_YOUR_CLAIM" = "Your claim";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
-"CLAIM_CHAT_EDIT_EXPLANATION" = "Changing this answer will reset everything you’ve filled in after it. You’ll need to go through those steps again.";
+"CLAIM_CHAT_EDIT_EXPLANATION" = "Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.";
 "CLAIM_CHAT_EDIT_TITLE" = "Previous answers will be reset";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Make sure you fill in all the required fields";
 "CLAIM_CHAT_FILE_TITLE" = "Uploaded files";
@@ -232,7 +232,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 /* When we send fetch request for the coinsured SSN and get null as an result, we should automatically switch toggle on and show this info at the bottom of the sheet. */
 "COINSURED_WITHOUT_SSN_INFO" = "We were unable to retrieve the information linked to this Social Security number. Please enter it manually.";
 "COMMON_CLAIM_BUTTON" = "Book now";
-"COMMON_CLAIM_EMERGENCY_BUTTON_TITLE" = "Sick abroad";
+"COMMON_CLAIM_EMERGENCY_BUTTON_TITLE" = "How to get help abroad";
 "COMMON_CLAIM_EMERGENCY_TITLE" = "Sick abroad";
 "CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Documents";
 "CONFIRM_CHANGES_SUBTITLE" = "Please note that your updates will be effective on %@.";
@@ -572,7 +572,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SIMPLE_SIGN_FAILED_TITLE" = "We couldn't sign you up";
 "SINGLE_ITEM_INFO_BRAND" = "Brand";
 "SUBMIT_CLAIM_ PURCHASE_PRICE_TITLE" = "Fill in your purchase price";
-"SUBMIT_CLAIM_CAR_BUTTON_TITLE" = "Car claim";
+"SUBMIT_CLAIM_CAR_BUTTON_TITLE" = "Continue";
 "SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON" = "Report your claim";
 "SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT" = "We are committed to making the process as swift and seamless as possible for you. The more information you can provide, the quicker we can assist you. Once we have all the necessary details, we will contact you via email.\n\nPlease note that for this matter, you cannot reach us through the app. After reporting the claim, all communication will take place via email.";
 "SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE" = "Report your claim";
@@ -599,7 +599,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL" = "We cover costs due to acute illness, injury and acute dental injury abroad. If you are seriously ill and require emergency medical care, contact Hedvig Global Assistance (SOS International) immediately.";
 "SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE" = "What your insurance covers";
 "SUBMIT_CLAIM_EMERGENCY_TITLE" = "Are you on a trip and need urgent medical care or assistance?";
-"SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE" = "Glass damage";
+"SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE" = "See our partners";
 "SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL" = "Get started quickly by contacting a workshop. We have established partnerships with Carglass and Ryds Bilglas.\n\nHowever, you are free to select a different workshop of your preference.";
 "SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL" = "You need to contact a car workshop to get further help with your claim";
 "SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON" = "Book now";
@@ -609,13 +609,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE" = "Available 24/7 ∙ No charge";
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL" = "Book online";
 "SUBMIT_CLAIM_HOW_IT_WORKS_TITLE" = "How it works";
-"SUBMIT_CLAIM_ID_PROTECTION_BUTTON_TITLE" = "ID Protection";
+"SUBMIT_CLAIM_ID_PROTECTION_BUTTON_TITLE" = "Read more";
 "SUBMIT_CLAIM_ID_PROTECTION_TITLE" = "ID Protection";
 "SUBMIT_CLAIM_NEED_HELP_LABEL" = "We’re here 08–22, Mon–Fri\nand weekends 10–22";
 "SUBMIT_CLAIM_NEED_HELP_TITLE" = "Need help with something else?";
 "SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE" = "Our partner";
 "SUBMIT_CLAIM_PARTNER_TITLE" = "Our partners";
-"SUBMIT_CLAIM_PESTS_BUTTON_TITLE" = "Dry-rot fungus and pests";
+"SUBMIT_CLAIM_PESTS_BUTTON_TITLE" = "Read more";
 "SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON" = "Contact Nomor (Rentokil)";
 "SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL" = "Customer service available Mon–Fri, 7–17";
 "SUBMIT_CLAIM_PESTS_HOW_IT_WORKS_LABEL" = "If your house is affected by pests, you can get compensation for decontamination and repairs. The coverage includes house longhorns, carpenter ants, ants, mice and other household pests.\nThey can also help with dry-rot fungus.";
@@ -624,7 +624,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_TOWING_A1" = "You can get help with towing the car if it has been damaged or experienced a breakdown, such as engine failure or a flat tire.";
 "SUBMIT_CLAIM_TOWING_A2" = "As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.";
 "SUBMIT_CLAIM_TOWING_A3" = "You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.";
-"SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Towing";
+"SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Read more";
 "SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 10–45 99 222. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
 "SUBMIT_CLAIM_TOWING_INFO_LABEL" = "You need to contact Assistancekåren directly to receive further assistance";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "Call now";
