@@ -21,7 +21,11 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                             onConfirm()
                         }
                         .disabled(!hasAgreedToHonestyPledge)
-                        hCancelButton {
+                        hButton(
+                            .large,
+                            .secondary,
+                            content: .init(title: L10n.generalCancelButton)
+                        ) {
                             router.dismiss()
                         }
                     }
