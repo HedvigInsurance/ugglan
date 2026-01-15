@@ -13,6 +13,7 @@ struct SubmitClaimChatMesageView: View {
                         RevealTextView(
                             text: text,
                             delay: 1,
+                            animate: viewModel.state.animateText,
                             onTextAnimationDone: {
                                 withAnimation {
                                     viewModel.state.showInput = true

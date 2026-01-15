@@ -211,8 +211,10 @@ struct StepView: View {
             .id(step.id)
             .transition(
                 .asymmetric(
-                    insertion: .offset(x: 0, y: 100).combined(with: .opacity).animation(.default),
-                    removal: .opacity.animation(.easeInOut(duration: 0.1))
+                    insertion: step.state.animateText
+                        ? .offset(x: 0, y: 100).combined(with: .opacity).animation(.default)
+                        : .opacity.animation(.easeInOut(duration: 0)),
+                    removal: .opacity.animation(.easeInOut(duration: 0))
                 )
 
             )
@@ -449,6 +451,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
                 }
                 allSteps.removeSubrange((indexToRemove)..<allSteps.count)
             }
+            handler.state.animateText = false
             stepHeights[handler.id] = 0
             allSteps.append(handler)
             currentStep = handler
