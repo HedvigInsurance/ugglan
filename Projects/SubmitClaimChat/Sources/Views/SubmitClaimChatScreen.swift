@@ -9,7 +9,6 @@ public struct SubmitClaimChatScreen: View {
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @StateObject var alertVm = SubmitClaimChatScreenAlertViewModel()
 
     public init() {}
 
@@ -20,11 +19,11 @@ public struct SubmitClaimChatScreen: View {
                 .animation(.defaultSpring, value: viewModel.outcome)
         } else {
             scrollContent
-                .submitClaimChatScreenAlert(alertVm)
+                .submitClaimChatScreenAlert(viewModel.alertVm)
                 .animation(.defaultSpring, value: viewModel.outcome)
                 .onChange(of: viewModel.showError) { value in
                     if value {
-                        alertVm.alertModel = .init(
+                        viewModel.alertVm.alertModel = .init(
                             type: .error,
                             message: viewModel.error?.localizedDescription ?? "",
                             action: {
@@ -99,7 +98,7 @@ public struct SubmitClaimChatScreen: View {
                 currentStepView
             }
         }
-        .environmentObject(alertVm)
+        .environmentObject(viewModel.alertVm)
     }
 
     private var currentStepView: some View {
@@ -279,6 +278,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     }
     @Published var currentStep: ClaimIntentStepHandler?
     @Published var scrollTarget: ScrollTarget = .init(id: "", anchor: .bottom)
+    let alertVm = SubmitClaimChatScreenAlertViewModel()
 
     var scrollViewBottomInset: CGFloat = 0
     var scrollViewHeight: CGFloat = 0
@@ -462,9 +462,13 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
-        flowManager.createStepHandler(for: claimIntent) { [weak self] claimEvent in
-            self?.processClaimIntent(claimEvent)
-        }
+        flowManager.createStepHandler(
+            for: claimIntent,
+            alertVm: alertVm,
+            mainHandler: { [weak self] claimEvent in
+                self?.processClaimIntent(claimEvent)
+            }
+        )
     }
 
     struct ScrollTarget: Equatable {

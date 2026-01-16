@@ -163,11 +163,14 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
 
 class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var bottomView: AnyView?
+    var onUserDismiss: (() -> Void)?
 
     init(
-        bottomView: AnyView? = nil
+        bottomView: AnyView? = nil,
+        onUserDismiss: (() -> Void)? = nil
     ) {
         self.bottomView = bottomView
+        self.onUserDismiss = onUserDismiss
         super.init()
     }
 
@@ -176,11 +179,13 @@ class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitionin
         presenting: UIViewController?,
         source _: UIViewController
     ) -> UIPresentationController? {
-        CenteredModalPresentationController(
+        let pc = CenteredModalPresentationController(
             presentedViewController: presented,
             presenting: presenting,
             bottomView: bottomView
         )
+        pc.onUserDismiss = onUserDismiss
+        return pc
     }
 }
 
@@ -192,6 +197,8 @@ final class CenteredModalPresentationController: UIPresentationController {
     private var dragPercentage: CGFloat = 0
     private var dragOffset: CGFloat = 0
     private var dragState: ModalScaleState = .presentation
+
+    var onUserDismiss: (() -> Void)?
 
     init(
         presentedViewController: UIViewController,
@@ -210,6 +217,7 @@ final class CenteredModalPresentationController: UIPresentationController {
     }
 
     @objc private func dismissOnTapOutside() {
+        onUserDismiss?()
         presentedViewController.dismiss(animated: true, completion: nil)
     }
 
@@ -338,6 +346,7 @@ extension CenteredModalPresentationController {
                 dragOffset = 0
                 resetDrag()
             } else {
+                onUserDismiss?()
                 presentedViewController.dismiss(animated: true, completion: nil)
                 gesture.isEnabled = false
             }

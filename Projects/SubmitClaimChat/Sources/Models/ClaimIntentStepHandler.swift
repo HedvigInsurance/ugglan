@@ -31,6 +31,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
+    weak var alertVm: SubmitClaimChatScreenAlertViewModel?
     private var submitTask: Task<Void, Never>?
 
     required init(
@@ -130,7 +131,15 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 mainHandler(.outcome(model: model))
             }
         } catch let ex {
-            self.state.error = ex
+            alertVm?.alertModel = .init(
+                type: .error,
+                message: ex.localizedDescription,
+                action: { [weak self] in
+                    Task {
+                        await self?.skip()
+                    }
+                }
+            )
         }
     }
 
@@ -157,7 +166,15 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 break
             }
         } catch let ex {
-            self.state.error = ex
+            alertVm?.alertModel = .init(
+                type: .error,
+                message: ex.localizedDescription,
+                action: { [weak self] in
+                    Task {
+                        await self?.regret()
+                    }
+                }
+            )
         }
     }
 
@@ -172,26 +189,30 @@ enum ClaimIntentStepHandlerFactory {
     static func createHandler(
         for claimIntent: ClaimIntent,
         service: ClaimIntentService,
+        alertVm: SubmitClaimChatScreenAlertViewModel,
         mainHandler: @escaping ((SubmitClaimEvent) -> Void)
     ) -> ClaimIntentStepHandler {
+        let handler: ClaimIntentStepHandler
         switch claimIntent.currentStep.content {
         case .form:
-            return SubmitClaimFormStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimFormStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .task:
-            return SubmitClaimTaskStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimTaskStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .audioRecording:
-            return SubmitClaimAudioStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimAudioStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .summary:
-            return SubmitClaimSummaryStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimSummaryStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .singleSelect:
-            return SubmitClaimSingleSelectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimSingleSelectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .fileUpload:
-            return SubmitClaimFileUploadStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimFileUploadStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .deflect:
-            return SubmitClaimDeflectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimDeflectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .unknown:
-            return SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+            handler = SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }
+        handler.alertVm = alertVm
+        return handler
     }
 }
 

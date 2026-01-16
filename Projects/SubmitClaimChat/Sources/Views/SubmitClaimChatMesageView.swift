@@ -157,11 +157,9 @@ struct ClaimStepResultView: View {
                     action: {
                         Task {
                             await viewModel?.regret()
-                            alertVm.alertModel = nil
                         }
                     },
                     onClose: {
-                        alertVm.alertModel = nil
                     }
                 )
             }
