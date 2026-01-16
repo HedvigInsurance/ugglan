@@ -14,6 +14,7 @@ struct SubmitClaimTaskResultView: View {
                 .overlay {
                     if !viewModel.taskModel.isCompleted {
                         CircularProgressView()
+                            .accessibilityHidden(true)
                     }
                 }
             hText(viewModel.taskModel.description, style: .body1)

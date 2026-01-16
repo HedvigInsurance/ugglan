@@ -13,6 +13,7 @@ struct SubmitClaimChatMesageView: View {
                         RevealTextView(
                             text: text,
                             delay: 1,
+                            animate: viewModel.state.animateText,
                             onTextAnimationDone: {
                                 withAnimation {
                                     viewModel.state.showInput = true
@@ -90,8 +91,6 @@ struct ClaimStepView: View {
                 SubmitClaimSummaryBottomView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
-                SubmitClaimHonestyPledgeView(submitClaimChatViewModel: submitClaimChatViewModel, viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
                 SubmitClaimUnknownView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
@@ -137,8 +136,6 @@ struct ClaimStepResultView: View {
                 SubmitClaimFormResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimHonestyPledgeStep {
-                SubmitClaimHonestyPledgeResultView()
             }
         }
         if viewModel.isRegrettable && viewModel.state.isStepExecuted {
@@ -148,6 +145,11 @@ struct ClaimStepResultView: View {
                 colorLevel: .two,
                 withBorder: false
             )
+            .hFieldSize(.capsuleShape)
+            .hPillAttributes(attributes: [.withChevron])
+            .accessibilityLabel(L10n.General.edit)
+            .accessibilityHint(L10n.voiceoverEdit)
+            .accessibilityAddTraits(.isButton)
             .onTapGesture { [weak viewModel] in
                 alertVm.alertModel = .init(
                     type: .edit,
@@ -161,11 +163,6 @@ struct ClaimStepResultView: View {
                     }
                 )
             }
-            .hFieldSize(.capsuleShape)
-            .hPillAttributes(attributes: [.withChevron])
-            .accessibilityLabel(L10n.General.edit)
-            .accessibilityHint(L10n.voiceoverEdit)
-            .accessibilityAddTraits(.isButton)
         }
     }
 }

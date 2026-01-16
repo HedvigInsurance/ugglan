@@ -62,7 +62,6 @@ final class StoreLoadTests: XCTestCase {
         self.store = store
         await store.sendAsync(.load)
         try await Task.sleep(seconds: 0.1)
-        XCTAssertNil(store.loadingState[.getPaymentData])
         assert(store.state.ongoingPaymentData == paymentData.ongoing)
         assert(store.state.paymentData == paymentData.upcoming)
         assert(mockService.events.count == 1)

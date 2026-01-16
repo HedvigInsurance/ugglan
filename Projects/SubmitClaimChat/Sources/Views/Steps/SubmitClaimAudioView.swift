@@ -303,7 +303,7 @@ struct SubmitClaimAudioResultView: View {
                     Spacer()
                 }
                 .hPillStyle(color: .grey, colorLevel: .two)
-                .hFieldSize(.capsuleShape)
+                .hFieldSize(.extraLarge)
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(viewModel.inputType?.title ?? "")

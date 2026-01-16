@@ -152,13 +152,13 @@ struct ScrollToBottomButton: View {
             .contentShape(Circle())
             .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
             .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+            .accessibilityLabel(L10n.generalContinueButton)
+            .accessibilityHint(L10n.voiceoverDoubleClickTo)
+            .accessibilityAddTraits(.isButton)
             .onTapGesture {
                 scrollAction()
             }
             .transition(.move(edge: .bottom).combined(with: .opacity))
-            .accessibilityLabel(L10n.generalContinueButton)
-            .accessibilityHint(L10n.voiceoverDoubleClickTo)
-            .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -210,7 +210,9 @@ struct StepView: View {
             .id(step.id)
             .transition(
                 .asymmetric(
-                    insertion: .offset(x: 0, y: 100).combined(with: .opacity).animation(.default),
+                    insertion: step.state.animateText
+                        ? .offset(x: 0, y: 100).combined(with: .opacity).animation(.default)
+                        : .opacity.animation(.easeInOut(duration: 0)),
                     removal: .opacity.animation(.easeInOut(duration: 0.1))
                 )
 
@@ -352,13 +354,13 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
     private let input: StartClaimInput
     // MARK: - Initialization
     init(
-        startInput: SubmiClaimChatInput
+        startInput: SubmitClaimChatInput
     ) {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
         self.openChat = startInput.openChat
         self.input = startInput.input
         super.init()
-        self.showHonestyPledge()
+        startClaimIntent()
     }
 
     // MARK: - UI Height Calculations
@@ -371,23 +373,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         if let id = allSteps.last?.id {
             lastStepContentHeight = stepHeights[id] ?? 0
         }
-    }
-
-    func showHonestyPledge() {
-        let honestyIntent = ClaimIntent(
-            currentStep: .init(
-                content: .honestyPledge,
-                id: "honestyPledge",
-                text:
-                    "För att vi ska kunna hjälpa dig på bästa sätt ber vi dig berätta om din skada precis som det hände.\n\nVår försäkring bygger på tillit. Man tar den ersättning man har rätt till, varken mer eller mindre, och därför är din beskrivning avgörande för att vi ska kunna hantera ärendet korrekt och snabbt."
-            ),
-            id: "honestyPledge",
-            isSkippable: false,
-            isRegrettable: false,
-            progress: 0
-        )
-
-        processClaimIntent(.goToNext(claimIntent: honestyIntent))
     }
 
     // MARK: - Business Logic
@@ -456,7 +441,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         Task { @MainActor in
             if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
                 currentStep?.state.showInput = false
-                if allSteps.count > 1 {
+                if indexToRemove > 0 {
                     let stepIdToScrollTo = allSteps[indexToRemove - 1].id
                     scrollTarget = .init(id: "result_\(stepIdToScrollTo)", anchor: .top)
                     try await Task.sleep(seconds: 0.4)
@@ -466,6 +451,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
                 }
                 allSteps.removeSubrange((indexToRemove)..<allSteps.count)
             }
+            handler.state.animateText = false
             stepHeights[handler.id] = 0
             allSteps.append(handler)
             currentStep = handler

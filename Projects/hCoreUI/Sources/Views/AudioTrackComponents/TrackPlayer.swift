@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
@@ -25,6 +26,7 @@ struct TrackPlayer: View {
                 }
             }()
         )
+        .accessibilityHidden(true)
         .foregroundColor(hFillColor.Opaque.primary)
         .background {
             Circle().fill(hSurfaceColor.Translucent.secondary)
@@ -97,6 +99,21 @@ struct TrackPlayer: View {
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(L10n.a11YAudioRecording)
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment:
+                    let newProgress = min(audioPlayer.progress + 0.1, 1.0)
+                    audioPlayer.setProgress(to: newProgress)
+                case .decrement:
+                    let newProgress = max(audioPlayer.progress - 0.1, 0.0)
+                    audioPlayer.setProgress(to: newProgress)
+                @unknown default:
+                    break
+                }
             }
         }
     }

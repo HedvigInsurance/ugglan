@@ -40,6 +40,7 @@ public struct FileView: View {
                             .aspectRatio(
                                 contentMode: .fill
                             )
+                            .accessibilityHidden(true)
                         )
                 }
             } else {
@@ -67,6 +68,9 @@ public struct FileView: View {
         .onTapGesture {
             onTap()
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(file.name)
     }
 
     private var fileImage: Image {
@@ -93,6 +97,7 @@ public struct FileView: View {
                 .aspectRatio(
                     contentMode: .fill
                 )
+                .accessibilityHidden(true)
             )
     }
 
@@ -104,6 +109,7 @@ public struct FileView: View {
                 .background(
                     KFAnimatedImage(url)
                         .scaledToFit()
+                        .accessibilityHidden(true)
                 )
         } else {
             Rectangle().fill(.clear)
@@ -118,6 +124,7 @@ public struct FileView: View {
                     .targetCache(ImageCache.default)
                     .setProcessor(processor)
                     .resizable()
+                    .accessibilityHidden(true)
                     .aspectRatio(
                         contentMode: .fill
                     )

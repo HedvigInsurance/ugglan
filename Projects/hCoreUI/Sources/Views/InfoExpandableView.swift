@@ -33,12 +33,15 @@ public struct InfoExpandableView: View {
                     Image(
                         uiImage: hCoreUIAssets.minus.image
                     )
+                    .accessibilityHidden(true)
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 270))
                     Image(
                         uiImage: hCoreUIAssets.minus.image
                     )
+                    .accessibilityHidden(true)
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
+                .accessibilityHidden(true)
             }
             .onTap {
                 withAnimation(.spring) {

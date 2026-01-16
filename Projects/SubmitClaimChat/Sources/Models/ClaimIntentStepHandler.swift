@@ -19,6 +19,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var showResults = false
         var disableSkip = false
         var showInput = false
+        var animateText = true
     }
 
     @Published var state = StepUIState()
@@ -207,8 +208,6 @@ enum ClaimIntentStepHandlerFactory {
             handler = SubmitClaimFileUploadStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .deflect:
             handler = SubmitClaimDeflectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        case .honestyPledge:
-            handler = SubmitClaimHonestyPledgeStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .unknown:
             handler = SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }

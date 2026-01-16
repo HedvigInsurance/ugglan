@@ -1,6 +1,7 @@
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import UIKit
+import hCore
 import hCoreUI
 
 struct NavigationBarProgressModifier: ViewModifier {
@@ -16,6 +17,7 @@ struct NavigationBarProgressModifier: ViewModifier {
             }
             .onChange(of: progress) { newProgress in
                 progressView?.setProgress(Float(newProgress), animated: true)
+                progressView?.accessibilityValue = "\(Int(newProgress * 100))%"
             }
     }
 
@@ -30,6 +32,10 @@ struct NavigationBarProgressModifier: ViewModifier {
         )
         progress.trackTintColor = .clear
         progress.progress = Float(self.progress)
+        progress.isAccessibilityElement = true
+        progress.accessibilityLabel = L10n.embarkLoading
+        progress.accessibilityValue = "\(Int(self.progress * 100))%"
+        progress.accessibilityTraits = .updatesFrequently
 
         navBar.addSubview(progress)
         // Added additional 2 points to avoid rounding progress bar on edges

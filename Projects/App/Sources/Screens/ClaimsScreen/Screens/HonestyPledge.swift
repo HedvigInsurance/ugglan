@@ -53,6 +53,7 @@ struct SlideToConfirm: View {
             }
             Image(uiImage: updateUIForFinished ? hCoreUIAssets.checkmark.image : hCoreUIAssets.chevronRight.image)
                 .foregroundColor(hTextColor.Opaque.negative)
+                .accessibilityHidden(true)
                 .frame(width: 50, height: 50)
                 .background(getIconBackgroundColor)
                 .colorScheme(.light)
