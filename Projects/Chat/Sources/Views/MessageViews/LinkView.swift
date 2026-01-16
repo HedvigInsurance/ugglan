@@ -16,6 +16,7 @@ struct LinkView: View {
                     linkColor: hTextColor.Opaque.primary,
                     linkUnderlineStyle: .thick,
                     maxWidth: 300,
+                    isSelectable: true,
                     onUrlClicked: { url in
                         NotificationCenter.default.post(name: .openDeepLink, object: url)
                     }

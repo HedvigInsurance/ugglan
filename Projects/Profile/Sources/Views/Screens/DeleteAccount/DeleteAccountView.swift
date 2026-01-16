@@ -38,7 +38,8 @@ public struct DeleteAccountView: View {
                                 color: hTextColor.Opaque.secondary,
                                 linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single,
-                                textAlignment: vm.textAlignment
+                                textAlignment: vm.textAlignment,
+                                isSelectable: false
                             ) { url in
                                 NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }
