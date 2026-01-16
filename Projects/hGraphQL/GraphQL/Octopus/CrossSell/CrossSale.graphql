@@ -4,6 +4,7 @@ query CrossSell($input: CrossSellInput!) {
 		  otherCrossSells {
 			  ...CrossSellFragment
 		  }
+		  discountAvailable
 		  recommendedCrossSell {
 			  bannerText
 			  buttonText
@@ -32,6 +33,7 @@ fragment CrossSellFragment on CrossSell {
     description
     storeUrl
     title
+    buttonTitle
     pillowImageSmall {
         ...StoryblokImageAssetFragment
     }

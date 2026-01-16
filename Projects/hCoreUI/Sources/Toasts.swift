@@ -15,8 +15,8 @@ public struct ToastBar {
         type: NotificationType,
         icon: Image? = nil,
         text: String,
-        action: ToastBarAction? = nil,
-        duration: Double = 3
+        duration: Double = 3,
+        action: ToastBarAction? = nil
     ) {
         self.type = type
         self.icon = icon ?? type.image
@@ -27,14 +27,11 @@ public struct ToastBar {
 
     public struct ToastBarAction {
         let actionText: String
-        let onClick: () -> Void
 
         public init(
-            actionText: String,
-            onClick: @escaping () -> Void
+            actionText: String
         ) {
             self.actionText = actionText
-            self.onClick = onClick
         }
     }
 }
@@ -95,7 +92,7 @@ public struct ToastBarView: View {
                 toastModel: .init(
                     type: .info,
                     text: "testing toast bar action",
-                    action: .init(actionText: "action", onClick: {})
+                    action: .init(actionText: "action")
                 )
             )
         }

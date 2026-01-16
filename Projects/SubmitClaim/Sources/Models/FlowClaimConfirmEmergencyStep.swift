@@ -1,20 +1,14 @@
 import Foundation
 
 public struct FlowClaimConfirmEmergencyStepModel: FlowClaimStepModel {
-    let id: String
     let text: String
-    let confirmEmergency: Bool?
     let options: [FlowClaimConfirmEmergencyOption]
 
     public init(
-        id: String,
         text: String,
-        confirmEmergency: Bool?,
         options: [FlowClaimConfirmEmergencyOption]
     ) {
-        self.id = id
         self.text = text
-        self.confirmEmergency = confirmEmergency
         self.options = options
     }
 }

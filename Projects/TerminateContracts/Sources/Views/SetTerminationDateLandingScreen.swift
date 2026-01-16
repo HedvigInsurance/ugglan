@@ -195,15 +195,6 @@ struct SetTerminationDateLandingScreen: View {
         }
         return label
     }
-
-    @hColorBuilder
-    func getFillColor() -> some hColor {
-        if vm.hasAgreedToTerms {
-            hSignalColor.Green.element
-        } else {
-            hSurfaceColor.Opaque.primary
-        }
-    }
 }
 
 @MainActor
@@ -212,6 +203,7 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var hasAgreedToTerms: Bool = false
     @Published var titleText: String = ""
     private var terminationNavigationVm: TerminationFlowNavigationViewModel?
+    private var cancellables = Set<AnyCancellable>()
 
     init(terminationNavigationVm: TerminationFlowNavigationViewModel) {
         self.terminationNavigationVm = terminationNavigationVm
@@ -219,6 +211,19 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
         if isDeletion == true {
             terminationNavigationVm.fetchNotification(isDeletion: true)
         }
+        observeNavigationVMChanges(terminationNavigationVm)
+    }
+
+    private func observeNavigationVMChanges(_ navigationVm: TerminationFlowNavigationViewModel) {
+        navigationVm.$terminationDeleteStepModel
+            .combineLatest(navigationVm.$terminationDateStepModel)
+            .sink { [weak self] _, _ in
+                self?.checkDeletion(for: navigationVm)
+                if self?.isDeletion == true {
+                    navigationVm.fetchNotification(isDeletion: true)
+                }
+            }
+            .store(in: &cancellables)
     }
     func isCancelButtonDisabled(terminationDate: Date?) -> Bool {
         let hasSetTerminationDate = terminationDate != nil

@@ -4,27 +4,163 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+// MARK: - Helper Classes
+
+@MainActor
+class MovingFlowQuoteManager {
+    weak var viewModel: MovingFlowNavigationViewModel?
+
+    func createSummaryViewModel(
+        router: Router,
+        moveQuotesModel: MoveQuotesModel?,
+        selectedHomeQuote: MovingFlowQuote?,
+        totalPremium: Premium?,
+        removedAddonIds: [String]
+    ) -> QuoteSummaryViewModel {
+        let movingFlowQuotes = getQuotes(
+            moveQuotesModel: moveQuotesModel,
+            selectedHomeQuote: selectedHomeQuote
+        )
+
+        let contractInfos = movingFlowQuotes.map { quote in
+            createContractInfo(for: quote, removedAddonIds: removedAddonIds)
+        }
+
+        let vm = QuoteSummaryViewModel(
+            contract: contractInfos,
+            activationDate: movingFlowQuotes.first?.startDate,
+            premium: totalPremium ?? .init(gross: nil, net: nil)
+        )
+
+        vm.onConfirmClick = { [weak router, weak viewModel] in
+            Task { [weak viewModel] in
+                guard let viewModel = viewModel,
+                    let movingFlowConfirmViewModel = viewModel.movingFlowConfirmViewModel
+                else { return }
+
+                await movingFlowConfirmViewModel.confirmMoveIntent(
+                    intentId: viewModel.moveConfigurationModel?.id ?? "",
+                    currentHomeQuoteId: viewModel.selectedHomeQuote?.id ?? "",
+                    removedAddons: viewModel.removedAddonIds
+                )
+            }
+            router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
+        }
+
+        return vm
+    }
+
+    private func createContractInfo(
+        for quote: MovingFlowQuote,
+        removedAddonIds: [String]
+    ) -> QuoteSummaryViewModel.ContractInfo {
+        var documents: [hPDFDocument] = quote.documents.map {
+            .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+        }
+
+        var displayItems: [QuoteDisplayItem] = []
+        displayItems.append(.init(title: quote.displayName, value: quote.baseGrossPremium.formattedAmountPerMonth))
+
+        for addon in quote.addons {
+            if !removedAddonIds.contains(addon.id) {
+                documents.append(contentsOf: addon.addonVariant.documents)
+                displayItems.append(
+                    .init(title: addon.addonVariant.displayName, value: addon.grossPremium.formattedAmountPerMonth)
+                )
+            }
+        }
+
+        displayItems.append(
+            contentsOf: quote.priceBreakdownItems.map { .init(title: $0.displayTitle, value: $0.displayValue) }
+        )
+
+        return QuoteSummaryViewModel.ContractInfo(
+            id: quote.id,
+            displayName: quote.displayName,
+            exposureName: quote.exposureName ?? "",
+            premium: quote.totalPremium,
+            documentSection: .init(
+                documents: documents,
+                onTap: { [weak viewModel] document in
+                    viewModel?.document = document
+                }
+            ),
+            displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }),
+            insuranceLimits: quote.insurableLimits,
+            typeOfContract: quote.contractType,
+            priceBreakdownItems: displayItems
+        )
+    }
+
+    private func getQuotes(
+        moveQuotesModel: MoveQuotesModel?,
+        selectedHomeQuote: MovingFlowQuote?
+    ) -> [MovingFlowQuote] {
+        var allQuotes = moveQuotesModel?.mtaQuotes ?? []
+        if let selectedHomeQuote = selectedHomeQuote {
+            allQuotes.insert(selectedHomeQuote, at: 0)
+        }
+        return allQuotes
+    }
+
+    func updateQuotesWithCost(
+        moveQuotesModel: inout MoveQuotesModel?,
+        quoteCosts: [QuoteCost]
+    ) {
+        moveQuotesModel?.homeQuotes.enumerated()
+            .forEach { (index, quote) in
+                if let cost = quoteCosts.first(where: { $0.id == quote.id })?.cost {
+                    moveQuotesModel?.homeQuotes[index].totalPremium = cost.premium
+                    moveQuotesModel?.homeQuotes[index].priceBreakdownItems = cost.discounts.map {
+                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
+                    }
+                }
+            }
+
+        moveQuotesModel?.mtaQuotes.enumerated()
+            .forEach { (index, quote) in
+                if let cost = quoteCosts.first(where: { $0.id == quote.id })?.cost {
+                    moveQuotesModel?.mtaQuotes[index].totalPremium = cost.premium
+                    moveQuotesModel?.mtaQuotes[index].priceBreakdownItems = cost.discounts.map {
+                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
+                    }
+                }
+            }
+    }
+}
+
+// MARK: - View Model
+
 @MainActor
 public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDataProvider {
     @Inject private var service: MoveFlowClient
+
+    // MARK: - Helper Properties
+    private let quoteManager = MovingFlowQuoteManager()
+
+    // MARK: - UI State
+    @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
+    @Published var document: hPDFDocument?
+    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+
+    // MARK: - Properties
     @Published var viewState: ProcessingState = .loading
     var errorTitle: String?
-    @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
-    @Published var document: hPDFDocument? = nil
     @Published var moveConfigurationModel: MoveConfigurationModel?
     @Published var moveQuotesModel: MoveQuotesModel?
     @Published var addressInputModel = AddressInputModel()
     @Published var houseInformationInputvm = HouseInformationInputModel()
     @Published var selectedHomeQuote: MovingFlowQuote?
     @Published var selectedHomeAddress: MoveAddress?
-    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
     var totalPremium: Premium?
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
     var quoteSummaryViewModel: QuoteSummaryViewModel?
     var removedAddonIds: [String] = []
 
     fileprivate var initialTrackingType: MovingFlowDetentType?
+
     init() {
+        quoteManager.viewModel = self
         initializeData()
     }
 
@@ -64,73 +200,14 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
     }
 
     func setMovingFlowSummaryViewModel(router: Router) {
-        let movingFlowQuotes = getQuotes()
-        var contractInfos: [QuoteSummaryViewModel.ContractInfo] = []
         movingFlowConfirmViewModel = .init()
-        for quote in movingFlowQuotes {
-            var documents: [hPDFDocument] = quote.documents.map {
-                .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-            }
-            var displayItems: [QuoteDisplayItem] = []
-            displayItems.append(.init(title: quote.displayName, value: quote.baseGrossPremium.formattedAmountPerMonth))
-            for addon in quote.addons {
-                if !removedAddonIds.contains(addon.id) {
-                    documents.append(contentsOf: addon.addonVariant.documents)
-                    displayItems.append(
-                        .init(title: addon.addonVariant.displayName, value: addon.grossPremium.formattedAmountPerMonth)
-                    )
-                }
-            }
-            displayItems.append(
-                contentsOf: quote.priceBreakdownItems.map { .init(title: $0.displayTitle, value: $0.displayValue) }
-            )
-            let contractQuote = QuoteSummaryViewModel.ContractInfo(
-                id: quote.id,
-                displayName: quote.displayName,
-                exposureName: quote.exposureName ?? "",
-                premium: quote.totalPremium,
-                documentSection: .init(
-                    documents: documents,
-                    onTap: { [weak self] document in
-                        self?.document = document
-                    }
-                ),
-                displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
-                ),
-                insuranceLimits: quote.insurableLimits,
-                typeOfContract: quote.contractType,
-                priceBreakdownItems: displayItems
-            )
-            contractInfos.append(contractQuote)
-        }
-
-        let vm = QuoteSummaryViewModel(
-            contract: contractInfos,
-            activationDate: movingFlowQuotes.first?.startDate,
-            premium: totalPremium ?? .init(gross: nil, net: nil)
+        quoteSummaryViewModel = quoteManager.createSummaryViewModel(
+            router: router,
+            moveQuotesModel: moveQuotesModel,
+            selectedHomeQuote: selectedHomeQuote,
+            totalPremium: totalPremium,
+            removedAddonIds: removedAddonIds
         )
-        vm.onConfirmClick = { [weak router] in
-            Task { [weak self] in
-                guard let self = self,
-                    let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel
-                else { return }
-                await movingFlowConfirmViewModel.confirmMoveIntent(
-                    intentId: self.moveConfigurationModel?.id ?? "",
-                    currentHomeQuoteId: self.selectedHomeQuote?.id ?? "",
-                    removedAddons: self.removedAddonIds
-                )
-            }
-            router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
-        }
-        quoteSummaryViewModel = vm
-    }
-
-    private func getQuotes() -> [MovingFlowQuote] {
-        var allQuotes = moveQuotesModel?.mtaQuotes ?? []
-        if let selectedHomeQuote = selectedHomeQuote {
-            allQuotes.insert(selectedHomeQuote, at: 0)
-        }
-        return allQuotes
     }
 
     var movingDate: String {
@@ -144,6 +221,7 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
         removedAddonIds =
             moveQuotesModel?.homeQuotes.first(where: { $0.id == selectedQuoteId })?.addons
             .filter({ !includedAddonIds.contains($0.id) }).map { $0.id } ?? []
+
         let data = try await service.getMoveIntentCost(
             input: .init(
                 intentId: moveConfigurationModel?.id ?? "",
@@ -151,27 +229,16 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
                 selectedAddons: includedAddonIds
             )
         )
+
         let quote = data.quoteCosts.first(where: { $0.id == selectedQuoteId })!
         totalPremium = data.totalCost
-        moveQuotesModel?.homeQuotes.enumerated()
-            .forEach { (index, quote) in
-                if let cost = data.quoteCosts.first(where: { $0.id == quote.id })?.cost {
-                    moveQuotesModel?.homeQuotes[index].totalPremium = cost.premium
-                    moveQuotesModel?.homeQuotes[index].priceBreakdownItems = cost.discounts.map({
-                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
-                    })
-                }
-            }
-        moveQuotesModel?.mtaQuotes.enumerated()
-            .forEach { (index, quote) in
-                if let cost = data.quoteCosts.first(where: { $0.id == quote.id })?.cost {
-                    moveQuotesModel?.mtaQuotes[index].totalPremium = cost.premium
-                    moveQuotesModel?.mtaQuotes[index].priceBreakdownItems = cost.discounts.map({
-                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
-                    })
-                }
-            }
-        return (quote.cost.premium, quote.cost.discounts.map({ .init(title: $0.displayName, value: $0.displayValue) }))
+
+        quoteManager.updateQuotesWithCost(moveQuotesModel: &moveQuotesModel, quoteCosts: data.quoteCosts)
+
+        return (
+            quote.cost.premium,
+            quote.cost.discounts.map { .init(title: $0.displayName, value: $0.displayValue) }
+        )
     }
 }
 
@@ -235,6 +302,7 @@ public struct MovingFlowNavigation: View {
     public var body: some View {
         RouterHost(
             router: router,
+            options: .extendedNavigationWidth,
             tracking: movingFlowNavigationVm.initialTrackingType ?? MovingFlowDetentType.selectHousingType
         ) {
             getInitalScreen()

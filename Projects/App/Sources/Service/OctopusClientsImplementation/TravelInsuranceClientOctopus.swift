@@ -40,7 +40,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
             let delayTask = Task {
-                try await Task.sleep(nanoseconds: 3_000_000_000)
+                try await Task.sleep(seconds: 3)
             }
             let data = try await octopus.client.mutation(mutation: mutation)
             try await delayTask.value
@@ -129,7 +129,6 @@ extension TravelInsuranceContractSpecification {
             exposureDisplayName: exposureDisplayName,
             minStartDate: data.minStartDate.localDateToDate ?? Date(),
             maxStartDate: data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90),
-            numberOfCoInsured: data.numberOfCoInsured,
             maxDuration: data.maxDurationDays,
             email: email,
             fullName: fullName

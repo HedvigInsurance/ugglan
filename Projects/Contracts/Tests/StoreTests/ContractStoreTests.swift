@@ -9,7 +9,6 @@ final class ContractStoreTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     @MainActor
@@ -18,6 +17,7 @@ final class ContractStoreTests: XCTestCase {
         await waitUntil(description: "Store deinit") {
             self.store == nil
         }
+        globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     func testFetchContractsSuccess() async {
@@ -27,10 +27,6 @@ final class ContractStoreTests: XCTestCase {
         let store = ContractStore()
         self.store = store
         await store.sendAsync(.fetchContracts)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.fetchContracts] == nil
-        }
-
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
         assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
         assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
@@ -68,7 +64,7 @@ final class ContractStoreTests: XCTestCase {
             store.loadingState[.fetchContracts] == nil
         }
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
         assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
         assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
@@ -91,7 +87,6 @@ extension ContractsStack {
                     productVariant: .init(
                         termsVersion: "",
                         typeOfContract: "",
-                        partner: nil,
                         perils: [],
                         insurableLimits: [],
                         documents: [],
@@ -129,7 +124,7 @@ extension XCTestCase {
         if closure() {
             exc.fulfill()
         } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
+            try! await Task.sleep(seconds: 0.1)
             Task {
                 await self.waitUntil(description: description, closure: closure)
                 if closure() {

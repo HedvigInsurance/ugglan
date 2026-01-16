@@ -34,6 +34,7 @@ public struct CrossSellingCentered: View {
             id: "id",
             title: "Accident Insurance",
             description: "Help when you need it the most",
+            buttonTitle: "Save 50%",
             imageUrl: nil,
             buttonDescription: "buttonDescription",
             numberOfEligibleContracts: 1

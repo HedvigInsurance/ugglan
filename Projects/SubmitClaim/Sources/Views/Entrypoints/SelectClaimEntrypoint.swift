@@ -1,5 +1,4 @@
 import AVFoundation
-import Claims
 import SwiftUI
 import TagKit
 import hCore
@@ -96,7 +95,6 @@ public struct SelectClaimEntrypointGroup: View {
 }
 
 struct SelectClaimEntrypointType: View {
-    @State var entrypointList: [ClaimEntryPointResponseModel] = []
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
     @State var selectedClaimEntrypoint: String? = nil
     @State var buttonIsLoading: Bool = false
@@ -179,14 +177,6 @@ struct SelectClaimEntrypointType: View {
             }
         }
         return ""
-    }
-
-    var hasClaimEntrypointOptions: Bool {
-        if claimOptions != [] {
-            return true
-        } else {
-            return false
-        }
     }
 }
 

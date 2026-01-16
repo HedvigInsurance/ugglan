@@ -1,5 +1,4 @@
 import Foundation
-import hCore
 
 public class TerminateContractsClientDemo: TerminateContractsClient {
     public func startTermination(contractId _: String) async throws -> TerminateStepResponse {
@@ -25,6 +24,10 @@ public class TerminateContractsClientDemo: TerminateContractsClient {
         option _: String,
         inputData _: String?
     ) async throws -> TerminateStepResponse {
+        .init(context: "", step: .setSuccessStep(model: .init(terminationDate: nil)), progress: 0)
+    }
+
+    public func sendContinueAfterDecom(terminationContext: String) async throws -> TerminateStepResponse {
         .init(context: "", step: .setSuccessStep(model: .init(terminationDate: nil)), progress: 0)
     }
 

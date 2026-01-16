@@ -72,7 +72,11 @@ public struct HelpCenterNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: helpCenterVm.router, tracking: HelpCenterDetentRouterType.startView) {
+        RouterHost(
+            router: helpCenterVm.router,
+            options: .extendedNavigationWidth,
+            tracking: HelpCenterDetentRouterType.startView
+        ) {
             HelpCenterStartView(
                 onQuickAction: { quickAction in
                     handle(quickAction: quickAction)
@@ -100,7 +104,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
                 .embededInNavigation(
-                    options: .navigationType(type: .large),
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: HelpCenterDetentRouterType.firstVet
                 )
         }
@@ -191,7 +195,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     private func handle(quickAction: QuickAction) {
         switch quickAction {
         case .connectPayments:
-            helpCenterVm.connectPaymentsVm.set(for: nil)
+            helpCenterVm.connectPaymentsVm.set()
         case .travelInsurance:
             helpCenterVm.quickActions.isTravelCertificatePresented = true
         case let .editInsurance(insuranceQuickActions):

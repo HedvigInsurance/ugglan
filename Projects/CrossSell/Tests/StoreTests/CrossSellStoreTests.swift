@@ -23,7 +23,7 @@ final class CrossSellStoreTests: XCTestCase {
 
     func testFetchCrossSalesSuccess() async {
         let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { CrossSell.getDefault }
+            fetchCrossSell: { _ in CrossSell.getDefault }
         )
         let store = CrossSellStore()
         self.store = store
@@ -38,15 +38,15 @@ final class CrossSellStoreTests: XCTestCase {
 
     func testFetchCrossSalesFailure() async throws {
         let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { throw MockContractError.fetchCrossSells }
+            fetchCrossSell: { _ in throw MockContractError.fetchCrossSells }
         )
 
         let store = CrossSellStore()
         self.store = store
         await store.sendAsync(.fetchCrossSell)
-        try await Task.sleep(nanoseconds: 5 * 100_000_000)
+        try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchCrossSell] != nil)
-        assert(store.state.crossSells.isEmpty)
+        assert(store.state.crossSells?.others.isEmpty == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
@@ -74,9 +74,9 @@ final class CrossSellStoreTests: XCTestCase {
         let store = CrossSellStore()
         self.store = store
         await store.sendAsync(.fetchAddonBanner)
-        try await Task.sleep(nanoseconds: 5 * 100_000_000)
+        try await Task.sleep(seconds: 0.5)
         assert(store.loadingState[.fetchAddonBanner] != nil)
-        assert(store.state.crossSells.isEmpty)
+        assert(store.state.crossSells?.others.isEmpty == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getAddonBannerModel)
     }
@@ -84,22 +84,35 @@ final class CrossSellStoreTests: XCTestCase {
 
 @MainActor
 extension CrossSell {
-    fileprivate static let getDefault: [CrossSell] = [
-        .init(
-            id: "1",
-            title: "car",
-            description: "description",
-            imageUrl: nil,
-            buttonDescription: "button description"
-        ),
-        .init(
-            id: "2",
-            title: "home",
-            description: "description",
-            imageUrl: nil,
-            buttonDescription: "button description"
-        ),
-    ]
+    fileprivate static let getDefault: CrossSells = .init(
+        recommended: nil,
+        others: [
+            .init(
+                id: "1",
+                title: "car",
+                description: "description",
+                buttonTitle: "button title",
+                imageUrl: nil,
+                buttonDescription: "button description"
+            ),
+            .init(
+                id: "2",
+                title: "home",
+                description: "description",
+                buttonTitle: "button title",
+                imageUrl: nil,
+                buttonDescription: "button description"
+            ),
+        ],
+        discountAvailable: true
+    )
+}
+
+@MainActor
+extension CrossSellState {
+    fileprivate var isEmpty: Bool {
+        self.crossSells?.recommended == nil && self.crossSells?.others.isEmpty == true
+    }
 }
 
 @MainActor
@@ -119,7 +132,7 @@ extension XCTestCase {
         if closure() {
             exc.fulfill()
         } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
+            try! await Task.sleep(seconds: 0.1)
             Task {
                 await self.waitUntil(description: description, closure: closure)
                 if closure() {

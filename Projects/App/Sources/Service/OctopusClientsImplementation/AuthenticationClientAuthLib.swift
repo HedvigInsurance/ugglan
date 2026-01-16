@@ -32,7 +32,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     func submit(otpState: OTPState) async throws -> String {
         if let verifyUrl = otpState.verifyUrl {
             do {
-                try await Task.sleep(nanoseconds: 5 * 100_000_000)
+                try await Task.sleep(seconds: 0.5)
                 let data =
                     try await networkAuthRepository
                     .submitOtp(
@@ -64,7 +64,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                     personalNumber: personalNumber,
                     email: email
                 )
-            try await Task.sleep(nanoseconds: 5 * 100_000_000)
+            try await Task.sleep(seconds: 0.5)
             if let otpProperties = data as? AuthAttemptResultOtpProperties,
                 let verifyUrl = URL(string: otpProperties.verifyUrl),
                 let resendUrl = URL(string: otpProperties.resendUrl)

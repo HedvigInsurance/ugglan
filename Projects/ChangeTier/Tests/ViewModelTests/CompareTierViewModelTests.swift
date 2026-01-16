@@ -40,7 +40,6 @@ final class CompareTierVireModelTests: XCTestCase {
                     productVariant: .init(
                         termsVersion: "",
                         typeOfContract: "",
-                        partner: nil,
                         perils: [],
                         insurableLimits: [],
                         documents: [],
@@ -64,7 +63,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: ChangeTierClient.self)
-        try await Task.sleep(nanoseconds: 20_000_000)
+        try await Task.sleep(seconds: 0.02)
         XCTAssertNil(sut)
         XCTAssertNil(vm)
     }
@@ -95,7 +94,6 @@ final class CompareTierVireModelTests: XCTestCase {
             .init(
                 termsVersion: "",
                 typeOfContract: "",
-                partner: "",
                 perils: [peril1],
                 insurableLimits: [],
                 documents: [],
@@ -106,7 +104,6 @@ final class CompareTierVireModelTests: XCTestCase {
             .init(
                 termsVersion: "",
                 typeOfContract: "",
-                partner: "",
                 perils: [peril1],
                 insurableLimits: [],
                 documents: [],
@@ -128,7 +125,7 @@ final class CompareTierVireModelTests: XCTestCase {
         vm = model
         model.productVariantComparision()
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
@@ -147,7 +144,7 @@ final class CompareTierVireModelTests: XCTestCase {
         vm = model
         model.productVariantComparision()
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)

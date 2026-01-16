@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 
 public class hNavigationBaseController: UINavigationController {
+    static let extendedNavigationWidthOffset: CGFloat = 12
     var onDeinit: (@Sendable () -> Void)?
 
     deinit {
@@ -12,21 +13,19 @@ public class hNavigationBaseController: UINavigationController {
 }
 
 public class hNavigationController: hNavigationBaseController {
-    private let additionalHeight: CGFloat?
-
-    public init(additionalHeight: CGFloat? = nil) {
-        self.additionalHeight = additionalHeight
+    public init(additionalHeight: CGFloat? = nil, extendedNavigationWidth: Bool = false) {
         super.init(navigationBarClass: NavBar.self, toolbarClass: UIToolbar.self)
         if let navBar = navigationBar as? NavBar {
+            navBar.extendedNavigationWidth = extendedNavigationWidth
             navBar.additionalHeight = additionalHeight
         }
+
         if let additionalHeight {
             additionalSafeAreaInsets.top = additionalHeight
         }
     }
 
     override public init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
-        additionalHeight = nil
         super.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
     }
 
@@ -40,7 +39,7 @@ public class hNavigationController: hNavigationBaseController {
 
 class NavBar: UINavigationBar {
     var additionalHeight: CGFloat?
-
+    var extendedNavigationWidth: Bool = false
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         if let additionalHeight {
             return CGSize(width: size.width, height: size.height + additionalHeight)
@@ -69,7 +68,10 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: additionalHeight ?? subview.frame.origin.y,
-                    width: frame.width + (isLiquidGlassEnabled ? 0 : 12),
+                    width: frame.width
+                        + (isLiquidGlassEnabled
+                            ? 0
+                            : extendedNavigationWidth ? hNavigationBaseController.extendedNavigationWidthOffset : 0),
                     height: subview.frame.size.height
                 )
             }
@@ -95,8 +97,11 @@ extension UINavigationBar {
 public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
     public static var navigationBarHeight: CGFloat = 80
 
-    public init() {
+    public init(extendedNavigationWidth: Bool = false) {
         super.init(navigationBarClass: LargeNavBar.self, toolbarClass: UIToolbar.self)
+        if let navBar = navigationBar as? LargeNavBar {
+            navBar.extendedNavigationWidth = extendedNavigationWidth
+        }
         additionalSafeAreaInsets.top = hNavigationControllerWithLargerNavBar.navigationBarHeight - 44
     }
 
@@ -109,6 +114,7 @@ public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
 }
 
 class LargeNavBar: UINavigationBar {
+    var extendedNavigationWidth: Bool = false
     override func sizeThatFits(_: CGSize) -> CGSize {
         CGSize(
             width: UIScreen.main.bounds.size.width,
@@ -129,7 +135,8 @@ class LargeNavBar: UINavigationBar {
                     subview.frame = CGRect(
                         x: 0,
                         y: -12,
-                        width: frame.width + 12,
+                        width: frame.width
+                            + (extendedNavigationWidth ? hNavigationBaseController.extendedNavigationWidthOffset : 0),
                         height: hNavigationControllerWithLargerNavBar.navigationBarHeight - 44
                     )
                 }

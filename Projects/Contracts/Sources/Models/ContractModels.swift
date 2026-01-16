@@ -197,15 +197,7 @@ extension TypeOfContract {
             return false
         case .seAccidentStudent:
             return false
-        case .seCarTraffic:
-            return false
-        case .seCarHalf:
-            return false
-        case .seCarFull:
-            return false
-        case .seCarTrialFull:
-            return false
-        case .seCarTrialHalf:
+        case .seCarTraffic, .seCarHalf, .seCarFull, .seCarTrialFull, .seCarTrialHalf, .seCarDecommisioned:
             return false
         case .seGroupApartmentBrf:
             return true
@@ -306,13 +298,17 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
 public struct AgreementDisplayItem: Codable, Hashable, Sendable {
     let displayTitle: String
     let displayValue: String
-
+    let displaySubtitle: String?
+    let id: String
     public init(
         title displayTitle: String,
-        value displayValue: String
+        value displayValue: String,
+        subtitle displaySubtitle: String? = nil
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
+        self.displaySubtitle = displaySubtitle
+        self.id = UUID().uuidString
     }
 }
 

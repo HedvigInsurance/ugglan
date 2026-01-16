@@ -1,5 +1,4 @@
-import Claims
-import Contracts
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,18 +7,21 @@ public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel
     @StateObject var router = Router()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
-    private var dismissAction: (ProfileNavigationDismissAction) -> Void
-
+    let memberDetails: MemberDetails?
     public init(
-        vm: DeleteAccountViewModel,
-        dismissAction: @escaping (ProfileNavigationDismissAction) -> Void
+        vm: DeleteAccountViewModel
     ) {
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        self.memberDetails = store.state.memberDetails
         self.vm = vm
-        self.dismissAction = dismissAction
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: DeleteDetentType.deleteAccountView) {
+        RouterHost(
+            router: router,
+            options: .extendedNavigationWidth,
+            tracking: DeleteDetentType.deleteAccountView
+        ) {
             hForm {
                 hSection {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
@@ -36,9 +38,9 @@ public struct DeleteAccountView: View {
                                 color: hTextColor.Opaque.secondary,
                                 linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single,
-                                textAlignment: vm.textAlignment
+                                textAlignment: vm.textAlignment,
+                                isSelectable: false
                             ) { url in
-                                router.dismiss()
                                 NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }
                         )
@@ -56,7 +58,7 @@ public struct DeleteAccountView: View {
                                 .alert,
                                 content: .init(title: L10n.profileDeleteAccountConfirmDeletion),
                                 {
-                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                                    profileNavigationVm.isDeleteAccountRequestedPresented = memberDetails
                                 }
                             )
                         }
@@ -86,17 +88,6 @@ private enum DeleteDetentType: TrackingViewNameProtocol {
     }
 
     case deleteAccountView
-}
-
-struct ParagraphTextModifier<Color: hColor>: ViewModifier {
-    var color: Color
-
-    func body(content: Content) -> some View {
-        content
-            .fixedSize(horizontal: false, vertical: true)
-            .foregroundColor(color)
-            .frame(maxWidth: .infinity, alignment: .leading)
-    }
 }
 
 extension DeleteAccountViewModel {

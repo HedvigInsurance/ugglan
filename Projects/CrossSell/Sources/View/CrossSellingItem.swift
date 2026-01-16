@@ -5,6 +5,7 @@ import hCoreUI
 
 struct CrossSellingItem: View {
     let crossSell: CrossSell
+    let discountAvailable: Bool
     @State var fieldIsClicked = false
 
     func openExternal() {
@@ -37,7 +38,7 @@ struct CrossSellingItem: View {
                         .accessibilityHidden(true)
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 0) {
-                            hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
+                            hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Translucent.primary)
                             MarqueeText(
                                 text: crossSell.description,
                                 font: Fonts.fontFor(style: .label),
@@ -51,8 +52,8 @@ struct CrossSellingItem: View {
 
                         hButton(
                             .small,
-                            .secondary,
-                            content: .init(title: L10n.crossSellGetPrice),
+                            discountAvailable ? .primaryAlt : .secondary,
+                            content: .init(title: crossSell.buttonTitle),
                             {
                                 fieldIsClicked.toggle()
                                 openExternal()
@@ -80,8 +81,10 @@ struct CrossSellingItem: View {
             id: "id",
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
+            buttonTitle: "Save 50%",
             imageUrl: nil,
             buttonDescription: "button description"
-        )
+        ),
+        discountAvailable: true
     )
 }

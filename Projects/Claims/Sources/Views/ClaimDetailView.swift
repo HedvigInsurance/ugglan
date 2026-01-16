@@ -78,9 +78,12 @@ public struct ClaimDetailView: View {
                     }
                 }
             }
-            .withDismissButton()
+            .withAlertDismiss()
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
-            .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
+            .embededInNavigation(
+                options: .extendedNavigationWidth,
+                tracking: ClaimDetailDetentType.fileUpload
+            )
         }
         .detent(
             item: $vm.document,

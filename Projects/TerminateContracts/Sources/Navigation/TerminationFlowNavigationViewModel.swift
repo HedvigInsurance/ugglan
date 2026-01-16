@@ -5,33 +5,121 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+// MARK: - Helper Classes
+
 @MainActor
-public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
-    public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
-        lhs.id == rhs.id
+class TerminationRedirectHandler {
+    weak var viewModel: TerminationFlowNavigationViewModel?
+
+    func handle(_ action: FlowTerminationSurveyRedirectAction?) async {
+        guard let action = action else { return }
+
+        switch action {
+        case .updateAddress:
+            handleUpdateAddress()
+        case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
+            await handleChangeTier(action: action)
+        }
     }
 
-    public let id = UUID().uuidString
-
-    public init(
-        stepResponse: TerminateStepResponse,
-        config: TerminationConfirmConfig,
-        terminateInsuranceViewModel: TerminateInsuranceViewModel?
-    ) {
-        self.config = config
-        hasSelectInsuranceStep = false
-        progress = stepResponse.progress
-        currentContext = stepResponse.context
-        initialStep = TerminationFlowNavigationViewModel.getInitialStep(data: stepResponse)
-        terminationDateStepModel = terminationDateStepModel
-        self.terminateInsuranceViewModel = terminateInsuranceViewModel
-        setInitialModel(initialStep: initialStep)
+    private func handleUpdateAddress() {
+        viewModel?.router.dismiss()
+        var url = Environment.current.deepLinkUrls.last!
+        url.appendPathComponent(DeepLink.moveContract.rawValue)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NotificationCenter.default.post(name: .openDeepLink, object: url)
+        }
     }
 
-    private static func getInitialStep(data: TerminateStepResponse) -> TerminationFlowActions {
-        switch data.step {
+    private func handleChangeTier(action: FlowTerminationSurveyRedirectAction) async {
+        guard let viewModel = viewModel,
+            let contractId = viewModel.config?.contractId,
+            let source = getChangeTierSource(for: action)
+        else { return }
+
+        let input = ChangeTierInputData(source: source, contractId: contractId)
+
+        do {
+            withAnimation {
+                viewModel.redirectActionLoadingState = .loading
+            }
+            let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
+            withAnimation {
+                viewModel.redirectActionLoadingState = .success
+            }
+
+            switch newInput {
+            case let .changeTierIntentModel(intent):
+                DispatchQueue.main.async { [weak viewModel] in
+                    viewModel?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
+                        intent: intent,
+                        onSelect: nil
+                    )
+                    viewModel?.router.dismiss()
+                }
+            case .emptyTier:
+                viewModel.infoText = L10n.terminationNoTierQuotesSubtitle
+            case let .deflection(deflection):
+                viewModel.infoText = deflection.message
+            }
+        } catch let exception {
+            withAnimation {
+                viewModel.redirectActionLoadingState = .success
+            }
+            Toasts.shared.displayToastBar(
+                toast: .init(type: .error, text: exception.localizedDescription)
+            )
+        }
+    }
+
+    private func getChangeTierSource(for action: FlowTerminationSurveyRedirectAction) -> ChangeTierSource? {
+        switch action {
+        case .changeTierFoundBetterPrice:
+            return .betterPrice
+        case .changeTierMissingCoverageAndTerms:
+            return .betterCoverage
+        default:
+            return nil
+        }
+    }
+}
+
+class TerminationStepHandler {
+    @MainActor func route(step: TerminationContractStep, to router: Router) -> (model: Any?, progress: Float?) {
+        switch step {
+        case let .setTerminationDateStep(model):
+            router.push(TerminationFlowRouterActions.terminationDate(model: model))
+            return (model, nil)
+        case let .setTerminationDeletion(model):
+            router.push(TerminationFlowRouterActions.terminationDate(model: nil))
+            return (model, nil)
+        case let .setSuccessStep(model):
+            router.push(TerminationFlowFinalRouterActions.success(model: model))
+            return (model, nil)
+        case let .setFailedStep(model):
+            router.push(TerminationFlowFinalRouterActions.fail(model: model))
+            return (model, nil)
+        case let .setTerminationSurveyStep(model):
+            router.push(TerminationFlowRouterActions.surveyStep(model: model))
+            return (model, nil)
+        case .openTerminationUpdateAppScreen:
+            router.push(TerminationFlowFinalRouterActions.updateApp)
+            return (nil, nil)
+        case let .setDeflectAutoDecom(model):
+            router.push(TerminationFlowRouterActions.deflectAutoDecom(model: model))
+            return (model, nil)
+        case let .setDeflectAutoCancel(model):
+            router.push(TerminationFlowRouterActions.deflectAutoCancel(model: model))
+            return (model, nil)
+        }
+    }
+
+    func getInitialAction(from step: TerminationContractStep) -> TerminationFlowActions {
+        switch step {
         case let .setTerminationDateStep(model):
             return .router(action: .terminationDate(model: model))
+        case .setTerminationDeletion:
+            return .router(action: .terminationDate(model: nil))
         case let .setSuccessStep(model):
             return .final(action: .success(model: model))
         case let .setFailedStep(model):
@@ -44,42 +132,23 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             return .final(action: .fail(model: nil))
         }
     }
+}
 
-    public init(
-        configs: [TerminationConfirmConfig],
-        terminateInsuranceViewModel: TerminateInsuranceViewModel?
-    ) {
-        self.configs = configs
-        self.terminateInsuranceViewModel = terminateInsuranceViewModel
-        initialStep = .router(action: .selectInsurance(configs: configs))
+// MARK: - View Model
+
+@MainActor
+public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
+    public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
+        lhs.id == rhs.id
     }
 
-    private func setInitialModel(initialStep: TerminationFlowActions) {
-        reset()
-        switch initialStep {
-        case let .router(action):
-            switch action {
-            case .selectInsurance:
-                break
-            case let .terminationDate(model):
-                terminationDateStepModel = model
-            case let .surveyStep(model):
-                terminationSurveyStepModel = model
-            case .summary:
-                break
-            }
-        case let .final(action):
-            switch action {
-            case let .success(model):
-                successStepModel = model
-            case let .fail(model):
-                failedStepModel = model
-            case .updateApp:
-                break
-            }
-        }
-    }
+    public let id = UUID().uuidString
 
+    // MARK: - Helper Properties
+    private let stepHandler = TerminationStepHandler()
+    private let redirectHandler = TerminationRedirectHandler()
+
+    // MARK: - UI State
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
@@ -87,71 +156,15 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     @Published var redirectActionLoadingState: ProcessingState = .success
     @Published var notification: TerminationNotification?
 
+    // MARK: - Properties
     let initialStep: TerminationFlowActions
     var configs: [TerminationConfirmConfig] = []
     weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
+
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
-            switch redirectAction {
-            case .updateAddress:
-                router.dismiss()
-                var url = Environment.current.deepLinkUrls.last!
-                url.appendPathComponent(DeepLink.moveContract.rawValue)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                }
-            case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
-                if let contractId = config?.contractId,
-                    let redirectAction,
-                    let source: ChangeTierSource = {
-                        if case .changeTierFoundBetterPrice = redirectAction {
-                            return .betterPrice
-                        } else if case .changeTierMissingCoverageAndTerms = redirectAction {
-                            return .betterCoverage
-                        }
-                        return nil
-                    }()
-                {
-                    let input = ChangeTierInputData(source: source, contractId: contractId)
-                    Task { @MainActor [weak self] in
-                        do {
-                            withAnimation {
-                                self?.redirectActionLoadingState = .loading
-                            }
-                            let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
-                            withAnimation {
-                                self?.redirectActionLoadingState = .success
-                            }
-                            DispatchQueue.main.async { [weak self] in
-                                self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
-                                    intent: newInput,
-                                    onSelect: nil
-                                )
-                                self?.router.dismiss()
-                            }
-                        } catch let exception {
-                            withAnimation {
-                                self?.redirectActionLoadingState = .success
-                            }
-                            if let exception = exception as? ChangeTierError {
-                                switch exception {
-                                case .emptyList:
-                                    self?.infoText = L10n.terminationNoTierQuotesSubtitle
-                                default:
-                                    Toasts.shared.displayToastBar(
-                                        toast: .init(type: .error, text: exception.localizedDescription)
-                                    )
-                                }
-                            } else {
-                                Toasts.shared.displayToastBar(
-                                    toast: .init(type: .error, text: exception.localizedDescription)
-                                )
-                            }
-                        }
-                    }
-                }
-            case .none:
-                break
+            Task {
+                await redirectHandler.handle(redirectAction)
             }
         }
     }
@@ -171,7 +184,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     private let terminateContractsService = TerminateContractsService()
 
-    @Published var currentContext: String?
+    @Published private(set) var currentContext: String?
     @Published var progress: Float? = 0
     var previousProgress: Float?
     @Published var hasSelectInsuranceStep: Bool = false
@@ -198,6 +211,51 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         terminationDeleteStepModel != nil
     }
 
+    // MARK: - Initialization
+
+    public init(
+        stepResponse: TerminateStepResponse,
+        config: TerminationConfirmConfig,
+        terminateInsuranceViewModel: TerminateInsuranceViewModel?
+    ) {
+        self.config = config
+        self.hasSelectInsuranceStep = false
+        self.progress = stepResponse.progress
+        self.currentContext = stepResponse.context
+        self.initialStep = stepHandler.getInitialAction(from: stepResponse.step)
+        self.terminateInsuranceViewModel = terminateInsuranceViewModel
+        self.redirectHandler.viewModel = self
+        setInitialModel(from: stepResponse.step)
+    }
+
+    public init(
+        configs: [TerminationConfirmConfig],
+        terminateInsuranceViewModel: TerminateInsuranceViewModel?
+    ) {
+        self.configs = configs
+        self.terminateInsuranceViewModel = terminateInsuranceViewModel
+        self.initialStep = .router(action: .selectInsurance(configs: configs))
+        self.redirectHandler.viewModel = self
+    }
+
+    private func setInitialModel(from step: TerminationContractStep) {
+        reset()
+        switch step {
+        case let .setTerminationDateStep(model):
+            terminationDateStepModel = model
+        case let .setSuccessStep(model):
+            successStepModel = model
+        case let .setFailedStep(model):
+            failedStepModel = model
+        case let .setTerminationSurveyStep(model):
+            terminationSurveyStepModel = model
+        case let .setTerminationDeletion(model):
+            terminationDeleteStepModel = model
+        default:
+            break
+        }
+    }
+
     @MainActor
     func startTermination(config: TerminationConfirmConfig, fromSelectInsurance: Bool) async {
         reset()
@@ -216,24 +274,24 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             progress = data.progress
         }
 
-        switch data.step {
+        updateStepModel(for: data.step)
+        _ = stepHandler.route(step: data.step, to: router)
+    }
+
+    private func updateStepModel(for step: TerminationContractStep) {
+        switch step {
         case let .setTerminationDateStep(model):
             terminationDateStepModel = model
-            router.push(TerminationFlowRouterActions.terminationDate(model: model))
         case let .setTerminationDeletion(model):
             terminationDeleteStepModel = model
-            router.push(TerminationFlowRouterActions.terminationDate(model: nil))
         case let .setSuccessStep(model):
             successStepModel = model
-            router.push(TerminationFlowFinalRouterActions.success(model: model))
         case let .setFailedStep(model):
             failedStepModel = model
-            router.push(TerminationFlowFinalRouterActions.fail(model: model))
         case let .setTerminationSurveyStep(model):
             terminationSurveyStepModel = model
-            router.push(TerminationFlowRouterActions.surveyStep(model: model))
-        case .openTerminationUpdateAppScreen:
-            router.push(TerminationFlowFinalRouterActions.updateApp)
+        default:
+            break
         }
     }
 
@@ -337,7 +395,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                     // if it fails check again after 1 second
                     // if the task is cancelled, it will throw cancellation error
                     do {
-                        try await Task.sleep(nanoseconds: 1_000_000_000)
+                        try await Task.sleep(seconds: 1)
                         try Task.checkCancellation()
                         self?.fetchNotification(isDeletion: deletion)
                     } catch {
@@ -364,12 +422,14 @@ struct TerminationFlowNavigation: View {
     var body: some View {
         RouterHost(
             router: vm.router,
-            options: [.navigationType(type: .withProgress)],
+            options: [
+                .navigationType(type: .withProgress),
+                .extendedNavigationWidth,
+            ],
             tracking: vm.initialStep
         ) {
             getView(for: vm.initialStep)
                 .addNavigationInfoButton(
-                    placement: .leading,
                     title: L10n.terminationFlowCancelInfoTitle,
                     description: L10n.terminationFlowCancelInfoText
                 )
@@ -383,11 +443,15 @@ struct TerminationFlowNavigation: View {
                         case .terminationDate:
                             openSetTerminationDateLandingScreen(fromSelectInsurance: false)
                         case let .surveyStep(model):
-                            openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
+                            openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
                         case .selectInsurance:
                             openSelectInsuranceScreen()
                         case .summary:
                             openTerminationSummaryScreen()
+                        case let .deflectAutoDecom(model):
+                            openDeflectAutoDecom(model: model)
+                        case let .deflectAutoCancel(model):
+                            openDeflectAutoCancel(model: model)
                         }
                     }
                     .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
@@ -449,11 +513,15 @@ struct TerminationFlowNavigation: View {
             case .terminationDate:
                 openSetTerminationDateLandingScreen(fromSelectInsurance: false)
             case let .surveyStep(model):
-                openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
+                openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
             case .selectInsurance:
                 openSelectInsuranceScreen()
             case .summary:
                 openTerminationSummaryScreen()
+            case .deflectAutoDecom(model: let model):
+                openDeflectAutoDecom(model: model)
+            case let .deflectAutoCancel(model):
+                openDeflectAutoCancel(model: model)
             }
         case let .final(action):
             switch action {
@@ -515,6 +583,15 @@ struct TerminationFlowNavigation: View {
 
     private func openTerminationSummaryScreen() -> some View {
         TerminationSummaryScreen()
+            .withDismissButton()
+    }
+
+    private func openDeflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel) -> some View {
+        TerminationDeflectAutoDecomScreen(model: model, navigation: vm)
+            .withDismissButton()
+    }
+    private func openDeflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel) -> some View {
+        TerminationDeflectAutoCancelScreen(model: model)
             .withDismissButton()
     }
 
@@ -581,20 +658,6 @@ struct TerminationFlowNavigation: View {
             )
         )
     }
-
-    private var tabBarInfoView: some View {
-        InfoViewHolder(
-            title: L10n.terminationFlowCancelInfoTitle,
-            description: L10n.terminationFlowCancelInfoText,
-            type: .navigation
-        )
-        .foregroundColor(hTextColor.Opaque.primary)
-    }
-}
-
-struct TerminationFlowActionWrapper: Identifiable, Equatable {
-    var id = UUID().uuidString
-    let action: TerminationFlowActions
 }
 
 public enum TerminationFlowActions: Hashable {
@@ -628,6 +691,8 @@ public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
     case terminationDate(model: TerminationFlowDateNextStepModel?)
     case surveyStep(model: TerminationFlowSurveyStepModel?)
+    case deflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel)
+    case deflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel)
     case summary
 }
 
@@ -642,6 +707,10 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: TerminationSurveyScreen.self)
         case .summary:
             return .init(describing: TerminationSummaryScreen.self)
+        case .deflectAutoDecom:
+            return .init(describing: TerminationDeflectAutoDecomScreen.self)
+        case .deflectAutoCancel:
+            return .init(describing: TerminationDeflectAutoCancelScreen.self)
         }
     }
 }

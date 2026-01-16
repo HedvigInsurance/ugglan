@@ -61,7 +61,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
             removedAddons: GraphQLNullable(optionalValue: removedAddons)
         )
         let delayTask = Task {
-            try await Task.sleep(nanoseconds: 3_000_000_000)
+            try await Task.sleep(seconds: 3)
         }
         let data = try await octopus.client.mutation(mutation: mutation)
 
@@ -101,7 +101,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
                 extraBuildings: houseInformationInputModel.extraBuildings.map {
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: Int32($0.livingArea),
-                        type: GraphQLEnum<OctopusGraphQL.MoveExtraBuildingType>(rawValue: $0.type),
+                        type: $0.type.type,
                         hasWaterConnected: $0.connectedToWater
                     )
                 }
@@ -139,7 +139,7 @@ extension MoveConfigurationModel {
             currentHomeAddresses: data.currentHomeAddresses.compactMap {
                 MoveAddress(from: $0.fragments.moveAddressFragment)
             },
-            extraBuildingTypes: data.extraBuildingTypes.compactMap(\.rawValue),
+            extraBuildingTypes: data.extraBuildingTypesV2.map { .init(type: $0.type, displayName: $0.displayName) },
             isApartmentAvailableforStudent: data.isApartmentAvailableforStudent ?? false,
             maxApartmentNumberCoInsured: data.maxApartmentNumberCoInsured,
             maxApartmentSquareMeters: data.maxApartmentSquareMeters,
@@ -377,11 +377,6 @@ extension AddonDataModel {
     init(fragment: OctopusGraphQL.MoveAddonQuoteFragment) {
         self.init(
             id: fragment.addonId,
-            quoteInfo: .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription),
-            displayItems: fragment.displayItems.map {
-                .init(displayTitle: $0.displayTitle, displayValue: $0.displayValue)
-            },
-            coverageDisplayName: fragment.coverageDisplayName,
             grossPremium: .init(
                 fragment: fragment.premium.fragments.moneyFragment
             ),

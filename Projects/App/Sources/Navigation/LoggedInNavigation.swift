@@ -25,6 +25,390 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
+// MARK: - Helper Classes
+
+@MainActor
+class PushNotificationHandler {
+    weak var viewModel: LoggedInNavigationViewModel?
+
+    func handle(_ notification: Notification) {
+        guard let object = notification.object as? PushNotificationType else { return }
+
+        switch object {
+        case .NEW_MESSAGE:
+            handleNewMessage(notification)
+        case .OPEN_FOREVER_TAB, .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
+            handleForeverTab()
+        case .CONNECT_DIRECT_DEBIT:
+            handleConnectDirectDebit()
+        case .PAYMENT_FAILED:
+            handlePaymentFailed()
+        case .CROSS_SELL, .OPEN_INSURANCE_TAB:
+            handleInsuranceTab()
+        case .OPEN_CONTACT_INFO:
+            handleContactInfo()
+        case .CHANGE_TIER:
+            handleChangeTierNotification(notification)
+        case .ADDON_TRAVEL:
+            Task { await handleTravelAddon() }
+        case .OPEN_CLAIM, .CLAIM_CLOSED:
+            handleClaimNotification(notification)
+        case .INSURANCE_EVIDENCE:
+            handleInsuranceEvidence()
+        case .TRAVEL_CERTIFICATE:
+            handleTravelCertificate()
+        }
+    }
+
+    private func handleNewMessage(_ notification: Notification) {
+        let userInfo = notification.userInfo
+        let conversationId = userInfo?["conversationId"] as? String
+        NotificationCenter.default.post(
+            name: .openChat,
+            object: ChatType.conversationId(id: conversationId ?? "")
+        )
+    }
+
+    private func handleForeverTab() {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        viewModel?.selectedTab = 2
+    }
+
+    private func handleConnectDirectDebit() {
+        viewModel?.homeNavigationVm.connectPaymentVm.set()
+    }
+
+    private func handlePaymentFailed() {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        viewModel?.selectedTab = 3
+    }
+
+    private func handleInsuranceTab() {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        viewModel?.selectedTab = 1
+    }
+
+    private func handleContactInfo() {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        viewModel?.selectedTab = 4
+        viewModel?.profileNavigationVm.pushToProfile()
+    }
+
+    private func handleChangeTierNotification(_ notification: Notification) {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        let userInfo = notification.userInfo
+        let contractId = userInfo?["contractId"] as? String
+        handleChangeTier(contractId: contractId)
+    }
+
+    private func handleClaimNotification(_ notification: Notification) {
+        let userInfo = notification.userInfo
+        let claimId = userInfo?["claimId"] as? String
+        Task { await handleClaimDetails(claimId: claimId) }
+    }
+
+    private func handleTravelCertificate() {
+        viewModel?.isTravelInsurancePresented = true
+    }
+
+    func handleChangeTier(contractId: String?) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
+                viewModel?.isChangeTierPresented = .init(
+                    source: .changeTier,
+                    contracts: [
+                        .init(
+                            contractId: contractId,
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractExposureName: contract.exposureDisplayName
+                        )
+                    ]
+                )
+            }
+        } else {
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+                .filter(\.supportsChangeTier)
+                .map {
+                    .init(
+                        contractId: $0.id,
+                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: $0.exposureDisplayName
+                    )
+                }
+            viewModel?.isChangeTierPresented = ChangeTierContractsInput(
+                source: .changeTier,
+                contracts: contractsSupportingChangingTier
+            )
+        }
+    }
+
+    func handleTravelAddon() async {
+        do {
+            let client: FetchContractsClient = Dependencies.shared.resolve()
+            if let bannerData = try await client.getAddonBannerModel(source: .deeplink) {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let addonContracts = bannerData.contractIds.compactMap {
+                    contractStore.state.contractForId($0)
+                }
+                guard !addonContracts.isEmpty else {
+                    throw AddonsError.missingContracts
+                }
+                let addonConfigs: [AddonConfig] = addonContracts.map {
+                    .init(
+                        contractId: $0.id,
+                        exposureName: $0.exposureDisplayName,
+                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                    )
+                }
+                viewModel?.isAddonPresented = .init(
+                    addonSource: .deeplink,
+                    contractConfigs: addonConfigs
+                )
+            }
+        } catch {
+            viewModel?.isAddonErrorPresented = error.localizedDescription
+        }
+    }
+
+    func handleClaimDetails(claimId: String?) async {
+        guard let viewModel = viewModel else { return }
+        if let claimId {
+            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+            do {
+                let claim = try await claimService.get(for: claimId)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                viewModel.selectedTab = 0
+                Task { [weak viewModel] in
+                    try await Task.sleep(seconds: 0.2)
+                    viewModel?.homeNavigationVm.router.push(claim)
+                }
+            } catch {
+                Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
+            }
+        } else {
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
+        }
+    }
+
+    func handleInsuranceEvidence() {
+        Task { [weak viewModel] in
+            do {
+                let profileClient: ProfileClient = Dependencies.shared.resolve()
+                let canCreate = try await profileClient.getProfileState().canCreateInsuranceEvidence
+                if canCreate {
+                    viewModel?.isInsuranceEvidencePresented = true
+                }
+            } catch {}
+        }
+    }
+}
+
+@MainActor
+class DeepLinkHandler {
+    weak var viewModel: LoggedInNavigationViewModel?
+
+    func handle(_ deepLinkUrl: URL?) {
+        guard let url = deepLinkUrl else { return }
+        guard let deepLink = DeepLink.getType(from: url) else {
+            if !Environment.current.isDeeplink(url) {
+                viewModel?.openUrl(url: url)
+            }
+            return
+        }
+
+        switch deepLink {
+        case .forever:
+            dismissAndSelectTab(2)
+        case .directDebit:
+            viewModel?.homeNavigationVm.connectPaymentVm.set()
+        case .profile:
+            dismissAndSelectTab(4)
+        case .insurances:
+            dismissAndSelectTab(1)
+        case .home:
+            dismissAndSelectTab(0)
+        case .sasEuroBonus:
+            viewModel?.isEuroBonusPresented = true
+        case .contract:
+            handleContractDeeplink(url)
+        case .payments:
+            dismissAndSelectTab(3)
+        case .travelCertificate:
+            viewModel?.isTravelInsurancePresented = true
+        case .insuranceEvidence:
+            viewModel?.handleInsuranceEvidence()
+        case .helpCenter:
+            handleHelpCenterDeeplink(url)
+        case .helpCenterTopic:
+            handleHelpCenterTopic(url)
+        case .helpCenterQuestion:
+            handleHelpCenterQuestion(url)
+        case .moveContract:
+            viewModel?.isMoveContractPresented = true
+        case .terminateContract:
+            handleTerminateContract(url)
+        case .conversation:
+            handleDeeplinkConversation(url)
+        case .chat, .inbox:
+            NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
+        case .contactInfo:
+            handleDeeplinkContactInfo(url)
+        case .changeTier:
+            viewModel?.handleChangeTier(contractId: url.getParameter(property: .contractId))
+        case .travelAddon:
+            Task { [weak viewModel] in await viewModel?.handleTravelAddon() }
+        case .editCoInsured:
+            handleEditCoInsured(url: url)
+        case .claimDetails:
+            Task { [weak viewModel] in
+                await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
+            }
+        case .submitClaim:
+            viewModel?.selectedTab = 0
+            viewModel?.homeNavigationVm.isSubmitClaimPresented = true
+        }
+    }
+
+    private func dismissAndSelectTab(_ tab: Int) {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        viewModel?.selectedTab = tab
+    }
+
+    private func handleContractDeeplink(_ url: URL) {
+        dismissAndSelectTab(1)
+        let contractId = url.getParameter(property: .contractId)
+
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
+                viewModel?.contractsNavigationVm.contractsRouter.popToRoot()
+                viewModel?.contractsNavigationVm.contractsRouter.push(contract)
+            }
+        }
+    }
+
+    private func handleHelpCenterDeeplink(_ url: URL) {
+        dismissAndSelectTab(0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
+            viewModel?.homeNavigationVm.isHelpCenterPresented = true
+        }
+    }
+
+    private func handleHelpCenterTopic(_ url: URL) {
+        if let id = url.getParameter(property: .id) {
+            Task { [weak viewModel] in
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                if store.state.helpCenterFAQModel == nil {
+                    await store.sendAsync(.fetchFAQ)
+                }
+                if let helpCenterFAQModel = store.state.helpCenterFAQModel,
+                    let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
+                {
+                    viewModel?.isFaqTopicPresented = topic
+                }
+            }
+        }
+    }
+
+    private func handleHelpCenterQuestion(_ url: URL) {
+        if let id = url.getParameter(property: .id) {
+            Task { [weak viewModel] in
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                if store.state.getAllFAQ()?.first(where: { $0.id == id }) == nil {
+                    await store.sendAsync(.fetchFAQ)
+                }
+                if let question = store.state.getAllFAQ()?.first(where: { $0.id == id }) {
+                    viewModel?.isFaqPresented = question
+                }
+            }
+        }
+    }
+
+    private func handleTerminateContract(_ url: URL) {
+        guard let viewModel = viewModel else { return }
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contractId = url.getParameter(property: .contractId)
+        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+            Task { [weak viewModel] in
+                do {
+                    try await Task.sleep(seconds: 0.2)
+                    let contractsConfig = [contract.asTerminationConfirmConfig]
+                    try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
+                } catch let exception {
+                    Toasts.shared.displayToastBar(
+                        toast: .init(type: .error, text: exception.localizedDescription)
+                    )
+                }
+            }
+        } else {
+            Task { [weak viewModel] in
+                do {
+                    try await Task.sleep(seconds: 0.2)
+                    let contractsConfig = contractStore.state.activeContracts
+                        .filter(\.canTerminate)
+                        .map(\.asTerminationConfirmConfig)
+                    try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
+                } catch let exception {
+                    Toasts.shared.displayToastBar(
+                        toast: .init(type: .error, text: exception.localizedDescription)
+                    )
+                }
+            }
+        }
+    }
+
+    private func handleDeeplinkConversation(_ url: URL) {
+        let conversationId = url.getParameter(property: .conversationId)
+        Task {
+            let conversationClient: ConversationsClient = Dependencies.shared.resolve()
+            let conversations = try await conversationClient.getConversations()
+            let isValidConversation = conversations.first(where: { $0.id == conversationId })
+
+            if let conversationId, isValidConversation != nil {
+                NotificationCenter.default.post(
+                    name: .openChat,
+                    object: ChatType.conversationId(id: conversationId)
+                )
+            } else {
+                NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
+            }
+        }
+    }
+
+    private func handleDeeplinkContactInfo(_ url: URL) {
+        dismissAndSelectTab(4)
+        viewModel?.profileNavigationVm.pushToProfile()
+    }
+
+    private func handleEditCoInsured(url: URL) {
+        guard let viewModel = viewModel else { return }
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        Task {
+            if let contractId = url.getParameter(property: .contractId),
+                let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
+            {
+                let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
+
+                if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
+                    viewModel.homeNavigationVm.editCoInsuredVm
+                        .start(
+                            fromContract: contractConfig,
+                            forMissingCoInsured: true
+                        )
+                } else {
+                    viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
+                }
+            } else {
+                // select insurance
+                viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+            }
+        }
+    }
+}
+
+// MARK: - Views
+
 struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
     @StateObject private var router = Router()
@@ -50,104 +434,7 @@ struct LoggedInNavigation: View {
             profileTab
         }
         .tint(hTextColor.Opaque.primary)
-        .modally(
-            presented: $vm.isTravelInsurancePresented,
-            options: .constant(.alwaysOpenOnTop)
-        ) {
-            TravelCertificateNavigation(
-                vm: vm.travelCertificateNavigationVm,
-                infoButtonPlacement: .leading,
-                useOwnNavigation: true
-            )
-            .handleEditCoInsured(
-                with: vm.travelCertificateNavigationVm.editCoInsuredVm
-            )
-        }
-        .modally(
-            presented: $vm.isInsuranceEvidencePresented,
-            options: .constant(.alwaysOpenOnTop),
-            tracking: nil
-        ) {
-            InsuranceEvidenceNavigation()
-        }
-        .modally(
-            presented: $vm.isMoveContractPresented,
-            options: .constant(.alwaysOpenOnTop)
-        ) {
-            HandleMoving()
-        }
-        .modally(
-            item: $vm.isChangeTierPresented,
-            options: .constant(.alwaysOpenOnTop),
-            tracking: nil
-        ) { changeTierInput in
-            ChangeTierNavigation(input: changeTierInput)
-        }
-        .modally(
-            item: $vm.isAddonPresented,
-            options: .constant(.alwaysOpenOnTop),
-            tracking: nil
-        ) { addonInput in
-            ChangeAddonNavigation(input: addonInput)
-        }
-        .detent(
-            item: $vm.isAddonErrorPresented,
-
-            options: .constant([.alwaysOpenOnTop])
-        ) { error in
-            GenericErrorView(description: error, formPosition: .compact)
-                .hStateViewButtonConfig(
-                    .init(
-                        actionButton: .init(
-                            buttonAction: { [weak vm] in
-                                vm?.addonErrorRouter.dismiss()
-                            }
-                        )
-                    )
-                )
-                .embededInNavigation(router: vm.addonErrorRouter, tracking: LoggedInNavigationDetentType.error)
-        }
-        .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
-            dismissType in
-            switch dismissType {
-            case .done:
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.fetchQuickActions)
-            case .chat:
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                }
-            case let .openFeedback(url):
-                vm.openUrl(url: url)
-            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
-                break
-            }
-        }
-        .modally(
-            presented: $vm.isEuroBonusPresented,
-            options: .constant(.alwaysOpenOnTop)
-        ) {
-            EuroBonusNavigation(useOwnNavigation: true)
-        }
-        .detent(
-            item: $vm.isFaqTopicPresented,
-            transitionType: .detent(style: [.large]),
-            options: .constant(.alwaysOpenOnTop)
-        ) { topic in
-            HelpCenterTopicNavigation(topic: topic)
-        }
-        .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
-            vm.tabBar = tabBar
-        }
-        .detent(
-            item: $vm.isFaqPresented,
-            transitionType: .detent(style: [.large]),
-            options: .constant(.alwaysOpenOnTop)
-        ) { question in
-            HelpCenterQuestionNavigation(question: question)
-        }
+        .handleLoggedInPresentations(with: vm)
         .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
         }
@@ -251,32 +538,16 @@ struct LoggedInNavigation: View {
                 .handleEditCoInsured(
                     with: vm.travelCertificateNavigationVm.editCoInsuredVm
                 )
-            case let .deleteAccount(memberDetails):
+            case .deleteAccount:
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
-                    memberDetails: memberDetails,
                     claimsStore: claimsStore,
                     contractsStore: contractsStore
                 )
 
                 DeleteAccountView(
-                    vm: model,
-                    dismissAction: { profileDismissAction in
-                        vm.profileNavigationVm.isDeleteAccountPresented = nil
-                        switch profileDismissAction {
-                        case .openChat:
-                            withAnimation {
-                                vm.selectedTab = 0
-                            }
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatType.newConversation
-                            )
-                        default:
-                            break
-                        }
-                    }
+                    vm: model
                 )
                 .environmentObject(vm.profileNavigationVm)
             case .pickLanguage:
@@ -289,16 +560,16 @@ struct LoggedInNavigation: View {
                     store.send(.updateLanguage)
                     // show home screen with updated langauge
                     mainNavigationVm?.loggedInVm = .init()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak mainNavigationVm, weak vm] in
                         mainNavigationVm?.hasLaunchFinished = true
                         vm?.selectedTab = 0
                     }
                 } onCancel: { [weak profileNavigationVm = vm.profileNavigationVm] in
                     profileNavigationVm?.isLanguagePickerPresented = false
                 }
-            case .deleteRequestLoading:
+            case let .deleteRequestLoading(state):
                 DeleteRequestLoadingView(
-                    screenState: .success,
+                    screenState: state,
                     dismissAction: { [weak vm] profileDismissAction in
                         switch profileDismissAction {
                         case .makeHomeTabActiveAndOpenChat:
@@ -309,7 +580,7 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
-                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
+                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading(state: state))
             }
         }
         .tabItem {
@@ -415,7 +686,7 @@ struct HomeTab: View {
                     .configureTitle(model.id.title)
                     .withDismissButton()
                     .embededInNavigation(
-                        options: .navigationType(type: .large),
+                        options: [.navigationType(type: .large), .extendedNavigationWidth],
                         tracking: LoggedInNavigationDetentType.submitClaimDeflect
                     )
                 }
@@ -433,7 +704,7 @@ struct HomeTab: View {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .embededInNavigation(
-                    options: .navigationType(type: .large),
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: LoggedInNavigationDetentType.firstVet
                 )
         }
@@ -500,7 +771,7 @@ struct HomeTab: View {
     }
 }
 
-private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
+enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .submitClaimDeflect:
@@ -528,6 +799,10 @@ class LoggedInNavigationViewModel: ObservableObject {
     let hasLaunchFinished = CurrentValueSubject<Bool, Never>(false)
     var hasLaunchFinishedCancellable: AnyCancellable?
     var previousTab: Int = 0
+
+    // MARK: - Helper Properties
+    private let pushNotificationHandler = PushNotificationHandler()
+    private let deepLinkHandler = DeepLinkHandler()
 
     let contractsNavigationVm = ContractsNavigationViewModel()
     let paymentsNavigationVm = PaymentsNavigationViewModel()
@@ -558,6 +833,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     init() {
+        pushNotificationHandler.viewModel = self
+        deepLinkHandler.viewModel = self
         setupObservers()
         homeNavigationVm.pushToProfile = { [weak self] in
             self?.selectedTab = 4
@@ -660,51 +937,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     private func handle(notification: Notification) {
-        if let object = notification.object as? PushNotificationType {
-            switch object {
-            case .NEW_MESSAGE:
-                let userInfo = notification.userInfo
-                let conversationId = userInfo?["conversationId"] as? String
-                NotificationCenter.default.post(
-                    name: .openChat,
-                    object: ChatType.conversationId(id: conversationId ?? "")
-                )
-            case .OPEN_FOREVER_TAB, .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
-                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                selectedTab = 2
-            case .CONNECT_DIRECT_DEBIT:
-                homeNavigationVm.connectPaymentVm.set(for: nil)
-            case .PAYMENT_FAILED:
-                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                selectedTab = 3
-            case .CROSS_SELL, .OPEN_INSURANCE_TAB:
-                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                selectedTab = 1
-            case .OPEN_CONTACT_INFO:
-                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                selectedTab = 4
-                profileNavigationVm.pushToProfile()
-            case .CHANGE_TIER:
-                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                let userInfo = notification.userInfo
-                let contractId = userInfo?["contractId"] as? String
-                handleChangeTier(contractId: contractId)
-            case .ADDON_TRAVEL:
-                Task {
-                    await handleTravelAddon()
-                }
-            case .OPEN_CLAIM, .CLAIM_CLOSED:
-                let userInfo = notification.userInfo
-                let claimId = userInfo?["claimId"] as? String
-                Task {
-                    await handleClaimDetails(claimId: claimId)
-                }
-            case .INSURANCE_EVIDENCE:
-                handleInsuranceEvidence()
-            case .TRAVEL_CERTIFICATE:
-                isTravelInsurancePresented = true
-            }
-        }
+        pushNotificationHandler.handle(notification)
     }
 
     func actionAfterLogin() {
@@ -715,173 +948,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {
-        guard let url = deepLinkUrl else { return }
-        guard let deepLink = DeepLink.getType(from: url) else {
-            if !Environment.current.isDeeplink(url) {
-                openUrl(url: url)
-            }
-            return
-        }
-
-        switch deepLink {
-        case .forever:
-            dismissAndSelectTab(2)
-        case .directDebit:
-            homeNavigationVm.connectPaymentVm.set(for: nil)
-        case .profile:
-            dismissAndSelectTab(4)
-        case .insurances:
-            dismissAndSelectTab(1)
-        case .home:
-            dismissAndSelectTab(0)
-        case .sasEuroBonus:
-            isEuroBonusPresented = true
-        case .contract:
-            handleContractDeeplink(url)
-        case .payments:
-            dismissAndSelectTab(3)
-        case .travelCertificate:
-            isTravelInsurancePresented = true
-        case .insuranceEvidence:
-            handleInsuranceEvidence()
-        case .helpCenter:
-            handleHelpCenterDeeplink(url)
-        case .helpCenterTopic:
-            handleHelpCenterTopic(url)
-        case .helpCenterQuestion:
-            handleHelpCenterQuestion(url)
-        case .moveContract:
-            isMoveContractPresented = true
-        case .terminateContract:
-            handleTerminateContract(url)
-        case .conversation:
-            handleDeeplinkConversation(url)
-        case .chat, .inbox:
-            NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
-        case .contactInfo:
-            handleDeeplinkContactInfo(url)
-        case .changeTier:
-            handleChangeTier(contractId: url.getParameter(property: .contractId))
-        case .travelAddon:
-            Task { await handleTravelAddon() }
-        case .editCoInsured:
-            handleEditCoInsured(url: url)
-        case .claimDetails:
-            Task { await self.handleClaimDetails(claimId: url.getParameter(property: .claimId)) }
-        case .submitClaim:
-            selectedTab = 0
-            homeNavigationVm.isSubmitClaimPresented = true
-        }
-    }
-
-    private func dismissAndSelectTab(_ tab: Int) {
-        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-        selectedTab = tab
-    }
-
-    private func handleContractDeeplink(_ url: URL) {
-        dismissAndSelectTab(1)
-        let contractId = url.getParameter(property: .contractId)
-
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                self?.contractsNavigationVm.contractsRouter.popToRoot()
-                self?.contractsNavigationVm.contractsRouter.push(contract)
-            }
-        }
-    }
-
-    private func handleHelpCenterDeeplink(_ url: URL) {
-        dismissAndSelectTab(0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            self?.homeNavigationVm.isHelpCenterPresented = true
-        }
-    }
-
-    private func handleHelpCenterTopic(_ url: URL) {
-        if let id = url.getParameter(property: .id) {
-            Task {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                if store.state.helpCenterFAQModel == nil {
-                    await store.sendAsync(.fetchFAQ)
-                }
-                if let helpCenterFAQModel = store.state.helpCenterFAQModel,
-                    let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
-                {
-                    isFaqTopicPresented = topic
-                }
-            }
-        }
-    }
-
-    private func handleHelpCenterQuestion(_ url: URL) {
-        if let id = url.getParameter(property: .id) {
-            Task {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                if store.state.getAllFAQ()?.first(where: { $0.id == id }) == nil {
-                    await store.sendAsync(.fetchFAQ)
-                }
-                if let question = store.state.getAllFAQ()?.first(where: { $0.id == id }) {
-                    isFaqPresented = question
-                }
-            }
-        }
-    }
-
-    private func handleTerminateContract(_ url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let contractId = url.getParameter(property: .contractId)
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
-            Task { [weak self] in
-                do {
-                    try await Task.sleep(nanoseconds: 200_000_000)
-                    let contractsConfig = [contract.asTerminationConfirmConfig]
-                    try await self?.terminateInsuranceVm.start(with: contractsConfig)
-                } catch let exception {
-                    Toasts.shared.displayToastBar(
-                        toast: .init(type: .error, text: exception.localizedDescription)
-                    )
-                }
-            }
-        } else {
-            Task { [weak self] in
-                do {
-                    try await Task.sleep(nanoseconds: 200_000_000)
-                    let contractsConfig = contractStore.state.activeContracts
-                        .filter(\.canTerminate)
-                        .map(\.asTerminationConfirmConfig)
-                    try await self?.terminateInsuranceVm.start(with: contractsConfig)
-                } catch let exception {
-                    Toasts.shared.displayToastBar(
-                        toast: .init(type: .error, text: exception.localizedDescription)
-                    )
-                }
-            }
-        }
-    }
-
-    private func handleDeeplinkConversation(_ url: URL) {
-        let conversationId = url.getParameter(property: .conversationId)
-        Task {
-            let conversationClient: ConversationsClient = Dependencies.shared.resolve()
-            let conversations = try await conversationClient.getConversations()
-            let isValidConversation = conversations.first(where: { $0.id == conversationId })
-
-            if let conversationId, isValidConversation != nil {
-                NotificationCenter.default.post(
-                    name: .openChat,
-                    object: ChatType.conversationId(id: conversationId)
-                )
-            } else {
-                NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
-            }
-        }
-    }
-
-    private func handleDeeplinkContactInfo(_ url: URL) {
-        dismissAndSelectTab(4)
-        profileNavigationVm.pushToProfile()
+        deepLinkHandler.handle(deepLinkUrl)
     }
 
     func openUrl(url: URL) {
@@ -909,120 +976,20 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    private func handleChangeTier(contractId: String?) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                self?.isChangeTierPresented = .init(
-                    source: .changeTier,
-                    contracts: [
-                        .init(
-                            contractId: contractId,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
-                                ?? "",
-                            contractExposureName: contract.exposureDisplayName
-                        )
-                    ]
-                )
-            }
-        } else {
-            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
-                .filter(\.supportsChangeTier)
-                .map {
-                    .init(
-                        contractId: $0.id,
-                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
-                        contractExposureName: $0.exposureDisplayName
-                    )
-                }
-            isChangeTierPresented = ChangeTierContractsInput(
-                source: .changeTier,
-                contracts: contractsSupportingChangingTier
-            )
-        }
+    func handleChangeTier(contractId: String?) {
+        pushNotificationHandler.handleChangeTier(contractId: contractId)
     }
 
-    private func handleTravelAddon() async {
-        do {
-            let client: FetchContractsClient = Dependencies.shared.resolve()
-            if let bannerData = try await client.getAddonBannerModel(source: .deeplink) {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                let addonContracts = bannerData.contractIds.compactMap {
-                    contractStore.state.contractForId($0)
-                }
-                guard !addonContracts.isEmpty else {
-                    throw AddonsError.missingContracts
-                }
-                let addonConfigs: [AddonConfig] = addonContracts.map {
-                    .init(
-                        contractId: $0.id,
-                        exposureName: $0.exposureDisplayName,
-                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                    )
-                }
-                isAddonPresented = .init(
-                    addonSource: .deeplink,
-                    contractConfigs: addonConfigs
-                )
-            }
-        } catch {
-            isAddonErrorPresented = error.localizedDescription
-        }
+    func handleTravelAddon() async {
+        await pushNotificationHandler.handleTravelAddon()
     }
 
-    private func handleEditCoInsured(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        Task {
-            if let contractId = url.getParameter(property: .contractId),
-                let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
-            {
-                let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
-
-                if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
-                    self.homeNavigationVm.editCoInsuredVm
-                        .start(
-                            fromContract: contractConfig,
-                            forMissingCoInsured: true
-                        )
-                } else {
-                    self.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
-                }
-            } else {
-                // select insurance
-                self.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
-            }
-        }
+    func handleInsuranceEvidence() {
+        pushNotificationHandler.handleInsuranceEvidence()
     }
 
-    private func handleClaimDetails(claimId: String?) async {
-        if let claimId {
-            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
-            do {
-                let claim = try await claimService.get(for: claimId)
-                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                selectedTab = 0
-                Task { [weak self] in
-                    try await Task.sleep(nanoseconds: 200_000_000)
-                    self?.homeNavigationVm.router.push(claim)
-                }
-            } catch {
-                Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
-            }
-        } else {
-            Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
-        }
-    }
-
-    private func handleInsuranceEvidence() {
-        Task {
-            do {
-                let profileClient: ProfileClient = Dependencies.shared.resolve()
-                let canCreate = try await profileClient.getProfileState().canCreateInsuranceEvidence
-                if canCreate {
-                    self.isInsuranceEvidencePresented = true
-                }
-            } catch {}
-        }
+    func handleClaimDetails(claimId: String?) async {
+        await pushNotificationHandler.handleClaimDetails(claimId: claimId)
     }
 
     deinit {

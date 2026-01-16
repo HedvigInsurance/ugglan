@@ -44,6 +44,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
             var files = [File]()
 
             for selectedItem in results {
+                let name = selectedItem.itemProvider.suggestedName
                 if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                     let id = UUID().uuidString
                     let file: File =
@@ -51,7 +52,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
                             id: id,
                             size: 0,
                             mimeType: .JPEG,
-                            name: "\(Date().displayDateWithTimeStamp).jpeg",
+                            name: name ?? "\(Date().displayDateWithTimeStamp).jpeg",
                             source: .localFile(results: selectedItem)
                         )
                     files.append(file)
@@ -62,7 +63,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
                             id: id,
                             size: 0,
                             mimeType: .MOV,
-                            name: "\(Date().displayDateWithTimeStamp).mov",
+                            name: name ?? "\(Date().displayDateWithTimeStamp).mov",
                             source: .localFile(results: selectedItem)
                         )
                     files.append(file)

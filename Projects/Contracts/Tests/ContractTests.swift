@@ -9,7 +9,7 @@ final class ContractsTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: FetchContractsClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
     }
@@ -27,7 +27,6 @@ final class ContractsTests: XCTestCase {
                         productVariant: .init(
                             termsVersion: "",
                             typeOfContract: "",
-                            partner: nil,
                             perils: [],
                             insurableLimits: [],
                             documents: [],

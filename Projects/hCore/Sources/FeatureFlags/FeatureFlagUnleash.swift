@@ -42,13 +42,9 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
 
         log.info("Started loading unleash experiments")
 
-        do {
-            try await unleashClient?.start(printToConsole: true)
-            handleUpdate()
-            log.info("Successfully loaded unleash experiments")
-        } catch let exception {
-            log.info("Failed loading unleash experiments \(exception)")
-        }
+        try await unleashClient?.start(printToConsole: true)
+        handleUpdate()
+        log.info("Successfully loaded unleash experiments")
         unleashClient?
             .subscribe(.update) { [weak self] in
                 self?.handleUpdate()
@@ -64,10 +60,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
                 }
             }
         }
-    }
-
-    private func handleReady() {
-        setFeatureFlags()
     }
 
     private func handleUpdate() {

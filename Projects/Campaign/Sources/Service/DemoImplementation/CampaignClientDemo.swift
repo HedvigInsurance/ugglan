@@ -2,7 +2,7 @@ public class hCampaignClientDemo: hCampaignClient {
     public init() {}
 
     public func getPaymentDiscountsData() async throws -> PaymentDiscountsData {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         return .init(
             discountsData: [
                 .init(
@@ -21,7 +21,6 @@ public class hCampaignClientDemo: hCampaignClient {
 
             ],
             referralsData: .init(
-                code: "CODE",
                 discountPerMember: .sek(10),
                 referrals: [
                     .init(

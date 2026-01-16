@@ -150,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .sink { locale in
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
-                let dateService = DateService()
+                let dateService = DateService(locale: locale)
                 Dependencies.shared.add(module: Module { () -> DateService in dateService })
             }
 
@@ -235,7 +235,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 } else {
                     hasPresentedVC = false
                 }
-                try await Task.sleep(nanoseconds: 50_000_000)
+                try await Task.sleep(seconds: 0.05)
             }
         }
     }

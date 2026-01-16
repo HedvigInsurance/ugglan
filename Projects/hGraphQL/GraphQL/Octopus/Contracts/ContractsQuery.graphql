@@ -70,4 +70,5 @@ fragment AddonPriceFragment on Addon {
 fragment AgreementDisplayItemFragment on AgreementDisplayItem {
 	displayTitle
 	displayValue
+	displaySubtitle
 }

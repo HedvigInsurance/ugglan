@@ -13,7 +13,7 @@ final class HouseInformationInputModelTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: MoveFlowClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
         XCTAssertNil(sut)
     }
 
@@ -21,16 +21,36 @@ final class HouseInformationInputModelTests: XCTestCase {
         let model = HouseInformationInputModel()
 
         model.extraBuildings = [
-            .init(id: "id1", type: "buidling type1", livingArea: 100, connectedToWater: false),
-            .init(id: "id2", type: "buidling type2", livingArea: 120, connectedToWater: false),
-            .init(id: "id3", type: "buidling type3", livingArea: 130, connectedToWater: false),
+            .init(
+                id: "id1",
+                type: ExtraBuildingType(type: "building type 1", displayName: "building display type"),
+                livingArea: 100,
+                connectedToWater: false
+            ),
+            .init(
+                id: "id2",
+                type: ExtraBuildingType(type: "building type 2", displayName: "building display type"),
+                livingArea: 120,
+                connectedToWater: false
+            ),
+            .init(
+                id: "id3",
+                type: ExtraBuildingType(type: "building type 3", displayName: "building display type"),
+                livingArea: 130,
+                connectedToWater: false
+            ),
         ]
 
         assert(model.extraBuildings.count == 3)
 
         model.remove(
             extraBuilding:
-                .init(id: "id3", type: "buidling type3", livingArea: 130, connectedToWater: false)
+                .init(
+                    id: "id3",
+                    type: ExtraBuildingType(type: "building type 3", displayName: "building display type"),
+                    livingArea: 130,
+                    connectedToWater: false
+                )
         )
 
         assert(model.extraBuildings.count == 2)

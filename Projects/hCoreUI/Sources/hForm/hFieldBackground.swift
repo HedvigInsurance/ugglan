@@ -140,23 +140,6 @@ struct hFieldContainer<Content: View>: View {
             return size.fieldOffset
         }
     }
-
-    @hColorBuilder
-    private func getTextColor() -> some hColor {
-        if error != nil && animate {
-            hSignalColor.Amber.text
-        } else if animate {
-            hTextColor.Translucent.secondary
-        } else if isEnabled || backgroundOption.contains(.withoutDisabled) {
-            hTextColor.Translucent.secondary
-        } else if backgroundOption.contains(.locked) {
-            hTextColor.Translucent.disabled
-        } else if shouldMoveLabel, !isEnabled {
-            hTextColor.Translucent.secondary
-        } else {
-            hTextColor.Translucent.disabled
-        }
-    }
 }
 
 struct hFieldLabel: View {
@@ -223,20 +206,20 @@ struct hFieldLabel: View {
     }
 }
 
-struct hFieldLabel_Previews: PreviewProvider {
-    @State static var value: String?
-    @State static var error: String?
-    @State static var animate: Bool = false
-    @State static var shouldMoveLabel: Bool = true
-    static var previews: some View {
-        hFieldLabel(
-            placeholder: "PLACE",
-            animate: $animate,
-            error: $error,
-            shouldMoveLabel: $shouldMoveLabel
-        )
-        .hFieldSize(.small)
-        .addFieldBackground(animate: $animate, error: $error)
-        .addFieldError(animate: $animate, error: $error)
-    }
+@available(iOS 17.0, *)
+#Preview {
+    @Previewable @State var value: String?
+    @Previewable @State var error: String?
+    @Previewable @State var animate: Bool = false
+    @Previewable @State var shouldMoveLabel: Bool = true
+
+    hFieldLabel(
+        placeholder: "PLACE",
+        animate: $animate,
+        error: $error,
+        shouldMoveLabel: $shouldMoveLabel
+    )
+    .hFieldSize(.small)
+    .addFieldBackground(animate: $animate, error: $error)
+    .addFieldError(animate: $animate, error: $error)
 }

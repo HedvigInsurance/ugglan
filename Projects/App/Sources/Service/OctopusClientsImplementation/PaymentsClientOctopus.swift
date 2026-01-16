@@ -45,8 +45,7 @@ extension PaymentStatusData {
         }()
         self.init(
             status: status,
-            displayName: data.currentMember.paymentInformation.connection?.displayName,
-            descriptor: data.currentMember.paymentInformation.connection?.descriptor
+            paymentChargeData: .init(with: data.currentMember.paymentInformation.chargeMethod)
         )
     }
 }
@@ -67,10 +66,10 @@ class hPaymentClientOctopus: hPaymentClient {
             fragment: data.currentMember.referralInformation.monthlyDiscountPerReferral.fragments
                 .moneyFragment
         )
-        let paymentDetails = PaymentData.PaymentDetails(with: paymentDetailsData)
+        let paymentChargeData = PaymentChargeData(with: paymentDetailsData)
         let upcomingPayment = PaymentData(
             with: data,
-            paymentDetails: paymentDetails,
+            paymentChargeData: paymentChargeData,
             amountPerReferral: amountPerReferral
         )
         let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap {
@@ -110,7 +109,7 @@ extension PaymentData {
     // used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
-        paymentDetails: PaymentDetails?,
+        paymentChargeData: PaymentChargeData?,
         amountPerReferral: MonetaryAmount
     ) {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
@@ -137,7 +136,7 @@ extension PaymentData {
             },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentDetails: paymentDetails,
+            paymentChargeData: paymentChargeData,
             addedToThePayment: []
         )
     }
@@ -166,21 +165,35 @@ extension PaymentData {
             },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentDetails: nil,
+            paymentChargeData: nil,
             addedToThePayment: []
         )
     }
 }
 
-extension PaymentData.PaymentDetails {
+extension PaymentChargeData {
     init?(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
-        guard let account = model.currentMember.paymentInformation.connection?.descriptor,
-            let bank = model.currentMember.paymentInformation.connection?.displayName
-        else { return nil }
+        guard let chargeMethod = model.currentMember.paymentInformation.chargeMethod else {
+            return nil
+        }
         self.init(
-            paymentMethod: L10n.paymentsAutogiroLabel,
-            account: account,
-            bank: bank
+            paymentMethod: chargeMethod.paymentMethod,
+            bankName: chargeMethod.displayName,
+            account: chargeMethod.descriptor,
+            mandate: chargeMethod.mandate,
+            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth
+        )
+    }
+    init?(with model: OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod?) {
+        guard let chargeMethod = model else {
+            return nil
+        }
+        self.init(
+            paymentMethod: chargeMethod.paymentMethod,
+            bankName: chargeMethod.displayName,
+            account: chargeMethod.descriptor,
+            mandate: chargeMethod.mandate,
+            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth
         )
     }
 }
@@ -241,10 +254,14 @@ extension PaymentData.ContractPaymentDetails {
             subtitle: data.displaySubtitle,
             netAmount: .init(fragment: data.net.fragments.moneyFragment),
             grossAmount: .init(fragment: data.gross.fragments.moneyFragment),
-            discounts: data.discounts?
-                .compactMap { .init(with: $0.fragments.memberChargeBreakdownItemDiscountFragment) }
-                ?? [],
-            periods: data.periods.compactMap { .init(with: $0) }
+            periods: data.periods.compactMap { .init(with: $0) },
+            priceBreakdown:
+                data.insurancePriceBreakdown.map {
+                    .init(
+                        displayTitle: $0.displayTitle,
+                        amount: MonetaryAmount(fragment: $0.amount.fragments.moneyFragment)
+                    )
+                }
         )
     }
 }
@@ -350,7 +367,7 @@ extension PaymentData {
             contracts: chargeFragment.chargeBreakdown.compactMap { .init(with: $0) },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentDetails: nil,
+            paymentChargeData: nil,
             addedToThePayment: {
                 if let nextPayment {
                     [nextPayment]
@@ -384,19 +401,5 @@ extension PaymentData.PaymentStatus {
         case .unknown:
             return .unknown
         }
-    }
-}
-
-@MainActor
-extension Discount {
-    public init(
-        with data: OctopusGraphQL.MemberChargeBreakdownItemDiscountFragment
-    ) {
-        self.init(
-            code: data.code,
-            displayValue: MonetaryAmount(fragment: data.discount.fragments.moneyFragment).formattedNegativeAmount,
-            description: data.description,
-            type: .paymentsDiscount
-        )
     }
 }

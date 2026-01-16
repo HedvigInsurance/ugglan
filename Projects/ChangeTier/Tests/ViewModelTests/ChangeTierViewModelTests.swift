@@ -40,7 +40,6 @@ final class ChangeTierViewModelTests: XCTestCase {
                     productVariant: .init(
                         termsVersion: "",
                         typeOfContract: "",
-                        partner: nil,
                         perils: [],
                         insurableLimits: [],
                         documents: [],
@@ -64,7 +63,7 @@ final class ChangeTierViewModelTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: ChangeTierClient.self)
-        try await Task.sleep(nanoseconds: 20_000_000)
+        try await Task.sleep(seconds: 0.02)
         XCTAssertNil(sut)
         XCTAssertNil(vm)
     }
@@ -95,7 +94,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         )
         vm = model
 
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         var expectedTiers = tiers
         expectedTiers.insert(currentTier, at: 0)
         assert(model.tiers == expectedTiers)
@@ -123,7 +122,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         )
         vm = model
         model.fetchTiers()
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         assert(model.canEditTier == false)
         assert(model.tiers.isEmpty)
         assert(model.exposureName == nil)
@@ -163,7 +162,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         )
         vm = model
         model.fetchTiers()
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         model.setTier(for: "max")
         assert(model.selectedTier?.name == "max")
         assert(model.selectedTier == tiers[1])
@@ -188,7 +187,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         )
         vm = model
         model.fetchTiers()
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         model.setTier(for: "max")
         assert(model.selectedTier == nil)
         assert(model.canEditTier == false)
@@ -229,7 +228,7 @@ final class ChangeTierViewModelTests: XCTestCase {
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
         vm = model
-        try await Task.sleep(nanoseconds: 30_000_000)
+        try await Task.sleep(seconds: 0.03)
         model.setTier(for: "max")
         model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
         assert(model.selectedQuote != nil)
@@ -270,7 +269,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.displayName == nil)
         assert(model.activationDate == nil)
         assert(model.selectedTier == nil)
-        try await Task.sleep(nanoseconds: 100_000)
+        try await Task.sleep(seconds: 0.0001)
         if case let .error(errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
         } else {

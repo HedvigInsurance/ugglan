@@ -8,7 +8,10 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
 
     func startTermination(contractId: String) async throws -> TerminateStepResponse {
         let mutation = OctopusGraphQL.FlowTerminationStartMutation(
-            input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
+            input: OctopusGraphQL.FlowTerminationStartInput(
+                contractId: contractId,
+                supportedSteps: GraphQLNullable(optionalValue: supportedSteps())
+            ),
             context: nil
         )
         return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
@@ -24,7 +27,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
             context: terminationContext
         )
         async let dataTask = mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
-        try await Task.sleep(nanoseconds: 3_000_000_000)
+        try await Task.sleep(seconds: 3)
         let data = try await dataTask
         return data
     }
@@ -40,7 +43,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         async let dataTask = mutation.execute(
             \.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep
         )
-        try await Task.sleep(nanoseconds: 3_000_000_000)
+        try await Task.sleep(seconds: 3)
         return try await dataTask
     }
 
@@ -58,6 +61,16 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         return try await mutation.execute(\.flowTerminationSurveyNext.fragments.flowTerminationFragment.currentStep)
     }
 
+    func sendContinueAfterDecom(
+        terminationContext: String
+    ) async throws -> TerminateStepResponse {
+        let input = OctopusGraphQL.FlowTerminationCarAutoDecomInput(proceedToCancel: true)
+        let mutation = OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation(input: input, context: terminationContext)
+        return try await mutation.execute(
+            \.flowTerminationCarAutoDecomNext.fragments.flowTerminationFragment.currentStep
+        )
+    }
+
     public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         let input = OctopusGraphQL.TerminationFlowNotificationInput(
             contractId: contractId,
@@ -70,6 +83,18 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         guard let terminationFlowNotification = data.currentMember.terminationFlowNotification else { return nil }
 
         return .init(with: terminationFlowNotification.fragments.flowTerminationNotificationFragment)
+    }
+
+    private func supportedSteps() -> [OctopusGraphQL.ID] {
+        [
+            OctopusGraphQL.Objects.FlowTerminationDateStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationFailedStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationSurveyStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationSuccessStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationDeletionStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationCarAutoDecomStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationCarDeflectAutoCancelStep.typename,
+        ]
     }
 }
 
@@ -101,6 +126,12 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
             return (step: .setSuccessStep(model: .init(terminationDate: step.terminationDate)), nil)
         } else if let step = asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
             return (step: .setTerminationSurveyStep(model: .init(with: step)), progress)
+        } else if let step = asFlowTerminationCarAutoDecomStep?.fragments.flowTerminationCarAutoDecomStepFragment {
+            return (step: .setDeflectAutoDecom(model: .init(with: step)), progress)
+        } else if let step = asFlowTerminationCarDeflectAutoCancelStep?.fragments
+            .flowTerminationCarDeflectAutoCancelStepStep
+        {
+            return (step: .setDeflectAutoCancel(model: .init(with: step)), progress)
         } else {
             return (step: .openTerminationUpdateAppScreen, nil)
         }
@@ -158,6 +189,12 @@ extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStep
     }
 }
 
+extension OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation.Data: TerminationStepContext {
+    func getContext() -> String {
+        flowTerminationCarAutoDecomNext.context
+    }
+}
+
 extension OctopusGraphQL.FlowTerminationStartMutation.Data: TerminationStepProgress {
     func getProgress() -> Float {
         Float(flowTerminationStart.progress?.clearedSteps ?? 0)
@@ -183,6 +220,24 @@ extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStep
     func getProgress() -> Float {
         Float(flowTerminationSurveyNext.progress?.clearedSteps ?? 0)
             / Float(flowTerminationSurveyNext.progress?.totalSteps ?? 0)
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation.Data: TerminationStepProgress {
+    func getProgress() -> Float {
+        Float(flowTerminationCarAutoDecomNext.progress?.clearedSteps ?? 0)
+            / Float(flowTerminationCarAutoDecomNext.progress?.totalSteps ?? 0)
+    }
+}
+
+extension TerminationFlowDeflectAutoDecomModel {
+    init(with data: OctopusGraphQL.FlowTerminationCarAutoDecomStepFragment) {
+        self.init(
+            message: data.message,
+            title: data.title,
+            explanations: data.explanations.map({ .init(title: $0.title, text: $0.text) }),
+            info: data.info
+        )
     }
 }
 
@@ -224,10 +279,15 @@ extension TerminationFlowSurveyStepModel {
             options.append(.init(with: stepOptionFragment, subOptions: subOptions))
         }
         self.init(
-            id: data.id,
             options: options,
             subTitleType: .default
         )
+    }
+}
+
+extension TerminationFlowDeflectAutoCancelModel {
+    init(with data: OctopusGraphQL.FlowTerminationCarDeflectAutoCancelStepStep) {
+        self.init(title: data.title, message: data.message, extraMessage: data.extraMessage)
     }
 }
 
@@ -255,7 +315,6 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
             let description = optionActionSuggestion.description
             return .action(
                 action: .init(
-                    id: optionActionSuggestion.id,
                     action: action,
                     description: description,
                     buttonTitle: buttonTitle,
@@ -265,7 +324,6 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
         } else if let optionRedirectSuggestion = asFlowTerminationSurveyOptionSuggestionRedirect {
             return .redirect(
                 redirect: .init(
-                    id: optionRedirectSuggestion.id,
                     url: optionRedirectSuggestion.url,
                     description: optionRedirectSuggestion.description,
                     buttonTitle: optionRedirectSuggestion.buttonTitle,
@@ -275,7 +333,6 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
         } else if let optionSuggestionInfo = asFlowTerminationSurveyOptionSuggestionInfo {
             return .suggestionInfo(
                 info: .init(
-                    id: optionSuggestionInfo.id,
                     description: optionSuggestionInfo.description,
                     type: optionSuggestionInfo.infoType.value?.asInfoType ?? .offer
                 )
@@ -305,7 +362,7 @@ extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
 
 extension OctopusGraphQL.FlowTerminationSurveyOptionFeedbackFragment {
     var asFeedback: TerminationFlowSurveyStepFeedback? {
-        .init(id: id, isRequired: isRequired)
+        .init(isRequired: isRequired)
     }
 }
 
@@ -323,7 +380,6 @@ extension TerminationFlowDateNextStepModel {
         with data: OctopusGraphQL.FlowTerminationDateStepFragment
     ) {
         self.init(
-            id: data.id,
             maxDate: data.maxDate,
             minDate: data.minDate,
             date: nil,
@@ -363,7 +419,7 @@ extension TerminationFlowFailedNextModel {
     fileprivate init(
         with data: OctopusGraphQL.FlowTerminationFailedFragment
     ) {
-        self.init(id: data.id)
+        self.init()
     }
 }
 
@@ -372,7 +428,6 @@ extension TerminationFlowDeletionNextModel {
         with data: OctopusGraphQL.FlowTerminationDeletionFragment
     ) {
         self.init(
-            id: data.id,
             extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) }
         )
     }

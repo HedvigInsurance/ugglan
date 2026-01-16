@@ -34,6 +34,7 @@ public class ChatMessageViewModel: ObservableObject {
             }
         }
     }
+    @Published var responseIsBeingGenerated: Bool = false
     @Published var isFetchingPreviousMessages = false
     private var hasAutomation: Bool = false
     private(set) var firstHedvigMessageAfterAutomation: Message?
@@ -71,7 +72,7 @@ public class ChatMessageViewModel: ObservableObject {
                 isFetchingPreviousMessages = false
             } catch _ {
                 if withAutomaticRetry {
-                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                    try? await Task.sleep(seconds: 2)
                     isFetchingPreviousMessages = false
                     await fetchPreviousMessages()
                 } else {
@@ -88,6 +89,9 @@ public class ChatMessageViewModel: ObservableObject {
             do {
                 let store: ChatStore = globalPresentableStoreContainer.get()
                 let chatData = try await chatService.getNewMessages()
+                withAnimation {
+                    responseIsBeingGenerated = chatData.responseIsBeingGenerated
+                }
                 conversationVm.conversationId = chatData.conversationId
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
                 if newMessages.contains(where: { $0.sender == .automation }) {

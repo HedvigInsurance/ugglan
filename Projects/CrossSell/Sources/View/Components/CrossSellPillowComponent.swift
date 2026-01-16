@@ -67,6 +67,7 @@ struct CrossSellPillowComponent: View {
             id: "id",
             title: "title",
             description: "description",
+            buttonTitle: "Save 15%",
             discountText: "50%",
             imageUrl: URL(
                 string:

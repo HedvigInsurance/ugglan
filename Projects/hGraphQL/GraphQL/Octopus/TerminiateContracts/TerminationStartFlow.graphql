@@ -14,6 +14,8 @@ fragment FlowTerminationFragment on Flow {
 	...FlowTerminationFailedFragment
 	...FlowTerminationSuccessFragment
 	...FlowTerminationSurveyStepFragment
+	...FlowTerminationCarAutoDecomStepFragment
+	...FlowTerminationCarDeflectAutoCancelStepStep
   }
   progress {
     clearedSteps
@@ -38,12 +40,30 @@ fragment FlowTerminationDeletionFragment on FlowTerminationDeletionStep{
 }
 
 fragment FlowTerminationFailedFragment on FlowTerminationFailedStep{
-     id
+	id
 }
 
 fragment FlowTerminationSuccessFragment on FlowTerminationSuccessStep{
-     id
-     terminationDate
+	id
+	terminationDate
+}
+
+fragment FlowTerminationCarAutoDecomStepFragment on FlowTerminationCarAutoDecomStep {
+	id
+	explanations {
+	  text
+	  title
+	}
+	info
+	message
+	title
+}
+
+fragment FlowTerminationCarDeflectAutoCancelStepStep on FlowTerminationCarDeflectAutoCancelStep {
+  id
+  message
+  title
+  extraMessage
 }
 
 fragment FlowTerminationSurveyStepFragment on FlowTerminationSurveyStep {

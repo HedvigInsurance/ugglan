@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import hCore
 
 extension View {
     public func showTooltip(
@@ -34,7 +33,7 @@ struct TooltipViewModifier: ViewModifier {
             }
             .onAppear {
                 Task {
-                    try await Task.sleep(nanoseconds: 200_000_000)
+                    try await Task.sleep(seconds: 0.2)
                     toolTipManager.checkIfDisplayIsNeeded(type)
                     showTooltip = toolTipManager.displayedTooltip == type
                 }
@@ -50,7 +49,6 @@ struct TooltipView: View {
     // MARK: - Properties
 
     let type: ToolbarOptionType
-    let timeInterval: TimeInterval
     let placement: ListToolBarPlacement
     private let triangleWidth: CGFloat = 12
     private let trianglePadding: CGFloat = .padding16
@@ -65,7 +63,6 @@ struct TooltipView: View {
 
     init(type: ToolbarOptionType, placement: ListToolBarPlacement) {
         self.type = type
-        timeInterval = type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
         self.placement = placement
     }
 
@@ -154,7 +151,7 @@ struct TooltipView: View {
 
     private func startAutoHideTimer() {
         autoHideTask = Task {
-            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            try? await Task.sleep(seconds: 4)
             guard !Task.isCancelled else { return }
             if #available(iOS 17.0, *) {
                 withAnimation(.defaultSpring) {
@@ -219,7 +216,7 @@ class ToolTipManager: ObservableObject {
         if tooltip.shouldShowTooltip(for: tooltip.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)) {
             toolTipsToShow.insert(tooltip)
             Task {
-                try await Task.sleep(nanoseconds: 500_000_000)
+                try await Task.sleep(seconds: 0.5)
                 if let first = Array(toolTipsToShow).sorted(by: { $0.priority < $1.priority }).first {
                     presentTooltip(first)
                 }

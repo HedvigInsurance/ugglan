@@ -5,7 +5,6 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: ItemModel)
 
     var items: [PickerModel]
-    var preSelectedItems: [T]
     let onSelected: ([(object: T?, displayName: String?)]) -> Void
     let onCancel: (() -> Void)?
     let buttonText: String
@@ -24,7 +23,6 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         infoCard: ItemPickerInfoCard? = nil
     ) {
         self.items = items
-        self.preSelectedItems = preSelectedItems()
         self.onSelected = onSelected
         self.onCancel = onCancel
         manualInput = manualInputConfig ?? .init(placeholder: nil)
@@ -366,41 +364,39 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 }
 
-struct ItemPickerScreen_Previews: PreviewProvider {
+#Preview {
     struct ModelForPreview: Equatable, Hashable {
         let id: String
         let name: ItemModel
     }
 
-    static var previews: some View {
-        VStack {
-            ItemPickerScreen<ModelForPreview>(
-                config:
-                    .init(
-                        items: [
-                            ModelForPreview(id: "id", name: .init(title: "name1")),
-                            ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
-                            ModelForPreview(
-                                id: "id3",
-                                name: .init(title: "title3", subTitle: "subtitle3")
-                            ),
-                            ModelForPreview(id: "id4", name: .init(title: "name4")),
-                            ModelForPreview(id: "id5", name: .init(title: "name5")),
-                            ModelForPreview(id: "id6", name: .init(title: "name6")),
-                            ModelForPreview(id: "id7", name: .init(title: "name7")),
-                        ]
-                        .compactMap { (object: $0, displayName: $0.name) },
-                        preSelectedItems: { [] },
-                        onSelected: { _ in
-                        },
-                        onCancel: {},
-                        manualInputConfig: .init(placeholder: "Enter brand name"),
-                        buttonText: L10n.generalSaveButton
-                    )
-            )
-            .hItemPickerAttributes([.singleSelect, .attachToBottom])
-            .hFieldSize(.small)
-        }
+    return VStack {
+        ItemPickerScreen<ModelForPreview>(
+            config:
+                .init(
+                    items: [
+                        ModelForPreview(id: "id", name: .init(title: "name1")),
+                        ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
+                        ModelForPreview(
+                            id: "id3",
+                            name: .init(title: "title3", subTitle: "subtitle3")
+                        ),
+                        ModelForPreview(id: "id4", name: .init(title: "name4")),
+                        ModelForPreview(id: "id5", name: .init(title: "name5")),
+                        ModelForPreview(id: "id6", name: .init(title: "name6")),
+                        ModelForPreview(id: "id7", name: .init(title: "name7")),
+                    ]
+                    .compactMap { (object: $0, displayName: $0.name) },
+                    preSelectedItems: { [] },
+                    onSelected: { _ in
+                    },
+                    onCancel: {},
+                    manualInputConfig: .init(placeholder: "Enter brand name"),
+                    buttonText: L10n.generalSaveButton
+                )
+        )
+        .hItemPickerAttributes([.singleSelect, .attachToBottom])
+        .hFieldSize(.small)
     }
 }
 

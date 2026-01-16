@@ -31,6 +31,7 @@ public struct hButton: View {
                         .withOptionalTransition(withTransition)
                 )
         }
+        .accessibilityLabel(content.title)
         .buttonStyle(ButtonFilledStyle(size: size))
         .hButtonConfigurationType(type)
     }
@@ -92,7 +93,6 @@ public enum hButtonSize: CaseIterable {
 }
 
 struct _hButton<Content: View>: View {
-    @Environment(\.isEnabled) var isEnabled
     @Environment(\.hButtonIsLoading) var isLoading
     var content: () -> Content
     var action: () -> Void

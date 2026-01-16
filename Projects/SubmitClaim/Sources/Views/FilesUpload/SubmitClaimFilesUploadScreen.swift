@@ -15,7 +15,7 @@ struct SubmitClaimFilesUploadScreen: View {
         claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
-        let model = claimsNavigationVm.fileUploadModel ?? .init(id: "", title: "", targetUploadUrl: "", uploads: [])
+        let model = claimsNavigationVm.fileUploadModel ?? .init(targetUploadUrl: "", uploads: [])
         _vm = StateObject(wrappedValue: FilesUploadViewModel(model: model))
     }
 
@@ -178,7 +178,6 @@ struct SubmitClaimFilesUploadScreen: View {
     }
 
     func skip() {
-        vm.hasFilesToUpload = false
         Task {
             let step = await vm.submitFileUpload(
                 ids: [],
@@ -196,13 +195,12 @@ struct SubmitClaimFilesUploadScreen: View {
 public class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
-    @Published var hasFilesToUpload: Bool = false
     @Published var skipPressed = false
     @Published var error: String?
     @Published var progress: Double = 0
     var uploadProgress: Double = 0
     var timerProgress: Double = 0
-    let uploadDelayDuration: UInt64 = 1_500_000_000
+    let uploadDelayDuration: Float = 1.5
 
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
@@ -276,11 +274,10 @@ public class FilesUploadViewModel: ObservableObject {
                     return false
                 }
             }
-            hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {
                 setNavigationBarHidden(true)
                 let startDate = Date()
-                async let sleepTask: () = Task.sleep(nanoseconds: uploadDelayDuration)
+                async let sleepTask: () = Task.sleep(seconds: uploadDelayDuration)
                 async let filesUploadTask = claimFileUploadService.upload(
                     endPoint: model.targetUploadUrl,
                     files: filteredFiles

@@ -16,7 +16,7 @@ public struct CrossSellingDetent: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrosssSellStackComponent(crossSells: crossSells.others, withHeader: false)
+                CrossSellStackComponent(crossSells: crossSells.others, discountAvailable: true, withHeader: false)
             }
         }
         .hFormAttachToBottom {
@@ -30,7 +30,11 @@ public struct CrossSellingDetent: View {
         }
         .hFormContentPosition(.compact)
         .configureTitleView(title: L10n.crossSellSubtitle)
-        .embededInNavigation(router: router, options: [.navigationType(type: .large)], tracking: self)
+        .embededInNavigation(
+            router: router,
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
+            tracking: self
+        )
     }
 }
 
@@ -42,5 +46,5 @@ extension CrossSellingDetent: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingDetent(crossSells: .init(recommended: nil, others: []))
+    return CrossSellingDetent(crossSells: .init(recommended: nil, others: [], discountAvailable: true))
 }

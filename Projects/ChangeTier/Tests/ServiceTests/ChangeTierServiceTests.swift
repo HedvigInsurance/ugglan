@@ -14,7 +14,7 @@ final class ChangeTierServiceTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: ChangeTierClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
     }
@@ -44,7 +44,6 @@ final class ChangeTierServiceTests: XCTestCase {
                         productVariant: .init(
                             termsVersion: "",
                             typeOfContract: "",
-                            partner: nil,
                             perils: [],
                             insurableLimits: [],
                             documents: [],
@@ -82,7 +81,11 @@ final class ChangeTierServiceTests: XCTestCase {
         let respondedTiersData = try! await mockService.getTier(
             input: .init(source: .changeTier, contractId: "contractId")
         )
-        assert(respondedTiersData == changeTierIntentModel)
+        if case let .changeTierIntentModel(data) = respondedTiersData {
+            assert(data == changeTierIntentModel)
+        } else {
+            assertionFailure("shouldn't happen")
+        }
     }
 
     func testCompareProductVariantDataSuccess() async {
@@ -101,7 +104,6 @@ final class ChangeTierServiceTests: XCTestCase {
             .init(
                 termsVersion: "",
                 typeOfContract: "",
-                partner: "",
                 perils: [],
                 insurableLimits: [],
                 documents: [],

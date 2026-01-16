@@ -15,7 +15,7 @@ final class TerminateContractsTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: TerminateContractsClient.self)
-        try await Task.sleep(nanoseconds: 100)
+        try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
     }
@@ -25,7 +25,6 @@ final class TerminateContractsTests: XCTestCase {
 
         let date = "2025-01-17"
         let model: TerminationFlowDateNextStepModel = .init(
-            id: "id",
             maxDate: "2025-11-11",
             minDate: Date().localDateString,
             date: nil,
@@ -54,7 +53,6 @@ final class TerminateContractsTests: XCTestCase {
 
     func testConfirmDeleteSuccess() async {
         let model: TerminationFlowDeletionNextModel = .init(
-            id: "id",
             extraCoverageItem: [
                 .init(displayName: "Travel plus", displayValue: "45 days")
             ]
@@ -80,19 +78,18 @@ final class TerminateContractsTests: XCTestCase {
 
     func testSubmitSurveySuccess() async {
         let model: TerminationFlowSurveyStepModel = .init(
-            id: "id",
             options: [
                 .init(
                     id: "idOption1",
                     title: "option 1",
                     suggestion: nil,
-                    feedBack: .init(id: "feedback id", isRequired: true),
+                    feedBack: .init(isRequired: true),
                     subOptions: [
                         .init(
                             id: "subOptionId1",
                             title: "sub option 1",
                             suggestion: nil,
-                            feedBack: .init(id: "id", isRequired: false),
+                            feedBack: .init(isRequired: false),
                             subOptions: nil
                         )
                     ]

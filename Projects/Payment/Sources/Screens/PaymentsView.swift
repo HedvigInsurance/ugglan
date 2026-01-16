@@ -40,20 +40,16 @@ public struct PaymentsView: View {
                         state.paymentStatusData
                     }
                 ) { statusData in
-                    if let displayName = statusData?.displayName, let descriptor = statusData?.descriptor {
-                        hSection {
-                            discounts
-                            paymentHistory
-                            connectedPaymentMethod(displayName: displayName, descriptor: descriptor)
-                        }
-                    } else {
-                        hSection {
-                            discounts
-                            paymentHistory
+                    hSection {
+                        discounts
+                        paymentHistory
+                        if let data = statusData?.paymentChargeData {
+                            connectedPaymentMethod(data: data)
                         }
                     }
                 }
                 .sectionContainerStyle(.transparent)
+                .hWithoutHorizontalPadding([.row, .divider])
             }
             .padding(.vertical, .padding8)
         }
@@ -119,6 +115,7 @@ public struct PaymentsView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 20, height: 20)
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .accessibilityHidden(true)
                     }
                     .foregroundColor(.primary)
                     hText(paymentData.payment.date.displayDate)
@@ -143,8 +140,6 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.discounts)
         }
-        .hWithoutHorizontalPadding([.row])
-        .dividerInsets(.all, 0)
     }
 
     private var paymentHistory: some View {
@@ -158,54 +153,23 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.history)
         }
-        .hWithoutHorizontalPadding([.row])
-        .dividerInsets(.all, 0)
     }
 
-    @ViewBuilder
-    private func connectedPaymentMethod(displayName: String, descriptor: String) -> some View {
+    private func connectedPaymentMethod(data: PaymentChargeData) -> some View {
         hRow {
             hCoreUIAssets.payments.view
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 24, height: 24)
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText(displayName)
+            hText(L10n.PaymentDetails.NavigationBar.title)
             Spacer()
         }
-        .withCustomAccessory {
-            hText(descriptor).foregroundColor(hTextColor.Opaque.secondary)
+        .withChevronAccessory
+        .onTap {
+            router.push(PaymentsRouterAction.paymentMethod(data: data))
         }
-        .hWithoutHorizontalPadding([.row])
-        .dividerInsets(.all, 0)
     }
 
     private var bottomPart: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentStatusData?.status
-            }
-        ) { statusData in
-            if let statusData, !statusData.showConnectPayment {
-                hSection {
-                    VStack(spacing: .padding16) {
-                        if statusData == .pending {
-                            InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                        }
-                        hButton(
-                            .large,
-                            .secondary,
-                            content: .init(title: statusData.connectButtonTitle),
-                            {
-                                paymentNavigationVm.connectPaymentVm.set(for: nil)
-                            }
-                        )
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-            }
-        }
+        ConnectPaymentBottomView(alwaysShowButton: false)
     }
 }
 

@@ -235,7 +235,6 @@ private class DirectDebitWebview: UIView {
 }
 
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
-    let setupType: SetupType
     @Binding var showErrorAlert: Bool
     let router: Router
 
@@ -300,12 +299,12 @@ public struct DirectDebitSetup: View {
                     )
                 )
             } else if showCancelAlert {
-                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
+                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showCancelAlert) {
                         cancelAlert()
                     }
             } else {
-                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
+                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showErrorAlert) {
                         errorAlert()
                     }
@@ -324,7 +323,7 @@ public struct DirectDebitSetup: View {
             setupType == .replacement
                 ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
         )
-        .embededInNavigation(router: router, options: .navigationType(type: .large), tracking: self)
+        .embededInNavigation(router: router, tracking: self)
     }
 
     private var dismissButton: some View {

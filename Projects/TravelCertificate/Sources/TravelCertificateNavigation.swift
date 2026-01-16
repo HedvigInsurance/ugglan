@@ -98,7 +98,11 @@ public struct TravelCertificateNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(router: router, tracking: TravelCertificateRouterActions.list(specifications: [])) {
+                RouterHost(
+                    router: router,
+                    options: .extendedNavigationWidth,
+                    tracking: TravelCertificateRouterActions.list(specifications: [])
+                ) {
                     getListScreen
                 }
             } else {
@@ -159,6 +163,7 @@ public struct TravelCertificateNavigation: View {
                 }
                 .embededInNavigation(
                     router: createNewRouter,
+                    options: .extendedNavigationWidth,
                     tracking: specificationModel.specification.count > 1
                         ? TravelCertificateRouterActions.list(specifications: specificationModel.specification)
                         : TravelCertificateRouterActions.startDate(
@@ -225,11 +230,6 @@ public struct TravelCertificateNavigation: View {
 
 extension View {
     func addDismissFlow() -> some View {
-        withDismissButton(
-            title: L10n.General.areYouSure,
-            message: L10n.Claims.Alert.body,
-            confirmButton: L10n.General.yes,
-            cancelButton: L10n.General.no
-        )
+        withAlertDismiss()
     }
 }

@@ -53,12 +53,6 @@ func setWantsBottomAttachedInCompactHeight(on presentationController: UIPresenta
     }
 }
 
-extension Notification {
-    fileprivate var endFrame: CGRect? {
-        (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-    }
-}
-
 public struct PresentationOptions: OptionSet, Sendable {
     public let rawValue: Int
     public init(rawValue: Int) {
@@ -193,7 +187,6 @@ class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitionin
 
 final class CenteredModalPresentationController: UIPresentationController {
     private let blurView: PassThroughEffectView?
-    let bottomView: AnyView?
     private var bottomHostingController: UIHostingController<AnyView>?
 
     private var startDragPosition: CGFloat = 0
@@ -206,7 +199,6 @@ final class CenteredModalPresentationController: UIPresentationController {
         presenting presentingViewController: UIViewController?,
         bottomView: AnyView?
     ) {
-        self.bottomView = bottomView
         blurView = PassThroughEffectView(effect: UIBlurEffect(style: .light), options: [.centeredSheet, .gradient])
 
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
@@ -439,28 +431,6 @@ extension UIViewController {
                     completion: nil
                 )
             }
-        }
-    }
-
-    private static var _lastDetentIndex: UInt8 = 1
-
-    var lastDetentIndex: Int? {
-        get {
-            if let lastDetentIndex = objc_getAssociatedObject(self, &UIViewController._lastDetentIndex)
-                as? Int
-            {
-                return lastDetentIndex
-            }
-
-            return nil
-        }
-        set {
-            objc_setAssociatedObject(
-                self,
-                &UIViewController._lastDetentIndex,
-                newValue,
-                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-            )
         }
     }
 }

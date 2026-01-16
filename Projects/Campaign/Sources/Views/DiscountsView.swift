@@ -129,7 +129,6 @@ struct DiscountsView: View {
 
             ],
             referralsData: .init(
-                code: "CODE",
                 discountPerMember: .sek(10),
                 referrals: [
                     .init(
@@ -137,8 +136,7 @@ struct DiscountsView: View {
                         name: "Mark",
                         code: "CODE",
                         description: "desc",
-                        activeDiscount: .sek(10),
-                        invitedYou: true
+                        activeDiscount: .sek(10)
                     ),
                     .init(
                         id: "a2",
@@ -166,8 +164,7 @@ struct DiscountsView: View {
                         name: "RILLE",
                         code: "CODE",
                         description: "desc",
-                        activeDiscount: .sek(30),
-                        invitedYou: false
+                        activeDiscount: .sek(30)
                     ),
                 ]
             )
@@ -182,7 +179,7 @@ struct DiscountsView: View {
     return DiscountsView(
         data: .init(
             discountsData: [],
-            referralsData: .init(code: "CODE", discountPerMember: .sek(10), referrals: [])
+            referralsData: .init(discountPerMember: .sek(10), referrals: [])
         )
     )
 }

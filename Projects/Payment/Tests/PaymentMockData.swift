@@ -22,7 +22,7 @@ struct MockPaymentData {
                     contracts: [],
                     referralDiscount: nil,
                     amountPerReferral: .sek(20),
-                    paymentDetails: nil,
+                    paymentChargeData: nil,
                     addedToThePayment: nil
                 ),
                 ongoing: [
@@ -39,14 +39,14 @@ struct MockPaymentData {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(25),
-                        paymentDetails: nil,
+                        paymentChargeData: nil,
                         addedToThePayment: nil
                     )
                 ]
             )
         },
         fetchPaymentStatusData: @escaping FetchPaymentStatusData = {
-            .init(status: .active, displayName: nil, descriptor: nil)
+            .init(status: .active, paymentChargeData: nil)
         },
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {
             .init()

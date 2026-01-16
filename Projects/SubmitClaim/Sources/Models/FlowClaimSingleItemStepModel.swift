@@ -1,10 +1,8 @@
 import Foundation
 import SwiftUI
-import hCore
 import hCoreUI
 
 public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
-    let id: String
     public let availableItemBrandOptions: [ClaimFlowItemBrandOptionModel]
     public let availableItemModelOptions: [ClaimFlowItemModelOptionModel]
     let availableItemProblems: [ClaimFlowItemProblemOptionModel]
@@ -20,7 +18,6 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     let purchasePriceApplicable: Bool
 
     public init(
-        id: String,
         availableItemBrandOptions: [ClaimFlowItemBrandOptionModel],
         availableItemModelOptions: [ClaimFlowItemModelOptionModel],
         availableItemProblems: [ClaimFlowItemProblemOptionModel],
@@ -35,7 +32,6 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
         defaultItemProblems: [String]?,
         purchasePriceApplicable: Bool
     ) {
-        self.id = id
         self.availableItemBrandOptions = availableItemBrandOptions
         self.availableItemModelOptions = availableItemModelOptions
         self.availableItemProblems = availableItemProblems

@@ -95,12 +95,12 @@ private struct AnimatedProgressView: View {
 
     private func animate() {
         Task {
-            try? await Task.sleep(nanoseconds: UInt64(orderOfExecution * 1_000_000_000))
+            try? await Task.sleep(seconds: Float(orderOfExecution))
             withAnimation(.linear(duration: 1)) {
                 animationProgress = 1
             }
             if pulse {
-                try? await Task.sleep(nanoseconds: UInt64(750_000_000))
+                try? await Task.sleep(seconds: 0.75)
                 withAnimation(.linear(duration: 1)) {
                     animationProgress = 0
                 }
@@ -115,6 +115,7 @@ private struct AnimatedProgressView: View {
             id: "id",
             title: "title",
             description: "description",
+            buttonTitle: "Get price",
             imageUrl: nil,
             buttonDescription: "",
             discountPercent: nil,
@@ -124,6 +125,7 @@ private struct AnimatedProgressView: View {
             id: "id",
             title: "title",
             description: "description",
+            buttonTitle: "Save 15%",
             imageUrl: nil,
             buttonDescription: "",
             discountPercent: 15,
@@ -133,6 +135,7 @@ private struct AnimatedProgressView: View {
             id: "id",
             title: "title",
             description: "description",
+            buttonTitle: "Save 15%",
             imageUrl: nil,
             buttonDescription: "",
             discountPercent: 15,
@@ -142,6 +145,7 @@ private struct AnimatedProgressView: View {
             id: "id",
             title: "title",
             description: "description",
+            buttonTitle: "Save 15%",
             imageUrl: nil,
             buttonDescription: "",
             discountPercent: 15,
@@ -151,6 +155,7 @@ private struct AnimatedProgressView: View {
             id: "id",
             title: "title",
             description: "description",
+            buttonTitle: "Save 15%",
             imageUrl: nil,
             buttonDescription: "",
             discountPercent: 15,
@@ -160,6 +165,7 @@ private struct AnimatedProgressView: View {
             id: "id",
             title: "title",
             description: "description",
+            buttonTitle: "Save 15%",
             imageUrl: nil,
             buttonDescription: "",
             discountPercent: 15,

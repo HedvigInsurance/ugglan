@@ -20,8 +20,13 @@ final class StorePaymentStatusTests: XCTestCase {
     func testFetchPaymentStatusSuccess() async throws {
         let statusData: PaymentStatusData = .init(
             status: .active,
-            displayName: "display name",
-            descriptor: "descriptor"
+            paymentChargeData: .init(
+                paymentMethod: "method",
+                bankName: "displayName",
+                account: "descriptor",
+                mandate: "mandate",
+                chargingDayInTheMonth: 27
+            )
         )
 
         let mockService = MockPaymentData.createMockPaymentService(
@@ -30,7 +35,7 @@ final class StorePaymentStatusTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchPaymentStatus)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(seconds: 0.1)
         XCTAssertNil(store.loadingState[.getPaymentStatus])
         assert(store.state.paymentStatusData == statusData)
         assert(mockService.events.count == 1)

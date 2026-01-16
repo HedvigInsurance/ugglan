@@ -119,7 +119,7 @@ class MainNavigationViewModel: ObservableObject {
                     let profileStore: ProfileStore = globalPresentableStoreContainer.get()
                     await profileStore.sendAsync(.fetchMemberDetails)
                     await profileStore.sendAsync(.updateLanguage)
-                    await checkForFeatureFlags()
+                    checkForFeatureFlags()
                     Task {
                         try? await analyticsService.fetchAndSetUserId()
                     }
@@ -147,7 +147,7 @@ class MainNavigationViewModel: ObservableObject {
     init() {
         Task { @MainActor [weak self] in
             await UIApplication.shared.appDelegate.initialSetup()
-            await self?.checkForFeatureFlags()
+            self?.checkForFeatureFlags()
             withAnimation(.easeInOut) {
                 self?.hasLaunchFinished = true
             }
@@ -155,6 +155,7 @@ class MainNavigationViewModel: ObservableObject {
                 self?.hideLaunchScreen()
             }
         }
+
         if state == .loggedIn {
             Task {
                 await ApplicationContext.shared.setValue(to: true)
@@ -175,15 +176,18 @@ class MainNavigationViewModel: ObservableObject {
         }
     }
 
-    private func checkForFeatureFlags() async {
-        await fetchFeatureFlag()
-    }
-
-    func fetchFeatureFlag() async {
-        do {
-            try await appDelegate.setupFeatureFlags()
-        } catch _ {
-            // we just ignore error since we should let the member in
+    private var featureFlagTask: Task<(), Error>?
+    private func checkForFeatureFlags() {
+        featureFlagTask?.cancel()
+        featureFlagTask = Task { [weak self] in
+            do {
+                try await self?.appDelegate.setupFeatureFlags()
+            } catch let exception {
+                log.info("Failed loading unleash experiments \(exception)")
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                try Task.checkCancellation()
+                self?.checkForFeatureFlags()
+            }
         }
     }
 

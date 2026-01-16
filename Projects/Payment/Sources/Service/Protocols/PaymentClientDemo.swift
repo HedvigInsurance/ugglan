@@ -5,7 +5,7 @@ import hCore
 public class hPaymentClientDemo: hPaymentClient {
     public init() {}
     public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        try await Task.sleep(seconds: 1)
         return (
             .init(
                 id: "",
@@ -24,14 +24,6 @@ public class hPaymentClientDemo: hPaymentClient {
                         subtitle: "Bastugatan 25 ∙ Bara du",
                         netAmount: .sek(250),
                         grossAmount: .sek(200),
-                        discounts: [
-                            .init(
-                                code: "TOGETHER",
-                                displayValue: MonetaryAmount.sek(9).formattedNegativeAmount,
-                                description: "15% discount for 12 months",
-                                type: .discount(status: .active)
-                            )
-                        ],
                         periods: [
                             .init(
                                 id: "id",
@@ -41,6 +33,9 @@ public class hPaymentClientDemo: hPaymentClient {
                                 isOutstanding: false,
                                 desciption: nil
                             )
+                        ],
+                        priceBreakdown: [
+                            .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(9))
                         ]
                     ),
                     .init(
@@ -49,14 +44,6 @@ public class hPaymentClientDemo: hPaymentClient {
                         subtitle: "Lola ∙ Huskatt/blandras",
                         netAmount: .sek(250),
                         grossAmount: .sek(200),
-                        discounts: [
-                            .init(
-                                code: "TOGETHER",
-                                displayValue: MonetaryAmount.sek(8).formattedNegativeAmount,
-                                description: "15% discount for 12 months",
-                                type: .discount(status: .active)
-                            )
-                        ],
                         periods: [
                             .init(
                                 id: "id2",
@@ -66,12 +53,21 @@ public class hPaymentClientDemo: hPaymentClient {
                                 isOutstanding: false,
                                 desciption: nil
                             )
+                        ],
+                        priceBreakdown: [
+                            .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(8))
                         ]
                     ),
                 ],
                 referralDiscount: nil,
                 amountPerReferral: .sek(10),
-                paymentDetails: .init(paymentMethod: "Autogiro", account: "****124124", bank: "Handelsbanken"),
+                paymentChargeData: .init(
+                    paymentMethod: "Autogiro",
+                    bankName: "Handelsbanken",
+                    account: "****124124",
+                    mandate: "Trustly",
+                    chargingDayInTheMonth: 20
+                ),
                 addedToThePayment: nil
             ),
             [
@@ -92,14 +88,6 @@ public class hPaymentClientDemo: hPaymentClient {
                             subtitle: "Bastugatan 25 ∙ Bara du",
                             netAmount: .sek(250),
                             grossAmount: .sek(200),
-                            discounts: [
-                                .init(
-                                    code: "TOGETHER",
-                                    displayValue: MonetaryAmount.sek(11).formattedNegativeAmount,
-                                    description: "15% discount for 12 months",
-                                    type: .discount(status: .active)
-                                )
-                            ],
                             periods: [
                                 .init(
                                     id: "id",
@@ -109,6 +97,9 @@ public class hPaymentClientDemo: hPaymentClient {
                                     isOutstanding: false,
                                     desciption: nil
                                 )
+                            ],
+                            priceBreakdown: [
+                                .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(11))
                             ]
                         ),
                         .init(
@@ -117,14 +108,6 @@ public class hPaymentClientDemo: hPaymentClient {
                             subtitle: "Lola ∙ Huskatt/blandras",
                             netAmount: .sek(250),
                             grossAmount: .sek(200),
-                            discounts: [
-                                .init(
-                                    code: "TOGETHER",
-                                    displayValue: MonetaryAmount.sek(12).formattedNegativeAmount,
-                                    description: "15% discount for 12 months",
-                                    type: .discount(status: .active)
-                                )
-                            ],
                             periods: [
                                 .init(
                                     id: "id2",
@@ -134,12 +117,15 @@ public class hPaymentClientDemo: hPaymentClient {
                                     isOutstanding: false,
                                     desciption: nil
                                 )
+                            ],
+                            priceBreakdown: [
+                                .init(displayTitle: "15% discount for 12 months", amount: MonetaryAmount.sek(12))
                             ]
                         ),
                     ],
                     referralDiscount: nil,
                     amountPerReferral: .sek(10),
-                    paymentDetails: nil,
+                    paymentChargeData: nil,
                     addedToThePayment: nil
                 )
             ]
@@ -147,11 +133,16 @@ public class hPaymentClientDemo: hPaymentClient {
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        return PaymentStatusData(
+        try await Task.sleep(seconds: 1)
+        return .init(
             status: .noNeedToConnect,
-            displayName: "Connected bank",
-            descriptor: "****1234"
+            paymentChargeData: .init(
+                paymentMethod: nil,
+                bankName: "Connected bank",
+                account: "****1234",
+                mandate: nil,
+                chargingDayInTheMonth: nil
+            )
         )
     }
 
@@ -175,7 +166,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(10),
-                        paymentDetails: nil,
+                        paymentChargeData: nil,
                         addedToThePayment: nil
                     )
                 )
@@ -200,7 +191,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(10),
-                        paymentDetails: nil,
+                        paymentChargeData: nil,
                         addedToThePayment: nil
                     )
                 )

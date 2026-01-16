@@ -66,7 +66,7 @@ class AddonsClientOctopus: AddonsClient {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonActivateMutation(quoteId: quoteId, addonId: addonId)
             let delayTask = Task {
-                try await Task.sleep(nanoseconds: 3_000_000_000)
+                try await Task.sleep(seconds: 3)
             }
             let response = try await octopus.client.mutation(mutation: mutation)
             try await delayTask.value

@@ -22,7 +22,6 @@ fragment MessageFragment on ChatMessage {
     disclaimer {
         ...ChatMessageDisclaimerFragment
     }
-    ... ChatMessageActionFragment
     ... ChatMessageFileFragment
     ... ChatMessageTextFragment
 }
@@ -35,17 +34,16 @@ fragment ChatMessageDisclaimerFragment on ChatMessageDisclaimer {
     type
 }
 
-fragment ChatMessageActionFragment on ChatMessageAction {
-    actionTitle
-    actionUrl
-    actionText: text
-}
-
 fragment ChatMessageFileFragment on ChatMessageFile {
     signedUrl
     mimeType
+	fileName
 }
 
 fragment ChatMessageTextFragment on ChatMessageText {
     text
+	actions {
+	  title
+	  url
+	}
 }

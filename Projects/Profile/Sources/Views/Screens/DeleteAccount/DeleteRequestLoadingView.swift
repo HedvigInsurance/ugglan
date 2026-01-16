@@ -1,11 +1,9 @@
 import Apollo
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct DeleteRequestLoadingView: View {
-    @PresentableStore var store: ProfileStore
     var profileService = ProfileService()
     @EnvironmentObject var router: Router
     private var dismissAction: (ProfileNavigationDismissAction) -> Void
@@ -18,7 +16,7 @@ public struct DeleteRequestLoadingView: View {
         self.dismissAction = dismissAction
     }
 
-    public enum ScreenState {
+    public enum ScreenState: Hashable {
         case tryToDelete(with: MemberDetails)
         case success
         case error(errorMessage: String)
@@ -42,8 +40,6 @@ public struct DeleteRequestLoadingView: View {
                     .padding(.bottom, .padding16)
                 hText(L10n.DeleteAccount.processedTitle, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText(L10n.DeleteAccount.processedDescription, style: .body1)
-                    .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, .padding32)
@@ -104,8 +100,6 @@ public struct DeleteRequestLoadingView: View {
     }
 }
 
-struct DeleteRequestLoadingView_Previews: PreviewProvider {
-    static var previews: some View {
-        DeleteRequestLoadingView(screenState: .success, dismissAction: { _ in })
-    }
+#Preview {
+    DeleteRequestLoadingView(screenState: .success, dismissAction: { _ in })
 }

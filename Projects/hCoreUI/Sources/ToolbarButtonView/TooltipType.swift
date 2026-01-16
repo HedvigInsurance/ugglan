@@ -75,6 +75,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return nil
         }
     }
+
     var showBadge: Bool {
         switch self {
         case let .crossSell(hasNewOffser):
@@ -247,7 +248,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         switch self {
         case .crossSell:
             Task {
-                try await Task.sleep(nanoseconds: 3_000_000_000)
+                try await Task.sleep(seconds: 3)
                 ToolbarOptionType.animateOffer = false
             }
             return ToolbarOptionType.animateOffer
