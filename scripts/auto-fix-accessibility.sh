@@ -170,19 +170,6 @@ fix_file() {
         fi
     fi
 
-    # Fix 2: Add .accessibilityHidden(true) to decorative icons ONLY (very conservative)
-    # Only fix chevron icons which are almost always decorative
-    if grep -qE "hCoreUIAssets\.chevron" "$file"; then
-        # Match chevron icons and add accessibilityHidden if not already present
-        # Only if they're on their own line or clearly decorative
-        perl -i -pe 's/^(\s+)(hCoreUIAssets\.chevron\w*\.view)(?!.*accessibilityHidden)/$1$2\n$1    .accessibilityHidden(true)/g' "$file"
-
-        if ! cmp -s "$file" "$file.bak"; then
-            ((file_fixes++))
-            echo -e "    ${GREEN}✓${NC} Added .accessibilityHidden(true) to chevron icons"
-        fi
-    fi
-
     # Clean up backup if no changes
     if cmp -s "$file" "$file.bak"; then
         rm "$file.bak"
