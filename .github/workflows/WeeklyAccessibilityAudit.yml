@@ -1,0 +1,163 @@
+name: Weekly Accessibility Audit
+
+on:
+  schedule:
+    # Runs every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  accessibility-audit:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find all Swift files
+        id: find-files
+        run: |
+          # Find all Swift files except tests
+          FILES=$(find Projects -name "*.swift" -type f | grep -v Test | tr '\n' ' ')
+          echo "swift_files=$FILES" >> $GITHUB_OUTPUT
+          echo "Found $(echo $FILES | wc -w | tr -d ' ') Swift files to check"
+
+      - name: Run Accessibility Check
+        id: check
+        run: |
+          chmod +x scripts/check-accessibility.sh
+          scripts/check-accessibility.sh "${{ steps.find-files.outputs.swift_files }}"
+        continue-on-error: true
+
+      - name: Read Report
+        id: report
+        if: always()
+        run: |
+          if [ -f accessibility-report.md ]; then
+            echo "report_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "report_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Issue if Problems Found
+        if: steps.check.outcome == 'failure' && steps.report.outputs.report_exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('accessibility-report.md', 'utf8');
+
+            // Check if there's already an open accessibility issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'accessibility',
+              per_page: 100
+            });
+
+            const existingIssue = issues.data.find(issue =>
+              issue.title.includes('Weekly Accessibility Audit')
+            );
+
+            const issueBody = `## 🔍 Weekly Accessibility Audit Report
+
+            This is an automated weekly scan of the codebase for accessibility compliance issues.
+
+            **Scan Date:** ${new Date().toISOString().split('T')[0]}
+            **Workflow Run:** [View Details](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+
+            ---
+
+            ${report}
+
+            ---
+
+            ### 📝 How to Fix
+
+            1. Review the issues listed above
+            2. Apply accessibility modifiers as needed:
+               - Add \`.accessibilityLabel()\` to images
+               - Add \`.accessibilityAddTraits(.isButton)\` to tappable views
+               - Add \`.accessibilityAction()\` for custom gestures
+               - Use \`.accessibilityHidden(true)\` for decorative elements
+            3. Test with VoiceOver to verify fixes
+            4. Run \`./scripts/check-accessibility.sh\` locally before committing
+
+            ### 🔗 Resources
+            - [Accessibility Workflow Documentation](docs/accessibility-workflow.md)
+            - [Apple Accessibility Guidelines](https://developer.apple.com/design/human-interface-guidelines/accessibility)
+            `;
+
+            if (existingIssue) {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `## 🔄 Updated Scan Results\n\n${issueBody}`
+              });
+              console.log(`Updated existing issue #${existingIssue.number}`);
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🔍 Weekly Accessibility Audit - Issues Found',
+                body: issueBody,
+                labels: ['accessibility', 'automated']
+              });
+              console.log('Created new accessibility issue');
+            }
+
+      - name: Close Issue if No Problems
+        if: steps.check.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Find and close any open accessibility audit issues
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'accessibility',
+              per_page: 100
+            });
+
+            const accessibilityIssues = issues.data.filter(issue =>
+              issue.title.includes('Weekly Accessibility Audit')
+            );
+
+            for (const issue of accessibilityIssues) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ **All accessibility issues have been resolved!**\n\nThe weekly audit on ${new Date().toISOString().split('T')[0]} found no accessibility issues.\n\nClosing this issue automatically.`
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed'
+              });
+
+              console.log(`Closed issue #${issue.number}`);
+            }
+
+            if (accessibilityIssues.length === 0) {
+              console.log('✅ No accessibility issues found and no open issues to close');
+            }
+
+      - name: Upload Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-accessibility-report-${{ github.run_id }}
+          path: accessibility-report.md
+          if-no-files-found: ignore
+          retention-days: 90

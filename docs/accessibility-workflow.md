@@ -2,14 +2,35 @@
 
 ## Overview
 
-The Accessibility Check workflow automatically reviews Swift/SwiftUI code changes in pull requests to identify potential accessibility issues.
+We have two automated workflows to ensure accessibility compliance:
 
-## How It Works
+1. **PR Accessibility Check** - Reviews code changes in pull requests
+2. **Weekly Accessibility Audit** - Scans the entire codebase every week
+
+## PR Accessibility Check
+
+### How It Works
 
 1. **Triggers**: Runs automatically on every pull request when `.swift` files are modified
 2. **Analysis**: Compares changes from the base branch (usually `main`) to detect new accessibility issues
 3. **Report**: Comments on the PR with findings and suggestions
 4. **Artifacts**: Uploads a detailed accessibility report
+
+## Weekly Accessibility Audit
+
+### How It Works
+
+1. **Schedule**: Runs every Monday at 9:00 AM UTC
+2. **Scope**: Scans all Swift files in the codebase (except tests)
+3. **Issue Creation**: Automatically creates or updates a GitHub issue if problems are found
+4. **Auto-Close**: Closes issues automatically when all problems are resolved
+5. **Manual Trigger**: Can be triggered manually from the Actions tab
+
+### What Happens
+
+- **Issues Found**: Creates a GitHub issue labeled `accessibility` and `automated` with detailed report
+- **No Issues**: Closes any open accessibility audit issues
+- **Existing Issue**: Updates the existing issue with new scan results instead of creating duplicates
 
 ## What It Checks
 
@@ -106,11 +127,14 @@ HStack {
 
 ## Files
 
-- **Workflow**: `.github/workflows/AccessibilityCheck.yml`
+- **PR Check Workflow**: `.github/workflows/AccessibilityCheck.yml`
+- **Weekly Audit Workflow**: `.github/workflows/WeeklyAccessibilityAudit.yml`
 - **Script**: `scripts/check-accessibility.sh`
 - **Documentation**: `docs/accessibility-workflow.md` (this file)
 
 ## Manual Usage
+
+### Run Check Locally
 
 You can run the check locally:
 
@@ -121,6 +145,31 @@ You can run the check locally:
 # Check all Swift files in a directory
 find Projects/MyModule -name "*.swift" | xargs ./scripts/check-accessibility.sh
 ```
+
+### Trigger Weekly Audit Manually
+
+You can trigger the weekly audit manually from GitHub:
+
+1. Go to **Actions** tab in GitHub
+2. Select **Weekly Accessibility Audit** workflow
+3. Click **Run workflow** button
+4. Select the branch and click **Run workflow**
+
+### Configure Schedule
+
+To change the weekly audit schedule, edit `.github/workflows/WeeklyAccessibilityAudit.yml`:
+
+```yaml
+on:
+  schedule:
+    # Change the cron expression (currently Monday 9 AM UTC)
+    - cron: '0 9 * * 1'
+```
+
+Common cron patterns:
+- `0 9 * * 1` - Every Monday at 9 AM UTC
+- `0 9 * * 5` - Every Friday at 9 AM UTC
+- `0 0 1 * *` - First day of every month at midnight UTC
 
 ## Limitations
 
