@@ -22,15 +22,43 @@ We have two automated workflows to ensure accessibility compliance:
 
 1. **Schedule**: Runs every Monday at 9:00 AM UTC
 2. **Scope**: Scans all Swift files in the codebase (except tests)
-3. **Issue Creation**: Automatically creates or updates a GitHub issue if problems are found
-4. **Auto-Close**: Closes issues automatically when all problems are resolved
-5. **Manual Trigger**: Can be triggered manually from the Actions tab
+3. **Auto-Fix**: Automatically applies common accessibility fixes
+4. **PR Creation**: Creates a pull request with the auto-fixes for review
+5. **Issue Creation**: Creates a GitHub issue for remaining manual fixes (if needed)
+6. **Auto-Close**: Closes issues automatically when all problems are resolved
+7. **Manual Trigger**: Can be triggered manually from the Actions tab
 
 ### What Happens
 
-- **Issues Found**: Creates a GitHub issue labeled `accessibility` and `automated` with detailed report
-- **No Issues**: Closes any open accessibility audit issues
-- **Existing Issue**: Updates the existing issue with new scan results instead of creating duplicates
+**When issues are found:**
+1. 🔍 Scans all Swift files
+2. 🤖 Auto-fixes common issues (button traits, decorative icons)
+3. 📝 Creates a PR with fixes labeled `accessibility` and `automated`
+4. ⚠️ Creates an issue for remaining manual fixes (if any)
+
+**When no issues are found:**
+- ✅ Closes any open accessibility audit issues
+
+### Auto-Fix Capabilities
+
+The workflow automatically fixes:
+
+✅ **Adds `.accessibilityAddTraits(.isButton)` to `.onTapGesture`**
+- Makes tappable views behave properly for VoiceOver
+
+✅ **Adds `.accessibilityHidden(true)` to decorative icons**
+- Only for common patterns (chevrons, arrows, info icons, etc.)
+
+⚠️ **Adds TODO comments for images needing manual labels**
+- Flags images that require human judgment and L10n keys
+
+### Manual Fixes Required
+
+Some fixes require human review:
+- Proper L10n keys for accessibility labels
+- Determining if images are decorative vs informative
+- Context-specific accessibility hints
+- Complex gesture interactions
 
 ## What It Checks
 
@@ -129,14 +157,15 @@ HStack {
 
 - **PR Check Workflow**: `.github/workflows/AccessibilityCheck.yml`
 - **Weekly Audit Workflow**: `.github/workflows/WeeklyAccessibilityAudit.yml`
-- **Script**: `scripts/check-accessibility.sh`
+- **Accessibility Checker Script**: `scripts/check-accessibility.sh`
+- **Auto-Fix Script**: `scripts/auto-fix-accessibility.sh`
 - **Documentation**: `docs/accessibility-workflow.md` (this file)
 
 ## Manual Usage
 
 ### Run Check Locally
 
-You can run the check locally:
+You can run the accessibility checker locally:
 
 ```bash
 # Check specific files
@@ -144,6 +173,32 @@ You can run the check locally:
 
 # Check all Swift files in a directory
 find Projects/MyModule -name "*.swift" | xargs ./scripts/check-accessibility.sh
+```
+
+### Run Auto-Fix Locally
+
+You can run the auto-fix script locally before committing:
+
+```bash
+# Auto-fix specific files
+./scripts/auto-fix-accessibility.sh "Projects/MyModule/Sources/MyView.swift"
+
+# Auto-fix all Swift files in a directory
+./scripts/auto-fix-accessibility.sh $(find Projects/MyModule -name "*.swift" -type f | grep -v Test)
+
+# Auto-fix all Swift files in the project
+./scripts/auto-fix-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
+```
+
+**Then verify the fixes:**
+```bash
+# Re-run the checker to see remaining issues
+./scripts/check-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
+
+# Review the changes
+git diff
+
+# Test with VoiceOver before committing
 ```
 
 ### Trigger Weekly Audit Manually
