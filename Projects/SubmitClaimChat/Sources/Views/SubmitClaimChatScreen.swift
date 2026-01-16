@@ -17,6 +17,9 @@ public struct SubmitClaimChatScreen: View {
             SubmitClaimOutcomeScreen(outcome: outcome)
                 .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .animation(.defaultSpring, value: viewModel.outcome)
+                .onDeinit {
+                    NotificationCenter.default.post(name: .claimCreated, object: nil)
+                }
         } else {
             scrollContent
                 .submitClaimChatScreenAlert(viewModel.alertVm)
