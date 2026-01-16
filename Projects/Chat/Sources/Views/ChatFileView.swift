@@ -52,12 +52,10 @@ struct ChatFileView: View {
             .aspectRatio(
                 contentMode: .fit
             )
-            .accessibilityLabel(L10n.voiceoverChatImage)
         } else {
             KFImage(
                 source: getSource()
             )
-            .accessibilityLabel(L10n.voiceoverChatImage)
             .fade(duration: 0.25)
             .placeholder { _ in
                 ProgressView()

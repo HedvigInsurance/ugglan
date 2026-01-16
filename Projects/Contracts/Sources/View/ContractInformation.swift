@@ -154,7 +154,12 @@ struct ContractInformationView: View {
                             }
                         }
                         .accessibilityAddTraits(
-                            contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil ? .isButton : []
+                            {
+                                if contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil {
+                                    return .isButton
+                                }
+                                return AccessibilityTraits()
+                            }()
                         )
                     } else {
                         CoInsuredField(

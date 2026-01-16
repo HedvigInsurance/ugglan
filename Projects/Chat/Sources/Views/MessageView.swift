@@ -32,7 +32,14 @@ struct MessageView: View {
                 }
             }
         }
-        .accessibilityAddTraits(message.status == .failed ? .isButton : [])
+        .accessibilityAddTraits(
+            {
+                if case .failed = message.status {
+                    return .isButton
+                }
+                return AccessibilityTraits()
+            }()
+        )
         .id("MessageView_\(message.id)")
         .modifier(MessageViewConfirmationDialog(message: message, showRetryOptions: $showRetryOptions, vm: vm))
     }

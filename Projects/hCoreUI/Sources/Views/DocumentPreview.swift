@@ -124,7 +124,6 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
             target: self,
             action: #selector(share(sender:))
         )
-        barButtonItem.accessibilityLabel = L10n.generalShare
         vc?.navigationItem.leftBarButtonItem = barButtonItem
     }
 
