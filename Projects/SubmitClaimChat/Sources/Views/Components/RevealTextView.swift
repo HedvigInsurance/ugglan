@@ -3,20 +3,22 @@ import hCore
 import hCoreUI
 
 struct RevealTextView: View {
-    let text: String
     @State private var visibleCharacters: [Int: Double] = [:]
     @State private var showDot = false
     @State private var animationCompleted = false
-
+    let text: String
+    let animate: Bool
     let delay: Float
     private var onTextAnimationDone: (() -> Void)
     init(
         text: String,
         delay: Float,
+        animate: Bool = true,
         onTextAnimationDone: @escaping (() -> Void)
     ) {
         self.text = text
         self.delay = delay
+        self.animate = animate
         self.onTextAnimationDone = onTextAnimationDone
     }
     var body: some View {
@@ -24,7 +26,7 @@ struct RevealTextView: View {
             if showDot {
                 AnimatedDotView()
             }
-            if #available(iOS 18.0, *) {
+            if animate, #available(iOS 18.0, *) {
                 hText(text, style: .heading1)
                     .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))
                     .onAppear {

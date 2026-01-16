@@ -19,6 +19,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var showResults = false
         var disableSkip = false
         var showInput = false
+        var animateText = true
     }
 
     @Published var state = StepUIState()
