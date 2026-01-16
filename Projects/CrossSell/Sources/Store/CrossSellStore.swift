@@ -10,7 +10,7 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
         switch action {
         case .fetchCrossSell:
             do {
-                let crossSells = try await crossSellService.getCrossSell()
+                let crossSells = try await crossSellService.getCrossSell(source: .insurances)
                 send(.setCrossSells(crossSells: crossSells))
             } catch {
                 setError(error.localizedDescription, for: .fetchCrossSell)

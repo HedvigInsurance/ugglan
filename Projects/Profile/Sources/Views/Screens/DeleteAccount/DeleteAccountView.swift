@@ -1,3 +1,4 @@
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,15 +7,21 @@ public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel
     @StateObject var router = Router()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
-
+    let memberDetails: MemberDetails?
     public init(
         vm: DeleteAccountViewModel
     ) {
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        self.memberDetails = store.state.memberDetails
         self.vm = vm
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: DeleteDetentType.deleteAccountView) {
+        RouterHost(
+            router: router,
+            options: .extendedNavigationWidth,
+            tracking: DeleteDetentType.deleteAccountView
+        ) {
             hForm {
                 hSection {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
@@ -31,7 +38,8 @@ public struct DeleteAccountView: View {
                                 color: hTextColor.Opaque.secondary,
                                 linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single,
-                                textAlignment: vm.textAlignment
+                                textAlignment: vm.textAlignment,
+                                isSelectable: false
                             ) { url in
                                 NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }
@@ -50,7 +58,7 @@ public struct DeleteAccountView: View {
                                 .alert,
                                 content: .init(title: L10n.profileDeleteAccountConfirmDeletion),
                                 {
-                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                                    profileNavigationVm.isDeleteAccountRequestedPresented = memberDetails
                                 }
                             )
                         }

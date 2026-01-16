@@ -1,0 +1,46 @@
+name: UpdateLocalization
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  fetch-localization:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch translations
+        run: scripts/translations.sh
+        env:
+          LOKALIZE_TOKEN: ${{ secrets.LOKALIZE_TOKEN }}
+      - name: Check for changes
+        id: changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+      - uses: maxim-lobanov/setup-xcode@v1
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          xcode-version: latest-stable
+      - name: Post checkout pre
+        if: steps.changes.outputs.has_changes == 'true'
+        run: scripts/install-tuist.sh
+      - name: Post checkout
+        if: steps.changes.outputs.has_changes == 'true'
+        run: scripts/post-checkout.sh
+      - name: Build project
+        if: steps.changes.outputs.has_changes == 'true'
+        run: xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro' CODE_SIGNING_ALLOWED=NO
+      - name: Commit changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Update localizations"
+          git push

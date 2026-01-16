@@ -113,7 +113,7 @@ public struct ContractsNavigation<Content: View>: View {
             )
             .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
             .embededInNavigation(
-                options: [.navigationType(type: .large)],
+                options: [.navigationType(type: .large), .extendedNavigationWidth],
                 tracking: ContractsDetentType.upcomingChanges
             )
             .environmentObject(contractsNavigationVm)

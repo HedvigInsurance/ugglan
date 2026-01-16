@@ -39,21 +39,36 @@ struct MessageView: View {
     @ViewBuilder
     private var messageContent: some View {
         switch message.type {
-        case .text:
-            MarkdownView(
-                config: .init(
-                    text: message.trimmedText,
-                    fontStyle: .body1,
-                    color: message.textColor,
-                    linkColor: hTextColor.Opaque.primary,
-                    linkUnderlineStyle: .thick,
-                    maxWidth: 300,
-                    onUrlClicked: { url in
-                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                    }
+        case let .text(_, action):
+            VStack(spacing: .padding16) {
+                MarkdownView(
+                    config: .init(
+                        text: message.trimmedText,
+                        fontStyle: .body1,
+                        color: message.textColor,
+                        linkColor: hTextColor.Opaque.primary,
+                        linkUnderlineStyle: .thick,
+                        maxWidth: 300,
+                        isSelectable: true,
+                        onUrlClicked: { url in
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        }
+                    )
                 )
-            )
-            .hEnvironmentAccessibilityLabel(message.timeStampString)
+                .hEnvironmentAccessibilityLabel(message.timeStampString)
+                if let action {
+                    hButton(
+                        .large,
+                        .secondary,
+                        content: .init(title: action.buttonTitle)
+                    ) {
+                        NotificationCenter.default
+                            .post(name: .openDeepLink, object: action.url)
+                    }
+                    .padding(.horizontal, -message.horizontalPadding)
+                    .padding(.bottom, .padding4)
+                }
+            }
         case let .file(file):
             ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
                 .accessibilityLabel(accessilityLabel(for: message))
@@ -78,6 +93,7 @@ struct MessageView: View {
                         linkColor: hTextColor.Opaque.primary,
                         linkUnderlineStyle: .thick,
                         maxWidth: 300,
+                        isSelectable: true,
                         onUrlClicked: { url in
                             NotificationCenter.default.post(name: .openDeepLink, object: url)
                         }
@@ -90,9 +106,6 @@ struct MessageView: View {
                 vm: .init(url: url)
             )
             .accessibilityLabel(accessilityLabel(for: message))
-        case let .action(action):
-            ActionView(action: action)
-                .accessibilityLabel(accessilityLabel(for: message))
         case .unknown: Text("")
         }
     }
@@ -172,29 +185,22 @@ extension URL {
     Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationsDemoClient() })
     let service = ConversationService(conversationId: "conversationId")
 
-    return MessageView(
-        message: .init(
-            id: "messageId",
-            sender: .hedvig,
-            sentAt: Date(),
-            type: .action(
-                action: .init(
-                    url: URL("")!,
-                    text: "A new conversation has been created by Hedvig.",
-                    buttonTitle: "Go to conversation"
-                )
+    return VStack {
+        MessageView(
+            message: .init(
+                id: "messageId2",
+                sender: .hedvig,
+                sentAt: Date(),
+                type: .text(
+                    text: "text that we want to use here for the member",
+                    action: .init(url: URL("")!, text: nil, buttonTitle: "Button title")
+                ),
+                disclaimer: nil,
+                status: .received
             ),
-            disclaimer: .init(
-                description: "description",
-                detailsDescription: "details",
-                detailsTitle: "details title",
-                title: "title",
-                type: .information
-            ),
-            status: .failed(error: "error")
-        ),
-        conversationStatus: .open,
-        vm: .init(chatService: service),
-        showRetryOptions: true
-    )
+            conversationStatus: .open,
+            vm: .init(chatService: service),
+            showRetryOptions: false
+        )
+    }
 })

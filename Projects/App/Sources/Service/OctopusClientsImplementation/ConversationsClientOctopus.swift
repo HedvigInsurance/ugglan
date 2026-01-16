@@ -51,7 +51,7 @@ class ConversationClientOctopus: ConversationClient {
         var textToSend: String?
         var fileToken: String?
         switch message.type {
-        case let .text(text):
+        case let .text(text, _):
             textToSend = text
         case let .file(file):
             do {
@@ -112,7 +112,8 @@ class ConversationClientOctopus: ConversationClient {
             isLegacy: conversation.isLegacy,
             hasClaim: hasClaim,
             claimType: conversation.claim?.claimType,
-            claimId: conversation.claim?.id
+            claimId: conversation.claim?.id,
+            responseIsBeingGenerated: conversation.responseIsBeingGenerated
         )
     }
 }
@@ -154,14 +155,8 @@ extension OctopusGraphQL.MessageFragment {
     }
 
     private var messageType: MessageType {
-        if let action = asChatMessageAction {
-            let urlText = action.actionUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-            if let url = URL(string: urlText), urlText.isUrl {
-                let data = ActionMessage(url: url, text: action.actionText, buttonTitle: action.actionTitle)
-                return .action(action: data)
-            }
-        } else if let text = asChatMessageText?.text {
-            let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let chatMessage = asChatMessageText {
+            let urlText = chatMessage.text.trimmingCharacters(in: .whitespacesAndNewlines)
             if let url = URL(string: urlText), urlText.isUrl {
                 if urlText.isGIFURL {
                     return .file(
@@ -181,7 +176,13 @@ extension OctopusGraphQL.MessageFragment {
                     return .otherLink(url: url)
                 }
             } else {
-                return .text(text: encodeLinks(in: text))
+                let action: ActionMessage? = {
+                    if let action = chatMessage.actions, let url = URL(string: action.url) {
+                        return .init(url: url, text: nil, buttonTitle: action.title)
+                    }
+                    return nil
+                }()
+                return .text(text: encodeLinks(in: chatMessage.text), action: action)
             }
         } else if let file = asChatMessageFile {
             if let url = URL(string: file.signedUrl) {

@@ -56,6 +56,16 @@ public struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
             LazyVStack(spacing: .padding16) {
+                if messageVm.responseIsBeingGenerated {
+                    HStack {
+                        DotsActivityIndicator(.standard)
+                            .colorScheme(.dark)
+                            .padding(.padding10)
+                            .background(hSurfaceColor.Opaque.primary)
+                            .clipShape(Capsule())
+                        Spacer()
+                    }
+                }
                 let messages = messageVm.messages
                 ForEach(messages) { message in
                     messageView(for: message, conversationStatus: conversationVm.conversationStatus)
@@ -170,7 +180,8 @@ public struct ChatScreen: View {
                                 fontStyle: .label,
                                 color: hSignalColor.Blue.text,
                                 linkColor: hSignalColor.Blue.text,
-                                linkUnderlineStyle: .single
+                                linkUnderlineStyle: .single,
+                                isSelectable: false
                             ) { url in
                                 NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }

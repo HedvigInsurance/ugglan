@@ -16,7 +16,7 @@ public struct DeleteRequestLoadingView: View {
         self.dismissAction = dismissAction
     }
 
-    public enum ScreenState {
+    public enum ScreenState: Hashable {
         case tryToDelete(with: MemberDetails)
         case success
         case error(errorMessage: String)
@@ -40,8 +40,6 @@ public struct DeleteRequestLoadingView: View {
                     .padding(.bottom, .padding16)
                 hText(L10n.DeleteAccount.processedTitle, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText(L10n.DeleteAccount.processedDescription, style: .body1)
-                    .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, .padding32)

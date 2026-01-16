@@ -76,7 +76,7 @@ public struct ChangeAddonNavigation: View {
     public var body: some View {
         RouterHost(
             router: changeAddonNavigationVm.router,
-            options: [],
+            options: [.extendedNavigationWidth],
             tracking: ChangeAddonTrackingType.changeAddonScreen
         ) {
             Group {
@@ -119,7 +119,7 @@ public struct ChangeAddonNavigation: View {
             AddonLearnMoreView(model: info)
                 .withDismissButton()
                 .embededInNavigation(
-                    options: .navigationType(type: .large),
+                    options: .extendedNavigationWidth,
                     tracking: ChangeAddonTrackingType.addonLearnMoreView
                 )
         }

@@ -1,10 +1,13 @@
 query PaymentInformation {
     currentMember {
         paymentInformation {
-            connection {
-            displayName
-            descriptor
-            }
+			chargeMethod {
+			  displayName
+			  descriptor
+			  paymentMethod
+			  mandate
+			  chargingDayInTheMonth
+			}
             status
         }
         activeContracts {

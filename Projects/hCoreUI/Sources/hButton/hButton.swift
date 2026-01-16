@@ -31,6 +31,7 @@ public struct hButton: View {
                         .withOptionalTransition(withTransition)
                 )
         }
+        .accessibilityLabel(content.title)
         .buttonStyle(ButtonFilledStyle(size: size))
         .hButtonConfigurationType(type)
     }

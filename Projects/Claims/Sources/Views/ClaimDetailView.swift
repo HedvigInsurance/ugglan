@@ -80,7 +80,10 @@ public struct ClaimDetailView: View {
             }
             .withAlertDismiss()
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
-            .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
+            .embededInNavigation(
+                options: .extendedNavigationWidth,
+                tracking: ClaimDetailDetentType.fileUpload
+            )
         }
         .detent(
             item: $vm.document,

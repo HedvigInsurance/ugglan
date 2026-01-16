@@ -88,7 +88,7 @@ public struct ChatNavigation<Content: View>: View {
     public var body: some View {
         RouterHost(
             router: chatNavigationViewModel.router,
-            options: .navigationType(type: .large),
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: ChatNavigationViewName.chat
         ) {
             Group {
