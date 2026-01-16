@@ -82,6 +82,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 vm.connectedToWater.toggle()
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     func addExtraBuilding() {

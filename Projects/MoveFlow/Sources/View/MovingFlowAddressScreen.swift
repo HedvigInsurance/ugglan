@@ -173,6 +173,7 @@ struct MovingFlowAddressScreen: View {
                 vm.isStudent.toggle()
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     func continuePressed() {

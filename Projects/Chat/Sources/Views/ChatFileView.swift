@@ -25,6 +25,8 @@ struct ChatFileView: View {
                 .onTapGesture {
                     showFile()
                 }
+                .accessibilityAddTraits(.isButton)
+                .accessibilityLabel(file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile)
         }
     }
 
@@ -50,10 +52,12 @@ struct ChatFileView: View {
             .aspectRatio(
                 contentMode: .fit
             )
+            .accessibilityLabel(L10n.voiceoverChatImage)
         } else {
             KFImage(
                 source: getSource()
             )
+            .accessibilityLabel(L10n.voiceoverChatImage)
             .fade(duration: 0.25)
             .placeholder { _ in
                 ProgressView()

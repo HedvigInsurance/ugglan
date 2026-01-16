@@ -63,6 +63,7 @@ public struct ToolbarButtonView: View {
             .frame(width: type.imageSize, height: type.imageSize)
             .foregroundColor(hFillColor.Opaque.primary)
             .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
+            .accessibilityLabel(type.displayName)
             .accessibilityValue(type.displayName)
     }
 }

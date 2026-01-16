@@ -34,6 +34,7 @@ public struct FileView: View {
                                     InMemoryImageDataProvider(cacheKey: file.id, data: data)
                                 )
                             )
+                            .accessibilityLabel(L10n.voiceoverChatImage)
                             .fade(duration: 0.25)
                             .setProcessor(processor)
                             .resizable()
@@ -67,6 +68,8 @@ public struct FileView: View {
         .onTapGesture {
             onTap()
         }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile)
     }
 
     private var fileImage: Image {
@@ -87,6 +90,7 @@ public struct FileView: View {
                         hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results)
                     )
                 )
+                .accessibilityLabel(L10n.voiceoverChatImage)
                 .fade(duration: 0.25)
                 .setProcessor(processor)
                 .resizable()
@@ -114,6 +118,7 @@ public struct FileView: View {
                             Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
                         )
                     )
+                    .accessibilityLabel(L10n.voiceoverChatImage)
                     .fade(duration: 0.25)
                     .targetCache(ImageCache.default)
                     .setProcessor(processor)

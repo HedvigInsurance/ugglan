@@ -95,6 +95,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
             .onTapGesture {
                 vm.setSelectedTab(with: model.id)
             }
+            .accessibilityAddTraits(.isButton)
             .background {
                 GeometryReader { geo in
                     Color.clear
