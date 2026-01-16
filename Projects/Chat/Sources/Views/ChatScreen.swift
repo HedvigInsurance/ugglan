@@ -180,7 +180,8 @@ public struct ChatScreen: View {
                                 fontStyle: .label,
                                 color: hSignalColor.Blue.text,
                                 linkColor: hSignalColor.Blue.text,
-                                linkUnderlineStyle: .single
+                                linkUnderlineStyle: .single,
+                                isSelectable: false
                             ) { url in
                                 NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }

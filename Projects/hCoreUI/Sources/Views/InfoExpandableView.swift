@@ -66,7 +66,8 @@ public struct InfoExpandableView: View {
                                 fontStyle: .body1,
                                 color: hTextColor.Opaque.secondary,
                                 linkColor: hTextColor.Opaque.primary,
-                                linkUnderlineStyle: .single
+                                linkUnderlineStyle: .single,
+                                isSelectable: false
                             ) { url in
                                 onMarkDownClick?(url)
                             }
