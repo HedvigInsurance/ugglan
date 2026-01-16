@@ -615,7 +615,7 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-
+    @State var showOldSubmitClaimFlow = false
     var body: some View {
         RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
@@ -637,7 +637,13 @@ struct HomeTab: View {
             ClaimsMainNavigation()
                 .environmentObject(homeNavigationVm)
         }
-        .handleClaimFlow(startInput: $homeNavigationVm.claimsAutomationStartInput)
+        .handleClaimFlow(
+            startInput: $homeNavigationVm.claimsAutomationStartInput,
+            showOldSubmitClaimFlow: $showOldSubmitClaimFlow
+        )
+        .modally(presented: $showOldSubmitClaimFlow) {
+            SubmitClaimNavigation()
+        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
         ) {

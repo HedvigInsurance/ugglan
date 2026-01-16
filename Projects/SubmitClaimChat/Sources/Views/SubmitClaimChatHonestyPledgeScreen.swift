@@ -1,3 +1,4 @@
+import Environment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,6 +7,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
     @EnvironmentObject var router: Router
     @State private var hasAgreedToHonestyPledge = false
     let onConfirm: () -> Void
+    let onConfirmOldFlow: () -> Void
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
@@ -17,17 +19,11 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 )
                 hSection {
                     VStack(spacing: .padding8) {
-                        hContinueButton {
-                            onConfirm()
+                        continueButton
+                        if Environment.current == .staging {
+                            oldFlowButton
                         }
-                        .disabled(!hasAgreedToHonestyPledge)
-                        hButton(
-                            .large,
-                            .secondary,
-                            content: .init(title: L10n.generalCancelButton)
-                        ) {
-                            router.dismiss()
-                        }
+                        cancelButton
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -36,11 +32,34 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         }
         .hFormContentPosition(.compact)
     }
+
+    private var continueButton: some View {
+        hContinueButton {
+            onConfirm()
+        }
+        .disabled(!hasAgreedToHonestyPledge)
+    }
+
+    @ViewBuilder
+    private var oldFlowButton: some View {
+        hButton(.large, .secondary, content: .init(title: "Start old flow")) {
+            onConfirmOldFlow()
+        }
+        .disabled(!hasAgreedToHonestyPledge)
+    }
+
+    private var cancelButton: some View {
+        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) {
+            router.dismiss()
+        }
+    }
 }
 
 #Preview {
     VStack {
         Spacer()
-        SubmitClaimChatHonestyPledgeScreen {}
+        SubmitClaimChatHonestyPledgeScreen {
+        } onConfirmOldFlow: {
+        }
     }
 }
