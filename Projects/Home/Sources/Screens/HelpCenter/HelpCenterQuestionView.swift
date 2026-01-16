@@ -70,7 +70,8 @@ struct HelpCenterQuestionView: View {
                     fontStyle: .body1,
                     color: hTextColor.Opaque.secondary,
                     linkColor: hTextColor.Opaque.primary,
-                    linkUnderlineStyle: .single
+                    linkUnderlineStyle: .single,
+                    isSelectable: false
                 ) { url in
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }

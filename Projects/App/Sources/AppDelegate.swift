@@ -1,5 +1,6 @@
 import Apollo
 import Authentication
+import AutomaticLog
 import Chat
 import Claims
 import Combine
@@ -169,7 +170,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
         DefaultStyling.installCustom()
-
         UNUserNotificationCenter.current().delegate = self
         observeNotificationsSettings()
         return true
@@ -202,9 +202,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let datadogLogger = Logger.create(with: config)
         hGraphQL.graphQlLogger = DatadogLogger(datadogLogger: datadogLogger)
         log = DatadogLogger(datadogLogger: datadogLogger)
-
+        AutomaticLog.loginClosure = { message in
+            Task { @MainActor in
+                log.info(message, error: nil, attributes: nil)
+            }
+        }
         setupPresentableStoreLogger()
-
         log.info("Starting app")
 
         forceLogoutHook = { [weak self] in
