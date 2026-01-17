@@ -208,6 +208,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_FORM_TEXT_MAX_CHAR" = "Värdet får vara högst %d tecken";
 "CLAIM_CHAT_FORM_TEXT_MIN_CHAR" = "Värdet måste vara minst %d tecken";
 "CLAIM_CHAT_FREE_TEXT_LABEL" = "Textbeskrivning";
+"CLAIM_CHAT_GET_NOTIFIED" = "Bli meddelad";
 "CLAIM_CHAT_OTHER_TITLE" = "Övrig information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Vänligen ange telefonnummer ifall vi behöver kontakta dig";
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig";
