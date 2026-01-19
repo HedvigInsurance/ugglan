@@ -188,7 +188,7 @@ struct MovingFlowHouseScreen: View {
                 houseInformationInputvm.isSubleted.toggle()
             }
         }
-        .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(.isToggle)
     }
 
     func addExtraBuilding() {
