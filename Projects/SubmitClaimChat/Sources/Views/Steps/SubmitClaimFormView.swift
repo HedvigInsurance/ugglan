@@ -76,9 +76,19 @@ extension SubmitClaimFormView: TrackingViewNameProtocol {
 struct FormFieldView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     @ObservedObject var fieldViewModel: FormStepValue
+    @AccessibilityFocusState var isForFieldFocused: String?
     let field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
 
     var body: some View {
+        fieldView
+            .accessibilityFocused($isForFieldFocused, equals: field.id)
+            .onChange(of: viewModel.currentFieldId) { value in
+                isForFieldFocused = value
+            }
+    }
+
+    @ViewBuilder
+    private var fieldView: some View {
         switch field.type {
         case .date:
             dateField
@@ -96,7 +106,6 @@ struct FormFieldView: View {
             multiSelectField
         }
     }
-
     var numberView: some View {
         hFloatingTextField(
             masking: .init(type: .digits),

@@ -30,6 +30,7 @@ public struct TrackPlayerView: View {
             .accessibilityRemoveTraits(.isImage)
             .accessibilityAddTraits(.playsSound)
             .accessibilityHint(L10n.voiceoverAudioRecordingPlay)
+            .accessibilityAddTraits(.startsMediaSession)
         }
     }
 }

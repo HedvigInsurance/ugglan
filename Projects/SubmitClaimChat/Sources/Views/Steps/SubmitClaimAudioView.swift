@@ -337,15 +337,6 @@ struct SubmitClaimAudioResultView: View {
     }
 }
 
-extension View {
-    func mat(id: String, namespace: Namespace.ID) -> some View {
-        if #available(iOS 18.0, *) {
-            return matchedTransitionSource(id: id, in: namespace)
-        } else {
-            return self
-        }
-    }
-}
 #Preview {
     let viewModel = SubmitClaimAudioStep(
         claimIntent: .init(
