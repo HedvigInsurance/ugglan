@@ -58,14 +58,9 @@ public struct ToastBarView: View {
 
                 if let action = toastModel.action {
                     Spacer()
-                    if #available(iOS 16.0, *) {
-                        hText(action.actionText, style: .label)
-                            .underline()
-                            .foregroundColor(toastModel.type.textColor)
-                    } else {
-                        hText(action.actionText, style: .label)
-                            .foregroundColor(toastModel.type.textColor)
-                    }
+                    hText(action.actionText, style: .label)
+                        .underline()
+                        .foregroundColor(toastModel.type.textColor)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .center)
