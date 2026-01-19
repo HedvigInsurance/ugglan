@@ -3,14 +3,31 @@ import hCore
 import hCoreUI
 
 final class SubmitClaimFormStep: ClaimIntentStepHandler {
+    @Published var currentFieldId: String?
     @Published var isDatePickerPresented: DatePickerViewModel? {
         willSet {
             UIApplication.dismissKeyboard()
+        }
+        didSet {
+            if let id = oldValue?.id {
+                Task {
+                    try? await Task.sleep(seconds: 0.5)
+                    currentFieldId = id
+                }
+            }
         }
     }
     @Published var isSelectItemPresented: SingleItemModel? {
         willSet {
             UIApplication.dismissKeyboard()
+        }
+        didSet {
+            if let id = oldValue?.id {
+                Task {
+                    try? await Task.sleep(seconds: 0.5)
+                    currentFieldId = id
+                }
+            }
         }
     }
     @Published var dateForPicker: Date = Date()

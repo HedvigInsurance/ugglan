@@ -105,7 +105,9 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                     ),
                     secondaryButton: .default(
                         Text(L10n.embarkGoBackButton).font(.system(size: 17, weight: .medium))
-                    )
+                    ) {
+                        viewModel.alertModel?.onClose()
+                    }
                 )
             }
     }

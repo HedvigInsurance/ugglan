@@ -118,6 +118,7 @@ struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
+    @AccessibilityFocusState var isEditButtonFocused: Bool
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
@@ -150,6 +151,7 @@ struct ClaimStepResultView: View {
             .hPillAttributes(attributes: [.withChevron])
             .accessibilityHint(editHint)
             .accessibilityAddTraits(.isButton)
+            .accessibilityFocused($isEditButtonFocused)
             .onTapGesture { [weak viewModel] in
                 alertVm.alertModel = .init(
                     type: .edit,
@@ -160,6 +162,7 @@ struct ClaimStepResultView: View {
                         }
                     },
                     onClose: {
+                        isEditButtonFocused = true
                     }
                 )
             }

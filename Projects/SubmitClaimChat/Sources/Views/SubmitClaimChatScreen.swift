@@ -231,7 +231,7 @@ struct StepView: View {
 
             )
             .accessibilityFocused($isAccessibilityFocused, equals: step.id)
-            .onChange(of: viewModel.currentStep?.id) { id in
+            .onChange(of: viewModel.currentStepId) { id in
                 isAccessibilityFocused = id
             }
     }
@@ -290,6 +290,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         }
     }
     @Published var currentStep: ClaimIntentStepHandler?
+    @Published var currentStepId: String?
     @Published var scrollTarget: ScrollTarget = .init(id: "", anchor: .bottom)
     let alertVm = SubmitClaimChatScreenAlertViewModel()
 
@@ -445,6 +446,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             try await Task.sleep(seconds: 1)
             currentStep = handler
             scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
+            currentStepId = handler.id
         }
     }
 
@@ -471,6 +473,8 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
             if allSteps.count == 1 {
                 scrollTarget = .init(id: handler.id, anchor: .top)
             }
+            try? await Task.sleep(seconds: 0.05)
+            currentStepId = handler.id
         }
     }
 

@@ -11,7 +11,7 @@ struct TrackPlayer: View {
         self.audioPlayer = audioPlayer
     }
 
-    @ViewBuilder var image: some View {
+    private var image: some View {
         Image(
             uiImage: {
                 switch audioPlayer.playbackState {
@@ -26,7 +26,6 @@ struct TrackPlayer: View {
                 }
             }()
         )
-        .accessibilityHidden(true)
         .foregroundColor(hFillColor.Opaque.primary)
         .background {
             Circle().fill(hSurfaceColor.Translucent.secondary)
