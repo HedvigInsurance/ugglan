@@ -171,6 +171,7 @@ struct FormFieldView: View {
                 )
             }
         }
+        .accessibilityLabel(field.title + "\n" + fieldViewModel.value.displayDate)
     }
 
     private var singleSelectField: some View {
@@ -248,6 +249,7 @@ struct SubmitClaimFormResultView: View {
                     .foregroundColor(fieldTextColor(for: item))
                     .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                     .hFieldSize(.capsuleShape)
+                    .accessibilityLabel(item.value.getAccessibilityLabelDate)
             }
         }
     }

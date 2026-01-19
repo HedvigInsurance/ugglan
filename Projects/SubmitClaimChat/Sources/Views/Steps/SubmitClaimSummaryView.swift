@@ -39,7 +39,7 @@ struct SubmitClaimSummaryView: View {
                         }
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .accessibilityElement(children: .combine)
-                        .accessibilityLabel("\(item.title): \(item.value)")
+                        .accessibilityLabel("\(item.title): \(item.value.getAccessibilityLabelDate)")
                     }
                 }
             }
@@ -156,4 +156,14 @@ struct SubmitClaimSummaryBottomView: View {
         mainHandler: { _ in }
     )
     SubmitClaimSummaryView(viewModel: vm)
+}
+
+@MainActor
+extension String {
+    var getAccessibilityLabelDate: String {
+        if self.contains("-") {
+            return self.displayDate
+        }
+        return self
+    }
 }
