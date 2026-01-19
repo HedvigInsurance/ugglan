@@ -20,6 +20,7 @@ struct SubmitClaimChatMesageView: View {
                                 }
                             }
                         )
+                        .accessibilityAddTraits(.isHeader)
                     }
                     .fixedSize(horizontal: false, vertical: true)
                     Spacer()
