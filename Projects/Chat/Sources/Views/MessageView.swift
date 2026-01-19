@@ -193,7 +193,7 @@ extension URL {
                 sentAt: Date(),
                 type: .text(
                     text: "text that we want to use here for the member",
-                    action: .init(url: URL("")!, text: nil, buttonTitle: "Button title")
+                    action: .init(url: URL(filePath: "")!, text: nil, buttonTitle: "Button title")
                 ),
                 disclaimer: nil,
                 status: .received

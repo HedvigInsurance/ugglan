@@ -22,7 +22,7 @@ public struct CampaignNavigation: View {
             .environmentObject(campaignNavigationVm)
             .routerDestination(for: CampaignRouterAction.self) { _ in
                 ForeverNavigation(useOwnNavigation: false)
-                    .hideToolbar()
+                    .toolbar(.hidden, for: .tabBar)
             }
     }
 }

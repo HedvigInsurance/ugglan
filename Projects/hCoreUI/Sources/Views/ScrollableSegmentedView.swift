@@ -131,7 +131,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                             Spacer()
                         }
                     }
-                    .setDisabledScroll()
+                    .scrollDisabled(true)
                 }
             }
         }
@@ -381,13 +381,6 @@ public struct PageModel: Identifiable {
     ) {
         self.id = id
         self.title = title
-    }
-}
-
-extension View {
-    @MainActor
-    func setDisabledScroll() -> some View {
-        self.scrollDisabled(true)
     }
 }
 

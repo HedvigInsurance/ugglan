@@ -527,8 +527,7 @@ public enum Detent: Equatable {
         unanimated: Bool
     ) {
         guard !detents.isEmpty else { return }
-        weak var weakViewController = viewController
-        weak var weakPresentationController = presentationController
+        weak let weakViewController = viewController
         func apply() {
             weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
             weakViewController?.appliedDetents = detents
