@@ -248,7 +248,6 @@ struct SubmitClaimFormResultView: View {
                     .foregroundColor(fieldTextColor(for: item))
                     .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                     .hFieldSize(.capsuleShape)
-                    .accessibilityHidden(true)
             }
         }
     }
