@@ -281,16 +281,11 @@ class PresentationViewModel: ObservableObject {
                             .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
                             .sink(receiveValue: { _ in
                                 guard let self else { return }
-                                if #available(iOS 16.0, *) {
-                                    self.presentingVC?.sheetPresentationController?
-                                        .animateChanges {
-                                            self.presentingVC?.sheetPresentationController?
-                                                .invalidateDetents()
-                                        }
-                                } else {
-                                    self.presentingVC?.sheetPresentationController?
-                                        .animateChanges {}
-                                }
+                                self.presentingVC?.sheetPresentationController?
+                                    .animateChanges {
+                                        self.presentingVC?.sheetPresentationController?
+                                            .invalidateDetents()
+                                    }
                             })
                     }
                 }
