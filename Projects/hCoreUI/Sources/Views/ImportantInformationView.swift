@@ -31,6 +31,7 @@ public struct ImportantInformationView: View {
                         }
                     }
                     .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityElement(children: .combine)
                     HStack {
                         hRow {
                             hText(confirmationMessage)
@@ -77,11 +78,10 @@ public struct ImportantInformationView: View {
                         )
                     }
                     .colorScheme(.light)
+                    .accessibilityLabel(accessibilityLabel)
+                    .accessibilityAddTraits(.isButton)
                 }
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(accessibilityLabel)
-            .accessibilityAddTraits(.isButton)
             .onTapGesture {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isConfirmed.toggle()
@@ -91,13 +91,11 @@ public struct ImportantInformationView: View {
     }
 
     private var accessibilityLabel: String {
-        var label = title + "\n" + subtitle + "\n" + confirmationMessage + "\n"
         if isConfirmed {
-            label += L10n.voiceoverAccepted
+            return L10n.voiceoverAccepted
         } else {
-            label += L10n.voiceoverNotAccepted
+            return L10n.voiceoverNotAccepted
         }
-        return label
     }
 }
 
