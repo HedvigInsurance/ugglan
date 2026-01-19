@@ -20,6 +20,7 @@ public enum ExternalDependencies: CaseIterable {
     case presentableStore
     case environment
     case logger
+    case automaticLog
     public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
@@ -97,6 +98,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(path: .relativeToRoot("LocalModules/Logger"))
             ]
+        case .automaticLog:
+            return [
+                .package(path: .relativeToRoot("LocalModules/AutomaticLog"))
+            ]
         }
     }
 
@@ -164,6 +169,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "Environment")]
         case .logger:
             return [.package(product: "Logger")]
+        case .automaticLog:
+            return [.package(product: "AutomaticLog")]
         }
     }
 }
@@ -223,7 +230,7 @@ extension Project {
                     destinations: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTargets: .iOS("15.0"),
+                    deploymentTargets: .iOS("16.0"),
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],

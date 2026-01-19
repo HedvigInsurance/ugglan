@@ -131,7 +131,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                             Spacer()
                         }
                     }
-                    .setDisabledScroll()
+                    .scrollDisabled(true)
                 }
             }
         }
@@ -381,20 +381,6 @@ public struct PageModel: Identifiable {
     ) {
         self.id = id
         self.title = title
-    }
-}
-
-extension View {
-    @MainActor
-    func setDisabledScroll() -> some View {
-        if #available(iOS 16.0, *) {
-            return self.scrollDisabled(true)
-        } else {
-            return introspect(.scrollView, on: .iOS(.v13...)) { view in
-                view.isScrollEnabled = false
-                view.isUserInteractionEnabled = false
-            }
-        }
     }
 }
 

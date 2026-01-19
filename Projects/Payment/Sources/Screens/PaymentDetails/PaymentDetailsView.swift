@@ -121,14 +121,9 @@ struct PaymentDetailsView: View {
             HStack {
                 Spacer()
                 if data.payment.gross.amount != data.payment.net.amount {
-                    if #available(iOS 16.0, *) {
-                        hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                            .strikethrough()
-                    } else {
-                        hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
+                    hText(data.payment.gross.formattedAmount)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .strikethrough()
                 }
                 ZStack {
                     hText(data.payment.net.formattedAmount)
