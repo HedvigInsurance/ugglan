@@ -24,6 +24,7 @@ struct SubmitClaimChatMesageView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
+                .accessibilityHint(viewModel.state.isSkipped ? L10n.claimChatSkippedLabel : "")
             }
 
             HStack {
@@ -122,7 +123,7 @@ struct ClaimStepResultView: View {
         if viewModel.state.isSkipped {
             hPill(text: L10n.claimChatSkippedLabel, color: .grey, colorLevel: .two, withBorder: false)
                 .hFieldSize(.capsuleShape)
-                .accessibilityLabel(L10n.claimChatSkippedLabel)
+                .accessibilityHidden(true)
         } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
                 SubmitClaimAudioResultView(viewModel: viewModel)
@@ -147,8 +148,7 @@ struct ClaimStepResultView: View {
             )
             .hFieldSize(.capsuleShape)
             .hPillAttributes(attributes: [.withChevron])
-            .accessibilityLabel(L10n.General.edit)
-            .accessibilityHint(L10n.voiceoverEdit)
+            .accessibilityHint(editHint)
             .accessibilityAddTraits(.isButton)
             .onTapGesture { [weak viewModel] in
                 alertVm.alertModel = .init(
@@ -164,5 +164,11 @@ struct ClaimStepResultView: View {
                 )
             }
         }
+    }
+
+    private var editHint: String {
+        L10n.voiceoverEdit + " " + (viewModel.claimIntent.currentStep.text ?? "") + " "
+            + viewModel
+            .accessibilityEditHint()
     }
 }

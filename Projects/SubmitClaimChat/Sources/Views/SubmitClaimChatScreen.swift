@@ -9,6 +9,7 @@ public struct SubmitClaimChatScreen: View {
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     @Environment(\.verticalSizeClass) var verticalSizeClass
+    @AccessibilityFocusState private var isCurrentStepFocused: Bool
 
     public init() {}
 
@@ -129,6 +130,7 @@ public struct SubmitClaimChatScreen: View {
                         y: viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
                             && !viewModel.shouldMergeInputWithContent ? 1000 : 0
                     )
+                    .accessibilityFocused($isCurrentStepFocused)
             }
         }
         .padding(.bottom, .padding8)
@@ -139,6 +141,10 @@ public struct SubmitClaimChatScreen: View {
 
     private func scrollToBottom() {
         viewModel.scrollToBottom()
+        Task {
+            try? await Task.sleep(seconds: 1)
+            isCurrentStepFocused = true
+        }
     }
 }
 
@@ -146,22 +152,26 @@ struct ScrollToBottomButton: View {
     let scrollAction: () -> Void
 
     var body: some View {
-        hCoreUIAssets.arrowDown.view
-            .resizable()
-            .frame(width: 24, height: 24)
-            .padding(.padding8)
-            .background(hFillColor.Opaque.negative)
-            .clipShape(Circle())
-            .contentShape(Circle())
-            .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
-            .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
-            .accessibilityLabel(L10n.generalContinueButton)
-            .accessibilityHint(L10n.voiceoverDoubleClickTo)
-            .accessibilityAddTraits(.isButton)
-            .onTapGesture {
-                scrollAction()
-            }
-            .transition(.move(edge: .bottom).combined(with: .opacity))
+        Button {
+            scrollAction()
+        } label: {
+            hCoreUIAssets.arrowDown.view
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundColor(hTextColor.Opaque.primary)
+                .padding(.padding8)
+                .background(hFillColor.Opaque.negative)
+                .clipShape(Circle())
+                .contentShape(Circle())
+                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+        }
+        .accessibilityLabel(L10n.voiceoverDoubleClickTo + " " + L10n.a11YScrollDown)
+        .accessibilityAddTraits(.isButton)
+        .onTapGesture {
+            scrollAction()
+        }
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 

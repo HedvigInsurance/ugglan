@@ -38,6 +38,17 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
             throw error
         }
     }
+
+    override func accessibilityEditHint() -> String {
+        if state.isSkipped {
+            return L10n.claimChatSkippedLabel
+        }
+        let fileNames = fileUploadVm.fileGridViewModel.files.map { $0.name }
+        if fileNames.isEmpty {
+            return ""
+        }
+        return L10n.a11YSubmittedValues(fileNames.count) + ": " + fileNames.joined(separator: ", ")
+    }
 }
 
 @MainActor

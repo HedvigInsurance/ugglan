@@ -45,4 +45,8 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         }
         return result
     }
+
+    override func accessibilityEditHint() -> String {
+        ""
+    }
 }

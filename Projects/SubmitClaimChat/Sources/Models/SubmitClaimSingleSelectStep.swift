@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 
 final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     @Published var selectedOptionId: String?
@@ -38,6 +39,18 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     override func skip() async {
         await super.skip()
         selectedOptionId = nil
+    }
+
+    override func accessibilityEditHint() -> String {
+        if state.isSkipped {
+            return L10n.claimChatSkippedLabel
+        }
+        guard let selectedOptionId,
+            let selectedOption = model.options.first(where: { $0.id == selectedOptionId })
+        else {
+            return ""
+        }
+        return L10n.a11YSubmittedValues(1) + ": " + selectedOption.title
     }
 }
 

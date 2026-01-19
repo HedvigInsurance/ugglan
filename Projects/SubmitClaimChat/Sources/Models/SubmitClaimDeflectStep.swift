@@ -25,4 +25,8 @@ final class SubmitClaimDeflectStep: ClaimIntentStepHandler {
     override func executeStep() async throws -> ClaimIntentType {
         throw ClaimIntentError.invalidResponse
     }
+
+    override func accessibilityEditHint() -> String {
+        ""
+    }
 }

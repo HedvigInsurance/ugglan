@@ -101,6 +101,20 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         return result
     }
 
+    override func accessibilityEditHint() -> String {
+        if state.isSkipped {
+            return L10n.claimChatSkippedLabel
+        }
+        switch inputType {
+        case .audio:
+            return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
+        case .text:
+            return L10n.a11YSubmittedValues(1) + ": " + textInput
+        case nil:
+            return ""
+        }
+    }
+
     deinit {
         if let audioFileURL = audioFileURL {
             try? FileManager.default.removeItem(at: audioFileURL)

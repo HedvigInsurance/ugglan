@@ -36,7 +36,7 @@ struct NavigationBarProgressModifier: ViewModifier {
         progress.accessibilityLabel = L10n.embarkLoading
         progress.accessibilityValue = "\(Int(self.progress * 100))%"
         progress.accessibilityTraits = .updatesFrequently
-
+        progress.accessibilityElementsHidden = true
         navBar.addSubview(progress)
         // Added additional 2 points to avoid rounding progress bar on edges
         NSLayoutConstraint.activate([

@@ -143,6 +143,11 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
     }
 
+    // describe entered values for acacessibility
+    func accessibilityEditHint() -> String {
+        fatalError("accessibilityEditHint must be overridden")
+    }
+
     func regret() async {
         state.isLoading = true
         state.isEnabled = false

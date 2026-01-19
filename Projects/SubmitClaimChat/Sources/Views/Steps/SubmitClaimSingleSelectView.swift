@@ -93,7 +93,7 @@ struct SubmitClaimSingleSelectResultView: View {
                 withBorder: false
             )
             .hFieldSize(.capsuleShape)
-            .accessibilityLabel(option.title)
+            .accessibilityHidden(true)
         }
     }
 }

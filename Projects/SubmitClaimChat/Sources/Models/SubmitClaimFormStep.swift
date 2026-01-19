@@ -89,6 +89,19 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         let value: String
         let skipped: Bool
     }
+
+    override func accessibilityEditHint() -> String {
+        if state.isSkipped {
+            return L10n.claimChatSkippedLabel
+        }
+        let items = getAllValuesToShow()
+            .filter { !$0.skipped }
+            .map { "\($0.key): \($0.value.localDateToDate?.displayDateDDMMMYYYYFormat ?? $0.value)" }
+        if items.isEmpty {
+            return ""
+        }
+        return L10n.a11YSubmittedValues(items.count) + ": " + items.joined(separator: ", ")
+    }
 }
 
 final class FormStepValue: ObservableObject {
