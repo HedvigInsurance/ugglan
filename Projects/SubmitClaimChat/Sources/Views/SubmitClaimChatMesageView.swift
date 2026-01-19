@@ -98,14 +98,17 @@ struct ClaimStepView: View {
                 SubmitClaimDeflectStepView(model: viewModel.deflectModel)
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
-                hButton(.large, .ghost, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
-                    Task {
-                        await viewModel?.skip()
+                hSection {
+                    hButton(.large, .ghost, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
+                        Task {
+                            await viewModel?.skip()
+                        }
                     }
+                    .hButtonIsLoading(false)
+                    .accessibilityLabel(L10n.claimChatSkipStep)
+                    .accessibilityHint(L10n.generalContinueButton)
                 }
-                .hButtonIsLoading(false)
-                .accessibilityLabel(L10n.claimChatSkipStep)
-                .accessibilityHint(L10n.generalContinueButton)
+                .sectionContainerStyle(.transparent)
             }
         }
         .disabled(!viewModel.state.isEnabled)
