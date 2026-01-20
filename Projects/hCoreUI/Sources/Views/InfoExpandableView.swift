@@ -35,11 +35,13 @@ public struct InfoExpandableView: View {
                     )
                     .accessibilityHidden(true)
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 270))
+                    .accessibilityHidden(true)
                     Image(
                         uiImage: hCoreUIAssets.minus.image
                     )
                     .accessibilityHidden(true)
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 180))
+                    .accessibilityHidden(true)
                 }
                 .accessibilityHidden(true)
             }

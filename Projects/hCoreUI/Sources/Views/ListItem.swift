@@ -114,6 +114,7 @@ public struct ListItem: View {
                 isSelected = true
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     private var getTopPadding: CGFloat {

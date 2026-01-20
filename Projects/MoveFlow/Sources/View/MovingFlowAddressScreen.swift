@@ -163,6 +163,7 @@ struct MovingFlowAddressScreen: View {
         )
     }
 
+    @ViewBuilder
     func isStudentField() -> some View {
         CheckboxToggleView(
             title: L10n.changeAddressStudentLabel,
@@ -173,6 +174,7 @@ struct MovingFlowAddressScreen: View {
                 vm.isStudent.toggle()
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     func continuePressed() {

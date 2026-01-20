@@ -30,6 +30,7 @@ fragment ClaimIntentStepFragment on ClaimIntentStep {
     id
     text
     isRegrettable
+    hint
     content {
         ...ClaimIntentStepContentFragment
     }
@@ -68,7 +69,6 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         isCompleted
     }
     ... on ClaimIntentStepContentAudioRecording {
-        hint
         uploadUri
         freeTextMaxLength
         freeTextMinLength

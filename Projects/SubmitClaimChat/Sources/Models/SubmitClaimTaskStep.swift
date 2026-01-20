@@ -40,7 +40,6 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
         try await Task.sleep(seconds: 0.5)
         mainHandler(.removeStep(id: id))
-        try await Task.sleep(seconds: 0.5)
         return result
     }
 

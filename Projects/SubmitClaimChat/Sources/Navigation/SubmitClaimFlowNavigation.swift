@@ -40,7 +40,10 @@ struct SubmitClaimFlowNavigation: View {
                     options: [.hidesBottomBarWhenPushed, .hidesBackButton]
                 ) { outcome in
                     SubmitClaimOutcomeScreen(outcome: outcome)
-                        .addDismissClaimChatFlow()
+                        .onDeinit {
+                            NotificationCenter.default.post(name: .claimCreated, object: nil)
+                        }
+                        .withDismissButton()
                 }
                 .routerDestination(
                     for: ClaimIntentOutcomeDeflection.self,
@@ -76,5 +79,15 @@ extension ClaimIntentOutcomeDeflection: TrackingViewNameProtocol, NavigationTitl
 
     public var nameForTracking: String {
         String(describing: SubmitClaimDeflectScreen.self)
+    }
+}
+
+extension ClaimIntentStepOutcome: TrackingViewNameProtocol, NavigationTitleProtocol {
+    public var navigationTitle: String? {
+        L10n.claimChatTitle
+    }
+
+    public var nameForTracking: String {
+        String(describing: SubmitClaimSuccessView.self)
     }
 }

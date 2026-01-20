@@ -42,6 +42,7 @@ public struct InsurableLimitsSectionView: View {
                             .onTapGesture {
                                 didTap(limit)
                             }
+                            .accessibilityAddTraits(.isButton)
                     }
                     .fixedSize(horizontal: false, vertical: true)
                 }

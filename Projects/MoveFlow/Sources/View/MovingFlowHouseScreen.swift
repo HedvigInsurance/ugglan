@@ -177,6 +177,7 @@ struct MovingFlowHouseScreen: View {
         .padding(.top, .padding6)
     }
 
+    @ViewBuilder
     private var isSubleted: some View {
         CheckboxToggleView(
             title: L10n.changeAddressSubletLabel,
@@ -188,6 +189,7 @@ struct MovingFlowHouseScreen: View {
                 houseInformationInputvm.isSubleted.toggle()
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     func addExtraBuilding() {

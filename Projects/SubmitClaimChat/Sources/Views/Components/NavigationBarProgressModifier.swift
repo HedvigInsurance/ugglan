@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 struct NavigationBarProgressModifier: ViewModifier {
-    @Binding var progress: Double
+    @Binding var progress: Double?
     @State private var progressView: UIProgressView?
 
     func body(content: Content) -> some View {
@@ -16,8 +16,11 @@ struct NavigationBarProgressModifier: ViewModifier {
                 }
             }
             .onChange(of: progress) { newProgress in
-                progressView?.setProgress(Float(newProgress), animated: true)
-                progressView?.accessibilityValue = "\(Int(newProgress * 100))%"
+                progressView?.isHidden = newProgress == nil
+                if let newProgress {
+                    progressView?.setProgress(Float(newProgress), animated: true)
+                    progressView?.accessibilityValue = "\(Int(newProgress * 100))%"
+                }
             }
     }
 
@@ -31,10 +34,10 @@ struct NavigationBarProgressModifier: ViewModifier {
             dark: hFillColor.Opaque.primary.colorFor(.dark, .base).color.uiColor()
         )
         progress.trackTintColor = .clear
-        progress.progress = Float(self.progress)
+        progress.progress = Float(self.progress ?? 0)
         progress.isAccessibilityElement = true
         progress.accessibilityLabel = L10n.embarkLoading
-        progress.accessibilityValue = "\(Int(self.progress * 100))%"
+        progress.accessibilityValue = "\(Int((self.progress ?? 0) * 100))%"
         progress.accessibilityTraits = .updatesFrequently
         progress.accessibilityElementsHidden = true
         navBar.addSubview(progress)
@@ -51,7 +54,7 @@ struct NavigationBarProgressModifier: ViewModifier {
 }
 
 extension View {
-    func navigationBarProgress(_ progress: Binding<Double>) -> some View {
+    func navigationBarProgress(_ progress: Binding<Double?>) -> some View {
         modifier(NavigationBarProgressModifier(progress: progress))
     }
 }

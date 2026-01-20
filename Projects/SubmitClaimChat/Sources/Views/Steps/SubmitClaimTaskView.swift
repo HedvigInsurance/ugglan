@@ -26,8 +26,7 @@ struct SubmitClaimTaskResultView: View {
         .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(viewModel.taskModel.description)
-        .accessibilityValue(viewModel.taskModel.isCompleted ? L10n.voiceoverAccepted : L10n.embarkLoading)
+        .accessibilityLabel(L10n.claimChatTaskContentDescription)
     }
 }
 

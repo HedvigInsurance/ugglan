@@ -32,6 +32,14 @@ struct MessageView: View {
                 }
             }
         }
+        .accessibilityAddTraits(
+            {
+                if case .failed = message.status {
+                    return .isButton
+                }
+                return AccessibilityTraits()
+            }()
+        )
         .id("MessageView_\(message.id)")
         .modifier(MessageViewConfirmationDialog(message: message, showRetryOptions: $showRetryOptions, vm: vm))
     }
@@ -144,6 +152,8 @@ struct MessageView: View {
                 .onTapGesture {
                     showRetryOptions = true
                 }
+                .accessibilityAddTraits(.isButton)
+                .accessibilityLabel(L10n.voiceoverMoreInfo)
         }
     }
 }

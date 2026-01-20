@@ -40,19 +40,22 @@ public struct ClaimIntent: Sendable {
     let isSkippable: Bool
     let isRegrettable: Bool
     let progress: Double
+    let hint: String?
 
     public init(
         currentStep: ClaimIntentStep,
         id: String,
         isSkippable: Bool,
         isRegrettable: Bool,
-        progress: Double
+        progress: Double,
+        hint: String? = nil
     ) {
         self.currentStep = currentStep
         self.id = id
         self.isSkippable = isSkippable
         self.isRegrettable = isRegrettable
         self.progress = progress
+        self.hint = hint
     }
 }
 
@@ -171,13 +174,11 @@ public struct ClaimIntentStepContentTask: Sendable, Equatable {
 }
 
 public struct ClaimIntentStepContentAudioRecording: Sendable {
-    let hint: String
     let uploadURI: String
     let freeTextMinLength: Int
     let freeTextMaxLength: Int
 
-    public init(hint: String, uploadURI: String, freeTextMinLength: Int, freeTextMaxLength: Int) {
-        self.hint = hint
+    public init(uploadURI: String, freeTextMinLength: Int, freeTextMaxLength: Int) {
         self.uploadURI = uploadURI
         self.freeTextMinLength = freeTextMinLength
         self.freeTextMaxLength = freeTextMaxLength

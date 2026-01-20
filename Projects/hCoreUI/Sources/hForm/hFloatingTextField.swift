@@ -74,6 +74,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     }
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityHint(
+                isEnabled ? L10n.voiceoverPressTo + " " + L10n.voiceoverEdit : ""
+            )
             rightAttachedView
         }
         .addFieldBackground(animate: $animate, error: $error)
@@ -124,6 +128,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             equals = focusValue
             vm.textField?.becomeFirstResponder()
         }
+        .accessibilityAddTraits(.isButton)
         .onChange(of: error) { _ in
             animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
