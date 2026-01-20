@@ -161,9 +161,6 @@ struct SubmitClaimSummaryBottomView: View {
 @MainActor
 extension String {
     var getAccessibilityLabelDate: String {
-        if self.contains("-") {
-            return self.displayDate
-        }
-        return self
+        self.localDateToDate?.displayDateDDMMMYYYYFormat ?? self
     }
 }

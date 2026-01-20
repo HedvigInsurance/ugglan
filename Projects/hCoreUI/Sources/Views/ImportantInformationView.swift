@@ -54,6 +54,7 @@ public struct ImportantInformationView: View {
                                     RoundedRectangle(cornerRadius: 6)
                                         .fill(hSignalColor.Green.element)
                                 )
+                                .accessibilityHidden(true)
                             } else {
                                 Circle()
                                     .fill(hBackgroundColor.clear)
