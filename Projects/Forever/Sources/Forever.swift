@@ -109,50 +109,28 @@ struct ForeverViewModifier: ViewModifier {
     @Binding var totalHeight: CGFloat
 
     func body(content: Content) -> some View {
-        Group {
-            if #available(iOS 16.0, *) {
-                content
-                    .toolbar {
-                        toolbarContent
-                    }
-            } else {
-                content
-                    .toolbar {
-                        ToolbarItem(
-                            placement: .topBarTrailing
-                        ) {
-                            if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
-                                InfoViewHolder(
-                                    title: L10n.ReferralsInfoSheet.headline,
-                                    description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
-                                    type: .navigation
-                                )
-                                .foregroundColor(hTextColor.Opaque.primary)
-                            }
+        content
+            .toolbar {
+                toolbarContent
+            }
+            .onPullToRefresh {
+                Task { @MainActor in
+                    try await foreverNavigationVm.fetchForeverData()
+                }
+            }
+            .background(
+                GeometryReader(content: { proxy in
+                    Color.clear
+                        .onAppear {
+                            totalHeight = proxy.size.height
                         }
-                    }
-            }
-        }
-
-        .onPullToRefresh {
-            Task { @MainActor in
-                try await foreverNavigationVm.fetchForeverData()
-            }
-        }
-        .background(
-            GeometryReader(content: { proxy in
-                Color.clear
-                    .onAppear {
-                        totalHeight = proxy.size.height
-                    }
-                    .onChange(of: proxy.size) { size in
-                        totalHeight = size.height
-                    }
-            })
-        )
+                        .onChange(of: proxy.size) { size in
+                            totalHeight = size.height
+                        }
+                })
+            )
     }
 
-    @available(iOS 16.0, *)
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         if isLiquidGlassEnabled {

@@ -9,4 +9,5 @@ extension Notification.Name {
     public static let registerForPushNotifications = Notification.Name("registerForPushNotifications")
     public static let addonAdded = Notification.Name("addonAdded")
     public static let openCrossSell = Notification.Name("openCrossSell")
+    public static let claimCreated = Notification.Name("claimCreated")
 }

@@ -127,14 +127,3 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
     ForeverNavigation(useOwnNavigation: true)
         .environmentObject(Router())
 }
-
-extension View {
-    @ViewBuilder
-    public func hideToolbar() -> some View {
-        if #available(iOS 16.0, *) {
-            self.toolbar(.hidden, for: .tabBar)
-        } else {
-            self
-        }
-    }
-}
