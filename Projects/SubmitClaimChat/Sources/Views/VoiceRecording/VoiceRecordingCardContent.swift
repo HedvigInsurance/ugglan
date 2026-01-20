@@ -40,7 +40,7 @@ struct VoiceRecordingCardContent: View {
         } else if voiceRecorder.hasRecording {
             VoiceWaveformView(
                 audioLevels: voiceRecorder.audioLevels,
-                isRecording: false,
+                isRecording: voiceRecorder.isPlaying,
                 maxHeight: 60
             )
         } else {
@@ -65,10 +65,15 @@ struct VoiceRecordingCardContent: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            // Record button (center)
-            VoiceRecordButton(isRecording: voiceRecorder.isRecording) {
-                Task {
-                    await voiceRecorder.toggleRecording()
+            if !voiceRecorder.hasRecording {
+                VoiceRecordButton(isRecording: voiceRecorder.isRecording) {
+                    Task {
+                        await voiceRecorder.toggleRecording()
+                    }
+                }
+            } else {
+                VoicePlaybackButton(isPlaying: voiceRecorder.isPlaying) {
+                    voiceRecorder.togglePlayback()
                 }
             }
 

@@ -16,10 +16,12 @@ public final class VoiceRecorder: ObservableObject {
 
     public var isRecording: Bool { recordingState == .recording }
     public var hasRecording: Bool { recordedFileURL != nil }
+    public var isPlaying: Bool { recordingState == .playing }
 
     // MARK: - Private Properties
     private let filePath: URL
     private var recorder: AVAudioRecorder?
+    private var player: AVAudioPlayer?
     private var timer: Timer?
     private var meteringTimer: Timer?
     private var recordingStartTime: Date?
@@ -101,6 +103,8 @@ public final class VoiceRecorder: ObservableObject {
         if FileManager.default.fileExists(atPath: filePath.path) {
             recordedFileURL = filePath
             recordingState = .recorded
+            // Prepare player early to reduce delay when user clicks play
+            preparePlayer()
         } else {
             recordingState = .idle
         }
@@ -114,10 +118,59 @@ public final class VoiceRecorder: ObservableObject {
         }
     }
 
+    public func startPlayback() {
+        // If player isn't ready, prepare it first
+        if player == nil {
+            preparePlayer()
+        }
+
+        guard let player else {
+            error = .playbackFailed
+            return
+        }
+
+        player.play()
+        recordingState = .playing
+        startPlaybackTimer()
+    }
+
+    private func preparePlayer() {
+        guard let url = recordedFileURL else {
+            return
+        }
+
+        do {
+            try configureAudioSession()
+            player = try AVAudioPlayer(contentsOf: url)
+            player?.isMeteringEnabled = true
+            player?.prepareToPlay()
+        } catch {
+            self.error = .playbackFailed
+        }
+    }
+
+    public func stopPlayback() {
+        player?.stop()
+        player = nil
+        stopTimers()
+        recordingState = .recorded
+        currentTime = 0
+    }
+
+    public func togglePlayback() {
+        if isPlaying {
+            stopPlayback()
+        } else {
+            startPlayback()
+        }
+    }
+
     public func startOver() {
         stopTimers()
         recorder?.stop()
         recorder = nil
+        player?.stop()
+        player = nil
 
         if let url = recordedFileURL, FileManager.default.fileExists(atPath: url.path) {
             try? FileManager.default.removeItem(at: url)
@@ -192,6 +245,42 @@ public final class VoiceRecorder: ObservableObject {
             Task { @MainActor in
                 self?.updateAudioLevels()
             }
+        }
+    }
+
+    private func startPlaybackTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self, let player = self.player else { return }
+                self.currentTime = player.currentTime
+
+                // Stop when playback finishes
+                if !player.isPlaying {
+                    self.stopPlayback()
+                }
+            }
+        }
+
+        // Timer for metering audio levels during playback
+        meteringTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.updatePlaybackLevels()
+            }
+        }
+    }
+
+    private func updatePlaybackLevels() {
+        guard let player, isPlaying else { return }
+        player.updateMeters()
+        let power = player.averagePower(forChannel: 0)
+        // Normalize: power ranges from -160 to 0
+        let normalizedPower = max(0, (power + 50) / 50)
+        let level = CGFloat(pow(10, normalizedPower) - 1) / 9  // Scale to 0...1
+
+        audioLevels.append(level)
+        // Keep only last 100 samples for visualization
+        if audioLevels.count > 100 {
+            audioLevels.removeFirst()
         }
     }
 
