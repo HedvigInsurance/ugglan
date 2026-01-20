@@ -192,6 +192,9 @@ public struct DocumentPreview: View {
                         .frame(maxHeight: vm.contentHeight)
                         .offset(x: vm.offset)
                         .rotationEffect(.degrees(180 * Double(vm.offset) / 10000))
+                        .accessibilityAction(named: Text(L10n.generalCloseButton)) {
+                            vm.vc?.dismiss(animated: true)
+                        }
                         .gesture(
                             DragGesture()
                                 .onChanged { gesture in

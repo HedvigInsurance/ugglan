@@ -35,9 +35,13 @@ public struct BankIDLoginQRView: View {
                                     .foregroundColor(hTextColor.Opaque.primary)
                                     .transition(.opacity)
                                     .id(image.pngData()?.count ?? 0)
+                                    .accessibilityLabel(L10n.bankidLoginTitle)
                             }
                         }
                         .onLongPressGesture(minimumDuration: 3.0) {
+                            vm.showAlert = true
+                        }
+                        .accessibilityAction(named: Text(L10n.demoModeStart)) {
                             vm.showAlert = true
                         }
                         .alert(isPresented: $vm.showAlert) {

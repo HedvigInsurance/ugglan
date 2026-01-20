@@ -80,6 +80,7 @@ struct AccordionHeader: View {
                         .frame(width: 24, height: 24)
                         .transition(.opacity.animation(.easeOut))
                         .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 270))
+                        .accessibilityHidden(true)
                         Image(
                             uiImage: hCoreUIAssets.minus.image
                         )
@@ -87,6 +88,7 @@ struct AccordionHeader: View {
                         .frame(width: 24, height: 24)
                         .transition(.opacity.animation(.easeOut))
                         .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
+                        .accessibilityHidden(true)
                     }
                 }
                 .foregroundColor(peril?.textColor)

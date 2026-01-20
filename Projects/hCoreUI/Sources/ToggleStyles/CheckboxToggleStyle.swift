@@ -104,6 +104,7 @@ public struct CheckboxToggleView: View {
         Toggle(isOn: $isOn.animation(.default)) {
             mainContent
         }
+        .accessibilityLabel(title)
         .toggleStyle(
             CheckboxToggleStyle(
                 withSubtitle: subtitle != nil,
@@ -138,6 +139,7 @@ public struct CheckboxToggleView: View {
                         isOn.toggle()
                     }
                 }
+                .accessibilityAddTraits(.isButton)
             Circle()
                 .fill(hTextColor.Opaque.white)
                 .padding(1)

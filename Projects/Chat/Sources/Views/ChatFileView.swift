@@ -25,6 +25,8 @@ struct ChatFileView: View {
                 .onTapGesture {
                     showFile()
                 }
+                .accessibilityAddTraits(.isButton)
+                .accessibilityLabel(file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile)
         }
     }
 

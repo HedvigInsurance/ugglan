@@ -67,6 +67,8 @@ public struct FileView: View {
         .onTapGesture {
             onTap()
         }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(file.mimeType.isImage ? L10n.voiceoverChatImage : L10n.voiceoverChatFile)
     }
 
     private var fileImage: Image {

@@ -72,6 +72,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
         )
     }
 
+    @ViewBuilder
     private var connectedToWater: some View {
         CheckboxToggleView(
             title: L10n.changeAddressExtraBuildingsWaterInputLabel,
@@ -82,6 +83,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 vm.connectedToWater.toggle()
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     func addExtraBuilding() {
