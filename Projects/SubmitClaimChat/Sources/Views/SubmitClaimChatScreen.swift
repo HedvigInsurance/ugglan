@@ -332,12 +332,9 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         }
         self.shouldMergeInputWithContent = false
         let neededHeight = self.currentStepInputHeight
-        let scrollHeight =
-            scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y
-            + scrollView.adjustedContentInset.top - scrollView.safeAreaInsets.bottom
         let availableHeight =
-            scrollHeight - totalStepsHeight
-            + scrollView.adjustedContentInset.top + topPadding
+            scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y - totalStepsHeight
+            + scrollView.adjustedContentInset.top - topPadding
         self.isInputScrolledOffScreen = neededHeight > availableHeight
     }
 
