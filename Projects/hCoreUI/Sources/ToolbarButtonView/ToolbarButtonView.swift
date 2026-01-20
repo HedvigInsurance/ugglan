@@ -47,9 +47,11 @@ public struct ToolbarButtonView: View {
                                     .fill(hSignalColor.Red.element)
                                     .frame(width: 10, height: 10)
                                     .offset(x: -.padding4, y: .padding4)
+                                    .accessibilityHidden(true)
                             }
                         }
                     }
+                    .accessibilityLabel(type.displayName)
                 }
                 .showTooltip(type: type, placement: placement)
             }
@@ -60,11 +62,10 @@ public struct ToolbarButtonView: View {
         Image(uiImage: type.image)
             .resizable()
             .scaledToFill()
+            .accessibilityHidden(true)
             .frame(width: type.imageSize, height: type.imageSize)
             .foregroundColor(hFillColor.Opaque.primary)
             .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
-            .accessibilityLabel(type.displayName)
-            .accessibilityValue(type.displayName)
     }
 }
 

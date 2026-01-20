@@ -106,6 +106,7 @@ public struct ListItem: View {
             selectedValue: .constant(isSelected ? title : nil),
             value: title
         )
+        .accessibilityHidden(true)
         .onTapGesture {
             if isSelected {
                 isSelected = false

@@ -214,6 +214,30 @@ extension View {
     public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
         modifier(TrackErrorState(processingState: state))
     }
+    public func trackError(for error: Binding<Error?>) -> some View {
+        modifier(TrackError(error: error))
+    }
+}
+
+private struct TrackError: ViewModifier {
+    @Binding private var error: Error?
+
+    init(error: Binding<Error?>) {
+        self._error = error
+    }
+
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+                .opacity(error == nil ? 1 : 0)
+            if let error {
+                GenericErrorView(
+                    description: error.localizedDescription,
+                    formPosition: nil
+                )
+            }
+        }
+    }
 }
 
 private struct TrackErrorState: ViewModifier {

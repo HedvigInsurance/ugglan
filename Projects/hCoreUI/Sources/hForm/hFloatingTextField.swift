@@ -74,6 +74,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     }
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityHint(
+                isEnabled ? L10n.voiceoverPressTo + " " + L10n.voiceoverEdit : ""
+            )
             rightAttachedView
         }
         .addFieldBackground(animate: $animate, error: $error)
@@ -103,11 +107,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 textField?.becomeFirstResponder()
             }
         }
-        .onChange(of: equals) { equals in
+        .onChange(of: equals) { [weak vm] equals in
             if equals == focusValue {
-                vm.textField?.becomeFirstResponder()
-            } else if vm.textField?.isEditing == true {
-                vm.textField?.resignFirstResponder()
+                vm?.textField?.becomeFirstResponder()
+            } else if vm?.textField?.isEditing == true {
+                vm?.textField?.resignFirstResponder()
             }
         }
         .onChange(of: innerValue) { currentValue in
@@ -119,6 +123,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 startAnimation(currentValue)
             }
         }
+        .accessibilityAddTraits(.isButton)
         .onTapGesture {
             equals = focusValue
             vm.textField?.becomeFirstResponder()
@@ -319,7 +324,9 @@ private struct EnvironmentHFieldSize: EnvironmentKey {
 public enum hFieldSize: Hashable, Sendable {
     case small
     case large
+    case extraLarge
     case medium
+    case capsuleShape
 
     var horizontalPadding: CGFloat {
         switch self {
@@ -327,8 +334,12 @@ public enum hFieldSize: Hashable, Sendable {
             return .padding14
         case .large:
             return .padding16
+        case .extraLarge:
+            return .padding16
         case .medium:
             return .padding16
+        case .capsuleShape:
+            return 100
         }
     }
 }
@@ -418,6 +429,8 @@ extension hFieldSize {
         case .small: return -13
         case .medium: return -14
         case .large: return -15
+        case .capsuleShape: return -14
+        case .extraLarge: return -15
         }
     }
 
@@ -430,6 +443,8 @@ extension hFieldSize {
         case .small: return .body1
         case .medium: return .body1
         case .large: return .body2
+        case .extraLarge: return .body2
+        case .capsuleShape: return .body1
         }
     }
 }

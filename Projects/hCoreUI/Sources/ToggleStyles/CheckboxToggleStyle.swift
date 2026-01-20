@@ -134,6 +134,7 @@ public struct CheckboxToggleView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 9)
                 .fill(backgroundColor(isOn: isOn))
+                .accessibilityHidden(true)
                 .onTapGesture {
                     withAnimation(.spring) {
                         isOn.toggle()
@@ -144,8 +145,10 @@ public struct CheckboxToggleView: View {
                 .fill(hTextColor.Opaque.white)
                 .padding(1)
                 .offset(x: isOn ? 5 : -5)
+                .accessibilityHidden(true)
         }
         .frame(width: 28, height: 18)
+        .accessibilityHidden(true)
     }
 
     private func getTitleStyle(subtitle: String?) -> HFontTextStyle {

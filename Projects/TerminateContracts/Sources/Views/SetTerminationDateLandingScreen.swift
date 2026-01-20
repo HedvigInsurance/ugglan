@@ -109,91 +109,13 @@ struct SetTerminationDateLandingScreen: View {
     @ViewBuilder
     private var displayImportantInformation: some View {
         if terminationNavigationVm.terminationDateStepModel?.date != nil {
-            hSection {
-                hRow {
-                    VStack(spacing: .padding16) {
-                        VStack(spacing: .padding16) {
-                            VStack(alignment: .leading, spacing: .padding4) {
-                                hText(L10n.terminationFlowImportantInformationTitle)
-                                hText(
-                                    L10n.terminationFlowImportantInformationText,
-                                    style: .label
-                                )
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                            }
-                        }
-                        .fixedSize(horizontal: false, vertical: true)
-                        HStack {
-                            hRow {
-                                hText(L10n.terminationFlowIUnderstandText)
-                                    .foregroundColor(
-                                        hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
-                                    )
-                                Spacer()
-                                if vm.hasAgreedToTerms {
-                                    HStack {
-                                        hCoreUIAssets.checkmark.view
-                                            .foregroundColor(
-                                                hColorScheme(
-                                                    light: hTextColor.Opaque.negative,
-                                                    dark: hTextColor.Opaque.primary
-                                                )
-                                            )
-                                    }
-                                    .frame(width: 24, height: 24)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .fill(hSignalColor.Green.element)
-                                    )
-                                } else {
-                                    Circle()
-                                        .fill(hBackgroundColor.clear)
-                                        .frame(width: 24, height: 24)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 6)
-                                                .strokeBorder(
-                                                    hBorderColor.secondary,
-                                                    lineWidth: 2
-                                                )
-                                                .animation(.easeInOut, value: UUID())
-                                        )
-                                        .colorScheme(.light)
-                                        .hUseLightMode
-                                }
-                            }
-                            .background(
-                                RoundedRectangle(cornerRadius: .cornerRadiusS)
-                                    .fill(
-                                        hFillColor.Translucent.negative
-                                    )
-                            )
-                        }
-                        .colorScheme(.light)
-                    }
-                }
-                .onTapGesture {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        vm.hasAgreedToTerms.toggle()
-                    }
-                }
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(accessibilityLabel)
-            .accessibilityAddTraits(.isButton)
+            ImportantInformationView(
+                title: L10n.terminationFlowImportantInformationTitle,
+                subtitle: L10n.terminationFlowImportantInformationText,
+                confirmationMessage: L10n.terminationFlowIUnderstandText,
+                isConfirmed: $vm.hasAgreedToTerms
+            )
         }
-    }
-
-    private var accessibilityLabel: String {
-        var label =
-            L10n.terminationFlowImportantInformationTitle + "\n" + L10n.terminationFlowImportantInformationText + "\n"
-            + L10n.terminationFlowIUnderstandText + "\n"
-
-        if vm.hasAgreedToTerms {
-            label += L10n.voiceoverAccepted
-        } else {
-            label += L10n.voiceoverNotAccepted
-        }
-        return label
     }
 }
 

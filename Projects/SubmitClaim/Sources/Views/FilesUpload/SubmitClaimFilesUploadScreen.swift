@@ -5,12 +5,8 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimFilesUploadScreen: View {
-    @State var showImagePicker = false
-    @State var showFilePicker = false
-    @State var showCamera = false
     @StateObject fileprivate var vm: FilesUploadViewModel
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
-
     init(
         claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
@@ -38,8 +34,8 @@ struct SubmitClaimFilesUploadScreen: View {
                                 .large,
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-                                {
-                                    showFilePickerAlert()
+                                { [weak vm] in
+                                    vm?.showFileSourcePicker = true
                                 }
                             )
                             .disabled(vm.isLoading)
@@ -62,6 +58,10 @@ struct SubmitClaimFilesUploadScreen: View {
                                         Rectangle().fill(hGrayscaleTranslucent.greyScaleTranslucent800.inverted)
                                             .opacity(vm.isLoading ? 1 : 0)
                                             .frame(width: vm.progress * geo.size.width)
+                                            .accessibilityElement(children: .ignore)
+                                            .accessibilityLabel(L10n.ClaimStatusDetail.addFiles)
+                                            .accessibilityValue(String(format: "%.0f%%", vm.progress * 100))
+                                            .accessibilityAddTraits(.updatesFrequently)
                                     }
                                 }
                             }
@@ -101,8 +101,8 @@ struct SubmitClaimFilesUploadScreen: View {
                                 .large,
                                 .primary,
                                 content: .init(title: L10n.ClaimStatusDetail.addFiles),
-                                {
-                                    showFilePickerAlert()
+                                { [weak vm] in
+                                    vm?.showFileSourcePicker = true
                                 }
                             )
                             .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
@@ -123,34 +123,8 @@ struct SubmitClaimFilesUploadScreen: View {
                 }
             }
         }
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker { images in
-                vm.addFiles(with: images)
-            }
-            .ignoresSafeArea()
-        }
-        .sheet(isPresented: $showFilePicker) {
-            FileImporterView { files in
-                vm.addFiles(with: files)
-            }
-            .ignoresSafeArea()
-        }
-        .sheet(isPresented: $showCamera) {
-            CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 0.9)
-                else { return }
-                let file: File = .init(
-                    id: UUID().uuidString,
-                    size: Double(data.count),
-                    mimeType: .JPEG,
-                    name: "image_\(Date()).jpeg",
-                    source: .data(data: data)
-                )
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    vm.addFiles(with: [file])
-                }
-            }
-            .ignoresSafeArea()
+        .showFileSourcePicker($vm.showFileSourcePicker) { [weak vm] files in
+            vm?.addFiles(with: files)
         }
     }
 
@@ -161,19 +135,6 @@ struct SubmitClaimFilesUploadScreen: View {
         } else {
             InfoCard(text: L10n.claimsFileUploadInfo, type: .info)
                 .accessibilitySortPriority(2)
-        }
-    }
-
-    private func showFilePickerAlert() {
-        FilePicker.showAlert { selected in
-            switch selected {
-            case .camera:
-                showCamera = true
-            case .imagePicker:
-                showImagePicker = true
-            case .filePicker:
-                showFilePicker = true
-            }
         }
     }
 
@@ -193,11 +154,18 @@ struct SubmitClaimFilesUploadScreen: View {
 
 @MainActor
 public class FilesUploadViewModel: ObservableObject {
+    private enum TaskResult {
+        case sleep
+        case uploadedFiles([ClaimFileUploadResponse])
+    }
+
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
     @Published var skipPressed = false
     @Published var error: String?
     @Published var progress: Double = 0
+    @Published var showFileSourcePicker = false
+
     var uploadProgress: Double = 0
     var timerProgress: Double = 0
     let uploadDelayDuration: Float = 1.5
@@ -277,19 +245,7 @@ public class FilesUploadViewModel: ObservableObject {
             if !filteredFiles.isEmpty {
                 setNavigationBarHidden(true)
                 let startDate = Date()
-                async let sleepTask: () = Task.sleep(seconds: uploadDelayDuration)
-                async let filesUploadTask = claimFileUploadService.upload(
-                    endPoint: model.targetUploadUrl,
-                    files: filteredFiles
-                ) { progress in
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self = self else { return }
-                        self.uploadProgress = progress
-                        withAnimation {
-                            self.progress = min(self.uploadProgress, self.timerProgress)
-                        }
-                    }
-                }
+
                 delayTimer = Timer.publish(every: 0.2, on: .main, in: .common)
                     .autoconnect()
                     .map { output in
@@ -305,12 +261,41 @@ public class FilesUploadViewModel: ObservableObject {
                         }
                     }
 
-                let data = try await [sleepTask, filesUploadTask] as [Any]
+                let files = try await withThrowingTaskGroup(of: TaskResult.self) { group in
+                    group.addTask {
+                        try await Task.sleep(seconds: self.uploadDelayDuration)
+                        return .sleep
+                    }
+
+                    group.addTask {
+                        let uploadedFiles = try await self.claimFileUploadService.upload(
+                            endPoint: self.model.targetUploadUrl,
+                            files: filteredFiles
+                        ) { progress in
+                            DispatchQueue.main.async { [weak self] in
+                                guard let self = self else { return }
+                                self.uploadProgress = progress
+                                withAnimation {
+                                    self.progress = min(self.uploadProgress, self.timerProgress)
+                                }
+                            }
+                        }
+                        return .uploadedFiles(uploadedFiles)
+                    }
+
+                    var uploadedFiles: [ClaimFileUploadResponse] = []
+                    for try await result in group {
+                        if case .uploadedFiles(let files) = result {
+                            uploadedFiles = files
+                        }
+                    }
+                    return uploadedFiles
+                }
+
                 delayTimer = nil
                 withAnimation {
                     self.progress = 1
                 }
-                let files = data[1] as! [ClaimFileUploadResponse]
                 let uploadedFiles = files.compactMap { $0.file?.fileId }
                 let filesToReplaceLocalFiles =
                     files

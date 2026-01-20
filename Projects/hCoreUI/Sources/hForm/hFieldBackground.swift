@@ -22,10 +22,10 @@ struct hFieldBackgroundModifier: ViewModifier {
             if error != nil {
                 hSignalColor.Amber.fill
             } else {
-                hSurfaceColor.Opaque.secondary
+                hSurfaceColor.Translucent.secondary
             }
         } else {
-            hSurfaceColor.Opaque.primary
+            hSurfaceColor.Translucent.primary
         }
     }
 }
@@ -181,9 +181,9 @@ struct hFieldLabel: View {
 
     private var font: HFontTextStyle {
         switch size {
-        case .small, .medium:
+        case .small, .medium, .capsuleShape:
             return .body1
-        case .large:
+        case .large, .extraLarge:
             return .body2
         }
     }

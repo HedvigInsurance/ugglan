@@ -37,6 +37,8 @@ public struct InsurableLimitsSectionView: View {
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .frame(width: 20, height: 20)
                             .padding(.vertical, .padding4)
+                            .accessibilityLabel(L10n.voiceoverMoreInfo)
+                            .accessibilityAddTraits(.isButton)
                             .onTapGesture {
                                 didTap(limit)
                             }

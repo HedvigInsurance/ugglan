@@ -77,6 +77,7 @@ struct AccordionHeader: View {
                             uiImage: hCoreUIAssets.minus.image
                         )
                         .resizable()
+                        .accessibilityHidden(true)
                         .frame(width: 24, height: 24)
                         .transition(.opacity.animation(.easeOut))
                         .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 270))
@@ -85,6 +86,7 @@ struct AccordionHeader: View {
                             uiImage: hCoreUIAssets.minus.image
                         )
                         .resizable()
+                        .accessibilityHidden(true)
                         .frame(width: 24, height: 24)
                         .transition(.opacity.animation(.easeOut))
                         .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
