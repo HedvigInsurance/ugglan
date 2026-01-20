@@ -6,7 +6,8 @@ public struct VoiceRecordButton: View {
     let isRecording: Bool
     let onTap: () -> Void
 
-    @State private var pulseScale: CGFloat = 1.0
+    @State private var countdownNumber: Int? = nil
+    @State private var isCountingDown = false
 
     public init(isRecording: Bool, onTap: @escaping () -> Void) {
         self.isRecording = isRecording
@@ -14,7 +15,7 @@ public struct VoiceRecordButton: View {
     }
 
     public var body: some View {
-        Button(action: onTap) {
+        Button(action: handleTap) {
             hSection {
                 VStack(spacing: .padding4) {
                     ZStack {
@@ -32,20 +33,41 @@ public struct VoiceRecordButton: View {
             }
         }
         .buttonStyle(.plain)
-        .onAppear {
-            if isRecording {
-                pulseScale = 1.3
-            }
-        }
-        .onChange(of: isRecording) { recording in
-            pulseScale = recording ? 1.3 : 1.0
-        }
         .accessibilityLabel(isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
         .accessibilityAddTraits(.isButton)
     }
 
+    private func handleTap() {
+        if isRecording {
+            onTap()
+        } else if !isCountingDown {
+            startCountdown()
+        }
+    }
+
+    private func startCountdown() {
+        isCountingDown = true
+
+        Task {
+            for number in (1...3).reversed() {
+                countdownNumber = number
+                try? await Task.sleep(nanoseconds: 1_000_000_000)  // 1 second
+            }
+
+            countdownNumber = nil
+            isCountingDown = false
+            onTap()
+        }
+    }
+
     var buttonImage: some View {
-        isRecording ? hCoreUIAssets.pause.view : hCoreUIAssets.mic.view
+        Group {
+            if let number = countdownNumber {
+                hText("\(number)", style: .label)
+            } else {
+                isRecording ? hCoreUIAssets.pause.view : hCoreUIAssets.mic.view
+            }
+        }
     }
 }
 
