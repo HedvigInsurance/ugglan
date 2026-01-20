@@ -15,39 +15,21 @@ public struct VoiceRecordButton: View {
 
     public var body: some View {
         Button(action: onTap) {
-            ZStack {
-                // Pulse animation when recording
-                if isRecording {
-                    Circle()
-                        .fill(hSignalColor.Red.element.opacity(0.2))
-                        .scaleEffect(pulseScale)
-                        .animation(
-                            .easeInOut(duration: 1.0).repeatForever(autoreverses: true),
-                            value: pulseScale
-                        )
-                }
-
-                // Outer circle
-                Circle()
-                    .fill(hBackgroundColor.white)
-                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                    .overlay(
+            hSection {
+                VStack(spacing: .padding4) {
+                    ZStack {
                         Circle()
-                            .strokeBorder(hBorderColor.primary, lineWidth: isRecording ? 0 : 1)
-                    )
+                            .fill(hSignalColor.Red.element)
+                            .frame(width: 32, height: 32)
 
-                // Inner shape (circle when not recording, rounded square when recording)
-                if isRecording {
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(hTextColor.Opaque.primary)
-                        .frame(width: 24, height: 24)
-                } else {
-                    Circle()
-                        .fill(hSignalColor.Red.element)
-                        .frame(width: 32, height: 32)
+                        buttonImage
+                            .foregroundColor(hFillColor.Opaque.negative)
+                    }
+
+                    hText(isRecording ? "Stop" : "Start", style: .label)
                 }
+                .padding(.vertical, .padding8)
             }
-            .frame(width: 72, height: 72)
         }
         .buttonStyle(.plain)
         .onAppear {
@@ -61,6 +43,10 @@ public struct VoiceRecordButton: View {
         .accessibilityLabel(isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
         .accessibilityAddTraits(.isButton)
     }
+
+    var buttonImage: some View {
+        isRecording ? hCoreUIAssets.pause.view : hCoreUIAssets.mic.view
+    }
 }
 
 #Preview {
@@ -68,6 +54,4 @@ public struct VoiceRecordButton: View {
         VoiceRecordButton(isRecording: false) {}
         VoiceRecordButton(isRecording: true) {}
     }
-    .padding()
-    .background(Color.gray.opacity(0.1))
 }
