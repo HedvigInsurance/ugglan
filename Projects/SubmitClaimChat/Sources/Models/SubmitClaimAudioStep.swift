@@ -19,8 +19,8 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         }
     }
     @Published var textInputError: String?
-    @Published var inputType: AudioRecordingStepType?
-
+    @Published var isTextInputPresented: Bool = false
+    @Published var isAudioInputPresented: Bool = false
     var characterMismatch: Bool {
         textInput.count < audioRecordingModel.freeTextMinLength
             || textInput.count > audioRecordingModel.freeTextMaxLength
@@ -61,7 +61,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
 
     override func executeStep() async throws -> ClaimIntentType {
         let fileId: String? = try await {
-            if inputType == .text {
+            if isTextInputPresented {
                 return nil
             }
             guard let audioFileURL else {
@@ -87,7 +87,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             return response.fileIds.first!
         }()
 
-        let freeText = inputType == .text ? textInput : nil
+        let freeText = isTextInputPresented ? textInput : nil
 
         guard
             let result = try await service.claimIntentSubmitAudio(
@@ -105,13 +105,10 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         if state.isSkipped {
             return L10n.claimChatSkippedLabel
         }
-        switch inputType {
-        case .audio:
-            return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
-        case .text:
+        if isTextInputPresented {
             return L10n.a11YSubmittedValues(1) + ": " + textInput
-        case nil:
-            return ""
+        } else {
+            return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
         }
     }
 
