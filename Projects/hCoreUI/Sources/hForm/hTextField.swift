@@ -91,7 +91,7 @@ public struct hTextField: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack {
-                if options.useLineBreak, #available(iOS 16.0, *) {
+                if options.useLineBreak {
                     SwiftUI.TextField(placeholder ?? "", text: $innerValue, axis: .vertical)
                         .lineLimit(5...10)
                         .modifier(hFontModifier(style: .body1))

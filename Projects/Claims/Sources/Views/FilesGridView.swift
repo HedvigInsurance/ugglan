@@ -7,6 +7,7 @@ import hCoreUI
 
 public struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
+    @Environment(\.hFileGridAlignment) var alignment
 
     public init(
         vm: FileGridViewModel
@@ -14,51 +15,58 @@ public struct FilesGridView: View {
         self.vm = vm
     }
 
-    private let adaptiveColumn = [
-        GridItem(.flexible(), spacing: .padding8),
-        GridItem(.flexible(), spacing: .padding8),
-        GridItem(.flexible(), spacing: .padding8),
-    ]
-
     public var body: some View {
-        LazyVGrid(columns: adaptiveColumn, spacing: .padding8) {
-            ForEach(vm.files, id: \.id) { file in
-                ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
-                    FileView(file: file) {
-                        vm.show(file: file)
+        VStack(alignment: .trailing, spacing: .padding4) {
+            ForEach(Array(stride(from: 0, to: vm.files.count, by: 3)), id: \.self) { rowIndex in
+                HStack(spacing: .padding4) {
+                    if alignment == .trailing {
+                        Spacer()
                     }
-                    .aspectRatio(1, contentMode: .fit)
-                    .cornerRadius(.padding12)
-                    .contentShape(Rectangle())
-                    .opacity(vm.options.contains(.loading) ? 0.5 : 1)
-                    if vm.options.contains(.delete) {
-                        Button(
-                            action: {
-                                vm.delete(file)
-                            },
-                            label: {
-                                Circle().fill(Color.clear)
-                                    .frame(width: 30, height: 30)
-                                    .hShadow()
-                                    .overlay(
-                                        Circle().fill(hBackgroundColor.primary)
-                                            .frame(width: 24, height: 24)
+                    ForEach(Array(stride(from: rowIndex, to: min(rowIndex + 3, vm.files.count), by: 1)), id: \.self) {
+                        index in
+                        let file = vm.files[index]
+                        ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
+                            FileView(file: file) {
+                                vm.show(file: file)
+                            }
+                            .frame(maxWidth: 100, maxHeight: 100)
+                            .aspectRatio(1, contentMode: .fit)
+                            .cornerRadius(.padding12)
+                            .contentShape(Rectangle())
+                            .opacity(vm.options.contains(.loading) ? 0.5 : 1)
+                            if vm.options.contains(.delete) {
+                                Button(
+                                    action: {
+                                        vm.delete(file)
+                                    },
+                                    label: {
+                                        Circle().fill(Color.clear)
+                                            .frame(width: 30, height: 30)
                                             .hShadow()
                                             .overlay(
-                                                hCoreUIAssets.closeSmall.view
-                                                    .resizable()
-                                                    .frame(width: 16, height: 16)
-                                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                                Circle().fill(hBackgroundColor.primary)
+                                                    .frame(width: 24, height: 24)
+                                                    .hShadow()
+                                                    .overlay(
+                                                        hCoreUIAssets.closeSmall.view
+                                                            .resizable()
+                                                            .frame(width: 16, height: 16)
+                                                            .foregroundColor(hTextColor.Opaque.secondary)
+                                                    )
                                             )
-                                    )
-                                    .offset(.init(width: 8, height: -8))
-                                    .accessibilityLabel(L10n.General.remove)
+                                            .offset(.init(width: 8, height: -8))
+                                            .accessibilityLabel(L10n.General.remove)
+                                    }
+                                )
+                                .zIndex(.infinity)
                             }
-                        )
-                        .zIndex(.infinity)
+                        }
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                    if alignment == .leading {
+                        Spacer()
                     }
                 }
-                .transition(.scale.combined(with: .opacity))
             }
         }
         .detent(
@@ -72,9 +80,15 @@ public struct FilesGridView: View {
 
 @MainActor
 public class FileGridViewModel: ObservableObject {
-    @Published public var files: [File]
+    @Published public var files: [File] {
+        didSet {
+            setColumns()
+        }
+    }
     @Published public var options: ClaimFilesViewModel.ClaimFilesViewOptions
     @Published var fileModel: FileUrlModel?
+
+    @Published private(set) var columns: [GridItem] = []
     public var onDelete: ((_ file: File) -> Void)?
 
     public init(
@@ -85,6 +99,7 @@ public class FileGridViewModel: ObservableObject {
         self.files = files
         self.options = options
         self.onDelete = onDelete
+        self.setColumns()
     }
 
     func delete(_ file: File) {
@@ -115,6 +130,25 @@ public class FileGridViewModel: ObservableObject {
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
+    private func setColumns() {
+        if files.count >= 3 {
+            columns = [
+                GridItem(.flexible(), spacing: .padding8),
+                GridItem(.flexible(), spacing: .padding8),
+                GridItem(.flexible(), spacing: .padding8),
+            ]
+        } else if files.count == 2 {
+            columns = [
+                GridItem(.flexible(), spacing: .padding8),
+                GridItem(.flexible(), spacing: .padding8),
+            ]
+        } else {
+            columns = [
+                GridItem(.flexible(), spacing: .padding8)
+            ]
+        }
+    }
+
     public func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
         withAnimation {
             self.options = options
@@ -135,6 +169,24 @@ public class FileGridViewModel: ObservableObject {
         case let .data(data):
             fileModel = .init(type: .data(data: data, name: file.name, mimeType: file.mimeType))
         }
+    }
+}
+
+@MainActor
+private struct FileGridAlignment: @preconcurrency EnvironmentKey {
+    static let defaultValue: HorizontalAlignment = .trailing
+}
+
+extension EnvironmentValues {
+    public var hFileGridAlignment: HorizontalAlignment {
+        get { self[FileGridAlignment.self] }
+        set { self[FileGridAlignment.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFileGridAlignment(alignment: HorizontalAlignment) -> some View {
+        environment(\.hFileGridAlignment, alignment)
     }
 }
 
@@ -189,5 +241,13 @@ public class FileGridViewModel: ObservableObject {
             )
         ),
     ]
-    return FilesGridView(vm: .init(files: files, options: [.delete]))
+    return ScrollView {
+        VStack(alignment: .leading, spacing: .padding32) {
+            FilesGridView(vm: .init(files: [files[0]], options: [.delete]))
+            FilesGridView(vm: .init(files: [files[0], files[1]], options: [.delete]))
+            FilesGridView(vm: .init(files: [files[0], files[1], files[2]], options: [.delete]))
+            FilesGridView(vm: .init(files: [files[0], files[1], files[2], files[3]], options: [.delete]))
+            FilesGridView(vm: .init(files: [files[0], files[1], files[2], files[3], files[4]], options: [.delete]))
+        }
+    }
 }

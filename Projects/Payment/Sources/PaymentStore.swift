@@ -35,8 +35,8 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case .load:
             do {
                 let paymentData = try await paymentService.getPaymentData()
-                send(.setPaymentData(data: paymentData.upcoming))
-                send(.setOngoingPaymentData(data: paymentData.ongoing))
+                await sendAsync(.setPaymentData(data: paymentData.upcoming))
+                await sendAsync(.setOngoingPaymentData(data: paymentData.ongoing))
             } catch {
                 setError(L10n.General.errorBody, for: .getPaymentData)
             }

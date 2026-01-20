@@ -18,6 +18,22 @@
         <string>You have %li eligible insurances.</string>
       </dict>
     </dict>
+    <key>A11Y_SUBMITTED_VALUES</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Submitted value</string>
+        <key>other</key>
+        <string>Submitted values</string>
+      </dict>
+    </dict>
     <key>FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

@@ -37,7 +37,7 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
 
 @MainActor
 extension ClaimModel {
-    init(
+    public init(
         claim: OctopusGraphQL.ClaimFragment
     ) {
         self.init(

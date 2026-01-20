@@ -18,6 +18,7 @@ import PresentableStore
 import Profile
 import SafariServices
 import SubmitClaim
+import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts
@@ -275,6 +276,15 @@ class DeepLinkHandler {
         case .submitClaim:
             viewModel?.selectedTab = 0
             viewModel?.homeNavigationVm.isSubmitClaimPresented = true
+        case .claimChat:
+            handleChatClaimDeeplink(url)
+        }
+    }
+
+    private func handleChatClaimDeeplink(_ url: URL) {
+        dismissAndSelectTab(0)
+        if let messageId = url.getParameter(property: .sourceMessageId) {
+            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: messageId)
         }
     }
 
@@ -446,6 +456,21 @@ struct LoggedInNavigation: View {
         .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
         }
+        .detent(
+            presented: $vm.askForPushNotification,
+            options: .constant(.withoutGrabber)
+        ) { [weak vm] in
+            AskForPushNotifications(
+                text: L10n.claimsActivateNotificationsBody,
+                onActionExecuted: {
+                    vm?.askForPushNotification = false
+                },
+                wrapWithForm: true
+            )
+            .embededInNavigation(
+                tracking: "AskForPushNotifications"
+            )
+        }
     }
 
     var homeTab: some View {
@@ -613,7 +638,7 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-
+    @State var showOldSubmitClaimFlow = false
     var body: some View {
         RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
@@ -630,10 +655,17 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-
             options: .constant(.withoutGrabber)
         ) {
             ClaimsMainNavigation()
+                .environmentObject(homeNavigationVm)
+        }
+        .handleClaimFlow(
+            startInput: $homeNavigationVm.claimsAutomationStartInput,
+            showOldSubmitClaimFlow: $showOldSubmitClaimFlow
+        )
+        .modally(presented: $showOldSubmitClaimFlow) {
+            SubmitClaimNavigation()
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
@@ -830,6 +862,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isEuroBonusPresented = false
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
+    @Published var askForPushNotification = false
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
@@ -901,6 +934,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .addonAdded,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(claimCreated),
+            name: .claimCreated,
+            object: nil
+        )
     }
 
     @objc func addonAdded() {
@@ -917,6 +957,17 @@ class LoggedInNavigationViewModel: ObservableObject {
                 handleDeepLinks(deepLinkUrl: deepLinkUrl)
             } else if !deepLinkUrl.absoluteString.contains("//bankid") {
                 deeplinkToBeOpenedAfterLogin = deepLinkUrl
+            }
+        }
+    }
+
+    @objc func claimCreated(notification: Notification) {
+        Task { @MainActor in
+            let store: ClaimsStore = globalPresentableStoreContainer.get()
+            store.send(.fetchActiveClaims)
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
+                askForPushNotification = true
             }
         }
     }

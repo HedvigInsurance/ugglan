@@ -1,0 +1,10 @@
+mutation ClaimIntentSkipStep($stepId: ID!) {
+  claimIntentSkipStep(stepId: $stepId) {
+    intent {
+        ...ClaimIntentFragment
+    }
+    userError {
+        message
+    }
+  }
+}

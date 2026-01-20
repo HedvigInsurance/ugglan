@@ -81,9 +81,11 @@ public struct hCounterField: View {
         }
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
+        .accessibilityAddTraits(.isButton)
         .onTapGesture {
             startAnimation()
         }
+        .accessibilityAddTraits(.isButton)
         .onAppear {
             withAnimation {
                 textToShow = textForValue(value) ?? ""
@@ -181,9 +183,11 @@ extension hFieldSize {
         switch self {
         case .small:
             return 10
-        case .large:
+        case .large, .extraLarge:
             return 15
         case .medium:
+            return 15
+        case .capsuleShape:
             return 15
         }
     }

@@ -214,12 +214,8 @@ class MainNavigationViewModel: ObservableObject {
 
     @objc func resetBadge() {
         UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
-        if #available(iOS 16.0, *) {
-            Task {
-                try await UNUserNotificationCenter.current().setBadgeCount(0)
-            }
-        } else {
-            UIApplication.shared.applicationIconBadgeNumber = 0
+        Task {
+            try await UNUserNotificationCenter.current().setBadgeCount(0)
         }
     }
 

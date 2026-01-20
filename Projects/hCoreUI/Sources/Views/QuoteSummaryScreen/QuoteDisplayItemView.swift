@@ -26,7 +26,7 @@ public struct QuoteDisplayItemView: View {
 
     @ViewBuilder
     private var displayTitleView: some View {
-        if displayItem.crossDisplayTitle, #available(iOS 16.0, *) {
+        if displayItem.crossDisplayTitle {
             hText(displayItem.displayTitle, style: .label)
                 .strikethrough()
                 .accessibilityLabel(L10n.voiceoverCurrentValue + displayItem.displayTitle)
@@ -38,7 +38,7 @@ public struct QuoteDisplayItemView: View {
     @ViewBuilder
     private var displayValueView: some View {
         let displayValue = displayItem.displayValue
-        if displayItem.crossDisplayTitle, #available(iOS 16.0, *) {
+        if displayItem.crossDisplayTitle {
             hText(displayValue, style: .label)
                 .strikethrough()
         } else {

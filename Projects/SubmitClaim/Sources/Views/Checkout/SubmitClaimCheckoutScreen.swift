@@ -152,6 +152,7 @@ public struct SubmitClaimCheckoutScreen: View {
                                     claimsNavigationVm.singleItemCheckoutModel?.selectedPayoutMethod = element
                                 }
                             }
+                            .accessibilityAddTraits(.isButton)
                         }
                         .sectionContainerStyle(.transparent)
                     }

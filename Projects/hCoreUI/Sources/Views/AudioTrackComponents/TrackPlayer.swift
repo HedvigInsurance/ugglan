@@ -1,9 +1,17 @@
 import SwiftUI
+import hCore
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
     @State private var width: CGFloat = 0
-    @ViewBuilder var image: some View {
+    @Environment(\.trackPlayerBackground) var trackPlayerBackground
+    init(
+        audioPlayer: AudioPlayer
+    ) {
+        self.audioPlayer = audioPlayer
+    }
+
+    private var image: some View {
         Image(
             uiImage: {
                 switch audioPlayer.playbackState {
@@ -18,6 +26,7 @@ struct TrackPlayer: View {
                 }
             }()
         )
+        .accessibilityHidden(true)
         .foregroundColor(hFillColor.Opaque.primary)
         .background {
             Circle().fill(hSurfaceColor.Translucent.secondary)
@@ -49,6 +58,16 @@ struct TrackPlayer: View {
                         .transition(
                             .opacity.animation(.easeOut)
                         )
+                        .accessibilityAdjustableAction { direction in
+                            switch direction {
+                            case .increment:
+                                audioPlayer.setProgress(to: min(audioPlayer.progress + 0.1, 1.0))
+                            case .decrement:
+                                audioPlayer.setProgress(to: max(audioPlayer.progress - 0.1, 0.0))
+                            @unknown default:
+                                break
+                            }
+                        }
                         .gesture(
                             DragGesture(coordinateSpace: .local)
                                 .onChanged { gesture in
@@ -86,11 +105,25 @@ struct TrackPlayer: View {
             .frame(maxWidth: .infinity)
             .frame(height: 64)
             .background(
-                RoundedRectangle(cornerRadius: .cornerRadiusL)
-                    .fill(hSurfaceColor.Opaque.primary)
+                trackPlayerBackground
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(L10n.a11YAudioRecording)
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment:
+                    let newProgress = min(audioPlayer.progress + 0.1, 1.0)
+                    audioPlayer.setProgress(to: newProgress)
+                case .decrement:
+                    let newProgress = max(audioPlayer.progress - 0.1, 0.0)
+                    audioPlayer.setProgress(to: newProgress)
+                @unknown default:
+                    break
+                }
             }
         }
     }
@@ -104,4 +137,24 @@ struct TrackPlayer: View {
         )
     )
     TrackPlayer(audioPlayer: audioPlayer)
+}
+@MainActor
+private struct EnvironmentTrackPlayerBackground: @preconcurrency EnvironmentKey {
+    static let defaultValue: AnyView = AnyView(
+        RoundedRectangle(cornerRadius: .cornerRadiusL)
+            .fill(hSurfaceColor.Opaque.primary)
+    )
+}
+
+extension EnvironmentValues {
+    public var trackPlayerBackground: AnyView {
+        get { self[EnvironmentTrackPlayerBackground.self] }
+        set { self[EnvironmentTrackPlayerBackground.self] = newValue }
+    }
+}
+
+extension View {
+    public func trackPlayerBackground<Content: View>(@ViewBuilder background: () -> Content) -> some View {
+        environment(\.trackPlayerBackground, AnyView(background()))
+    }
 }
