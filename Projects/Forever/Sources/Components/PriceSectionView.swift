@@ -20,6 +20,8 @@ struct PriceSectionView: View {
                     .onTapGesture {
                         didPressInfo()
                     }
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityLabel(L10n.voiceoverMoreInfo)
             }
             .foregroundColor(hTextColor.Opaque.secondary)
         }

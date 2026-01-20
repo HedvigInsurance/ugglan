@@ -85,6 +85,7 @@ public struct hCounterField: View {
         .onTapGesture {
             startAnimation()
         }
+        .accessibilityAddTraits(.isButton)
         .onAppear {
             withAnimation {
                 textToShow = textForValue(value) ?? ""

@@ -128,6 +128,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             equals = focusValue
             vm.textField?.becomeFirstResponder()
         }
+        .accessibilityAddTraits(.isButton)
         .onChange(of: error) { _ in
             animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {

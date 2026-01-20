@@ -26,6 +26,7 @@ struct TrackPlayer: View {
                 }
             }()
         )
+        .accessibilityHidden(true)
         .foregroundColor(hFillColor.Opaque.primary)
         .background {
             Circle().fill(hSurfaceColor.Translucent.secondary)
@@ -57,6 +58,16 @@ struct TrackPlayer: View {
                         .transition(
                             .opacity.animation(.easeOut)
                         )
+                        .accessibilityAdjustableAction { direction in
+                            switch direction {
+                            case .increment:
+                                audioPlayer.setProgress(to: min(audioPlayer.progress + 0.1, 1.0))
+                            case .decrement:
+                                audioPlayer.setProgress(to: max(audioPlayer.progress - 0.1, 0.0))
+                            @unknown default:
+                                break
+                            }
+                        }
                         .gesture(
                             DragGesture(coordinateSpace: .local)
                                 .onChanged { gesture in
