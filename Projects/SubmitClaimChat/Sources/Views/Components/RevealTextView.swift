@@ -4,7 +4,7 @@ import hCoreUI
 
 struct RevealTextView: View {
     @State private var visibleCharacters: [Int: Double] = [:]
-    @State private var showDot = false
+    @State private var showDot = true
     @State private var animationCompleted = false
     let text: String
     let animate: Bool
@@ -23,7 +23,7 @@ struct RevealTextView: View {
     }
     var body: some View {
         ZStack(alignment: .topLeading) {
-            if showDot {
+            if showDot && animate {
                 AnimatedDotView()
             }
             if animate, #available(iOS 18.0, *) {

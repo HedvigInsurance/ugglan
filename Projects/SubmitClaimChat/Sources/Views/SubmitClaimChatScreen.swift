@@ -332,8 +332,11 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         }
         self.shouldMergeInputWithContent = false
         let neededHeight = self.currentStepInputHeight
+        let scrollHeight =
+            scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y
+            + scrollView.adjustedContentInset.top - scrollView.safeAreaInsets.bottom
         let availableHeight =
-            scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y - totalStepsHeight
+            scrollHeight - totalStepsHeight
             + scrollView.adjustedContentInset.top + topPadding
         self.isInputScrolledOffScreen = neededHeight > availableHeight
     }
@@ -407,6 +410,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         case let .removeStep(id):
             withAnimation {
                 self.allSteps.removeAll(where: { $0.id == id })
+                self.stepHeights[id] = nil
             }
         case let .goToNext(claimIntent):
             handleGoToNextStep(claimIntent: claimIntent)
