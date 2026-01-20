@@ -74,6 +74,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     }
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityHint(
+                isEnabled ? L10n.voiceoverPressTo + " " + L10n.voiceoverEdit : ""
+            )
             rightAttachedView
         }
         .addFieldBackground(animate: $animate, error: $error)
