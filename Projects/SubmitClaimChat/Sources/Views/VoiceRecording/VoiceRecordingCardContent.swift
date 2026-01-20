@@ -48,22 +48,12 @@ struct VoiceRecordingCardContent: View {
         }
     }
 
+    @ViewBuilder
     private var controlsSection: some View {
-        HStack(spacing: .padding16) {
+        HStack(spacing: .padding4) {
             // Start over button (left)
-            if voiceRecorder.hasRecording {
-                Button(action: onStartOver) {
-                    hText(L10n.embarkRecordAgain, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
-                Button(action: onUseText) {
-                    hText(L10n.claimsUseTextInstead, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            VoiceStartOverButton(onTap: onStartOver)
+                .disabled(!voiceRecorder.hasRecording)
 
             if !voiceRecorder.hasRecording {
                 VoiceRecordButton(isRecording: voiceRecorder.isRecording) {
@@ -78,36 +68,9 @@ struct VoiceRecordingCardContent: View {
             }
 
             // Send button (right)
-            Button(action: onSend) {
-                hText(L10n.chatUploadPresend, style: .body1)
-                    .foregroundColor(uploadTextColor)
-                    .padding(.horizontal, .padding16)
-                    .padding(.vertical, .padding8)
-                    .background(
-                        Capsule()
-                            .fill(uploadCapsuleColor)
-                    )
-            }
-            .disabled(!voiceRecorder.hasRecording)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+            VoiceSendButton(onTap: onSend)
+                .disabled(!voiceRecorder.hasRecording)
         }
     }
 
-    @hColorBuilder
-    private var uploadTextColor: some hColor {
-        if voiceRecorder.hasRecording {
-            hTextColor.Opaque.negative
-        } else {
-            hTextColor.Opaque.tertiary
-        }
-    }
-
-    @hColorBuilder
-    private var uploadCapsuleColor: some hColor {
-        if voiceRecorder.hasRecording {
-            hSignalColor.Blue.element
-        } else {
-            hFillColor.Opaque.disabled
-        }
-    }
 }
