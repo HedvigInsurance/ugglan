@@ -343,7 +343,6 @@ struct SubmitClaimAudioResultView: View {
             currentStep: .init(
                 content: .audioRecording(
                     model: .init(
-                        hint: "",
                         uploadURI: "",
                         freeTextMinLength: 5,
                         freeTextMaxLength: 100

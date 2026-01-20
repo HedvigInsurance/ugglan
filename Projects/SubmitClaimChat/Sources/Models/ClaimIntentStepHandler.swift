@@ -61,8 +61,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     func getText() -> String? {
         if let text = claimIntent.currentStep.text {
-            if case let ClaimIntentStepContent.audioRecording(model) = claimIntent.currentStep.content {
-                return text + "\n\n" + model.hint
+            if let hint = claimIntent.hint {
+                return text + "\n\n" + hint
             }
             return text
         }
