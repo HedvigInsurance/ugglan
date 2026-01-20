@@ -56,7 +56,11 @@ struct SubmitClaimFormView: View {
                     onSelected: { [weak viewModel] values in
                         viewModel?.getFormStepValue(for: model.id).values = values.compactMap({ $0.0?.value })
                         viewModel?.isSelectItemPresented = nil
-                    }
+                    },
+                    onCancel: {
+                        viewModel?.isSelectItemPresented = nil
+                    },
+                    returnValueOnSelection: !model.multiselect
                 )
             )
             .hItemPickerAttributes(model.attributes)

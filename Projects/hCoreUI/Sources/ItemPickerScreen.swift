@@ -10,6 +10,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     let buttonText: String
     let infoCard: ItemPickerInfoCard?
     var manualInput: ItemManualInput
+    let returnValueOnSelection: Bool
     @Published var type: ItemPickerFieldType? = nil
     @Published var selectedItems: [T] = []
 
@@ -20,7 +21,8 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         onCancel: (() -> Void)? = nil,
         manualInputConfig: ItemManualInput? = nil,
         buttonText: String? = L10n.generalSaveButton,
-        infoCard: ItemPickerInfoCard? = nil
+        infoCard: ItemPickerInfoCard? = nil,
+        returnValueOnSelection: Bool = false
     ) {
         self.items = items
         self.onSelected = onSelected
@@ -29,6 +31,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.buttonText = buttonText ?? L10n.generalSaveButton
         self.infoCard = infoCard
         selectedItems = preSelectedItems()
+        self.returnValueOnSelection = returnValueOnSelection
     }
 
     public struct ItemPickerInfoCard {
@@ -205,17 +208,20 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         hSection {
             VStack(spacing: .padding16) {
                 bottomAttachedView
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: config.buttonText),
-                    {
-                        sendSelectedItems
-                    }
-                )
-                .hButtonIsLoading(isLoading)
-                .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
-                .accessibilityHint(accessibilityText)
+                if !config.returnValueOnSelection {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: config.buttonText),
+                        {
+                            sendSelectedItems
+                        }
+                    )
+                    .hButtonIsLoading(isLoading)
+                    .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
+                    .accessibilityHint(accessibilityText)
+                }
+
                 if let onCancel = config.onCancel {
                     hCancelButton {
                         onCancel()
@@ -292,7 +298,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 .asAnyView
             }
         )
-        .accessibilityHint(isSelected ? L10n.voiceoverOptionSelected + (displayName?.title ?? "") : "")
     }
 
     func onTapExecuteFor(_ item: T) {
@@ -311,6 +316,9 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                     }
                 } else {
                     config.selectedItems = [item]
+                }
+                if config.returnValueOnSelection {
+                    sendSelectedItems
                 }
             }
         }
