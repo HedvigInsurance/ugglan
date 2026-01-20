@@ -14,32 +14,24 @@ public struct SubmitClaimChatScreen: View {
     public init() {}
 
     public var body: some View {
-        if let outcome = viewModel.outcome {
-            SubmitClaimOutcomeScreen(outcome: outcome)
-                .hFormBottomBackgroundColor(.aiPoweredGradient)
-                .animation(.defaultSpring, value: viewModel.outcome)
-                .onDeinit {
-                    NotificationCenter.default.post(name: .claimCreated, object: nil)
+        scrollContent
+            .submitClaimChatScreenAlert(viewModel.alertVm)
+            .animation(.defaultSpring, value: viewModel.outcome)
+            .onChange(of: viewModel.showError) { value in
+                if value {
+                    viewModel.alertVm.alertModel = .init(
+                        type: .error,
+                        message: viewModel.error?.localizedDescription ?? "",
+                        action: {
+                            viewModel.startClaimIntent()
+                        },
+                        onClose: {
+                            router.dismiss()
+                        }
+                    )
                 }
-        } else {
-            scrollContent
-                .submitClaimChatScreenAlert(viewModel.alertVm)
-                .animation(.defaultSpring, value: viewModel.outcome)
-                .onChange(of: viewModel.showError) { value in
-                    if value {
-                        viewModel.alertVm.alertModel = .init(
-                            type: .error,
-                            message: viewModel.error?.localizedDescription ?? "",
-                            action: {
-                                viewModel.startClaimIntent()
-                            },
-                            onClose: {
-                                viewModel.router.dismiss()
-                            }
-                        )
-                    }
-                }
-        }
+            }
+            .navigationBarProgress($viewModel.progress)
     }
 
     private var scrollContent: some View {
@@ -51,7 +43,6 @@ public struct SubmitClaimChatScreen: View {
                     }
                 }
         }
-        .navigationBarProgress($viewModel.progress)
     }
 
     private var mainContent: some View {
@@ -255,7 +246,8 @@ extension View {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
+    let demoService = ClaimIntentClientDemo()
+    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demoService })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return SubmitClaimChatScreen()
         .embededInNavigation(tracking: "")
@@ -359,7 +351,7 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
 
     @Published var isInputScrolledOffScreen = false
     @Published var outcome: ClaimIntentStepOutcome?
-    @Published var progress: Double = 0
+    @Published var progress: Double?
 
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
@@ -421,14 +413,11 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         case let .regret(currentClaimIntent, newclaimIntent):
             handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
         case let .outcome(model):
-            self.allSteps.removeAll()
-            self.currentStep = nil
-            self.progress = 1.0
-            Task {
-                try? await Task.sleep(seconds: 0.5)
-                withAnimation {
-                    self.outcome = model
-                }
+            router.push(model)
+            withAnimation {
+                self.allSteps.removeAll()
+                self.currentStep = nil
+                self.progress = nil
             }
         }
     }
