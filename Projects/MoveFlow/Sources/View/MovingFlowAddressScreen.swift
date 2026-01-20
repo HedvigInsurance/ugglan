@@ -165,7 +165,7 @@ struct MovingFlowAddressScreen: View {
 
     @ViewBuilder
     func isStudentField() -> some View {
-        let view = CheckboxToggleView(
+        CheckboxToggleView(
             title: L10n.changeAddressStudentLabel,
             isOn: $vm.isStudent.animation(.default)
         )
@@ -174,13 +174,7 @@ struct MovingFlowAddressScreen: View {
                 vm.isStudent.toggle()
             }
         }
-
-        if #available(iOS 17.0, *) {
-            view.accessibilityAddTraits(.isToggle)
-        } else {
-            view
-                .accessibilityAddTraits(.isButton)
-        }
+        .accessibilityAddTraits(.isButton)
     }
 
     func continuePressed() {

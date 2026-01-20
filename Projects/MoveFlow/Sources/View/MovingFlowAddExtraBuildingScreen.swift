@@ -74,7 +74,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
 
     @ViewBuilder
     private var connectedToWater: some View {
-        let view = CheckboxToggleView(
+        CheckboxToggleView(
             title: L10n.changeAddressExtraBuildingsWaterInputLabel,
             isOn: $vm.connectedToWater.animation(.default)
         )
@@ -83,16 +83,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 vm.connectedToWater.toggle()
             }
         }
-
-        if #available(iOS 17.0, *) {
-            view.accessibilityAddTraits(.isToggle)
-        } else {
-            view
-                .accessibilityAddTraits(.isButton)
-                .accessibilityValue(
-                    vm.connectedToWater ? Text("On") : Text("Off")
-                )
-        }
+        .accessibilityAddTraits(.isButton)
     }
 
     func addExtraBuilding() {

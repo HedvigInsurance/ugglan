@@ -179,7 +179,7 @@ struct MovingFlowHouseScreen: View {
 
     @ViewBuilder
     private var isSubleted: some View {
-        let view = CheckboxToggleView(
+        CheckboxToggleView(
             title: L10n.changeAddressSubletLabel,
             isOn: $houseInformationInputvm.isSubleted.animation(.default)
         )
@@ -189,13 +189,7 @@ struct MovingFlowHouseScreen: View {
                 houseInformationInputvm.isSubleted.toggle()
             }
         }
-
-        if #available(iOS 17.0, *) {
-            view.accessibilityAddTraits(.isToggle)
-        } else {
-            view
-                .accessibilityAddTraits(.isButton)
-        }
+        .accessibilityAddTraits(.isButton)
     }
 
     func addExtraBuilding() {
