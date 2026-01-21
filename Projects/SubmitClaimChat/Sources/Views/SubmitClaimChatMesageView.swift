@@ -100,7 +100,7 @@ struct ClaimStepView: View {
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
                 hSection {
-                    hButton(.large, .ghost, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
+                    hButton(.large, .secondary, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
                         Task {
                             await viewModel?.skip()
                         }
