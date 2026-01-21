@@ -126,7 +126,9 @@ struct ClaimStepResultView: View {
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
-            hPill(text: L10n.claimChatSkippedLabel, color: .grey, colorLevel: .two, withBorder: false)
+            hText(L10n.claimChatSkippedLabel)
+                .foregroundColor(hTextColor.Translucent.secondary)
+                .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                 .hFieldSize(.capsuleShape)
                 .accessibilityHidden(true)
         } else if viewModel.state.showResults {
