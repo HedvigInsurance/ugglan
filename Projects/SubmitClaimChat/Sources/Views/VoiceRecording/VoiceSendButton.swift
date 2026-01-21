@@ -4,10 +4,15 @@ import hCoreUI
 
 public struct VoiceSendButton: View {
     let onTap: () async throws -> Void
-    @Environment(\.isEnabled) var isEnabled
+    var isEnabled: Bool
     @EnvironmentObject var voiceRecorder: VoiceRecorder
-    public init(onTap: @escaping () async throws -> Void) {
+
+    public init(
+        onTap: @escaping () async throws -> Void,
+        isEnabled: Bool
+    ) {
         self.onTap = onTap
+        self.isEnabled = isEnabled
     }
 
     public var body: some View {
@@ -68,8 +73,7 @@ public struct VoiceSendButton: View {
 
 #Preview {
     VStack(spacing: 40) {
-        VoiceSendButton {}
-        VoiceSendButton {}
-            .disabled(true)
+        VoiceSendButton(onTap: {}, isEnabled: true)
+        VoiceSendButton(onTap: {}, isEnabled: false)
     }
 }

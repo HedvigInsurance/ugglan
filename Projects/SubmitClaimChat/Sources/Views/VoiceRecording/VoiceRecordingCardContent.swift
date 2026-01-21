@@ -78,10 +78,12 @@ struct VoiceRecordingCardContent: View {
 
     private var controlsSection: some View {
         HStack(spacing: .padding4) {
-            VoiceStartOverButton { [weak voiceRecorder] in
-                voiceRecorder?.startOver()
-            }
-            .disabled(!voiceRecorder.hasRecording)
+            VoiceStartOverButton(
+                onTap: { [weak voiceRecorder] in
+                    voiceRecorder?.startOver()
+                },
+                isEnabled: voiceRecorder.hasRecording
+            )
 
             if !voiceRecorder.hasRecording {
                 VoiceRecordButton(isRecording: voiceRecorder.isRecording) { [weak voiceRecorder] in
@@ -94,8 +96,10 @@ struct VoiceRecordingCardContent: View {
                     voiceRecorder?.togglePlayback()
                 }
             }
-            VoiceSendButton(onTap: onSend)
-                .disabled(!voiceRecorder.hasRecording)
+            VoiceSendButton(
+                onTap: onSend,
+                isEnabled: voiceRecorder.hasRecording
+            )
         }
         .frame(maxWidth: 600)
     }

@@ -4,10 +4,14 @@ import hCoreUI
 
 public struct VoiceStartOverButton: View {
     let onTap: () -> Void
-    @Environment(\.isEnabled) var isEnabled
+    var isEnabled: Bool
 
-    public init(onTap: @escaping () -> Void) {
+    public init(
+        onTap: @escaping () -> Void,
+        isEnabled: Bool
+    ) {
         self.onTap = onTap
+        self.isEnabled = isEnabled
     }
 
     public var body: some View {
@@ -52,7 +56,7 @@ public struct VoiceStartOverButton: View {
 }
 
 #Preview {
-    VoiceStartOverButton {}
+    VoiceStartOverButton(onTap: {}, isEnabled: true)
 }
 
 extension View {
