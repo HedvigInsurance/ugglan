@@ -9,7 +9,7 @@ public final class VoiceRecorder: ObservableObject {
 
     // MARK: - Published State
     @Published public private(set) var recordingState: RecordingState = .idle
-    @Published public private(set) var currentTime: TimeInterval = 0
+    @Published public private(set) var currentTime: TimeInterval?
     @Published public private(set) var audioLevels: [CGFloat] = []
     @Published public private(set) var recordedFileURL: URL?
     @Published public private(set) var error: VoiceRecorderError?
@@ -319,6 +319,7 @@ public final class VoiceRecorder: ObservableObject {
 // MARK: - Time Formatting
 extension VoiceRecorder {
     public var formattedTime: String {
+        guard let currentTime else { return " " }
         let minutes = Int(currentTime) / 60
         let seconds = Int(currentTime) % 60
         return String(format: "%02d:%02d", minutes, seconds)

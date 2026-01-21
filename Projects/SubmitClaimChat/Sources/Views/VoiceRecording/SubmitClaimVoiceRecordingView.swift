@@ -29,21 +29,10 @@ struct SubmitClaimVoiceRecordingView: View {
                 onSend: {
                     viewModel.audioFileURL = voiceRecorder.recordedFileURL
                     viewModel.submitResponse()
-                },
-                onStartOver: {
-                    voiceRecorder.startOver()
-                },
-                onUseText: {
-                    voiceRecorder.reset()
-                    withAnimation {
-                        viewModel.isAudioInputPresented = false
-                        viewModel.isTextInputPresented = true
-                    }
                 }
             )
-            .configureTitle(L10n.claimsTriagingWhatHappenedTitle)
             .embededInNavigation(
-                options: [.navigationType(type: .large)],
+                options: [.navigationBarHidden],
                 tracking: SubmitClaimVoiceRecordingViewDetentType.voiceRecording
             )
         }

@@ -5,55 +5,48 @@ import hCoreUI
 struct VoiceRecordingCardContent: View {
     @ObservedObject var voiceRecorder: VoiceRecorder
     let onSend: () -> Void
-    let onStartOver: () -> Void
-    let onUseText: () -> Void
 
     var body: some View {
         hForm {
-            VStack(spacing: .padding16) {
-                // Waveform area
-                waveformSection
-                    .frame(height: 60)
+            hSection {
+                VStack(spacing: .padding16) {
+                    VStack(spacing: 0) {
+                        hText(L10n.claimsTriagingWhatHappenedTitle)
+                        hText(voiceRecorder.formattedTime, style: .body1)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
 
-                // Timer (when recording or recorded)
-                if voiceRecorder.isRecording || voiceRecorder.hasRecording {
-                    hText(voiceRecorder.formattedTime, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                    waveformSection
+                        .frame(height: .padding60)
+                        .padding(.horizontal, .padding45)
+
+                    controlsSection
+                        .sectionContainerStyle(.opaque)
                 }
-
-                // Bottom controls
-                controlsSection
             }
-            .padding(.padding16)
+            .sectionContainerStyle(.transparent)
+            .padding(.bottom, .padding16)
+            .padding(.top, .padding32)
         }
         .hFormContentPosition(.compact)
     }
 
     @ViewBuilder
     private var waveformSection: some View {
-        if voiceRecorder.isRecording {
-            VoiceWaveformView(
-                audioLevels: voiceRecorder.audioLevels,
-                isRecording: true,
-                maxHeight: 60
-            )
-        } else if voiceRecorder.hasRecording {
-            VoiceWaveformView(
-                audioLevels: voiceRecorder.audioLevels,
-                isRecording: voiceRecorder.isPlaying,
-                maxHeight: 60
-            )
-        } else {
-            IdleWaveformView()
-        }
+        VoiceWaveformView(
+            audioLevels: voiceRecorder.audioLevels,
+            isRecording: voiceRecorder.isRecording,
+            maxHeight: 60
+        )
     }
 
     @ViewBuilder
     private var controlsSection: some View {
         HStack(spacing: .padding4) {
-            // Start over button (left)
-            VoiceStartOverButton(onTap: onStartOver)
-                .disabled(!voiceRecorder.hasRecording)
+            VoiceStartOverButton {
+                voiceRecorder.startOver()
+            }
+            .disabled(!voiceRecorder.hasRecording)
 
             if !voiceRecorder.hasRecording {
                 VoiceRecordButton(isRecording: voiceRecorder.isRecording) {
@@ -71,6 +64,11 @@ struct VoiceRecordingCardContent: View {
             VoiceSendButton(onTap: onSend)
                 .disabled(!voiceRecorder.hasRecording)
         }
+        .frame(maxWidth: 600)
     }
+}
 
+#Preview {
+    VoiceRecordingCardContent(voiceRecorder: .init()) {
+    }
 }
