@@ -4,24 +4,40 @@ import hCoreUI
 
 struct VoiceRecordingCardContent: View {
     @ObservedObject var voiceRecorder: VoiceRecorder
-    let onSend: () -> Void
+    let onSend: () async throws -> Void
 
     var body: some View {
         hForm {
             hSection {
                 VStack(spacing: .padding16) {
-                    VStack(spacing: 0) {
-                        hText(L10n.claimsTriagingWhatHappenedTitle)
-                        hText(voiceRecorder.formattedTime, style: .body1)
-                            .foregroundColor(hTextColor.Opaque.secondary)
+                    if let error = voiceRecorder.error {
+                        StateView(
+                            type: .error,
+                            title: error.title ?? L10n.somethingWentWrong,
+                            bodyText: error.errorDescription,
+                            formPosition: nil,
+                            attachContentToBottom: false
+                        )
+                    } else {
+                        VStack(spacing: 0) {
+                            hText(L10n.claimsTriagingWhatHappenedTitle)
+                                .foregroundColor(titleColor)
+
+                            hText(voiceRecorder.formattedTime, style: .body1)
+                                .foregroundColor(recordingProgressColor)
+                        }
+                        ZStack {
+                            if voiceRecorder.isSending {
+                                DotsActivityIndicator(.standard)
+                                    .useDarkColor
+                            }
+                            waveformSection
+                                .frame(height: .padding60)
+                                .padding(.horizontal, .padding45)
+                                .opacity(voiceRecorder.isSending ? 0 : 1)
+                        }
                     }
-
-                    waveformSection
-                        .frame(height: .padding60)
-                        .padding(.horizontal, .padding45)
-
                     controlsSection
-                        .sectionContainerStyle(.opaque)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -29,6 +45,26 @@ struct VoiceRecordingCardContent: View {
             .padding(.top, .padding32)
         }
         .hFormContentPosition(.compact)
+        .disabled(voiceRecorder.isSending)
+        .environmentObject(voiceRecorder)
+    }
+
+    @hColorBuilder
+    private var titleColor: some hColor {
+        if !voiceRecorder.isSending {
+            hTextColor.Opaque.primary
+        } else {
+            hTextColor.Opaque.disabled
+        }
+    }
+
+    @hColorBuilder
+    private var recordingProgressColor: some hColor {
+        if !voiceRecorder.isSending {
+            hTextColor.Opaque.secondary
+        } else {
+            hTextColor.Opaque.disabled
+        }
     }
 
     @ViewBuilder
@@ -40,28 +76,24 @@ struct VoiceRecordingCardContent: View {
         )
     }
 
-    @ViewBuilder
     private var controlsSection: some View {
         HStack(spacing: .padding4) {
-            VoiceStartOverButton {
-                voiceRecorder.startOver()
+            VoiceStartOverButton { [weak voiceRecorder] in
+                voiceRecorder?.startOver()
             }
             .disabled(!voiceRecorder.hasRecording)
 
             if !voiceRecorder.hasRecording {
-                VoiceRecordButton(isRecording: voiceRecorder.isRecording) {
+                VoiceRecordButton(isRecording: voiceRecorder.isRecording) { [weak voiceRecorder] in
                     Task {
-                        await voiceRecorder.toggleRecording()
+                        await voiceRecorder?.toggleRecording()
                     }
                 }
-                .environmentObject(voiceRecorder)
             } else {
-                VoicePlaybackButton(isPlaying: voiceRecorder.isPlaying) {
-                    voiceRecorder.togglePlayback()
+                VoicePlaybackButton(isPlaying: voiceRecorder.isPlaying) { [weak voiceRecorder] in
+                    voiceRecorder?.togglePlayback()
                 }
             }
-
-            // Send button (right)
             VoiceSendButton(onTap: onSend)
                 .disabled(!voiceRecorder.hasRecording)
         }
@@ -70,6 +102,8 @@ struct VoiceRecordingCardContent: View {
 }
 
 #Preview {
-    VoiceRecordingCardContent(voiceRecorder: .init()) {
+    let voiceRecoder = VoiceRecorder()
+    voiceRecoder.isSending = true
+    return VoiceRecordingCardContent(voiceRecorder: voiceRecoder) {
     }
 }

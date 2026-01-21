@@ -21,6 +21,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     @Published var textInputError: String?
     @Published var isTextInputPresented: Bool = false
     @Published var isAudioInputPresented: Bool = false
+    let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
         textInput.count < audioRecordingModel.freeTextMinLength
             || textInput.count > audioRecordingModel.freeTextMaxLength
@@ -59,32 +60,38 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
+    private var uploadedAudioId: String?
+    func uploadAudioRecording() async throws {
+        guard let audioFileURL else {
+            throw ClaimIntentError.invalidResponse
+        }
+        state.isEnabled = false
+        let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
+        let multipart = MultipartFormDataRequest(url: url)
+        let data = try Data(contentsOf: audioFileURL)
+        multipart.addDataField(
+            fieldName: "files",
+            fileName: audioFileURL.lastPathComponent,
+            data: data,
+            mimeType: "audio/m4a"
+        )
+        let response: FileUploadResponseModel = try await fileUploadClient.upload(
+            url: audioFileURL,
+            multipart: multipart
+        ) { [weak self] progress in
+            Task { @MainActor in
+                self?.uploadProgress = progress
+            }
+        }
+        uploadedAudioId = response.fileIds.first!
+    }
+
     override func executeStep() async throws -> ClaimIntentType {
-        let fileId: String? = try await {
+        let fileId: String? = {
             if isTextInputPresented {
                 return nil
             }
-            guard let audioFileURL else {
-                throw ClaimIntentError.invalidResponse
-            }
-            let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
-            let multipart = MultipartFormDataRequest(url: url)
-            let data = try Data(contentsOf: audioFileURL)
-            multipart.addDataField(
-                fieldName: "files",
-                fileName: audioFileURL.lastPathComponent,
-                data: data,
-                mimeType: "audio/m4a"
-            )
-            let response: FileUploadResponseModel = try await fileUploadClient.upload(
-                url: audioFileURL,
-                multipart: multipart
-            ) { [weak self] progress in
-                Task { @MainActor in
-                    self?.uploadProgress = progress
-                }
-            }
-            return response.fileIds.first!
+            return uploadedAudioId
         }()
 
         let freeText = isTextInputPresented ? textInput : nil
@@ -98,6 +105,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
+        isAudioInputPresented = false
         return result
     }
 
@@ -109,12 +117,6 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             return L10n.a11YSubmittedValues(1) + ": " + textInput
         } else {
             return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
-        }
-    }
-
-    deinit {
-        if let audioFileURL = audioFileURL {
-            try? FileManager.default.removeItem(at: audioFileURL)
         }
     }
 }
