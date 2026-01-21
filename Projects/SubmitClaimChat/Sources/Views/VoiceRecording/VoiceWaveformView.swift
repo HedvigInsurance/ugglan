@@ -14,7 +14,7 @@ public struct VoiceWaveformView: View {
         audioLevels: [CGFloat],
         isRecording: Bool,
         maxHeight: CGFloat = 60,
-        minBarHeight: CGFloat = 2
+        minBarHeight: CGFloat = 8
     ) {
         self.audioLevels = audioLevels
         self.isRecording = isRecording
@@ -23,24 +23,35 @@ public struct VoiceWaveformView: View {
     }
 
     public var body: some View {
-        GeometryReader { geometry in
-            let maxBars = Int(geometry.size.width / (barWidth + barSpacing))
-            let levels = prepareLevels(count: maxBars)
+        ZStack {
+            if audioLevels.isEmpty {
+                // Show dotted line when idle
+                DottedLine()
+                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    .fill(hTextColor.Opaque.secondary)
+                    .frame(height: 1)
+            } else {
+                // Show waveform bars when recording/recorded
+                GeometryReader { geometry in
+                    let maxBars = Int(geometry.size.width / (barWidth + barSpacing))
+                    let levels = prepareLevels(count: maxBars)
 
-            HStack(spacing: barSpacing) {
-                ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
-                    RoundedRectangle(cornerRadius: barWidth / 2)
-                        .fill(hTextColor.Opaque.secondary)
-                        .frame(
-                            width: barWidth,
-                            height: barHeight(for: level)
-                        )
-                        .animation(.easeOut(duration: 0.1), value: level)
+                    HStack(spacing: barSpacing) {
+                        ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
+                            RoundedRectangle(cornerRadius: barWidth / 2)
+                                .fill(hTextColor.Opaque.primary)
+                                .frame(
+                                    width: barWidth,
+                                    height: barHeight(for: level, at: index, total: levels.count)
+                                )
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
         .frame(height: maxHeight)
+        .animation(.easeOut(duration: 0.1), value: audioLevels)
     }
 
     private func prepareLevels(count: Int) -> [CGFloat] {
@@ -55,9 +66,39 @@ public struct VoiceWaveformView: View {
         return padding + Array(levels)
     }
 
-    private func barHeight(for level: CGFloat) -> CGFloat {
-        let height = max(minBarHeight, level * maxHeight)
+    private func barHeight(for level: CGFloat, at index: Int, total: Int) -> CGFloat {
+        // Apply edge fade effect - bars are shorter at the edges
+        let edgeFadeWidth = min(10, total / 4)  // Fade over ~10 bars on each edge
+
+        // Calculate edge multiplier: 0 at edges, 1.0 in the middle
+        let edgeMultiplier: CGFloat
+        if index < edgeFadeWidth {
+            // Left edge fade in
+            edgeMultiplier = CGFloat(index) / CGFloat(edgeFadeWidth)
+        } else if index >= total - edgeFadeWidth {
+            // Right edge fade out
+            edgeMultiplier = CGFloat(total - index - 1) / CGFloat(edgeFadeWidth)
+        } else {
+            // Middle section - full height
+            edgeMultiplier = 1.0
+        }
+
+        // Amplify to get taller bars while preserving variation
+        let amplifiedLevel = min(1.0, pow(level, 0.65) * 2.5)
+
+        // Apply edge multiplier to the amplified level
+        let adjustedLevel = amplifiedLevel * edgeMultiplier
+        let height = max(minBarHeight * edgeMultiplier, adjustedLevel * maxHeight)
         return min(height, maxHeight)
+    }
+}
+
+struct DottedLine: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        return path
     }
 }
 
