@@ -39,6 +39,12 @@ struct SubmitClaimVoiceRecordingView: View {
                 tracking: SubmitClaimVoiceRecordingViewDetentType.voiceRecording
             )
         }
+        .onChange(of: viewModel.isAudioInputPresented) { isPresented in
+            if !isPresented {
+                // Reset the voice recorder when the modal is dismissed
+                voiceRecorder.reset()
+            }
+        }
         .animation(.default, value: viewModel.isTextInputPresented)
     }
 

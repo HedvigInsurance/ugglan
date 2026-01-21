@@ -27,6 +27,8 @@ public final class VoiceRecorder: ObservableObject {
     private var timer: Timer?
     private var meteringTimer: Timer?
     private var recordingStartTime: Date?
+    private var recentPeaks: [CGFloat] = []
+    private let peakWindowSize = 30  // Track peaks over last 30 samples
 
     // MARK: - Types
     public enum RecordingState: Equatable {
@@ -201,6 +203,7 @@ public final class VoiceRecorder: ObservableObject {
         recordedFileURL = nil
         currentTime = 0
         audioLevels = []
+        recentPeaks = []
         recordingState = .idle
         error = nil
     }
@@ -317,11 +320,25 @@ public final class VoiceRecorder: ObservableObject {
         guard let recorder, isRecording else { return }
         recorder.updateMeters()
         let power = recorder.averagePower(forChannel: 0)
-        // Normalize: power ranges from -160 to 0
-        let normalizedPower = max(0, (power + 50) / 50)
-        let level = CGFloat(pow(10, normalizedPower) - 1) / 9  // Scale to 0...1
 
-        audioLevels.append(level)
+        // Initial normalization: power ranges from -160 to 0
+        let normalizedPower = max(0, (power + 50) / 50)
+        let rawLevel = CGFloat(pow(10, normalizedPower) - 1) / 9  // Scale to 0...1
+
+        // Track recent peaks for adaptive normalization
+        recentPeaks.append(rawLevel)
+        if recentPeaks.count > peakWindowSize {
+            recentPeaks.removeFirst()
+        }
+
+        // Calculate adaptive scale based on recent peak
+        let recentPeak = recentPeaks.max() ?? 0.3
+        let adaptiveScale = recentPeak > 0.2 ? (0.85 / recentPeak) : 1.0  // Target using 85% of range
+
+        // Apply adaptive scaling to make better use of the visual range
+        let adaptedLevel = min(1.0, rawLevel * adaptiveScale)
+
+        audioLevels.append(adaptedLevel)
         // Keep only last 100 samples for visualization
         if audioLevels.count > 100 {
             audioLevels.removeFirst()
