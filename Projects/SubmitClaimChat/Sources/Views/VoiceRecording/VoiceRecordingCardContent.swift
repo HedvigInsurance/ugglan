@@ -54,6 +54,7 @@ struct VoiceRecordingCardContent: View {
                         await voiceRecorder.toggleRecording()
                     }
                 }
+                .environmentObject(voiceRecorder)
             } else {
                 VoicePlaybackButton(isPlaying: voiceRecorder.isPlaying) {
                     voiceRecorder.togglePlayback()

@@ -90,6 +90,14 @@ public final class VoiceRecorder: ObservableObject {
         }
     }
 
+    public func askForPermissionIfNeeded() async throws {
+        let granted = await requestMicrophonePermission()
+        guard granted else {
+            error = .permissionDenied
+            throw VoiceRecorderError.permissionDenied
+        }
+    }
+
     public func stopRecording() {
         recorder?.stop()
         stopTimers()
@@ -154,7 +162,7 @@ public final class VoiceRecorder: ObservableObject {
         player = nil
         stopTimers()
         recordingState = .recorded
-        currentTime = 0
+        currentTime = nil
     }
 
     public func togglePlayback() {

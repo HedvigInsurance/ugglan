@@ -9,6 +9,8 @@ public struct VoiceRecordButton: View {
     @State private var countdownNumber: Int? = nil
     @State private var isCountingDown = false
 
+    @EnvironmentObject var voiceRecorder: VoiceRecorder
+
     public init(isRecording: Bool, onTap: @escaping () -> Void) {
         self.isRecording = isRecording
         self.onTap = onTap
@@ -39,7 +41,10 @@ public struct VoiceRecordButton: View {
         if isRecording {
             onTap()
         } else if !isCountingDown {
-            startCountdown()
+            Task {
+                try await voiceRecorder.askForPermissionIfNeeded()
+                startCountdown()
+            }
         }
     }
 
