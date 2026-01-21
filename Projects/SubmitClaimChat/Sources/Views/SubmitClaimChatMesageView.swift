@@ -43,7 +43,7 @@ struct SubmitClaimChatMesageView: View {
                 )
                 .hButtonIsLoading(viewModel.state.isLoading)
                 .fixedSize(horizontal: false, vertical: true)
-                spacing(viewModel.sender == .hedvig)
+                spacing(viewModel.trailingSpacing)
             }
             .padding(.top, .padding16)
             .id("result_\(viewModel.id)")
@@ -74,6 +74,13 @@ extension ClaimIntentStepHandler {
             }
         }
         return .trailing
+    }
+
+    var trailingSpacing: Bool {
+        switch claimIntent.currentStep.content {
+        case .summary: false
+        default: sender == .hedvig
+        }
     }
 }
 
