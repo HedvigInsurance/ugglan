@@ -12,22 +12,20 @@ public struct VoiceStartOverButton: View {
 
     public var body: some View {
         Button(action: onTap) {
-            hSection {
-                VStack(spacing: .padding4) {
-                    ZStack {
-                        Circle()
-                            .fill(hSurfaceColor.Translucent.secondary)
-                            .frame(width: 32, height: 32)
+            VStack(spacing: .padding4) {
+                ZStack {
+                    Circle()
+                        .fill(hSurfaceColor.Translucent.secondary)
+                        .frame(width: 32, height: 32)
 
-                        hCoreUIAssets.reload.view
-                            .foregroundColor(imageColor)
-                    }
-
-                    hText(L10n.embarkRecordAgain, style: .label)
-                        .foregroundColor(textColor)
+                    hCoreUIAssets.reload.view
+                        .foregroundColor(imageColor)
                 }
-                .padding(.vertical, .padding8)
+
+                hText(L10n.embarkRecordAgain, style: .label)
+                    .foregroundColor(textColor)
             }
+            .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
         .accessibilityLabel(L10n.embarkRecordAgain)
@@ -55,4 +53,20 @@ public struct VoiceStartOverButton: View {
 
 #Preview {
     VoiceStartOverButton {}
+}
+
+extension View {
+    func wrapContentForControlButton() -> some View {
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
+            self
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, .padding8)
+        .frame(maxWidth: .infinity)
+        .background {
+            RoundedRectangle(cornerRadius: .cornerRadiusL)
+                .fill(hSurfaceColor.Opaque.primary)
+        }
+    }
 }

@@ -12,22 +12,20 @@ public struct VoiceSendButton: View {
 
     public var body: some View {
         Button(action: onTap) {
-            hSection {
-                VStack(spacing: .padding4) {
-                    ZStack {
-                        Circle()
-                            .fill(circleColor)
-                            .frame(width: 32, height: 32)
+            VStack(spacing: .padding4) {
+                ZStack {
+                    Circle()
+                        .fill(circleColor)
+                        .frame(width: 32, height: 32)
 
-                        hCoreUIAssets.arrowUp.view
-                            .foregroundColor(iconColor)
-                    }
-
-                    hText(L10n.chatUploadPresend, style: .label)
-                        .foregroundColor(textColor)
+                    hCoreUIAssets.arrowUp.view
+                        .foregroundColor(iconColor)
                 }
-                .padding(.vertical, .padding8)
+
+                hText(L10n.chatUploadPresend, style: .label)
+                    .foregroundColor(textColor)
             }
+            .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
         .accessibilityLabel(L10n.chatUploadPresend)

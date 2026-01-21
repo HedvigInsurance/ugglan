@@ -13,21 +13,19 @@ public struct VoicePlaybackButton: View {
 
     public var body: some View {
         Button(action: onTap) {
-            hSection {
-                VStack(spacing: .padding4) {
-                    ZStack {
-                        Circle()
-                            .fill(hFillColor.Opaque.primary)
-                            .frame(width: 32, height: 32)
+            VStack(spacing: .padding4) {
+                ZStack {
+                    Circle()
+                        .fill(hFillColor.Opaque.primary)
+                        .frame(width: 32, height: 32)
 
-                        buttonImage
-                            .foregroundColor(hFillColor.Opaque.negative)
-                    }
-
-                    hText("Listen", style: .label)
+                    buttonImage
+                        .foregroundColor(hFillColor.Opaque.negative)
                 }
-                .padding(.vertical, .padding8)
+
+                hText("Listen", style: .label)
             }
+            .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
         .accessibilityLabel(isPlaying ? "Pause recording" : "Play recording")

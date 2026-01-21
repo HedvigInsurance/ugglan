@@ -16,21 +16,19 @@ public struct VoiceRecordButton: View {
 
     public var body: some View {
         Button(action: handleTap) {
-            hSection {
-                VStack(spacing: .padding4) {
-                    ZStack {
-                        Circle()
-                            .fill(hSignalColor.Red.element)
-                            .frame(width: 32, height: 32)
+            VStack(spacing: .padding4) {
+                ZStack {
+                    Circle()
+                        .fill(hSignalColor.Red.element)
+                        .frame(width: 32, height: 32)
 
-                        buttonImage
-                            .foregroundColor(hFillColor.Opaque.negative)
-                    }
-
-                    hText(isRecording ? "Stop" : "Start", style: .label)
+                    buttonImage
+                        .foregroundColor(hFillColor.Opaque.negative)
                 }
-                .padding(.vertical, .padding8)
+
+                hText(isRecording ? "Stop" : "Start", style: .label)
             }
+            .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
         .accessibilityLabel(isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
