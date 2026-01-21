@@ -12,9 +12,11 @@ public final class VoiceRecorder: ObservableObject {
     @Published public private(set) var currentTime: TimeInterval?
     @Published public private(set) var audioLevels: [CGFloat] = []
     @Published public private(set) var recordedFileURL: URL?
-    @Published public private(set) var error: VoiceRecorderError?
+    @Published public var error: VoiceRecorderError?
 
     public var isRecording: Bool { recordingState == .recording }
+    @Published public var isSending: Bool = false
+
     public var hasRecording: Bool { recordedFileURL != nil }
     public var isPlaying: Bool { recordingState == .playing }
 
@@ -38,6 +40,7 @@ public final class VoiceRecorder: ObservableObject {
         case permissionDenied
         case recordingFailed
         case playbackFailed
+        case sendingFailed
 
         public var errorDescription: String? {
             switch self {
@@ -47,6 +50,17 @@ public final class VoiceRecorder: ObservableObject {
                 return "Could not send recording. Please try again."
             case .playbackFailed:
                 return "Could not play recording"
+            case .sendingFailed:
+                return "Please try again"
+            }
+        }
+
+        public var title: String? {
+            switch self {
+            case .sendingFailed:
+                return "Could not send recording"
+            default:
+                return nil
             }
         }
     }

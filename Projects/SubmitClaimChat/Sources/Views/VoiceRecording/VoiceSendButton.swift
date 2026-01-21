@@ -3,15 +3,21 @@ import hCore
 import hCoreUI
 
 public struct VoiceSendButton: View {
-    let onTap: () -> Void
+    let onTap: () async throws -> Void
     @Environment(\.isEnabled) var isEnabled
-
-    public init(onTap: @escaping () -> Void) {
+    @EnvironmentObject var voiceRecorder: VoiceRecorder
+    public init(onTap: @escaping () async throws -> Void) {
         self.onTap = onTap
     }
 
     public var body: some View {
-        Button(action: onTap) {
+        Button(action: {
+            Task {
+                voiceRecorder.isSending = true
+                try await onTap()
+                voiceRecorder.isSending = false
+            }
+        }) {
             VStack(spacing: .padding4) {
                 ZStack {
                     Circle()

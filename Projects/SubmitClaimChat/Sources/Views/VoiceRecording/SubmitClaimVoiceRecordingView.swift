@@ -6,8 +6,12 @@ import hCoreUI
 // MARK: - Main Voice Recording View
 struct SubmitClaimVoiceRecordingView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
-    @StateObject private var voiceRecorder = VoiceRecorder()
-    @State private var showError = false
+    @ObservedObject var voiceRecorder: VoiceRecorder
+
+    init(viewModel: SubmitClaimAudioStep) {
+        self.viewModel = viewModel
+        self.voiceRecorder = viewModel.voiceRecorder
+    }
 
     var body: some View {
         hSection {
@@ -20,27 +24,19 @@ struct SubmitClaimVoiceRecordingView: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .onChange(of: voiceRecorder.error) { error in
-            showError = error != nil
-        }
         .detent(presented: $viewModel.isAudioInputPresented) {
             VoiceRecordingCardContent(
                 voiceRecorder: voiceRecorder,
-                onSend: {
-                    viewModel.audioFileURL = voiceRecorder.recordedFileURL
-                    viewModel.submitResponse()
+                onSend: { [weak viewModel, weak voiceRecorder] in
+                    viewModel?.audioFileURL = voiceRecorder?.recordedFileURL
+                    try await viewModel?.uploadAudioRecording()
+                    viewModel?.submitResponse()
                 }
             )
+            .disabled(!viewModel.state.isEnabled)
             .embededInNavigation(
                 options: [.navigationBarHidden],
                 tracking: SubmitClaimVoiceRecordingViewDetentType.voiceRecording
-            )
-        }
-        .alert(isPresented: $showError) {
-            Alert(
-                title: Text(L10n.generalError),
-                message: Text(voiceRecorder.error?.localizedDescription ?? ""),
-                dismissButton: .default(Text("OK"))
             )
         }
         .animation(.default, value: viewModel.isTextInputPresented)
