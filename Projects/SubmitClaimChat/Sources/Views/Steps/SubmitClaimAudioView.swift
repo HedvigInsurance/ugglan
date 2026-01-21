@@ -201,10 +201,7 @@ struct SubmitClaimAudioView: View {
         .onChange(of: audioRecorder.isRecording) { isRecording in
             if !isRecording {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    //                    UIAccessibility.post(notification: .announcement, argument: " ")
-                    //                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     focusState = Accessibility.saveAndContinueFocused
-                    //                    }
                 }
             }
         }
