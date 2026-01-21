@@ -104,14 +104,18 @@ public struct SubmitClaimDeflectScreen: View {
                             ParnerButtonView(model: partner, overrideColorSchema: false)
                         }
                     }
-                    SupportView(openChat: openChat)
-                        .padding(.top, .padding56)
                 }
                 .padding(.top, .padding8)
             }
             .sectionContainerStyle(.negative)
             .hWithoutHorizontalPadding([.section])
         }
+        .hFormAttachToBottom {
+            SupportView(openChat: openChat)
+                .padding(.bottom, -.padding16)
+        }
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
