@@ -201,6 +201,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_EDIT_TITLE" = "Previous answers will be reset";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Make sure you fill in all the required fields";
 "CLAIM_CHAT_FILE_TITLE" = "Uploaded files";
+"CLAIM_CHAT_FILE_UPLOAD_HINT" = "You can upload images, PDFs or other files. Only include files that are relevant to your claim.";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Send files";
 "CLAIM_CHAT_FORM_NUMBER_MAX_CHAR" = "Value must be at most %d";
 "CLAIM_CHAT_FORM_NUMBER_MIN_CHAR" = "Value must be at least %d";
