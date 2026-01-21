@@ -201,6 +201,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att rensas";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Dubbelkolla att du fyllt i alla obligatoriska fält";
 "CLAIM_CHAT_FILE_TITLE" = "Uppladdade filer";
+"CLAIM_CHAT_FILE_UPLOAD_HINT" = "Du kan ladda upp bilder, PDF:er eller andra filer. Ladda bara upp filer som är relevanta för din skadeanmälan.";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Ladda upp filer";
 "CLAIM_CHAT_FORM_NUMBER_MAX_CHAR" = "Värdet får vara högst %d";
 "CLAIM_CHAT_FORM_NUMBER_MIN_CHAR" = "Värdet måste vara minst %d";
