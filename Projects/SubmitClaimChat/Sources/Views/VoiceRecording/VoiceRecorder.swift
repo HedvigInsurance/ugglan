@@ -53,20 +53,20 @@ public final class VoiceRecorder: ObservableObject {
         public var errorDescription: String? {
             switch self {
             case .permissionDenied:
-                return "Microphone permission denied"
+                return L10n.voiceoverAudioRecordingMicPermissionDenied
             case .recordingFailed:
-                return "Could not send recording. Please try again."
+                return L10n.voiceoverAudioRecordingFailed
             case .playbackFailed:
-                return "Could not play recording"
+                return L10n.voiceoverAudioPlaybackFailed
             case .sendingFailed:
-                return "Please try again"
+                return L10n.voiceoverAudioSendingFailed
             }
         }
 
         public var title: String? {
             switch self {
             case .sendingFailed:
-                return "Could not send recording"
+                return L10n.voiceoverAudioSendingFailed
             default:
                 return nil
             }
