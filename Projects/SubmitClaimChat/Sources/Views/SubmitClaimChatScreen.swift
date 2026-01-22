@@ -441,7 +441,12 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         let handler = createStepHandler(for: claimIntent)
         stepHeights[handler.id] = 0
         let previousStepId = allSteps.last?.id ?? ""
-        self.progress = claimIntent.progress
+
+        if case .deflect = claimIntent.currentStep.content {
+            self.progress = nil
+        } else {
+            self.progress = claimIntent.progress
+        }
         Task { @MainActor in
             if !self.allSteps.isEmpty {
                 currentStep = nil
