@@ -58,6 +58,7 @@ struct TrackPlayer: View {
                         .transition(
                             .opacity.animation(.easeOut)
                         )
+                        .accessibilityHidden(true)
                         .gesture(
                             DragGesture(coordinateSpace: .local)
                                 .onChanged { gesture in
@@ -103,6 +104,9 @@ struct TrackPlayer: View {
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isButton)
             .accessibilityLabel(L10n.a11YAudioRecording)
+            .accessibilityAction {
+                audioPlayer.togglePlaying()
+            }
         }
     }
 }

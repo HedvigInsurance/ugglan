@@ -134,6 +134,9 @@ struct VoiceRecordingCardContent: View {
             .accessibilityValue(voiceRecorder.formattedTime)
             .accessibilityHint(L10n.voiceoverAudioRecordingPlay)
             .accessibilityAddTraits(.isButton)
+            .accessibilityAction {
+                voiceRecorder.togglePlayback()
+            }
         } else if voiceRecorder.isRecording {
             VoiceWaveformView(
                 audioLevels: voiceRecorder.audioLevels,
