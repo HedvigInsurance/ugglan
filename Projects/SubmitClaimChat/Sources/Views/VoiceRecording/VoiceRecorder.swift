@@ -312,28 +312,6 @@ public final class VoiceRecorder: ObservableObject {
                 }
             }
         }
-
-        // Timer for metering audio levels during playback
-        meteringTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.updatePlaybackLevels()
-            }
-        }
-    }
-
-    private func updatePlaybackLevels() {
-        guard let player, isPlaying else { return }
-        player.updateMeters()
-        let power = player.averagePower(forChannel: 0)
-        // Normalize: power ranges from -160 to 0
-        let normalizedPower = max(0, (power + 50) / 50)
-        let level = CGFloat(pow(10, normalizedPower) - 1) / 9  // Scale to 0...1
-
-        audioLevels.append(level)
-        // Keep only last 100 samples for visualization
-        if audioLevels.count > 100 {
-            audioLevels.removeFirst()
-        }
     }
 
     private func stopTimers() {
@@ -366,10 +344,6 @@ public final class VoiceRecorder: ObservableObject {
         let adaptedLevel = min(1.0, rawLevel * adaptiveScale)
 
         audioLevels.append(adaptedLevel)
-        // Keep only last 100 samples for visualization
-        if audioLevels.count > 100 {
-            audioLevels.removeFirst()
-        }
     }
 
     @MainActor

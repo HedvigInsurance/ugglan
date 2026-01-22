@@ -71,8 +71,61 @@ struct VoiceRecordingCardContent: View {
 
     @ViewBuilder
     private var waveformSection: some View {
-        GeometryReader { geometry in
-            let waveform = VoiceWaveformView(
+        if voiceRecorder.hasRecording && !voiceRecorder.isRecording {
+            FixedDotsWaveformView(
+                audioLevels: voiceRecorder.audioLevels,
+                maxHeight: 60,
+                progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
+            )
+            .onTapGesture { location in
+                // Calculate progress based on tap position
+                let progress = location.x / waveformWidth
+                let finalProgress = min(max(progress, 0), 1)
+
+                // Seek to tapped position
+                voiceRecorder.setProgress(to: finalProgress)
+
+                // Start playback if not already playing
+                if !voiceRecorder.isPlaying {
+                    voiceRecorder.startPlayback()
+                }
+            }
+            .gesture(
+                DragGesture(coordinateSpace: .local)
+                    .onChanged { gesture in
+                        // On the very first drag event, pause if currently playing
+                        if dragProgress == nil && voiceRecorder.isPlaying {
+                            voiceRecorder.pausePlayback()
+                        }
+
+                        // Only update visual progress, don't seek audio yet
+                        let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                        let progress = gesturePosition / waveformWidth
+                        dragProgress = min(max(progress, 0), 1)
+                    }
+                    .onEnded { gesture in
+                        let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                        let progress = gesturePosition / waveformWidth
+                        let finalProgress = min(max(progress, 0), 1)
+
+                        // Seek to final position and start playing
+                        voiceRecorder.setProgress(to: finalProgress)
+                        dragProgress = nil
+                        voiceRecorder.startPlayback()
+                    }
+            )
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment:
+                    voiceRecorder.setProgress(to: min(voiceRecorder.progress + 0.1, 1.0))
+                case .decrement:
+                    voiceRecorder.setProgress(to: max(voiceRecorder.progress - 0.1, 0.0))
+                @unknown default:
+                    break
+                }
+            }
+        } else {
+            VoiceWaveformView(
                 audioLevels: voiceRecorder.audioLevels,
                 isRecording: voiceRecorder.isRecording,
                 maxHeight: 60,
@@ -89,59 +142,6 @@ struct VoiceRecordingCardContent: View {
                         }
                 }
             )
-
-            if voiceRecorder.hasRecording && !voiceRecorder.isRecording {
-                waveform
-                    .onTapGesture { location in
-                        // Calculate progress based on tap position
-                        let progress = location.x / waveformWidth
-                        let finalProgress = min(max(progress, 0), 1)
-
-                        // Seek to tapped position
-                        voiceRecorder.setProgress(to: finalProgress)
-
-                        // Start playback if not already playing
-                        if !voiceRecorder.isPlaying {
-                            voiceRecorder.startPlayback()
-                        }
-                    }
-                    .gesture(
-                        DragGesture(coordinateSpace: .local)
-                            .onChanged { gesture in
-                                // On the very first drag event, pause if currently playing
-                                if dragProgress == nil && voiceRecorder.isPlaying {
-                                    voiceRecorder.pausePlayback()
-                                }
-
-                                // Only update visual progress, don't seek audio yet
-                                let gesturePosition = gesture.startLocation.x + gesture.translation.width
-                                let progress = gesturePosition / waveformWidth
-                                dragProgress = min(max(progress, 0), 1)
-                            }
-                            .onEnded { gesture in
-                                let gesturePosition = gesture.startLocation.x + gesture.translation.width
-                                let progress = gesturePosition / waveformWidth
-                                let finalProgress = min(max(progress, 0), 1)
-
-                                // Seek to final position and start playing
-                                voiceRecorder.setProgress(to: finalProgress)
-                                dragProgress = nil
-                                voiceRecorder.startPlayback()
-                            }
-                    )
-                    .accessibilityAdjustableAction { direction in
-                        switch direction {
-                        case .increment:
-                            voiceRecorder.setProgress(to: min(voiceRecorder.progress + 0.1, 1.0))
-                        case .decrement:
-                            voiceRecorder.setProgress(to: max(voiceRecorder.progress - 0.1, 0.0))
-                        @unknown default:
-                            break
-                        }
-                    }
-            } else {
-                waveform
-            }
         }
     }
 
