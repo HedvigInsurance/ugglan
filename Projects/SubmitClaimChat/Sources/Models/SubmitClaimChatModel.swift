@@ -8,6 +8,7 @@ struct SingleItemModel: Equatable, Identifiable {
     let id: String
     let values: [SingleSelectValue]
     let multiselect: Bool
+    let title: String
 
     var attributes: [ItemPickerAttribute] {
         var result: [ItemPickerAttribute] = []
