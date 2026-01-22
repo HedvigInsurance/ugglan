@@ -2,6 +2,7 @@ import AVFAudio
 import Combine
 import Foundation
 import SwiftUI
+import hCore
 
 @MainActor
 public final class VoiceRecorder: ObservableObject {
