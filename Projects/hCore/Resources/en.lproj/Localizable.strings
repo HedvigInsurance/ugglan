@@ -46,6 +46,12 @@
 "ADDON_REMOVE_TITLE" = "Cancel %1$@";
 "ADDON_TRAVEL_DISPLAY_NAME" = "Travel Insurance Plus";
 "ALERT_CANCEL" = "Cancel";
+"AUDIO_RECORDER_LISTEN" = "Listen";
+"AUDIO_RECORDER_SEND" = "Send";
+"AUDIO_RECORDER_SEND_ERROR_TITLE" = "Could not send recording";
+"AUDIO_RECORDER_START" = "Start";
+"AUDIO_RECORDER_START_OVER" = "Start over";
+"AUDIO_RECORDER_STOP" = "Stop";
 "AUTHENTICATION_BANKID_LOGIN_ERROR" = "We cannot log you in via BankID right now, try again";
 "AUTHENTICATION_BANKID_LOGIN_LABEL" = "Open the BankID app on your phone or scan the QR-code to login";
 "AUTHENTICATION_BANKID_LOGIN_TITLE" = "Login with BankID";
@@ -214,6 +220,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Please provide phone number in the case we need to contact you";
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Make sure we have right phone number in the case we need to contact you";
 "CLAIM_CHAT_RECORDING_TITLE" = "Recording";
+"CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT" = "If you do not remember the purchase date, you don't need to fill in anything.";
 "CLAIM_CHAT_SKIPPED_LABEL" = "Skipped";
 "CLAIM_CHAT_SKIPPED_STEP" = "Skipped";
 "CLAIM_CHAT_SKIP_STEP" = "Skip";
@@ -225,6 +232,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_UNKNOWN_STEP" = "Unknown step";
 "CLAIM_CHAT_USE_AUDIO" = "Start voice recording";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Describe with text";
+"CLAIM_DATE_AND_LOCATION_HINT" = "If you do not know the exact date, enter an approximate date.";
 "CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Date of occurrence";
 "CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Submit your claim";
 "CLAIM_TRIAGING_ABOUT_TITILE" = "What insurance is it about?";
