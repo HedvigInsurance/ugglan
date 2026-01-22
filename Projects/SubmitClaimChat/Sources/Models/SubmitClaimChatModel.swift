@@ -276,7 +276,7 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
     let infoText: String?
     let warningText: String?
     let questions: [DeflectQuestion]
-    let linkOnlyPartners: [Partner]
+    let linkOnlyPartners: [LinkOnlyPartner]
     let buttonTitle: String
 
     public init(
@@ -286,12 +286,13 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
         infoText: String?,
         warningText: String?,
         questions: [DeflectQuestion],
-        buttonTitle: String
+        linkOnlyPartners: [LinkOnlyPartner],
+        buttonTitle: String,
     ) {
         self.title = title
         self.content = content
         self.partners = partners.filter({ $0.imageUrl != nil })
-        self.linkOnlyPartners = partners.filter({ $0.imageUrl == nil })
+        self.linkOnlyPartners = linkOnlyPartners
         self.infoText = infoText
         self.warningText = warningText
         self.questions = questions
@@ -306,6 +307,10 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
             self.title = title
             self.description = description
         }
+    }
+
+    var hasSupportView: Bool {
+        linkOnlyPartners.isEmpty
     }
 }
 
