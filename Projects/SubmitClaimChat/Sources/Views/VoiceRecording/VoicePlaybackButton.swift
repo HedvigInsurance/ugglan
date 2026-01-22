@@ -23,12 +23,12 @@ public struct VoicePlaybackButton: View {
                         .foregroundColor(hFillColor.Opaque.negative)
                 }
 
-                hText("Listen", style: .label)
+                hText(L10n.audioRecorderListen, style: .label)
             }
             .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(isPlaying ? "Pause recording" : "Play recording")
+        .accessibilityLabel(isPlaying ? L10n.a11YPause : L10n.a11YPlay)
         .accessibilityAddTraits(.isButton)
     }
 

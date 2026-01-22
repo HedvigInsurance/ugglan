@@ -32,8 +32,10 @@ public struct VoiceStartOverButton: View {
             .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
+        .disabled(!isEnabled)
         .accessibilityLabel(L10n.embarkRecordAgain)
         .accessibilityAddTraits(.isButton)
+        .accessibilityHint(isEnabled ? "" : L10n.claimsStartRecordingLabel)
     }
 
     @hColorBuilder

@@ -12,33 +12,37 @@ struct VoiceRecordingCardContent: View {
         hForm {
             hSection {
                 VStack(spacing: .padding16) {
-                    if let error = voiceRecorder.error {
-                        StateView(
-                            type: .error,
-                            title: error.title ?? L10n.somethingWentWrong,
-                            bodyText: error.errorDescription,
-                            formPosition: nil,
-                            attachContentToBottom: false
-                        )
-                    } else {
-                        VStack(spacing: 0) {
-                            hText(L10n.claimsTriagingWhatHappenedTitle)
-                                .foregroundColor(titleColor)
+                    Group {
+                        if let error = voiceRecorder.error {
+                            StateView(
+                                type: .error,
+                                title: error.title ?? L10n.somethingWentWrong,
+                                bodyText: error.errorDescription,
+                                formPosition: nil,
+                                attachContentToBottom: false
+                            )
+                        } else {
+                            VStack(spacing: 0) {
+                                hText(L10n.claimsTriagingWhatHappenedTitle)
+                                    .foregroundColor(titleColor)
 
-                            hText(voiceRecorder.formattedTime, style: .body1)
-                                .foregroundColor(recordingProgressColor)
-                        }
-                        ZStack {
-                            if voiceRecorder.isSending {
-                                DotsActivityIndicator(.standard)
-                                    .useDarkColor
+                                hText(voiceRecorder.formattedTime, style: .body1)
+                                    .foregroundColor(recordingProgressColor)
                             }
-                            waveformSection
-                                .frame(height: .padding60)
-                                .padding(.horizontal, .padding45)
-                                .opacity(voiceRecorder.isSending ? 0 : 1)
+                            ZStack {
+                                if voiceRecorder.isSending {
+                                    DotsActivityIndicator(.standard)
+                                        .useDarkColor
+                                }
+                                waveformSection
+                                    .frame(height: .padding60)
+                                    .padding(.horizontal, .padding45)
+                                    .opacity(voiceRecorder.isSending ? 0 : 1)
+                            }
                         }
                     }
+                    .accessibilityHidden(voiceRecorder.isCountingDown)
+
                     controlsSection
                 }
             }
@@ -77,6 +81,17 @@ struct VoiceRecordingCardContent: View {
                 maxHeight: 60,
                 progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
             )
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            waveformWidth = geo.size.width
+                        }
+                        .onChange(of: geo.size) { size in
+                            waveformWidth = size.width
+                        }
+                }
+            )
             .onTapGesture { location in
                 // Calculate progress based on tap position
                 let progress = location.x / waveformWidth
@@ -114,16 +129,32 @@ struct VoiceRecordingCardContent: View {
                         voiceRecorder.startPlayback()
                     }
             )
-            .accessibilityAdjustableAction { direction in
-                switch direction {
-                case .increment:
-                    voiceRecorder.setProgress(to: min(voiceRecorder.progress + 0.1, 1.0))
-                case .decrement:
-                    voiceRecorder.setProgress(to: max(voiceRecorder.progress - 0.1, 0.0))
-                @unknown default:
-                    break
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(L10n.voiceoverAudioRecordingPlay)
+            .accessibilityValue(voiceRecorder.formattedTime)
+            .accessibilityHint(L10n.voiceoverAudioRecordingPlay)
+            .accessibilityAddTraits(.isButton)
+        } else if voiceRecorder.isRecording {
+            VoiceWaveformView(
+                audioLevels: voiceRecorder.audioLevels,
+                isRecording: voiceRecorder.isRecording,
+                maxHeight: 60,
+                progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
+            )
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            waveformWidth = geo.size.width
+                        }
+                        .onChange(of: geo.size) { size in
+                            waveformWidth = size.width
+                        }
                 }
-            }
+            )
+            .accessibilityLabel(L10n.claimChatRecordingTitle)
+            .accessibilityValue(voiceRecorder.formattedTime)
+            .accessibilityAddTraits(.updatesFrequently)
         } else {
             VoiceWaveformView(
                 audioLevels: voiceRecorder.audioLevels,
@@ -142,6 +173,9 @@ struct VoiceRecordingCardContent: View {
                         }
                 }
             )
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(L10n.a11YAudioRecording)
+            .accessibilityHint(L10n.claimsStartRecordingLabel)
         }
     }
 

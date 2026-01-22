@@ -7,7 +7,6 @@ public struct VoiceRecordButton: View {
     let onTap: () -> Void
 
     @State private var countdownNumber: Int? = nil
-    @State private var isCountingDown = false
 
     @EnvironmentObject var voiceRecorder: VoiceRecorder
 
@@ -28,7 +27,7 @@ public struct VoiceRecordButton: View {
                         .foregroundColor(hFillColor.Opaque.negative)
                 }
 
-                hText(isRecording ? "Stop" : "Start", style: .label)
+                hText(isRecording ? L10n.audioRecorderStop : L10n.audioRecorderStart, style: .label)
             }
             .wrapContentForControlButton()
         }
@@ -40,7 +39,7 @@ public struct VoiceRecordButton: View {
     private func handleTap() {
         if isRecording {
             onTap()
-        } else if !isCountingDown {
+        } else if !voiceRecorder.isCountingDown {
             Task {
                 try await voiceRecorder.askForPermissionIfNeeded()
                 startCountdown()
@@ -49,16 +48,29 @@ public struct VoiceRecordButton: View {
     }
 
     private func startCountdown() {
-        isCountingDown = true
+        voiceRecorder.isCountingDown = true
 
         Task {
+            // Small delay to let SwiftUI update accessibility tree before announcements
+            try? await Task.sleep(nanoseconds: 200_000_000)  // 0.2 seconds
+
+            UIAccessibility.post(
+                notification: .announcement,
+                argument: L10n.voiceoverAudioCountdown
+            )
+            try? await Task.sleep(nanoseconds: 1_200_000_000)  // 1.2 seconds to let VoiceOver finish speaking
+
             for number in (1...3).reversed() {
                 countdownNumber = number
+                UIAccessibility.post(
+                    notification: .announcement,
+                    argument: "\(number)"
+                )
                 try? await Task.sleep(nanoseconds: 1_000_000_000)  // 1 second
             }
 
             countdownNumber = nil
-            isCountingDown = false
+            voiceRecorder.isCountingDown = false
             onTap()
         }
     }

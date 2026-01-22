@@ -16,6 +16,7 @@ public final class VoiceRecorder: ObservableObject {
 
     public var isRecording: Bool { recordingState == .recording }
     @Published public var isSending: Bool = false
+    @Published public var isCountingDown: Bool = false
 
     public var hasRecording: Bool { recordedFileURL != nil }
     public var isPlaying: Bool { recordingState == .playing }
@@ -257,7 +258,11 @@ public final class VoiceRecorder: ObservableObject {
 
     private func configureAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker, .allowBluetooth])
+        try session.setCategory(
+            .playAndRecord,
+            mode: .spokenAudio,
+            options: [.defaultToSpeaker, .allowBluetooth, .duckOthers]
+        )
         try session.setActive(true)
     }
 

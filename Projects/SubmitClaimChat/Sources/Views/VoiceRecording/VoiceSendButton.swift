@@ -39,8 +39,10 @@ public struct VoiceSendButton: View {
             .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
+        .disabled(!isEnabled)
         .accessibilityLabel(L10n.chatUploadPresend)
         .accessibilityAddTraits(.isButton)
+        .accessibilityHint(isEnabled ? "" : L10n.claimsStartRecordingLabel)
     }
 
     @hColorBuilder
