@@ -312,6 +312,9 @@ extension ClaimIntentStepContent {
                         infoText: deflect.infoText,
                         warningText: deflect.warningText,
                         questions: deflect.faq.map { .init(question: $0.title, answer: $0.description) },
+                        linkOnlyPartners: deflect.simplePartners.map({
+                            .init(url: $0.url, buttonText: $0.urlButtonTitle)
+                        }),
                         buttonTitle: deflect.buttonTitle
                     )
             )

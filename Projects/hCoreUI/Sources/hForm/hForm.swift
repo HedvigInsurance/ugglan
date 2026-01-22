@@ -517,8 +517,10 @@ public struct BackgroundView: UIViewRepresentable {
     }
 }
 
-struct BackgroundBlurView: UIViewRepresentable {
-    func makeUIView(context _: Context) -> UIView {
+public struct BackgroundBlurView: UIViewRepresentable {
+    public init() {}
+
+    public func makeUIView(context _: Context) -> UIView {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         for subview in view.subviews {
             subview.backgroundColor = UIColor.clear
@@ -526,5 +528,5 @@ struct BackgroundBlurView: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_: UIView, context _: Context) {}
+    public func updateUIView(_: UIView, context _: Context) {}
 }
