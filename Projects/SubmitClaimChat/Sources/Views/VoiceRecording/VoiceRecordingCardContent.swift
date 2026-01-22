@@ -5,6 +5,8 @@ import hCoreUI
 struct VoiceRecordingCardContent: View {
     @ObservedObject var voiceRecorder: VoiceRecorder
     let onSend: () async throws -> Void
+    @State private var waveformWidth: CGFloat = 0
+    @State private var dragProgress: Double?
 
     var body: some View {
         hForm {
@@ -69,11 +71,78 @@ struct VoiceRecordingCardContent: View {
 
     @ViewBuilder
     private var waveformSection: some View {
-        VoiceWaveformView(
-            audioLevels: voiceRecorder.audioLevels,
-            isRecording: voiceRecorder.isRecording,
-            maxHeight: 60
-        )
+        GeometryReader { geometry in
+            let waveform = VoiceWaveformView(
+                audioLevels: voiceRecorder.audioLevels,
+                isRecording: voiceRecorder.isRecording,
+                maxHeight: 60,
+                progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
+            )
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            waveformWidth = geo.size.width
+                        }
+                        .onChange(of: geo.size) { size in
+                            waveformWidth = size.width
+                        }
+                }
+            )
+
+            if voiceRecorder.hasRecording && !voiceRecorder.isRecording {
+                waveform
+                    .onTapGesture { location in
+                        // Calculate progress based on tap position
+                        let progress = location.x / waveformWidth
+                        let finalProgress = min(max(progress, 0), 1)
+
+                        // Seek to tapped position
+                        voiceRecorder.setProgress(to: finalProgress)
+
+                        // Start playback if not already playing
+                        if !voiceRecorder.isPlaying {
+                            voiceRecorder.startPlayback()
+                        }
+                    }
+                    .gesture(
+                        DragGesture(coordinateSpace: .local)
+                            .onChanged { gesture in
+                                // On the very first drag event, pause if currently playing
+                                if dragProgress == nil && voiceRecorder.isPlaying {
+                                    voiceRecorder.pausePlayback()
+                                }
+
+                                // Only update visual progress, don't seek audio yet
+                                let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                                let progress = gesturePosition / waveformWidth
+                                dragProgress = min(max(progress, 0), 1)
+                            }
+                            .onEnded { gesture in
+                                let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                                let progress = gesturePosition / waveformWidth
+                                let finalProgress = min(max(progress, 0), 1)
+
+                                // Seek to final position and start playing
+                                voiceRecorder.setProgress(to: finalProgress)
+                                dragProgress = nil
+                                voiceRecorder.startPlayback()
+                            }
+                    )
+                    .accessibilityAdjustableAction { direction in
+                        switch direction {
+                        case .increment:
+                            voiceRecorder.setProgress(to: min(voiceRecorder.progress + 0.1, 1.0))
+                        case .decrement:
+                            voiceRecorder.setProgress(to: max(voiceRecorder.progress - 0.1, 0.0))
+                        @unknown default:
+                            break
+                        }
+                    }
+            } else {
+                waveform
+            }
+        }
     }
 
     private var controlsSection: some View {

@@ -5,6 +5,7 @@ public struct VoiceWaveformView: View {
     let audioLevels: [CGFloat]
     let isRecording: Bool
     let maxHeight: CGFloat
+    let progress: Double?
 
     private let barWidth: CGFloat = 2
     private let barSpacing: CGFloat = 2
@@ -14,12 +15,14 @@ public struct VoiceWaveformView: View {
         audioLevels: [CGFloat],
         isRecording: Bool,
         maxHeight: CGFloat = 60,
-        minBarHeight: CGFloat = 8
+        minBarHeight: CGFloat = 8,
+        progress: Double? = nil
     ) {
         self.audioLevels = audioLevels
         self.isRecording = isRecording
         self.maxHeight = maxHeight
         self.minBarHeight = minBarHeight
+        self.progress = progress
     }
 
     public var body: some View {
@@ -36,7 +39,7 @@ public struct VoiceWaveformView: View {
                     let maxBars = Int(geometry.size.width / (barWidth + barSpacing))
                     let levels = prepareLevels(count: maxBars)
 
-                    HStack(spacing: barSpacing) {
+                    let waveform = HStack(spacing: barSpacing) {
                         ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
                             RoundedRectangle(cornerRadius: barWidth / 2)
                                 .fill(hTextColor.Opaque.primary)
@@ -47,6 +50,20 @@ public struct VoiceWaveformView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+
+                    if let progress = progress {
+                        waveform
+                            .overlay(
+                                GeometryReader { geo in
+                                    Rectangle()
+                                        .fill(hFillColor.Opaque.tertiary)
+                                        .frame(width: geo.size.width * progress)
+                                }
+                                .mask(waveform)
+                            )
+                    } else {
+                        waveform
+                    }
                 }
             }
         }

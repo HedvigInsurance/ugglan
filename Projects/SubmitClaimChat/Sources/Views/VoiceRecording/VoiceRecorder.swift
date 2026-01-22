@@ -20,6 +20,11 @@ public final class VoiceRecorder: ObservableObject {
     public var hasRecording: Bool { recordedFileURL != nil }
     public var isPlaying: Bool { recordingState == .playing }
 
+    public var progress: Double {
+        guard let player, player.duration > 0 else { return 0 }
+        return player.currentTime / player.duration
+    }
+
     // MARK: - Private Properties
     private let filePath: URL
     private var recorder: AVAudioRecorder?
@@ -173,6 +178,12 @@ public final class VoiceRecorder: ObservableObject {
         }
     }
 
+    public func pausePlayback() {
+        player?.pause()
+        stopTimers()
+        recordingState = .recorded
+    }
+
     public func stopPlayback() {
         player?.stop()
         player = nil
@@ -187,6 +198,22 @@ public final class VoiceRecorder: ObservableObject {
         } else {
             startPlayback()
         }
+    }
+
+    public func setProgress(to progress: Double) {
+        // Ensure player is prepared before seeking
+        if player == nil {
+            preparePlayer()
+        }
+
+        guard let player = self.player else { return }
+
+        let newTime = player.duration * progress
+        player.currentTime = newTime
+        currentTime = newTime
+
+        // Ensure player is ready for playback after seeking
+        player.prepareToPlay()
     }
 
     public func startOver() {
@@ -279,9 +306,9 @@ public final class VoiceRecorder: ObservableObject {
                 guard let self, let player = self.player else { return }
                 self.currentTime = player.currentTime
 
-                // Stop when playback finishes
+                // Pause when playback finishes (keep player alive for seeking)
                 if !player.isPlaying {
-                    self.stopPlayback()
+                    self.pausePlayback()
                 }
             }
         }
