@@ -122,12 +122,26 @@ public struct SubmitClaimChatScreen: View {
                             && !viewModel.shouldMergeInputWithContent ? 1000 : 0
                     )
                     .accessibilityFocused($isCurrentStepFocused)
+                    .disabled(
+                        viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                            && !viewModel.shouldMergeInputWithContent
+                    )
             }
         }
         .padding(.bottom, .padding8)
         .environmentObject(viewModel)
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: viewModel.isInputScrolledOffScreen)
+        .background {
+            if viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                && !viewModel.shouldMergeInputWithContent
+            {
+                Color.clear
+            } else {
+                BackgroundBlurView()
+                    .ignoresSafeArea(.container, edges: .bottom)
+            }
+        }
     }
 
     private func scrollToBottom() {
