@@ -80,8 +80,19 @@ public struct SubmitClaimDeflectScreen: View {
                     hRow {
                         VStack(alignment: .leading, spacing: 8) {
                             hText(model.content.title)
-                            hText(model.content.description)
-                                .foregroundColor(hTextColor.Opaque.secondary)
+                            MarkdownView(
+                                config: .init(
+                                    text: model.content.description,
+                                    fontStyle: .body1,
+                                    color: hTextColor.Opaque.primary,
+                                    linkColor: hTextColor.Opaque.primary,
+                                    linkUnderlineStyle: .thick,
+                                    isSelectable: true,
+                                    onUrlClicked: { url in
+                                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                                    }
+                                )
+                            )
                         }
                         .padding(.top, .padding8)
                         .accessibilityElement(children: .combine)
