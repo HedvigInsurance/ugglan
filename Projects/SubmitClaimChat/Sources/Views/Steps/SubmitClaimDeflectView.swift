@@ -132,6 +132,7 @@ public struct SubmitClaimDeflectScreen: View {
         if model.hasSupportView {
             SupportView(openChat: openChat)
                 .padding(.bottom, -.padding16)
+                .padding(.top, .padding16)
         } else {
             VStack(spacing: .padding8) {
                 ForEach(model.linkOnlyPartners, id: \.url) { partner in
