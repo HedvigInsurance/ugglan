@@ -54,11 +54,11 @@ public final class VoiceRecorder: ObservableObject {
         public var errorDescription: String? {
             switch self {
             case .permissionDenied:
-                return L10n.voiceoverAudioRecordingMicPermissionDenied
+                return L10n.voiceoverAudioMicPermissionDenied
             case .recordingFailed:
                 return L10n.voiceoverAudioRecordingFailed
             case .playbackFailed:
-                return L10n.voiceoverAudioPlaybackFailed
+                return L10n.voiceoverAuidoPlaybackFailed
             case .sendingFailed:
                 return L10n.voiceoverAudioSendingFailed
             }
