@@ -96,6 +96,8 @@ public struct SubmitClaimDeflectScreen: View {
                                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                                 }
                             )
+                            .sectionContainerStyle(.opaque)
+                            .hWithoutHorizontalPadding([])
                         }
                     }
                     .padding(.top, .padding8)
