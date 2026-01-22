@@ -134,7 +134,7 @@ class CustomTextView: UITextView, UITextViewDelegate {
         super.init(frame: .zero, textContainer: nil)
         configureTextView()
         snp.makeConstraints { make in
-            make.width.lessThanOrEqualTo(fixedWidth)
+            make.width.equalTo(fixedWidth)
         }
     }
 
@@ -156,6 +156,8 @@ class CustomTextView: UITextView, UITextViewDelegate {
         }
         self.linkTextAttributes = linkTextAttributes
         textContainerInset = .zero
+        textContainer.lineFragmentPadding = 0
+        contentInset = .zero
         delegate = self
     }
 

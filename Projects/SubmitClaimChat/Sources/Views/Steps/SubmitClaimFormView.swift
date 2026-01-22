@@ -38,7 +38,6 @@ struct SubmitClaimFormView: View {
                     ? [.large] : [.height]
             )
         ) { [weak viewModel] model in
-            let title = viewModel?.claimIntent.currentStep.text ?? ""
             ItemPickerScreen<SingleSelectValue>(
                 config: .init(
                     items: model.values.map({ ($0, .init(title: $0.title)) }),
@@ -64,7 +63,7 @@ struct SubmitClaimFormView: View {
                 )
             )
             .hItemPickerAttributes(model.attributes)
-            .navigationTitle(title)
+            .navigationTitle(model.title)
             .embededInNavigation(options: .largeNavigationBar, tracking: self)
             .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
         }
@@ -189,7 +188,12 @@ struct FormFieldView: View {
             let values: [SingleSelectValue] = field.options.map {
                 .init(title: $0.title, value: $0.value)
             }
-            viewModel?.isSelectItemPresented = .init(id: field.id, values: values, multiselect: false)
+            viewModel?.isSelectItemPresented = .init(
+                id: field.id,
+                values: values,
+                multiselect: false,
+                title: field.title
+            )
         }
     }
 
@@ -205,7 +209,12 @@ struct FormFieldView: View {
             let values: [SingleSelectValue] = field.options.map {
                 .init(title: $0.title, value: $0.value)
             }
-            viewModel?.isSelectItemPresented = .init(id: field.id, values: values, multiselect: true)
+            viewModel?.isSelectItemPresented = .init(
+                id: field.id,
+                values: values,
+                multiselect: true,
+                title: field.title
+            )
         }
     }
 

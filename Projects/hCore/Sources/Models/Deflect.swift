@@ -32,6 +32,16 @@ public struct Partner: Codable, Equatable, Hashable, Sendable {
     }
 }
 
+public struct LinkOnlyPartner: Codable, Equatable, Hashable, Sendable {
+    public let url: String
+    public let buttonText: String
+
+    public init(url: String, buttonText: String) {
+        self.url = url
+        self.buttonText = buttonText
+    }
+}
+
 public struct FlowClaimDeflectConfig {
     public let infoText: String
     public let infoSectionText: String
