@@ -43,29 +43,33 @@ public struct FixedDotsWaveformView: View {
     }
 
     private var waveform: some View {
-        HStack(spacing: dotSpacing) {
-            ForEach(Array(heights.enumerated()), id: \.offset) { index, height in
-                RoundedRectangle(cornerRadius: dotSize / 2)
-                    .fill(dotColor(for: index))
-                    .frame(
-                        width: dotSize,
-                        height: height
+        ZStack(alignment: .leading) {
+            // Base layer - unplayed (primary color)
+            dotsView(color: hTextColor.Opaque.primary)
+
+            // Progress layer - played (tertiary color) with mask
+            if let progress {
+                dotsView(color: hTextColor.Opaque.tertiary)
+                    .mask(
+                        GeometryReader { geo in
+                            Rectangle()
+                                .frame(width: geo.size.width * progress)
+                        }
                     )
             }
         }
     }
 
-    @hColorBuilder
-    private func dotColor(for index: Int) -> some hColor {
-        if let progress, !heights.isEmpty {
-            let progressIndex = Int(progress * Double(heights.count))
-            if index < progressIndex {
-                hTextColor.Opaque.tertiary
-            } else {
-                hTextColor.Opaque.primary
+    private func dotsView(color: some hColor) -> some View {
+        HStack(spacing: dotSpacing) {
+            ForEach(heights, id: \.self) { height in
+                RoundedRectangle(cornerRadius: dotSize / 2)
+                    .fill(color)
+                    .frame(
+                        width: dotSize,
+                        height: height
+                    )
             }
-        } else {
-            hTextColor.Opaque.primary
         }
     }
 
