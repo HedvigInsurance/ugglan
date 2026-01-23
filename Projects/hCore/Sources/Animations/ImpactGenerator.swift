@@ -8,4 +8,11 @@ public enum ImpactGenerator {
             await generator.impactOccurred()
         }
     }
+
+    public static func light() {
+        Task {
+            let generator = await UIImpactFeedbackGenerator(style: .light)
+            await generator.impactOccurred()
+        }
+    }
 }

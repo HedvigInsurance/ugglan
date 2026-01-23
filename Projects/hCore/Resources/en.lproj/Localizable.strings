@@ -391,6 +391,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_SAVE_CHANGES_BUTTON" = "Save changes";
 "GENERAL_SHOW" = "Show";
 "GENERAL_TODAY" = "Today";
+"GENERAL_TRY_AGAIN" = "Please try again";
 "GENERAL_YESTERDAY" = "Yesterday";
 "GENERIC_UNKNOWN" = "Unknown";
 "HC_ALL_QUESTION_TITLE" = "All questions";
@@ -477,7 +478,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 /* Title above bundle selector on offer page. */
 "OFFER_BUNDLE_SELECTOR_TITLE" = "Choose your Hedvig-bundle";
 "OFFER_HOUSE_SUMMARY_DESC" = "Here's a quick overview of the information you've given us about your home.";
-"OFFER_SAVE_START_DATE_ERROR_ALERT_MESSAGE" = "Please try again";
 "OFFER_SAVE_START_DATE_ERROR_ALERT_TITLE" = "Couldn't save start date";
 "OFFER_SCREEN_COVERAGE_TITLE" = "The coverage";
 "OFFER_SWITCHER_EXPLANATION_FOOTER" = "When switched on, your Hedvig insurance will automatically start when your current plan with your other insurance company expires.";
@@ -647,7 +647,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUMMARY_SCREEN_COVERAGE" = "Coverage";
 "SUMMARY_SCREEN_OVERVIEW" = "Overview";
 "SUMMARY_TOTAL_PRICE_SUBTITLE" = "Changes activate %@";
-"SURVEY_SOLD_VACATION_HOME" = "I have sold the vacation home";
 "SWITCHER_AUTO_CARD_DESCRIPTION" = "After signing, we'll cancel your old insurance and activate your new insurance with Hedvig on the same day as the old one(s) expires.";
 "SWITCHER_AUTO_CARD_TITLE" = "Auto switch";
 "SWITCHER_MANUAL_CARD_DESCRIPTION" = "Your current insurance company does not allow us to terminate your insurance agreement for you. You need to terminate it yourself and then set your start date for your new insurance in the Hedvig app.";
