@@ -88,6 +88,7 @@ public struct ImportantInformationView: View {
                     isConfirmed.toggle()
                 }
             }
+            .accessibilityAddTraits(.isButton)
         }
     }
 

@@ -41,6 +41,7 @@ public struct AccordionView: View {
                 UIAccessibility.post(notification: .layoutChanged, argument: nil)
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 }
 

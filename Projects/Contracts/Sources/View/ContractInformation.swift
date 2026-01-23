@@ -153,6 +153,7 @@ struct ContractInformationView: View {
                                 contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
                             }
                         }
+                        .accessibilityAddTraits(.isButton)
                         .accessibilityAddTraits(
                             {
                                 if contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil {
