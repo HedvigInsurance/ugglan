@@ -41,15 +41,8 @@ struct SubmitClaimVoiceRecordingView: View {
         }
         .onChange(of: viewModel.isAudioInputPresented) { isPresented in
             if !isPresented {
-                // Only reset if the recording wasn't successfully submitted
-                // (if audioFileURL is nil, it means recording wasn't sent)
-                if viewModel.audioFileURL == nil {
-                    voiceRecorder.reset()
-                } else {
-                    // Recording was sent successfully, just stop recording/playback but keep the file
-                    voiceRecorder.stopRecording()
-                    voiceRecorder.stopPlayback()
-                }
+                voiceRecorder.stopRecording()
+                voiceRecorder.stopPlayback()
             }
         }
         .animation(.default, value: viewModel.isTextInputPresented)
