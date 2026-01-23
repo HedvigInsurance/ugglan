@@ -113,6 +113,7 @@ struct VoiceRecordingCardContent: View {
                     voiceRecorder.startPlayback()
                 }
             }
+            .accessibilityAddTraits(.isButton)
             .gesture(
                 DragGesture(coordinateSpace: .local)
                     .onChanged { gesture in

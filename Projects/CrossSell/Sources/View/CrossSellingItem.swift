@@ -68,6 +68,7 @@ struct CrossSellingItem: View {
                     openExternal()
                     ImpactGenerator.soft()
                 }
+                .accessibilityAddTraits(.isButton)
             }
             .padding(.vertical, .padding8)
         }
