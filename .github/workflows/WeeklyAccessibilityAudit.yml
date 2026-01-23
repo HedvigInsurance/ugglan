@@ -34,7 +34,7 @@ jobs:
         run: |
           chmod +x scripts/check-accessibility.sh
           echo "Running accessibility check on $(wc -l < swift_files.txt) files..."
-          scripts/check-accessibility.sh $(cat swift_files.txt) || true
+          cat swift_files.txt | xargs scripts/check-accessibility.sh || true
           # Ensure report file exists even if script fails early
           if [ ! -f accessibility-report.md ]; then
             echo "## 🔍 Accessibility Check Report" > accessibility-report.md
@@ -49,7 +49,7 @@ jobs:
         run: |
           echo "Running auto-fix on $(wc -l < swift_files.txt) files..."
           chmod +x scripts/auto-fix-accessibility.sh
-          scripts/auto-fix-accessibility.sh $(cat swift_files.txt) || true
+          cat swift_files.txt | xargs scripts/auto-fix-accessibility.sh || true
 
           # Check if any files were changed
           echo "Checking git status..."
@@ -68,7 +68,7 @@ jobs:
         if: steps.autofix.outputs.fixes_applied == 'true'
         run: |
           echo "Re-running accessibility check after auto-fix..."
-          scripts/check-accessibility.sh $(cat swift_files.txt) || true
+          cat swift_files.txt | xargs scripts/check-accessibility.sh || true
           # Ensure report file exists even if script fails early
           if [ ! -f accessibility-report.md ]; then
             echo "## 🔍 Accessibility Check Report" > accessibility-report.md
