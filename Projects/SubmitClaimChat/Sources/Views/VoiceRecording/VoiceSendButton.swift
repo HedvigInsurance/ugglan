@@ -16,6 +16,7 @@ public struct VoiceSendButton: View {
         Button(action: {
             Task {
                 voiceRecorder.isSending = true
+                voiceRecorder.stopPlayback()
                 try await onTap()
             }
         }) {
