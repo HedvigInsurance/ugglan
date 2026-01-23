@@ -23,32 +23,21 @@ public struct VoiceWaveformView: View {
     }
 
     public var body: some View {
-        ZStack {
-            if audioLevels.isEmpty {
-                // Show dotted line when idle
-                DottedLine()
-                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
-                    .fill(hTextColor.Opaque.secondary)
-                    .frame(height: 1)
-            } else {
-                // Show waveform bars when recording/recorded
-                GeometryReader { geometry in
-                    let maxBars = Int(geometry.size.width / (barWidth + barSpacing))
-                    let levels = prepareLevels(count: maxBars)
+        GeometryReader { geometry in
+            let maxBars = Int(geometry.size.width / (barWidth + barSpacing))
+            let levels = prepareLevels(count: maxBars)
 
-                    HStack(spacing: barSpacing) {
-                        ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
-                            RoundedRectangle(cornerRadius: barWidth / 2)
-                                .fill(hTextColor.Opaque.primary)
-                                .frame(
-                                    width: barWidth,
-                                    height: barHeight(for: level, at: index, total: levels.count)
-                                )
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            HStack(spacing: barSpacing) {
+                ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
+                    RoundedRectangle(cornerRadius: barWidth / 2)
+                        .fill(hTextColor.Opaque.primary)
+                        .frame(
+                            width: barWidth,
+                            height: barHeight(for: level, at: index, total: levels.count)
+                        )
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
         .frame(height: maxHeight)
         .animation(.easeOut(duration: 0.1), value: audioLevels)
@@ -94,15 +83,6 @@ public struct VoiceWaveformView: View {
         let adjustedLevel = amplifiedLevel * edgeMultiplier
         let height = max(minBarHeight * edgeMultiplier, adjustedLevel * maxHeight)
         return min(height, maxHeight)
-    }
-}
-
-struct DottedLine: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.minX, y: rect.midY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        return path
     }
 }
 
