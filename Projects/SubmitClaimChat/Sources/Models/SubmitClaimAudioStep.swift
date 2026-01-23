@@ -101,8 +101,6 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         voiceRecorder.isSending = true
         let freeText = isTextInputPresented ? textInput : nil
         do {
-            try await Task.sleep(seconds: 2)
-            throw ClaimIntentError.invalidResponse
             guard
                 let result = try await service.claimIntentSubmitAudio(
                     fileId: fileId,
