@@ -87,6 +87,7 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
             .detent(
                 item: $viewModel.alertPresentationModel,
                 transitionType: .center,
+                options: .constant(.alwaysOpenOnTop),
                 onUserDismiss: {
                     viewModel.alertPresentationModel?.onClose()
                 }

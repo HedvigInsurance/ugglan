@@ -66,24 +66,29 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             throw ClaimIntentError.invalidResponse
         }
         state.isEnabled = false
-        let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
-        let multipart = MultipartFormDataRequest(url: url)
-        let data = try Data(contentsOf: audioFileURL)
-        multipart.addDataField(
-            fieldName: "files",
-            fileName: audioFileURL.lastPathComponent,
-            data: data,
-            mimeType: "audio/m4a"
-        )
-        let response: FileUploadResponseModel = try await fileUploadClient.upload(
-            url: audioFileURL,
-            multipart: multipart
-        ) { [weak self] progress in
-            Task { @MainActor in
-                self?.uploadProgress = progress
+        do {
+            let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
+            let multipart = MultipartFormDataRequest(url: url)
+            let data = try Data(contentsOf: audioFileURL)
+            multipart.addDataField(
+                fieldName: "files",
+                fileName: audioFileURL.lastPathComponent,
+                data: data,
+                mimeType: "audio/m4a"
+            )
+            let response: FileUploadResponseModel = try await fileUploadClient.upload(
+                url: audioFileURL,
+                multipart: multipart
+            ) { [weak self] progress in
+                Task { @MainActor in
+                    self?.uploadProgress = progress
+                }
             }
+            uploadedAudioId = response.fileIds.first!
+        } catch {
+            state.isEnabled = true
+            throw error
         }
-        uploadedAudioId = response.fileIds.first!
     }
 
     override func executeStep() async throws -> ClaimIntentType {
@@ -93,9 +98,11 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             }
             return uploadedAudioId
         }()
-
+        voiceRecorder.isSending = true
         let freeText = isTextInputPresented ? textInput : nil
         do {
+            try await Task.sleep(seconds: 2)
+            throw ClaimIntentError.invalidResponse
             guard
                 let result = try await service.claimIntentSubmitAudio(
                     fileId: fileId,
@@ -112,7 +119,10 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             }
             return result
         } catch {
-            voiceRecorder.isSending = false
+            Task {
+                try? await Task.sleep(seconds: 1)
+                voiceRecorder.isSending = false
+            }
             throw error
         }
     }

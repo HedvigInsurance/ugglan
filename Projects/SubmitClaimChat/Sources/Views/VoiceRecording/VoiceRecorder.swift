@@ -60,7 +60,7 @@ public final class VoiceRecorder: ObservableObject {
             case .playbackFailed:
                 return L10n.voiceoverAuidoPlaybackFailed
             case .sendingFailed:
-                return L10n.voiceoverAudioSendingFailed
+                return L10n.generalTryAgain
             }
         }
 
@@ -195,6 +195,7 @@ public final class VoiceRecorder: ObservableObject {
     }
 
     public func togglePlayback() {
+        error = nil
         if isPlaying {
             stopPlayback()
         } else {
@@ -219,6 +220,7 @@ public final class VoiceRecorder: ObservableObject {
     }
 
     public func startOver() {
+        error = nil
         stopTimers()
         recorder?.stop()
         recorder = nil

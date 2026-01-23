@@ -16,6 +16,7 @@ public struct VoiceSendButton: View {
         Button(action: {
             ImpactGenerator.soft()
             Task {
+                voiceRecorder.error = nil
                 voiceRecorder.isSending = true
                 voiceRecorder.stopPlayback()
                 do {

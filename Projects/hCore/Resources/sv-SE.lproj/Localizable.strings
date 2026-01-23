@@ -391,6 +391,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_SAVE_CHANGES_BUTTON" = "Spara ändringar";
 "GENERAL_SHOW" = "Visa";
 "GENERAL_TODAY" = "Idag";
+"GENERAL_TRY_AGAIN" = "Försök igen";
 "GENERAL_YESTERDAY" = "Igår";
 "GENERIC_UNKNOWN" = "Okänt";
 "HC_ALL_QUESTION_TITLE" = "Alla frågor";
@@ -477,7 +478,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 /* Title above bundle selector on offer page. */
 "OFFER_BUNDLE_SELECTOR_TITLE" = "Välj ditt Hedvig-paket";
 "OFFER_HOUSE_SUMMARY_DESC" = "Här är en snabb översikt över informationen du har gett oss om ditt hem.";
-"OFFER_SAVE_START_DATE_ERROR_ALERT_MESSAGE" = "Försök igen";
 "OFFER_SAVE_START_DATE_ERROR_ALERT_TITLE" = "Kunde inte spara startdatumet";
 "OFFER_SCREEN_COVERAGE_TITLE" = "Skyddet";
 "OFFER_SWITCHER_EXPLANATION_FOOTER" = "När denna är påslagen, startar din Hedvig-försäkring automatiskt när ditt nuvarande försäkringsavtal med ditt andra försäkringsbolag löper ut.";
@@ -647,7 +647,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUMMARY_SCREEN_COVERAGE" = "Skyddet";
 "SUMMARY_SCREEN_OVERVIEW" = "Överblick";
 "SUMMARY_TOTAL_PRICE_SUBTITLE" = "Ändringar aktiveras %@";
-"SURVEY_SOLD_VACATION_HOME" = "Jag har sålt fritidshuset";
 "SWITCHER_AUTO_CARD_DESCRIPTION" = "När du har signerat säger vi upp din gamla försäkring och aktiverar din nya försäkring hos Hedvig samma dag som den gamla löper ut.";
 "SWITCHER_AUTO_CARD_TITLE" = "Automatiskt byte";
 "SWITCHER_MANUAL_CARD_DESCRIPTION" = "Ditt nuvarande försäkringsbolag tillåter inte att vi säger upp ditt försäkringsavtal åt dig. Du måste säga upp det själv och sedan ange ett startdatum för din nya försäkring i Hedvig-appen.";

@@ -13,40 +13,45 @@ struct VoiceRecordingCardContent: View {
             hSection {
                 VStack(spacing: .padding16) {
                     Group {
-                        if let error = voiceRecorder.error {
-                            StateView(
-                                type: .error,
-                                title: error.title ?? L10n.somethingWentWrong,
-                                bodyText: error.errorDescription,
-                                formPosition: nil,
-                                attachContentToBottom: false
-                            )
-                        } else {
-                            VStack(spacing: 0) {
-                                hText(L10n.claimsTriagingWhatHappenedTitle)
-                                    .foregroundColor(titleColor)
+                        VStack(spacing: 0) {
+                            hText(L10n.claimsTriagingWhatHappenedTitle)
+                                .foregroundColor(titleColor)
 
-                                hText(voiceRecorder.formattedTime, style: .body1)
-                                    .foregroundColor(recordingProgressColor)
+                            hText(voiceRecorder.formattedTime, style: .body1)
+                                .foregroundColor(recordingProgressColor)
+                        }
+                        .opacity(voiceRecorder.error != nil ? 0 : 1)
+
+                        ZStack {
+                            if let error = voiceRecorder.error {
+                                StateView(
+                                    type: .error,
+                                    title: error.title ?? L10n.somethingWentWrong,
+                                    bodyText: error.errorDescription,
+                                    formPosition: nil,
+                                    attachContentToBottom: false
+                                )
+                                .offset(x: 0, y: -.padding32)
+                                .transition(.opacity)
                             }
-                            ZStack {
-                                if voiceRecorder.isSending {
-                                    DotsActivityIndicator(.standard)
-                                        .useDarkColor
-                                }
-                                waveformSection
-                                    .frame(height: .padding60)
-                                    .padding(.horizontal, .padding45)
-                                    .padding(.vertical, .padding48)
-                                    .opacity(voiceRecorder.isSending ? 0 : 1)
-                                    .animation(.defaultSpring, value: voiceRecorder.hasRecording)
+                            if voiceRecorder.isSending {
+                                DotsActivityIndicator(.standard)
+                                    .useDarkColor
                             }
+                            waveformSection
+                                .frame(height: .padding60)
+                                .padding(.horizontal, .padding45)
+                                .padding(.vertical, .padding48)
+                                .opacity(voiceRecorder.isSending || voiceRecorder.error != nil ? 0 : 1)
+                                .animation(.defaultSpring, value: voiceRecorder.hasRecording)
                         }
                     }
                     .accessibilityHidden(voiceRecorder.isCountingDown)
 
                     controlsSection
                 }
+                .animation(.easeInOut(duration: 0.2), value: voiceRecorder.error)
+                .animation(.easeInOut(duration: 0.2), value: voiceRecorder.isSending)
             }
             .sectionContainerStyle(.transparent)
             .padding(.bottom, .padding16)
