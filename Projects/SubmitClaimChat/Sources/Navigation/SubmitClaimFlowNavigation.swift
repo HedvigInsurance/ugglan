@@ -68,7 +68,7 @@ extension SubmitClaimFlowNavigation: TrackingViewNameProtocol {
 
 extension View {
     func addDismissClaimChatFlow() -> some View {
-        withAlertDismiss(message: L10n.claimChatEditExplanation)
+        withAlertDismiss(message: L10n.Claims.Alert.body)
     }
 }
 
@@ -82,11 +82,7 @@ extension ClaimIntentOutcomeDeflection: TrackingViewNameProtocol, NavigationTitl
     }
 }
 
-extension ClaimIntentStepOutcome: TrackingViewNameProtocol, NavigationTitleProtocol {
-    public var navigationTitle: String? {
-        L10n.claimChatTitle
-    }
-
+extension ClaimIntentStepOutcome: TrackingViewNameProtocol {
     public var nameForTracking: String {
         String(describing: SubmitClaimSuccessView.self)
     }

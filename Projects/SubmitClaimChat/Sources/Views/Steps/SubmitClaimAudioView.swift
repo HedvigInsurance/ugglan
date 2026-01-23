@@ -13,7 +13,7 @@ struct SubmitClaimAudioView: View {
 
     @State private var minutes: Int = 0
     @State private var seconds: Int = 0
-    @AccessibilityFocusState private var saveAndContinueFocused: Bool
+    @AccessibilityFocusState private var focusState: String?
 
     @State private var showMicAlert = false
     @Environment(\.openURL) private var openURL
@@ -63,6 +63,11 @@ struct SubmitClaimAudioView: View {
             .environmentObject(audioRecorder)
         }
         .sectionContainerStyle(.transparent)
+        .onChange(of: viewModel.inputType) { value in
+            if value == .text {
+                focusState = Accessibility.inputTextView
+            }
+        }
     }
 
     private var textElements: some View {
@@ -87,7 +92,7 @@ struct SubmitClaimAudioView: View {
                 )
                 .disabled(audioRecordingVm.viewState == .loading)
                 .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-                .accessibilityFocused($saveAndContinueFocused)
+                .accessibilityFocused($focusState, equals: Accessibility.saveAndContinueFocused)
                 .accessibilityLabel(L10n.saveAndContinueButtonLabel)
 
                 hButton(
@@ -121,6 +126,7 @@ struct SubmitClaimAudioView: View {
                     viewModel.submitResponse()
                 }
             )
+            .accessibilityFocused($focusState, equals: Accessibility.saveAndContinueFocused)
             .disabled(viewModel.characterMismatch)
             hButton(
                 .large,
@@ -163,6 +169,7 @@ struct SubmitClaimAudioView: View {
             viewModel.textInput = text
         }
         .hTextFieldError(viewModel.textInputError)
+        .accessibilityFocused($focusState, equals: Accessibility.inputTextView)
     }
 
     private func playRecordingButton(url: URL) -> some View {
@@ -194,10 +201,7 @@ struct SubmitClaimAudioView: View {
         .onChange(of: audioRecorder.isRecording) { isRecording in
             if !isRecording {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    UIAccessibility.post(notification: .announcement, argument: " ")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        saveAndContinueFocused = true
-                    }
+                    focusState = Accessibility.saveAndContinueFocused
                 }
             }
         }
@@ -371,5 +375,12 @@ struct SubmitClaimAudioResultView: View {
         SubmitClaimAudioResultView(
             viewModel: viewModel
         )
+    }
+}
+
+extension SubmitClaimAudioView {
+    enum Accessibility {
+        static let saveAndContinueFocused = "saveAndContinueFocused"
+        static let inputTextView = "inputTextView"
     }
 }

@@ -13,6 +13,7 @@ public struct hTextView: View {
     @State private var value: String = ""
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
+    @AccessibilityFocusState var isFocused: Bool
     private let onContinue: (_ text: String) -> Void
     private let enabled: Bool
     private let color: UIColor
@@ -60,9 +61,11 @@ public struct hTextView: View {
                             },
                             color: enabled ? color : nil
                         )
+                        .accessibilityLabel(placeholder)
                         .padding(.leading, -4)
                         .frame(height: height)
                         .padding(.bottom, enabled ? 0 : .padding12)
+                        .accessibilityFocused($isFocused)
                         if enabled {
                             HStack(spacing: .padding4) {
                                 Spacer()
@@ -71,6 +74,7 @@ public struct hTextView: View {
                             }
                             .fixedSize()
                             .padding(.bottom, .padding12)
+                            .accessibilityHidden(true)
                         }
                     }
                 }
@@ -96,7 +100,6 @@ public struct hTextView: View {
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(placeholder)
         .accessibilityAddTraits(.isButton)
     }
 
@@ -119,7 +122,6 @@ public struct hTextView: View {
             color: color
         )
         .hTextFieldError(errorMessage)
-
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
         let backgroundColor = UIColor(
             light: hGrayscaleOpaqueColor.white.colorFor(.light, .base).color.uiColor(),
@@ -134,10 +136,18 @@ public struct hTextView: View {
         continueAction.execute = { [weak vc] in
             selectedValue = value
             onContinue(value)
+            Task {
+                try? await Task.sleep(seconds: 0.5)
+                isFocused = true
+            }
             vc?.dismiss(animated: true)
         }
         cancelAction.execute = { [weak vc] in
             vc?.dismiss(animated: true)
+            Task {
+                try? await Task.sleep(seconds: 0.5)
+                isFocused = true
+            }
         }
         let topVC = UIApplication.shared.getTopViewController()
         if let topVC {
@@ -223,6 +233,7 @@ private struct FreeTextInputView: View {
                     hSection {
                         HStack {
                             hText(title, style: .body1)
+                                .accessibilityHidden(true)
                             Spacer()
                             Button(
                                 action: {
@@ -236,6 +247,8 @@ private struct FreeTextInputView: View {
                                         .foregroundColor(hFillColor.Opaque.primary)
                                 }
                             )
+                            .accessibilityLabel(L10n.a11YClose)
+                            .accessibilitySortPriority(99)
                         }
                     }
                     hRowDivider()
@@ -255,6 +268,7 @@ private struct FreeTextInputView: View {
                         )
                         .padding(.leading, -4)
                         .frame(maxHeight: max(height, 100))
+                        .accessibilitySortPriority(100)
                     }
                     .sectionContainerStyle(.transparent)
                     Spacer()
@@ -400,6 +414,7 @@ private class TextView: UITextView, UITextViewDelegate {
         placeholderView.font = Fonts.fontFor(style: .body1)
         placeholderView.isHidden = inputText.wrappedValue != ""
         placeholderView.delegate = self
+        placeholderView.accessibilityElementsHidden = true
         if becomeFirstResponder {
             self.becomeFirstResponder()
         } else {

@@ -43,7 +43,7 @@ struct SubmitClaimChatMesageView: View {
                 )
                 .hButtonIsLoading(viewModel.state.isLoading)
                 .fixedSize(horizontal: false, vertical: true)
-                spacing(viewModel.sender == .hedvig)
+                spacing(viewModel.trailingSpacing)
             }
             .padding(.top, .padding16)
             .id("result_\(viewModel.id)")
@@ -75,6 +75,13 @@ extension ClaimIntentStepHandler {
         }
         return .trailing
     }
+
+    var trailingSpacing: Bool {
+        switch claimIntent.currentStep.content {
+        case .summary: false
+        default: sender == .hedvig
+        }
+    }
 }
 
 struct ClaimStepView: View {
@@ -100,7 +107,7 @@ struct ClaimStepView: View {
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
                 hSection {
-                    hButton(.large, .ghost, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
+                    hButton(.large, .secondary, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
                         Task {
                             await viewModel?.skip()
                         }
@@ -126,7 +133,9 @@ struct ClaimStepResultView: View {
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
-            hPill(text: L10n.claimChatSkippedLabel, color: .grey, colorLevel: .two, withBorder: false)
+            hText(L10n.claimChatSkippedLabel)
+                .foregroundColor(hTextColor.Translucent.secondary)
+                .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                 .hFieldSize(.capsuleShape)
                 .accessibilityHidden(true)
         } else if viewModel.state.showResults {
