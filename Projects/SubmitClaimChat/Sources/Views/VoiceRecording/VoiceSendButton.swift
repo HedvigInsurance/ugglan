@@ -18,7 +18,12 @@ public struct VoiceSendButton: View {
             Task {
                 voiceRecorder.isSending = true
                 voiceRecorder.stopPlayback()
-                try await onTap()
+                do {
+                    try await onTap()
+                } catch {
+                    voiceRecorder.isSending = false
+                    voiceRecorder.error = .sendingFailed
+                }
             }
         }) {
             VStack(spacing: .padding4) {
