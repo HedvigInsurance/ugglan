@@ -46,6 +46,7 @@ public struct TravelCertificatesListScreen: View {
                     .onTapGesture {
                         travelCertificateNavigationVm.isDocumentPresented = travelCertificate
                     }
+                    .accessibilityAddTraits(.isButton)
                     .accessibilityElement(children: .combine)
                     .accessibilityAddTraits(.isButton)
                 }

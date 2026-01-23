@@ -52,6 +52,7 @@ public struct PriceField: View {
                 .onTapGesture {
                     isInfoViewPresented = infoViewModel
                 }
+                .accessibilityAddTraits(.isButton)
                 .accessibilityLabel(
                     L10n.voiceoverMoreInfo
                 )
