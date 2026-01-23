@@ -101,6 +101,7 @@ struct TrackPlayer: View {
             .onTapGesture {
                 audioPlayer.togglePlaying()
             }
+            .accessibilityAddTraits(.isButton)
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isButton)
             .accessibilityLabel(L10n.a11YAudioRecording)

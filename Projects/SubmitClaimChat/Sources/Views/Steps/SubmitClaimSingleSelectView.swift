@@ -34,6 +34,7 @@ struct SubmitClaimSingleSelectView: View {
                 .hFieldSize(.capsuleShape)
                 .transition(.submitClaimOptionAppear)
                 .onTapGesture { selectOption(id: option.id) }
+                .accessibilityAddTraits(.isButton)
                 .optionAccessibility(label: option.title)
             }
         }

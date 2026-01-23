@@ -338,6 +338,7 @@ public struct DirectDebitSetup: View {
                 showCancelAlert = true
             }
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     private func cancelAlert() -> SwiftUI.Alert {

@@ -176,6 +176,7 @@ struct ScrollToBottomButton: View {
         .onTapGesture {
             scrollAction()
         }
+        .accessibilityAddTraits(.isButton)
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }

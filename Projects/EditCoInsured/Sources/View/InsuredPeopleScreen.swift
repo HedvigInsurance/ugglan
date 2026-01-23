@@ -135,6 +135,7 @@ struct InsuredPeopleScreen: View {
         .onTapGesture {
             onAccessoryViewTap(type: type, coInsured: coInsured)
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     private func onAccessoryViewTap(type: CoInsuredFieldType, coInsured: CoInsuredModel) {
