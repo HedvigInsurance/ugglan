@@ -22,15 +22,19 @@ jobs:
         id: find-files
         run: |
           # Find all Swift files except tests
-          FILES=$(find Projects -name "*.swift" -type f | grep -v Test | tr '\n' ' ')
+          find Projects -name "*.swift" -type f | grep -v Test > swift_files.txt
+          FILES=$(cat swift_files.txt | tr '\n' ' ')
           echo "swift_files=$FILES" >> $GITHUB_OUTPUT
-          echo "Found $(echo $FILES | wc -w | tr -d ' ') Swift files to check"
+          echo "Found $(wc -l < swift_files.txt) Swift files to check"
+          echo "First 5 files:"
+          head -5 swift_files.txt
 
       - name: Run Accessibility Check
         id: check
         run: |
           chmod +x scripts/check-accessibility.sh
-          scripts/check-accessibility.sh "${{ steps.find-files.outputs.swift_files }}" || true
+          echo "Running accessibility check on $(wc -l < swift_files.txt) files..."
+          scripts/check-accessibility.sh $(cat swift_files.txt) || true
           # Ensure report file exists even if script fails early
           if [ ! -f accessibility-report.md ]; then
             echo "## 🔍 Accessibility Check Report" > accessibility-report.md
@@ -43,23 +47,28 @@ jobs:
         id: autofix
         if: steps.check.outcome == 'failure'
         run: |
+          echo "Running auto-fix on $(wc -l < swift_files.txt) files..."
           chmod +x scripts/auto-fix-accessibility.sh
-          scripts/auto-fix-accessibility.sh "${{ steps.find-files.outputs.swift_files }}" || true
+          scripts/auto-fix-accessibility.sh $(cat swift_files.txt) || true
 
           # Check if any files were changed
+          echo "Checking git status..."
+          git status
           if [ -n "$(git status --porcelain)" ]; then
             echo "fixes_applied=true" >> $GITHUB_OUTPUT
-            echo "Files were modified by auto-fix"
+            echo "✅ Files were modified by auto-fix"
+            git diff --stat
           else
             echo "fixes_applied=false" >> $GITHUB_OUTPUT
-            echo "No files were modified"
+            echo "⚠️ No files were modified by auto-fix"
           fi
 
       - name: Re-run Accessibility Check
         id: recheck
         if: steps.autofix.outputs.fixes_applied == 'true'
         run: |
-          scripts/check-accessibility.sh "${{ steps.find-files.outputs.swift_files }}" || true
+          echo "Re-running accessibility check after auto-fix..."
+          scripts/check-accessibility.sh $(cat swift_files.txt) || true
           # Ensure report file exists even if script fails early
           if [ ! -f accessibility-report.md ]; then
             echo "## 🔍 Accessibility Check Report" > accessibility-report.md
@@ -143,7 +152,7 @@ jobs:
           fi
 
       - name: Create Issue if Manual Fixes Needed
-        if: steps.recheck.outcome == 'failure' && steps.autofix.outputs.fixes_applied == 'true'
+        if: (steps.recheck.outcome == 'failure' && steps.autofix.outputs.fixes_applied == 'true') || (steps.check.outcome == 'failure' && steps.autofix.outputs.fixes_applied == 'false')
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -171,6 +180,8 @@ jobs:
               issue.title.includes('Weekly Accessibility Audit')
             );
 
+            const fixesApplied = '${{ steps.autofix.outputs.fixes_applied }}' === 'true';
+
             const issueBody = `## 🔍 Weekly Accessibility Audit - Manual Fixes Required
 
             This is an automated weekly scan of the codebase for accessibility compliance issues.
@@ -178,20 +189,20 @@ jobs:
             **Scan Date:** ${new Date().toISOString().split('T')[0]}
             **Workflow Run:** [View Details](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
 
-            ### 🤖 Auto-Fix PR Created
+            ${fixesApplied ? `### 🤖 Auto-Fix PR Created
 
             A pull request has been automatically created with fixes for common accessibility issues.
             **👉 Review and merge the auto-fix PR first**, then address the remaining issues below.
 
-            ---
+            ---` : ''}
 
-            ## ⚠️ Remaining Issues Requiring Manual Review
+            ## ⚠️ ${fixesApplied ? 'Remaining Issues' : 'Issues Found'} Requiring Manual Review
 
             ${report}
 
             ---
 
-            ### 📝 How to Fix the Remaining Issues
+            ### 📝 How to Fix ${fixesApplied ? 'the Remaining Issues' : 'These Issues'}
 
             These issues require manual review because they need:
             - Proper L10n keys for accessibility labels
@@ -199,11 +210,9 @@ jobs:
             - Context-specific accessibility hints
 
             **Steps:**
-            1. Review the auto-fix PR and merge it
-            2. Review the issues listed above
-            3. Add appropriate \`.accessibilityLabel()\` using L10n keys
-            4. Test with VoiceOver to verify fixes
-            5. Run \`./scripts/check-accessibility.sh\` locally before committing
+            ${fixesApplied ? '1. Review the auto-fix PR and merge it\n            2. Review the issues listed above\n            3. Add appropriate \`.accessibilityLabel()\` using L10n keys' : '1. Review the issues listed above\n            2. Add appropriate \`.accessibilityLabel()\` using L10n keys'}
+            ${fixesApplied ? '4' : '3'}. Test with VoiceOver to verify fixes
+            ${fixesApplied ? '5' : '4'}. Run \`./scripts/check-accessibility.sh\` locally before committing
 
             ### 🔗 Resources
             - [Accessibility Workflow Documentation](docs/accessibility-workflow.md)
