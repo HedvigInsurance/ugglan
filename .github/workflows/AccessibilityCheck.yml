@@ -42,6 +42,24 @@ jobs:
             const fs = require('fs');
             const output = fs.readFileSync('accessibility-report.md', 'utf8');
 
+            // Delete old accessibility report comments
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            for (const comment of comments.data) {
+              if (comment.user.type === 'Bot' && comment.body.includes('🔍 Accessibility Check Report')) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id
+                });
+              }
+            }
+
+            // Create new comment
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
