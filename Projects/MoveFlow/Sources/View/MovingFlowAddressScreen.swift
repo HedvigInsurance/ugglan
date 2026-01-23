@@ -175,6 +175,7 @@ struct MovingFlowAddressScreen: View {
             }
         }
         .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(.isButton)
     }
 
     func continuePressed() {

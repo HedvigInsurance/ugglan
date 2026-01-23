@@ -87,6 +87,7 @@ public struct hDatePickerField: View {
             }
         }
         .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(.isButton)
         .accessibilityElement(children: .combine)
         .disabled(!isEnabled)
         .detent(

@@ -179,6 +179,7 @@ struct ClaimStepResultView: View {
                     }
                 )
             }
+            .accessibilityAddTraits(.isButton)
         }
     }
 

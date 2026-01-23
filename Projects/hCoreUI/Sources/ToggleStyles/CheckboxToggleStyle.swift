@@ -141,6 +141,7 @@ public struct CheckboxToggleView: View {
                     }
                 }
                 .accessibilityAddTraits(.isButton)
+                .accessibilityAddTraits(.isButton)
             Circle()
                 .fill(hTextColor.Opaque.white)
                 .padding(1)
