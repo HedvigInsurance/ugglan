@@ -58,11 +58,17 @@ def fix_accessibility(content):
             close_count = remaining_text.count('}')
 
             if open_count == close_count:
-                # Single-line closure - check if trait already exists on next line
-                if i + 1 < len(lines) and '.accessibilityAddTraits(.isButton)' in lines[i + 1]:
-                    # Trait already exists, skip
-                    pass
-                else:
+                # Single-line closure - check if trait already exists in next 10 lines
+                has_trait = False
+                for check_line in range(i + 1, min(i + 11, len(lines))):
+                    if '.accessibilityAddTraits(.isButton)' in lines[check_line]:
+                        has_trait = True
+                        break
+                    # Stop checking if we hit a different view modifier or closing brace
+                    if lines[check_line].strip() and not lines[check_line].strip().startswith('.'):
+                        break
+
+                if not has_trait:
                     # Add trait right after this line
                     indent = len(line) - len(line.lstrip())
                     result.append(' ' * indent + '.accessibilityAddTraits(.isButton)')
@@ -88,11 +94,17 @@ def fix_accessibility(content):
                     for k in range(i + 1, closure_end + 1):
                         result.append(lines[k])
 
-                    # Check if trait already exists on the line after closure
-                    if closure_end + 1 < len(lines) and '.accessibilityAddTraits(.isButton)' in lines[closure_end + 1]:
-                        # Trait already exists, skip
-                        pass
-                    else:
+                    # Check if trait already exists in next 10 lines after closure
+                    has_trait = False
+                    for check_line in range(closure_end + 1, min(closure_end + 11, len(lines))):
+                        if '.accessibilityAddTraits(.isButton)' in lines[check_line]:
+                            has_trait = True
+                            break
+                        # Stop checking if we hit a different view modifier or closing brace
+                        if lines[check_line].strip() and not lines[check_line].strip().startswith('.'):
+                            break
+
+                    if not has_trait:
                         # Add accessibility trait after closure
                         indent = len(lines[i]) - len(lines[i].lstrip())
                         result.append(' ' * indent + '.accessibilityAddTraits(.isButton)')
