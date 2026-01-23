@@ -38,6 +38,7 @@ struct VoiceRecordingCardContent: View {
                                     .frame(height: .padding60)
                                     .padding(.horizontal, .padding45)
                                     .opacity(voiceRecorder.isSending ? 0 : 1)
+                                    .animation(.defaultSpring, value: voiceRecorder.hasRecording)
                             }
                         }
                     }
@@ -81,7 +82,7 @@ struct VoiceRecordingCardContent: View {
                 maxHeight: 60,
                 progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
             )
-            .transition(.opacity.combined(with: .scale))
+            .transition(.opacity)
             .background(
                 GeometryReader { geo in
                     Color.clear

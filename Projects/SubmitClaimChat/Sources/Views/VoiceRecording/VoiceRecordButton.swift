@@ -20,17 +20,23 @@ struct VoiceRecordButton: View {
                         .foregroundColor(hFillColor.Opaque.negative)
                 }
                 .scaleEffect(buttonScale)
-                hText(voiceRecorder.isRecording ? L10n.audioRecorderStop : L10n.audioRecorderStart, style: .label)
+                hText(
+                    voiceRecorder.isRecording || voiceRecorder.isCountingDown
+                        ? L10n.audioRecorderStop : L10n.audioRecorderStart,
+                    style: .label
+                )
+                .transition(.scale)
             }
             .wrapContentForControlButton()
         }
         .animation(.defaultSpring, value: buttonScale)
         .animation(.defaultSpring, value: voiceRecorder.isRecording)
+        .animation(.defaultSpring, value: voiceRecorder.isCountingDown)
         .buttonStyle(.plain)
         .accessibilityLabel(voiceRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
         .accessibilityAddTraits(.isButton)
         .onChange(of: countdownNumber) { _ in
-            buttonScale = 1.2
+            buttonScale = 1.3
             Task {
                 try? await Task.sleep(seconds: 0.15)
                 buttonScale = 1.0
@@ -39,6 +45,7 @@ struct VoiceRecordButton: View {
     }
 
     private func handleTap() {
+        ImpactGenerator.soft()
         if voiceRecorder.isRecording {
             Task {
                 await voiceRecorder.toggleRecording()
@@ -82,6 +89,7 @@ struct VoiceRecordButton: View {
                 )
                 try? await Task.sleep(nanoseconds: 1_000_000_000)  // 1 second
                 try Task.checkCancellation()
+                ImpactGenerator.light()
             }
             try Task.checkCancellation()
             countdownNumber = nil

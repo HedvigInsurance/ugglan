@@ -7,6 +7,7 @@ public struct VoicePlaybackButton: View {
 
     public var body: some View {
         Button(action: {
+            ImpactGenerator.soft()
             voiceRecorder.togglePlayback()
         }) {
             VStack(spacing: .padding4) {

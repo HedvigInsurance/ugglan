@@ -6,6 +6,7 @@ public struct VoiceStartOverButton: View {
     @EnvironmentObject var voiceRecorder: VoiceRecorder
     public var body: some View {
         Button(action: {
+            ImpactGenerator.soft()
             voiceRecorder.startOver()
         }) {
             VStack(spacing: .padding4) {
