@@ -37,6 +37,7 @@ struct VoiceRecordingCardContent: View {
                                 waveformSection
                                     .frame(height: .padding60)
                                     .padding(.horizontal, .padding45)
+                                    .padding(.vertical, .padding48)
                                     .opacity(voiceRecorder.isSending ? 0 : 1)
                                     .animation(.defaultSpring, value: voiceRecorder.hasRecording)
                             }
