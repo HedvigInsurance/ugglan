@@ -46,6 +46,12 @@
 "ADDON_REMOVE_TITLE" = "Avsluta %1$@";
 "ADDON_TRAVEL_DISPLAY_NAME" = "Reseskydd Plus";
 "ALERT_CANCEL" = "Avbryt";
+"AUDIO_RECORDER_LISTEN" = "Lyssna";
+"AUDIO_RECORDER_SEND" = "Skicka";
+"AUDIO_RECORDER_SEND_ERROR_TITLE" = "Kunde inte skicka inspelning";
+"AUDIO_RECORDER_START" = "Starta";
+"AUDIO_RECORDER_START_OVER" = "Börja om";
+"AUDIO_RECORDER_STOP" = "Stoppa";
 "AUTHENTICATION_BANKID_LOGIN_ERROR" = "";
 "AUTHENTICATION_BANKID_LOGIN_LABEL" = "Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in";
 "AUTHENTICATION_BANKID_LOGIN_TITLE" = "Logga in med BankID";
@@ -201,6 +207,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att rensas";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Dubbelkolla att du fyllt i alla obligatoriska fält";
 "CLAIM_CHAT_FILE_TITLE" = "Uppladdade filer";
+"CLAIM_CHAT_FILE_UPLOAD_HINT" = "Du kan ladda upp bilder, PDF:er eller andra filer. Ladda bara upp filer som är relevanta för din skadeanmälan.";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Ladda upp filer";
 "CLAIM_CHAT_FORM_NUMBER_MAX_CHAR" = "Värdet får vara högst %d";
 "CLAIM_CHAT_FORM_NUMBER_MIN_CHAR" = "Värdet måste vara minst %d";
@@ -213,6 +220,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Vänligen ange telefonnummer ifall vi behöver kontakta dig";
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig";
 "CLAIM_CHAT_RECORDING_TITLE" = "Inspelning";
+"CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT" = "Om du inte minns inköpsdatum behöver du inte fylla i något.";
 "CLAIM_CHAT_SKIPPED_LABEL" = "Överhoppad";
 "CLAIM_CHAT_SKIPPED_STEP" = "Överhoppad";
 "CLAIM_CHAT_SKIP_STEP" = "Hoppa över";
@@ -224,6 +232,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_UNKNOWN_STEP" = "";
 "CLAIM_CHAT_USE_AUDIO" = "Starta röstinspelning";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv med text";
+"CLAIM_DATE_AND_LOCATION_HINT" = "Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.";
 "CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Händelsedatum";
 "CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Skicka in din skadeanmälan";
 "CLAIM_TRIAGING_ABOUT_TITILE" = "Vilken försäkring gäller det?";
@@ -638,6 +647,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUMMARY_SCREEN_COVERAGE" = "Skyddet";
 "SUMMARY_SCREEN_OVERVIEW" = "Överblick";
 "SUMMARY_TOTAL_PRICE_SUBTITLE" = "Ändringar aktiveras %@";
+"SURVEY_SOLD_VACATION_HOME" = "Jag har sålt fritidshuset";
 "SWITCHER_AUTO_CARD_DESCRIPTION" = "När du har signerat säger vi upp din gamla försäkring och aktiverar din nya försäkring hos Hedvig samma dag som den gamla löper ut.";
 "SWITCHER_AUTO_CARD_TITLE" = "Automatiskt byte";
 "SWITCHER_MANUAL_CARD_DESCRIPTION" = "Ditt nuvarande försäkringsbolag tillåter inte att vi säger upp ditt försäkringsavtal åt dig. Du måste säga upp det själv och sedan ange ett startdatum för din nya försäkring i Hedvig-appen.";
@@ -747,7 +757,12 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK" = "Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada";
 "VOICEOVER_ACCEPTED" = "Är accepterad";
 "VOICEOVER_ADD_INFORMATION" = "lägga till information";
+"VOICEOVER_AUDIO_COUNTDOWN" = "Räknar ner";
+"VOICEOVER_AUDIO_MIC_PERMISSION_DENIED" = "Mikrofonåtkomst nekad";
+"VOICEOVER_AUDIO_RECORDING_FAILED" = "inspelningen misslyckades";
 "VOICEOVER_AUDIO_RECORDING_PLAY" = "Spela upp inskickad ljudinspelning";
+"VOICEOVER_AUDIO_SENDING_FAILED" = "Kunde inte skicka inspelningen";
+"VOICEOVER_AUIDO_PLAYBACK_FAILED" = "Uppspelningen misslyckades";
 "VOICEOVER_BUNDLE_DISCOUNT_TAG" = "Rabattnamn: %@";
 "VOICEOVER_CHANGE_VALUE" = "ändra värde";
 "VOICEOVER_CHAT_CAMERA" = "Kamera";

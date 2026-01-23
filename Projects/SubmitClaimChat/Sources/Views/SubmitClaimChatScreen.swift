@@ -122,12 +122,26 @@ public struct SubmitClaimChatScreen: View {
                             && !viewModel.shouldMergeInputWithContent ? 1000 : 0
                     )
                     .accessibilityFocused($isCurrentStepFocused)
+                    .disabled(
+                        viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                            && !viewModel.shouldMergeInputWithContent
+                    )
             }
         }
         .padding(.bottom, .padding8)
         .environmentObject(viewModel)
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: viewModel.isInputScrolledOffScreen)
+        .background {
+            if viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                && !viewModel.shouldMergeInputWithContent
+            {
+                Color.clear
+            } else {
+                BackgroundBlurView()
+                    .ignoresSafeArea(.container, edges: .bottom)
+            }
+        }
     }
 
     private func scrollToBottom() {
@@ -427,7 +441,12 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         let handler = createStepHandler(for: claimIntent)
         stepHeights[handler.id] = 0
         let previousStepId = allSteps.last?.id ?? ""
-        self.progress = claimIntent.progress
+
+        if case .deflect = claimIntent.currentStep.content {
+            self.progress = nil
+        } else {
+            self.progress = claimIntent.progress
+        }
         Task { @MainActor in
             if !self.allSteps.isEmpty {
                 currentStep = nil

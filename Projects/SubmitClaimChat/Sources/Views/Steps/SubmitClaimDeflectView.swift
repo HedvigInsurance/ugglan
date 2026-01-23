@@ -80,8 +80,19 @@ public struct SubmitClaimDeflectScreen: View {
                     hRow {
                         VStack(alignment: .leading, spacing: 8) {
                             hText(model.content.title)
-                            hText(model.content.description)
-                                .foregroundColor(hTextColor.Opaque.secondary)
+                            MarkdownView(
+                                config: .init(
+                                    text: model.content.description,
+                                    fontStyle: .body1,
+                                    color: hTextColor.Opaque.primary,
+                                    linkColor: hTextColor.Opaque.primary,
+                                    linkUnderlineStyle: .thick,
+                                    isSelectable: true,
+                                    onUrlClicked: { url in
+                                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                                    }
+                                )
+                            )
                         }
                         .padding(.top, .padding8)
                         .accessibilityElement(children: .combine)
@@ -96,21 +107,57 @@ public struct SubmitClaimDeflectScreen: View {
                                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                                 }
                             )
+                            .sectionContainerStyle(.opaque)
+                            .hWithoutHorizontalPadding([])
                         }
                     }
                     .padding(.top, .padding8)
-                    ForEach(model.linkOnlyPartners, id: \.id) { partner in
-                        hRow {
-                            ParnerButtonView(model: partner, overrideColorSchema: false)
-                        }
-                    }
-                    SupportView(openChat: openChat)
-                        .padding(.top, .padding56)
                 }
                 .padding(.top, .padding8)
             }
             .sectionContainerStyle(.negative)
             .hWithoutHorizontalPadding([.section])
+        }
+        .hFormAttachToBottom {
+            bottomAttachedView
+        }
+        .hFormBottomBackgroundColor(
+            model.hasSupportView
+                ? .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary) : .default
+        )
+        .edgesIgnoringSafeArea(.bottom)
+    }
+
+    @ViewBuilder var bottomAttachedView: some View {
+        if model.hasSupportView {
+            SupportView(openChat: openChat)
+                .padding(.bottom, -.padding16)
+                .padding(.top, .padding16)
+        } else {
+            VStack(spacing: .padding8) {
+                ForEach(model.linkOnlyPartners, id: \.url) { partner in
+                    if let url = URL(string: partner.url) {
+                        hSection {
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(
+                                    title: partner.buttonText,
+                                    buttonImage: .init(
+                                        image: hCoreUIAssets.arrowNorthEast.view,
+                                        alignment: .trailing
+                                    )
+                                ),
+                                {
+                                    Dependencies.urlOpener.open(url)
+                                }
+                            )
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                }
+            }
+            .padding(.bottom, .padding24)
         }
     }
 }
@@ -143,6 +190,7 @@ public struct SubmitClaimDeflectScreen: View {
             .init(question: "question 1", answer: "answer 1"),
             .init(question: "question 2", answer: "answer 2"),
         ],
+        linkOnlyPartners: [],
         buttonTitle: "Open deflect"
     )
 

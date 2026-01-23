@@ -26,6 +26,11 @@ fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentStepContentDe
     urlButtonTitle
 }
 
+fragment ClaimIntentOutcomeDeflectionSimplePartnerFragment on ClaimIntentStepContentDeflectionSimplePartner {
+    url
+    urlButtonTitle
+}
+
 fragment ClaimIntentStepFragment on ClaimIntentStep {
     id
     text
@@ -55,6 +60,9 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         title
         partners {
             ...ClaimIntentOutcomeDeflectionPartnerFragment
+        }
+        simplePartners {
+            ...ClaimIntentOutcomeDeflectionSimplePartnerFragment
         }
         buttonTitle
     }
