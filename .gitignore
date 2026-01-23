@@ -82,3 +82,7 @@ gym_derived_data
 iOSInjectionProject/
 
 LocalModules/AutomaticLog/Package.resolved
+
+# GitHub Actions workflow artifacts
+accessibility-report.md
+swift_files.txt
