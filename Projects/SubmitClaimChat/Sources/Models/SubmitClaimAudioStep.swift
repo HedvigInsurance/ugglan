@@ -95,18 +95,26 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         }()
 
         let freeText = isTextInputPresented ? textInput : nil
-
-        guard
-            let result = try await service.claimIntentSubmitAudio(
-                fileId: fileId,
-                freeText: freeText,
-                stepId: claimIntent.currentStep.id
-            )
-        else {
-            throw ClaimIntentError.invalidResponse
+        do {
+            guard
+                let result = try await service.claimIntentSubmitAudio(
+                    fileId: fileId,
+                    freeText: freeText,
+                    stepId: claimIntent.currentStep.id
+                )
+            else {
+                throw ClaimIntentError.invalidResponse
+            }
+            isAudioInputPresented = false
+            Task {
+                try? await Task.sleep(seconds: 1)
+                voiceRecorder.isSending = false
+            }
+            return result
+        } catch {
+            voiceRecorder.isSending = false
+            throw error
         }
-        isAudioInputPresented = false
-        return result
     }
 
     override func accessibilityEditHint() -> String {

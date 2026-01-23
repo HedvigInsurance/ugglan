@@ -4,15 +4,12 @@ import hCoreUI
 
 public struct VoiceSendButton: View {
     let onTap: () async throws -> Void
-    var isEnabled: Bool
     @EnvironmentObject var voiceRecorder: VoiceRecorder
 
     public init(
         onTap: @escaping () async throws -> Void,
-        isEnabled: Bool
     ) {
         self.onTap = onTap
-        self.isEnabled = isEnabled
     }
 
     public var body: some View {
@@ -20,7 +17,6 @@ public struct VoiceSendButton: View {
             Task {
                 voiceRecorder.isSending = true
                 try await onTap()
-                voiceRecorder.isSending = false
             }
         }) {
             VStack(spacing: .padding4) {
@@ -39,15 +35,16 @@ public struct VoiceSendButton: View {
             .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
-        .disabled(!isEnabled)
+        .disabled(!voiceRecorder.hasRecording)
         .accessibilityLabel(L10n.chatUploadPresend)
         .accessibilityAddTraits(.isButton)
-        .accessibilityHint(isEnabled ? "" : L10n.claimsStartRecordingLabel)
+        .accessibilityHint(voiceRecorder.hasRecording ? "" : L10n.claimsStartRecordingLabel)
+        .animation(.defaultSpring, value: voiceRecorder.hasRecording)
     }
 
     @hColorBuilder
     private var circleColor: some hColor {
-        if isEnabled {
+        if voiceRecorder.hasRecording {
             hSignalColor.Blue.element
         } else {
             hSurfaceColor.Translucent.secondary
@@ -56,7 +53,7 @@ public struct VoiceSendButton: View {
 
     @hColorBuilder
     private var iconColor: some hColor {
-        if isEnabled {
+        if voiceRecorder.hasRecording {
             hFillColor.Opaque.white
         } else {
             hFillColor.Opaque.tertiary
@@ -65,7 +62,7 @@ public struct VoiceSendButton: View {
 
     @hColorBuilder
     private var textColor: some hColor {
-        if isEnabled {
+        if voiceRecorder.hasRecording {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.tertiary
@@ -75,7 +72,9 @@ public struct VoiceSendButton: View {
 
 #Preview {
     VStack(spacing: 40) {
-        VoiceSendButton(onTap: {}, isEnabled: true)
-        VoiceSendButton(onTap: {}, isEnabled: false)
+        VoiceSendButton(onTap: {})
+            .environmentObject(VoiceRecorder())
+        VoiceSendButton(onTap: {})
+            .environmentObject(VoiceRecorder())
     }
 }

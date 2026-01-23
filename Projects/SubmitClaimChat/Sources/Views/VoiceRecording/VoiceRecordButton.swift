@@ -2,20 +2,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct VoiceRecordButton: View {
-    let isRecording: Bool
-    let onTap: () -> Void
-
+struct VoiceRecordButton: View {
     @State private var countdownNumber: Int? = nil
+    @State private var buttonScale: CGFloat = 1.0
 
     @EnvironmentObject var voiceRecorder: VoiceRecorder
-
-    public init(isRecording: Bool, onTap: @escaping () -> Void) {
-        self.isRecording = isRecording
-        self.onTap = onTap
-    }
-
-    public var body: some View {
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    var body: some View {
         Button(action: handleTap) {
             VStack(spacing: .padding4) {
                 ZStack {
@@ -26,20 +19,35 @@ public struct VoiceRecordButton: View {
                     buttonImage
                         .foregroundColor(hFillColor.Opaque.negative)
                 }
-
-                hText(isRecording ? L10n.audioRecorderStop : L10n.audioRecorderStart, style: .label)
+                .scaleEffect(buttonScale)
+                hText(voiceRecorder.isRecording ? L10n.audioRecorderStop : L10n.audioRecorderStart, style: .label)
             }
             .wrapContentForControlButton()
         }
+        .animation(.defaultSpring, value: buttonScale)
+        .animation(.defaultSpring, value: voiceRecorder.isRecording)
         .buttonStyle(.plain)
-        .accessibilityLabel(isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
+        .accessibilityLabel(voiceRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
         .accessibilityAddTraits(.isButton)
+        .onChange(of: countdownNumber) { _ in
+            buttonScale = 1.2
+            Task {
+                try? await Task.sleep(seconds: 0.15)
+                buttonScale = 1.0
+            }
+        }
     }
 
     private func handleTap() {
-        if isRecording {
-            onTap()
-        } else if !voiceRecorder.isCountingDown {
+        if voiceRecorder.isRecording {
+            Task {
+                await voiceRecorder.toggleRecording()
+            }
+        } else if countdownNumber != nil {
+            startCountdownTask?.cancel()
+            voiceRecorder.isCountingDown = false
+            countdownNumber = nil
+        } else {
             Task {
                 try await voiceRecorder.askForPermissionIfNeeded()
                 startCountdown()
@@ -47,19 +55,25 @@ public struct VoiceRecordButton: View {
         }
     }
 
+    @State var startCountdownTask: Task<(), Error>?
     private func startCountdown() {
         voiceRecorder.isCountingDown = true
 
-        Task {
+        startCountdownTask = Task {
             // Small delay to let SwiftUI update accessibility tree before announcements
-            try? await Task.sleep(nanoseconds: 200_000_000)  // 0.2 seconds
+            if voiceOverEnabled {
+                try? await Task.sleep(nanoseconds: 200_000_000)  // 0.2 seconds
+            }
 
+            try Task.checkCancellation()
             UIAccessibility.post(
                 notification: .announcement,
                 argument: L10n.voiceoverAudioCountdown
             )
-            try? await Task.sleep(nanoseconds: 1_200_000_000)  // 1.2 seconds to let VoiceOver finish speaking
-
+            if voiceOverEnabled {
+                try? await Task.sleep(nanoseconds: 1_200_000_000)  // 1.2 seconds to let VoiceOver finish speaking
+            }
+            try Task.checkCancellation()
             for number in (1...3).reversed() {
                 countdownNumber = number
                 UIAccessibility.post(
@@ -67,11 +81,12 @@ public struct VoiceRecordButton: View {
                     argument: "\(number)"
                 )
                 try? await Task.sleep(nanoseconds: 1_000_000_000)  // 1 second
+                try Task.checkCancellation()
             }
-
+            try Task.checkCancellation()
             countdownNumber = nil
             voiceRecorder.isCountingDown = false
-            onTap()
+            await voiceRecorder.toggleRecording()
         }
     }
 
@@ -80,15 +95,8 @@ public struct VoiceRecordButton: View {
             if let number = countdownNumber {
                 hText("\(number)", style: .label)
             } else {
-                isRecording ? hCoreUIAssets.pause.view : hCoreUIAssets.mic.view
+                voiceRecorder.isRecording ? hCoreUIAssets.pause.view : hCoreUIAssets.mic.view
             }
         }
-    }
-}
-
-#Preview {
-    VStack(spacing: 40) {
-        VoiceRecordButton(isRecording: false) {}
-        VoiceRecordButton(isRecording: true) {}
     }
 }

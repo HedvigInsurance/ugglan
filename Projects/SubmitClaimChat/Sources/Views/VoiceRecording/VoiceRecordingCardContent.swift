@@ -81,6 +81,7 @@ struct VoiceRecordingCardContent: View {
                 maxHeight: 60,
                 progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
             )
+            .transition(.opacity.combined(with: .scale))
             .background(
                 GeometryReader { geo in
                     Color.clear
@@ -160,27 +161,14 @@ struct VoiceRecordingCardContent: View {
 
     private var controlsSection: some View {
         HStack(spacing: .padding4) {
-            VoiceStartOverButton(
-                onTap: { [weak voiceRecorder] in
-                    voiceRecorder?.startOver()
-                },
-                isEnabled: voiceRecorder.hasRecording
-            )
-
+            VoiceStartOverButton()
             if !voiceRecorder.hasRecording {
-                VoiceRecordButton(isRecording: voiceRecorder.isRecording) { [weak voiceRecorder] in
-                    Task {
-                        await voiceRecorder?.toggleRecording()
-                    }
-                }
+                VoiceRecordButton()
             } else {
-                VoicePlaybackButton(isPlaying: voiceRecorder.isPlaying) { [weak voiceRecorder] in
-                    voiceRecorder?.togglePlayback()
-                }
+                VoicePlaybackButton()
             }
             VoiceSendButton(
-                onTap: onSend,
-                isEnabled: voiceRecorder.hasRecording
+                onTap: onSend
             )
         }
         .frame(maxWidth: 600)

@@ -3,19 +3,11 @@ import hCore
 import hCoreUI
 
 public struct VoiceStartOverButton: View {
-    let onTap: () -> Void
-    var isEnabled: Bool
-
-    public init(
-        onTap: @escaping () -> Void,
-        isEnabled: Bool
-    ) {
-        self.onTap = onTap
-        self.isEnabled = isEnabled
-    }
-
+    @EnvironmentObject var voiceRecorder: VoiceRecorder
     public var body: some View {
-        Button(action: onTap) {
+        Button(action: {
+            voiceRecorder.startOver()
+        }) {
             VStack(spacing: .padding4) {
                 ZStack {
                     Circle()
@@ -32,15 +24,16 @@ public struct VoiceStartOverButton: View {
             .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
-        .disabled(!isEnabled)
+        .disabled(!voiceRecorder.hasRecording)
         .accessibilityLabel(L10n.embarkRecordAgain)
         .accessibilityAddTraits(.isButton)
-        .accessibilityHint(isEnabled ? "" : L10n.claimsStartRecordingLabel)
+        .accessibilityHint(voiceRecorder.hasRecording ? "" : L10n.claimsStartRecordingLabel)
+        .animation(.defaultSpring, value: voiceRecorder.hasRecording)
     }
 
     @hColorBuilder
     private var imageColor: some hColor {
-        if isEnabled {
+        if voiceRecorder.hasRecording {
             hFillColor.Opaque.primary
         } else {
             hFillColor.Opaque.tertiary
@@ -49,7 +42,7 @@ public struct VoiceStartOverButton: View {
 
     @hColorBuilder
     private var textColor: some hColor {
-        if isEnabled {
+        if voiceRecorder.hasRecording {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.tertiary
@@ -58,7 +51,7 @@ public struct VoiceStartOverButton: View {
 }
 
 #Preview {
-    VoiceStartOverButton(onTap: {}, isEnabled: true)
+    VoiceStartOverButton()
 }
 
 extension View {
