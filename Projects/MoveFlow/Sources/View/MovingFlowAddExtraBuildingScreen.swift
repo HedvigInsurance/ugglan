@@ -84,6 +84,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
             }
         }
         .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(.isButton)
     }
 
     func addExtraBuilding() {

@@ -75,6 +75,7 @@ where MainContent: View, BottomContent: View {
             }
         }
         .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(.isButton)
         .modifier(StatusCardBackgroundModifier())
     }
 }

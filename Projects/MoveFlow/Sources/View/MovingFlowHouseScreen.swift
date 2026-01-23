@@ -190,6 +190,7 @@ struct MovingFlowHouseScreen: View {
             }
         }
         .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(.isButton)
     }
 
     func addExtraBuilding() {

@@ -49,6 +49,7 @@ public struct hRadioField<T>: View where T: Equatable {
                 }
             }
             .accessibilityAddTraits(.isButton)
+            .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder

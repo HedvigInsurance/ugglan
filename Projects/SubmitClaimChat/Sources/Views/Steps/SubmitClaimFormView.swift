@@ -235,6 +235,7 @@ struct FormFieldView: View {
                 .onTapGesture {
                     fieldViewModel.value = tag
                 }
+                .accessibilityAddTraits(.isButton)
                 .animation(.default, value: fieldViewModel.value)
                 .accessibilityLabel(optionTitle)
                 .accessibilityAddTraits(.isButton)

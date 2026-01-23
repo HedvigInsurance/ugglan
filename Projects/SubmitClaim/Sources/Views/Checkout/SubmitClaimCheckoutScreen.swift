@@ -153,6 +153,7 @@ public struct SubmitClaimCheckoutScreen: View {
                                 }
                             }
                             .accessibilityAddTraits(.isButton)
+                            .accessibilityAddTraits(.isButton)
                         }
                         .sectionContainerStyle(.transparent)
                     }
