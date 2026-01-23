@@ -58,16 +58,7 @@ struct TrackPlayer: View {
                         .transition(
                             .opacity.animation(.easeOut)
                         )
-                        .accessibilityAdjustableAction { direction in
-                            switch direction {
-                            case .increment:
-                                audioPlayer.setProgress(to: min(audioPlayer.progress + 0.1, 1.0))
-                            case .decrement:
-                                audioPlayer.setProgress(to: max(audioPlayer.progress - 0.1, 0.0))
-                            @unknown default:
-                                break
-                            }
-                        }
+                        .accessibilityHidden(true)
                         .gesture(
                             DragGesture(coordinateSpace: .local)
                                 .onChanged { gesture in
@@ -113,17 +104,8 @@ struct TrackPlayer: View {
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isButton)
             .accessibilityLabel(L10n.a11YAudioRecording)
-            .accessibilityAdjustableAction { direction in
-                switch direction {
-                case .increment:
-                    let newProgress = min(audioPlayer.progress + 0.1, 1.0)
-                    audioPlayer.setProgress(to: newProgress)
-                case .decrement:
-                    let newProgress = max(audioPlayer.progress - 0.1, 0.0)
-                    audioPlayer.setProgress(to: newProgress)
-                @unknown default:
-                    break
-                }
+            .accessibilityAction {
+                audioPlayer.togglePlaying()
             }
         }
     }

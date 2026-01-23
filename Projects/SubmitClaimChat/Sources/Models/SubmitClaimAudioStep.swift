@@ -19,8 +19,9 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         }
     }
     @Published var textInputError: String?
-    @Published var inputType: AudioRecordingStepType?
-
+    @Published var isTextInputPresented: Bool = false
+    @Published var isAudioInputPresented: Bool = false
+    let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
         textInput.count < audioRecordingModel.freeTextMinLength
             || textInput.count > audioRecordingModel.freeTextMaxLength
@@ -59,14 +60,13 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 
-    override func executeStep() async throws -> ClaimIntentType {
-        let fileId: String? = try await {
-            if inputType == .text {
-                return nil
-            }
-            guard let audioFileURL else {
-                throw ClaimIntentError.invalidResponse
-            }
+    private var uploadedAudioId: String?
+    func uploadAudioRecording() async throws {
+        guard let audioFileURL else {
+            throw ClaimIntentError.invalidResponse
+        }
+        state.isEnabled = false
+        do {
             let url = Environment.current.claimsApiURL.appendingPathComponent(audioRecordingModel.uploadURI)
             let multipart = MultipartFormDataRequest(url: url)
             let data = try Data(contentsOf: audioFileURL)
@@ -84,40 +84,55 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
                     self?.uploadProgress = progress
                 }
             }
-            return response.fileIds.first!
-        }()
-
-        let freeText = inputType == .text ? textInput : nil
-
-        guard
-            let result = try await service.claimIntentSubmitAudio(
-                fileId: fileId,
-                freeText: freeText,
-                stepId: claimIntent.currentStep.id
-            )
-        else {
-            throw ClaimIntentError.invalidResponse
+            uploadedAudioId = response.fileIds.first!
+        } catch {
+            state.isEnabled = true
+            throw error
         }
-        return result
+    }
+
+    override func executeStep() async throws -> ClaimIntentType {
+        let fileId: String? = {
+            if isTextInputPresented {
+                return nil
+            }
+            return uploadedAudioId
+        }()
+        voiceRecorder.isSending = true
+        let freeText = isTextInputPresented ? textInput : nil
+        do {
+            guard
+                let result = try await service.claimIntentSubmitAudio(
+                    fileId: fileId,
+                    freeText: freeText,
+                    stepId: claimIntent.currentStep.id
+                )
+            else {
+                throw ClaimIntentError.invalidResponse
+            }
+            isAudioInputPresented = false
+            Task {
+                try? await Task.sleep(seconds: 1)
+                voiceRecorder.isSending = false
+            }
+            return result
+        } catch {
+            Task {
+                try? await Task.sleep(seconds: 1)
+                voiceRecorder.isSending = false
+            }
+            throw error
+        }
     }
 
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
             return L10n.claimChatSkippedLabel
         }
-        switch inputType {
-        case .audio:
-            return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
-        case .text:
+        if isTextInputPresented {
             return L10n.a11YSubmittedValues(1) + ": " + textInput
-        case nil:
-            return ""
-        }
-    }
-
-    deinit {
-        if let audioFileURL = audioFileURL {
-            try? FileManager.default.removeItem(at: audioFileURL)
+        } else {
+            return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
         }
     }
 }
