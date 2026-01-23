@@ -2,8 +2,8 @@ name: Weekly Accessibility Audit
 
 on:
   schedule:
-    # Runs every Monday at 9:00 AM UTC
-    - cron: '0 9 * * 1'
+    # Runs every Friday at 11:00 AM UTC (5:00 AM CST / 6:00 AM CDT)
+    - cron: '0 11 * * 5'
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -30,7 +30,13 @@ jobs:
         id: check
         run: |
           chmod +x scripts/check-accessibility.sh
-          scripts/check-accessibility.sh "${{ steps.find-files.outputs.swift_files }}"
+          scripts/check-accessibility.sh "${{ steps.find-files.outputs.swift_files }}" || true
+          # Ensure report file exists even if script fails early
+          if [ ! -f accessibility-report.md ]; then
+            echo "## 🔍 Accessibility Check Report" > accessibility-report.md
+            echo "" >> accessibility-report.md
+            echo "⚠️ Script failed to generate report" >> accessibility-report.md
+          fi
         continue-on-error: true
 
       - name: Auto-fix Issues
@@ -38,7 +44,7 @@ jobs:
         if: steps.check.outcome == 'failure'
         run: |
           chmod +x scripts/auto-fix-accessibility.sh
-          scripts/auto-fix-accessibility.sh "${{ steps.find-files.outputs.swift_files }}"
+          scripts/auto-fix-accessibility.sh "${{ steps.find-files.outputs.swift_files }}" || true
 
           # Check if any files were changed
           if [ -n "$(git status --porcelain)" ]; then
@@ -53,7 +59,13 @@ jobs:
         id: recheck
         if: steps.autofix.outputs.fixes_applied == 'true'
         run: |
-          scripts/check-accessibility.sh "${{ steps.find-files.outputs.swift_files }}"
+          scripts/check-accessibility.sh "${{ steps.find-files.outputs.swift_files }}" || true
+          # Ensure report file exists even if script fails early
+          if [ ! -f accessibility-report.md ]; then
+            echo "## 🔍 Accessibility Check Report" > accessibility-report.md
+            echo "" >> accessibility-report.md
+            echo "⚠️ Script failed to generate report" >> accessibility-report.md
+          fi
         continue-on-error: true
 
       - name: Create Pull Request with Fixes
@@ -137,6 +149,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
+
+            // Check if report file exists
+            if (!fs.existsSync('accessibility-report.md')) {
+              console.log('No accessibility report found, skipping issue creation');
+              return;
+            }
+
             const report = fs.readFileSync('accessibility-report.md', 'utf8');
 
             // Check if there's already an open accessibility issue
