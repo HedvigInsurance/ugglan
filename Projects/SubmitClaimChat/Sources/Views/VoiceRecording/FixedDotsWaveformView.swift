@@ -9,7 +9,8 @@ public struct FixedDotsWaveformView: View {
     private let dotSize: CGFloat = 2
     private let dotSpacing: CGFloat = 2
     private let minDotHeight: CGFloat = 2
-
+    @State var width: CGFloat = 0
+    @State var heights: [CGFloat] = []
     public init(
         audioLevels: [CGFloat],
         maxHeight: CGFloat = 60,
@@ -22,36 +23,50 @@ public struct FixedDotsWaveformView: View {
 
     public var body: some View {
         GeometryReader { geometry in
-            let dotCount = calculateDotCount(for: geometry.size.width)
-            let levels = resampleLevels(to: dotCount)
-
-            let waveform = HStack(spacing: dotSpacing) {
-                ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
-                    RoundedRectangle(cornerRadius: dotSize / 2)
-                        .fill(hTextColor.Opaque.primary)
-                        .frame(
-                            width: dotSize,
-                            height: dotHeight(for: level)
-                        )
-                }
+            ZStack(alignment: .leading) {
+                waveform
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-
-            if let progress = progress {
-                waveform
-                    .overlay(
-                        GeometryReader { geo in
-                            Rectangle()
-                                .fill(hFillColor.Opaque.tertiary)
-                                .frame(width: geo.size.width * progress)
-                        }
-                        .mask(waveform)
-                    )
-            } else {
-                waveform
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .frame(height: maxHeight)
+            .onAppear {
+                width = geometry.size.width
+            }
+            .onChange(of: geometry.size) { size in
+                width = size.width
+            }
+            .onChange(of: width) { value in
+                let dotCount = calculateDotCount(for: value)
+                let levels = resampleLevels(to: dotCount)
+                heights = levels.map({ dotHeight(for: $0) })
             }
         }
-        .frame(height: maxHeight)
+    }
+
+    private var waveform: some View {
+        HStack(spacing: dotSpacing) {
+            ForEach(Array(heights.enumerated()), id: \.offset) { index, height in
+                RoundedRectangle(cornerRadius: dotSize / 2)
+                    .fill(dotColor(for: index))
+                    .frame(
+                        width: dotSize,
+                        height: height
+                    )
+            }
+        }
+    }
+
+    @hColorBuilder
+    private func dotColor(for index: Int) -> some hColor {
+        if let progress, !heights.isEmpty {
+            let progressIndex = Int(progress * Double(heights.count))
+            if index < progressIndex {
+                hTextColor.Opaque.tertiary
+            } else {
+                hTextColor.Opaque.primary
+            }
+        } else {
+            hTextColor.Opaque.primary
+        }
     }
 
     private func calculateDotCount(for width: CGFloat) -> Int {
@@ -97,7 +112,7 @@ public struct FixedDotsWaveformView: View {
     }
 
     private func dotHeight(for level: CGFloat) -> CGFloat {
-        let amplifiedLevel = min(1.0, pow(level, 0.65) * 2.5)
+        let amplifiedLevel = min(1.0, pow(level, 0.8) * 1.2)
         let height = max(minDotHeight, amplifiedLevel * maxHeight)
         return min(height, maxHeight)
     }

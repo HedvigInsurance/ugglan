@@ -5,7 +5,6 @@ public struct VoiceWaveformView: View {
     let audioLevels: [CGFloat]
     let isRecording: Bool
     let maxHeight: CGFloat
-    let progress: Double?
 
     private let barWidth: CGFloat = 2
     private let barSpacing: CGFloat = 2
@@ -15,14 +14,12 @@ public struct VoiceWaveformView: View {
         audioLevels: [CGFloat],
         isRecording: Bool,
         maxHeight: CGFloat = 60,
-        minBarHeight: CGFloat = 8,
-        progress: Double? = nil
+        minBarHeight: CGFloat = 2
     ) {
         self.audioLevels = audioLevels
         self.isRecording = isRecording
         self.maxHeight = maxHeight
         self.minBarHeight = minBarHeight
-        self.progress = progress
     }
 
     public var body: some View {
@@ -39,7 +36,7 @@ public struct VoiceWaveformView: View {
                     let maxBars = Int(geometry.size.width / (barWidth + barSpacing))
                     let levels = prepareLevels(count: maxBars)
 
-                    let waveform = HStack(spacing: barSpacing) {
+                    HStack(spacing: barSpacing) {
                         ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
                             RoundedRectangle(cornerRadius: barWidth / 2)
                                 .fill(hTextColor.Opaque.primary)
@@ -50,20 +47,6 @@ public struct VoiceWaveformView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-
-                    if let progress = progress {
-                        waveform
-                            .overlay(
-                                GeometryReader { geo in
-                                    Rectangle()
-                                        .fill(hFillColor.Opaque.tertiary)
-                                        .frame(width: geo.size.width * progress)
-                                }
-                                .mask(waveform)
-                            )
-                    } else {
-                        waveform
-                    }
                 }
             }
         }
@@ -100,8 +83,12 @@ public struct VoiceWaveformView: View {
             edgeMultiplier = 1.0
         }
 
+        // Apply noise gate to filter background noise
+        let noiseThreshold: CGFloat = 0.1
+        let gatedLevel = level < noiseThreshold ? 0 : (level - noiseThreshold) / (1.0 - noiseThreshold)
+
         // Amplify to get taller bars while preserving variation
-        let amplifiedLevel = min(1.0, pow(level, 0.65) * 2.5)
+        let amplifiedLevel = min(1.0, pow(gatedLevel, 0.8) * 1.2)
 
         // Apply edge multiplier to the amplified level
         let adjustedLevel = amplifiedLevel * edgeMultiplier

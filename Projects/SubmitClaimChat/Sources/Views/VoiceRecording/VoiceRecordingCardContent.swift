@@ -115,7 +115,7 @@ struct VoiceRecordingCardContent: View {
 
                         // Only update visual progress, don't seek audio yet
                         let gesturePosition = gesture.startLocation.x + gesture.translation.width
-                        let progress = gesturePosition / waveformWidth
+                        let progress = Double(gesturePosition / waveformWidth)
                         dragProgress = min(max(progress, 0), 1)
                     }
                     .onEnded { gesture in
@@ -141,19 +141,7 @@ struct VoiceRecordingCardContent: View {
             VoiceWaveformView(
                 audioLevels: voiceRecorder.audioLevels,
                 isRecording: voiceRecorder.isRecording,
-                maxHeight: 60,
-                progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
-            )
-            .background(
-                GeometryReader { geo in
-                    Color.clear
-                        .onAppear {
-                            waveformWidth = geo.size.width
-                        }
-                        .onChange(of: geo.size) { size in
-                            waveformWidth = size.width
-                        }
-                }
+                maxHeight: 60
             )
             .accessibilityLabel(L10n.claimChatRecordingTitle)
             .accessibilityValue(voiceRecorder.formattedTime)
@@ -162,19 +150,7 @@ struct VoiceRecordingCardContent: View {
             VoiceWaveformView(
                 audioLevels: voiceRecorder.audioLevels,
                 isRecording: voiceRecorder.isRecording,
-                maxHeight: 60,
-                progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
-            )
-            .background(
-                GeometryReader { geo in
-                    Color.clear
-                        .onAppear {
-                            waveformWidth = geo.size.width
-                        }
-                        .onChange(of: geo.size) { size in
-                            waveformWidth = size.width
-                        }
-                }
+                maxHeight: 60
             )
             .accessibilityElement(children: .combine)
             .accessibilityLabel(L10n.a11YAudioRecording)
