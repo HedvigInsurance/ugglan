@@ -27,7 +27,7 @@ struct SubmitClaimSingleSelectView: View {
             if showOptions {
                 hPill(
                     text: option.title,
-                    color: .grey,
+                    color: viewModel.model.defaultSelectedId == optionId ? .green : .grey,
                     colorLevel: .two,
                     withBorder: false
                 )
