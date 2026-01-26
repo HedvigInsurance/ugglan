@@ -94,39 +94,24 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
         presenting: UIViewController?,
         source _: UIViewController
     ) -> UIPresentationController? {
-        let presentationController: UIPresentationController = {
-            if #available(iOS 16.0, *) {
-                let presentationController = BlurredSheetPresentationController(
-                    presentedViewController: presented,
-                    presenting: presenting,
-                    useBlur: options.contains(.useBlur)
-                )
-                if !isLiquidGlassEnabled {
-                    presentationController.preferredCornerRadius = .cornerRadiusXL
-                }
-                return presentationController
-            } else {
-                let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
-                let sheetPresentationController = NSClassFromString(key.joined()) as! UIPresentationController.Type
-                let presentationController = sheetPresentationController.init(
-                    presentedViewController: presented,
-                    presenting: presenting
-                )
-                return presentationController
-            }
-        }()
-
-        if let presentationController = presentationController as? UISheetPresentationController {
-            presentationController.detents = [
-                .custom(
-                    identifier: UISheetPresentationController.Detent.Identifier.init("zero"),
-                    resolver: { context in
-                        0
-                    }
-                )
-            ]
-            presentationController.largestUndimmedDetentIdentifier = presentationController.detents.last?.identifier
+        let presentationController = BlurredSheetPresentationController(
+            presentedViewController: presented,
+            presenting: presenting,
+            useBlur: options.contains(.useBlur)
+        )
+        if !isLiquidGlassEnabled {
+            presentationController.preferredCornerRadius = .cornerRadiusXL
         }
+
+        presentationController.detents = [
+            .custom(
+                identifier: UISheetPresentationController.Detent.Identifier.init("zero"),
+                resolver: { context in
+                    0
+                }
+            )
+        ]
+        presentationController.largestUndimmedDetentIdentifier = presentationController.detents.last?.identifier
 
         Task { @MainActor [weak presentationController] in
             try? await Task.sleep(nanoseconds: 100_000_000)

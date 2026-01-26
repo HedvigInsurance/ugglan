@@ -185,7 +185,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         animated: true,
                         completion: { [weak vc] in
                             Task {
-                                vc?.accessibilityViewIsModal = true
                                 UIAccessibility.post(notification: .screenChanged, argument: vc?.view)
                             }
                         }

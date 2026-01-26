@@ -63,6 +63,7 @@ public struct ToolbarButtonView: View {
         type.image
             .resizable()
             .scaledToFill()
+            .accessibilityHidden(true)
             .frame(width: type.imageSize, height: type.imageSize)
             .foregroundColor(type.imageTintColor)
             .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)

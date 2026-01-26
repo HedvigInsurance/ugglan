@@ -38,32 +38,7 @@ private struct DismissButton: ViewModifier {
         self.message = message
     }
 
-    @ViewBuilder
     func body(content: Content) -> some View {
-        //<<<<<<< HEAD
-        //        if #available(iOS 26, *)  {
-        //            content
-        //            .setToolbarTrailing {
-        //                Button {
-        //                    if withAlert {
-        //                        isAlertPresented = true
-        //                    } else {
-        //                        router.dismiss()
-        //                    }
-        //                } label: {
-        //                    Group {
-        //                        hCoreUIAssets.close.view
-        //                            .closeButtonOffset(y: CGFloat(reducedTopSpacing))
-        //                    }
-        //                    .frame(minWidth: isLiquidGlassEnabled ? nil : 44, minHeight: isLiquidGlassEnabled ? nil : 44)
-        //
-        //                    .foregroundColor(hTextColor.Opaque.primary)
-        //                    .accessibilityLabel(L10n.a11YClose)
-        //                    .accessibilityAddTraits(.isButton)
-        //                    .configureAlert(message: message, isPresented: $isAlertPresented)
-        //                }
-        //            }
-        //        } else {
         content
             .toolbar {
                 ToolbarItem(
@@ -86,9 +61,11 @@ private struct DismissButton: ViewModifier {
                     .accessibilityLabel(L10n.a11YClose)
                     .accessibilityAddTraits(.isButton)
                     .configureAlert(message: message, isPresented: $isAlertPresented)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .accessibilityLabel(L10n.a11YClose)
+                    .accessibilityAddTraits(.isButton)
                 }
             }
-        //        }
     }
 }
 
