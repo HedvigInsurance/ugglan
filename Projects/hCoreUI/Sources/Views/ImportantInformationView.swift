@@ -21,13 +21,12 @@ public struct ImportantInformationView: View {
 
     public var body: some View {
         hRow {
-            VStack(spacing: .padding16) {
-                VStack(spacing: .padding16) {
-                    VStack(alignment: .leading, spacing: .padding4) {
-                        hText(title)
-                        hText(subtitle, style: .label)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
+            VStack(alignment: .leading, spacing: .padding16) {
+                VStack(alignment: .leading) {
+                    hText(title, style: .label)
+                        .foregroundColor(hTextColor.Translucent.primary)
+                    hText(subtitle, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityElement(children: .combine)

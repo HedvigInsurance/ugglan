@@ -32,7 +32,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .padding(.top, .padding32)
+            .padding(.top, -.padding8)
         }
         .hFormContentPosition(.compact)
     }
@@ -54,7 +54,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 
     private func questionRowView(text: String) -> some View {
         hRow {
-            HStack(spacing: .padding8) {
+            HStack(alignment: .top, spacing: .padding8) {
                 hCoreUIAssets.checkmark.view
                 hText(text)
                     .foregroundColor(hTextColor.Translucent.secondary)

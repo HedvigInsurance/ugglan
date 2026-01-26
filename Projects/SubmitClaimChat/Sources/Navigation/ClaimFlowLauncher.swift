@@ -21,7 +21,6 @@ struct ClaimFlowLauncher: ViewModifier {
             .detent(
                 item: $startInput,
                 transitionType: .detent(style: [.height]),
-                options: .constant(.withoutGrabber),
                 content: { input in
                     SubmitClaimChatHonestyPledgeScreen {
                         submitClaimInput = startInput
@@ -30,8 +29,9 @@ struct ClaimFlowLauncher: ViewModifier {
                         startInput = nil
                         showOldSubmitClaimFlow = true
                     }
+                    .configureTitle(L10n.honestyPledgeHeader)
                     .embededInNavigation(
-                        options: .navigationBarHidden,
+                        options: .navigationType(type: .large),
                         tracking: self
                     )
                 }
