@@ -11,12 +11,16 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                ImportantInformationView(
-                    title: L10n.honestyPledgeTitle,
-                    subtitle: L10n.honestyPledgeDescription,
-                    confirmationMessage: L10n.claimsPledgeSlideLabel,
-                    isConfirmed: $hasAgreedToHonestyPledge
-                )
+                questionView
+                hSection {
+                    ImportantInformationView(
+                        title: L10n.honestyPledgeTitle,
+                        subtitle: L10n.honestyPledgeDescription,
+                        confirmationMessage: L10n.claimsPledgeSlideLabel,
+                        isConfirmed: $hasAgreedToHonestyPledge
+                    )
+                }
+                .sectionContainerStyle(.transparent)
                 hSection {
                     VStack(spacing: .padding8) {
                         continueButton
@@ -31,6 +35,32 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
             .padding(.top, .padding32)
         }
         .hFormContentPosition(.compact)
+    }
+
+    @ViewBuilder
+    private var questionView: some View {
+        let texts = [
+            L10n.honestyPledgeNote2,
+            L10n.honestyPledgeNote1,
+            L10n.honestyPledgeNote3,
+        ]
+
+        hSection(texts) { text in
+            questionRowView(text: text)
+        }
+        .hWithoutHorizontalPadding([.row])
+        .sectionContainerStyle(.transparent)
+    }
+
+    private func questionRowView(text: String) -> some View {
+        hRow {
+            HStack(spacing: .padding8) {
+                hCoreUIAssets.checkmark.view
+                hText(text)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+        }
     }
 
     private var continueButton: some View {

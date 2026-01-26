@@ -20,75 +20,86 @@ public struct ImportantInformationView: View {
     }
 
     public var body: some View {
-        hSection {
-            hRow {
+        hRow {
+            VStack(spacing: .padding16) {
                 VStack(spacing: .padding16) {
-                    VStack(spacing: .padding16) {
-                        VStack(alignment: .leading, spacing: .padding4) {
-                            hText(title)
-                            hText(subtitle, style: .label)
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                        }
+                    VStack(alignment: .leading, spacing: .padding4) {
+                        hText(title)
+                        hText(subtitle, style: .label)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityElement(children: .combine)
-                    HStack {
-                        hRow {
-                            hText(confirmationMessage)
-                                .foregroundColor(
-                                    hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
-                                )
-                            Spacer()
-                            if isConfirmed {
-                                HStack {
-                                    hCoreUIAssets.checkmark.view
-                                        .foregroundColor(
-                                            hColorScheme(
-                                                light: hTextColor.Opaque.negative,
-                                                dark: hTextColor.Opaque.primary
-                                            )
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityElement(children: .combine)
+                HStack {
+                    hRow {
+                        hText(confirmationMessage)
+                            .foregroundColor(
+                                hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
+                            )
+                        Spacer()
+                        if isConfirmed {
+                            HStack {
+                                hCoreUIAssets.checkmark.view
+                                    .foregroundColor(
+                                        hColorScheme(
+                                            light: hTextColor.Opaque.negative,
+                                            dark: hTextColor.Opaque.primary
                                         )
-                                }
-                                .frame(width: 24, height: 24)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .fill(hSignalColor.Green.element)
-                                )
-                                .accessibilityHidden(true)
-                            } else {
-                                Circle()
-                                    .fill(hBackgroundColor.clear)
-                                    .frame(width: 24, height: 24)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .strokeBorder(
-                                                hBorderColor.secondary,
-                                                lineWidth: 2
-                                            )
-                                            .animation(.easeInOut, value: UUID())
                                     )
-                                    .colorScheme(.light)
-                                    .hUseLightMode
                             }
-                        }
-                        .background(
-                            RoundedRectangle(cornerRadius: .cornerRadiusS)
-                                .fill(
-                                    hFillColor.Translucent.negative
+                            .frame(width: 24, height: 24)
+                            .background(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .fill(hSignalColor.Green.element)
+                            )
+                            .accessibilityHidden(true)
+                        } else {
+                            Circle()
+                                .fill(hBackgroundColor.clear)
+                                .frame(width: 24, height: 24)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .strokeBorder(
+                                            hBorderColor.secondary,
+                                            lineWidth: 2
+                                        )
+                                        .animation(.easeInOut, value: UUID())
                                 )
-                        )
+                                .colorScheme(.light)
+                                .hUseLightMode
+                        }
                     }
-                    .colorScheme(.light)
-                    .accessibilityLabel(accessibilityLabel)
-                    .accessibilityAddTraits(.isButton)
+                    .background(
+                        RoundedRectangle(cornerRadius: .cornerRadiusS)
+                            .fill(
+                                hFillColor.Translucent.negative
+                            )
+                    )
                 }
+                .colorScheme(.light)
+                .accessibilityLabel(accessibilityLabel)
+                .accessibilityAddTraits(.isButton)
             }
-            .onTapGesture {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isConfirmed.toggle()
-                }
+        }
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isConfirmed.toggle()
             }
-            .accessibilityAddTraits(.isButton)
+        }
+        .accessibilityAddTraits(.isButton)
+        .background(
+            RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                .fill(backgroundColor)
+        )
+    }
+
+    @hColorBuilder
+    private var backgroundColor: some hColor {
+        if isConfirmed {
+            hSignalColor.Green.fill
+        } else {
+            hSurfaceColor.Opaque.primary
         }
     }
 
