@@ -7,6 +7,10 @@ public struct ImportantInformationView: View {
     let confirmationMessage: String
     @Binding var isConfirmed: Bool
 
+    private static let toggleAnimationDuration: CGFloat = 0.2
+    private static let checkboxSize: CGFloat = 24
+    private static let checkboxCornerRadius: CGFloat = 6
+
     public init(
         title: String,
         subtitle: String,
@@ -30,67 +34,66 @@ public struct ImportantInformationView: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityElement(children: .combine)
-                HStack {
-                    hRow {
-                        hText(confirmationMessage)
-                            .foregroundColor(
-                                hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
-                            )
-                        Spacer()
-                        if isConfirmed {
-                            HStack {
-                                hCoreUIAssets.checkmark.view
-                                    .foregroundColor(
-                                        hColorScheme(
-                                            light: hTextColor.Opaque.negative,
-                                            dark: hTextColor.Opaque.primary
-                                        )
-                                    )
-                            }
-                            .frame(width: 24, height: 24)
-                            .background(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(hSignalColor.Green.element)
-                            )
-                            .accessibilityHidden(true)
-                        } else {
-                            Circle()
-                                .fill(hBackgroundColor.clear)
-                                .frame(width: 24, height: 24)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .strokeBorder(
-                                            hBorderColor.secondary,
-                                            lineWidth: 2
-                                        )
-                                        .animation(.easeInOut, value: UUID())
-                                )
-                                .colorScheme(.light)
-                                .hUseLightMode
-                        }
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: .cornerRadiusS)
-                            .fill(
-                                hFillColor.Translucent.negative
-                            )
-                    )
-                }
-                .colorScheme(.light)
-                .accessibilityLabel(accessibilityLabel)
-                .accessibilityAddTraits(.isButton)
+                checkboxRow
             }
         }
         .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withAnimation(.easeInOut(duration: Self.toggleAnimationDuration)) {
                 isConfirmed.toggle()
             }
         }
-        .accessibilityAddTraits(.isButton)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadiusXL)
                 .fill(backgroundColor)
         )
+    }
+
+    private var checkboxRow: some View {
+        HStack {
+            hRow {
+                hText(confirmationMessage)
+                    .foregroundColor(confirmationTextColor)
+                Spacer()
+                checkboxView
+            }
+            .background(
+                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                    .fill(hFillColor.Translucent.negative)
+            )
+        }
+        .colorScheme(.light)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityAddTraits(.isButton)
+    }
+
+    @ViewBuilder
+    private var checkboxView: some View {
+        if isConfirmed {
+            hCoreUIAssets.checkmark.view
+                .foregroundColor(checkmarkColor)
+                .frame(width: Self.checkboxSize, height: Self.checkboxSize)
+                .background(
+                    RoundedRectangle(cornerRadius: Self.checkboxCornerRadius)
+                        .fill(hSignalColor.Green.element)
+                )
+                .accessibilityHidden(true)
+        } else {
+            RoundedRectangle(cornerRadius: Self.checkboxCornerRadius)
+                .strokeBorder(hBorderColor.secondary, lineWidth: 2)
+                .frame(width: Self.checkboxSize, height: Self.checkboxSize)
+                .colorScheme(.light)
+                .hUseLightMode
+        }
+    }
+
+    @hColorBuilder
+    private var confirmationTextColor: some hColor {
+        hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
+    }
+
+    @hColorBuilder
+    private var checkmarkColor: some hColor {
+        hColorScheme(light: hTextColor.Opaque.negative, dark: hTextColor.Opaque.primary)
     }
 
     @hColorBuilder

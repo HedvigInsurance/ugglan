@@ -7,7 +7,14 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
     @EnvironmentObject var router: Router
     @State private var hasAgreedToHonestyPledge = false
     let onConfirm: () -> Void
-    let onConfirmOldFlow: () -> Void
+    let onConfirmOldFlow: (() -> Void)?
+
+    private static let pledgeNotes = [
+        L10n.honestyPledgeNote2,
+        L10n.honestyPledgeNote1,
+        L10n.honestyPledgeNote3,
+    ]
+
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
@@ -39,13 +46,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 
     @ViewBuilder
     private var questionView: some View {
-        let texts = [
-            L10n.honestyPledgeNote2,
-            L10n.honestyPledgeNote1,
-            L10n.honestyPledgeNote3,
-        ]
-
-        hSection(texts) { text in
+        hSection(Self.pledgeNotes) { text in
             questionRowView(text: text)
         }
         .hWithoutHorizontalPadding([.row])
@@ -70,10 +71,9 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         .disabled(!hasAgreedToHonestyPledge)
     }
 
-    @ViewBuilder
     private var oldFlowButton: some View {
         hButton(.large, .secondary, content: .init(title: "Start old flow")) {
-            onConfirmOldFlow()
+            onConfirmOldFlow?()
         }
         .disabled(!hasAgreedToHonestyPledge)
     }
@@ -88,8 +88,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 #Preview {
     VStack {
         Spacer()
-        SubmitClaimChatHonestyPledgeScreen {
-        } onConfirmOldFlow: {
-        }
+        SubmitClaimChatHonestyPledgeScreen(onConfirm: {}, onConfirmOldFlow: nil)
     }
 }
