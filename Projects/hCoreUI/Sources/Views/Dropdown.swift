@@ -6,15 +6,17 @@ public struct DropdownView: View {
     private var onTap: () -> Void
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hBackgroundOption) var backgroundOption
-
+    @Binding var error: String?
     public init(
         value: String,
         placeHolder: String,
+        error: Binding<String?>? = nil,
         onTap: @escaping () -> Void
     ) {
         self.value = value
         self.placeHolder = placeHolder
         self.onTap = onTap
+        self._error = error ?? .constant(nil)
     }
 
     public var body: some View {
@@ -22,6 +24,7 @@ public struct DropdownView: View {
             hFloatingField(
                 value: value,
                 placeholder: placeHolder,
+                error: $error,
                 onTap: {
                     onTap()
                 }

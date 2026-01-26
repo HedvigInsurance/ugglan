@@ -6,22 +6,64 @@ import hCore
 extension View {
     public func withDismissButton() -> some View {
         modifier(
-            DismissButton(withAlert: false)
+            DismissButton()
         )
     }
 
-    public func withAlertDismiss() -> some View {
+    public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
+        modifier(DismissButton(reducedTopSpacing: reducedTopSpacing))
+    }
+
+    public func withAlertDismiss(message: String? = nil) -> some View {
         modifier(
-            DismissButton(withAlert: true)
+            DismissButton(withAlert: true, message: message)
         )
     }
 }
 
 private struct DismissButton: ViewModifier {
+    let reducedTopSpacing: Int
     let withAlert: Bool
+    let message: String?
     @EnvironmentObject var router: Router
     @State var isAlertPresented = false
+
+    init(
+        withAlert: Bool = false,
+        message: String? = nil,
+        reducedTopSpacing: Int = 0,
+    ) {
+        self.reducedTopSpacing = reducedTopSpacing
+        self.withAlert = withAlert
+        self.message = message
+    }
+
+    @ViewBuilder
     func body(content: Content) -> some View {
+        //<<<<<<< HEAD
+        //        if #available(iOS 26, *)  {
+        //            content
+        //            .setToolbarTrailing {
+        //                Button {
+        //                    if withAlert {
+        //                        isAlertPresented = true
+        //                    } else {
+        //                        router.dismiss()
+        //                    }
+        //                } label: {
+        //                    Group {
+        //                        hCoreUIAssets.close.view
+        //                            .closeButtonOffset(y: CGFloat(reducedTopSpacing))
+        //                    }
+        //                    .frame(minWidth: isLiquidGlassEnabled ? nil : 44, minHeight: isLiquidGlassEnabled ? nil : 44)
+        //
+        //                    .foregroundColor(hTextColor.Opaque.primary)
+        //                    .accessibilityLabel(L10n.a11YClose)
+        //                    .accessibilityAddTraits(.isButton)
+        //                    .configureAlert(message: message, isPresented: $isAlertPresented)
+        //                }
+        //            }
+        //        } else {
         content
             .toolbar {
                 ToolbarItem(
@@ -34,28 +76,31 @@ private struct DismissButton: ViewModifier {
                             router.dismiss()
                         }
                     } label: {
-                        hCoreUIAssets.close.view
-                            .resizable()
-                            .frame(minWidth: 24, minHeight: 24)
+                        Group {
+                            hCoreUIAssets.close.view
+                                .closeButtonOffset(y: CGFloat(reducedTopSpacing))
+                        }
+                        .frame(minWidth: isLiquidGlassEnabled ? nil : 44, minHeight: isLiquidGlassEnabled ? nil : 44)
                     }
                     .foregroundColor(hTextColor.Opaque.primary)
                     .accessibilityLabel(L10n.a11YClose)
                     .accessibilityAddTraits(.isButton)
+                    .configureAlert(message: message, isPresented: $isAlertPresented)
                 }
             }
-            .withDismissAlert(isPresented: $isAlertPresented)
+        //        }
     }
 }
 
 extension View {
-    public func withDismissAlert(isPresented: Binding<Bool>) -> some View {
-        modifier(DismissAlertPopup(isPresented: isPresented))
+    func configureAlert(message: String? = nil, isPresented: Binding<Bool>) -> some View {
+        modifier(DismissAlertPopup(message: message, isPresented: isPresented))
     }
 }
 
 private struct DismissAlertPopup: ViewModifier {
     let title: String
-    let message: String?
+    let message: String
     let confirmButton: String
     let cancelButton: String
 
@@ -70,7 +115,7 @@ private struct DismissAlertPopup: ViewModifier {
         isPresented: Binding<Bool>
     ) {
         self.title = title
-        self.message = message
+        self.message = message ?? L10n.General.progressWillBeLostAlert
         self.confirmButton = confirmButton
         self.cancelButton = cancelButton
         self._isPresented = isPresented
@@ -87,37 +132,39 @@ private struct DismissAlertPopup: ViewModifier {
                     }
                 }
             } message: {
-                hText(message ?? "")
+                hText(message)
             }
     }
 }
-
-extension View {
-    public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
-        modifier(CloseButtonModifier(reducedTopSpacing: reducedTopSpacing))
-    }
-}
-
-private struct CloseButtonModifier: ViewModifier {
-    let reducedTopSpacing: Int
-    @EnvironmentObject var router: Router
-
-    func body(content: Content) -> some View {
-        content
-            .setToolbarTrailing {
-                Button {
-                    router.dismiss()
-                } label: {
-                    hCoreUIAssets.close.view
-                        .frame(minWidth: 24, minHeight: 44)
-                        .foregroundColor(hFillColor.Opaque.primary)
-                }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .accessibilityLabel(L10n.a11YClose)
-                .accessibilityAddTraits(.isButton)
-            }
-    }
-}
+//
+//extension View {
+//    public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
+//        modifier(CloseButtonModifier(reducedTopSpacing: reducedTopSpacing))
+//    }
+//}
+//
+//private struct CloseButtonModifier: ViewModifier {
+//    let reducedTopSpacing: Int
+//    @EnvironmentObject var router: Router
+//
+//    func body(content: Content) -> some View {
+//        content
+//            .setToolbarTrailing {
+//                Button {
+//                    router.dismiss()
+//                } label: {
+//                    hCoreUIAssets.close.view
+//                        .frame(minWidth: 24, minHeight: 44)
+//                        .foregroundColor(hFillColor.Opaque.primary)
+//                }
+//                .foregroundColor(hTextColor.Opaque.primary)
+//                .accessibilityLabel(L10n.a11YClose)
+//                .accessibilityAddTraits(.isButton)
+//=======
+//                hText(message)
+//            }
+//    }
+//}
 
 extension View {
     @ViewBuilder

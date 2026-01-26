@@ -139,6 +139,18 @@ public struct RowViewBuilder {
             )
         )
     }
+
+    public static func buildEither<TrueContent: View, FalseContent: View>(
+        first: TrueContent
+    ) -> _ConditionalContent<TrueContent, FalseContent> {
+        ViewBuilder.buildEither(first: first)
+    }
+
+    public static func buildEither<TrueContent: View, FalseContent: View>(
+        second: FalseContent
+    ) -> _ConditionalContent<TrueContent, FalseContent> {
+        ViewBuilder.buildEither(second: second)
+    }
 }
 
 private struct hShadowModifier: ViewModifier {
@@ -217,6 +229,7 @@ public enum hSectionContainerStyle {
     case opaque
     case translucent
     case black
+    case negative
 }
 
 @MainActor
@@ -286,6 +299,11 @@ struct hSectionContainerStyleModifier: ViewModifier {
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        case .negative:
+            content.background(
+                hFillColor.Opaque.negative
+            )
+            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusXL, corners: maskedCorners))
         }
     }
 }

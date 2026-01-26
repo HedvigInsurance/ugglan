@@ -134,6 +134,8 @@ struct PHPAssetPreview: View {
                             }
                         }
                         .blur(radius: selected ? 20 : 0, opaque: true)
+                        .accessibilityLabel(L10n.voiceoverChatImage)
+                        .accessibilityAddTraits(.isButton)
 
                     hButton(
                         .medium,

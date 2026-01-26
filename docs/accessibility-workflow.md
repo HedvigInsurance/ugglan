@@ -2,14 +2,63 @@
 
 ## Overview
 
-The Accessibility Check workflow automatically reviews Swift/SwiftUI code changes in pull requests to identify potential accessibility issues.
+We have two automated workflows to ensure accessibility compliance:
 
-## How It Works
+1. **PR Accessibility Check** - Reviews code changes in pull requests
+2. **Weekly Accessibility Audit** - Scans the entire codebase every week
+
+## PR Accessibility Check
+
+### How It Works
 
 1. **Triggers**: Runs automatically on every pull request when `.swift` files are modified
 2. **Analysis**: Compares changes from the base branch (usually `main`) to detect new accessibility issues
 3. **Report**: Comments on the PR with findings and suggestions
 4. **Artifacts**: Uploads a detailed accessibility report
+
+## Weekly Accessibility Audit
+
+### How It Works
+
+1. **Schedule**: Runs every Monday at 9:00 AM UTC
+2. **Scope**: Scans all Swift files in the codebase (except tests)
+3. **Auto-Fix**: Automatically applies common accessibility fixes
+4. **PR Creation**: Creates a pull request with the auto-fixes for review
+5. **Issue Creation**: Creates a GitHub issue for remaining manual fixes (if needed)
+6. **Auto-Close**: Closes issues automatically when all problems are resolved
+7. **Manual Trigger**: Can be triggered manually from the Actions tab
+
+### What Happens
+
+**When issues are found:**
+1. 🔍 Scans all Swift files
+2. 🤖 Auto-fixes common issues (button traits, decorative icons)
+3. 📝 Creates a PR with fixes labeled `accessibility` and `automated`
+4. ⚠️ Creates an issue for remaining manual fixes (if any)
+
+**When no issues are found:**
+- ✅ Closes any open accessibility audit issues
+
+### Auto-Fix Capabilities
+
+The workflow automatically fixes:
+
+✅ **Adds `.accessibilityAddTraits(.isButton)` to `.onTapGesture`**
+- Makes tappable views behave properly for VoiceOver
+
+✅ **Adds `.accessibilityHidden(true)` to decorative icons**
+- Only for common patterns (chevrons, arrows, info icons, etc.)
+
+⚠️ **Adds TODO comments for images needing manual labels**
+- Flags images that require human judgment and L10n keys
+
+### Manual Fixes Required
+
+Some fixes require human review:
+- Proper L10n keys for accessibility labels
+- Determining if images are decorative vs informative
+- Context-specific accessibility hints
+- Complex gesture interactions
 
 ## What It Checks
 
@@ -106,13 +155,17 @@ HStack {
 
 ## Files
 
-- **Workflow**: `.github/workflows/AccessibilityCheck.yml`
-- **Script**: `scripts/check-accessibility.sh`
+- **PR Check Workflow**: `.github/workflows/AccessibilityCheck.yml`
+- **Weekly Audit Workflow**: `.github/workflows/WeeklyAccessibilityAudit.yml`
+- **Accessibility Checker Script**: `scripts/check-accessibility.sh`
+- **Auto-Fix Script**: `scripts/auto-fix-accessibility.sh`
 - **Documentation**: `docs/accessibility-workflow.md` (this file)
 
 ## Manual Usage
 
-You can run the check locally:
+### Run Check Locally
+
+You can run the accessibility checker locally:
 
 ```bash
 # Check specific files
@@ -121,6 +174,57 @@ You can run the check locally:
 # Check all Swift files in a directory
 find Projects/MyModule -name "*.swift" | xargs ./scripts/check-accessibility.sh
 ```
+
+### Run Auto-Fix Locally
+
+You can run the auto-fix script locally before committing:
+
+```bash
+# Auto-fix specific files
+./scripts/auto-fix-accessibility.sh "Projects/MyModule/Sources/MyView.swift"
+
+# Auto-fix all Swift files in a directory
+./scripts/auto-fix-accessibility.sh $(find Projects/MyModule -name "*.swift" -type f | grep -v Test)
+
+# Auto-fix all Swift files in the project
+./scripts/auto-fix-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
+```
+
+**Then verify the fixes:**
+```bash
+# Re-run the checker to see remaining issues
+./scripts/check-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
+
+# Review the changes
+git diff
+
+# Test with VoiceOver before committing
+```
+
+### Trigger Weekly Audit Manually
+
+You can trigger the weekly audit manually from GitHub:
+
+1. Go to **Actions** tab in GitHub
+2. Select **Weekly Accessibility Audit** workflow
+3. Click **Run workflow** button
+4. Select the branch and click **Run workflow**
+
+### Configure Schedule
+
+To change the weekly audit schedule, edit `.github/workflows/WeeklyAccessibilityAudit.yml`:
+
+```yaml
+on:
+  schedule:
+    # Change the cron expression (currently Monday 9 AM UTC)
+    - cron: '0 9 * * 1'
+```
+
+Common cron patterns:
+- `0 9 * * 1` - Every Monday at 9 AM UTC
+- `0 9 * * 5` - Every Friday at 9 AM UTC
+- `0 0 1 * *` - First day of every month at midnight UTC
 
 ## Limitations
 

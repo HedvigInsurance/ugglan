@@ -8,6 +8,7 @@ public struct Partner: Codable, Equatable, Hashable, Sendable {
     public let info: String?
     public let buttonText: String?
     public let preferredImageHeight: Int?
+
     public init(
         id: String,
         imageUrl: String?,
@@ -28,6 +29,16 @@ public struct Partner: Codable, Equatable, Hashable, Sendable {
         self.info = info
         self.buttonText = buttonText
         self.preferredImageHeight = preferredImageHeight
+    }
+}
+
+public struct LinkOnlyPartner: Codable, Equatable, Hashable, Sendable {
+    public let url: String
+    public let buttonText: String
+
+    public init(url: String, buttonText: String) {
+        self.url = url
+        self.buttonText = buttonText
     }
 }
 
@@ -65,7 +76,7 @@ public struct FlowClaimDeflectConfig {
     }
 }
 
-public struct DeflectQuestion {
+public struct DeflectQuestion: Sendable, Hashable {
     public let question: String
     public let answer: String
 

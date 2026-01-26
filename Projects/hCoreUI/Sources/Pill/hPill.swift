@@ -4,97 +4,158 @@ public struct hPill: View {
     public init(
         text: String,
         color: PillColor,
-        colorLevel: PillColor.PillColorLevel? = .one
+        colorLevel: PillColor.PillColorLevel? = .one,
+        withBorder: Bool = true
     ) {
         self.text = text
         self.color = color
         self.colorLevel = colorLevel ?? .one
+        self.withBorder = withBorder
     }
 
     public let text: String
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
+    let withBorder: Bool
     @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.hPillAttributes) var attributes
 
     public var body: some View {
-        if !ProcessInfo.processInfo.arguments.contains("-UITestExcludeHPill") {
-            hText(text, style: fieldSize == .large ? .body1 : .label)
+        HStack(spacing: .padding6) {
+            hText(text, style: getFontStyle)
                 .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                 .foregroundColor(color.pillTextColor(level: colorLevel))
-                .modifier(
-                    PillModifier(
-                        color: color,
-                        colorLevel: colorLevel
-                    )
-                )
-        } else {
-            EmptyView()
+
+            if attributes.contains(.withChevron) {
+                hCoreUIAssets.chevronDown.view
+                    .foregroundColor(hFillColor.Translucent.tertiary)
+            }
+        }
+        .modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder))
+        .accessibilityElement(children: .combine)
+    }
+
+    private var getFontStyle: HFontTextStyle {
+        switch fieldSize {
+        case .large, .capsuleShape:
+            return .body1
+        default:
+            return .label
+        }
+    }
+}
+
+extension View {
+    public func hPillStyle(
+        color: PillColor,
+        colorLevel: PillColor.PillColorLevel = .one,
+        withBorder: Bool = false
+    ) -> some View {
+        self.modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder))
+    }
+}
+
+fileprivate struct PillModifier: ViewModifier {
+    let color: PillColor
+    let colorLevel: PillColor.PillColorLevel
+    let withBorder: Bool
+    @Environment(\.hFieldSize) var fieldSize
+    func body(content: Content) -> some View {
+        content
+            .padding(.horizontal, getHorizontalPadding)
+            .padding(.top, getTopPadding)
+            .padding(.bottom, getBottomPadding)
+            .background(
+                RoundedRectangle(cornerRadius: getCornerRadius)
+                    .fill(color.pillBackgroundColor(level: colorLevel))
+            )
+            .overlay {
+                if withBorder {
+                    RoundedRectangle(cornerRadius: getCornerRadius)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                }
+            }
+            .accessibilityElement(children: .combine)
+    }
+
+    private var getHorizontalPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return .padding6
+        case .medium:
+            return .padding10
+        case .large, .extraLarge:
+            return .padding12
+        case .capsuleShape:
+            return .padding14
         }
     }
 
-    struct PillModifier: ViewModifier {
-        let color: PillColor
-        let colorLevel: PillColor.PillColorLevel
-        @Environment(\.hFieldSize) var fieldSize
-        func body(content: Content) -> some View {
-            content
-                .padding(.horizontal, getHorizontalPadding)
-                .padding(.top, getTopPadding)
-                .padding(.bottom, getBottomPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
-                        .fill(color.pillBackgroundColor(level: colorLevel))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: getCornerRadius)
+    private var getTopPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return 3
+        case .medium:
+            return 6.5
+        case .large, .capsuleShape, .extraLarge:
+            return 7
+        }
+    }
+
+    private var getBottomPadding: CGFloat {
+        switch fieldSize {
+        case .small:
+            return 3
+        case .medium:
+            return 7.5
+        case .large, .capsuleShape, .extraLarge:
+            return 9
+        }
+    }
+
+    private var getCornerRadius: CGFloat {
+        switch fieldSize {
+        case .small:
+            return .cornerRadiusXS
+        case .medium:
+            return .cornerRadiusS
+        case .large:
+            return .cornerRadiusM
+        case .capsuleShape:
+            return 100
+        case .extraLarge:
+            return .cornerRadiusXL
+        }
+    }
+}
+
+extension View {
+    public func hWrapInPill(
+        color: PillColor,
+        colorLevel: PillColor.PillColorLevel = .one,
+        withBorder: Bool = false
+    ) -> some View {
+        modifier(PillWrapperModifier(color: color, colorLevel: colorLevel, withBorder: false))
+    }
+}
+fileprivate struct PillWrapperModifier: ViewModifier {
+    let color: PillColor
+    let colorLevel: PillColor.PillColorLevel
+    let withBorder: Bool
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: .infinity)
+                    .fill(color.pillBackgroundColor(level: colorLevel))
+            )
+            .overlay {
+                if withBorder {
+                    RoundedRectangle(cornerRadius: .infinity)
                         .stroke(hBorderColor.primary, lineWidth: 1)
-                )
-        }
-
-        private var getHorizontalPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return .padding6
-            case .medium:
-                return .padding10
-            case .large:
-                return .padding12
+                }
             }
-        }
-
-        private var getTopPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return 3
-            case .medium:
-                return 6.5
-            case .large:
-                return 7
-            }
-        }
-
-        private var getBottomPadding: CGFloat {
-            switch fieldSize {
-            case .small:
-                return 3
-            case .medium:
-                return 7.5
-            case .large:
-                return 9
-            }
-        }
-
-        private var getCornerRadius: CGFloat {
-            switch fieldSize {
-            case .small:
-                return .cornerRadiusXS
-            case .medium:
-                return .cornerRadiusS
-            case .large:
-                return .cornerRadiusM
-            }
-        }
+            .accessibilityElement(children: .combine)
     }
 }
 
@@ -216,6 +277,27 @@ public enum PillColor {
         case one
         case two
         case three
+    }
+}
+
+public enum hPillAttrubutes {
+    case withChevron
+}
+
+private struct EnvironmentHPillAttributes: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: [hPillAttrubutes] = []
+}
+
+extension EnvironmentValues {
+    public var hPillAttributes: [hPillAttrubutes] {
+        get { self[EnvironmentHPillAttributes.self] }
+        set { self[EnvironmentHPillAttributes.self] = newValue }
+    }
+}
+
+extension View {
+    public func hPillAttributes(attributes: [hPillAttrubutes]) -> some View {
+        environment(\.hPillAttributes, attributes)
     }
 }
 

@@ -13,7 +13,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @State private var ignoreKeyboard = false
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
@@ -30,7 +29,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         ZStack {
             VStack(spacing: 0) {
                 scrollView
-                if !vm.keyboardVisible, !voiceOverEnabled, verticalSizeClass == .regular {
+                if !vm.keyboardVisible, verticalSizeClass == .regular {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                 }
@@ -52,6 +51,12 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
+                        case .aiPoweredGradient:
+                            hCoreUIAssets.submitClaimBg.view
+                                .resizable()
+                                .scaledToFill()
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
                         case .default:
                             if contentPosition == .compact, isLiquidGlassEnabled {
                                 Color.clear
@@ -88,6 +93,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                             Group {
                                 if contentPosition == .compact, isLiquidGlassEnabled {
                                     Color.clear
+                                } else if case .aiPoweredGradient = bottomBackgroundStyle {
+                                    Color.clear
                                 } else {
                                     hBackgroundColor.primary
                                 }
@@ -107,16 +114,19 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 guard let vm else { return }
                 if scrollView != vm.scrollView {
                     vm.scrollView = scrollView
-                    vm.keyboardCancellable = keyboardPublisher.sink { _ in
-                    } receiveValue: { [weak vm] keyboardHeight in
-                        if vm?.vc?.presentedViewController == nil {
-                            vm?.keyboardVisible = keyboardHeight != nil
-                            ignoreKeyboard = false
-                        } else {
-                            vm?.keyboardVisible = false
-                            ignoreKeyboard = true
+                    vm.keyboardCancellable =
+                        keyboardPublisher
+                        .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
+                        .sink { _ in
+                        } receiveValue: { [weak vm] keyboardHeight in
+                            if vm?.vc?.presentedViewController == nil {
+                                vm?.keyboardVisible = keyboardHeight != nil
+                                ignoreKeyboard = false
+                            } else {
+                                vm?.keyboardVisible = false
+                                ignoreKeyboard = true
+                            }
                         }
-                    }
                 }
             }
             .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
@@ -154,7 +164,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 content
                 getBottomAttachedView
             }
-            if vm.keyboardVisible || voiceOverEnabled || verticalSizeClass == .compact {
+            if vm.keyboardVisible || verticalSizeClass == .compact {
                 getAlwaysVisibleBottomView
                     .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }
@@ -390,6 +400,7 @@ extension View {
 public enum hFormBottomBackgroundStyle {
     case `default`
     case gradient(from: any hColor, to: any hColor)
+    case aiPoweredGradient
 }
 
 @MainActor
@@ -506,8 +517,10 @@ public struct BackgroundView: UIViewRepresentable {
     }
 }
 
-struct BackgroundBlurView: UIViewRepresentable {
-    func makeUIView(context _: Context) -> UIView {
+public struct BackgroundBlurView: UIViewRepresentable {
+    public init() {}
+
+    public func makeUIView(context _: Context) -> UIView {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         for subview in view.subviews {
             subview.backgroundColor = UIColor.clear
@@ -515,7 +528,7 @@ struct BackgroundBlurView: UIViewRepresentable {
         return MaskedView(subView: view)
     }
 
-    func updateUIView(_ view: UIView, context _: Context) {}
+    public func updateUIView(_ view: UIView, context _: Context) {}
 }
 
 private class MaskedView: UIView {

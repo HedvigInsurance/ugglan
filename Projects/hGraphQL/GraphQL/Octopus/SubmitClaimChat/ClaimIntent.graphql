@@ -1,0 +1,128 @@
+query ClaimIntent($claimIntentId: ID!) {
+  claimIntent(id: $claimIntentId) {
+    ...ClaimIntentFragment
+  }
+}
+
+fragment ClaimIntentFragment on ClaimIntent {
+    id
+    progress
+    currentStep {
+        ...ClaimIntentStepFragment
+    }
+    createdClaim {
+        ...ClaimFragment
+    }
+}
+
+fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentStepContentDeflectionPartner {
+    id
+    imageUrl
+    phoneNumber
+    title
+    description
+    info
+    url
+    urlButtonTitle
+}
+
+fragment ClaimIntentOutcomeDeflectionSimplePartnerFragment on ClaimIntentStepContentDeflectionSimplePartner {
+    url
+    urlButtonTitle
+}
+
+fragment ClaimIntentStepFragment on ClaimIntentStep {
+    id
+    text
+    isRegrettable
+    hint
+    content {
+        ...ClaimIntentStepContentFragment
+    }
+}
+
+fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
+    ... on ClaimIntentStepContentDeflection {
+        infoText
+        warningText
+        partnersInfo {
+            title
+            description
+        }
+        content {
+            description
+            title
+        }
+        faq {
+            title
+            description
+        }
+        title
+        partners {
+            ...ClaimIntentOutcomeDeflectionPartnerFragment
+        }
+        simplePartners {
+            ...ClaimIntentOutcomeDeflectionSimplePartnerFragment
+        }
+        buttonTitle
+    }
+    ... on ClaimIntentStepContentForm {
+        fields {
+            ...ClaimIntentStepContentFormFieldFragment
+        }
+        isSkippable
+    }
+    ... on ClaimIntentStepContentTask {
+        description
+        isCompleted
+    }
+    ... on ClaimIntentStepContentAudioRecording {
+        uploadUri
+        freeTextMaxLength
+        freeTextMinLength
+        isSkippable
+    }
+    ... on ClaimIntentStepContentFileUpload {
+        uploadUri
+        isSkippable
+    }
+    ... on ClaimIntentStepContentSummary {
+        items {
+            title
+            value
+        }
+        freeTexts
+        audioRecordings {
+            url
+        }
+        fileUploads {
+            url
+            contentType
+            fileName
+        }
+    }
+    ... on ClaimIntentStepContentSelect {
+        options {
+            id
+            title
+        }
+        isSkippable
+        defaultSelectedId
+        style
+    }
+}
+
+fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {
+    id
+    type
+    title
+    suffix
+    isRequired
+    options {
+        title
+        value
+    }
+    defaultValues
+    minValue
+    maxValue
+}

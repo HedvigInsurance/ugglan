@@ -216,16 +216,11 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
 
             vc.onViewDidLayoutSubviews = { [weak vc] in
                 guard let vc = vc else { return }
-                if #available(iOS 16.0, *) {
-                    vc.sheetPresentationController?
-                        .animateChanges {
-                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                .invalidateDetents()
-                        }
-                } else {
-                    vc.sheetPresentationController?
-                        .animateChanges {}
-                }
+                vc.sheetPresentationController?
+                    .animateChanges {
+                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                            .invalidateDetents()
+                    }
             }
 
             navigation?
@@ -397,6 +392,7 @@ extension View {
                 .onTapGesture {
                     onTitleTap?()
                 }
+                .accessibilityAddTraits(.isButton)
         )
         .view
         view.backgroundColor = .clear

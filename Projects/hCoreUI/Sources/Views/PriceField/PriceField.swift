@@ -52,6 +52,7 @@ public struct PriceField: View {
                 .onTapGesture {
                     isInfoViewPresented = infoViewModel
                 }
+                .accessibilityAddTraits(.isButton)
                 .accessibilityLabel(
                     L10n.voiceoverMoreInfo
                 )
@@ -120,7 +121,7 @@ fileprivate struct PremiumText: View {
 
     public var body: some View {
         Group {
-            if #available(iOS 16.0, *), strikeThrough {
+            if strikeThrough {
                 hText(text)
                     .strikethrough()
                     .foregroundColor(hTextColor.Opaque.secondary)

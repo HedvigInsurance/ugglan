@@ -1,0 +1,505 @@
+import Combine
+import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
+import hCore
+import hCoreUI
+
+public struct SubmitClaimChatScreen: View {
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
+    @EnvironmentObject var router: Router
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    @AccessibilityFocusState private var isCurrentStepFocused: Bool
+
+    public init() {}
+
+    public var body: some View {
+        scrollContent
+            .submitClaimChatScreenAlert(viewModel.alertVm)
+            .animation(.defaultSpring, value: viewModel.outcome)
+            .onChange(of: viewModel.showError) { value in
+                if value {
+                    viewModel.alertVm.alertModel = .init(
+                        type: .error,
+                        message: viewModel.error?.localizedDescription ?? "",
+                        action: {
+                            viewModel.startClaimIntent()
+                        },
+                        onClose: {
+                            router.dismiss()
+                        }
+                    )
+                }
+            }
+            .navigationBarProgress($viewModel.progress)
+    }
+
+    private var scrollContent: some View {
+        ScrollViewReader { proxy in
+            mainContent
+                .onChange(of: viewModel.scrollTarget) { scrollTarget in
+                    withAnimation {
+                        proxy.scrollTo(scrollTarget.id, anchor: scrollTarget.anchor)
+                    }
+                }
+        }
+    }
+
+    private var mainContent: some View {
+        ZStack(alignment: .bottom) {
+            GeometryReader { proxy in
+                hForm {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(viewModel.allSteps, id: \.id) { step in
+                            StepView(step: step)
+                        }
+                    }
+                    .padding(.horizontal, .padding16)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+
+                    if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
+                        Color.clear.frame(
+                            height: viewModel.calculatePaddingHeight()
+                        )
+                    }
+                }
+                .hFormContentPosition(.top)
+                .hFormBottomBackgroundColor(.aiPoweredGradient)
+                .environmentObject(viewModel)
+                .hideScrollIndicators()
+                .onAppear {
+                    viewModel.scrollViewHeight = proxy.size.height
+                }
+                .onChange(of: proxy.size) { value in
+                    viewModel.scrollViewHeight = value.height
+                }
+                .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+                    viewModel.scrollViewBottomInset = scrollView.safeAreaInsets.bottom
+                    if scrollView != viewModel.scrollView {
+                        viewModel.scrollView = scrollView
+                    }
+                }
+                .hFormAttachToBottom {
+                    if verticalSizeClass == .compact || viewModel.shouldMergeInputWithContent {
+                        currentStepView
+                    }
+                }
+            }
+            .ignoresSafeArea(
+                .keyboard,
+                edges: viewModel.shouldMergeInputWithContent || viewModel.outcome != nil ? [] : .all
+            )
+            if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
+                currentStepView
+            }
+        }
+        .environmentObject(viewModel.alertVm)
+    }
+
+    private var currentStepView: some View {
+        ZStack(alignment: .bottom) {
+            if let currentStep = viewModel.currentStep {
+                if viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                    && !viewModel.shouldMergeInputWithContent
+                {
+                    ScrollToBottomButton(scrollAction: scrollToBottom)
+                }
+                CurrentStepView(step: currentStep)
+                    .background {
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear {
+                                    viewModel.currentStepInputHeight = proxy.size.height
+                                }
+                                .onChange(of: proxy.size) { value in
+                                    viewModel.currentStepInputHeight = value.height
+                                }
+                        }
+                    }
+                    .offset(
+                        x: 0,
+                        y: viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                            && !viewModel.shouldMergeInputWithContent ? 1000 : 0
+                    )
+                    .accessibilityFocused($isCurrentStepFocused)
+                    .disabled(
+                        viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                            && !viewModel.shouldMergeInputWithContent
+                    )
+            }
+        }
+        .padding(.bottom, .padding8)
+        .environmentObject(viewModel)
+        .animation(.default, value: viewModel.currentStep?.id)
+        .animation(.easeInOut(duration: 0.5), value: viewModel.isInputScrolledOffScreen)
+        .background {
+            if viewModel.isInputScrolledOffScreen && verticalSizeClass == .regular
+                && !viewModel.shouldMergeInputWithContent
+            {
+                Color.clear
+            } else {
+                BackgroundBlurView()
+                    .ignoresSafeArea(.container, edges: .bottom)
+            }
+        }
+    }
+
+    private func scrollToBottom() {
+        viewModel.scrollToBottom()
+        Task {
+            try? await Task.sleep(seconds: 1)
+            isCurrentStepFocused = true
+        }
+    }
+}
+
+struct ScrollToBottomButton: View {
+    let scrollAction: () -> Void
+
+    var body: some View {
+        Button {
+            scrollAction()
+        } label: {
+            hCoreUIAssets.arrowDown.view
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundColor(hTextColor.Opaque.primary)
+                .padding(.padding8)
+                .background(hFillColor.Opaque.negative)
+                .clipShape(Circle())
+                .contentShape(Circle())
+                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+        }
+        .accessibilityLabel(L10n.voiceoverDoubleClickTo + " " + L10n.a11YScrollDown)
+        .accessibilityAddTraits(.isButton)
+        .onTapGesture {
+            scrollAction()
+        }
+        .accessibilityAddTraits(.isButton)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+}
+
+private struct CurrentStepView: View {
+    @ObservedObject var step: ClaimIntentStepHandler
+    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
+
+    var body: some View {
+        if step.state.showInput {
+            ClaimStepView(viewModel: step)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .onChange(of: step.state.showError) { value in
+                    if value {
+                        alertVm.alertModel = .init(
+                            type: .error,
+                            message: step.state.error?.localizedDescription ?? "",
+                            action: {
+                                step.submitResponse()
+                            },
+                            onClose: {
+                                step.state.isEnabled = true
+                            }
+                        )
+                    }
+                }
+        }
+    }
+}
+
+struct StepView: View {
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @ObservedObject var step: ClaimIntentStepHandler
+    @AccessibilityFocusState var isAccessibilityFocused: String?
+
+    var body: some View {
+        SubmitClaimChatMesageView(viewModel: step)
+            .padding(.top, .padding16)
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            viewModel.stepHeights[step.id] = proxy.size.height
+                        }
+                        .onChange(of: proxy.size) { value in
+                            viewModel.stepHeights[step.id] = value.height
+                        }
+                }
+            }
+            .id(step.id)
+            .transition(
+                .asymmetric(
+                    insertion: step.state.animateText
+                        ? .offset(x: 0, y: 100).combined(with: .opacity).animation(.default)
+                        : .opacity.animation(.easeInOut(duration: 0)),
+                    removal: .opacity.animation(.easeInOut(duration: 0.1))
+                )
+
+            )
+            .accessibilityFocused($isAccessibilityFocused, equals: step.id)
+            .onChange(of: viewModel.currentStepId) { id in
+                isAccessibilityFocused = id
+            }
+    }
+}
+
+extension SubmitClaimChatScreen: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        .init(describing: self)
+    }
+}
+
+extension View {
+    @ViewBuilder
+    fileprivate func hideScrollIndicators() -> some View {
+        if #available(iOS 16.0, *) {
+            self.scrollIndicators(.hidden)
+        } else {
+            self
+        }
+    }
+}
+
+#Preview {
+    let demoService = ClaimIntentClientDemo()
+    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demoService })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return SubmitClaimChatScreen()
+        .embededInNavigation(tracking: "")
+        .environmentObject(
+            SubmitClaimChatViewModel(
+                startInput: .init(
+                    input: .init(sourceMessageId: nil),
+                    openChat: {
+                    }
+                )
+            )
+        )
+}
+
+// MARK: - Main Model
+@MainActor
+final class SubmitClaimChatViewModel: NSObject, ObservableObject {
+    // MARK: - Constants
+    private let inputHeightThreshold: CGFloat = 0.6
+    private let topPadding: CGFloat = 32
+
+    @Published var error: Error? {
+        didSet {
+            showError = error != nil
+        }
+    }
+    @Published var showError = false
+    // MARK: - Published UI State
+    @Published var allSteps: [ClaimIntentStepHandler] = [] {
+        didSet {
+            isInputScrolledOffScreen = false
+        }
+    }
+    @Published var currentStep: ClaimIntentStepHandler?
+    @Published var currentStepId: String?
+    @Published var scrollTarget: ScrollTarget = .init(id: "", anchor: .bottom)
+    let alertVm = SubmitClaimChatScreenAlertViewModel()
+
+    var scrollViewBottomInset: CGFloat = 0
+    var scrollViewHeight: CGFloat = 0
+    var stepHeights: [String: CGFloat] = [:] {
+        didSet {
+            recalculateStepHeights()
+        }
+    }
+    private var scrollCancellable: AnyCancellable?
+
+    func scrollToBottom() {
+        if let scrollView {
+            let bottomOffset = CGPoint(
+                x: 0,
+                y: scrollView.contentSize.height - scrollView.bounds.size.height + scrollView.contentInset.bottom + 40
+            )
+            scrollView.setContentOffset(bottomOffset, animated: true)
+        }
+    }
+
+    func calculatePaddingHeight() -> CGFloat {
+        let height = scrollViewHeight - scrollViewBottomInset + topPadding - lastStepContentHeight
+        return max(
+            height,
+            currentStepInputHeight + topPadding
+        )
+    }
+    weak var scrollView: UIScrollView? {
+        didSet {
+            scrollCancellable = scrollView?.publisher(for: \.contentOffset)
+                .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
+                .removeDuplicates()
+                .sink(receiveValue: { [weak self] value in
+                    self?.checkForScrollOffset()
+                })
+        }
+    }
+
+    private func checkForScrollOffset() {
+        guard let scrollView else { return }
+        // if current step bottom input part is huge, just merge it with the form
+        if self.currentStepInputHeight / scrollView.frame.size.height > self.inputHeightThreshold {
+            self.shouldMergeInputWithContent = true
+            return
+        }
+        self.shouldMergeInputWithContent = false
+        let neededHeight = self.currentStepInputHeight
+        let availableHeight =
+            scrollView.frame.size.height - scrollView.safeAreaInsets.top + scrollView.contentOffset.y - totalStepsHeight
+            + scrollView.adjustedContentInset.top - topPadding
+        self.isInputScrolledOffScreen = neededHeight > availableHeight
+    }
+
+    var totalStepsHeight: CGFloat = 0
+    @Published var lastStepContentHeight: CGFloat = 0
+    @Published var currentStepInputHeight: CGFloat = 0 {
+        didSet {
+            if currentStepInputHeight != oldValue {
+                checkForScrollOffset()
+            }
+        }
+    }
+    @Published var shouldMergeInputWithContent = false
+
+    @Published var isInputScrolledOffScreen = false
+    @Published var outcome: ClaimIntentStepOutcome?
+    @Published var progress: Double?
+
+    // MARK: - Dependencies
+    private let flowManager: ClaimIntentFlowManager
+    let openChat: () -> Void
+    let router = Router()
+    private let input: StartClaimInput
+    // MARK: - Initialization
+    init(
+        startInput: SubmitClaimChatInput
+    ) {
+        self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
+        self.openChat = startInput.openChat
+        self.input = startInput.input
+        super.init()
+        startClaimIntent()
+    }
+
+    // MARK: - UI Height Calculations
+    private func recalculateStepHeights() {
+        Task {
+            try? await Task.sleep(seconds: 0.1)
+            checkForScrollOffset()
+        }
+        totalStepsHeight = stepHeights.values.reduce(0, +)
+        if let id = allSteps.last?.id {
+            lastStepContentHeight = stepHeights[id] ?? 0
+        }
+    }
+
+    // MARK: - Business Logic
+    func startClaimIntent() {
+        self.error = nil
+        Task {
+            do {
+                guard let claimIntent = try await flowManager.startClaimIntent(input: input) else {
+                    throw ClaimIntentError.invalidResponse
+                }
+                switch claimIntent {
+                case let .intent(model):
+                    processClaimIntent(.goToNext(claimIntent: model))
+                case let .outcome(model):
+                    processClaimIntent(.outcome(model: model))
+                }
+            } catch {
+                try await Task.sleep(seconds: 0.5)
+                self.error = error
+            }
+        }
+    }
+
+    private func processClaimIntent(_ claimEvent: SubmitClaimEvent) {
+        switch claimEvent {
+        case let .removeStep(id):
+            withAnimation {
+                self.allSteps.removeAll(where: { $0.id == id })
+                self.stepHeights[id] = nil
+            }
+        case let .goToNext(claimIntent):
+            handleGoToNextStep(claimIntent: claimIntent)
+        case let .regret(currentClaimIntent, newclaimIntent):
+            handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
+        case let .outcome(model):
+            router.push(model)
+            withAnimation {
+                self.allSteps.removeAll()
+                self.currentStep = nil
+                self.progress = nil
+            }
+        }
+    }
+
+    private func handleGoToNextStep(claimIntent: ClaimIntent) {
+        let handler = createStepHandler(for: claimIntent)
+        stepHeights[handler.id] = 0
+        let previousStepId = allSteps.last?.id ?? ""
+
+        if case .deflect = claimIntent.currentStep.content {
+            self.progress = nil
+        } else {
+            self.progress = claimIntent.progress
+        }
+        Task { @MainActor in
+            if !self.allSteps.isEmpty {
+                currentStep = nil
+            }
+            self.allSteps.append(handler)
+            try await Task.sleep(seconds: 1)
+            currentStep = handler
+            scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
+            currentStepId = handler.id
+        }
+    }
+
+    private func handleRegretStep(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent) {
+        let handler = createStepHandler(for: newClaimIntent)
+        self.progress = newClaimIntent.progress
+        Task { @MainActor in
+            if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
+                currentStep?.state.showInput = false
+                if indexToRemove > 0 {
+                    let stepIdToScrollTo = allSteps[indexToRemove - 1].id
+                    scrollTarget = .init(id: "result_\(stepIdToScrollTo)", anchor: .top)
+                    try await Task.sleep(seconds: 0.4)
+                }
+                for item in allSteps[indexToRemove..<allSteps.count] {
+                    stepHeights.removeValue(forKey: item.id)
+                }
+                allSteps.removeSubrange((indexToRemove)..<allSteps.count)
+            }
+            handler.state.animateText = false
+            stepHeights[handler.id] = 0
+            allSteps.append(handler)
+            currentStep = handler
+            if allSteps.count == 1 {
+                scrollTarget = .init(id: handler.id, anchor: .top)
+            }
+            try? await Task.sleep(seconds: 0.05)
+            currentStepId = handler.id
+        }
+    }
+
+    private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
+        flowManager.createStepHandler(
+            for: claimIntent,
+            alertVm: alertVm,
+            mainHandler: { [weak self] claimEvent in
+                self?.processClaimIntent(claimEvent)
+            }
+        )
+    }
+
+    struct ScrollTarget: Equatable {
+        let id: String
+        let anchor: UnitPoint
+    }
+}

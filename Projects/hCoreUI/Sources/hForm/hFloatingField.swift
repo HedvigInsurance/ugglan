@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import SwiftUI
+import hCore
 
 public struct hFloatingField: View {
     private var placeholder: String
@@ -64,13 +65,16 @@ public struct hFloatingField: View {
                 startAnimation()
             }
         }
+        .accessibilityAddTraits(.isButton)
         .onChange(of: value) { _ in
             if isEnabled {
                 startAnimation()
             }
         }
-        .accessibilityAddTraits(.isButton)
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(value.isEmpty ? placeholder : "\(placeholder). \(value)")
+        .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.voiceoverChangeValue)
     }
 
     private var getTextLabel: some View {

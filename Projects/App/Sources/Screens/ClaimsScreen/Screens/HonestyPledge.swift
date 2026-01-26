@@ -1,5 +1,6 @@
 import Claims
 import Combine
+import Environment
 import Profile
 import SwiftUI
 import hCore
@@ -14,28 +15,25 @@ struct SlideToConfirm: View {
     @State private var bounceSliderButton = false
 
     var body: some View {
-        if #available(iOS 16.0, *) {
-            slider
-                .onTapGesture(coordinateSpace: .local) { location in
-                    if didFinished {
-                        return
-                    }
-                    withAnimation(.defaultSpring) {
-                        self.progress = location.x + 25
-                    }
-                    if progress < width {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(.defaultSpring) {
-                                resetProgress()
-                            }
-                        }
-                    } else {
-                        promiseConfirmed()
-                    }
+        slider
+            .onTapGesture(coordinateSpace: .local) { location in
+                if didFinished {
+                    return
                 }
-        } else {
-            slider
-        }
+                withAnimation(.defaultSpring) {
+                    self.progress = location.x + 25
+                }
+                if progress < width {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation(.defaultSpring) {
+                            resetProgress()
+                        }
+                    }
+                } else {
+                    promiseConfirmed()
+                }
+            }
+            .accessibilityAddTraits(.isButton)
     }
 
     private func resetProgress() {
@@ -52,6 +50,7 @@ struct SlideToConfirm: View {
             }
             Image(uiImage: updateUIForFinished ? hCoreUIAssets.checkmark.image : hCoreUIAssets.chevronRight.image)
                 .foregroundColor(hTextColor.Opaque.negative)
+                .accessibilityHidden(true)
                 .frame(width: 50, height: 50)
                 .background(getIconBackgroundColor)
                 .colorScheme(.light)

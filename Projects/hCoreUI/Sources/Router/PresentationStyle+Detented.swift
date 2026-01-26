@@ -61,7 +61,6 @@ public struct PresentationOptions: OptionSet, Sendable {
 
     static let useBlur = PresentationOptions()
 }
-
 class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var detents: [Detent]
     var options: PresentationOptions
@@ -97,7 +96,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
     ) -> UIPresentationController? {
         let presentationController: UIPresentationController = {
             if #available(iOS 16.0, *) {
-                let presentationController = BlurredSheetPresenationController(
+                let presentationController = BlurredSheetPresentationController(
                     presentedViewController: presented,
                     presenting: presenting,
                     useBlur: options.contains(.useBlur)
@@ -117,33 +116,18 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
             }
         }()
 
-        if #available(iOS 16.0, *) {
-            if let presentationController = presentationController as? UISheetPresentationController {
-                presentationController.detents = [
-                    .custom(
-                        identifier: UISheetPresentationController.Detent.Identifier.init("zero"),
-                        resolver: { context in
-                            0
-                        }
-                    )
-                ]
-                presentationController.largestUndimmedDetentIdentifier = presentationController.detents.last?.identifier
-            }
-        } else {
-            Detent.set(
-                [
-                    .custom(
-                        "zero",
-                        { _, _ in
-                            0
-                        }
-                    )
-                ],
-                on: presentationController,
-                viewController: viewController,
-                unanimated: false
-            )
+        if let presentationController = presentationController as? UISheetPresentationController {
+            presentationController.detents = [
+                .custom(
+                    identifier: UISheetPresentationController.Detent.Identifier.init("zero"),
+                    resolver: { context in
+                        0
+                    }
+                )
+            ]
+            presentationController.largestUndimmedDetentIdentifier = presentationController.detents.last?.identifier
         }
+
         Task { @MainActor [weak presentationController] in
             try? await Task.sleep(nanoseconds: 100_000_000)
             if let presentationController {
@@ -164,11 +148,14 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
 
 class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var bottomView: AnyView?
+    var onUserDismiss: (() -> Void)?
 
     init(
-        bottomView: AnyView? = nil
+        bottomView: AnyView? = nil,
+        onUserDismiss: (() -> Void)? = nil
     ) {
         self.bottomView = bottomView
+        self.onUserDismiss = onUserDismiss
         super.init()
     }
 
@@ -177,11 +164,13 @@ class CenteredModalTransitioningDelegate: NSObject, UIViewControllerTransitionin
         presenting: UIViewController?,
         source _: UIViewController
     ) -> UIPresentationController? {
-        CenteredModalPresentationController(
+        let pc = CenteredModalPresentationController(
             presentedViewController: presented,
             presenting: presenting,
             bottomView: bottomView
         )
+        pc.onUserDismiss = onUserDismiss
+        return pc
     }
 }
 
@@ -193,6 +182,8 @@ final class CenteredModalPresentationController: UIPresentationController {
     private var dragPercentage: CGFloat = 0
     private var dragOffset: CGFloat = 0
     private var dragState: ModalScaleState = .presentation
+
+    var onUserDismiss: (() -> Void)?
 
     init(
         presentedViewController: UIViewController,
@@ -211,6 +202,7 @@ final class CenteredModalPresentationController: UIPresentationController {
     }
 
     @objc private func dismissOnTapOutside() {
+        onUserDismiss?()
         presentedViewController.dismiss(animated: true, completion: nil)
     }
 
@@ -339,6 +331,7 @@ extension CenteredModalPresentationController {
                 dragOffset = 0
                 resetDrag()
             } else {
+                onUserDismiss?()
                 presentedViewController.dismiss(animated: true, completion: nil)
                 gesture.isEnabled = false
             }
@@ -405,7 +398,7 @@ extension UIViewController {
             guard let presentationController = navigationController?.presentationController,
                 let newValue = newValue, let index = appliedDetents.firstIndex(of: newValue)
             else { return }
-            weak var presentationControllerWeak = presentationController
+            weak let presentationControllerWeak = presentationController
             func apply() {
                 if let presentationControllerWeak {
                     setDetentIndex(on: presentationControllerWeak, index: index)
@@ -542,55 +535,35 @@ public enum Detent: Equatable {
         unanimated: Bool
     ) {
         guard !detents.isEmpty else { return }
-        weak var weakViewController = viewController
-        weak var weakPresentationController = presentationController
+        weak let weakViewController = viewController
+        weak let weakPresentationController = presentationController
         func apply() {
-            if #available(iOS 16.0, *) {
-                weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
-                weakViewController?.appliedDetents = detents
-                weakViewController?.sheetPresentationController?.detents =
-                    weakViewController?.appliedDetents
-                    .map {
-                        switch $0 {
-                        case .large:
-                            return .large()
-                        case .medium:
-                            return .medium()
-                        case let .custom(name, block):
-                            return UISheetPresentationController.Detent.custom(
-                                identifier: UISheetPresentationController.Detent.Identifier(name)
-                            ) { _ in
-                                if let weakViewController {
-                                    return block(weakViewController, weakViewController.view)
-                                }
-                                return 0
+            weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
+            weakViewController?.appliedDetents = detents
+            weakViewController?.sheetPresentationController?.detents =
+                weakViewController?.appliedDetents
+                .map {
+                    switch $0 {
+                    case .large:
+                        return .large()
+                    case .medium:
+                        return .medium()
+                    case let .custom(name, block):
+                        return UISheetPresentationController.Detent.custom(
+                            identifier: UISheetPresentationController.Detent.Identifier(name)
+                        ) { _ in
+                            if let weakViewController {
+                                return block(weakViewController, weakViewController.view)
                             }
+                            return 0
                         }
-                    } ?? [.medium()]
+                    }
+                } ?? [.medium()]
 
-                weakViewController?.sheetPresentationController?.largestUndimmedDetentIdentifier =
-                    weakViewController?.sheetPresentationController?.detents.last?.identifier
-                if let lastDetentIndex = lastDetentIndex {
-                    setDetentIndex(on: presentationController, index: lastDetentIndex)
-                }
-            } else {
-                let key = ["_", "set", "Detents", ":"]
-                let selector = NSSelectorFromString(key.joined())
-                weakViewController?.appliedDetents = detents
-                if let weakViewController {
-                    weakPresentationController?
-                        .perform(
-                            selector,
-                            with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
-                        )
-                }
-                if let weakPresentationController {
-                    setWantsBottomAttachedInCompactHeight(on: weakPresentationController, to: true)
-                }
-
-                if let lastDetentIndex = lastDetentIndex, let weakPresentationController {
-                    setDetentIndex(on: weakPresentationController, index: lastDetentIndex)
-                }
+            weakViewController?.sheetPresentationController?.largestUndimmedDetentIdentifier =
+                weakViewController?.sheetPresentationController?.detents.last?.identifier
+            if let lastDetentIndex = lastDetentIndex {
+                setDetentIndex(on: presentationController, index: lastDetentIndex)
             }
         }
         if unanimated {
@@ -618,9 +591,10 @@ public enum Detent: Equatable {
         switch self {
         case .large, .medium: return DetentsClass.value(forKey: "_\(rawValue)Detent") as! NSObject
         case let .custom(_, containerViewBlock):
-            typealias ContainerViewBlockMethod = @convention(c) (
-                NSObject.Type, Selector, @escaping (_ containerView: UIView) -> Double
-            ) -> NSObject
+            typealias ContainerViewBlockMethod =
+                @convention(c) (
+                    NSObject.Type, Selector, @escaping (_ containerView: UIView) -> Double
+                ) -> NSObject
             let customKey = ["_detent", "WithContainerViewBlock", ":"]
             let selector = NSSelectorFromString(customKey.joined())
             let method = DetentsClass.method(for: selector)
@@ -704,7 +678,7 @@ extension UIViewController {
     }
 }
 
-public class BlurredSheetPresenationController: UISheetPresentationController {
+public class BlurredSheetPresentationController: UISheetPresentationController {
     var effectView: PassThroughEffectView?
 
     init(

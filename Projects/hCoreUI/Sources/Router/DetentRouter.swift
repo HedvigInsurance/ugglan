@@ -15,6 +15,7 @@ extension View {
         presented: Binding<Bool>,
         transitionType: TransitionType? = .detent(style: [.height]),
         options: Binding<DetentPresentationOption>? = .constant([]),
+        onUserDismiss: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(
@@ -22,6 +23,7 @@ extension View {
                 presented: presented,
                 transitionType: transitionType ?? .detent(style: [.height]),
                 options: options ?? .constant([]),
+                onUserDismiss: onUserDismiss,
                 content: content
             )
         )
@@ -31,6 +33,7 @@ extension View {
         item: Binding<Item?>,
         transitionType: TransitionType? = .detent(style: [.height]),
         options: Binding<DetentPresentationOption>? = .constant([]),
+        onUserDismiss: (() -> Void)? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
         modifier(
@@ -38,6 +41,7 @@ extension View {
                 item: item,
                 transitionType: transitionType ?? .detent(style: [.height]),
                 options: options ?? .constant([]),
+                onUserDismiss: onUserDismiss,
                 content: content
             )
         )
@@ -51,11 +55,17 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var present: Bool = false
     let transitionType: TransitionType
     @Binding var options: DetentPresentationOption
+    let onUserDismiss: (() -> Void)?
     var content: (Item) -> SwiftUIContent
 
     func body(content: Content) -> some View {
         Group {
-            content.detent(presented: $present, transitionType: transitionType, options: $options) {
+            content.detent(
+                presented: $present,
+                transitionType: transitionType,
+                options: $options,
+                onUserDismiss: onUserDismiss
+            ) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }
@@ -87,16 +97,20 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     let transitionType: TransitionType
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
+    let onUserDismiss: (() -> Void)?
+
     init(
         presented: Binding<Bool>,
         transitionType: TransitionType,
         options: Binding<DetentPresentationOption>,
+        onUserDismiss: (() -> Void)?,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
         self.transitionType = transitionType
         _options = options
+        self.onUserDismiss = onUserDismiss
     }
 
     @ViewBuilder
@@ -165,13 +179,14 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 }
 
                 presentationViewModel.presentingVC = vc
-                UIAccessibility.post(notification: .screenChanged, argument: vc.view)
+                //                UIAccessibility.post(notification: .screenChanged, argument: vc.view)
                 vcToPresent?
                     .present(
                         vc,
                         animated: true,
                         completion: { [weak vc] in
                             Task {
+                                vc?.accessibilityViewIsModal = true
                                 UIAccessibility.post(notification: .screenChanged, argument: vc?.view)
                             }
                         }
@@ -221,7 +236,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
         case .center:
-            let delegate = CenteredModalTransitioningDelegate(bottomView: closeButton.asAnyView)
+            let delegate = CenteredModalTransitioningDelegate(
+                bottomView: closeButton.asAnyView,
+                onUserDismiss: onUserDismiss
+            )
             vc.view.backgroundColor = .clear
             vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
             return delegate
@@ -230,7 +248,8 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
     private var closeButton: some View {
         hSection {
-            hCloseButton {
+            hCloseButton { [self] in
+                onUserDismiss?()
                 presentationViewModel.presentingVC?.dismiss(animated: true)
             }
         }
@@ -263,16 +282,11 @@ class PresentationViewModel: ObservableObject {
                             .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
                             .sink(receiveValue: { _ in
                                 guard let self else { return }
-                                if #available(iOS 16.0, *) {
-                                    self.presentingVC?.sheetPresentationController?
-                                        .animateChanges {
-                                            self.presentingVC?.sheetPresentationController?
-                                                .invalidateDetents()
-                                        }
-                                } else {
-                                    self.presentingVC?.sheetPresentationController?
-                                        .animateChanges {}
-                                }
+                                self.presentingVC?.sheetPresentationController?
+                                    .animateChanges {
+                                        self.presentingVC?.sheetPresentationController?
+                                            .invalidateDetents()
+                                    }
                             })
                     }
                 }

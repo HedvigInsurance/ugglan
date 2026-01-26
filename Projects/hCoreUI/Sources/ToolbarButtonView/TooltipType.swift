@@ -57,7 +57,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         case .firstVet:
             return L10n.hcQuickActionsFirstvetTitle
         case .chat:
-            return L10n.Toast.newMessage
+            return L10n.chatConversationInbox
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
         }
