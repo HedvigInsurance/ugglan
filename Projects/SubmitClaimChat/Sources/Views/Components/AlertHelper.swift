@@ -88,11 +88,38 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                 item: $viewModel.alertPresentationModel,
                 transitionType: .center,
                 options: .constant(.alwaysOpenOnTop),
-                onUserDismiss: {
-                    viewModel.alertPresentationModel?.onClose()
+                onUserDismiss: { [weak viewModel] in
+                    viewModel?.alertPresentationModel?.onClose()
                 }
             ) { alertModel in
-                errorAlert(model: alertModel)
+                //                errorAlert(model: alertModel)
+                hForm {
+                    hSection {
+                        warningTriangleImage
+                        VStack(spacing: 0) {
+                            hText(alertModel.title)
+                                .foregroundColor(hTextColor.Opaque.primary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, .padding32)
+                            hText(alertModel.message)
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, .padding32)
+                        }
+                    }
+                    .padding(.vertical, 80)
+                    .accessibilityElement(children: .combine)
+                }
+                .hFormAttachToBottom {
+                    hSection {
+                        hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
+                            self.viewModel.alertPresentationModel = nil
+                            alertModel.action()
+                        }
+                    }
+                }
+                .hFormContentPosition(.center)
+                .sectionContainerStyle(.transparent)
             }
             .alert(isPresented: $viewModel.systemAlertPresented) {
                 Alert(
@@ -100,48 +127,48 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                     message: Text(viewModel.alertModel?.message ?? "").font(.system(size: 17, weight: .regular)),
                     primaryButton: .destructive(
                         Text(L10n.claimChatEditAnswerButton).font(.system(size: 17, weight: .medium)),
-                        action: {
-                            viewModel.alertModel?.action()
+                        action: { [weak viewModel] in
+                            viewModel?.alertModel?.action()
                         }
                     ),
                     secondaryButton: .default(
                         Text(L10n.generalCancelButton).font(.system(size: 17, weight: .medium))
-                    ) {
-                        viewModel.alertModel?.onClose()
+                    ) { [weak viewModel] in
+                        viewModel?.alertModel?.onClose()
                     }
                 )
             }
     }
 
-    private func errorAlert(model: SubmitClaimChatScreenAlertViewModel.AlertModel) -> some View {
-        hForm {
-            hSection {
-                warningTriangleImage
-                VStack(spacing: 0) {
-                    hText(model.title)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, .padding32)
-                    hText(model.message)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, .padding32)
-                }
-            }
-            .padding(.vertical, 80)
-            .accessibilityElement(children: .combine)
-        }
-        .hFormAttachToBottom {
-            hSection {
-                hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
-                    self.viewModel.alertPresentationModel = nil
-                    model.action()
-                }
-            }
-        }
-        .hFormContentPosition(.center)
-        .sectionContainerStyle(.transparent)
-    }
+    //    private func errorAlert(model: SubmitClaimChatScreenAlertViewModel.AlertModel) -> some View {
+    //        hForm {
+    //            hSection {
+    //                warningTriangleImage
+    //                VStack(spacing: 0) {
+    //                    hText(model.title)
+    //                        .foregroundColor(hTextColor.Opaque.primary)
+    //                        .multilineTextAlignment(.center)
+    //                        .padding(.horizontal, .padding32)
+    //                    hText(model.message)
+    //                        .foregroundColor(hTextColor.Translucent.secondary)
+    //                        .multilineTextAlignment(.center)
+    //                        .padding(.horizontal, .padding32)
+    //                }
+    //            }
+    //            .padding(.vertical, 80)
+    //            .accessibilityElement(children: .combine)
+    //        }
+    //        .hFormAttachToBottom {
+    //            hSection {
+    //                hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
+    //                    self.viewModel.alertPresentationModel = nil
+    //                    model.action()
+    //                }
+    //            }
+    //        }
+    //        .hFormContentPosition(.center)
+    //        .sectionContainerStyle(.transparent)
+    //    }
 
     private var warningTriangleImage: some View {
         hCoreUIAssets.warningTriangleFilled.view

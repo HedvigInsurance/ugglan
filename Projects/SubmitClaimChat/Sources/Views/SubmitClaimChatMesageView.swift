@@ -100,8 +100,6 @@ struct ClaimStepView: View {
                 SubmitClaimSummaryBottomView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
-                SubmitClaimUnknownView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
                 SubmitClaimDeflectStepView(model: viewModel.deflectModel)
             }
