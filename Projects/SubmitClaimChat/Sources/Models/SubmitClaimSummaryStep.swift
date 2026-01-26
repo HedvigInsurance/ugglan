@@ -30,7 +30,7 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
         )
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task { [weak self] in
-            try await Task.sleep(seconds: 0.5)
+            try await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
             self?.state.showResults = true
         }
     }

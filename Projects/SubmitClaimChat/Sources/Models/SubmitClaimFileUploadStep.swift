@@ -44,10 +44,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
             return L10n.claimChatSkippedLabel
         }
         let fileNames = fileUploadVm.fileGridViewModel.files.map { $0.name }
-        if fileNames.isEmpty {
-            return ""
-        }
-        return L10n.a11YSubmittedValues(fileNames.count) + ": " + fileNames.joined(separator: ", ")
+        return .accessibilitySubmittedValues(count: fileNames.count, values: fileNames)
     }
 }
 
