@@ -162,7 +162,9 @@ struct ClaimStepResultView: View {
             )
             .hFieldSize(.capsuleShape)
             .hPillAttributes(attributes: [.withChevron])
+            .accessibilityAddTraits(.isButton)
             .accessibilityHint(editHint)
+            .accessibilityFocused($isEditButtonFocused)
             .onTapGesture { [weak viewModel] in
                 alertVm.alertModel = .init(
                     type: .edit,
@@ -177,8 +179,6 @@ struct ClaimStepResultView: View {
                     }
                 )
             }
-            .accessibilityAddTraits(.isButton)
-            .accessibilityFocused($isEditButtonFocused)
         }
     }
 
