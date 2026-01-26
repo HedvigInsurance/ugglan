@@ -42,6 +42,7 @@ public struct ImportantInformationView: View {
                 isConfirmed.toggle()
             }
         }
+        .accessibilityAddTraits(.isButton)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadiusXL)
                 .fill(backgroundColor)
