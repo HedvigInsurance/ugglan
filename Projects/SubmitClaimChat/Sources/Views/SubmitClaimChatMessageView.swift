@@ -162,7 +162,6 @@ struct ClaimStepResultView: View {
             )
             .hFieldSize(.capsuleShape)
             .hPillAttributes(attributes: [.withChevron])
-            .accessibilityAddTraits(.isButton)
             .accessibilityHint(editHint)
             .accessibilityFocused($isEditButtonFocused)
             .onTapGesture { [weak viewModel] in
@@ -179,6 +178,7 @@ struct ClaimStepResultView: View {
                     }
                 )
             }
+            .accessibilityAddTraits(.isButton)
         }
     }
 
