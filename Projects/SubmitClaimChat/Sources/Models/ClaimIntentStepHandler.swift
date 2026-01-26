@@ -25,7 +25,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     @Published var state = StepUIState()
     var id: String { claimIntent.currentStep.id }
     var claimIntent: ClaimIntent
-    var sender: SubmitClaimChatMesageSender { .member }
+    var sender: SubmitClaimChatMessageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
     var isRegrettable: Bool { claimIntent.isRegrettable }
 
@@ -131,15 +131,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 mainHandler(.outcome(model: model))
             }
         } catch let ex {
-            alertVm?.alertModel = .init(
-                type: .error,
-                message: ex.localizedDescription,
-                action: { [weak self] in
-                    Task {
-                        await self?.skip()
-                    }
-                }
-            )
+            showErrorAlert(for: ex) { [weak self] in
+                await self?.skip()
+            }
         }
     }
 
@@ -171,21 +165,31 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 break
             }
         } catch let ex {
-            alertVm?.alertModel = .init(
-                type: .error,
-                message: ex.localizedDescription,
-                action: { [weak self] in
-                    Task {
-                        await self?.regret()
-                    }
-                }
-            )
+            showErrorAlert(for: ex) { [weak self] in
+                await self?.regret()
+            }
         }
     }
 
     deinit {
         submitTask?.cancel()
         submitTask = nil
+    }
+
+    /// Shows an error alert with retry action
+    private func showErrorAlert(
+        for error: Error,
+        retryAction: @escaping () async -> Void
+    ) {
+        alertVm?.alertModel = .init(
+            type: .error,
+            message: error.localizedDescription,
+            action: {
+                Task {
+                    await retryAction()
+                }
+            }
+        )
     }
 }
 

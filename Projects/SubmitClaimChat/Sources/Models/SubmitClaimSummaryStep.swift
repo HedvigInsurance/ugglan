@@ -3,7 +3,7 @@ import SwiftUI
 import hCoreUI
 
 final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
-    override var sender: SubmitClaimChatMesageSender { .hedvig }
+    override var sender: SubmitClaimChatMessageSender { .hedvig }
 
     let summaryModel: ClaimIntentStepContentSummary
     let fileGridViewModel: FileGridViewModel

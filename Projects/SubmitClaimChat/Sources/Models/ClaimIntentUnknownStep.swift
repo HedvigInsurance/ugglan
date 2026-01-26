@@ -1,5 +1,5 @@
 final class SubmitClaimUnknownStep: ClaimIntentStepHandler {
-    override var sender: SubmitClaimChatMesageSender { .hedvig }
+    override var sender: SubmitClaimChatMessageSender { .hedvig }
 
     required init(
         claimIntent: ClaimIntent,

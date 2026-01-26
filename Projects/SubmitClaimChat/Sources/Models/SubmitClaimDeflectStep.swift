@@ -3,7 +3,7 @@ import SwiftUI
 import hCoreUI
 
 final class SubmitClaimDeflectStep: ClaimIntentStepHandler {
-    override var sender: SubmitClaimChatMesageSender { .hedvig }
+    override var sender: SubmitClaimChatMessageSender { .hedvig }
 
     let deflectModel: ClaimIntentOutcomeDeflection
     required init(
