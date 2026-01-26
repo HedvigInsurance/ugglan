@@ -391,6 +391,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_SAVE_CHANGES_BUTTON" = "Spara ändringar";
 "GENERAL_SHOW" = "Visa";
 "GENERAL_TODAY" = "Idag";
+"GENERAL_TRY_AGAIN" = "Försök igen";
 "GENERAL_YESTERDAY" = "Igår";
 "GENERIC_UNKNOWN" = "Okänt";
 "HC_ALL_QUESTION_TITLE" = "Alla frågor";
@@ -428,8 +429,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_RELATED_QUESTIONS_TITLE" = "";
 "HC_TITLE" = "Hjälp och support";
 "HOMETAB_ACCOUNT_DELETION_NOTIFICATION" = "Vi har tagit emot din begäran om att radera ditt konto. Du kommer att få ett e-postmeddelande från oss inom 30 dagar som bekräftar att ditt konto har raderats. Tills dess kommer ditt konto att vara aktivt.";
-"HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på tillit. Det fungerar genom att alla medlemmar tar ut den ersättning de har rätt till ur den gemensamma skadepoolen, varken mer eller mindre. Vi ber dig därför att berätta om det som inträffat precis som det var, så att vi kan hjälpa dig på bästa sätt.";
-"HONESTY_PLEDGE_TITLE" = "Innan vi börjar";
+"HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på förtroende. Jag lovar dyrt och heligt att beskriva händelsen sanningsenligt och att endast begära den ersättning jag har rätt till.";
+"HONESTY_PLEDGE_HEADER" = "Anmäl skada";
+"HONESTY_PLEDGE_NOTE_1" = "";
+"HONESTY_PLEDGE_NOTE_2" = "";
+"HONESTY_PLEDGE_NOTE_3" = "";
+"HONESTY_PLEDGE_TITLE" = "Läs innan du fortsätter";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.";
@@ -477,7 +482,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 /* Title above bundle selector on offer page. */
 "OFFER_BUNDLE_SELECTOR_TITLE" = "Välj ditt Hedvig-paket";
 "OFFER_HOUSE_SUMMARY_DESC" = "Här är en snabb översikt över informationen du har gett oss om ditt hem.";
-"OFFER_SAVE_START_DATE_ERROR_ALERT_MESSAGE" = "Försök igen";
 "OFFER_SAVE_START_DATE_ERROR_ALERT_TITLE" = "Kunde inte spara startdatumet";
 "OFFER_SCREEN_COVERAGE_TITLE" = "Skyddet";
 "OFFER_SWITCHER_EXPLANATION_FOOTER" = "När denna är påslagen, startar din Hedvig-försäkring automatiskt när ditt nuvarande försäkringsavtal med ditt andra försäkringsbolag löper ut.";
@@ -647,7 +651,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUMMARY_SCREEN_COVERAGE" = "Skyddet";
 "SUMMARY_SCREEN_OVERVIEW" = "Överblick";
 "SUMMARY_TOTAL_PRICE_SUBTITLE" = "Ändringar aktiveras %@";
-"SURVEY_SOLD_VACATION_HOME" = "Jag har sålt fritidshuset";
 "SWITCHER_AUTO_CARD_DESCRIPTION" = "När du har signerat säger vi upp din gamla försäkring och aktiverar din nya försäkring hos Hedvig samma dag som den gamla löper ut.";
 "SWITCHER_AUTO_CARD_TITLE" = "Automatiskt byte";
 "SWITCHER_MANUAL_CARD_DESCRIPTION" = "Ditt nuvarande försäkringsbolag tillåter inte att vi säger upp ditt försäkringsavtal åt dig. Du måste säga upp det själv och sedan ange ett startdatum för din nya försäkring i Hedvig-appen.";

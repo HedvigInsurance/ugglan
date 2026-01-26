@@ -29,6 +29,7 @@ struct ItemCostView: View {
         .onTapGesture {
             infoButtonTapAction()
         }
+        .accessibilityAddTraits(.isButton)
         .accessibilityElement(children: .combine)
         .accessibilityAction {
             infoButtonTapAction()

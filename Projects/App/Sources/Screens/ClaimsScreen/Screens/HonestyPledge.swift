@@ -33,6 +33,7 @@ struct SlideToConfirm: View {
                     promiseConfirmed()
                 }
             }
+            .accessibilityAddTraits(.isButton)
     }
 
     private func resetProgress() {

@@ -27,13 +27,14 @@ struct SubmitClaimSingleSelectView: View {
             if showOptions {
                 hPill(
                     text: option.title,
-                    color: .grey,
+                    color: viewModel.model.defaultSelectedId == optionId ? .green : .grey,
                     colorLevel: .two,
                     withBorder: false
                 )
                 .hFieldSize(.capsuleShape)
                 .transition(.submitClaimOptionAppear)
                 .onTapGesture { selectOption(id: option.id) }
+                .accessibilityAddTraits(.isButton)
                 .optionAccessibility(label: option.title)
             }
         }

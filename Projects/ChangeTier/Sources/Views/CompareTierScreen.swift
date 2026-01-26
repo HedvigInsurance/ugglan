@@ -113,6 +113,7 @@ struct CompareOnRowTap: ViewModifier {
                     description: currentPeril.description
                 )
             }
+            .accessibilityAddTraits(.isButton)
     }
 }
 

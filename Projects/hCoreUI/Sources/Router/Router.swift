@@ -391,6 +391,7 @@ extension View {
                 .onTapGesture {
                     onTitleTap?()
                 }
+                .accessibilityAddTraits(.isButton)
         )
         .view
         view.backgroundColor = .clear

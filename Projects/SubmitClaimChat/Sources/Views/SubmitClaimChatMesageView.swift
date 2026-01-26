@@ -91,7 +91,7 @@ struct ClaimStepView: View {
     var body: some View {
         VStack {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
-                SubmitClaimAudioView(viewModel: viewModel)
+                SubmitClaimVoiceRecordingView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimFormStep {
@@ -140,7 +140,7 @@ struct ClaimStepResultView: View {
                 .accessibilityHidden(true)
         } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
-                SubmitClaimAudioResultView(viewModel: viewModel)
+                SubmitClaimVoiceRecordingResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
@@ -179,6 +179,7 @@ struct ClaimStepResultView: View {
                     }
                 )
             }
+            .accessibilityAddTraits(.isButton)
         }
     }
 

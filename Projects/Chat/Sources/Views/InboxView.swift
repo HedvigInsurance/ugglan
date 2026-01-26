@@ -30,6 +30,7 @@ public struct InboxView: View {
                         object: ChatType.conversationId(id: conversation.id)
                     )
                 }
+                .accessibilityAddTraits(.isButton)
                 .background(getBackgroundColor(for: conversation))
         }
         .hWithoutHorizontalPadding([.section])

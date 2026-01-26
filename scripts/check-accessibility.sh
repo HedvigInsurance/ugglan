@@ -5,7 +5,7 @@
 
 set -e
 
-CHANGED_FILES=${1:-}
+CHANGED_FILES="$@"
 REPORT_FILE="accessibility-report.md"
 ISSUES_FOUND=0
 
@@ -56,15 +56,14 @@ check_file() {
     fi
 
     # Check 1: onTapGesture without accessibility traits
-    # Also recognizes custom modifiers ending with "Accessibility"
-    # Skip if the view has .accessibilityAction or .accessibilityHidden nearby (parent container accessibility)
-    if grep -n "\.onTapGesture" "$scan_file" | grep -v "accessibilityAddTraits\|Accessibility(\|accessibilityAction" > /dev/null 2>&1; then
+    # Look for .accessibilityAddTraits(.isButton) within 10 lines after the onTapGesture
+    if grep -n "\.onTapGesture" "$scan_file" > /dev/null 2>&1; then
         local lines
         lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
         for line_num in $lines; do
-            local start_line=$((line_num > 10 ? line_num - 10 : 1))
-            local end_line=$((line_num + 100))
-            if ! sed -n "${start_line},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits\|Accessibility(\|accessibilityAction\|accessibilityHidden"; then
+            local end_line=$((line_num + 10))
+            # Look for .accessibilityAddTraits(.isButton) within next 10 lines
+            if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits(.isButton)"; then
                 issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
                 ((file_issues++))
             fi
