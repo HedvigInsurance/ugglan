@@ -28,7 +28,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         do {
             let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
             let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
-            let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
+            let result = try await service.claimIntentSubmitFile(stepId: id, fileIds: uploadedFiles)
 
             guard let result else {
                 throw ClaimIntentError.invalidResponse

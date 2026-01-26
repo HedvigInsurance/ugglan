@@ -277,7 +277,7 @@ extension View {
 
 // MARK: - Main Model
 @MainActor
-final class SubmitClaimChatViewModel: NSObject, ObservableObject {
+final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - Constants
     /// Top padding applied to the scroll content to provide spacing above the first message
     private let topPadding: CGFloat = 32
@@ -371,7 +371,6 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         self.flowManager = ClaimIntentFlowManager(service: ClaimIntentService())
         self.openChat = startInput.openChat
         self.input = startInput.input
-        super.init()
 
         // Configure scroll coordinator with dependencies
         scrollCoordinator.configure(

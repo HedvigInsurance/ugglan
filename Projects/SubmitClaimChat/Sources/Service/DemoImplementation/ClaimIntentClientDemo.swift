@@ -50,7 +50,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         )
     }
 
-    public func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntentType? {
+    public func claimIntentSubmitFile(stepId: String, fileIds: [String]) async throws -> ClaimIntentType? {
         .intent(
             model: .init(
                 currentStep: .init(content: .unknown, id: "id", text: ""),
