@@ -12,42 +12,42 @@ struct VoiceRecordingCardContent: View {
         hForm {
             hSection {
                 VStack(spacing: .padding16) {
-                    Group {
-                        VStack(spacing: 0) {
-                            hText(L10n.claimsTriagingWhatHappenedTitle)
-                                .foregroundColor(titleColor)
-
-                            hText(voiceRecorder.formattedTime, style: .body1)
-                                .foregroundColor(recordingProgressColor)
-                        }
-                        .opacity(voiceRecorder.error != nil ? 0 : 1)
-
-                        ZStack {
-                            if let error = voiceRecorder.error {
-                                StateView(
-                                    type: .error,
-                                    title: error.title ?? L10n.somethingWentWrong,
-                                    bodyText: error.errorDescription,
-                                    formPosition: nil,
-                                    attachContentToBottom: false
-                                )
-                                .offset(x: 0, y: -.padding32)
-                                .transition(.opacity)
-                            }
-                            if voiceRecorder.isSending {
-                                DotsActivityIndicator(.standard)
-                                    .useDarkColor
-                            }
-                            waveformSection
-                                .frame(height: .padding60)
-                                .padding(.horizontal, .padding45)
-                                .padding(.vertical, .padding48)
-                                .opacity(voiceRecorder.isSending || voiceRecorder.error != nil ? 0 : 1)
-                                .animation(.defaultSpring, value: voiceRecorder.hasRecording)
-                        }
+                    VStack(spacing: 0) {
+                        hText(L10n.claimsTriagingWhatHappenedTitle)
+                            .foregroundColor(titleColor)
+                            .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
+                        hText(voiceRecorder.formattedTime ?? " ", style: .body1)
+                            .foregroundColor(recordingProgressColor)
+                            .accessibilityHidden(true)
                     }
-                    .accessibilityHidden(voiceRecorder.isCountingDown)
+                    .opacity(voiceRecorder.error != nil ? 0 : 1)
 
+                    ZStack {
+                        if let error = voiceRecorder.error {
+                            StateView(
+                                type: .error,
+                                title: error.title ?? L10n.somethingWentWrong,
+                                bodyText: error.errorDescription,
+                                formPosition: nil,
+                                attachContentToBottom: false
+                            )
+                            .offset(x: 0, y: -.padding32)
+                            .transition(.opacity)
+                        }
+                        if voiceRecorder.isSending {
+                            DotsActivityIndicator(.standard)
+                                .useDarkColor
+                        }
+                        waveformSection
+                            .frame(height: .padding60)
+                            .padding(.horizontal, .padding45)
+                            .padding(.vertical, .padding48)
+                            .opacity(voiceRecorder.isSending || voiceRecorder.error != nil ? 0 : 1)
+                            .animation(.defaultSpring, value: voiceRecorder.hasRecording)
+                            .accessibilityHidden(
+                                voiceRecorder.isCountingDown || voiceRecorder.isRecording || !voiceRecorder.hasRecording
+                            )
+                    }
                     controlsSection
                 }
                 .animation(.easeInOut(duration: 0.2), value: voiceRecorder.error)
@@ -113,7 +113,7 @@ struct VoiceRecordingCardContent: View {
                     voiceRecorder.startPlayback()
                 }
             }
-            .accessibilityAddTraits(.isButton)
+
             .gesture(
                 DragGesture(coordinateSpace: .local)
                     .onChanged { gesture in
@@ -140,9 +140,11 @@ struct VoiceRecordingCardContent: View {
             )
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(L10n.voiceoverAudioRecordingPlay)
-            .accessibilityValue(voiceRecorder.formattedTime)
+            .accessibilityValue(voiceRecorder.formattedTime ?? "")
             .accessibilityHint(L10n.voiceoverAudioRecordingPlay)
             .accessibilityAddTraits(.isButton)
+            .accessibilityAddTraits(.startsMediaSession)
+            .accessibilityAddTraits(.playsSound)
             .accessibilityAction {
                 voiceRecorder.togglePlayback()
             }
@@ -153,7 +155,7 @@ struct VoiceRecordingCardContent: View {
                 maxHeight: 60
             )
             .accessibilityLabel(L10n.claimChatRecordingTitle)
-            .accessibilityValue(voiceRecorder.formattedTime)
+            .accessibilityValue(voiceRecorder.formattedTime ?? "")
             .accessibilityAddTraits(.updatesFrequently)
         } else {
             VoiceWaveformView(
@@ -163,7 +165,6 @@ struct VoiceRecordingCardContent: View {
             )
             .accessibilityElement(children: .combine)
             .accessibilityLabel(L10n.a11YAudioRecording)
-            .accessibilityHint(L10n.claimsStartRecordingLabel)
         }
     }
 

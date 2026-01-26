@@ -214,7 +214,6 @@ public final class VoiceRecorder: ObservableObject {
         let newTime = player.duration * progress
         player.currentTime = newTime
         currentTime = newTime
-
         // Ensure player is ready for playback after seeking
         player.prepareToPlay()
     }
@@ -366,8 +365,8 @@ public final class VoiceRecorder: ObservableObject {
 
 // MARK: - Time Formatting
 extension VoiceRecorder {
-    public var formattedTime: String {
-        guard let currentTime else { return " " }
+    public var formattedTime: String? {
+        guard let currentTime else { return nil }
         let minutes = Int(currentTime) / 60
         let seconds = Int(currentTime) % 60
         return String(format: "%02d:%02d", minutes, seconds)

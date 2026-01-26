@@ -46,7 +46,6 @@ public struct VoiceSendButton: View {
         .disabled(!voiceRecorder.hasRecording)
         .accessibilityLabel(L10n.chatUploadPresend)
         .accessibilityAddTraits(.isButton)
-        .accessibilityHint(voiceRecorder.hasRecording ? "" : L10n.claimsStartRecordingLabel)
         .animation(.defaultSpring, value: voiceRecorder.hasRecording)
     }
 
