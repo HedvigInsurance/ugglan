@@ -92,34 +92,7 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                     viewModel?.alertPresentationModel?.onClose()
                 }
             ) { alertModel in
-                //                errorAlert(model: alertModel)
-                hForm {
-                    hSection {
-                        warningTriangleImage
-                        VStack(spacing: 0) {
-                            hText(alertModel.title)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, .padding32)
-                            hText(alertModel.message)
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, .padding32)
-                        }
-                    }
-                    .padding(.vertical, 80)
-                    .accessibilityElement(children: .combine)
-                }
-                .hFormAttachToBottom {
-                    hSection {
-                        hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
-                            self.viewModel.alertPresentationModel = nil
-                            alertModel.action()
-                        }
-                    }
-                }
-                .hFormContentPosition(.center)
-                .sectionContainerStyle(.transparent)
+                errorAlert(model: alertModel)
             }
             .alert(isPresented: $viewModel.systemAlertPresented) {
                 Alert(
@@ -140,35 +113,35 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
             }
     }
 
-    //    private func errorAlert(model: SubmitClaimChatScreenAlertViewModel.AlertModel) -> some View {
-    //        hForm {
-    //            hSection {
-    //                warningTriangleImage
-    //                VStack(spacing: 0) {
-    //                    hText(model.title)
-    //                        .foregroundColor(hTextColor.Opaque.primary)
-    //                        .multilineTextAlignment(.center)
-    //                        .padding(.horizontal, .padding32)
-    //                    hText(model.message)
-    //                        .foregroundColor(hTextColor.Translucent.secondary)
-    //                        .multilineTextAlignment(.center)
-    //                        .padding(.horizontal, .padding32)
-    //                }
-    //            }
-    //            .padding(.vertical, 80)
-    //            .accessibilityElement(children: .combine)
-    //        }
-    //        .hFormAttachToBottom {
-    //            hSection {
-    //                hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
-    //                    self.viewModel.alertPresentationModel = nil
-    //                    model.action()
-    //                }
-    //            }
-    //        }
-    //        .hFormContentPosition(.center)
-    //        .sectionContainerStyle(.transparent)
-    //    }
+    private func errorAlert(model: SubmitClaimChatScreenAlertViewModel.AlertModel) -> some View {
+        hForm {
+            hSection {
+                warningTriangleImage
+                VStack(spacing: 0) {
+                    hText(model.title)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, .padding32)
+                    hText(model.message)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, .padding32)
+                }
+            }
+            .padding(.vertical, 80)
+            .accessibilityElement(children: .combine)
+        }
+        .hFormAttachToBottom {
+            hSection {
+                hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
+                    self.viewModel.alertPresentationModel = nil
+                    model.action()
+                }
+            }
+        }
+        .hFormContentPosition(.center)
+        .sectionContainerStyle(.transparent)
+    }
 
     private var warningTriangleImage: some View {
         hCoreUIAssets.warningTriangleFilled.view
