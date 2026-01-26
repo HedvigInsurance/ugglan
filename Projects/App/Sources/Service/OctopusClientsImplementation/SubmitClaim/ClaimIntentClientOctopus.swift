@@ -331,21 +331,20 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
     init(
         fragment: OctopusGraphQL.ClaimIntentStepContentFormFieldFragment
     ) throws {
-        //        guard let type = fragment.type.value?.asType else {
-        //            throw ClaimIntentError.unknownField
-        //        }
-        throw ClaimIntentError.unknownField
-        //        self.init(
-        //            defaultValues: fragment.defaultValues,
-        //            id: fragment.id,
-        //            isRequired: fragment.isRequired,
-        //            maxValue: fragment.maxValue,
-        //            minValue: fragment.minValue,
-        //            options: fragment.options?.map { .init(title: $0.title, value: $0.value) } ?? [],
-        //            suffix: fragment.suffix,
-        //            title: fragment.title,
-        //            type: type
-        //        )
+        guard let type = fragment.type.value?.asType else {
+            throw ClaimIntentError.unknownField
+        }
+        self.init(
+            defaultValues: fragment.defaultValues,
+            id: fragment.id,
+            isRequired: fragment.isRequired,
+            maxValue: fragment.maxValue,
+            minValue: fragment.minValue,
+            options: fragment.options?.map { .init(title: $0.title, value: $0.value) } ?? [],
+            suffix: fragment.suffix,
+            title: fragment.title,
+            type: type
+        )
     }
 }
 
