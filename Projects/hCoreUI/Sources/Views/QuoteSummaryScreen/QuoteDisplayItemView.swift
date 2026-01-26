@@ -69,6 +69,7 @@ struct DocumentRowItemView: View {
         .onTapGesture {
             onTap(document)
         }
+        .accessibilityAddTraits(.isButton)
         .accessibilityAction {
             onTap(document)
         }

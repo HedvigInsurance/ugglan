@@ -286,6 +286,7 @@ struct ShowTagList: View {
                             notValid = false
                             ImpactGenerator.soft()
                         }
+                        .accessibilityAddTraits(.isButton)
                         .padding(.horizontal, .padding12)  // 16 - tag list horizontal spacing
                         .padding(.vertical, .padding8)
                         .background(
