@@ -32,9 +32,9 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .padding(.top, -.padding8)
         }
         .hFormContentPosition(.compact)
+        .hFormIgnoreBottomPadding
     }
 
     @ViewBuilder
