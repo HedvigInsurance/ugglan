@@ -6,6 +6,7 @@ import hCoreUI
 
 public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: Router
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -63,7 +64,7 @@ public struct SubmitClaimChatScreen: View {
                     .padding(.horizontal, .padding16)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                    if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
+                    if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                         Color.clear.frame(
                             height: viewModel.calculatePaddingHeight()
                         )
@@ -74,28 +75,28 @@ public struct SubmitClaimChatScreen: View {
                 .environmentObject(viewModel)
                 .hideScrollIndicators()
                 .onAppear {
-                    viewModel.scrollViewHeight = proxy.size.height
+                    scrollCoordinator.scrollViewHeight = proxy.size.height
                 }
                 .onChange(of: proxy.size) { value in
-                    viewModel.scrollViewHeight = value.height
+                    scrollCoordinator.scrollViewHeight = value.height
                 }
                 .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-                    viewModel.scrollViewBottomInset = scrollView.safeAreaInsets.bottom
-                    if scrollView != viewModel.scrollView {
-                        viewModel.scrollView = scrollView
+                    scrollCoordinator.scrollViewBottomInset = scrollView.safeAreaInsets.bottom
+                    if scrollView != scrollCoordinator.scrollView {
+                        scrollCoordinator.scrollView = scrollView
                     }
                 }
                 .hFormAttachToBottom {
-                    if verticalSizeClass == .compact || viewModel.shouldMergeInputWithContent {
+                    if verticalSizeClass == .compact || scrollCoordinator.shouldMergeInputWithContent {
                         currentStepView
                     }
                 }
             }
             .ignoresSafeArea(
                 .keyboard,
-                edges: viewModel.shouldMergeInputWithContent || viewModel.outcome != nil ? [] : .all
+                edges: scrollCoordinator.shouldMergeInputWithContent || viewModel.outcome != nil ? [] : .all
             )
-            if verticalSizeClass == .regular && !viewModel.shouldMergeInputWithContent {
+            if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                 currentStepView
             }
         }
@@ -131,7 +132,7 @@ public struct SubmitClaimChatScreen: View {
         .padding(.bottom, .padding8)
         .environmentObject(viewModel)
         .animation(.default, value: viewModel.currentStep?.id)
-        .animation(.easeInOut(duration: 0.5), value: viewModel.isInputScrolledOffScreen)
+        .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
         .background {
             if viewModel.shouldHideCurrentInput {
                 Color.clear
@@ -143,7 +144,7 @@ public struct SubmitClaimChatScreen: View {
     }
 
     private func scrollToBottom() {
-        viewModel.scrollToBottom()
+        scrollCoordinator.scrollToBottom()
         Task {
             try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
             isCurrentStepFocused = true
@@ -262,17 +263,17 @@ extension View {
     let demoService = ClaimIntentClientDemo()
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demoService })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    let viewModel = SubmitClaimChatViewModel(
+        startInput: .init(
+            input: .init(sourceMessageId: nil),
+            openChat: {
+            }
+        )
+    )
     return SubmitClaimChatScreen()
         .embededInNavigation(tracking: "")
-        .environmentObject(
-            SubmitClaimChatViewModel(
-                startInput: .init(
-                    input: .init(sourceMessageId: nil),
-                    openChat: {
-                    }
-                )
-            )
-        )
+        .environmentObject(viewModel)
+        .environmentObject(viewModel.scrollCoordinator)
 }
 
 // MARK: - Main Model
@@ -316,11 +317,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
         )
     }
 
-    var scrollView: UIScrollView? {
-        get { scrollCoordinator.scrollView }
-        set { scrollCoordinator.scrollView = newValue }
-    }
-
     var totalStepsHeight: CGFloat = 0
     @Published var lastStepContentHeight: CGFloat = 0
     @Published var currentStepInputHeight: CGFloat = 0 {
@@ -339,24 +335,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
     var shouldHideCurrentInput: Bool {
         scrollCoordinator.isInputScrolledOffScreen && currentVerticalSizeClass == .regular
             && !scrollCoordinator.shouldMergeInputWithContent
-    }
-
-    var isInputScrolledOffScreen: Bool {
-        scrollCoordinator.isInputScrolledOffScreen
-    }
-
-    var shouldMergeInputWithContent: Bool {
-        scrollCoordinator.shouldMergeInputWithContent
-    }
-
-    var scrollViewHeight: CGFloat {
-        get { scrollCoordinator.scrollViewHeight }
-        set { scrollCoordinator.scrollViewHeight = newValue }
-    }
-
-    var scrollViewBottomInset: CGFloat {
-        get { scrollCoordinator.scrollViewBottomInset }
-        set { scrollCoordinator.scrollViewBottomInset = newValue }
     }
 
     // MARK: - Dependencies
@@ -379,10 +357,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
         )
 
         startClaimIntent()
-    }
-
-    func scrollToBottom() {
-        scrollCoordinator.scrollToBottom()
     }
 
     // MARK: - UI Height Calculations
