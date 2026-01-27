@@ -67,6 +67,29 @@ jobs:
               body: output
             });
 
+      - name: Delete Old Accessibility Comments
+        if: steps.check.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Delete old accessibility report comments when all issues are fixed
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            for (const comment of comments.data) {
+              if (comment.user.type === 'Bot' && comment.body.includes('🔍 Accessibility Check Report')) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id
+                });
+              }
+            }
+
       - name: Upload Report
         if: always()
         uses: actions/upload-artifact@v4
