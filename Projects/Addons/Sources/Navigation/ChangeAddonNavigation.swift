@@ -8,11 +8,15 @@ public struct ChangeAddonInput: Identifiable, Equatable {
 
     let contractConfigs: [AddonConfig]?
     let addonSource: AddonSource
+    let type: AddonType
+
     public init(
         addonSource: AddonSource,
+        type: AddonType,
         contractConfigs: [AddonConfig]? = nil
     ) {
         self.addonSource = addonSource
+        self.type = type
         self.contractConfigs = contractConfigs
     }
 

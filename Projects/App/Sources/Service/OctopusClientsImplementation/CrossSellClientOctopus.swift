@@ -44,6 +44,7 @@ class CrossSellClientOctopus: CrossSellClient {
         if let bannerData, !bannerData.contractIds.isEmpty {
             return AddonBannerModel(
                 contractIds: bannerData.contractIds,
+                type: .travel, /* TODO: CHANGE WHEN WE GET FROM BE*/
                 titleDisplayName: bannerData.titleDisplayName,
                 descriptionDisplayName: bannerData.descriptionDisplayName,
                 badges: bannerData.badges
