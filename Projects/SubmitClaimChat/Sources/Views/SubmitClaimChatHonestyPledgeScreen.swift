@@ -57,11 +57,13 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         hRow {
             HStack(alignment: .top, spacing: .padding8) {
                 hCoreUIAssets.checkmark.view
+                    .accessibilityHidden(true)
                 hText(text)
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
             .fixedSize(horizontal: false, vertical: true)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var continueButton: some View {
