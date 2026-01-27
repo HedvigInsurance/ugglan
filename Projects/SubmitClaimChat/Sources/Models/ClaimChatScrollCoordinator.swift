@@ -8,7 +8,7 @@ final class ClaimChatScrollCoordinator: ObservableObject {
     /// Threshold ratio (0.6 = 60%) above which the input is merged with content instead of being fixed at bottom
     private let inputHeightThreshold: CGFloat = 0.6
     /// Top padding applied to content to provide spacing above the first message
-    private let topPadding: CGFloat = 32
+    let topPadding: CGFloat = 32
 
     // MARK: - Published State
     @Published var isInputScrolledOffScreen = false

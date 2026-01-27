@@ -279,10 +279,6 @@ extension View {
 // MARK: - Main Model
 @MainActor
 final class SubmitClaimChatViewModel: ObservableObject {
-    // MARK: - Constants
-    /// Top padding applied to the scroll content to provide spacing above the first message
-    private let topPadding: CGFloat = 32
-
     @Published var error: Error? {
         didSet {
             showError = error != nil
@@ -309,11 +305,11 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
     func calculatePaddingHeight() -> CGFloat {
         let height =
-            scrollCoordinator.scrollViewHeight - scrollCoordinator.scrollViewBottomInset + topPadding
+            scrollCoordinator.scrollViewHeight - scrollCoordinator.scrollViewBottomInset + scrollCoordinator.topPadding
             - lastStepContentHeight
         return max(
             height,
-            currentStepInputHeight + topPadding
+            currentStepInputHeight + scrollCoordinator.topPadding
         )
     }
 
@@ -329,7 +325,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
     @Published var outcome: ClaimIntentStepOutcome?
     @Published var progress: Double?
-    @Published var currentVerticalSizeClass: UserInterfaceSizeClass?
+    var currentVerticalSizeClass: UserInterfaceSizeClass?
 
     /// Determines if the current input should be hidden based on scroll position, size class, and merge state
     var shouldHideCurrentInput: Bool {
