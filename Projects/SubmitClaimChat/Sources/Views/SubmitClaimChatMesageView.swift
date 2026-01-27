@@ -100,8 +100,6 @@ struct ClaimStepView: View {
                 SubmitClaimSummaryBottomView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimFileUploadStep {
                 SubmitClaimFileUploadView(viewModel: viewModel)
-            } else if let viewModel = viewModel as? SubmitClaimUnknownStep {
-                SubmitClaimUnknownView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
                 SubmitClaimDeflectStepView(model: viewModel.deflectModel)
             }
@@ -163,7 +161,6 @@ struct ClaimStepResultView: View {
             .hFieldSize(.capsuleShape)
             .hPillAttributes(attributes: [.withChevron])
             .accessibilityHint(editHint)
-            .accessibilityAddTraits(.isButton)
             .accessibilityFocused($isEditButtonFocused)
             .onTapGesture { [weak viewModel] in
                 alertVm.alertModel = .init(
