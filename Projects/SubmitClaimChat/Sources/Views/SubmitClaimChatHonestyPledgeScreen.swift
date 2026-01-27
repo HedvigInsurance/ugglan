@@ -9,7 +9,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
     let onConfirm: () -> Void
     let onConfirmOldFlow: (() -> Void)?
 
-    private static let pledgeNotes = [
+    private let pledgeNotes = [
         L10n.honestyPledgeNote2,
         L10n.honestyPledgeNote1,
         L10n.honestyPledgeNote3,
