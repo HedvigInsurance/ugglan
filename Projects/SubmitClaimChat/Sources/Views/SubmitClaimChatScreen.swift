@@ -17,16 +17,19 @@ public struct SubmitClaimChatScreen: View {
         scrollContent
             .submitClaimChatScreenAlert(viewModel.alertVm)
             .animation(.defaultSpring, value: viewModel.outcome)
-            .onChange(of: viewModel.showError) { value in
+            .onChange(of: viewModel.showError) { [weak viewModel] value in
                 if value {
-                    viewModel.alertVm.alertModel = .init(
+                    viewModel?.alertVm.alertModel = .init(
                         type: .error,
-                        message: viewModel.error?.localizedDescription ?? "",
-                        action: {
-                            viewModel.startClaimIntent()
+                        message: viewModel?.error?.localizedDescription ?? "",
+                        action: { [weak viewModel] in
+                            viewModel?.startClaimIntent()
                         },
                         onClose: {
-                            router.dismiss()
+                            Task { [weak router] in
+                                try? await Task.sleep(seconds: 0.1)
+                                router?.dismiss()
+                            }
                         }
                     )
                 }
@@ -184,7 +187,7 @@ struct ScrollToBottomButton: View {
 private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
-
+    @EnvironmentObject var router: Router
     var body: some View {
         if step.state.showInput {
             ClaimStepView(viewModel: step)
@@ -198,7 +201,19 @@ private struct CurrentStepView: View {
                                 step.submitResponse()
                             },
                             onClose: {
-                                step.state.isEnabled = true
+                                if let claimError = step.state.error as? ClaimIntentError {
+                                    switch claimError {
+                                    case .unknownStep, .unknownField:
+                                        Task { [weak router] in
+                                            try? await Task.sleep(seconds: 0.1)
+                                            router?.dismiss()
+                                        }
+                                    default:
+                                        step.state.isEnabled = true
+                                    }
+                                } else {
+                                    step.state.isEnabled = true
+                                }
                             }
                         )
                     }
