@@ -213,8 +213,6 @@ enum ClaimIntentStepHandlerFactory {
             handler = SubmitClaimFileUploadStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .deflect:
             handler = SubmitClaimDeflectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        case .unknown:
-            handler = SubmitClaimUnknownStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         }
         handler.alertVm = alertVm
         return handler
@@ -232,6 +230,8 @@ enum SubmitClaimEvent {
 public enum ClaimIntentError: Error {
     case invalidInput
     case invalidResponse
+    case unknownStep
+    case unknownField
     case error(message: String)
 }
 
@@ -242,6 +242,10 @@ extension ClaimIntentError: LocalizedError {
             return L10n.claimChatErrorMessage
         case .invalidResponse:
             return ""
+        case .unknownStep:
+            return L10n.embarkUpdateAppBody
+        case .unknownField:
+            return L10n.embarkUpdateAppBody
         case let .error(message): return message
         }
     }
