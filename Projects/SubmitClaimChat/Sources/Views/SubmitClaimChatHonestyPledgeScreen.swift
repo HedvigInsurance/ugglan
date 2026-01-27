@@ -46,7 +46,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 
     @ViewBuilder
     private var questionView: some View {
-        hSection(Self.pledgeNotes) { text in
+        hSection(pledgeNotes) { text in
             questionRowView(text: text)
         }
         .hWithoutHorizontalPadding([.row])
