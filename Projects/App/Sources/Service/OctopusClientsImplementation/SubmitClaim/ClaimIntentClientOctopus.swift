@@ -14,7 +14,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             let data = try await octopus.client.mutation(mutation: mutation)
 
             let intent = data?.claimIntentStart
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -37,7 +37,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSubmitAudio.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -58,7 +58,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSubmitFileUpload.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -81,7 +81,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSubmitForm.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -98,7 +98,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSubmitSummary.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw ClaimIntentError.error(message: error.localizedDescription)
         }
@@ -106,7 +106,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
     func handleStep(
         intentFragment: OctopusGraphQL.ClaimIntentFragment?
-    ) -> ClaimIntentType? {
+    ) throws -> ClaimIntentType? {
         if let trackingId = intentFragment?.currentStep?.content.__typename {
             log.addUserAction(
                 type: .custom,
@@ -129,7 +129,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         if let currentStepFragment = intentFragment?.currentStep?.fragments.claimIntentStepFragment {
             return .intent(
                 model: .init(
-                    currentStep: .init(fragment: currentStepFragment),
+                    currentStep: try .init(fragment: currentStepFragment),
                     id: id,
                     isSkippable: isSkippable,
                     isRegrettable: isRegrettable,
@@ -156,7 +156,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSubmitTask.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -172,7 +172,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSkipStep.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -188,7 +188,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentRegretStep.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -200,7 +200,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.fetch(query: query)
             let intent = data.claimIntent
-            return handleStep(intentFragment: intent.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -217,7 +217,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSubmitSelect.intent
-            return handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -230,6 +230,9 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             error: nil,
             attributes: nil
         )
+        if let error = error as? ClaimIntentError {
+            return error
+        }
         return ClaimIntentError.error(message: error.localizedDescription)
     }
 }
@@ -237,9 +240,9 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 extension ClaimIntentStep {
     init(
         fragment: OctopusGraphQL.ClaimIntentStepFragment
-    ) {
+    ) throws {
         self.init(
-            content: .init(fragment: fragment.content.fragments.claimIntentStepContentFragment),
+            content: try .init(fragment: fragment.content.fragments.claimIntentStepContentFragment),
             id: fragment.id,
             text: fragment.text
         )
@@ -249,10 +252,10 @@ extension ClaimIntentStep {
 extension ClaimIntentStepContent {
     init(
         fragment: OctopusGraphQL.ClaimIntentStepContentFragment
-    ) {
+    ) throws {
         if let form = fragment.asClaimIntentStepContentForm {
-            let fields = form.fields.map {
-                ClaimIntentStepContentForm.ClaimIntentStepContentFormField(
+            let fields = try form.fields.map {
+                try ClaimIntentStepContentForm.ClaimIntentStepContentFormField(
                     fragment: $0.fragments.claimIntentStepContentFormFieldFragment
                 )
             }
@@ -319,7 +322,7 @@ extension ClaimIntentStepContent {
                     )
             )
         } else {
-            self = .unknown
+            throw ClaimIntentError.unknownStep
         }
     }
 }
@@ -327,7 +330,10 @@ extension ClaimIntentStepContent {
 extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
     init(
         fragment: OctopusGraphQL.ClaimIntentStepContentFormFieldFragment
-    ) {
+    ) throws {
+        guard let type = fragment.type.value?.asType else {
+            throw ClaimIntentError.unknownField
+        }
         self.init(
             defaultValues: fragment.defaultValues,
             id: fragment.id,
@@ -337,7 +343,7 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
             options: fragment.options?.map { .init(title: $0.title, value: $0.value) } ?? [],
             suffix: fragment.suffix,
             title: fragment.title,
-            type: fragment.type.value?.asType ?? .text
+            type: type
         )
     }
 }

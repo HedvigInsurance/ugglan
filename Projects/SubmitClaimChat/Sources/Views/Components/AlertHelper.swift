@@ -88,8 +88,8 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                 item: $viewModel.alertPresentationModel,
                 transitionType: .center,
                 options: .constant(.alwaysOpenOnTop),
-                onUserDismiss: {
-                    viewModel.alertPresentationModel?.onClose()
+                onUserDismiss: { [weak viewModel] in
+                    viewModel?.alertPresentationModel?.onClose()
                 }
             ) { alertModel in
                 errorAlert(model: alertModel)
@@ -100,14 +100,14 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                     message: Text(viewModel.alertModel?.message ?? "").font(.system(size: 17, weight: .regular)),
                     primaryButton: .destructive(
                         Text(L10n.claimChatEditAnswerButton).font(.system(size: 17, weight: .medium)),
-                        action: {
-                            viewModel.alertModel?.action()
+                        action: { [weak viewModel] in
+                            viewModel?.alertModel?.action()
                         }
                     ),
                     secondaryButton: .default(
                         Text(L10n.generalCancelButton).font(.system(size: 17, weight: .medium))
-                    ) {
-                        viewModel.alertModel?.onClose()
+                    ) { [weak viewModel] in
+                        viewModel?.alertModel?.onClose()
                     }
                 )
             }

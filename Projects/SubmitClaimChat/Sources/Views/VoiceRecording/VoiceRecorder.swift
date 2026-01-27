@@ -92,7 +92,6 @@ public final class VoiceRecorder: ObservableObject {
     // MARK: - Public Methods
     public func startRecording() async -> Bool {
         error = nil
-
         let granted = await requestMicrophonePermission()
         guard granted else {
             error = .permissionDenied
@@ -114,10 +113,21 @@ public final class VoiceRecorder: ObservableObject {
     }
 
     public func askForPermissionIfNeeded() async throws {
-        let granted = await requestMicrophonePermission()
-        guard granted else {
+        await requestMicrophonePermission()
+        let status = microphonePermissionStatus()
+        switch status {
+        case .undetermined:
             error = .permissionDenied
             throw VoiceRecorderError.permissionDenied
+        case .denied:
+            error = .permissionDenied
+            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                throw VoiceRecorderError.permissionDenied
+            }
+            Dependencies.urlOpener.open(settingsUrl)
+            throw VoiceRecorderError.permissionDenied
+        case .granted:
+            break
         }
     }
 
@@ -243,6 +253,7 @@ public final class VoiceRecorder: ObservableObject {
     }
 
     // MARK: - Private Methods
+    @discardableResult
     private func requestMicrophonePermission() async -> Bool {
         await withCheckedContinuation { continuation in
             if #available(iOS 17.0, *) {
@@ -256,6 +267,38 @@ public final class VoiceRecorder: ObservableObject {
                     }
             }
         }
+    }
+
+    private func microphonePermissionStatus() -> PermissionStatus {
+        if #available(iOS 17.0, *) {
+            switch AVAudioApplication.shared.recordPermission {
+            case .undetermined:
+                return .undetermined
+            case .denied:
+                return .denied
+            case .granted:
+                return .granted
+            @unknown default:
+                return .denied
+            }
+        } else {
+            switch AVAudioSession.sharedInstance().recordPermission {
+            case .undetermined:
+                return .undetermined
+            case .denied:
+                return .denied
+            case .granted:
+                return .granted
+            @unknown default:
+                return .denied
+            }
+        }
+    }
+
+    private enum PermissionStatus {
+        case undetermined
+        case denied
+        case granted
     }
 
     private func configureAudioSession() throws {
