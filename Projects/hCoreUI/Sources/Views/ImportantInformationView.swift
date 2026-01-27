@@ -28,9 +28,9 @@ public struct ImportantInformationView: View {
             VStack(alignment: .leading, spacing: .padding16) {
                 VStack(alignment: .leading) {
                     hText(title, style: .label)
-                        .foregroundColor(hTextColor.Translucent.primary)
+                        .foregroundColor(titleTextColor)
                     hText(subtitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .foregroundColor(subtitleTextColor)
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityElement(children: .combine)
@@ -103,6 +103,24 @@ public struct ImportantInformationView: View {
             hSignalColor.Green.fill
         } else {
             hSurfaceColor.Opaque.primary
+        }
+    }
+
+    @hColorBuilder
+    private var titleTextColor: some hColor {
+        if isConfirmed {
+            hTextColor.Translucent.primary.colorFor(.light, .base)
+        } else {
+            hTextColor.Translucent.primary
+        }
+    }
+
+    @hColorBuilder
+    private var subtitleTextColor: some hColor {
+        if isConfirmed {
+            hTextColor.Translucent.secondary.colorFor(.light, .base)
+        } else {
+            hTextColor.Translucent.secondary
         }
     }
 
