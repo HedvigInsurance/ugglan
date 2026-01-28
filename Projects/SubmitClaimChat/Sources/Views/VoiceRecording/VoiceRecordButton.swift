@@ -17,7 +17,7 @@ struct VoiceRecordButton: View {
                         .frame(width: 32, height: 32)
 
                     buttonImage
-                        .foregroundColor(hFillColor.Translucent.negative)
+                        .foregroundColor(hFillColor.Opaque.white)
                 }
                 .scaleEffect(buttonScale)
                 hText(
@@ -104,8 +104,7 @@ struct VoiceRecordButton: View {
                 hText("\(number)", style: .label)
             } else {
                 if voiceRecorder.isRecording {
-                    RoundedRectangle(cornerRadius: .cornerRadiusXXXS)
-                        .fill(hFillColor.Translucent.negative)
+                    hCoreUIAssets.stop.view
                         .frame(width: 12, height: 12)
                 } else {
                     hCoreUIAssets.mic.view
