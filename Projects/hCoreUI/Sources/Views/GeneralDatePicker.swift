@@ -51,7 +51,7 @@ public struct DatePickerView: View {
                 .frame(maxWidth: .infinity, alignment: .bottom)
                 .padding(.horizontal, .padding16)
 
-                hCancelButton {
+                hCancelButton(type: .secondary) {
                     vm.cancelAction.execute()
                 }
                 .sectionContainerStyle(.transparent)
