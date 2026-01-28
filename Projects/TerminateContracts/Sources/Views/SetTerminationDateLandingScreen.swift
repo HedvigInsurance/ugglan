@@ -109,12 +109,15 @@ struct SetTerminationDateLandingScreen: View {
     @ViewBuilder
     private var displayImportantInformation: some View {
         if terminationNavigationVm.terminationDateStepModel?.date != nil {
-            ImportantInformationView(
-                title: L10n.terminationFlowImportantInformationTitle,
-                subtitle: L10n.terminationFlowImportantInformationText,
-                confirmationMessage: L10n.terminationFlowIUnderstandText,
-                isConfirmed: $vm.hasAgreedToTerms
-            )
+            hSection {
+                ImportantInformationView(
+                    title: L10n.terminationFlowImportantInformationTitle,
+                    subtitle: L10n.terminationFlowImportantInformationText,
+                    confirmationMessage: L10n.terminationFlowIUnderstandText,
+                    isConfirmed: $vm.hasAgreedToTerms
+                )
+            }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
