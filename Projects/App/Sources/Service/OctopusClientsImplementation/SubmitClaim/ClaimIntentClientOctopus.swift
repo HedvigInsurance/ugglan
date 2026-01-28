@@ -43,10 +43,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         }
     }
 
-    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntentType? {
+    func claimIntentSubmitFile(stepId: String, fileIds: [String]) async throws -> ClaimIntentType? {
         let input = OctopusGraphQL.ClaimIntentSubmitFileUploadInput(
             stepId: stepId,
-            fileIds: fildIds
+            fileIds: fileIds
         )
 
         let mutation = OctopusGraphQL.ClaimIntentSubmitFileUploadMutation(input: input)

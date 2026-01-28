@@ -50,7 +50,7 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         else {
             return ""
         }
-        return L10n.a11YSubmittedValues(1) + ": " + selectedOption.title
+        return .accessibilitySubmittedValue(selectedOption.title)
     }
 }
 

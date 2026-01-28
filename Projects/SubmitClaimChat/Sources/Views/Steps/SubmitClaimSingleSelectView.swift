@@ -16,7 +16,7 @@ struct SubmitClaimSingleSelectView: View {
         }
         .sectionContainerStyle(.transparent)
         .task {
-            try? await Task.sleep(seconds: 0.2)
+            try? await Task.sleep(seconds: ClaimChatConstants.Timing.optionReveal)
             showOptions = true
         }
     }

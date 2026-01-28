@@ -38,7 +38,7 @@ struct VoiceRecordButton: View {
         .onChange(of: countdownNumber) { _ in
             buttonScale = 1.3
             Task {
-                try? await Task.sleep(seconds: 0.15)
+                try? await Task.sleep(seconds: ClaimChatConstants.Timing.hapticDelay)
                 buttonScale = 1.0
             }
         }

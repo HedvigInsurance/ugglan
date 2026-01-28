@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimChatMesageView: View {
+struct SubmitClaimChatMessageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
 
     var body: some View {

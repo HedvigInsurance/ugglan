@@ -41,77 +41,10 @@ public struct SubmitClaimDeflectScreen: View {
         hForm {
             hSection {
                 VStack(spacing: .padding16) {
-                    if let warningText = model.warningText {
-                        hRow {
-                            InfoCard(text: warningText, type: .attention)
-                                .accessibilitySortPriority(2)
-                        }
-                        .verticalPadding(0)
-                    }
-
-                    hRow {
-                        VStack(spacing: .padding16) {
-                            if let infoViewTitle = model.title, let infoViewText = model.infoText {
-                                let title =
-                                    model.partners.count == 1
-                                    ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
-                                hSection {
-                                    HStack {
-                                        hText(title)
-                                        Spacer()
-                                        InfoViewHolder(
-                                            title: infoViewTitle,
-                                            description: infoViewText
-                                        )
-                                    }
-                                }
-                                .sectionContainerStyle(.transparent)
-                            }
-                            VStack(spacing: .padding8) {
-                                ForEach(model.partners, id: \.id) { partner in
-                                    ClaimContactCard(
-                                        model: partner
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    .verticalPadding(0)
-                    hRow {
-                        VStack(alignment: .leading, spacing: 8) {
-                            hText(model.content.title)
-                            MarkdownView(
-                                config: .init(
-                                    text: model.content.description,
-                                    fontStyle: .body1,
-                                    color: hTextColor.Opaque.primary,
-                                    linkColor: hTextColor.Opaque.primary,
-                                    linkUnderlineStyle: .thick,
-                                    isSelectable: true,
-                                    onUrlClicked: { url in
-                                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                                    }
-                                )
-                            )
-                        }
-                        .padding(.top, .padding8)
-                        .accessibilityElement(children: .combine)
-                    }
-                    .verticalPadding(0)
-                    VStack(spacing: .padding4) {
-                        ForEach(model.questions, id: \.question) { question in
-                            InfoExpandableView(
-                                title: question.question,
-                                text: question.answer,
-                                onMarkDownClick: { url in
-                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                                }
-                            )
-                            .sectionContainerStyle(.opaque)
-                            .hWithoutHorizontalPadding([])
-                        }
-                    }
-                    .padding(.top, .padding8)
+                    warningSection
+                    partnersSection
+                    contentSection
+                    questionsSection
                 }
                 .padding(.top, .padding8)
             }
@@ -127,6 +60,100 @@ public struct SubmitClaimDeflectScreen: View {
         )
         .edgesIgnoringSafeArea(.bottom)
     }
+
+    // MARK: - Section Views
+
+    @ViewBuilder
+    private var warningSection: some View {
+        if let warningText = model.warningText {
+            hRow {
+                InfoCard(text: warningText, type: .attention)
+                    .accessibilitySortPriority(2)
+            }
+            .verticalPadding(0)
+        }
+    }
+
+    @ViewBuilder
+    private var partnersSection: some View {
+        hRow {
+            VStack(spacing: .padding16) {
+                partnerInfoHeader
+                VStack(spacing: .padding8) {
+                    ForEach(model.partners, id: \.id) { partner in
+                        ClaimContactCard(model: partner)
+                    }
+                }
+            }
+        }
+        .verticalPadding(0)
+    }
+
+    @ViewBuilder
+    private var partnerInfoHeader: some View {
+        if let infoViewTitle = model.title, let infoViewText = model.infoText {
+            let title =
+                model.partners.count == 1
+                ? L10n.submitClaimPartnerSingularTitle
+                : L10n.submitClaimPartnerTitle
+            hSection {
+                HStack {
+                    hText(title)
+                    Spacer()
+                    InfoViewHolder(
+                        title: infoViewTitle,
+                        description: infoViewText
+                    )
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
+    @ViewBuilder
+    private var contentSection: some View {
+        hRow {
+            VStack(alignment: .leading, spacing: 8) {
+                hText(model.content.title)
+                MarkdownView(
+                    config: .init(
+                        text: model.content.description,
+                        fontStyle: .body1,
+                        color: hTextColor.Opaque.primary,
+                        linkColor: hTextColor.Opaque.primary,
+                        linkUnderlineStyle: .thick,
+                        isSelectable: true,
+                        onUrlClicked: { url in
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        }
+                    )
+                )
+            }
+            .padding(.top, .padding8)
+            .accessibilityElement(children: .combine)
+        }
+        .verticalPadding(0)
+    }
+
+    @ViewBuilder
+    private var questionsSection: some View {
+        VStack(spacing: .padding4) {
+            ForEach(model.questions, id: \.question) { question in
+                InfoExpandableView(
+                    title: question.question,
+                    text: question.answer,
+                    onMarkDownClick: { url in
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                    }
+                )
+                .sectionContainerStyle(.opaque)
+                .hWithoutHorizontalPadding([])
+            }
+        }
+        .padding(.top, .padding8)
+    }
+
+    // MARK: - Bottom Attached View
 
     @ViewBuilder var bottomAttachedView: some View {
         if model.hasSupportView {

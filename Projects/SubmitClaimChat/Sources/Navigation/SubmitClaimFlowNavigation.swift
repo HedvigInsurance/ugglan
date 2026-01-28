@@ -57,6 +57,7 @@ struct SubmitClaimFlowNavigation: View {
                 .addDismissClaimChatFlow()
         }
         .environmentObject(viewModel)
+        .environmentObject(viewModel.scrollCoordinator)
     }
 }
 

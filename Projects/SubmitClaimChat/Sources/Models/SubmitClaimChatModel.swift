@@ -30,7 +30,7 @@ struct SingleSelectValue: Hashable {
     let value: String
 }
 
-enum SubmitClaimChatMesageSender {
+enum SubmitClaimChatMessageSender {
     case hedvig
     case member
 }

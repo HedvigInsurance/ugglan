@@ -28,7 +28,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         do {
             let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
             let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
-            let result = try await service.claimIntentSubmitFile(stepId: id, fildIds: uploadedFiles)
+            let result = try await service.claimIntentSubmitFile(stepId: id, fileIds: uploadedFiles)
 
             guard let result else {
                 throw ClaimIntentError.invalidResponse
@@ -44,10 +44,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
             return L10n.claimChatSkippedLabel
         }
         let fileNames = fileUploadVm.fileGridViewModel.files.map { $0.name }
-        if fileNames.isEmpty {
-            return ""
-        }
-        return L10n.a11YSubmittedValues(fileNames.count) + ": " + fileNames.joined(separator: ", ")
+        return .accessibilitySubmittedValues(count: fileNames.count, values: fileNames)
     }
 }
 
