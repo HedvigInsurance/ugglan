@@ -32,46 +32,10 @@ struct SubmitClaimFileUploadView: View {
                     FilesGridView(vm: fileUploadVm.fileGridViewModel)
                         .hFileGridAlignment(alignment: .leading)
                     VStack(spacing: .padding8) {
-                        hButton(
-                            .large,
-                            .primary,
-                            content: .init(
-                                title: fileUploadVm.hasFiles
-                                    ? L10n.claimChatFileUploadSendButton : L10n.ClaimStatusDetail.addFiles
-                            )
-                        ) {
-                            if fileUploadVm.hasFiles {
-                                viewModel.submitResponse()
-                            } else {
-                                viewModel.showFileSourcePicker = true
-                            }
-                        }
-                        .overlay {
-                            if fileUploadVm.isLoading {
-                                GeometryReader { geo in
-                                    Rectangle()
-                                        .fill(hGrayscaleTranslucent.greyScaleTranslucent800)
-                                        .opacity(fileUploadVm.progress)
-                                        .frame(width: fileUploadVm.progress * geo.size.width)
-                                }
-                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                                .accessibilityElement(children: .ignore)
-                                .accessibilityLabel(L10n.ClaimStatusDetail.addFiles)
-                                .accessibilityValue(String(format: "%.0f%%", fileUploadVm.progress * 100))
-                                .accessibilityAddTraits(.updatesFrequently)
-                            }
-                        }
                         if fileUploadVm.hasFiles {
-                            hButton(
-                                .large,
-                                .secondary,
-                                content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-                                { [weak viewModel] in
-                                    viewModel?.showFileSourcePicker = true
-                                }
-                            )
-                            .transition(.offset(x: 0, y: 100).combined(with: .opacity))
+                            addMoreFilesButton
                         }
+                        sendOrAddFilesButton
                     }
                     .hButtonIsLoading(false)
                 }
@@ -82,6 +46,52 @@ struct SubmitClaimFileUploadView: View {
         .animation(.default, value: fileUploadVm.hasFiles)
         .animation(.default, value: fileUploadVm.isLoading)
         .animation(.default, value: fileUploadVm.progress)
+    }
+
+    @ViewBuilder
+    private var addMoreFilesButton: some View {
+        hButton(
+            .large,
+            .secondary,
+            content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
+            { [weak viewModel] in
+                viewModel?.showFileSourcePicker = true
+            }
+        )
+        .transition(.offset(x: 0, y: 100).combined(with: .opacity))
+    }
+
+    @ViewBuilder
+    private var sendOrAddFilesButton: some View {
+        hButton(
+            .large,
+            .primary,
+            content: .init(
+                title: fileUploadVm.hasFiles
+                    ? L10n.claimChatFileUploadSendButton : L10n.ClaimStatusDetail.addFiles
+            )
+        ) {
+            if fileUploadVm.hasFiles {
+                viewModel.submitResponse()
+            } else {
+                viewModel.showFileSourcePicker = true
+            }
+        }
+        .overlay {
+            if fileUploadVm.isLoading {
+                GeometryReader { geo in
+                    Rectangle()
+                        .fill(hGrayscaleTranslucent.greyScaleTranslucent800)
+                        .opacity(fileUploadVm.progress)
+                        .frame(width: fileUploadVm.progress * geo.size.width)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(L10n.ClaimStatusDetail.addFiles)
+                .accessibilityValue(String(format: "%.0f%%", fileUploadVm.progress * 100))
+                .accessibilityAddTraits(.updatesFrequently)
+            }
+        }
     }
 }
 

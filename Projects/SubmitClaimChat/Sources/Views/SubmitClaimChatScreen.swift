@@ -324,6 +324,8 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
         }
     }
     private var scrollCancellable: AnyCancellable?
+    private var keyboardDismissCancellable: AnyCancellable?
+    private var lastContentOffset: CGPoint = .zero
 
     func scrollToBottom() {
         if let scrollView {
@@ -349,6 +351,20 @@ final class SubmitClaimChatViewModel: NSObject, ObservableObject {
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] value in
                     self?.checkForScrollOffset()
+                })
+
+            keyboardDismissCancellable = scrollView?.publisher(for: \.contentOffset)
+                .sink(receiveValue: { [weak self] value in
+                    guard let self = self else { return }
+                    if abs(value.y - self.lastContentOffset.y) > 5 {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil,
+                            from: nil,
+                            for: nil
+                        )
+                    }
+                    self.lastContentOffset = value
                 })
         }
     }
