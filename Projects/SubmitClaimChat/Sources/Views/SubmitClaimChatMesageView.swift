@@ -148,7 +148,6 @@ struct ClaimStepResultView: View {
         } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
                 SubmitClaimVoiceRecordingResultView(viewModel: viewModel)
-                    .background(hSignalColor.Red.element)
             } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
                 SubmitClaimSingleSelectResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimSummaryStep {
