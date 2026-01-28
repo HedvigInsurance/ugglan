@@ -136,7 +136,7 @@ struct TooltipView: View {
         } else {
             xOffset = (proxy.size.width - imageSize) / 2 - (44 - imageSize) / 2
         }
-        yOffset = imageSize + (40 - imageSize) / 2
+        yOffset = type.offsetForToolTip + (40 - type.offsetForToolTip) / 2
     }
 
     // MARK: - Tooltip Animation & Timer
