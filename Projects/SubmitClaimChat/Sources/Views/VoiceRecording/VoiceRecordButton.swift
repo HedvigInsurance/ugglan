@@ -17,7 +17,7 @@ struct VoiceRecordButton: View {
                         .frame(width: 32, height: 32)
 
                     buttonImage
-                        .foregroundColor(hFillColor.Opaque.negative)
+                        .foregroundColor(hFillColor.Translucent.negative)
                 }
                 .scaleEffect(buttonScale)
                 hText(
@@ -103,7 +103,13 @@ struct VoiceRecordButton: View {
             if let number = countdownNumber {
                 hText("\(number)", style: .label)
             } else {
-                voiceRecorder.isRecording ? hCoreUIAssets.pause.view : hCoreUIAssets.mic.view
+                if voiceRecorder.isRecording {
+                    RoundedRectangle(cornerRadius: .cornerRadiusXXXS)
+                        .fill(hFillColor.Translucent.negative)
+                        .frame(width: 12, height: 12)
+                } else {
+                    hCoreUIAssets.mic.view
+                }
             }
         }
     }

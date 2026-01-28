@@ -419,6 +419,7 @@ final class ListTableView: UITableView {}
 
 @MainActor
 extension CGFloat {
+    public static var cornerRadiusXXXS: CGFloat = 2
     public static var cornerRadiusXS: CGFloat = 6
     public static var cornerRadiusS: CGFloat = 8
     public static var cornerRadiusM: CGFloat = 10
