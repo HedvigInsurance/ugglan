@@ -2,102 +2,212 @@ import SwiftUI
 import hCoreUI
 
 public struct VoiceWaveformView: View {
-    let audioLevels: [CGFloat]
-    let isRecording: Bool
+    @Binding var audioLevels: [CGFloat]
+    @Binding var isRecording: Bool
     let maxHeight: CGFloat
+    let progress: Double?
 
-    private let barWidth: CGFloat = 2
-    private let barSpacing: CGFloat = 2
-    private let minBarHeight: CGFloat
+    private let dotSize: CGFloat = 2
+    private let dotSpacing: CGFloat = 2
+    private let minDotHeight: CGFloat = 2
+
+    @State private var width: CGFloat = 0
+    @State private var heights: [CGFloat] = []
 
     public init(
-        audioLevels: [CGFloat],
-        isRecording: Bool,
-        maxHeight: CGFloat = 60,
-        minBarHeight: CGFloat = 2
+        audioLevels: Binding<[CGFloat]>,
+        isRecording: Binding<Bool>,
+        maxHeight: CGFloat = 30,
+        progress: Double? = nil
     ) {
-        self.audioLevels = audioLevels
-        self.isRecording = isRecording
+        self._audioLevels = audioLevels
+        self._isRecording = isRecording
         self.maxHeight = maxHeight
-        self.minBarHeight = minBarHeight
+        self.progress = progress
     }
 
     public var body: some View {
         GeometryReader { geometry in
-            let maxBars = Int(geometry.size.width / (barWidth + barSpacing))
-            let levels = prepareLevels(count: maxBars)
+            ZStack {
+                waveform
+            }
+            .frame(maxWidth: .infinity, alignment: isRecording ? .center : .leading)
+            .onAppear {
+                width = geometry.size.width
+            }
+            .onChange(of: geometry.size) { size in
+                width = size.width
+            }
+            .onChange(of: width) { value in
+                updateHeights()
+            }
+            .onChange(of: audioLevels) { _ in
+                updateHeights()
+            }
+            .onChange(of: isRecording) { isRecording in
+                updateHeights()
+            }
+        }
+        .frame(height: maxHeight)
+    }
 
-            HStack(spacing: barSpacing) {
-                ForEach(Array(levels.enumerated()), id: \.offset) { index, level in
-                    RoundedRectangle(cornerRadius: barWidth / 2)
-                        .fill(hTextColor.Opaque.primary)
+    private func updateHeights() {
+        let dotCount = calculateDotCount(for: width)
+        let levels = prepareLevels(count: dotCount)
+        withAnimation(.easeOut(duration: 0.15)) {
+            heights = levels.enumerated()
+                .map { index, level in
+                    dotHeight(for: level, at: index, total: dotCount)
+                }
+        }
+    }
+
+    private var waveform: some View {
+        ZStack(alignment: .leading) {
+            // Base layer - primary color
+            dotsView(color: hTextColor.Opaque.primary)
+
+            // Progress layer - tertiary color with mask (only for playback mode)
+            if let progress, !isRecording {
+                dotsView(color: hTextColor.Opaque.tertiary)
+                    .mask(
+                        GeometryReader { geo in
+                            Rectangle()
+                                .frame(width: geo.size.width * progress)
+                        }
+                    )
+            }
+        }
+    }
+
+    private func dotsView(color: some hColor) -> some View {
+        VStack {
+            Spacer(minLength: 0)
+            HStack(spacing: dotSpacing) {
+                ForEach(Array(heights.enumerated()), id: \.offset) { index, height in
+                    RoundedRectangle(cornerRadius: dotSize / 2)
+                        .fill(color)
                         .frame(
-                            width: barWidth,
-                            height: barHeight(for: level, at: index, total: levels.count)
+                            width: dotSize,
+                            height: height
                         )
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            Spacer(minLength: 0)
         }
-        .frame(height: maxHeight)
-        .animation(.easeOut(duration: 0.1), value: audioLevels)
+    }
+
+    private func calculateDotCount(for width: CGFloat) -> Int {
+        max(1, Int(width / (dotSize + dotSpacing)))
     }
 
     private func prepareLevels(count: Int) -> [CGFloat] {
         if audioLevels.isEmpty {
-            // Show static bars when not recording
             return Array(repeating: 0, count: count)
         }
 
-        // Take the last N levels, pad with zeros if needed
-        let levels = audioLevels.suffix(count)
-        let padding = Array(repeating: CGFloat(0), count: max(0, count - levels.count))
-        return padding + Array(levels)
+        if isRecording {
+            // For recording: all dots based on last audio level with random variation
+            let lastLevel = audioLevels.last ?? 0
+            return (0..<count)
+                .map { _ in
+                    let randomVariation = CGFloat.random(in: 0.4...1.0)
+                    return lastLevel * randomVariation
+                }
+        } else {
+            // For playback: resample all levels to fit the available dots
+            return resampleLevels(to: count)
+        }
     }
 
-    private func barHeight(for level: CGFloat, at index: Int, total: Int) -> CGFloat {
-        // Apply edge fade effect - bars are shorter at the edges
-        let edgeFadeWidth = min(10, total / 4)  // Fade over ~10 bars on each edge
+    private func resampleLevels(to targetCount: Int) -> [CGFloat] {
+        let sourceCount = audioLevels.count
 
-        // Calculate edge multiplier: 0 at edges, 1.0 in the middle
-        let edgeMultiplier: CGFloat
-        if index < edgeFadeWidth {
-            // Left edge fade in
-            edgeMultiplier = CGFloat(index) / CGFloat(edgeFadeWidth)
-        } else if index >= total - edgeFadeWidth {
-            // Right edge fade out
-            edgeMultiplier = CGFloat(total - index - 1) / CGFloat(edgeFadeWidth)
-        } else {
-            // Middle section - full height
-            edgeMultiplier = 1.0
+        if sourceCount == targetCount {
+            return audioLevels
         }
 
-        // Apply noise gate to filter background noise
-        let noiseThreshold: CGFloat = 0.1
-        let gatedLevel = level < noiseThreshold ? 0 : (level - noiseThreshold) / (1.0 - noiseThreshold)
+        var result = [CGFloat]()
+        result.reserveCapacity(targetCount)
 
-        // Amplify to get taller bars while preserving variation
-        let amplifiedLevel = min(1.0, pow(gatedLevel, 0.8) * 1.2)
+        if sourceCount > targetCount {
+            // More audio levels than dots: average levels in each bucket
+            let bucketSize = CGFloat(sourceCount) / CGFloat(targetCount)
+            for i in 0..<targetCount {
+                let startIndex = Int(CGFloat(i) * bucketSize)
+                let endIndex = Int(CGFloat(i + 1) * bucketSize)
+                let bucket = audioLevels[startIndex..<min(endIndex, sourceCount)]
+                let average = bucket.reduce(0, +) / CGFloat(bucket.count)
+                result.append(average)
+            }
+        } else {
+            // Fewer audio levels than dots: repeat each level multiple times
+            let repeatFactor = CGFloat(targetCount) / CGFloat(sourceCount)
+            for i in 0..<targetCount {
+                let sourceIndex = Int(CGFloat(i) / repeatFactor)
+                result.append(audioLevels[min(sourceIndex, sourceCount - 1)])
+            }
+        }
 
-        // Apply edge multiplier to the amplified level
-        let adjustedLevel = amplifiedLevel * edgeMultiplier
-        let height = max(minBarHeight * edgeMultiplier, adjustedLevel * maxHeight)
-        return min(height, maxHeight)
+        return result
+    }
+
+    private func dotHeight(for level: CGFloat, at index: Int, total: Int) -> CGFloat {
+        var adjustedLevel = level
+
+        // Apply edge fade effect only during recording
+        if isRecording {
+            let edgeFadeWidth = min(10, total / 4)
+
+            let edgeMultiplier: CGFloat
+            if index < edgeFadeWidth {
+                edgeMultiplier = CGFloat(index) / CGFloat(edgeFadeWidth)
+            } else if index >= total - edgeFadeWidth {
+                edgeMultiplier = CGFloat(total - index - 1) / CGFloat(edgeFadeWidth)
+            } else {
+                edgeMultiplier = 1.0
+            }
+
+            // Apply noise gate to filter background noise
+            let noiseThreshold: CGFloat = 0.1
+            let gatedLevel = level < noiseThreshold ? 0 : (level - noiseThreshold) / (1.0 - noiseThreshold)
+
+            // Amplify to get taller bars while preserving variation
+            let amplifiedLevel = min(1.0, pow(gatedLevel, 0.8) * 1.2)
+
+            adjustedLevel = amplifiedLevel * edgeMultiplier
+            let height = max(minDotHeight * edgeMultiplier, adjustedLevel * maxHeight)
+            return min(height, maxHeight)
+        } else {
+            // For playback: simple amplification without edge fade
+            let amplifiedLevel = min(1.0, pow(level, 0.8) * 1.2)
+            let height = max(minDotHeight, amplifiedLevel * maxHeight)
+            return min(height, maxHeight)
+        }
     }
 }
 
 #Preview("Recording") {
     VoiceWaveformView(
-        audioLevels: (0..<50).map { _ in CGFloat.random(in: 0...1.0) },
-        isRecording: true
+        audioLevels: .constant((0..<50).map { _ in CGFloat.random(in: 0...1.0) }),
+        isRecording: .constant(true)
     )
     .padding()
 }
 
 #Preview("Idle") {
     VoiceWaveformView(
-        audioLevels: [],
-        isRecording: false
+        audioLevels: .constant([]),
+        isRecording: .constant(false)
+    )
+    .padding()
+}
+
+#Preview("Playback with progress") {
+    VoiceWaveformView(
+        audioLevels: .constant((0..<100).map { _ in CGFloat.random(in: 0...1.0) }),
+        isRecording: .constant(false),
+        progress: 0.4
     )
     .padding()
 }
