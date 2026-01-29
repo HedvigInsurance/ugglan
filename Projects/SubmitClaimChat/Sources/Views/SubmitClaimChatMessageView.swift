@@ -29,7 +29,7 @@ struct SubmitClaimChatMessageView: View {
             }
 
             HStack {
-                spacing(viewModel.sender == .member)
+                spacing(viewModel.leadingSpacing)
                 VStack(alignment: .trailing, spacing: .padding6) {
                     ClaimStepResultView(viewModel: viewModel)
                         .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
@@ -67,19 +67,28 @@ extension ClaimIntentStepHandler {
     }
 
     var alignment: Alignment {
-        if sender == .hedvig {
-            switch claimIntent.currentStep.content {
-            default:
+        switch claimIntent.currentStep.content {
+        case .audioRecording:
+            return .leading
+        default:
+            if sender == .hedvig {
                 return .leading
             }
+            return .trailing
         }
-        return .trailing
     }
 
     var trailingSpacing: Bool {
         switch claimIntent.currentStep.content {
         case .summary: false
         default: sender == .hedvig
+        }
+    }
+
+    var leadingSpacing: Bool {
+        switch claimIntent.currentStep.content {
+        case .audioRecording: false
+        default: sender == .member
         }
     }
 }
