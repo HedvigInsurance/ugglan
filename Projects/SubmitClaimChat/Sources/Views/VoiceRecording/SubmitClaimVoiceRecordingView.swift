@@ -141,6 +141,7 @@ struct SubmitClaimVoiceRecordingResultView: View {
                 textResultView
             } else if let url = viewModel.audioFileURL {
                 audioResultView(url: url)
+                    .padding(.leading, .padding48)
             }
         }
     }
