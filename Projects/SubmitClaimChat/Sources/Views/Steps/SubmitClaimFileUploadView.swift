@@ -38,12 +38,12 @@ struct SubmitClaimFileUploadView: View {
                         sendOrAddFilesButton
                     }
                     .hButtonIsLoading(false)
+                    .animation(.default, value: fileUploadVm.hasFiles)
                 }
             }
         }
         .disabled(fileUploadVm.isLoading)
         .sectionContainerStyle(.transparent)
-        .animation(.default, value: fileUploadVm.hasFiles)
         .animation(.default, value: fileUploadVm.isLoading)
         .animation(.default, value: fileUploadVm.progress)
     }
@@ -58,7 +58,7 @@ struct SubmitClaimFileUploadView: View {
                 viewModel?.showFileSourcePicker = true
             }
         )
-        .transition(.offset(x: 0, y: 100).combined(with: .opacity))
+        .transition(.opacity)
     }
 
     @ViewBuilder
@@ -77,6 +77,7 @@ struct SubmitClaimFileUploadView: View {
                 viewModel.showFileSourcePicker = true
             }
         }
+        .animation(nil, value: fileUploadVm.hasFiles)
         .overlay {
             if fileUploadVm.isLoading {
                 GeometryReader { geo in
