@@ -11,7 +11,7 @@ struct VoiceRecordingCardContent: View {
     var body: some View {
         hForm {
             hSection {
-                VStack(spacing: .padding16) {
+                VStack(spacing: 0) {
                     VStack(spacing: 0) {
                         hText(L10n.claimsTriagingWhatHappenedTitle)
                             .foregroundColor(titleColor)
@@ -54,9 +54,8 @@ struct VoiceRecordingCardContent: View {
                                 .useDarkColor
                         }
                         waveformSection
-                            .frame(height: .padding60)
                             .padding(.horizontal, .padding45)
-                            .padding(.vertical, .padding48)
+                            .padding(.vertical, .padding64)
                             .opacity(voiceRecorder.isSending || voiceRecorder.error != nil ? 0 : 1)
                             .animation(.defaultSpring, value: voiceRecorder.hasRecording)
                             .accessibilityHidden(
@@ -95,91 +94,94 @@ struct VoiceRecordingCardContent: View {
         }
     }
 
-    @ViewBuilder
+    private var isPlaybackMode: Bool {
+        voiceRecorder.hasRecording && !voiceRecorder.isRecording
+    }
+
+    private var audioLevelsBinding: Binding<[CGFloat]> {
+        Binding(
+            get: { voiceRecorder.audioLevels },
+            set: { _ in }
+        )
+    }
+
+    private var isRecordingBinding: Binding<Bool> {
+        Binding(
+            get: { voiceRecorder.isRecording },
+            set: { _ in }
+        )
+    }
+
     private var waveformSection: some View {
-        if voiceRecorder.hasRecording && !voiceRecorder.isRecording {
-            FixedDotsWaveformView(
-                audioLevels: voiceRecorder.audioLevels,
-                maxHeight: 60,
-                progress: dragProgress ?? (voiceRecorder.hasRecording ? voiceRecorder.progress : nil)
-            )
-            .transition(.opacity)
-            .background(
-                GeometryReader { geo in
-                    Color.clear
-                        .onAppear {
-                            waveformWidth = geo.size.width
-                        }
-                        .onChange(of: geo.size) { size in
-                            waveformWidth = size.width
-                        }
+        VoiceWaveformView(
+            audioLevels: audioLevelsBinding,
+            isRecording: isRecordingBinding,
+            progress: isPlaybackMode ? (dragProgress ?? voiceRecorder.progress) : nil
+        )
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear {
+                        waveformWidth = geo.size.width
+                    }
+                    .onChange(of: geo.size) { size in
+                        waveformWidth = size.width
+                    }
+            }
+        )
+        .onTapGesture { location in
+            guard isPlaybackMode else { return }
+            // Calculate progress based on tap position
+            let progress = location.x / waveformWidth
+            let finalProgress = min(max(progress, 0), 1)
+
+            // Seek to tapped position
+            voiceRecorder.setProgress(to: finalProgress)
+
+            // Start playback if not already playing
+            if !voiceRecorder.isPlaying {
+                voiceRecorder.startPlayback()
+            }
+        }
+        .gesture(
+            DragGesture(coordinateSpace: .local)
+                .onChanged { gesture in
+                    guard isPlaybackMode else { return }
+                    // On the very first drag event, pause if currently playing
+                    if dragProgress == nil && voiceRecorder.isPlaying {
+                        voiceRecorder.pausePlayback()
+                    }
+
+                    // Only update visual progress, don't seek audio yet
+                    let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                    let progress = Double(gesturePosition / waveformWidth)
+                    dragProgress = min(max(progress, 0), 1)
                 }
-            )
-            .onTapGesture { location in
-                // Calculate progress based on tap position
-                let progress = location.x / waveformWidth
-                let finalProgress = min(max(progress, 0), 1)
+                .onEnded { gesture in
+                    guard isPlaybackMode else { return }
+                    let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                    let progress = gesturePosition / waveformWidth
+                    let finalProgress = min(max(progress, 0), 1)
 
-                // Seek to tapped position
-                voiceRecorder.setProgress(to: finalProgress)
-
-                // Start playback if not already playing
-                if !voiceRecorder.isPlaying {
+                    // Seek to final position and start playing
+                    voiceRecorder.setProgress(to: finalProgress)
+                    dragProgress = nil
                     voiceRecorder.startPlayback()
                 }
-            }
+        )
+        .accessibilityElement(children: isPlaybackMode ? .ignore : .combine)
+        .accessibilityLabel(waveformAccessibilityLabel)
+        .accessibilityValue(voiceRecorder.formattedTime ?? "")
+        .modifier(PlaybackAccessibilityModifier(isPlaybackMode: isPlaybackMode, voiceRecorder: voiceRecorder))
+    }
 
-            .gesture(
-                DragGesture(coordinateSpace: .local)
-                    .onChanged { gesture in
-                        // On the very first drag event, pause if currently playing
-                        if dragProgress == nil && voiceRecorder.isPlaying {
-                            voiceRecorder.pausePlayback()
-                        }
-
-                        // Only update visual progress, don't seek audio yet
-                        let gesturePosition = gesture.startLocation.x + gesture.translation.width
-                        let progress = Double(gesturePosition / waveformWidth)
-                        dragProgress = min(max(progress, 0), 1)
-                    }
-                    .onEnded { gesture in
-                        let gesturePosition = gesture.startLocation.x + gesture.translation.width
-                        let progress = gesturePosition / waveformWidth
-                        let finalProgress = min(max(progress, 0), 1)
-
-                        // Seek to final position and start playing
-                        voiceRecorder.setProgress(to: finalProgress)
-                        dragProgress = nil
-                        voiceRecorder.startPlayback()
-                    }
-            )
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(L10n.voiceoverAudioRecordingPlay)
-            .accessibilityValue(voiceRecorder.formattedTime ?? "")
-            .accessibilityHint(L10n.voiceoverAudioRecordingPlay)
-            .accessibilityAddTraits(.isButton)
-            .accessibilityAddTraits(.startsMediaSession)
-            .accessibilityAddTraits(.playsSound)
-            .accessibilityAction {
-                voiceRecorder.togglePlayback()
-            }
+    private var waveformAccessibilityLabel: String {
+        if isPlaybackMode {
+            return L10n.voiceoverAudioRecordingPlay
         } else if voiceRecorder.isRecording {
-            VoiceWaveformView(
-                audioLevels: voiceRecorder.audioLevels,
-                isRecording: voiceRecorder.isRecording,
-                maxHeight: 60
-            )
-            .accessibilityLabel(L10n.claimChatRecordingTitle)
-            .accessibilityValue(voiceRecorder.formattedTime ?? "")
-            .accessibilityAddTraits(.updatesFrequently)
+            return L10n.claimChatRecordingTitle
         } else {
-            VoiceWaveformView(
-                audioLevels: voiceRecorder.audioLevels,
-                isRecording: voiceRecorder.isRecording,
-                maxHeight: 60
-            )
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(L10n.a11YAudioRecording)
+            return L10n.a11YAudioRecording
         }
     }
 
@@ -199,9 +201,34 @@ struct VoiceRecordingCardContent: View {
     }
 }
 
+private struct PlaybackAccessibilityModifier: ViewModifier {
+    let isPlaybackMode: Bool
+    let voiceRecorder: VoiceRecorder
+
+    private var accessibilityTraits: AccessibilityTraits {
+        if isPlaybackMode {
+            return [.isButton, .startsMediaSession, .playsSound]
+        } else if voiceRecorder.isRecording {
+            return .updatesFrequently
+        }
+        return []
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .accessibilityHint(isPlaybackMode ? L10n.voiceoverAudioRecordingPlay : "")
+            .accessibilityAddTraits(accessibilityTraits)
+            .accessibilityAction {
+                if isPlaybackMode {
+                    voiceRecorder.togglePlayback()
+                }
+            }
+    }
+}
+
 #Preview {
     let voiceRecoder = VoiceRecorder()
-    //    voiceRecoder.isSending = true
+    voiceRecoder.isSending = true
     return VoiceRecordingCardContent(voiceRecorder: voiceRecoder) {
     }
 }
