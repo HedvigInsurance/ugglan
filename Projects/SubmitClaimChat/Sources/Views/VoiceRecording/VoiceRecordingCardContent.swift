@@ -227,7 +227,8 @@ private struct PlaybackAccessibilityModifier: ViewModifier {
 }
 
 #Preview {
-    let voiceRecoder = VoiceRecorder()        voiceRecoder.isSending = true
+    let voiceRecoder = VoiceRecorder()
+    voiceRecoder.isSending = true
     return VoiceRecordingCardContent(voiceRecorder: voiceRecoder) {
     }
 }
