@@ -13,6 +13,9 @@
 "A11Y_VIEW_DETAILS" = "Visa detaljer";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Få info direkt";
 "ADDON_ADD_COVERAGE" = "Lägg till skydd";
+"ADDON_CAR_ALLRISK_DISPLAY_NAME" = "Drulle";
+"ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Självriskavdrag";
+"ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Hyrbil";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Ja, uppgradera mitt skydd";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@ och kan endast tas bort när din försäkring förnyas eller avslutas.";
 "ADDON_FLOW_CONFIRMATION_TITLE" = "Bekräfta uppgraderat skydd";
@@ -296,6 +299,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "Om %1$li dagar kommer din försäkring förnyas. Läs ditt uppdaterade försäkringsbrev här.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Läs försäkringsbrev";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Din försäkring kommer att förnyas imorgon. Läs ditt uppdaterade försäkringsbevis här.";
+"DATA_TABLE_MULTIPLE_OWNERS" = "";
+"DATA_TABLE_WATER_CONNECTED" = "";
 "DEEP_LINK_CONTRACT" = "Försäkring";
 /* Figma */
 "DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Är du säker på att du vill radera ditt konto?";
@@ -431,10 +436,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOMETAB_ACCOUNT_DELETION_NOTIFICATION" = "Vi har tagit emot din begäran om att radera ditt konto. Du kommer att få ett e-postmeddelande från oss inom 30 dagar som bekräftar att ditt konto har raderats. Tills dess kommer ditt konto att vara aktivt.";
 "HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på förtroende. Jag lovar dyrt och heligt att beskriva händelsen sanningsenligt och att endast begära den ersättning jag har rätt till.";
 "HONESTY_PLEDGE_HEADER" = "Anmäl skada";
-"HONESTY_PLEDGE_NOTE_1" = "";
-"HONESTY_PLEDGE_NOTE_2" = "";
-"HONESTY_PLEDGE_NOTE_3" = "";
-"HONESTY_PLEDGE_TITLE" = "Läs innan du fortsätter";
+"HONESTY_PLEDGE_NOTE_1" = "Osäker på vad som täcks? Skicka in din anmälan oavsett";
+"HONESTY_PLEDGE_NOTE_2" = "Ha kvitton eller annan dokumentation redo för snabbare hjälp";
+"HONESTY_PLEDGE_NOTE_3" = "Vi hör av oss om vi behöver mer information eller fler uppgifter";
+"HONESTY_PLEDGE_TITLE" = "Läs innan du börjar";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.";
