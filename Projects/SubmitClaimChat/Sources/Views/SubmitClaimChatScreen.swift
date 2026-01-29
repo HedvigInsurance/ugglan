@@ -188,7 +188,7 @@ private struct CurrentStepView: View {
     var body: some View {
         if step.state.showInput {
             ClaimStepView(viewModel: step)
-                .transition(.offset(x: 0, y: 1000).animation(.easeInOut(duration: 0.5)))
+                .transition(.move(edge: .bottom).animation(.easeInOut(duration: 0.5)))
                 .onChange(of: step.state.showError) { value in
                     if value {
                         alertVm.alertModel = .init(
