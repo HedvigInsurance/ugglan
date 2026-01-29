@@ -241,7 +241,7 @@ public final class VoiceRecorder: ObservableObject {
         }
 
         recordedFileURL = nil
-        currentTime = 0
+        currentTime = nil
         audioLevels = []
         recentPeaks = []
         recordingState = .idle
@@ -413,5 +413,15 @@ extension VoiceRecorder {
         let minutes = Int(currentTime) / 60
         let seconds = Int(currentTime) % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+    public var formattedTimeMinutes: String? {
+        guard let currentTime else { return nil }
+        let minutes = Int(currentTime) / 60
+        return String(format: "%02d", minutes)
+    }
+    public var formattedTimeSeconds: String? {
+        guard let currentTime else { return nil }
+        let seconds = Int(currentTime) % 60
+        return String(format: "%02d", seconds)
     }
 }

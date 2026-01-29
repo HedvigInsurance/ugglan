@@ -3,7 +3,7 @@ import SwiftUI
 import hCoreUI
 
 final class SubmitClaimDeflectStep: ClaimIntentStepHandler {
-    override var sender: SubmitClaimChatMesageSender { .hedvig }
+    override var sender: SubmitClaimChatMessageSender { .hedvig }
 
     let deflectModel: ClaimIntentOutcomeDeflection
     required init(
@@ -17,7 +17,7 @@ final class SubmitClaimDeflectStep: ClaimIntentStepHandler {
         self.deflectModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task { [weak self] in
-            try await Task.sleep(seconds: 0.5)
+            try await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
             self?.state.showResults = true
         }
     }

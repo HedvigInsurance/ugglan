@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimChatMesageView: View {
+struct SubmitClaimChatMessageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
 
     var body: some View {
@@ -29,7 +29,7 @@ struct SubmitClaimChatMesageView: View {
             }
 
             HStack {
-                spacing(viewModel.sender == .member)
+                spacing(viewModel.leadingSpacing)
                 VStack(alignment: .trailing, spacing: .padding6) {
                     ClaimStepResultView(viewModel: viewModel)
                         .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
@@ -67,13 +67,15 @@ extension ClaimIntentStepHandler {
     }
 
     var alignment: Alignment {
-        if sender == .hedvig {
-            switch claimIntent.currentStep.content {
-            default:
+        switch claimIntent.currentStep.content {
+        case .audioRecording:
+            return .leading
+        default:
+            if sender == .hedvig {
                 return .leading
             }
+            return .trailing
         }
-        return .trailing
     }
 
     var trailingSpacing: Bool {
@@ -82,11 +84,17 @@ extension ClaimIntentStepHandler {
         default: sender == .hedvig
         }
     }
+
+    var leadingSpacing: Bool {
+        switch claimIntent.currentStep.content {
+        case .audioRecording: false
+        default: sender == .member
+        }
+    }
 }
 
 struct ClaimStepView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
-    @EnvironmentObject var submitClaimChatViewModel: SubmitClaimChatViewModel
 
     var body: some View {
         VStack {
@@ -125,7 +133,6 @@ struct ClaimStepView: View {
 }
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
-    @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
     @AccessibilityFocusState var isEditButtonFocused: Bool
 
