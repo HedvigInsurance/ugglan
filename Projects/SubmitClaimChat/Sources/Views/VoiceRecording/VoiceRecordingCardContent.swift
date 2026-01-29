@@ -16,9 +16,24 @@ struct VoiceRecordingCardContent: View {
                         hText(L10n.claimsTriagingWhatHappenedTitle)
                             .foregroundColor(titleColor)
                             .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
-                        hText(voiceRecorder.formattedTime ?? " ", style: .body1)
+                        if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
+                            let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
+                        {
+                            HStack(spacing: 0) {
+                                hText(formattedTimeMinutes)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                hText(":")
+                                hText(formattedTimeSeconds)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .hTextStyle(.body1)
                             .foregroundColor(recordingProgressColor)
                             .accessibilityHidden(true)
+                        } else {
+                            hText(" ", style: .body1)
+                                .foregroundColor(recordingProgressColor)
+                                .accessibilityHidden(true)
+                        }
                     }
                     .opacity(voiceRecorder.error != nil ? 0 : 1)
 
@@ -186,7 +201,7 @@ struct VoiceRecordingCardContent: View {
 
 #Preview {
     let voiceRecoder = VoiceRecorder()
-    voiceRecoder.isSending = true
+    //    voiceRecoder.isSending = true
     return VoiceRecordingCardContent(voiceRecorder: voiceRecoder) {
     }
 }
