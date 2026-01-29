@@ -111,15 +111,15 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
                 throw ClaimIntentError.invalidResponse
             }
             isAudioInputPresented = false
-            Task {
-                try? await Task.sleep(seconds: 1)
-                voiceRecorder.isSending = false
+            Task { [weak voiceRecorder] in
+                try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+                voiceRecorder?.isSending = false
             }
             return result
         } catch {
-            Task {
-                try? await Task.sleep(seconds: 1)
-                voiceRecorder.isSending = false
+            Task { [weak voiceRecorder] in
+                try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+                voiceRecorder?.isSending = false
             }
             throw error
         }
@@ -130,9 +130,9 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             return L10n.claimChatSkippedLabel
         }
         if isTextInputPresented {
-            return L10n.a11YSubmittedValues(1) + ": " + textInput
+            return .accessibilitySubmittedValue(textInput)
         } else {
-            return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
+            return .accessibilitySubmittedValue(L10n.claimChatAudioRecordingLabel)
         }
     }
 }
