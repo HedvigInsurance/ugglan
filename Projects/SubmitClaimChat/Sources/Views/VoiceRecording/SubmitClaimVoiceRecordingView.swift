@@ -143,6 +143,7 @@ struct SubmitClaimVoiceRecordingResultView: View {
                 audioResultView(url: url)
             }
         }
+        .padding(.leading, .padding48)
     }
 
     private var textResultView: some View {
