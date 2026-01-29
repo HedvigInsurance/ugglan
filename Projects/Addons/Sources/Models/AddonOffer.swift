@@ -19,17 +19,20 @@ public struct AddonConfig: Hashable {
 
 public struct AddonBannerModel: Sendable, Equatable, Codable, Hashable {
     public let contractIds: [String]
+    public let type: AddonType
     let titleDisplayName: String
     let descriptionDisplayName: String
     let badges: [String]
 
     public init(
         contractIds: [String],
+        type: AddonType,
         titleDisplayName: String,
         descriptionDisplayName: String,
         badges: [String]
     ) {
         self.contractIds = contractIds
+        self.type = type
         self.titleDisplayName = titleDisplayName
         self.descriptionDisplayName = descriptionDisplayName
         self.badges = badges
@@ -115,4 +118,9 @@ public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
     }
+}
+
+public enum AddonType: Sendable, Codable {
+    case travel
+    case car
 }

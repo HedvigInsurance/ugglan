@@ -68,5 +68,7 @@ extension ChangeAddonViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init(addonSource: .insurances)))
+    return ChangeAddonSummaryScreen(
+        changeAddonNavigationVm: .init(input: .init(addonSource: .insurances, type: .travel))
+    )
 }

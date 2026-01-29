@@ -96,6 +96,7 @@ public struct TravelCertificatesListScreen: View {
                     let addonConfigs = contractStore.getAddonConfigsFor(contractIds: banner.contractIds)
                     travelCertificateNavigationVm.isAddonPresented = .init(
                         addonSource: .travelCertificates,
+                        type: banner.type,
                         contractConfigs: addonConfigs
                     )
                 },

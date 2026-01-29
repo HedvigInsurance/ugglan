@@ -65,6 +65,7 @@ public struct AddonCardView: View {
             openAddon: {},
             addon: .init(
                 contractIds: [""],
+                type: .travel,
                 titleDisplayName: "Travel Plus",
                 descriptionDisplayName: "Extended travel insurance with extra coverage for your travels",
                 badges: ["Popular"]
