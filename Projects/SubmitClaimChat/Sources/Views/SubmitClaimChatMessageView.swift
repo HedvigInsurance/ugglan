@@ -86,7 +86,6 @@ extension ClaimIntentStepHandler {
 
 struct ClaimStepView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
-    @EnvironmentObject var submitClaimChatViewModel: SubmitClaimChatViewModel
 
     var body: some View {
         VStack {
@@ -125,7 +124,6 @@ struct ClaimStepView: View {
 }
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
-    @EnvironmentObject var chatViewModel: SubmitClaimChatViewModel
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
     @AccessibilityFocusState var isEditButtonFocused: Bool
 

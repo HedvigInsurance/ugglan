@@ -5,7 +5,6 @@ import hCoreUI
 
 public struct SubmitClaimSuccessView: View {
     private let model: ClaimIntentOutcomeClaim
-    @EnvironmentObject var navigationVm: SubmitClaimChatViewModel
     @EnvironmentObject var router: Router
     public init(
         model: ClaimIntentOutcomeClaim,
