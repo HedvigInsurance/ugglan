@@ -3,7 +3,6 @@ import hCoreUI
 
 public struct SubmitClaimOutcomeScreen: View {
     let outcome: ClaimIntentStepOutcome
-    @EnvironmentObject var navigationVm: SubmitClaimChatViewModel
 
     public init(
         outcome: ClaimIntentStepOutcome
