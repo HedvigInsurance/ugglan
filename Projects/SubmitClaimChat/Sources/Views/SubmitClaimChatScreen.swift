@@ -67,7 +67,6 @@ public struct SubmitClaimChatScreen: View {
                     }
                 }
                 .hFormContentPosition(.top)
-                .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .environmentObject(viewModel)
                 .hideScrollIndicators()
                 .onAppear {

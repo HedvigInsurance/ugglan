@@ -19,7 +19,6 @@ public struct SubmitClaimSuccessView: View {
             subtitle: L10n.claimsSuccessLabel,
             formPosition: .center
         )
-        .hFormBottomBackgroundColor(.aiPoweredGradient)
         .hStateViewButtonConfig(
             .init(
                 actionButtonAttachedToBottom: .init(
