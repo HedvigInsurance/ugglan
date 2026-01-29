@@ -111,38 +111,37 @@ public struct SubmitClaimChatScreen: View {
                 if viewModel.shouldHideCurrentInput {
                     ScrollToBottomButton(scrollAction: scrollToBottom)
                 }
-                CurrentStepView(step: currentStep)
-                    .background {
-                        GeometryReader { proxy in
-                            Color.clear
-                                .onAppear {
-                                    viewModel.currentStepInputHeight = proxy.size.height
-                                }
-                                .onChange(of: proxy.size) { value in
-                                    viewModel.currentStepInputHeight = value.height
-                                }
+                if !viewModel.shouldHideCurrentInput {
+                    CurrentStepView(step: currentStep)
+                        .padding(.top, .padding16)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        viewModel.currentStepInputHeight = proxy.size.height
+                                    }
+                                    .onChange(of: proxy.size) { value in
+                                        viewModel.currentStepInputHeight = value.height
+                                    }
+                            }
                         }
-                    }
-                    .offset(
-                        x: 0,
-                        y: viewModel.shouldHideCurrentInput ? 1000 : 0
-                    )
-                    .accessibilityFocused($isCurrentStepFocused)
-                    .disabled(viewModel.shouldHideCurrentInput)
+                        .accessibilityFocused($isCurrentStepFocused)
+                }
             }
         }
         .padding(.bottom, .padding8)
         .environmentObject(viewModel)
+        .background {
+            BackgroundBlurView()
+                .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: [.topLeft, .topRight]))
+                .ignoresSafeArea(.container, edges: .bottom)
+                .offset(
+                    x: 0,
+                    y: viewModel.shouldHideCurrentInput ? 1000 : 0
+                )
+        }
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
-        .background {
-            if viewModel.shouldHideCurrentInput {
-                Color.clear
-            } else {
-                BackgroundBlurView()
-                    .ignoresSafeArea(.container, edges: .bottom)
-            }
-        }
     }
 
     private func scrollToBottom() {
@@ -189,7 +188,7 @@ private struct CurrentStepView: View {
     var body: some View {
         if step.state.showInput {
             ClaimStepView(viewModel: step)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .transition(.offset(x: 0, y: 1000).animation(.easeInOut(duration: 0.5)))
                 .onChange(of: step.state.showError) { value in
                     if value {
                         alertVm.alertModel = .init(
