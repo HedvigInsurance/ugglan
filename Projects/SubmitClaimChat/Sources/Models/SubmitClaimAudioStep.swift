@@ -111,15 +111,15 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
                 throw ClaimIntentError.invalidResponse
             }
             isAudioInputPresented = false
-            Task {
+            Task { [weak voiceRecorder] in
                 try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
-                voiceRecorder.isSending = false
+                voiceRecorder?.isSending = false
             }
             return result
         } catch {
-            Task {
+            Task { [weak voiceRecorder] in
                 try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
-                voiceRecorder.isSending = false
+                voiceRecorder?.isSending = false
             }
             throw error
         }

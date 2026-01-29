@@ -68,7 +68,4 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     override func accessibilityEditHint() -> String {
         ""
     }
-
-    deinit {
-    }
 }
