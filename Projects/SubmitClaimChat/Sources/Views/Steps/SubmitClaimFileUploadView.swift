@@ -50,7 +50,6 @@ struct SubmitClaimFileUploadView: View {
         .animation(.default, value: fileUploadVm.hasFiles)
         .animation(.default, value: fileUploadVm.isLoading)
         .animation(.default, value: fileUploadVm.progress)
-        .transition(.opacity)
     }
 
     @ViewBuilder
@@ -63,7 +62,7 @@ struct SubmitClaimFileUploadView: View {
                 viewModel?.showFileSourcePicker = true
             }
         )
-        .transition(.opacity)
+        .transition(.offset(x: 0, y: 100).combined(with: .opacity))
     }
 
     @ViewBuilder
