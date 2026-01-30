@@ -23,6 +23,7 @@ final class ClaimChatScrollCoordinator: ObservableObject {
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] _ in
+                    UIApplication.dismissKeyboard()
                     self?.checkForScrollOffset()
                 })
         }
