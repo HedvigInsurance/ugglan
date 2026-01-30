@@ -434,12 +434,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_RELATED_QUESTIONS_TITLE" = "";
 "HC_TITLE" = "Hjälp och support";
 "HOMETAB_ACCOUNT_DELETION_NOTIFICATION" = "Vi har tagit emot din begäran om att radera ditt konto. Du kommer att få ett e-postmeddelande från oss inom 30 dagar som bekräftar att ditt konto har raderats. Tills dess kommer ditt konto att vara aktivt.";
-"HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på förtroende. Jag lovar dyrt och heligt att beskriva händelsen sanningsenligt och att endast begära den ersättning jag har rätt till.";
+"HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.";
 "HONESTY_PLEDGE_HEADER" = "Anmäl skada";
 "HONESTY_PLEDGE_NOTE_1" = "Osäker på vad som täcks? Skicka in din anmälan oavsett";
 "HONESTY_PLEDGE_NOTE_2" = "Ha kvitton eller annan dokumentation redo för snabbare hjälp";
 "HONESTY_PLEDGE_NOTE_3" = "Vi hör av oss om vi behöver mer information eller fler uppgifter";
-"HONESTY_PLEDGE_TITLE" = "Läs innan du börjar";
+"HONESTY_PLEDGE_TITLE" = "Innan vi börjar";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.";
