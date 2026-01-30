@@ -92,9 +92,11 @@ struct VoiceRecordButton: View {
                 ImpactGenerator.light()
             }
             try Task.checkCancellation()
+            if voiceRecorder.isCountingDown == true {
+                voiceRecorder.isCountingDown = false
+                await voiceRecorder.toggleRecording()
+            }
             countdownNumber = nil
-            voiceRecorder.isCountingDown = false
-            await voiceRecorder.toggleRecording()
         }
     }
 
