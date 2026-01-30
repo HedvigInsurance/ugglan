@@ -224,7 +224,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Make sure we have right phone number in the case we need to contact you";
 "CLAIM_CHAT_RECORDING_TITLE" = "Recording";
 "CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT" = "If you don't remember the purchase date, you don't need to fill in anything.";
-"CLAIM_CHAT_SKIPPED_LABEL" = "Skipped";
 "CLAIM_CHAT_SKIPPED_STEP" = "Skipped";
 "CLAIM_CHAT_SKIP_STEP" = "Skip";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Submit your claim";

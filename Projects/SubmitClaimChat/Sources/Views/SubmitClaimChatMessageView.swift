@@ -25,7 +25,7 @@ struct SubmitClaimChatMessageView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-                .accessibilityHint(viewModel.state.isSkipped ? L10n.claimChatSkippedLabel : "")
+                .accessibilityHint(viewModel.state.isSkipped ? L10n.claimChatSkippedStep : "")
             }
 
             HStack {
@@ -138,7 +138,7 @@ struct ClaimStepResultView: View {
 
     @ViewBuilder var body: some View {
         if viewModel.state.isSkipped {
-            hText(L10n.claimChatSkippedLabel)
+            hText(L10n.claimChatSkippedStep)
                 .foregroundColor(hTextColor.Translucent.secondary)
                 .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                 .hFieldSize(.capsuleShape)

@@ -224,7 +224,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig";
 "CLAIM_CHAT_RECORDING_TITLE" = "Inspelning";
 "CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT" = "Om du inte minns inköpsdatum behöver du inte fylla i något.";
-"CLAIM_CHAT_SKIPPED_LABEL" = "Överhoppad";
 "CLAIM_CHAT_SKIPPED_STEP" = "Överhoppad";
 "CLAIM_CHAT_SKIP_STEP" = "Hoppa över";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Skicka in ditt skadeärende";

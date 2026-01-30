@@ -43,7 +43,7 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
-            return L10n.claimChatSkippedLabel
+            return L10n.claimChatSkippedStep
         }
         guard let selectedOptionId,
             let selectedOption = model.options.first(where: { $0.id == selectedOptionId })
