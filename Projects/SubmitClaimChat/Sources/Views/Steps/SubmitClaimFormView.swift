@@ -257,14 +257,24 @@ struct SubmitClaimFormResultView: View {
     @ObservedObject var viewModel: SubmitClaimFormStep
     var body: some View {
         VStack(alignment: .trailing, spacing: .padding4) {
-            ForEach(viewModel.getAllValuesToShow(), id: \.key) { item in
-                hText(item.value)
-                    .foregroundColor(fieldTextColor(for: item))
-                    .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
-                    .hFieldSize(.capsuleShape)
-                    .accessibilityLabel(item.value.getAccessibilityLabelDate)
+            let allValuesAreSkipped = viewModel.getAllValuesToShow().allSatisfy(\.skipped)
+            if allValuesAreSkipped {
+                let item = SubmitClaimFormStep.ResultDisplayItem(key: L10n.claimChatSkippedStep, value: L10n.claimChatSkippedStep, skipped: true)
+                fieldFor(item)
+            } else {
+                ForEach(viewModel.getAllValuesToShow(), id: \.key) { item in
+                    fieldFor(item)
+                }
             }
         }
+    }
+    
+    private func fieldFor(_ item: SubmitClaimFormStep.ResultDisplayItem) -> some View {
+        hText(item.value)
+            .foregroundColor(fieldTextColor(for: item))
+            .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
+            .hFieldSize(.capsuleShape)
+            .accessibilityLabel(item.value.getAccessibilityLabelDate)
     }
 
     @hColorBuilder
