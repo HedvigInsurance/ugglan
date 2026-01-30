@@ -118,7 +118,11 @@ class CustomTextView: UITextView, UITextViewDelegate {
     let fixedWidth: CGFloat
     @Binding var height: CGFloat
     @Binding var width: CGFloat
-    var colorScheme: ColorScheme
+    var colorScheme: ColorScheme {
+        didSet {
+            updateLinkTextAttributes()
+        }
+    }
     init(
         config: CustomTextViewRepresentableConfig,
         fixedWidth: CGFloat,
@@ -148,6 +152,14 @@ class CustomTextView: UITextView, UITextViewDelegate {
         isSelectable = true
         dataDetectorTypes = [.address, .link, .phoneNumber]
         accessibilityTraits = .staticText
+        updateLinkTextAttributes()
+        textContainerInset = .zero
+        textContainer.lineFragmentPadding = 0
+        contentInset = .zero
+        delegate = self
+    }
+
+    func updateLinkTextAttributes() {
         var linkTextAttributes = [NSAttributedString.Key: Any]()
         linkTextAttributes[.foregroundColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
         linkTextAttributes[.underlineColor] = config.linkColor.colorFor(colorScheme, .base).color.uiColor()
@@ -155,10 +167,6 @@ class CustomTextView: UITextView, UITextViewDelegate {
             linkTextAttributes[.underlineStyle] = linkUnderlineStyle.rawValue
         }
         self.linkTextAttributes = linkTextAttributes
-        textContainerInset = .zero
-        textContainer.lineFragmentPadding = 0
-        contentInset = .zero
-        delegate = self
     }
 
     func setContent(from text: String) {
