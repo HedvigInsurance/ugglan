@@ -69,7 +69,7 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
                             inCont.resume(returning: uploadedFiles)
                         }
                     } catch {
-                        inCont.resume(throwing: error)
+                        inCont.resume(throwing: FileUploadError.somethingWentWrong(error: error))
                     }
                 }
             }
@@ -108,7 +108,7 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
                         let ids = responseWrapper?.fileIds ?? []
                         inCont.resume(returning: ids)
                     } catch {
-                        inCont.resume(throwing: error)
+                        inCont.resume(throwing: FileUploadError.somethingWentWrong(error: error))
                     }
                 }
             }
@@ -121,6 +121,18 @@ extension NetworkClient: @retroactive hClaimFileUploadClient {
 
         observation?.invalidate()
         return fileIds
+    }
+}
+
+private enum FileUploadError {
+    case somethingWentWrong(error: Error)
+}
+extension FileUploadError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .somethingWentWrong:
+            return L10n.General.errorBody
+        }
     }
 }
 
