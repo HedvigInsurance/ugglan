@@ -259,7 +259,11 @@ struct SubmitClaimFormResultView: View {
         VStack(alignment: .trailing, spacing: .padding4) {
             let allValuesAreSkipped = viewModel.getAllValuesToShow().allSatisfy(\.skipped)
             if allValuesAreSkipped {
-                let item = SubmitClaimFormStep.ResultDisplayItem(key: L10n.claimChatSkippedStep, value: L10n.claimChatSkippedStep, skipped: true)
+                let item = SubmitClaimFormStep.ResultDisplayItem(
+                    key: L10n.claimChatSkippedStep,
+                    value: L10n.claimChatSkippedStep,
+                    skipped: true
+                )
                 fieldFor(item)
             } else {
                 ForEach(viewModel.getAllValuesToShow(), id: \.key) { item in
@@ -268,7 +272,7 @@ struct SubmitClaimFormResultView: View {
             }
         }
     }
-    
+
     private func fieldFor(_ item: SubmitClaimFormStep.ResultDisplayItem) -> some View {
         hText(item.value)
             .foregroundColor(fieldTextColor(for: item))
