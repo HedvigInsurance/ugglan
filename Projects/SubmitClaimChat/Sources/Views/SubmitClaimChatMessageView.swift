@@ -97,7 +97,7 @@ struct ClaimStepView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
 
     var body: some View {
-        VStack {
+        VStack(spacing: .padding4) {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
                 SubmitClaimVoiceRecordingView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimSingleSelectStep {
