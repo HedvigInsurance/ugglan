@@ -9,9 +9,21 @@ struct SubmitClaimSingleSelectView: View {
 
     public var body: some View {
         hSection {
-            switch viewModel.model.style {
-            case .pill: pillInputView
-            case .binary: binaryInputView
+            VStack(spacing: .padding16) {
+                switch viewModel.model.style {
+                case .pill: pillInputView
+                case .binary: binaryInputView
+                }
+
+                if viewModel.hasPreselectedValue {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.generalConfirm)
+                    ) {
+                        viewModel.submitResponse()
+                    }
+                }
             }
         }
         .sectionContainerStyle(.transparent)
@@ -27,7 +39,7 @@ struct SubmitClaimSingleSelectView: View {
             if showOptions {
                 hPill(
                     text: option.title,
-                    color: viewModel.model.defaultSelectedId == optionId ? .green : .grey,
+                    color: viewModel.selectedOptionId == optionId ? .green : .grey,
                     colorLevel: .two,
                     withBorder: false
                 )
@@ -62,7 +74,9 @@ struct SubmitClaimSingleSelectView: View {
     private func selectOption(id: String) {
         ImpactGenerator.soft()
         viewModel.selectedOptionId = id
-        viewModel.submitResponse()
+        if !viewModel.hasPreselectedValue {
+            viewModel.submitResponse()
+        }
     }
 }
 

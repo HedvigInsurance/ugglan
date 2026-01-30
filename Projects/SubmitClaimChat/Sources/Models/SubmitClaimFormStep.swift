@@ -111,7 +111,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
-            return L10n.claimChatSkippedLabel
+            return L10n.claimChatSkippedStep
         }
         let items = getAllValuesToShow()
             .filter { !$0.skipped }

@@ -127,7 +127,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
-            return L10n.claimChatSkippedLabel
+            return L10n.claimChatSkippedStep
         }
         if isTextInputPresented {
             return .accessibilitySubmittedValue(textInput)

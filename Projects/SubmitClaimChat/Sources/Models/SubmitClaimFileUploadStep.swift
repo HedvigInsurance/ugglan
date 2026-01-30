@@ -41,7 +41,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
-            return L10n.claimChatSkippedLabel
+            return L10n.claimChatSkippedStep
         }
         let fileNames = fileUploadVm.fileGridViewModel.files.map { $0.name }
         return .accessibilitySubmittedValues(count: fileNames.count, values: fileNames)
