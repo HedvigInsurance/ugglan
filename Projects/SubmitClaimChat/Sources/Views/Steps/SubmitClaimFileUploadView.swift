@@ -35,7 +35,11 @@ struct SubmitClaimFileUploadView: View {
                         if fileUploadVm.hasFiles {
                             addMoreFilesButton
                         }
-                        sendOrAddFilesButton
+                        if fileUploadVm.hasFiles {
+                            sendButton
+                        } else {
+                            addFilesButton
+                        }
                     }
                     .hButtonIsLoading(false)
                 }
@@ -62,21 +66,17 @@ struct SubmitClaimFileUploadView: View {
     }
 
     @ViewBuilder
-    private var sendOrAddFilesButton: some View {
+    private var sendButton: some View {
         hButton(
             .large,
             .primary,
             content: .init(
-                title: fileUploadVm.hasFiles
-                    ? L10n.claimChatFileUploadSendButton : L10n.ClaimStatusDetail.addFiles
+                title: L10n.claimChatFileUploadSendButton
             )
         ) {
-            if fileUploadVm.hasFiles {
-                viewModel.submitResponse()
-            } else {
-                viewModel.showFileSourcePicker = true
-            }
+            viewModel.submitResponse()
         }
+        .animation(nil, value: fileUploadVm.hasFiles)
         .overlay {
             if fileUploadVm.isLoading {
                 GeometryReader { geo in
@@ -91,6 +91,19 @@ struct SubmitClaimFileUploadView: View {
                 .accessibilityValue(String(format: "%.0f%%", fileUploadVm.progress * 100))
                 .accessibilityAddTraits(.updatesFrequently)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var addFilesButton: some View {
+        hButton(
+            .large,
+            .primary,
+            content: .init(
+                title: L10n.ClaimStatusDetail.addFiles
+            )
+        ) {
+            viewModel.showFileSourcePicker = true
         }
     }
 }
