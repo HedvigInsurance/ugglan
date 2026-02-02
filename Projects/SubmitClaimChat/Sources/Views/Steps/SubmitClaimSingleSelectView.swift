@@ -14,19 +14,20 @@ struct SubmitClaimSingleSelectView: View {
                 case .pill: pillInputView
                 case .binary: binaryInputView
                 }
-
-                if viewModel.hasPreselectedValue {
-                    hButton(
-                        .large,
-                        .primary,
-                        content: .init(title: L10n.generalConfirm)
-                    ) {
-                        viewModel.submitResponse()
-                    }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.generalConfirm)
+                ) {
+                    viewModel.submitResponse()
                 }
+                .opacity(showOptions ? 1 : 0)
+                .animation(.easeInOut, value: showOptions)
+                .disabled(viewModel.selectedOptionId == nil)
             }
         }
         .sectionContainerStyle(.transparent)
+        .animation(.easeInOut, value: viewModel.selectedOptionId)
         .task {
             try? await Task.sleep(seconds: ClaimChatConstants.Timing.optionReveal)
             showOptions = true
@@ -74,9 +75,6 @@ struct SubmitClaimSingleSelectView: View {
     private func selectOption(id: String) {
         ImpactGenerator.soft()
         viewModel.selectedOptionId = id
-        if !viewModel.hasPreselectedValue {
-            viewModel.submitResponse()
-        }
     }
 }
 
