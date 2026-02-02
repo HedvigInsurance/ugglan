@@ -4,7 +4,6 @@ import hCore
 final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     @Published var selectedOptionId: String?
     let model: ClaimIntentStepContentSelect
-    let hasPreselectedValue: Bool
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
@@ -14,7 +13,6 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
             fatalError("TextStepHandler initialized with non-single select content")
         }
         self.model = model
-        hasPreselectedValue = model.defaultSelectedId != nil
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         self.initializeSelectValues()
     }
