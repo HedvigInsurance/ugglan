@@ -31,7 +31,7 @@ struct SubmitClaimFileUploadView: View {
                 VStack {
                     FilesGridView(vm: fileUploadVm.fileGridViewModel)
                         .hFileGridAlignment(alignment: .leading)
-                    VStack(spacing: .padding8) {
+                    VStack(spacing: .padding4) {
                         if fileUploadVm.hasFiles {
                             addMoreFilesButton
                         }
