@@ -9,9 +9,9 @@ import hGraphQL
 
 final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     var audioFileURL: URL?
-    @Published var uploadProgress: Double = 0
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
+
     @Published var textInput: String = "" {
         didSet {
             textInputError =
@@ -19,8 +19,15 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         }
     }
     @Published var textInputError: String?
-    @Published var isTextInputPresented: Bool = false
+    @Published var isTextInputPresented: Bool = false {
+        willSet {
+            showTextViewOnAppear = newValue
+        }
+    }
+    @Published var showTextViewOnAppear: Bool = false
     @Published var isAudioInputPresented: Bool = false
+    @Published var uploadProgress: Double = 0
+
     let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
         textInput.count < audioRecordingModel.freeTextMinLength

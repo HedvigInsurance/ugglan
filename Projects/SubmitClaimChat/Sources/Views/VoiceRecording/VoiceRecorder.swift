@@ -327,7 +327,7 @@ public final class VoiceRecorder: ObservableObject {
         try session.setCategory(
             .playAndRecord,
             mode: .spokenAudio,
-            options: [.defaultToSpeaker, .allowBluetooth, .duckOthers]
+            options: [.defaultToSpeaker, .allowBluetoothHFP, .duckOthers]
         )
         try session.setActive(true)
     }

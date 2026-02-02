@@ -64,9 +64,7 @@ struct SubmitClaimVoiceRecordingView: View {
                 .ghost,
                 content: .init(title: L10n.claimChatUseTextInput)
             ) {
-                withAnimation {
-                    viewModel.isTextInputPresented = true
-                }
+                viewModel.isTextInputPresented = true
             }
         }
         .transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -80,7 +78,8 @@ struct SubmitClaimVoiceRecordingView: View {
                 placeholder: L10n.claimsTextInputPlaceholder,
                 popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
                 minCharacters: viewModel.audioRecordingModel.freeTextMinLength,
-                maxCharacters: viewModel.audioRecordingModel.freeTextMaxLength
+                maxCharacters: viewModel.audioRecordingModel.freeTextMaxLength,
+                showOnAppear: $viewModel.showTextViewOnAppear
             ) { text in
                 viewModel.textInput = text
             }
