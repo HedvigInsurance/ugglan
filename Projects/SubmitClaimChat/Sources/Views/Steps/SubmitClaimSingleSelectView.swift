@@ -61,15 +61,30 @@ struct SubmitClaimSingleSelectView: View {
                         .medium,
                         .ghost,
                         content: .init(title: option.title)
-                    ) { selectOption(id: option.id) }
+                    ) {
+                        selectOption(id: option.id)
+                    }
+                    .hCustomButtonView {
+                        hText(option.title, style: .body1)
+                            .foregroundColor(pillColor(optionId: option.id).pillTextColor(level: .two))
+                    }
+                    .hWrapInPill(color: viewModel.selectedOptionId == option.id ? .green : .grey, colorLevel: .two)
                     .hButtonTakeFullWidth(true)
-                    .hWrapInPill(color: .grey, colorLevel: .two)
                     .optionAccessibility(label: option.title)
                     .transition(.submitClaimOptionAppear)
+                    .accessibilityAddTraits(.isButton)
+                    .optionAccessibility(label: option.title)
                 }
             }
         }
-        .padding(.horizontal, 16)
+    }
+
+    private func pillColor(optionId: String) -> PillColor {
+        if optionId == viewModel.selectedOptionId {
+            return PillColor.green
+        } else {
+            return PillColor.grey
+        }
     }
 
     private func selectOption(id: String) {
