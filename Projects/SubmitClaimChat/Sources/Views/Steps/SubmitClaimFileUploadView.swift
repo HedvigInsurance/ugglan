@@ -62,7 +62,6 @@ struct SubmitClaimFileUploadView: View {
                 viewModel?.showFileSourcePicker = true
             }
         )
-        .transition(.offset(x: 0, y: 100).combined(with: .opacity))
     }
 
     @ViewBuilder
