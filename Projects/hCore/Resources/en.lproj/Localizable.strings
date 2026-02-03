@@ -644,7 +644,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_TOWING_A2" = "As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.";
 "SUBMIT_CLAIM_TOWING_A3" = "You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.";
 "SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Read more";
-"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 10–45 99 222. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
+"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 020 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
 "SUBMIT_CLAIM_TOWING_INFO_LABEL" = "You need to contact Assistancekåren directly to receive further assistance";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "Call now";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL" = "Available 24/7";
