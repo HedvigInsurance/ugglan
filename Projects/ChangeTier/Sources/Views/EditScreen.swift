@@ -94,7 +94,7 @@ struct EditScreen: View {
     private func leftViewForQuote(_ quote: Quote) -> AnyView {
         leftView(
             title: quote.displayTitle,
-            premium: quote.newTotalCost.net?.formattedAmountPerMonth,
+            premium: quote.newTotalCost.net.formattedAmountPerMonth,
             subTitle: quote.subTitle
         )
     }
@@ -110,7 +110,7 @@ struct EditScreen: View {
     private func leftViewForAddon(_ addon: AddonQuote) -> AnyView {
         leftView(
             title: addon.displayName ?? "",
-            premium: addon.itemCost.premium.gross?.formattedAmountPerMonth,
+            premium: addon.itemCost.premium.gross.formattedAmountPerMonth,
             subTitle: nil
         )
     }

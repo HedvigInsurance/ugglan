@@ -171,11 +171,11 @@ private struct ContractCardView: View {
                 hRowDivider()
                     .hWithoutHorizontalPadding([.divider])
             }
-            if let netPremium = contract.premium?.net {
+            if let premium = contract.premium {
                 PriceField(
                     viewModel: .init(
-                        initialValue: contract.premium?.gross,
-                        newValue: netPremium
+                        initialValue: premium.gross,
+                        newValue: premium.net
                     )
                 )
                 .hWithStrikeThroughPrice(
@@ -210,35 +210,34 @@ private struct PriceSummarySection: View {
         hSection {
             VStack(spacing: .padding16) {
                 let currentPremium = vm.premium.gross
-                if let newPremium = vm.premium.net {
-                    if vm.isAddon {
-                        HStack {
-                            hText(L10n.tierFlowTotal)
-                            Spacer()
-                            VStack(alignment: .trailing, spacing: 0) {
-                                if newPremium.value >= 0 {
-                                    hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
-                                } else {
-                                    hText(newPremium.formattedAmountPerMonth)
-                                }
-                                hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
+                let newPremium = vm.premium.net
+                if vm.isAddon {
+                    HStack {
+                        hText(L10n.tierFlowTotal)
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 0) {
+                            if newPremium.value >= 0 {
+                                hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
+                            } else {
+                                hText(newPremium.formattedAmountPerMonth)
                             }
+                            hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                        .accessibilityElement(children: .combine)
-                    } else {
-                        PriceField(
-                            viewModel: .init(
-                                initialValue: currentPremium,
-                                newValue: newPremium,
-                                title: nil,
-                                subTitle: L10n.summaryTotalPriceSubtitle(
-                                    vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
-                                )
+                    }
+                    .accessibilityElement(children: .combine)
+                } else {
+                    PriceField(
+                        viewModel: .init(
+                            initialValue: currentPremium,
+                            newValue: newPremium,
+                            title: nil,
+                            subTitle: L10n.summaryTotalPriceSubtitle(
+                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                             )
                         )
-                        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-                    }
+                    )
+                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                 }
                 VStack(spacing: .padding8) {
                     hButton(
@@ -299,7 +298,7 @@ private struct PriceSummarySection: View {
                 displayName: "Travel addon",
                 exposureName: "Bellmansgtan 19A",
                 premium: .init(
-                    gross: nil,
+                    gross: .init(amount: 599, currency: "SEK"),
                     net: .init(amount: 999, currency: "SEK")
                 ),
                 documentSection: .init(

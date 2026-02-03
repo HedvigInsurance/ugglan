@@ -124,12 +124,12 @@ public struct ChangeTierLandingScreen: View {
                 .padding(.top, .padding16)
                 .accessibilityElement(children: .combine)
             }
-            if vm.newTotalCost != nil {
+            if let newTotalCost = vm.newTotalCost {
                 hRow {
                     PriceField(
                         viewModel: .init(
-                            initialValue: vm.shouldShowOldPrice ? vm.newTotalCost?.gross : nil,
-                            newValue: vm.newTotalCost?.net ?? .sek(0),
+                            initialValue: vm.shouldShowOldPrice ? newTotalCost.gross : nil,
+                            newValue: newTotalCost.net,
                             subTitle: getPriceSubtitle()
                         )
                     )
@@ -143,7 +143,7 @@ public struct ChangeTierLandingScreen: View {
 
     private func getPriceSubtitle() -> String? {
         if let currentPremium = vm.currentTotalCost, vm.newTotalCost != currentPremium {
-            let formattedAmount = currentPremium.net?.priceFormat(PriceFormatting.perMonth) ?? ""
+            let formattedAmount = currentPremium.net.priceFormat(PriceFormatting.perMonth)
             return L10n.tierFlowPreviousPrice(formattedAmount)
         }
         return nil
@@ -234,7 +234,7 @@ public struct ChangeTierLandingScreen: View {
                 changeTierNavigationVm?.isEditTierPresented = .init(
                     selectedItem: vm?.selectedQuote?.id ?? vm?.selectedTier?.quotes.first?.id,
                     type: .deductible(
-                        quotes: quotes.sorted(by: { $0.newTotalCost.net?.value ?? 0 > $1.newTotalCost.net?.value ?? 0 })
+                        quotes: quotes.sorted(by: { $0.newTotalCost.net.value > $1.newTotalCost.net.value })
                     )
                 )
             }

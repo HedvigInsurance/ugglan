@@ -117,9 +117,9 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     @MainActor
     func getPremiumLabel() -> String? {
         if quotes.count == 1 {
-            return quotes.first?.newTotalCost.net?.formattedAmountPerMonth
+            return quotes.first?.newTotalCost.net.formattedAmountPerMonth
         } else {
-            if let smallestPremium = quotes.map({ $0.newTotalCost.net ?? .sek(0) })
+            if let smallestPremium = quotes.map({ $0.newTotalCost.net })
                 .sorted(by: { $0.floatAmount < $1.floatAmount })
                 .first?
                 .formattedAmount

@@ -132,7 +132,7 @@ public class ChangeTierViewModel: ObservableObject {
                 addonId: L10n.tierFlowAddonNoCoverageLabel,
                 addonSubtype: addonSubtype,
                 displayItems: [],
-                itemCost: .init(premium: .init(gross: .sek(0), net: nil), discounts: []),
+                itemCost: .init(premium: .init(gross: .sek(0), net: .sek(0)), discounts: []),
                 addonVariant: nil,
                 documents: []
             )
@@ -183,7 +183,7 @@ public class ChangeTierViewModel: ObservableObject {
         displayItemsList.append(
             .init(
                 title: self.displayName ?? "",
-                value: selectedQuote?.newTotalCost.gross?.formattedAmountPerMonth ?? ""
+                value: selectedQuote?.newTotalCost.gross.formattedAmountPerMonth ?? ""
             )
         )
 
@@ -192,7 +192,7 @@ public class ChangeTierViewModel: ObservableObject {
             .map { quote in
                 QuoteDisplayItem(
                     title: quote.addonSubtype,
-                    value: quote.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
+                    value: quote.itemCost.premium.gross.formattedAmountPerMonth
                 )
             }
         displayItemsList.append(contentsOf: addonsItems)

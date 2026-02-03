@@ -165,3 +165,17 @@ extension String {
         self + "/" + L10n.monthAbbreviationLabel
     }
 }
+
+extension MonetaryAmount {
+    public static func + (lhs: MonetaryAmount, rhs: MonetaryAmount) -> MonetaryAmount {
+        MonetaryAmount(amount: lhs.value + rhs.value, currency: lhs.currency)
+    }
+
+    public static func - (lhs: MonetaryAmount, rhs: MonetaryAmount) -> MonetaryAmount {
+        MonetaryAmount(amount: lhs.value - rhs.value, currency: lhs.currency)
+    }
+
+    public static func zero(currency: String) -> MonetaryAmount {
+        .init(amount: 0, currency: currency)
+    }
+}

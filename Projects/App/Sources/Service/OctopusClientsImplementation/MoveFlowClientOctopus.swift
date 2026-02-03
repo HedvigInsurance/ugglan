@@ -302,7 +302,7 @@ extension ChangeTierIntentModel {
                             itemCost: .init(
                                 premium: .init(
                                     gross: .init(fragment: addonQuote.premium.fragments.moneyFragment),
-                                    net: nil
+                                    net: .init(fragment: addonQuote.premium.fragments.moneyFragment)
                                 ),
                                 discounts: []
                             ),
