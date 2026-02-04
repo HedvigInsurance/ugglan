@@ -13,6 +13,8 @@
 "A11Y_VIEW_DETAILS" = "View details";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Get notified";
 "ADDON_ADD_COVERAGE" = "Add coverage";
+/* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
+"ADDON_BADGE_ACTIVE" = "Active";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "All-risk";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Lower deductible";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Rental car";
@@ -761,6 +763,10 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "To be able to log in to your bank you need to have the XXX app installed.";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "You do not have BankID on this device";
 "Third_Party_Connected" = "%1$@ /month - Paying with third party provider";
+"UPSELL_TRAVEL_ADDON_CONTRACT_QUOTE_TITLE" = "Travel Insurance Plus";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE" = "Maximum travel limit";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION" = "Days covered when travelling";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE" = "Choose your maximum travel limit";
 "USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK" = "Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.";
 "VOICEOVER_ACCEPTED" = "Is accepted";
 "VOICEOVER_ADD_INFORMATION" = "add information";

@@ -13,6 +13,8 @@
 "A11Y_VIEW_DETAILS" = "Visa detaljer";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Få info direkt";
 "ADDON_ADD_COVERAGE" = "Lägg till skydd";
+/* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
+"ADDON_BADGE_ACTIVE" = "Aktiv";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "Drulle";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Självriskavdrag";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Hyrbil";
@@ -761,6 +763,10 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "För att kunna logga in på din bank så behöver du ha BankID-appen installerad.";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "Du saknar BankID på denna enheten";
 "Third_Party_Connected" = "";
+"UPSELL_TRAVEL_ADDON_CONTRACT_QUOTE_TITLE" = "Reseskydd Plus";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE" = "Antal resdagar";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION" = "Välj antalet resdagar som täcks";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE" = "Välj antal resdagar";
 "USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK" = "Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada";
 "VOICEOVER_ACCEPTED" = "Är accepterad";
 "VOICEOVER_ADD_INFORMATION" = "lägga till information";
