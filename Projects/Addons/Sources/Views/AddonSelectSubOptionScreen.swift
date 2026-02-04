@@ -15,12 +15,8 @@ struct AddonSelectSubOptionScreen: View {
         self.selectable = selectable
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
-        if let vm = changeAddonNavigationVm.changeAddonVm,
-            let preSelected = vm.selectedQuote(for: selectable)
-        {
-            _selectedQuote = State(initialValue: preSelected)
-        } else if let first = selectable.quotes.first {
-            _selectedQuote = State(initialValue: first)
+        if let selectedQuote = changeAddonNavigationVm.changeAddonVm?.selectedAddons.first ?? selectable.quotes.first {
+            _selectedQuote = State(initialValue: selectedQuote)
         }
     }
 
@@ -82,7 +78,7 @@ struct AddonSelectSubOptionScreen: View {
             hPill(
                 text: L10n.addonFlowPriceLabel(
                     changeAddonNavigationVm.changeAddonVm?
-                        .getPriceDifference(for: quote)?
+                        .getGrossPriceDifference(for: quote)
                         .formattedAmount ?? ""
                 ),
                 color: .grey,

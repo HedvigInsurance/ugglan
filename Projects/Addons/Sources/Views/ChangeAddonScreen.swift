@@ -72,24 +72,22 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private var addOnSection: some View {
-        switch changeAddonVm.addonType {
-        case .travel:
-            travelAddonSection(for: changeAddonVm.addonOffer!.quote.selectableOffer!)
-        case .car:
-            carAddonSection(for: changeAddonVm.addonOffer!.quote.toggleableOffer!)
-        case .none: EmptyView()
+        if let selectableOffer = changeAddonVm.addonOffer?.quote.selectableOffer {
+            travelAddonSection(for: selectableOffer)
+        } else if let carOffer = changeAddonVm.addonOffer?.quote.toggleableOffer {
+            carAddonSection(carOffer: changeAddonVm.addonOffer!)
         }
     }
 
     @ViewBuilder
-    private func carAddonSection(for toggleableOffer: AddonOfferToggleable) -> some View {
+    private func carAddonSection(carOffer: AddonOfferV2) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            hText(changeAddonVm.addonOffer?.quote.displayTitle ?? "")
-            hText(changeAddonVm.addonOffer?.quote.displayDescription ?? "", style: .label)
+            hText(carOffer.quote.displayTitle)
+            hText(carOffer.quote.displayDescription, style: .label)
                 .foregroundColor(hTextColor.Translucent.secondary)
                 .padding(.top, .padding8)
 
-            ForEach(changeAddonVm.activeAddons) { activeAddon in
+            ForEach(carOffer.activeAddons) { activeAddon in
                 addonToggleRow(
                     title: activeAddon.displayTitle,
                     subtitle: activeAddon.displayDescription,
@@ -103,22 +101,22 @@ struct ChangeAddonScreen: View {
                 .padding(.top, .padding16)
             }
 
-            ForEach(toggleableOffer.quotes) { quote in
+            ForEach(carOffer.toggleableAddons) { addonQuote in
                 addonToggleRow(
-                    title: quote.displayTitle,
-                    subtitle: quote.displayDescription,
-                    isSelected: changeAddonVm.isAddonSelected(quote),
+                    title: addonQuote.displayTitle,
+                    subtitle: addonQuote.displayDescription,
+                    isSelected: changeAddonVm.isAddonSelected(addonQuote),
                     trailingView: {
                         hPill(
                             text: L10n.addonFlowPriceLabel(
-                                quote.cost.premium.gross?.formattedAmount ?? ""
+                                addonQuote.cost.premium.gross?.formattedAmount ?? ""
                             ),
                             color: .grey,
                             colorLevel: .one
                         )
                         .hFieldSize(.small)
                     },
-                    onTap: { changeAddonVm.selectAddon(id: quote.id, addonType: .car) }
+                    onTap: { changeAddonVm.selectAddon(id: addonQuote.id, addonType: .car) }
                 )
                 .padding(.top, .padding16)
             }
@@ -175,14 +173,14 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private func travelAddonSection(for selectable: AddonOfferSelectable) -> some View {
-        if let selectedQuote = changeAddonVm.selectedQuote(for: selectable) {
+        if let selectedQuote = changeAddonVm.selectedAddons.first {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     hText(selectable.fieldTitle)
                     Spacer()
                     hPill(
                         text: L10n.addonFlowPriceLabel(
-                            changeAddonVm.getPriceDifference(for: selectedQuote)?.formattedAmount ?? ""
+                            changeAddonVm.getGrossPriceDifference(for: selectedQuote).formattedAmount
                         ),
                         color: .grey,
                         colorLevel: .one
@@ -195,7 +193,7 @@ struct ChangeAddonScreen: View {
                     .padding(.top, .padding8)
 
                 DropdownView(
-                    value: changeAddonVm.selectedQuote(for: selectable)?.displayTitle ?? "",
+                    value: selectedQuote.displayTitle,
                     placeHolder: L10n.addonFlowSelectDaysPlaceholder
                 ) {
                     changeAddonNavigationVm.isSelectableAddonPresented = selectable

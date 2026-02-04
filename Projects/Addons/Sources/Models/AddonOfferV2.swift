@@ -4,6 +4,8 @@ import hCore
 /// Output type for AddonOffer mutation.
 /// Returns offer with quote and addons with prices etc to show in the offer page.
 public struct AddonOfferV2: Equatable, Sendable {
+    let addonType: AddonType
+
     /// Title to show in offer page.
     /// eg "Extend your coverage"
     let pageTitle: String
@@ -22,13 +24,18 @@ public struct AddonOfferV2: Equatable, Sendable {
         pageTitle: String,
         pageDescription: String,
         quote: AddonContractQuote,
-        currentTotalCost: ItemCost
+        currentTotalCost: ItemCost,
+        addonType: AddonType
     ) {
         self.pageTitle = pageTitle
         self.pageDescription = pageDescription
         self.quote = quote
         self.currentTotalCost = currentTotalCost
+        self.addonType = addonType
     }
+}
+public enum AddonType: Equatable, Sendable {
+    case travel, car
 }
 
 /// Returns price for an Addon offer.
@@ -80,20 +87,17 @@ public struct AddonContractQuote: Equatable, Sendable {
         self.productVariant = productVariant
     }
 
-    // Convenience accessors kept as arrays to minimize downstream changes.
-
     var selectableOffer: AddonOfferSelectable? {
         if case .selectable(let s) = addonOffer { return s }
         return nil
     }
-    var selectableAddons: [AddonOfferQuote] { selectableOffer?.quotes ?? [] }
 
     var toggleableOffer: AddonOfferToggleable? {
         if case .toggleable(let t) = addonOffer { return t }
         return nil
     }
-
-    var toggleableAddons: [AddonOfferQuote] { toggleableOffer?.quotes ?? [] }
+    public var selectableAddons: [AddonOfferQuote] { selectableOffer?.quotes ?? [] }
+    public var toggleableAddons: [AddonOfferQuote] { toggleableOffer?.quotes ?? [] }
 
     var addons: [AddonOfferQuote] {
         switch addonOffer {
@@ -216,5 +220,30 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
         self.displayItems = displayItems
         self.cost = cost
         self.addonVariant = addonVariant
+    }
+}
+
+extension AddonOfferV2 {
+    var selectableAddons: [AddonOfferQuote] {
+        quote.selectableAddons
+    }
+
+    var allAddons: [AddonOfferQuote] {
+        quote.addons
+    }
+
+    var toggleableAddons: [AddonOfferQuote] {
+        quote.toggleableAddons
+    }
+
+    var activeAddons: [ActiveAddon] {
+        quote.activeAddons
+    }
+    var hasActiveAddons: Bool {
+        !activeAddons.isEmpty
+    }
+
+    var activationDate: Date {
+        quote.activationDate
     }
 }

@@ -28,7 +28,7 @@ extension ChangeAddonViewModel {
             id: contractId,
             displayName: displayName,
             exposureName: L10n.addonFlowSummaryActiveFrom(
-                activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                addonOffer?.activationDate.displayDateDDMMMYYYYFormat ?? ""
             ),
             premium: getPremium(),
             documentSection: .init(
@@ -44,11 +44,11 @@ extension ChangeAddonViewModel {
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
-        let priceIncrease = getPriceIncrease(offer: addonOffer!, for: addonType!)
+        let priceIncrease = getPriceIncrease()
 
         let vm = QuoteSummaryViewModel(
             contract: [contractInfo],
-            activationDate: activationDate,
+            activationDate: addonOffer?.activationDate,
             premium: .init(
                 gross: priceIncrease.gross,
                 net: priceIncrease.net

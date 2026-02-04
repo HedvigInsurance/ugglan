@@ -9,7 +9,6 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var addonOffer: AddonOfferV2?
     @Published var selectedAddonIds: Set<String> = []
-    @Published var addonType: AddonType? = nil
     let contractId: String
     let addonSource: AddonSource
 
@@ -19,7 +18,7 @@ public class ChangeAddonViewModel: ObservableObject {
         Task {
             await getAddons()
 
-            if let selectable = selectableAddons.first {
+            if let selectable = addonOffer?.selectableAddons.first {
                 selectedAddonIds = [selectable.id]
             }
         }
@@ -29,28 +28,8 @@ public class ChangeAddonViewModel: ObservableObject {
         selectable.quotes.count <= 1
     }
 
-    var selectableAddons: [AddonOfferQuote] {
-        addonOffer?.quote.selectableAddons ?? []
-    }
-
-    var toggleableAddons: [AddonOfferQuote] {
-        addonOffer?.quote.toggleableAddons ?? []
-    }
-
-    var activeAddons: [ActiveAddon] {
-        addonOffer?.quote.activeAddons ?? []
-    }
-
-    var activationDate: Date? {
-        addonOffer?.quote.activationDate
-    }
-
     var allowToContinue: Bool {
         !selectedAddonIds.isEmpty
-    }
-
-    func selectedQuote(for selectable: AddonOfferSelectable) -> AddonOfferQuote? {
-        selectable.quotes.first { selectedAddonIds.contains($0.id) }
     }
 
     func isAddonSelected(_ addon: AddonOfferQuote) -> Bool {
@@ -79,22 +58,9 @@ public class ChangeAddonViewModel: ObservableObject {
 
         do {
             let data = try await addonService.getAddonOffers(contractId: contractId)
-            let selectableAddons = data.quote.selectableAddons
-            let toggleableAddons = data.quote.toggleableAddons
-
-            let type: AddonType =
-                switch (selectableAddons.isEmpty, toggleableAddons.isEmpty) {
-                case (false, true):
-                    .travel
-                case (true, false):
-                    .car
-                default:
-                    throw AddonsError.somethingWentWrong
-                }
 
             withAnimation {
                 addonOffer = data
-                addonType = type
                 fetchAddonsViewState = .success
             }
         } catch {
@@ -123,82 +89,82 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     private func logAddonEvent() {
+        guard let addonOffer else { return }
+        let logType = addonOffer.addonType.asLoggingAddonType()
+        let eventType = addonOffer.addonType.asLoggingAddonEventType(hasActiveAddons: addonOffer.hasActiveAddons)
         selectedAddons.map(\.addonVariant.product)
             .forEach { selectedSubtype in
-                guard let addonType else { return }
-                let logInfoModel = AddonLogInfo(
+                let logInfo = AddonLogInfo(
                     flow: addonSource,
                     subType: selectedSubtype,
-                    type: addonType.asLoggingAddonType()
+                    type: logType
                 )
-                let eventType = addonType.asLoggingAddonEventType(hasActiveAddons: !activeAddons.isEmpty)
                 log.addUserAction(
                     type: .custom,
                     name: eventType.rawValue,
                     error: nil,
-                    attributes: logInfoModel.asAddonAttributes
+                    attributes: logInfo.asAddonAttributes
                 )
             }
     }
 
-    func getPriceDifference(for addonOffer: AddonOfferQuote) -> MonetaryAmount? {
-        let activeAddonPrice = activeAddons.first?.cost.premium.gross!.value ?? 0
-        let diff = addonOffer.cost.premium.gross!.value - activeAddonPrice
-        let currency = addonOffer.cost.premium.gross!.currency
-
-        return .init(amount: diff, currency: currency)
+    func getGrossPriceDifference(for addonOfferQuote: AddonOfferQuote) -> MonetaryAmount {
+        guard let currentGrossPrice = addonOfferQuote.cost.premium.gross else { return .sek(0) }
+        let activeAddonGrossPrice = addonOffer?.activeAddons.first?.cost.premium.gross?.value ?? 0
+        return .init(
+            amount: currentGrossPrice.value - activeAddonGrossPrice,
+            currency: currentGrossPrice.currency
+        )
     }
 
-    func getPriceIncrease(
-        offer: AddonOfferV2,
-        for addonType: AddonType
-    ) -> (net: MonetaryAmount, gross: MonetaryAmount) {
-        let currency = offer.currentTotalCost.premium.gross!.currency
-        let currentAddonsNetPrice = activeAddons.map(\.cost.premium.net!.value).reduce(0, +)
-        let purchasedAddonsNetPrice = selectedAddons.map(\.cost.premium.net!.value).reduce(0, +)
-        let currentAddonsGrossPrice = activeAddons.map(\.cost.premium.gross!.value).reduce(0, +)
-        let purchasedAddonsGrossPrice = selectedAddons.map(\.cost.premium.gross!.value).reduce(0, +)
+    func getPriceIncrease() -> Premium {
+        guard let addonOffer else { return .init(gross: .sek(0), net: .sek(0)) }
+        let currency = addonOffer.currentTotalCost.premium.gross?.currency ?? "SEK"
+        let currentAddonsNetPrice = addonOffer.activeAddons.compactMap(\.cost.premium.net?.value).reduce(0, +)
+        let purchasedAddonsNetPrice = selectedAddons.compactMap(\.cost.premium.net?.value).reduce(0, +)
+        let currentAddonsGrossPrice = addonOffer.activeAddons.compactMap(\.cost.premium.gross?.value).reduce(0, +)
+        let purchasedAddonsGrossPrice = selectedAddons.compactMap(\.cost.premium.gross?.value).reduce(0, +)
 
-        switch (addonType) {
+        switch (addonOffer.addonType) {
         case .car:
-            return (
-                net: .init(amount: purchasedAddonsNetPrice, currency: currency),
-                gross: .init(amount: purchasedAddonsGrossPrice, currency: currency)
+            return .init(
+                gross: .init(amount: purchasedAddonsGrossPrice, currency: currency),
+                net: .init(amount: purchasedAddonsNetPrice, currency: currency)
             )
         case .travel:
-            return (
-                net: .init(amount: purchasedAddonsNetPrice - currentAddonsNetPrice, currency: currency),
-                gross: .init(amount: purchasedAddonsGrossPrice - currentAddonsGrossPrice, currency: currency)
+            return .init(
+                gross: .init(amount: purchasedAddonsGrossPrice - currentAddonsGrossPrice, currency: currency),
+                net: .init(amount: purchasedAddonsNetPrice - currentAddonsNetPrice, currency: currency)
             )
         }
     }
 
     func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
-        guard let addonOffer, let addonType else { return [] }
+        guard let addonOffer else { return [] }
         var items: [QuoteDisplayItem] = []
 
         let baseTitle = addonOffer.quote.displayTitle
-        let baseGross = addonOffer.currentTotalCost.premium.gross!.formattedAmountPerMonth
+        let baseGross = addonOffer.quote.baseQuoteCost.premium.gross!.formattedAmountPerMonth
         items.append(.init(title: baseTitle, value: baseGross))
 
         let crossDisplayTitle =
-            switch addonType {
+            switch addonOffer.addonType {
             case .car: false
             case .travel: true
             }
 
-        items += activeAddons.map { activeAddon in
+        items += addonOffer.activeAddons.map { activeAddon in
             .init(
-                title: activeAddon.displayDescription!,
-                value: activeAddon.cost.premium.gross!.formattedAmountPerMonth,
+                title: activeAddon.displayTitle,
+                value: activeAddon.cost.premium.gross?.formattedAmountPerMonth ?? "",
                 crossDisplayTitle: crossDisplayTitle
             )
         }
 
         items += selectedAddons.map { selectedAddon in
             .init(
-                title: selectedAddon.addonVariant.displayName,
-                value: selectedAddon.cost.premium.gross!.formattedAmountPerMonth
+                title: selectedAddon.displayTitle,
+                value: selectedAddon.cost.premium.gross?.formattedAmountPerMonth ?? ""
             )
         }
 
@@ -216,27 +182,22 @@ public class ChangeAddonViewModel: ObservableObject {
         return displayItems
     }
 
-    public func getTotalPrice() -> (net: MonetaryAmount, gross: MonetaryAmount) {
-        switch addonType {
+    public func getTotalPrice() -> Premium {
+        guard let addonOffer else { return .zeroSek }
+        switch addonOffer.addonType {
         case .car:
             return getCarTotalPrice()
         case .travel:
             return getTravelTotalPrice()
-        case .none:
-            let zero = MonetaryAmount(amount: 0, currency: "SEK")
-            return (net: zero, gross: zero)
         }
     }
 
-    private func getCarTotalPrice() -> (net: MonetaryAmount, gross: MonetaryAmount) {
+    private func getCarTotalPrice() -> Premium {
         let selectedQuotes = selectedAddons
-        guard !selectedQuotes.isEmpty else {
-            let zero = MonetaryAmount(amount: 0, currency: "SEK")
-            return (net: zero, gross: zero)
-        }
+        guard !selectedQuotes.isEmpty, let addonOffer else { return .zeroSek }
 
-        let baseGross = addonOffer?.quote.baseQuoteCost.premium.gross
-        let baseNet = addonOffer?.quote.baseQuoteCost.premium.net
+        let baseGross = addonOffer.quote.baseQuoteCost.premium.gross
+        let baseNet = addonOffer.quote.baseQuoteCost.premium.net
 
         let addonsGross = selectedQuotes.reduce(Float(0)) { sum, quote in
             sum + (quote.cost.premium.gross?.floatAmount ?? 0)
@@ -245,7 +206,7 @@ public class ChangeAddonViewModel: ObservableObject {
             sum + (quote.cost.premium.net?.floatAmount ?? 0)
         }
 
-        let currency = baseGross?.currency ?? selectedQuotes.first?.cost.premium.gross?.currency ?? "SEK"
+        let currency = baseGross?.currency ?? "SEK"
 
         let totalGross = MonetaryAmount(
             amount: (baseGross?.floatAmount ?? 0) + addonsGross,
@@ -256,112 +217,76 @@ public class ChangeAddonViewModel: ObservableObject {
             currency: currency
         )
 
-        return (net: totalNet, gross: totalGross)
+        return .init(gross: totalGross, net: totalNet)
     }
 
-    private func getTravelTotalPrice() -> (net: MonetaryAmount, gross: MonetaryAmount) {
-        let selectedQuote = addonOffer!.quote.selectableAddons.filter { selectedAddonIds.contains($0.id) }.first
+    private func getTravelTotalPrice() -> Premium {
+        guard let addonOffer else { return .zeroSek }
+        let selectedQuote = addonOffer.quote.selectableAddons.filter { selectedAddonIds.contains($0.id) }.first
         let currency = selectedQuote?.cost.premium.gross?.currency ?? "SEK"
 
-        if !activeAddons.isEmpty {
+        if addonOffer.hasActiveAddons {
             // Upgrade scenario: return difference
             guard let selectedQuoteNet = selectedQuote?.cost.premium.net,
-                let currentAddonNet = activeAddons.first?.cost.premium.net
+                let currentAddonNet = addonOffer.activeAddons.first?.cost.premium.net
             else {
                 let zero = MonetaryAmount(amount: 0, currency: currency)
-                return (net: zero, gross: zero)
+                return .init(gross: zero, net: zero)
             }
 
             let netAmount = selectedQuoteNet.floatAmount - currentAddonNet.floatAmount
             let netDiff = MonetaryAmount(amount: netAmount, currency: selectedQuoteNet.currency)
 
             // For upgrades, gross is same as net (no separate gross calculation for difference)
-            return (net: netDiff, gross: netDiff)
+            return .init(gross: netDiff, net: netDiff)
         } else {
-            guard let baseGross = addonOffer?.quote.baseQuoteCost.premium.gross,
-                let baseNet = addonOffer?.quote.baseQuoteCost.premium.net,
+            guard let baseGross = addonOffer.quote.baseQuoteCost.premium.gross,
+                let baseNet = addonOffer.quote.baseQuoteCost.premium.net,
                 let addonGross = selectedQuote?.cost.premium.gross,
                 let addonNet = selectedQuote?.cost.premium.net
             else {
                 let zero = MonetaryAmount(amount: 0, currency: currency)
-                return (net: zero, gross: zero)
+                return .init(gross: zero, net: zero)
             }
 
             let totalGross = MonetaryAmount(amount: baseGross.floatAmount + addonGross.floatAmount, currency: currency)
             let totalNet = MonetaryAmount(amount: baseNet.floatAmount + addonNet.floatAmount, currency: currency)
 
-            return (net: totalNet, gross: totalGross)
+            return .init(gross: totalGross, net: totalNet)
         }
     }
 
-    func getPremium() -> Premium? {
-        switch addonType {
+    func getPremium() -> Premium {
+        guard let addonOffer, !selectedAddons.isEmpty else { return .zeroSek }
+
+        let currency = addonOffer.quote.baseQuoteCost.premium.gross?.currency ?? "SEK"
+
+        let baseGross = addonOffer.quote.baseQuoteCost.premium.gross?.floatAmount ?? 0
+        let baseNet = addonOffer.quote.baseQuoteCost.premium.net?.floatAmount ?? 0
+
+        let activeAddons = addonOffer.activeAddons
+        let activeGross = activeAddons.compactMap(\.cost.premium.gross?.floatAmount).reduce(Float(0), +)
+        let activeNet = activeAddons.compactMap(\.cost.premium.net?.floatAmount).reduce(Float(0), +)
+
+        let selectedGross = selectedAddons.compactMap(\.cost.premium.gross?.floatAmount).reduce(Float(0), +)
+        let selectedNet = selectedAddons.compactMap(\.cost.premium.net?.floatAmount).reduce(Float(0), +)
+
+        let totalGross: Float
+        let totalNet: Float
+
+        switch addonOffer.addonType {
         case .car:
-            return getCarPremium()
+            totalGross = baseGross + selectedGross + activeGross
+            totalNet = baseNet + selectedNet + activeNet
         case .travel:
-            return getTravelPremium()
-        case .none:
-            return nil
-        }
-    }
-
-    private func getCarPremium() -> Premium? {
-        let selectedQuotes = selectedAddons
-        guard !selectedQuotes.isEmpty else {
-            return nil
+            totalGross = baseGross + selectedGross
+            totalNet = baseNet + selectedNet
         }
 
-        let baseGross = addonOffer?.quote.baseQuoteCost.premium.gross
-        let baseNet = addonOffer?.quote.baseQuoteCost.premium.net
-
-        let addonsGross = selectedQuotes.reduce(Float(0)) { sum, quote in
-            sum + (quote.cost.premium.gross?.floatAmount ?? 0)
-        }
-        let addonsNet = selectedQuotes.reduce(Float(0)) { sum, quote in
-            sum + (quote.cost.premium.net?.floatAmount ?? 0)
-        }
-
-        let currency = baseGross?.currency ?? selectedQuotes.first?.cost.premium.gross?.currency ?? "SEK"
-
-        let totalGross = MonetaryAmount(
-            amount: (baseGross?.floatAmount ?? 0) + addonsGross,
-            currency: currency
+        return Premium(
+            gross: MonetaryAmount(amount: totalGross, currency: currency),
+            net: MonetaryAmount(amount: totalNet, currency: currency)
         )
-        let totalNet = MonetaryAmount(
-            amount: (baseNet?.floatAmount ?? 0) + addonsNet,
-            currency: currency
-        )
-
-        return Premium(gross: totalGross, net: totalNet)
-    }
-
-    private func getTravelPremium() -> Premium? {
-        let selectedQuote = addonOffer!.quote.selectableAddons.filter { selectedAddonIds.contains($0.id) }.first
-
-        if !activeAddons.isEmpty {
-            return Premium(
-                gross: nil,
-                net: selectedQuote?.cost.premium.net
-            )
-        } else {
-            let baseGross = addonOffer?.quote.baseQuoteCost.premium.gross
-            let baseNet = addonOffer?.quote.baseQuoteCost.premium.net
-            let addonGross = selectedQuote?.cost.premium.gross
-            let addonNet = selectedQuote?.cost.premium.net
-
-            guard let bg = baseGross, let bn = baseNet,
-                let ag = addonGross, let an = addonNet
-            else {
-                return selectedQuote?.cost.premium
-            }
-
-            // Total gross = base gross + addon gross
-            let totalGross = MonetaryAmount(amount: bg.floatAmount + ag.floatAmount, currency: bg.currency)
-            // Total net = base net + addon net (discounts already reflected in net prices)
-            let totalNet = MonetaryAmount(amount: bn.floatAmount + an.floatAmount, currency: bn.currency)
-
-            return Premium(gross: totalGross, net: totalNet)
-        }
     }
 
     func getDisplayItems() -> [QuoteDisplayItem] {
@@ -370,9 +295,7 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 }
 
-enum AddonType {
-    case travel, car
-
+extension AddonType {
     func asLoggingAddonType() -> AddonLogInfo.AddonType {
         switch self {
         case .travel: return .travelAddon

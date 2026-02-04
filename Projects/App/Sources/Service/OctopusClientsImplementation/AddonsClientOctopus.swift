@@ -23,11 +23,22 @@ class AddonsClientOctopus: AddonsClient {
             throw AddonsError.somethingWentWrong
         }
 
+        let quote = AddonContractQuote(data: addonOffer.quote)
+        let currentTotalCost = ItemCost(data: addonOffer.currentTotalCost)
+
+        let addonType: AddonType =
+            switch (quote.selectableAddons.isEmpty, quote.toggleableAddons.isEmpty) {
+            case (false, true): .travel
+            case (true, false): .car
+            default: throw AddonsError.somethingWentWrong
+            }
+
         return AddonOfferV2(
             pageTitle: addonOffer.pageTitle,
             pageDescription: addonOffer.pageDescription,
-            quote: .init(data: addonOffer.quote),
-            currentTotalCost: .init(data: addonOffer.currentTotalCost)
+            quote: quote,
+            currentTotalCost: currentTotalCost,
+            addonType: addonType
         )
     }
 
@@ -296,7 +307,7 @@ extension ActiveAddon {
             id: data.id,
             cost: .init(data: data.cost),
             displayTitle: data.displayTitle,
-            displayDescription: data.displayDescription
+            displayDescription: data.displayDescription!
         )
     }
 }
