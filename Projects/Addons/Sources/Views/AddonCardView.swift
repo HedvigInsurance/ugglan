@@ -24,7 +24,7 @@ public struct AddonCardView: View {
                             .accessibilityAddTraits(.isStaticText)
                         Spacer()
                         if let badge = addon.badges.first {
-                            hPill(text: badge, color: .grey, colorLevel: .three)
+                            hPill(text: badge, color: .grey)
                                 .hFieldSize(.small)
                         }
                     }
@@ -36,7 +36,7 @@ public struct AddonCardView: View {
             }
         }
         .hWithoutHorizontalPadding([.section])
-        .sectionContainerStyle(.opaque)
+        .sectionContainerStyle(.negative)
         .overlay(
             RoundedRectangle(cornerRadius: .cornerRadiusL).stroke(hBorderColor.primary, lineWidth: 1)
         )
