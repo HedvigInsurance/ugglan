@@ -57,13 +57,13 @@ final class CrossSellStoreTests: XCTestCase {
         )
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchAddonBanner)
+        await store.sendAsync(.fetchAddonBanners)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchAddonBanner] == nil && store.state.addonBanner == AddonBannerModel.getDefault
+            store.loadingState[.fetchAddonBanners] == nil && store.state.addonBanners == AddonBannerModel.getDefault
         }
 
         assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getAddonBannerModel)
+        assert(mockService.events.first == .getAddonBanners)
     }
 
     func testFetchAddonBannerDataFailure() async throws {
@@ -73,9 +73,9 @@ final class CrossSellStoreTests: XCTestCase {
 
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchAddonBanner)
+        await store.sendAsync(.fetchAddonBanners)
         try await Task.sleep(seconds: 0.5)
-        assert(store.loadingState[.fetchAddonBanner] != nil)
+        assert(store.loadingState[.fetchAddonBanners] != nil)
         assert(store.state.crossSells?.others.isEmpty == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getAddonBannerModel)
@@ -117,12 +117,14 @@ extension CrossSellState {
 
 @MainActor
 extension AddonBannerModel {
-    fileprivate static let getDefault = AddonBannerModel(
-        contractIds: ["contractId"],
-        titleDisplayName: "display name",
-        descriptionDisplayName: "description",
-        badges: []
-    )
+    fileprivate static let getDefault = [
+        AddonBannerModel(
+            contractIds: ["contractId"],
+            titleDisplayName: "display name",
+            descriptionDisplayName: "description",
+            badges: []
+        )
+    ]
 }
 
 @MainActor

@@ -74,8 +74,8 @@ public class FetchContractsClientDemo: FetchContractsClient {
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }
 
-    public func getAddonBannerModel(source _: AddonSource) async throws -> [AddonBannerModel] {
-        let bannerData = [
+    public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBannerModel] {
+        [
             AddonBannerModel(
                 contractIds: [],
                 titleDisplayName: "Travel Plus",
@@ -84,10 +84,5 @@ public class FetchContractsClientDemo: FetchContractsClient {
                 badges: ["Popular"]
             )
         ]
-
-        if bannerData.first(where: { $0.contractIds.isEmpty }) == nil {
-            return bannerData
-        }
-        return []
     }
 }

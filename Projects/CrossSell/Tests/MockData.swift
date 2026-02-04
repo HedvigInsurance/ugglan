@@ -7,12 +7,14 @@ import hCore
 struct MockData {
     static func createMockCrossSellService(
         fetchAddonBannerModel: @escaping FetchAddonBanner = { _ in
-            .init(
-                contractIds: ["contractId"],
-                titleDisplayName: "title",
-                descriptionDisplayName: "description",
-                badges: []
-            )
+            [
+                .init(
+                    contractIds: ["contractId"],
+                    titleDisplayName: "title",
+                    descriptionDisplayName: "description",
+                    badges: []
+                )
+            ]
         },
         fetchCrossSell: @escaping FetchCrossSell = { _ in
             .init(
@@ -37,7 +39,7 @@ enum MockContractError: Error {
 }
 
 typealias FetchCrossSell = (CrossSellSource) async throws -> CrossSells
-typealias FetchAddonBanner = (AddonSource) async throws -> AddonBannerModel?
+typealias FetchAddonBanner = (AddonSource) async throws -> [AddonBannerModel]
 
 class MockCrossSellService: CrossSellClient {
     var events = [Event]()
@@ -64,7 +66,7 @@ class MockCrossSellService: CrossSellClient {
         return data
     }
 
-    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBannerModel] {
         events.append(.getAddonBannerModel)
         let data = try await fetchAddonBannerModel(source)
         return data

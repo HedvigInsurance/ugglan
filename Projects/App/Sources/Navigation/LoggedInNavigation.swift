@@ -147,12 +147,12 @@ class PushNotificationHandler {
     func handleAddon() async {
         do {
             let client: FetchContractsClient = Dependencies.shared.resolve()
-            let bannerData = try await client.getAddonBannerModel(source: .deeplink)
+            let addonBanners = try await client.getAddonBanners(source: .deeplink)
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
             var addonConfigs: [AddonConfig] = []
 
-            for addon in bannerData {
+            for addon in addonBanners {
                 let addonContracts = addon.contractIds.compactMap {
                     contractStore.state.contractForId($0)
                 }
@@ -946,7 +946,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func addonAdded() {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
-            await store.sendAsync(.fetchAddonBanner)
+            await store.sendAsync(.fetchAddonBanners)
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
     }

@@ -6,7 +6,8 @@ public struct CrossSellState: StateProtocol {
     public init() {}
 
     public var crossSells: CrossSells?
-    public var addonBanner: AddonBannerModel?
+
+    public var addonBanners: [AddonBannerModel] = []
 
     public var hasNewOffer = false
 

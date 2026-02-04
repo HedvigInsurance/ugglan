@@ -13,6 +13,10 @@ public class AddonsClientDemo: AddonsClient {
         await delay(TimeInterval.random(in: 0.5...1.5))
     }
 
+    public func getAddonBanners(source: AddonSource) async throws -> [AddonBannerModel] {
+        []
+    }
+
     public init() {
         self.offer = testTravelOfferNoActive
     }

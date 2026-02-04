@@ -96,7 +96,7 @@ struct ChangeAddonScreen: View {
                     isSelected: true,
                     isDisabled: true,
                     trailingView: {
-                        hPill(text: L10n.dashboardInsuranceStatusActive, color: .green)
+                        hPill(text: L10n.addonBadgeActive, color: .green)
                             .hFieldSize(.small)
                     }
                 )
