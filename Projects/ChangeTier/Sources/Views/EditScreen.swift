@@ -1,4 +1,3 @@
-import Addons
 import SwiftUI
 import hCore
 import hCoreUI
@@ -110,7 +109,7 @@ struct EditScreen: View {
     private func leftViewForAddon(_ addon: AddonQuote) -> AnyView {
         leftView(
             title: addon.displayName ?? "",
-            premium: addon.itemCost.premium.gross.formattedAmountPerMonth,
+            premium: addon.premium.formattedAmountPerMonth,
             subTitle: nil
         )
     }

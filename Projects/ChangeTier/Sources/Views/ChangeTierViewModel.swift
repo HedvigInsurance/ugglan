@@ -1,4 +1,3 @@
-import Addons
 import Foundation
 import SwiftUI
 import hCore
@@ -127,14 +126,9 @@ public class ChangeTierViewModel: ObservableObject {
             self.excludedAddonTypes.append(addonSubtype)
             self.selectedAddon = .init(
                 displayName: L10n.tierFlowAddonNoCoverageLabel,
-                displayNameLong: "",
-                quoteId: L10n.tierFlowAddonNoCoverageLabel,
                 addonId: L10n.tierFlowAddonNoCoverageLabel,
                 addonSubtype: addonSubtype,
-                displayItems: [],
-                itemCost: .init(premium: .init(gross: .sek(0), net: .sek(0)), discounts: []),
-                addonVariant: nil,
-                documents: []
+                premium: .sek(0)
             )
             calculateTotal()
         }
@@ -192,7 +186,7 @@ public class ChangeTierViewModel: ObservableObject {
             .map { quote in
                 QuoteDisplayItem(
                     title: quote.addonSubtype,
-                    value: quote.itemCost.premium.gross.formattedAmountPerMonth
+                    value: quote.premium.formattedAmountPerMonth
                 )
             }
         displayItemsList.append(contentsOf: addonsItems)

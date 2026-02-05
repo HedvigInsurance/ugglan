@@ -1,4 +1,3 @@
-import Addons
 import ChangeTier
 import Foundation
 import MoveFlow
@@ -288,28 +287,20 @@ extension ChangeTierIntentModel {
         }
 
         var addonQuotes: [String: [AddonQuote]] = [:]
-        let tiers = groupedQuotes.compactMap { _, quotes in
+        let tiers = groupedQuotes.compactMap {
+            _,
+            quotes in
             if let firstQuote = quotes.first {
                 let quotes = quotes.compactMap { quote in
-                    addonQuotes[quote.id] = quote.addons.compactMap({ addonQuote in
-                        AddonQuote(
-                            displayName: addonQuote.coverageDisplayName,
-                            displayNameLong: "",
-                            quoteId: "",
-                            addonId: addonQuote.addonId,
-                            addonSubtype: addonQuote.addonVariant.displayName,
-                            displayItems: [],
-                            itemCost: .init(
-                                premium: .init(
-                                    gross: .init(fragment: addonQuote.premium.fragments.moneyFragment),
-                                    net: .init(fragment: addonQuote.premium.fragments.moneyFragment)
-                                ),
-                                discounts: []
-                            ),
-                            addonVariant: nil,
-                            documents: []
-                        )
-                    })
+                    addonQuotes[quote.id] = quote.addons.compactMap(
+                        { addonQuote in
+                            AddonQuote(
+                                displayName: addonQuote.coverageDisplayName,
+                                addonId: addonQuote.addonId,
+                                addonSubtype: addonQuote.addonVariant.displayName,
+                                premium: .init(fragment: addonQuote.premium.fragments.moneyFragment)
+                            )
+                        })
                     return Quote(
                         id: quote.id,
                         quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
