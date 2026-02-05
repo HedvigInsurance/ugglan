@@ -80,7 +80,7 @@ struct ChangeAddonScreen: View {
                     Spacer()
                     hPill(
                         text: L10n.addonFlowPriceLabel(
-                            changeAddonVm.getPriceIncrease().gross!.formattedAmount
+                            changeAddonVm.getPriceIncrease().gross.formattedAmount
                         ),
                         color: .grey,
                         colorLevel: .one
@@ -125,7 +125,7 @@ struct ChangeAddonScreen: View {
                     isSelected: changeAddonVm.isAddonSelected(addon),
                     trailingView: {
                         hPill(
-                            text: L10n.addonFlowPriceLabel(addon.cost.premium.gross?.formattedAmount ?? ""),
+                            text: L10n.addonFlowPriceLabel(addon.cost.premium.gross.formattedAmount),
                             color: .grey,
                             colorLevel: .one
                         )

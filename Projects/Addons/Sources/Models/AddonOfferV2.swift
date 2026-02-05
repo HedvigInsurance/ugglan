@@ -254,4 +254,8 @@ extension AddonOfferV2 {
     var activationDate: Date {
         quote.activationDate
     }
+
+    var currency: String {
+        currentTotalCost.premium.gross.currency
+    }
 }
