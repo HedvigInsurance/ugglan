@@ -74,7 +74,7 @@ struct ChangeAddonScreen: View {
     private var addOnSection: some View {
         if let offer = changeAddonVm.addonOffer {
             VStack(alignment: .leading, spacing: 0) {
-                let displayPriceDiff = !changeAddonVm.selectedAddonIds.isEmpty
+                let displayPriceDiff = !changeAddonVm.selectedAddons.isEmpty
                 HStack {
                     hText(offer.pageTitle)
                     Spacer()
@@ -118,22 +118,20 @@ struct ChangeAddonScreen: View {
                 .padding(.top, .padding16)
             }
 
-            ForEach(carOffer.allAddons) { addonQuote in
+            ForEach(carOffer.allAddons) { addon in
                 addonToggleRow(
-                    title: addonQuote.displayTitle,
-                    subtitle: addonQuote.displayDescription,
-                    isSelected: changeAddonVm.isAddonSelected(addonQuote),
+                    title: addon.displayTitle,
+                    subtitle: addon.displayDescription,
+                    isSelected: changeAddonVm.isAddonSelected(addon),
                     trailingView: {
                         hPill(
-                            text: L10n.addonFlowPriceLabel(
-                                addonQuote.cost.premium.gross?.formattedAmount ?? ""
-                            ),
+                            text: L10n.addonFlowPriceLabel(addon.cost.premium.gross?.formattedAmount ?? ""),
                             color: .grey,
                             colorLevel: .one
                         )
                         .hFieldSize(.small)
                     },
-                    onTap: { changeAddonVm.selectAddon(id: addonQuote.id, addonType: .car) }
+                    onTap: { changeAddonVm.selectAddon(addon: addon) }
                 )
                 .padding(.top, .padding16)
             }

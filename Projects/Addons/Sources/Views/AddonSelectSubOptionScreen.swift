@@ -5,7 +5,7 @@ import hCoreUI
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     let selectable: AddonOfferSelectable
-    @State var selectedQuote: AddonOfferQuote?
+    @State var selectedAddon: AddonOfferQuote?
     @EnvironmentObject var router: Router
 
     init(
@@ -14,10 +14,7 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.selectable = selectable
         self.changeAddonNavigationVm = changeAddonNavigationVm
-
-        if let selectedQuote = changeAddonNavigationVm.changeAddonVm?.selectedAddons.first ?? selectable.quotes.first {
-            _selectedQuote = State(initialValue: selectedQuote)
-        }
+        selectedAddon = changeAddonNavigationVm.changeAddonVm?.selectedAddons.first ?? selectable.quotes.first
     }
 
     var body: some View {
@@ -28,11 +25,8 @@ struct AddonSelectSubOptionScreen: View {
                         hRadioField(
                             id: quote,
                             itemModel: nil,
-                            leftView: {
-                                leftView(for: quote)
-                                    .asAnyView
-                            },
-                            selected: $selectedQuote,
+                            leftView: { leftView(for: quote).asAnyView },
+                            selected: $selectedAddon,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -51,13 +45,13 @@ struct AddonSelectSubOptionScreen: View {
                         .primary,
                         content: .init(title: L10n.addonFlowSelectButton),
                         {
-                            if let selected = selectedQuote {
-                                changeAddonNavigationVm.changeAddonVm?.selectAddon(id: selected.id, addonType: .travel)
+                            if let selectedAddon {
+                                changeAddonNavigationVm.changeAddonVm?.selectAddon(addon: selectedAddon)
                             }
                             router.dismiss()
                         }
                     )
-                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedQuote?.displayTitle ?? ""))
+                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedAddon?.displayTitle ?? ""))
 
                     hCancelButton {
                         router.dismiss()

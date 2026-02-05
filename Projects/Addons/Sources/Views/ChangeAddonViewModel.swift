@@ -8,7 +8,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var addonOffer: AddonOfferV2?
-    @Published var selectedAddonIds: Set<String> = []
+    @Published var selectedAddons: Set<AddonOfferQuote> = []
     let addonSource: AddonSource
     let config: AddonConfig
 
@@ -18,8 +18,8 @@ public class ChangeAddonViewModel: ObservableObject {
         Task {
             await getAddons()
 
-            if let selectable = addonOffer?.selectableAddons.first {
-                selectedAddonIds = [selectable.id]
+            if let selectableAddon = addonOffer?.selectableAddons.first {
+                selectedAddons = [selectableAddon]
             }
         }
     }
@@ -30,28 +30,25 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     var allowToContinue: Bool {
-        !selectedAddonIds.isEmpty
+        !selectedAddons.isEmpty
     }
 
     func isAddonSelected(_ addon: AddonOfferQuote) -> Bool {
-        selectedAddonIds.contains(addon.id)
+        selectedAddons.contains(addon)
     }
 
-    func selectAddon(id: String, addonType: AddonType) {
+    func selectAddon(addon: AddonOfferQuote) {
+        guard let addonType = addonOffer?.addonType else { return }
         switch (addonType) {
         case .travel:
-            selectedAddonIds = [id]
+            selectedAddons = [addon]
         case .car:
-            if selectedAddonIds.contains(id) {
-                selectedAddonIds.remove(id)
+            if selectedAddons.contains(addon) {
+                selectedAddons.remove(addon)
             } else {
-                selectedAddonIds.insert(id)
+                selectedAddons.insert(addon)
             }
         }
-    }
-
-    var selectedAddons: [AddonOfferQuote] {
-        addonOffer?.quote.addons.filter { selectedAddonIds.contains($0.id) } ?? []
     }
 
     func getAddons() async {
@@ -76,7 +73,7 @@ public class ChangeAddonViewModel: ObservableObject {
         do {
             try await addonService.submitAddons(
                 quoteId: addonOffer?.quote.quoteId ?? "",
-                selectedAddonIds: selectedAddonIds
+                selectedAddonIds: Set(selectedAddons.map(\.id))
             )
             logAddonEvent()
             withAnimation {
@@ -223,7 +220,7 @@ public class ChangeAddonViewModel: ObservableObject {
 
     private func getTravelTotalPrice() -> Premium {
         guard let addonOffer else { return .zeroSek }
-        let selectedQuote = addonOffer.quote.selectableAddons.filter { selectedAddonIds.contains($0.id) }.first
+        let selectedQuote = addonOffer.quote.selectableAddons.filter { selectedAddons.contains($0) }.first
         let currency = selectedQuote?.cost.premium.gross?.currency ?? "SEK"
 
         if addonOffer.hasActiveAddons {
