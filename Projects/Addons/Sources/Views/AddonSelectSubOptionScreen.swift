@@ -14,7 +14,8 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.selectable = selectable
         self.changeAddonNavigationVm = changeAddonNavigationVm
-        selectedAddon = changeAddonNavigationVm.changeAddonVm?.selectedAddons.first ?? selectable.quotes.first
+        let preselected = changeAddonNavigationVm.changeAddonVm?.selectedAddons.first ?? selectable.quotes.first
+        _selectedAddon = State(initialValue: preselected)
     }
 
     var body: some View {
