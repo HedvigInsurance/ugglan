@@ -162,7 +162,7 @@ let project = Project(
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**", ""],
-            resources: ["Resources/**", "Config/Test/Resources/**", "Config/PrivacyInfo.xcprivacy"],
+            resources: ["Config/Test/Resources/**", "Config/PrivacyInfo.xcprivacy"],
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
             dependencies: devAppDependencies,
@@ -224,7 +224,7 @@ let project = Project(
                 "Resources/**",
                 .glob(
                     pattern: "Config/Production/Resources/**",
-                    excluding: ["Config/Production/Resources/**/*.icon/**"]
+                    excluding: ["Config/Production/Resources/AppIcon.icon"]
                 ),
                 "Config/PrivacyInfo.xcprivacy",
             ],
