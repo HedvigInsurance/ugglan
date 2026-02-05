@@ -1,8 +1,7 @@
 import Foundation
 import hCore
 
-@MainActor
-public class AddonsService {
+@MainActor public class AddonsService {
     @Inject var client: AddonsClient
 
     public func getAddonOffers(contractId: String) async throws -> AddonOffer {
@@ -10,7 +9,8 @@ public class AddonsService {
     }
 
     public func submitAddons(quoteId: String, selectedAddonIds: Set<String>) async throws {
-        try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
-        await delay(3)
+        async let submit: () = try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
+        async let delayTask: () = delay(3)
+        let _ = try await (submit, delayTask)
     }
 }
