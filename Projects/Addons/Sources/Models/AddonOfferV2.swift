@@ -87,12 +87,12 @@ public struct AddonContractQuote: Equatable, Sendable {
         self.productVariant = productVariant
     }
 
-    var selectableOffer: AddonOfferSelectable? {
+    public var selectableOffer: AddonOfferSelectable? {
         if case .selectable(let s) = addonOffer { return s }
         return nil
     }
 
-    var toggleableOffer: AddonOfferToggleable? {
+    public var toggleableOffer: AddonOfferToggleable? {
         if case .toggleable(let t) = addonOffer { return t }
         return nil
     }
@@ -224,6 +224,14 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
 }
 
 extension AddonOfferV2 {
+    var selectableOffer: AddonOfferSelectable? {
+        quote.selectableOffer
+    }
+
+    var toggleableOffer: AddonOfferToggleable? {
+        quote.toggleableOffer
+    }
+
     var selectableAddons: [AddonOfferQuote] {
         quote.selectableAddons
     }
