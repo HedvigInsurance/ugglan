@@ -1,4 +1,3 @@
-import Addons
 import Foundation
 import hCore
 import hCoreUI
@@ -53,6 +52,29 @@ public struct Deflection: Codable, Equatable, Hashable, Sendable {
     public init(title: String, message: String) {
         self.title = title
         self.message = message
+    }
+}
+
+public struct AddonQuote: Identifiable, Equatable, Hashable, Codable, Sendable {
+    public var id: String {
+        addonId
+    }
+
+    public let displayName: String?
+    let addonId: String
+    public let addonSubtype: String
+    public let premium: MonetaryAmount
+
+    public init(
+        displayName: String?,
+        addonId: String,
+        addonSubtype: String,
+        premium: MonetaryAmount
+    ) {
+        self.displayName = displayName
+        self.addonId = addonId
+        self.addonSubtype = addonSubtype
+        self.premium = premium
     }
 }
 
@@ -117,9 +139,9 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     @MainActor
     func getPremiumLabel() -> String? {
         if quotes.count == 1 {
-            return quotes.first?.newTotalCost.net?.formattedAmountPerMonth
+            return quotes.first?.newTotalCost.net.formattedAmountPerMonth
         } else {
-            if let smallestPremium = quotes.map({ $0.newTotalCost.net ?? .sek(0) })
+            if let smallestPremium = quotes.map({ $0.newTotalCost.net })
                 .sorted(by: { $0.floatAmount < $1.floatAmount })
                 .first?
                 .formattedAmount
