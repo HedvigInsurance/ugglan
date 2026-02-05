@@ -43,14 +43,15 @@ extension ChangeAddonViewModel {
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
+        let totalPrice = getTotalPrice()
         let vm = QuoteSummaryViewModel(
             contract: [
                 contractInfo
             ],
             activationDate: self.addonOffer?.activationDate,
             premium: .init(
-                gross: nil,
-                net: getTotalPrice()
+                gross: totalPrice,
+                net: totalPrice
             ),
             isAddon: true
         ) { [weak self, weak changeAddonNavigationVm] in
