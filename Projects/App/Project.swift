@@ -224,7 +224,7 @@ let project = Project(
                 "Resources/**",
                 .glob(
                     pattern: "Config/Production/Resources/**",
-                    excluding: ["Config/Production/Resources/AppIcon.icon"]
+                    excluding: ["Config/Production/Resources/AppIcon.icon/**"]
                 ),
                 "Config/PrivacyInfo.xcprivacy",
             ],
