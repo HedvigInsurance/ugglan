@@ -5,6 +5,7 @@ struct AddonLogInfo: Codable {
 
     enum AddonType: String, Codable {
         case travelAddon = "TRAVEL_ADDON"
+        case carAddon = "CAR_ADDON"
     }
 
     var asAddonAttributes: [String: AddonLogInfo] {

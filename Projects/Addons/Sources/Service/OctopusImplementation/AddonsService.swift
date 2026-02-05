@@ -11,5 +11,6 @@ public class AddonsService {
 
     public func submitAddons(quoteId: String, selectedAddonsIds: Set<String>) async throws {
         try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonsIds)
+        await delay(3)
     }
 }

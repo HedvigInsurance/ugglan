@@ -61,7 +61,10 @@ struct ChangeAddonScreen: View {
                 }
 
                 hSection {
-                    buttonsView
+                    hContinueButton {
+                        changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+                    }
+                    .disabled(!changeAddonVm.allowToContinue)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -71,68 +74,144 @@ struct ChangeAddonScreen: View {
     private var addOnSection: some View {
         switch changeAddonVm.addonType {
         case .travel:
-            ForEach(changeAddonVm.selectableAddons, id: \.fieldTitle) { selectable in
-                addonRow(for: selectable)
-            }
-        case .car: EmptyView()
+            travelAddonSection(for: changeAddonVm.addonOffer!.quote.selectableOffer!)
+        case .car:
+            carAddonSection(for: changeAddonVm.addonOffer!.quote.toggleableOffer!)
         case .none: EmptyView()
         }
     }
 
     @ViewBuilder
-    private func addonRow(for selectable: AddonOfferSelectable) -> some View {
+    private func carAddonSection(for toggleableOffer: AddonOfferToggleable) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                hText(selectable.fieldTitle)
-                    .fixedSize()
-                Spacer()
-                hPill(
-                    text: L10n.addonFlowPriceLabel(
-                        changeAddonVm.getPriceForQuote(
-                            changeAddonVm.selectedQuote(for: selectable),
-                            in: selectable
-                        )?
-                        .formattedAmount ?? ""
-                    ),
-                    color: .grey,
-                    colorLevel: .one
-                )
-                .hFieldSize(.small)
-            }
-
-            hText(selectable.selectionDescription, style: .label)
+            hText(changeAddonVm.addonOffer?.quote.displayTitle ?? "")
+            hText(changeAddonVm.addonOffer?.quote.displayDescription ?? "", style: .label)
                 .foregroundColor(hTextColor.Translucent.secondary)
                 .padding(.top, .padding8)
 
-            DropdownView(
-                value: changeAddonVm.selectedQuote(for: selectable)?.displayTitle ?? "",
-                placeHolder: L10n.addonFlowSelectDaysPlaceholder
-            ) {
-                changeAddonNavigationVm.isSelectableAddonPresented = selectable
+            ForEach(changeAddonVm.activeAddons) { activeAddon in
+                addonToggleRow(
+                    title: activeAddon.displayTitle,
+                    subtitle: activeAddon.displayDescription,
+                    isSelected: true,
+                    isDisabled: true,
+                    trailingView: {
+                        hPill(text: L10n.dashboardInsuranceStatusActive, color: .green)
+                            .hFieldSize(.small)
+                    }
+                )
+                .padding(.top, .padding16)
             }
-            .disabled(changeAddonVm.disableDropDown(for: selectable))
-            .padding(.top, .padding16)
-            .hBackgroundOption(option: changeAddonVm.disableDropDown(for: selectable) ? [.locked] : [])
-            .hWithoutHorizontalPadding([.section])
-            .accessibilityHidden(false)
+
+            ForEach(toggleableOffer.quotes) { quote in
+                addonToggleRow(
+                    title: quote.displayTitle,
+                    subtitle: quote.displayDescription,
+                    isSelected: changeAddonVm.isAddonSelected(quote),
+                    trailingView: {
+                        hPill(
+                            text: L10n.addonFlowPriceLabel(
+                                quote.cost.premium.gross?.formattedAmount ?? ""
+                            ),
+                            color: .grey,
+                            colorLevel: .one
+                        )
+                        .hFieldSize(.small)
+                    },
+                    onTap: { changeAddonVm.selectAddon(id: quote.id, addonType: .car) }
+                )
+                .padding(.top, .padding16)
+            }
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-        .accessibilityAction {
-            changeAddonNavigationVm.isSelectableAddonPresented = selectable
-        }
-        .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var buttonsView: some View {
-        VStack(spacing: .padding8) {
-            hContinueButton {
-                changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
-            }
+    @hColorBuilder
+    private func checkmarkColor(isSelected: Bool, isDisabled: Bool) -> some hColor {
+        if isSelected && !isDisabled { hColorBase(.green) } else { hGrayscaleTranslucent.greyScaleTranslucent300 }
+    }
 
-            hCancelButton {
-                changeAddonNavigationVm.router.dismiss()
+    @hColorBuilder
+    private func titleColor(isDisabled: Bool) -> some hColor {
+        if isDisabled { hTextColor.Translucent.secondary } else { hTextColor.Opaque.primary }
+    }
+
+    @hColorBuilder
+    private func subTitleColor(isDisabled: Bool) -> some hColor {
+        if isDisabled { hTextColor.Translucent.secondary } else { hTextColor.Opaque.secondary }
+    }
+
+    @ViewBuilder
+    private func addonToggleRow<Trailing: View>(
+        title: String,
+        subtitle: String?,
+        isSelected: Bool,
+        isDisabled: Bool = false,
+        @ViewBuilder trailingView: () -> Trailing,
+        onTap: @escaping () -> Void = {}
+    ) -> some View {
+        ZStack {
+            HStack(alignment: .top) {
+                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
+                    .foregroundColor(checkmarkColor(isSelected: isSelected, isDisabled: isDisabled))
+                    .font(.title2)
+
+                VStack(alignment: .leading, spacing: .padding4) {
+                    HStack {
+                        hText(title)
+                            .foregroundColor(titleColor(isDisabled: isDisabled))
+                        Spacer()
+                        trailingView()
+                    }
+                    hText(subtitle ?? "", style: .label)
+                        .foregroundColor(subTitleColor(isDisabled: isDisabled))
+                }
             }
+            .padding(.init(top: .padding18, leading: .padding16, bottom: .padding24, trailing: .padding16))
+        }
+        .onTapGesture { onTap() }
+        .background(hSurfaceColor.Opaque.primary)
+        .cornerRadius(.cornerRadiusL)
+    }
+
+    @ViewBuilder
+    private func travelAddonSection(for selectable: AddonOfferSelectable) -> some View {
+        if let selectedQuote = changeAddonVm.selectedQuote(for: selectable) {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    hText(selectable.fieldTitle)
+                    Spacer()
+                    hPill(
+                        text: L10n.addonFlowPriceLabel(
+                            changeAddonVm.getPriceDifference(for: selectedQuote)?.formattedAmount ?? ""
+                        ),
+                        color: .grey,
+                        colorLevel: .one
+                    )
+                    .hFieldSize(.small)
+                }
+
+                hText(selectable.selectionDescription, style: .label)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .padding(.top, .padding8)
+
+                DropdownView(
+                    value: changeAddonVm.selectedQuote(for: selectable)?.displayTitle ?? "",
+                    placeHolder: L10n.addonFlowSelectDaysPlaceholder
+                ) {
+                    changeAddonNavigationVm.isSelectableAddonPresented = selectable
+                }
+                .disabled(changeAddonVm.disableDropDown(for: selectable))
+                .padding(.top, .padding16)
+                .hBackgroundOption(option: changeAddonVm.disableDropDown(for: selectable) ? [.locked] : [])
+                .hWithoutHorizontalPadding([.section])
+                .accessibilityHidden(false)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
+            .accessibilityAction {
+                changeAddonNavigationVm.isSelectableAddonPresented = selectable
+            }
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -142,13 +221,13 @@ struct ChangeAddonScreen: View {
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
         ) {
+            let perils = changeAddonVm.selectedAddons.flatMap(\.addonVariant.perils)
+
             changeAddonNavigationVm.isLearnMorePresented = .init(
                 .init(
                     title: L10n.addonFlowTravelInformationTitle,
                     description: L10n.addonFlowTravelInformationDescription,
-                    perils: changeAddonVm.selectableAddons.first.flatMap {
-                        changeAddonVm.selectedQuote(for: $0)?.addonVariant.perils
-                    } ?? []
+                    perils: perils
                 )
             )
         }

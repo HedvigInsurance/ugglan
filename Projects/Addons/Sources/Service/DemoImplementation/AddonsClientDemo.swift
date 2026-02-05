@@ -2,27 +2,33 @@ import Foundation
 import hCore
 
 public class AddonsClientDemo: AddonsClient {
+    let offer: AddonOfferV2
+
     public func getAddonV2(contractId: String) async throws -> AddonOfferV2 {
         await delay(TimeInterval.random(in: 0.5...1.5))
-        return testOffer45Days
+        return offer
     }
 
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
         await delay(TimeInterval.random(in: 0.5...1.5))
     }
 
-    public init() {}
+    public init() {
+        self.offer = testTravelOfferNoActive
+    }
+    public init(offer: AddonOfferV2) {
+        self.offer = offer
+    }
 }
 
-public let testOfferNoAddons: AddonOfferV2 = {
-    let bundleDiscount45 = ItemDiscount(
+public let testTravelOfferNoActive: AddonOfferV2 = {
+    let d45 = ItemDiscount(
         campaignCode: "BUNDLE15",
         displayName: "15% bundle discount",
         displayValue: "-10 kr/mo",
         explanation: "Discount for bundling with your home insurance"
     )
-
-    let quote45 = AddonOfferQuote(
+    let q45 = AddonOfferQuote(
         id: "addon45",
         displayTitle: "45 days",
         displayDescription: "Coverage for trips up to 45 days",
@@ -30,12 +36,9 @@ public let testOfferNoAddons: AddonOfferV2 = {
             .init(displayTitle: "Coverage", displayValue: "45 days"),
             .init(displayTitle: "Insured people", displayValue: "You+1"),
         ],
-        cost: .init(
-            premium: .init(gross: .sek(69), net: .sek(59)),
-            discounts: [bundleDiscount45]
-        ),
+        cost: .init(premium: .init(gross: .sek(69), net: .sek(59)), discounts: [d45]),
         addonVariant: .init(
-            displayName: "Travel Plus 45",
+            displayName: "Travel Insurance Plus 45",
             documents: [],
             perils: [],
             product: "travel",
@@ -43,14 +46,13 @@ public let testOfferNoAddons: AddonOfferV2 = {
         )
     )
 
-    let bundleDiscount60 = ItemDiscount(
+    let d60 = ItemDiscount(
         campaignCode: "BUNDLE15",
         displayName: "15% bundle discount",
-        displayValue: "-10 kr/mo",
+        displayValue: "-12 kr/mo",
         explanation: "Discount for bundling with your home insurance"
     )
-
-    let quote60 = AddonOfferQuote(
+    let q60 = AddonOfferQuote(
         id: "addon60",
         displayTitle: "60 days",
         displayDescription: "Coverage for trips up to 60 days",
@@ -58,12 +60,9 @@ public let testOfferNoAddons: AddonOfferV2 = {
             .init(displayTitle: "Coverage", displayValue: "60 days"),
             .init(displayTitle: "Insured people", displayValue: "You+1"),
         ],
-        cost: .init(
-            premium: .init(gross: .sek(79), net: .sek(69)),
-            discounts: [bundleDiscount60]
-        ),
+        cost: .init(premium: .init(gross: .sek(79), net: .sek(67)), discounts: [d60]),
         addonVariant: .init(
-            displayName: "Travel Plus 60",
+            displayName: "Travel Insurance Plus 60",
             documents: [],
             perils: [],
             product: "travel",
@@ -75,20 +74,20 @@ public let testOfferNoAddons: AddonOfferV2 = {
         fieldTitle: "Maximum travel days",
         selectionTitle: "Choose your coverage",
         selectionDescription: "Days covered when travelling",
-        quotes: [quote45, quote60]
+        quotes: [q45, q60]
     )
 
-    return AddonOfferV2(
+    return .init(
         pageTitle: "Extend your coverage",
         pageDescription: "Get extra coverage when you travel abroad",
-        quote: AddonContractQuote(
+        quote: .init(
             quoteId: "quoteId1",
-            displayTitle: "Travel Plus",
-            displayDescription: "For those who travel often: luggage protection and 24/7 assistance worldwide",
+            displayTitle: "Travel Insurance Plus",
+            displayDescription: "Extra coverage when you travel abroad",
             activationDate: Date(),
-            addonOffers: [.selectable(selectable)],
+            addonOffer: .selectable(selectable),
             activeAddons: [],
-            baseQuoteCost: .init(premium: .init(gross: .sek(299), net: .sek(279)), discounts: []),
+            baseQuoteCost: .init(premium: .init(gross: .sek(299), net: .sek(254)), discounts: []),
             productVariant: .init(
                 termsVersion: "1.0",
                 typeOfContract: "SE_APARTMENT_RENT",
@@ -101,12 +100,12 @@ public let testOfferNoAddons: AddonOfferV2 = {
             )
         ),
         currentTotalCost: .init(
-            premium: .init(gross: .sek(299), net: .sek(249)),
+            premium: .init(gross: .sek(299), net: .sek(254)),
             discounts: [
                 ItemDiscount(
                     campaignCode: "BUNDLE15",
                     displayName: "15% bundle discount",
-                    displayValue: "-50 kr/mo",
+                    displayValue: "-45 kr/mo",
                     explanation: "Discount for bundling addons with your home insurance"
                 )
             ]
@@ -114,28 +113,24 @@ public let testOfferNoAddons: AddonOfferV2 = {
     )
 }()
 
-public let testOffer45Days: AddonOfferV2 = {
-    let bundleDiscount = ItemDiscount(
+public let testTravelOffer45Days: AddonOfferV2 = {
+    let d60 = ItemDiscount(
         campaignCode: "BUNDLE15",
         displayName: "15% bundle discount",
-        displayValue: "-10 kr/mo",
+        displayValue: "-12 kr/mo",
         explanation: "Discount for bundling with your home insurance"
     )
-
-    let quote60 = AddonOfferQuote(
+    let q60 = AddonOfferQuote(
         id: "addon60",
-        displayTitle: "Travel Plus 60",
+        displayTitle: "60 days",
         displayDescription: "Coverage for trips up to 60 days",
         displayItems: [
             .init(displayTitle: "Coverage", displayValue: "60 days"),
             .init(displayTitle: "Insured people", displayValue: "You+1"),
         ],
-        cost: .init(
-            premium: .init(gross: .sek(79), net: .sek(69)),
-            discounts: [bundleDiscount]
-        ),
+        cost: .init(premium: .init(gross: .sek(79), net: .sek(67)), discounts: [d60]),
         addonVariant: .init(
-            displayName: "Travel Plus 60",
+            displayName: "Travel Insurance Plus 60",
             documents: [],
             perils: [],
             product: "travel",
@@ -143,34 +138,37 @@ public let testOffer45Days: AddonOfferV2 = {
         )
     )
 
-    let selectable = AddonOfferSelectable(
-        fieldTitle: "Maximum travel days",
-        selectionTitle: "Choose your coverage",
-        selectionDescription: "Days covered when travelling",
-        quotes: [quote60]
+    let activeD = ItemDiscount(
+        campaignCode: "BUNDLE15",
+        displayName: "15% bundle discount",
+        displayValue: "-10 kr/mo",
+        explanation: "Discount for bundling with your home insurance"
     )
-
-    let activeAddon = ActiveAddon(
+    let active = ActiveAddon(
         id: "activeAddon45",
-        cost: .init(
-            premium: .init(gross: .sek(69), net: .sek(59)),
-            discounts: [bundleDiscount]
-        ),
-        displayTitle: "Travel Plus 45",
+        cost: .init(premium: .init(gross: .sek(69), net: .sek(59)), discounts: [activeD]),
+        displayTitle: "Travel Insurance Plus 45",
         displayDescription: "Current travel coverage"
     )
 
-    return AddonOfferV2(
+    return .init(
         pageTitle: "Extend your coverage",
         pageDescription: "Upgrade your travel insurance for longer trips",
-        quote: AddonContractQuote(
+        quote: .init(
             quoteId: "quoteId2",
-            displayTitle: "Travel Plus",
-            displayDescription: "For those who travel often: luggage protection and 24/7 assistance worldwide",
+            displayTitle: "Travel Insurance Plus",
+            displayDescription: "Extra coverage when you travel abroad",
             activationDate: Date(),
-            addonOffers: [.selectable(selectable)],
-            activeAddons: [activeAddon],
-            baseQuoteCost: .init(premium: .init(gross: .sek(299), net: .sek(279)), discounts: []),
+            addonOffer: .selectable(
+                .init(
+                    fieldTitle: "Maximum travel days",
+                    selectionTitle: "Choose your coverage",
+                    selectionDescription: "Days covered when travelling",
+                    quotes: [q60]
+                )
+            ),
+            activeAddons: [active],
+            baseQuoteCost: .init(premium: .init(gross: .sek(299), net: .sek(254)), discounts: []),
             productVariant: .init(
                 termsVersion: "1.0",
                 typeOfContract: "SE_APARTMENT_RENT",
@@ -183,13 +181,218 @@ public let testOffer45Days: AddonOfferV2 = {
             )
         ),
         currentTotalCost: .init(
-            premium: .init(gross: .sek(369), net: .sek(319)),
+            premium: .init(gross: .sek(369), net: .sek(314)),
             discounts: [
                 ItemDiscount(
                     campaignCode: "BUNDLE15",
                     displayName: "15% bundle discount",
-                    displayValue: "-50 kr/mo",
+                    displayValue: "-55 kr/mo",
                     explanation: "Discount for bundling addons with your home insurance"
+                )
+            ]
+        )
+    )
+}()
+
+public let testCarOfferNoActive: AddonOfferV2 = {
+    let exp = "Discount for bundling with your car insurance"
+
+    let sj = AddonOfferQuote(
+        id: "sjalvriskreducering",
+        displayTitle: "Självriskreducering",
+        displayDescription: "Lorem ipsum dolor lurem imne",
+        displayItems: [.init(displayTitle: "Coverage", displayValue: "Excess reduction")],
+        cost: .init(
+            premium: .init(gross: .sek(59), net: .sek(50)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-9 kr/mo",
+                    explanation: exp
+                )
+            ]
+        ),
+        addonVariant: .init(
+            displayName: "Självriskreducering",
+            documents: [],
+            perils: [],
+            product: "car_addon",
+            termsVersion: "1.0"
+        )
+    )
+    let hyr = AddonOfferQuote(
+        id: "hyrbil",
+        displayTitle: "Hyrbil utomlands",
+        displayDescription: "Lorem ipsum dolor lurem imne",
+        displayItems: [.init(displayTitle: "Coverage", displayValue: "Rental car")],
+        cost: .init(
+            premium: .init(gross: .sek(39), net: .sek(33)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-6 kr/mo",
+                    explanation: exp
+                )
+            ]
+        ),
+        addonVariant: .init(
+            displayName: "Hyrbil utomlands",
+            documents: [],
+            perils: [],
+            product: "car_addon",
+            termsVersion: "1.0"
+        )
+    )
+    let dr = AddonOfferQuote(
+        id: "drulle",
+        displayTitle: "Drulle",
+        displayDescription: "Lorem ipsum dolor lurem imne",
+        displayItems: [.init(displayTitle: "Coverage", displayValue: "Accidental damage")],
+        cost: .init(
+            premium: .init(gross: .sek(29), net: .sek(25)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-4 kr/mo",
+                    explanation: exp
+                )
+            ]
+        ),
+        addonVariant: .init(displayName: "Drulle", documents: [], perils: [], product: "car_addon", termsVersion: "1.0")
+    )
+
+    return .init(
+        pageTitle: "Extend your coverage",
+        pageDescription: "Get extra coverage for your car insurance",
+        quote: .init(
+            quoteId: "carQuoteId1",
+            displayTitle: "Car Plus",
+            displayDescription: "Get extra coverage for your car insurance",
+            activationDate: Date(),
+            addonOffer: .toggleable(.init(quotes: [sj, hyr, dr])),
+            activeAddons: [],
+            baseQuoteCost: .init(premium: .init(gross: .sek(469), net: .sek(399)), discounts: []),
+            productVariant: .init(
+                termsVersion: "1.0",
+                typeOfContract: "SE_CAR_FULL",
+                perils: [],
+                insurableLimits: [],
+                documents: [],
+                displayName: "Bilförsäkring Hel",
+                displayNameTier: nil,
+                tierDescription: nil
+            )
+        ),
+        currentTotalCost: .init(
+            premium: .init(gross: .sek(469), net: .sek(399)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-70 kr/mo",
+                    explanation: "Discount for bundling addons with your car insurance"
+                )
+            ]
+        )
+    )
+}()
+
+public let testCarAddonRisk: AddonOfferV2 = {
+    let exp = "Discount for bundling with your car insurance"
+
+    let active = ActiveAddon(
+        id: "sjalvriskreducering",
+        cost: .init(
+            premium: .init(gross: .sek(59), net: .sek(50)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-9 kr/mo",
+                    explanation: exp
+                )
+            ]
+        ),
+        displayTitle: "Självriskreducering",
+        displayDescription: "Lorem ipsum dolor lurem imne"
+    )
+
+    let hyr = AddonOfferQuote(
+        id: "hyrbil",
+        displayTitle: "Hyrbil utomlands",
+        displayDescription: "Lorem ipsum dolor lurem imne",
+        displayItems: [.init(displayTitle: "Coverage", displayValue: "Rental car")],
+        cost: .init(
+            premium: .init(gross: .sek(39), net: .sek(33)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-6 kr/mo",
+                    explanation: exp
+                )
+            ]
+        ),
+        addonVariant: .init(
+            displayName: "Hyrbil utomlands",
+            documents: [],
+            perils: [],
+            product: "car_addon",
+            termsVersion: "1.0"
+        )
+    )
+    let dr = AddonOfferQuote(
+        id: "drulle",
+        displayTitle: "Drulle",
+        displayDescription: "Lorem ipsum dolor lurem imne",
+        displayItems: [.init(displayTitle: "Coverage", displayValue: "Accidental damage")],
+        cost: .init(
+            premium: .init(gross: .sek(29), net: .sek(25)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-4 kr/mo",
+                    explanation: exp
+                )
+            ]
+        ),
+        addonVariant: .init(displayName: "Drulle", documents: [], perils: [], product: "car_addon", termsVersion: "1.0")
+    )
+
+    return .init(
+        pageTitle: "Extend your coverage",
+        pageDescription: "Get extra coverage for your car insurance",
+        quote: .init(
+            quoteId: "carQuoteId2",
+            displayTitle: "Car Plus",
+            displayDescription: "Get extra coverage for your car insurance",
+            activationDate: Date(),
+            addonOffer: .toggleable(.init(quotes: [hyr, dr])),
+            activeAddons: [active],
+            baseQuoteCost: .init(premium: .init(gross: .sek(469), net: .sek(399)), discounts: []),
+            productVariant: .init(
+                termsVersion: "1.0",
+                typeOfContract: "SE_CAR_FULL",
+                perils: [],
+                insurableLimits: [],
+                documents: [],
+                displayName: "Bilförsäkring Hel",
+                displayNameTier: nil,
+                tierDescription: nil
+            )
+        ),
+        currentTotalCost: .init(
+            premium: .init(gross: .sek(529), net: .sek(450)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-79 kr/mo",
+                    explanation: "Discount for bundling addons with your car insurance"
                 )
             ]
         )

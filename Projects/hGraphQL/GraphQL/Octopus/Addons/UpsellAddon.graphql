@@ -1,0 +1,220 @@
+mutation AddonGenerateOffer($contractId: ID!) {
+  addonGenerateOffer(contractId: $contractId) {
+    ... on UserError {
+      message
+    }
+    ... on AddonOffer {
+      pageTitle
+      pageDescription
+      quote {
+        quoteId
+        displayTitle
+        displayDescription
+        activationDate
+        addonOffer {
+          ... on AddonOfferSelectable {
+            fieldTitle
+            selectionTitle
+            selectionDescription
+            quotes {
+              id
+              displayTitle
+              displayDescription
+              displayItems {
+                displayTitle
+                displayValue
+              }
+              cost {
+                ... ItemCostFragment
+              }
+              addonVariant {
+                termsVersion
+                product
+                perils {
+                  id
+                  title
+                  description
+                  shortDescription
+                  info
+                  covered
+                  exceptions
+                  colorCode
+                }
+                addonPerils {
+                  title
+                  description
+                  coverageText
+                  colorCode
+                }
+                insurableLimits {
+                  label
+                  limit
+                  description
+                  type
+                }
+                documents {
+                  displayName
+                  url
+                  type
+                }
+                displayName
+              }
+            }
+          }
+          ... on AddonOfferToggleable {
+            quotes {
+              id
+              displayTitle
+              displayDescription
+              displayItems {
+                displayTitle
+                displayValue
+              }
+              cost {
+                ... ItemCostFragment
+              }
+              addonVariant {
+                termsVersion
+                product
+                perils {
+                  id
+                  title
+                  description
+                  shortDescription
+                  info
+                  covered
+                  exceptions
+                  colorCode
+                }
+                addonPerils {
+                  title
+                  description
+                  coverageText
+                  colorCode
+                }
+                insurableLimits {
+                  label
+                  limit
+                  description
+                  type
+                }
+                documents {
+                  displayName
+                  url
+                  type
+                }
+                displayName
+              }
+            }
+          }
+        }
+        activeAddons {
+          id
+          cost {
+            monthlyGross {
+              amount
+              currencyCode
+            }
+            monthlyNet {
+              amount
+              currencyCode
+            }
+            discounts {
+              displayName
+              displayValue
+              explanation
+              campaignCode
+              tooltip
+            }
+          }
+          displayTitle
+          displayDescription
+        }
+        baseQuoteCost {
+          monthlyGross {
+            amount
+            currencyCode
+          }
+          monthlyNet {
+            amount
+            currencyCode
+          }
+          discounts {
+            displayName
+            displayValue
+            explanation
+            campaignCode
+            tooltip
+          }
+        }
+        productVariant {
+          termsVersion
+          typeOfContract
+          partner
+          perils {
+            id
+            title
+            description
+            shortDescription
+            info
+            covered
+            exceptions
+            colorCode
+          }
+          insurableLimits {
+            label
+            limit
+            description
+            type
+          }
+          documents {
+            displayName
+            url
+            type
+          }
+          displayName
+          displayNameSubtype
+          displayNameTier
+          displayNameTierLong
+          tierDescription
+          commonClaimDescriptions {
+            id
+            icon {
+              variants {
+                light {
+                  pdfUrl
+                  svgUrl
+                }
+                dark {
+                  pdfUrl
+                  svgUrl
+                }
+              }
+            }
+            title
+            layout {
+              ... on CommonClaimLayoutTitleAndBulletPoints {
+                color
+                title
+                buttonTitle
+                bulletPoints {
+                  title
+                  description
+                }
+              }
+              ... on CommonClaimLayoutEmergency {
+                color
+                title
+                emergencyNumber
+              }
+            }
+          }
+          displayNameShort
+        }
+      }
+      currentTotalCost {
+        ... ItemCostFragment
+      }
+    }
+  }
+}

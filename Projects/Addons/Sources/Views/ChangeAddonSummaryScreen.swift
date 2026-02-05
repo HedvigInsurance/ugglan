@@ -21,12 +21,12 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
-        let selectedVariant = selectableAddons.first.flatMap { selectedQuote(for: $0)?.addonVariant }
-        let documents = selectableAddons.flatMap { selectedQuote(for: $0)?.addonVariant.documents ?? [] }
+        let documents = selectedAddons.flatMap { $0.addonVariant.documents }
+        let displayName = selectedAddons.map { $0.addonVariant.displayName }.joined(separator: ", ")
 
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
             id: contractId,
-            displayName: selectedVariant?.displayName ?? "",
+            displayName: displayName,
             exposureName: L10n.addonFlowSummaryActiveFrom(
                 activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
@@ -44,15 +44,14 @@ extension ChangeAddonViewModel {
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
-        let totalPrice = getTotalPrice()
+        let priceIncrease = getPriceIncrease(offer: addonOffer!, for: addonType!)
+
         let vm = QuoteSummaryViewModel(
-            contract: [
-                contractInfo
-            ],
+            contract: [contractInfo],
             activationDate: activationDate,
             premium: .init(
-                gross: totalPrice,
-                net: totalPrice
+                gross: priceIncrease.gross,
+                net: priceIncrease.net
             ),
             isAddon: true
         ) { [weak self, weak changeAddonNavigationVm] in

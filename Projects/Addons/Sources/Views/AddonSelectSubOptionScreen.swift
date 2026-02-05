@@ -56,7 +56,7 @@ struct AddonSelectSubOptionScreen: View {
                         content: .init(title: L10n.addonFlowSelectButton),
                         {
                             if let selected = selectedQuote {
-                                changeAddonNavigationVm.changeAddonVm?.selectQuote(selected, for: selectable)
+                                changeAddonNavigationVm.changeAddonVm?.selectAddon(id: selected.id, addonType: .travel)
                             }
                             router.dismiss()
                         }
@@ -82,7 +82,7 @@ struct AddonSelectSubOptionScreen: View {
             hPill(
                 text: L10n.addonFlowPriceLabel(
                     changeAddonNavigationVm.changeAddonVm?
-                        .getPriceForQuote(quote, in: selectable)?
+                        .getPriceDifference(for: quote)?
                         .formattedAmount ?? ""
                 ),
                 color: .grey,
@@ -94,53 +94,13 @@ struct AddonSelectSubOptionScreen: View {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+    let offer = testTravelOfferNoActive
 
-    let selectable = AddonOfferSelectable(
-        fieldTitle: "Maximum travel days",
-        selectionTitle: "Choose your coverage",
-        selectionDescription: "Days covered when travelling",
-        quotes: [
-            AddonOfferQuote(
-                id: "addon45",
-                displayTitle: "45 days",
-                displayDescription: "Coverage for trips up to 45 days",
-                displayItems: [
-                    .init(displayTitle: "Coverage", displayValue: "45 days"),
-                    .init(displayTitle: "Insured people", displayValue: "You+1"),
-                ],
-                cost: .init(premium: .init(gross: .sek(99), net: .sek(49)), discounts: []),
-                addonVariant: .init(
-                    displayName: "Travel Plus 45",
-                    documents: [],
-                    perils: [],
-                    product: "travel",
-                    termsVersion: "1.0"
-                )
-            ),
-            AddonOfferQuote(
-                id: "addon60",
-                displayTitle: "60 days",
-                displayDescription: "Coverage for trips up to 60 days",
-                displayItems: [
-                    .init(displayTitle: "Coverage", displayValue: "60 days"),
-                    .init(displayTitle: "Insured people", displayValue: "You+1"),
-                ],
-                cost: .init(premium: .init(gross: .sek(139), net: .sek(79)), discounts: []),
-                addonVariant: .init(
-                    displayName: "Travel Plus 60",
-                    documents: [],
-                    perils: [],
-                    product: "travel",
-                    termsVersion: "1.0"
-                )
-            ),
-        ]
-    )
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
 
     return AddonSelectSubOptionScreen(
-        selectable: selectable,
+        selectable: offer.quote.selectableOffer!,
         changeAddonNavigationVm: .init(
             input: .init(
                 addonSource: .insurances,

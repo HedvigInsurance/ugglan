@@ -1,0 +1,7 @@
+mutation AddonActivateOffer($quoteId: ID!, $addonIds: [ID!]!) {
+  addonActivateOffer(quoteId: $quoteId, addonIds: $addonIds) {
+    userError {
+      message
+    }
+  }
+}
