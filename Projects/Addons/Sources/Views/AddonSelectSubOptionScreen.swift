@@ -71,20 +71,21 @@ struct AddonSelectSubOptionScreen: View {
         .configureTitleView(title: selectable.selectionTitle, subTitle: selectable.selectionDescription)
     }
 
+    @ViewBuilder
     private func leftView(for quote: AddonOfferQuote) -> some View {
-        HStack {
-            hText(quote.displayTitle)
-            Spacer()
-            hPill(
-                text: L10n.addonFlowPriceLabel(
-                    changeAddonNavigationVm.changeAddonVm?
-                        .getGrossPriceDifference(for: quote)
-                        .formattedAmount ?? ""
-                ),
-                color: .grey,
-                colorLevel: .one
-            )
-            .hFieldSize(.small)
+        if let grossPriceDifference = changeAddonNavigationVm.changeAddonVm?
+            .getGrossPriceDifference(for: quote)
+        {
+            HStack {
+                hText(quote.displayTitle)
+                Spacer()
+                hPill(
+                    text: L10n.addonFlowPriceLabel(grossPriceDifference.formattedAmount),
+                    color: .grey,
+                    colorLevel: .one
+                )
+                .hFieldSize(.small)
+            }
         }
     }
 }
