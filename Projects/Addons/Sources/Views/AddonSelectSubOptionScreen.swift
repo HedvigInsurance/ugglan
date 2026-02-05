@@ -4,28 +4,30 @@ import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    let addonOffer: AddonOffer
-    @State var selectedQuote: AddonQuote?
+    let selectable: AddonOfferSelectable
+    @State var selectedQuote: AddonOfferQuote?
     @EnvironmentObject var router: Router
 
     init(
-        addonOffer: AddonOffer,
+        selectable: AddonOfferSelectable,
         changeAddonNavigationVm: ChangeAddonNavigationViewModel
     ) {
-        self.addonOffer = addonOffer
+        self.selectable = selectable
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
-        if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
-            _selectedQuote = State(initialValue: preSelectedQuote)
-        } else if let firstQuote = addonOffer.quotes.first {
-            _selectedQuote = State(initialValue: firstQuote)
+        if let vm = changeAddonNavigationVm.changeAddonVm,
+            let preSelected = vm.selectedQuote(for: selectable)
+        {
+            _selectedQuote = State(initialValue: preSelected)
+        } else if let first = selectable.quotes.first {
+            _selectedQuote = State(initialValue: first)
         }
     }
 
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(addonOffer.quotes, id: \.self) { quote in
+                ForEach(selectable.quotes) { quote in
                     hSection {
                         hRadioField(
                             id: quote,
@@ -53,11 +55,13 @@ struct AddonSelectSubOptionScreen: View {
                         .primary,
                         content: .init(title: L10n.addonFlowSelectButton),
                         {
-                            changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
+                            if let selected = selectedQuote {
+                                changeAddonNavigationVm.changeAddonVm?.selectQuote(selected, for: selectable)
+                            }
                             router.dismiss()
                         }
                     )
-                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedQuote?.displayName ?? ""))
+                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedQuote?.displayTitle ?? ""))
 
                     hCancelButton {
                         router.dismiss()
@@ -68,17 +72,17 @@ struct AddonSelectSubOptionScreen: View {
             .padding(.top, 16)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(title: L10n.addonFlowSelectSuboptionTitle, subTitle: L10n.addonFlowSelectSuboptionSubtitle)
+        .configureTitleView(title: selectable.selectionTitle, subTitle: selectable.selectionDescription)
     }
 
-    private func leftView(for quote: AddonQuote) -> some View {
+    private func leftView(for quote: AddonOfferQuote) -> some View {
         HStack {
-            hText(quote.displayName ?? "")
+            hText(quote.displayTitle)
             Spacer()
             hPill(
                 text: L10n.addonFlowPriceLabel(
-                    addonOffer
-                        .getTotalPrice(selectedQuote: quote)?
+                    changeAddonNavigationVm.changeAddonVm?
+                        .getPriceForQuote(quote, in: selectable)?
                         .formattedAmount ?? ""
                 ),
                 color: .grey,
@@ -93,82 +97,55 @@ struct AddonSelectSubOptionScreen: View {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
 
-    let currentAddon: AddonQuote = .init(
-        displayName: "45 days",
-        displayNameLong: "Long display name",
-        quoteId: "quoteId45",
-        addonId: "addonId45",
-        addonSubtype: "addonId45",
-        displayItems: [
-            .init(displayTitle: "Coverage", displayValue: "45 days"),
-            .init(
-                displayTitle: "Insured people",
-                displayValue: "You+1"
+    let selectable = AddonOfferSelectable(
+        fieldTitle: "Maximum travel days",
+        selectionTitle: "Choose your coverage",
+        selectionDescription: "Days covered when travelling",
+        quotes: [
+            AddonOfferQuote(
+                id: "addon45",
+                displayTitle: "45 days",
+                displayDescription: "Coverage for trips up to 45 days",
+                displayItems: [
+                    .init(displayTitle: "Coverage", displayValue: "45 days"),
+                    .init(displayTitle: "Insured people", displayValue: "You+1"),
+                ],
+                cost: .init(premium: .init(gross: .sek(99), net: .sek(49)), discounts: []),
+                addonVariant: .init(
+                    displayName: "Travel Plus 45",
+                    documents: [],
+                    perils: [],
+                    product: "travel",
+                    termsVersion: "1.0"
+                )
             ),
-        ],
-        itemCost: .init(
-            premium: .init(gross: .sek(99), net: .sek(49)),
-            discounts: []
-        ),
-        addonVariant: .init(
-            displayName: "display name",
-            documents: [
-                .init(displayName: "dodument1", url: "", type: .generalTerms),
-                .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-            ],
-            perils: [],
-            product: "",
-            termsVersion: ""
-        ),
-        documents: [
-            .init(displayName: "dodument1", url: "www.hedvig.com", type: .unknown)
+            AddonOfferQuote(
+                id: "addon60",
+                displayTitle: "60 days",
+                displayDescription: "Coverage for trips up to 60 days",
+                displayItems: [
+                    .init(displayTitle: "Coverage", displayValue: "60 days"),
+                    .init(displayTitle: "Insured people", displayValue: "You+1"),
+                ],
+                cost: .init(premium: .init(gross: .sek(139), net: .sek(79)), discounts: []),
+                addonVariant: .init(
+                    displayName: "Travel Plus 60",
+                    documents: [],
+                    perils: [],
+                    product: "travel",
+                    termsVersion: "1.0"
+                )
+            ),
         ]
     )
 
     return AddonSelectSubOptionScreen(
-        addonOffer: .init(
-            titleDisplayName: "Travel Plus",
-            description: "Extended travel insurance with extra coverage for your travels",
-            activationDate: "2025-01-15".localDateToDate,
-            currentAddon: currentAddon,
-            quotes: [
-                currentAddon,
-                .init(
-                    displayName: "60 days",
-                    displayNameLong: "display name long",
-                    quoteId: "quoteId60",
-                    addonId: "addonId60",
-                    addonSubtype: "addonId60",
-                    displayItems: [
-                        .init(displayTitle: "Coverage", displayValue: "45 days"),
-                        .init(displayTitle: "Insured people", displayValue: "You+1"),
-                    ],
-                    itemCost: .init(
-                        premium: .init(gross: .sek(139), net: .sek(79)),
-                        discounts: []
-                    ),
-                    addonVariant: .init(
-                        displayName: "display name",
-                        documents: [
-                            .init(displayName: "dodument1", url: "", type: .generalTerms),
-                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-                        ],
-                        perils: [],
-                        product: "",
-                        termsVersion: ""
-                    ),
-                    documents: []
-                ),
-            ]
-        ),
+        selectable: selectable,
         changeAddonNavigationVm: .init(
             input: .init(
                 addonSource: .insurances,
                 contractConfigs: [.init(contractId: "contractId", exposureName: "exposure", displayName: "displayName")]
             )
-
         )
     )
 }

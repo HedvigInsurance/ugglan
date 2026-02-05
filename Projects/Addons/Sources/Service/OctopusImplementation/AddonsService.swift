@@ -3,15 +3,13 @@ import hCore
 
 @MainActor
 public class AddonsService {
-    @Inject var service: AddonsClient
+    @Inject var client: AddonsClient
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
-        log.info("AddonsService: getAddon", error: nil, attributes: nil)
-        return try await service.getAddon(contractId: contractId)
+    public func getAddonOffers(contractId: String) async throws -> AddonOfferV2 {
+        try await client.getAddonV2(contractId: contractId)
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws {
-        log.info("AddonsService: submitAddon", error: nil, attributes: nil)
-        return try await service.submitAddon(quoteId: quoteId, addonId: addonId)
+    public func submitAddons(quoteId: String, selectedAddonsIds: Set<String>) async throws {
+        try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonsIds)
     }
 }

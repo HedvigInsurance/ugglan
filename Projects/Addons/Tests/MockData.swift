@@ -60,4 +60,11 @@ class MockAddonsService: AddonsClient {
         events.append(.submitAddon)
         try await addonSubmit(quoteId, addonId)
     }
+
+    func getAddonV2(contractId: String) async throws -> Addons.AddonOfferV2 {
+        throw NSError(domain: "test", code: 0)
+    }
+
+    func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
+    }
 }

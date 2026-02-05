@@ -39,13 +39,13 @@ struct ChangeAddonScreen: View {
                 title: .init(
                     .small,
                     .body2,
-                    L10n.addonFlowTitle,
+                    changeAddonVm.addonOffer?.pageTitle ?? "",
                     alignment: .leading
                 ),
                 subTitle: .init(
                     .small,
                     .body2,
-                    L10n.addonFlowSubtitle
+                    changeAddonVm.addonOffer?.pageDescription ?? ""
                 )
             )
             .hFormAttachToBottom {
@@ -69,47 +69,59 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private var addOnSection: some View {
-        if let addonOffer = changeAddonVm.addonOffer {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    hText(addonOffer.title)
-                        .fixedSize()
-                    Spacer()
-                    hPill(
-                        text: L10n.addonFlowPriceLabel(
-                            changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
-                                .formattedAmount ?? ""
-                        ),
-                        color: .grey,
-                        colorLevel: .one
-                    )
-                    .hFieldSize(.small)
-                }
-                if let subTitle = addonOffer.description {
-                    hText(subTitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                        .padding(.top, .padding8)
-                }
-
-                DropdownView(
-                    value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
-                    placeHolder: L10n.addonFlowSelectDaysPlaceholder
-                ) {
-                    changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
-                }
-                .disabled(changeAddonVm.disableDropDown)
-                .padding(.top, .padding16)
-                .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
-                .hWithoutHorizontalPadding([.section])
-                .accessibilityHidden(false)
+        switch changeAddonVm.addonType {
+        case .travel:
+            ForEach(changeAddonVm.selectableAddons, id: \.fieldTitle) { selectable in
+                addonRow(for: selectable)
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-            .accessibilityAction {
-                changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
-            }
-            .fixedSize(horizontal: false, vertical: true)
+        case .car: EmptyView()
+        case .none: EmptyView()
         }
+    }
+
+    @ViewBuilder
+    private func addonRow(for selectable: AddonOfferSelectable) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                hText(selectable.fieldTitle)
+                    .fixedSize()
+                Spacer()
+                hPill(
+                    text: L10n.addonFlowPriceLabel(
+                        changeAddonVm.getPriceForQuote(
+                            changeAddonVm.selectedQuote(for: selectable),
+                            in: selectable
+                        )?
+                        .formattedAmount ?? ""
+                    ),
+                    color: .grey,
+                    colorLevel: .one
+                )
+                .hFieldSize(.small)
+            }
+
+            hText(selectable.selectionDescription, style: .label)
+                .foregroundColor(hTextColor.Translucent.secondary)
+                .padding(.top, .padding8)
+
+            DropdownView(
+                value: changeAddonVm.selectedQuote(for: selectable)?.displayTitle ?? "",
+                placeHolder: L10n.addonFlowSelectDaysPlaceholder
+            ) {
+                changeAddonNavigationVm.isSelectableAddonPresented = selectable
+            }
+            .disabled(changeAddonVm.disableDropDown(for: selectable))
+            .padding(.top, .padding16)
+            .hBackgroundOption(option: changeAddonVm.disableDropDown(for: selectable) ? [.locked] : [])
+            .hWithoutHorizontalPadding([.section])
+            .accessibilityHidden(false)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
+        .accessibilityAction {
+            changeAddonNavigationVm.isSelectableAddonPresented = selectable
+        }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var buttonsView: some View {
@@ -134,8 +146,9 @@ struct ChangeAddonScreen: View {
                 .init(
                     title: L10n.addonFlowTravelInformationTitle,
                     description: L10n.addonFlowTravelInformationDescription,
-                    perils: changeAddonNavigationVm.changeAddonVm?.selectedQuote?.addonVariant?
-                        .perils ?? []
+                    perils: changeAddonVm.selectableAddons.first.flatMap {
+                        changeAddonVm.selectedQuote(for: $0)?.addonVariant.perils
+                    } ?? []
                 )
             )
         }

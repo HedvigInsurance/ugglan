@@ -21,22 +21,23 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
+        let selectedVariant = selectableAddons.first.flatMap { selectedQuote(for: $0)?.addonVariant }
+        let documents = selectableAddons.flatMap { selectedQuote(for: $0)?.addonVariant.documents ?? [] }
+
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
             id: contractId,
-            displayName: selectedQuote?.addonVariant?.displayName ?? "",
+            displayName: selectedVariant?.displayName ?? "",
             exposureName: L10n.addonFlowSummaryActiveFrom(
-                addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             premium: getPremium(),
             documentSection: .init(
-                documents: selectedQuote?.documents ?? [],
+                documents: documents,
                 onTap: { [weak changeAddonNavigationVm] document in
                     changeAddonNavigationVm?.document = document
                 }
             ),
-            displayItems: compareAddonDisplayItems(
-                newDisplayItems: selectedQuote?.displayItems ?? []
-            ),
+            displayItems: getDisplayItems(),
             insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
@@ -48,7 +49,7 @@ extension ChangeAddonViewModel {
             contract: [
                 contractInfo
             ],
-            activationDate: self.addonOffer?.activationDate,
+            activationDate: activationDate,
             premium: .init(
                 gross: totalPrice,
                 net: totalPrice
@@ -69,5 +70,14 @@ extension ChangeAddonViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init(addonSource: .insurances)))
+    return ChangeAddonSummaryScreen(
+        changeAddonNavigationVm: .init(
+            input: .init(
+                addonSource: .insurances,
+                contractConfigs: [
+                    .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName")
+                ]
+            )
+        )
+    )
 }

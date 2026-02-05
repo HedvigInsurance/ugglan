@@ -3,8 +3,8 @@ import hCore
 
 @MainActor
 public protocol AddonsClient {
-    func getAddon(contractId: String) async throws -> AddonOffer
-    func submitAddon(quoteId: String, addonId: String) async throws
+    func getAddonV2(contractId: String) async throws -> AddonOfferV2
+    func submitAddons(quoteId: String, addonIds: Set<String>) async throws
 }
 
 public enum AddonsError: Error {
