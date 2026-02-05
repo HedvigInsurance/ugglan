@@ -162,7 +162,7 @@ let project = Project(
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Test/Info.plist",
             sources: ["Sources/**", ""],
-            resources: ["Config/Test/Resources/**", "Config/PrivacyInfo.xcprivacy"],
+            resources: ["Resources/**", "Config/Test/Resources/**", "Config/PrivacyInfo.xcprivacy"],
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
             dependencies: devAppDependencies,
