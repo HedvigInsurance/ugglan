@@ -24,8 +24,9 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    func disableDropDown(for selectable: AddonOfferSelectable) -> Bool {
-        selectable.quotes.count <= 1
+    var disableDropDown: Bool {
+        guard let addonOffer else { return true }
+        return addonOffer.allAddons.count == 1
     }
 
     var allowToContinue: Bool {
