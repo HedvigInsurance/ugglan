@@ -2,9 +2,9 @@ import Foundation
 import hCore
 
 public class AddonsClientDemo: AddonsClient {
-    let offer: AddonOfferV2
+    let offer: AddonOffer
 
-    public func getAddonV2(contractId: String) async throws -> AddonOfferV2 {
+    public func getAddonV2(contractId: String) async throws -> AddonOffer {
         await delay(TimeInterval.random(in: 0.5...1.5))
         return offer
     }
@@ -20,12 +20,12 @@ public class AddonsClientDemo: AddonsClient {
     public init() {
         self.offer = testTravelOfferNoActive
     }
-    public init(offer: AddonOfferV2) {
+    public init(offer: AddonOffer) {
         self.offer = offer
     }
 }
 
-public let testTravelOfferNoActive: AddonOfferV2 = {
+public let testTravelOfferNoActive: AddonOffer = {
     let d45 = ItemDiscount(
         campaignCode: "BUNDLE15",
         displayName: "15% bundle discount",
@@ -118,7 +118,7 @@ public let testTravelOfferNoActive: AddonOfferV2 = {
     )
 }()
 
-public let testTravelOffer45Days: AddonOfferV2 = {
+public let testTravelOffer45Days: AddonOffer = {
     let d60 = ItemDiscount(
         campaignCode: "BUNDLE15",
         displayName: "15% bundle discount",
@@ -200,7 +200,7 @@ public let testTravelOffer45Days: AddonOfferV2 = {
     )
 }()
 
-public let testCarOfferNoActive: AddonOfferV2 = {
+public let testCarOfferNoActive: AddonOffer = {
     let exp = "Discount for bundling with your car insurance"
 
     let sj = AddonOfferQuote(
@@ -307,7 +307,7 @@ public let testCarOfferNoActive: AddonOfferV2 = {
     )
 }()
 
-public let testCarAddonRisk: AddonOfferV2 = {
+public let testCarAddonRisk: AddonOffer = {
     let exp = "Discount for bundling with your car insurance"
 
     let active = ActiveAddon(

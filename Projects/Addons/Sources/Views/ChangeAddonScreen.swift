@@ -102,7 +102,7 @@ struct ChangeAddonScreen: View {
     }
 
     @ViewBuilder
-    private func carAddonSection(carOffer: AddonOfferV2) -> some View {
+    private func carAddonSection(carOffer: AddonOffer) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(carOffer.activeAddons) { activeAddon in
                 addonToggleRow(
@@ -190,7 +190,7 @@ struct ChangeAddonScreen: View {
     }
 
     @ViewBuilder
-    private func travelAddonSection(travelOffer: AddonOfferV2) -> some View {
+    private func travelAddonSection(travelOffer: AddonOffer) -> some View {
         if let selectedQuote = changeAddonVm.selectedAddons.first {
             Group {
                 DropdownView(

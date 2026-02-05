@@ -7,7 +7,7 @@ public class ChangeAddonViewModel: ObservableObject {
     var addonService = AddonsService()
     @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
-    @Published var addonOffer: AddonOfferV2?
+    @Published var addonOffer: AddonOffer?
     @Published var selectedAddons: Set<AddonOfferQuote> = []
     let addonSource: AddonSource
     let config: AddonConfig

@@ -5,7 +5,7 @@ import hCore
 public class AddonsService {
     @Inject var client: AddonsClient
 
-    public func getAddonOffers(contractId: String) async throws -> AddonOfferV2 {
+    public func getAddonOffers(contractId: String) async throws -> AddonOffer {
         try await client.getAddonV2(contractId: contractId)
     }
 

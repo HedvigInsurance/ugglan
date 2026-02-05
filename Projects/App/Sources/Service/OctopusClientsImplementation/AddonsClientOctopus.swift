@@ -7,7 +7,7 @@ import hGraphQL
 class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
-    public func getAddonV2(contractId: String) async throws -> AddonOfferV2 {
+    public func getAddonV2(contractId: String) async throws -> AddonOffer {
         let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: contractId)
         let response = try await octopus.client.mutation(mutation: mutation)
 
@@ -33,7 +33,7 @@ class AddonsClientOctopus: AddonsClient {
             default: throw AddonsError.somethingWentWrong
             }
 
-        return AddonOfferV2(
+        return AddonOffer(
             pageTitle: addonOffer.pageTitle,
             pageDescription: addonOffer.pageDescription,
             quote: quote,
