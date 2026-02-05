@@ -21,7 +21,14 @@ struct SubmitClaimSummaryView: View {
             }
         }
         .sectionContainerStyle(.negative)
+        .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+        .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
         .hWithoutHorizontalPadding([.section])
+        .overlay {
+            RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                .inset(by: 0.5)
+                .stroke(hBorderColor.primary, lineWidth: 1)
+        }
     }
 
     @ViewBuilder
@@ -114,6 +121,7 @@ struct SubmitClaimSummaryBottomView: View {
 }
 
 #Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let vm = SubmitClaimSummaryStep(
         claimIntent: .init(
             currentStep: .init(
@@ -155,7 +163,11 @@ struct SubmitClaimSummaryBottomView: View {
         service: .init(),
         mainHandler: { _ in }
     )
-    SubmitClaimSummaryView(viewModel: vm)
+    return hForm {
+        hSection {
+            SubmitClaimSummaryView(viewModel: vm)
+        }
+    }
 }
 
 @MainActor

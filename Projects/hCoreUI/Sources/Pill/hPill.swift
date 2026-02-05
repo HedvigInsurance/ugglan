@@ -262,7 +262,7 @@ public enum PillColor {
     }
 
     @hColorBuilder
-    func pillTextColor(level: PillColor.PillColorLevel) -> some hColor {
+    public func pillTextColor(level: PillColor.PillColorLevel) -> some hColor {
         if self == .grey || self == .clear {
             switch level {
             case .one, .two: hTextColor.Opaque.primary

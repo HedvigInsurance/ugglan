@@ -3,7 +3,7 @@ import hCore
 
 final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     override var id: String { claimIntent.currentStep.id }
-    override var sender: SubmitClaimChatMesageSender { .hedvig }
+    override var sender: SubmitClaimChatMessageSender { .hedvig }
     override var claimIntent: ClaimIntent {
         didSet {
             if case let .task(model) = claimIntent.currentStep.content {
@@ -25,7 +25,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         self.taskModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task { [weak self] in
-            try await Task.sleep(seconds: 1)
+            try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
             self?.submitResponse()
         }
     }
@@ -38,7 +38,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-        try await Task.sleep(seconds: 0.5)
+        try await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
         mainHandler(.removeStep(id: id))
         return result
     }
@@ -48,7 +48,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             return
         } else {
             try Task.checkCancellation()
-            try await Task.sleep(seconds: 1)
+            try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
             try Task.checkCancellation()
             guard let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id) else {
                 throw ClaimIntentError.invalidResponse
@@ -67,8 +67,5 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         ""
-    }
-
-    deinit {
     }
 }

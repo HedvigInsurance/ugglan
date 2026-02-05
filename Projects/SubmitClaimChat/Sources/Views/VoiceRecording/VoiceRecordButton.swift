@@ -17,7 +17,7 @@ struct VoiceRecordButton: View {
                         .frame(width: 32, height: 32)
 
                     buttonImage
-                        .foregroundColor(hFillColor.Opaque.negative)
+                        .foregroundColor(hFillColor.Opaque.white)
                 }
                 .scaleEffect(buttonScale)
                 hText(
@@ -38,7 +38,7 @@ struct VoiceRecordButton: View {
         .onChange(of: countdownNumber) { _ in
             buttonScale = 1.3
             Task {
-                try? await Task.sleep(seconds: 0.15)
+                try? await Task.sleep(seconds: ClaimChatConstants.Timing.hapticDelay)
                 buttonScale = 1.0
             }
         }
@@ -92,9 +92,11 @@ struct VoiceRecordButton: View {
                 ImpactGenerator.light()
             }
             try Task.checkCancellation()
+            if voiceRecorder.isCountingDown == true {
+                voiceRecorder.isCountingDown = false
+                await voiceRecorder.toggleRecording()
+            }
             countdownNumber = nil
-            voiceRecorder.isCountingDown = false
-            await voiceRecorder.toggleRecording()
         }
     }
 
@@ -103,7 +105,12 @@ struct VoiceRecordButton: View {
             if let number = countdownNumber {
                 hText("\(number)", style: .label)
             } else {
-                voiceRecorder.isRecording ? hCoreUIAssets.pause.view : hCoreUIAssets.mic.view
+                if voiceRecorder.isRecording {
+                    hCoreUIAssets.stop.view
+                        .frame(width: 12, height: 12)
+                } else {
+                    hCoreUIAssets.mic.view
+                }
             }
         }
     }

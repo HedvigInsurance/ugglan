@@ -13,6 +13,11 @@
 "A11Y_VIEW_DETAILS" = "View details";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Get notified";
 "ADDON_ADD_COVERAGE" = "Add coverage";
+/* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
+"ADDON_BADGE_ACTIVE" = "Active";
+"ADDON_CAR_ALLRISK_DISPLAY_NAME" = "All-risk";
+"ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Lower deductible";
+"ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Rental car";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Yes, upgrade my coverage";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "This upgrade will take effect from %1$@ and can only be removed when your insurance is renewed or cancelled.";
 "ADDON_FLOW_CONFIRMATION_TITLE" = "Confirm upgraded coverage";
@@ -221,7 +226,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Make sure we have right phone number in the case we need to contact you";
 "CLAIM_CHAT_RECORDING_TITLE" = "Recording";
 "CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT" = "If you don't remember the purchase date, you don't need to fill in anything.";
-"CLAIM_CHAT_SKIPPED_LABEL" = "Skipped";
 "CLAIM_CHAT_SKIPPED_STEP" = "Skipped";
 "CLAIM_CHAT_SKIP_STEP" = "Skip";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Submit your claim";
@@ -296,6 +300,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "In %1$li days your insurance will be renewed. Read your updated insurance certificate here.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Read certificate";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Your insurance will be renewed tomorrow. Read your updated insurance certificate here.";
+"DATA_TABLE_MULTIPLE_OWNERS" = "";
+"DATA_TABLE_WATER_CONNECTED" = "";
 "DEEP_LINK_CONTRACT" = "Contract";
 /* Figma */
 "DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Are you sure you want to delete your account?";
@@ -431,10 +437,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOMETAB_ACCOUNT_DELETION_NOTIFICATION" = "We have received your request for account deletion. You will get an email from us within 30 days to confirm that your account has been deleted. Until then, your account will stay active.";
 "HONESTY_PLEDGE_DESCRIPTION" = "Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.";
 "HONESTY_PLEDGE_HEADER" = "Make a claim";
-"HONESTY_PLEDGE_NOTE_1" = "Not sure what’s covered? Claim anyway and we’ll get back to you";
-"HONESTY_PLEDGE_NOTE_2" = "Have reciepts and other documents ready for faster help";
-"HONESTY_PLEDGE_NOTE_3" = "If we need more information we’ll get back to you";
-"HONESTY_PLEDGE_TITLE" = "Read before you continue";
+"HONESTY_PLEDGE_NOTE_1" = "Not sure about what’s covered? Submit your claim anyway";
+"HONESTY_PLEDGE_NOTE_2" = "Have receipts or other documentation ready to help us help you faster";
+"HONESTY_PLEDGE_NOTE_3" = "We’ll contact you if we need more information";
+"HONESTY_PLEDGE_TITLE" = "Before we start";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Discounts available";
 "INSURANCE_ADDONS_SUBHEADING" = "Addons";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "To return to your previous coverage, register your car as active again with Transportstyrelsen.";
@@ -640,7 +646,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_TOWING_A2" = "As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.";
 "SUBMIT_CLAIM_TOWING_A3" = "You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.";
 "SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Read more";
-"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 10–45 99 222. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
+"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 020 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
 "SUBMIT_CLAIM_TOWING_INFO_LABEL" = "You need to contact Assistancekåren directly to receive further assistance";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "Call now";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL" = "Available 24/7";
@@ -757,6 +763,10 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "To be able to log in to your bank you need to have the XXX app installed.";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "You do not have BankID on this device";
 "Third_Party_Connected" = "%1$@ /month - Paying with third party provider";
+"UPSELL_TRAVEL_ADDON_CONTRACT_QUOTE_TITLE" = "Travel Insurance Plus";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE" = "Maximum travel limit";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION" = "Days covered when travelling";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE" = "Choose your maximum travel limit";
 "USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK" = "Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.";
 "VOICEOVER_ACCEPTED" = "Is accepted";
 "VOICEOVER_ADD_INFORMATION" = "add information";

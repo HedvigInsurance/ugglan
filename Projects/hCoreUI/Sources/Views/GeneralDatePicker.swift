@@ -49,14 +49,14 @@ public struct DatePickerView: View {
                 )
                 .hUseButtonTextColor(.negative)
                 .frame(maxWidth: .infinity, alignment: .bottom)
-                .padding(.horizontal, .padding16)
 
-                hCancelButton {
+                hCancelButton(type: .secondary) {
                     vm.cancelAction.execute()
                 }
                 .sectionContainerStyle(.transparent)
             }
             .padding(.top, .padding8)
+            .padding(.horizontal, .padding16)
         }
         .toolbar {
             ToolbarItem(placement: .principal) {

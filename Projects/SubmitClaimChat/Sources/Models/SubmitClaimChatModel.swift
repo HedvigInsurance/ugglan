@@ -30,7 +30,7 @@ struct SingleSelectValue: Hashable {
     let value: String
 }
 
-enum SubmitClaimChatMesageSender {
+enum SubmitClaimChatMessageSender {
     case hedvig
     case member
 }
@@ -94,7 +94,6 @@ public enum ClaimIntentStepContent: Sendable {
     case summary(model: ClaimIntentStepContentSummary)
     case singleSelect(model: ClaimIntentStepContentSelect)
     case deflect(model: ClaimIntentOutcomeDeflection)
-    case unknown
 }
 
 public enum ClaimIntentStepOutcome: Sendable, Hashable {
