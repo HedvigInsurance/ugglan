@@ -7,7 +7,7 @@ public struct CrossSellState: StateProtocol {
 
     public var crossSells: CrossSells?
 
-    public var addonBanners: [AddonBannerModel] = []
+    public var addonBanners: [AddonBanner] = []
 
     public var hasNewOffer = false
 

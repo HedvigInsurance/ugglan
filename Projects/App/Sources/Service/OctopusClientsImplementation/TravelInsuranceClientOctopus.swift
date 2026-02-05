@@ -57,7 +57,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
     func getList(
         source: AddonSource
     ) async throws -> (
-        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?
     ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
         do {
@@ -74,7 +74,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let bannerResponse = try await octopus.client.fetch(query: query)
             let bannerData = bannerResponse.currentMember.addonBanners.first
 
-            let addonBanner: AddonBannerModel? =
+            let addonBanner: AddonBanner? =
                 if let bannerData, !bannerData.contractIds.isEmpty {
                     .init(
                         contractIds: bannerData.contractIds,

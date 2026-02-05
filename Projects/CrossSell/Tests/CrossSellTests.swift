@@ -49,19 +49,21 @@ final class CrossSellTests: XCTestCase {
     }
 
     func testGetAddonBannerSuccess() async {
-        let addonBannerModel = AddonBannerModel(
-            contractIds: ["contractId"],
-            titleDisplayName: "title",
-            descriptionDisplayName: "description",
-            badges: []
-        )
+        let addonBanner = [
+            AddonBanner(
+                contractIds: ["contractId"],
+                titleDisplayName: "title",
+                descriptionDisplayName: "description",
+                badges: []
+            )
+        ]
 
         let mockService = MockData.createMockCrossSellService(
-            fetchAddonBannerModel: { _ in addonBannerModel }
+            fetchAddonBanners: { _ in addonBanner }
         )
         sut = mockService
 
-        let respondedAddonBannerModel = try! await mockService.getAddonBannerModel(source: .insurances)
-        assert(respondedAddonBannerModel == addonBannerModel)
+        let respondedAddonBanner = try! await mockService.getAddonBanners(source: .insurances)
+        assert(respondedAddonBanner == addonBanner)
     }
 }

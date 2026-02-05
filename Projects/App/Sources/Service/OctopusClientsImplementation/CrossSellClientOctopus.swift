@@ -38,7 +38,7 @@ class CrossSellClientOctopus: CrossSellClient {
         return .init(recommended: recommendedCrossSell, others: otherCrossSells, discountAvailable: discountAvailable)
     }
 
-    func getAddonBanners(source: AddonSource) async throws -> [AddonBannerModel] {
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
         try await addonClient.getAddonBanners(source: source)
     }
 }

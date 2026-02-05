@@ -6,7 +6,7 @@ import hCore
 @MainActor
 struct MockData {
     static func createMockCrossSellService(
-        fetchAddonBannerModel: @escaping FetchAddonBanner = { _ in
+        fetchAddonBanners: @escaping FetchAddonBanners = { _ in
             [
                 .init(
                     contractIds: ["contractId"],
@@ -26,7 +26,7 @@ struct MockData {
     ) -> MockCrossSellService {
         let service = MockCrossSellService(
             fetchCrossSell: fetchCrossSell,
-            fetchAddonBannerModel: fetchAddonBannerModel
+            fetchAddonBanners: fetchAddonBanners
         )
         Dependencies.shared.add(module: Module { () -> CrossSellClient in service })
         return service
@@ -35,29 +35,29 @@ struct MockData {
 
 enum MockContractError: Error {
     case fetchCrossSells
-    case fetchAddonBanner
+    case fetchAddonBanners
 }
 
 typealias FetchCrossSell = (CrossSellSource) async throws -> CrossSells
-typealias FetchAddonBanner = (AddonSource) async throws -> [AddonBannerModel]
+typealias FetchAddonBanners = (AddonSource) async throws -> [AddonBanner]
 
 class MockCrossSellService: CrossSellClient {
     var events = [Event]()
     var fetchCrossSell: FetchCrossSell
-    var fetchAddonBannerModel: FetchAddonBanner
+    var fetchAddonBanners: FetchAddonBanners
 
     enum Event {
         case getCrossSell
-        case getAddonBannerModel
+        case getAddonBanners
     }
 
     init(
         fetchCrossSell: @escaping FetchCrossSell,
-        fetchAddonBannerModel: @escaping FetchAddonBanner,
+        fetchAddonBanners: @escaping FetchAddonBanners,
 
     ) {
         self.fetchCrossSell = fetchCrossSell
-        self.fetchAddonBannerModel = fetchAddonBannerModel
+        self.fetchAddonBanners = fetchAddonBanners
     }
 
     func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
@@ -66,9 +66,9 @@ class MockCrossSellService: CrossSellClient {
         return data
     }
 
-    func getAddonBanners(source: AddonSource) async throws -> [AddonBannerModel] {
-        events.append(.getAddonBannerModel)
-        let data = try await fetchAddonBannerModel(source)
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
+        events.append(.getAddonBanners)
+        let data = try await fetchAddonBanners(source)
         return data
     }
 }

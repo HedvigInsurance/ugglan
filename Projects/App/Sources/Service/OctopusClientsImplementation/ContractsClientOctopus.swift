@@ -22,7 +22,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
         )
     }
 
-    func getAddonBanners(source: AddonSource) async throws -> [AddonBannerModel] {
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
         try await addonClient.getAddonBanners(source: source)
     }
 

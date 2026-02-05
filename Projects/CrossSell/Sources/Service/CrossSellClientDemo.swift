@@ -17,7 +17,7 @@ public class CrossSellClientDemo: CrossSellClient {
         return .init(recommended: nil, others: crossSells, discountAvailable: true)
     }
 
-    public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBannerModel] {
+    public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {
         []
     }
 }

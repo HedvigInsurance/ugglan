@@ -74,9 +74,9 @@ public class FetchContractsClientDemo: FetchContractsClient {
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }
 
-    public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBannerModel] {
+    public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {
         [
-            AddonBannerModel(
+            AddonBanner(
                 contractIds: [],
                 titleDisplayName: "Travel Plus",
                 descriptionDisplayName:

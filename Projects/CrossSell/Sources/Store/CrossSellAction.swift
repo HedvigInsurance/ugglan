@@ -8,7 +8,7 @@ public enum CrossSellAction: ActionProtocol, Hashable {
     case setCrossSells(crossSells: CrossSells)
     case setHasSeenRecommendedWith(id: String)
     case setHasNewRecommendedCrossSell(hasNew: Bool)
-    case setAddonBanners(addonBanners: [AddonBannerModel])
+    case setAddonBanners(addonBanners: [AddonBanner])
 }
 
 public enum CrossSellLoadingAction: LoadingProtocol {

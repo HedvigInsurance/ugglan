@@ -54,7 +54,7 @@ class AddonsClientOctopus: AddonsClient {
         }
     }
 
-    func getAddonBanners(source: AddonSource) async throws -> [AddonBannerModel] {
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
         let query = OctopusGraphQL.AddonBannersQuery(flows: source.flows)
 
         let data = try await octopus.client.fetch(query: query)
@@ -62,7 +62,7 @@ class AddonsClientOctopus: AddonsClient {
 
         return banners.filter { !$0.contractIds.isEmpty }
             .map { banner in
-                AddonBannerModel(
+                AddonBanner(
                     contractIds: banner.contractIds,
                     titleDisplayName: banner.displayTitleName,
                     descriptionDisplayName: banner.descriptionDisplayName,

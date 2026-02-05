@@ -51,15 +51,15 @@ final class CrossSellStoreTests: XCTestCase {
         assert(mockService.events.first == .getCrossSell)
     }
 
-    func testFetchAddonBannerDataSuccess() async {
+    func testFetchAddonBannersDataSuccess() async {
         let mockService = MockData.createMockCrossSellService(
-            fetchAddonBannerModel: { _ in AddonBannerModel.getDefault }
+            fetchAddonBanners: { _ in AddonBanner.getDefault }
         )
         let store = CrossSellStore()
         self.store = store
         await store.sendAsync(.fetchAddonBanners)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchAddonBanners] == nil && store.state.addonBanners == AddonBannerModel.getDefault
+            store.loadingState[.fetchAddonBanners] == nil && store.state.addonBanners == AddonBanner.getDefault
         }
 
         assert(mockService.events.count == 1)
@@ -68,7 +68,7 @@ final class CrossSellStoreTests: XCTestCase {
 
     func testFetchAddonBannerDataFailure() async throws {
         let mockService = MockData.createMockCrossSellService(
-            fetchAddonBannerModel: { _ in throw MockContractError.fetchAddonBanner }
+            fetchAddonBanners: { _ in throw MockContractError.fetchAddonBanners }
         )
 
         let store = CrossSellStore()
@@ -78,7 +78,7 @@ final class CrossSellStoreTests: XCTestCase {
         assert(store.loadingState[.fetchAddonBanners] != nil)
         assert(store.state.crossSells?.others.isEmpty == nil)
         assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getAddonBannerModel)
+        assert(mockService.events.first == .getAddonBanners)
     }
 }
 
@@ -116,9 +116,9 @@ extension CrossSellState {
 }
 
 @MainActor
-extension AddonBannerModel {
+extension AddonBanner {
     fileprivate static let getDefault = [
-        AddonBannerModel(
+        AddonBanner(
             contractIds: ["contractId"],
             titleDisplayName: "display name",
             descriptionDisplayName: "description",

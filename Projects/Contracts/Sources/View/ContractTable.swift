@@ -192,7 +192,7 @@ public class ContractTableViewModel: ObservableObject {
     @PresentableStore var store: ContractStore
     @Published var loadingCancellable: AnyCancellable?
     @Inject var service: FetchContractsClient
-    @Published var addonBanners: [AddonBannerModel] = []
+    @Published var addonBanners: [AddonBanner] = []
     private var addonAddedObserver: NSObjectProtocol?
 
     init() {

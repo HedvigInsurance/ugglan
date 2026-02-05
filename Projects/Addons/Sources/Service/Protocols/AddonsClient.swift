@@ -5,7 +5,7 @@ import hCore
 public protocol AddonsClient {
     func getAddonV2(contractId: String) async throws -> AddonOffer
     func submitAddons(quoteId: String, addonIds: Set<String>) async throws
-    func getAddonBanners(source: AddonSource) async throws -> [AddonBannerModel]
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
 }
 
 public enum AddonsError: Error {

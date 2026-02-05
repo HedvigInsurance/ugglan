@@ -26,7 +26,7 @@ public class TravelInsuranceService {
     public func getList(
         source: AddonSource
     ) async throws -> (
-        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?
     ) {
         log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
         return try await service.getList(source: source)

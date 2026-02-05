@@ -4,11 +4,11 @@ import hCoreUI
 
 public struct AddonCardView: View {
     let openAddon: () -> Void
-    let addon: AddonBannerModel
+    let addon: AddonBanner
 
     public init(
         openAddon: @escaping () -> Void,
-        addon: AddonBannerModel
+        addon: AddonBanner
     ) {
         self.openAddon = openAddon
         self.addon = addon
