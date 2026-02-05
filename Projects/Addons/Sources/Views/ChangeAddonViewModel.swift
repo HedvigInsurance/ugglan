@@ -9,11 +9,11 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var addonOffer: AddonOfferV2?
     @Published var selectedAddonIds: Set<String> = []
-    let contractId: String
     let addonSource: AddonSource
+    let config: AddonConfig
 
-    init(contractId: String, addonSource: AddonSource) {
-        self.contractId = contractId
+    init(config: AddonConfig, addonSource: AddonSource) {
+        self.config = config
         self.addonSource = addonSource
         Task {
             await getAddons()
@@ -58,7 +58,7 @@ public class ChangeAddonViewModel: ObservableObject {
         withAnimation { fetchAddonsViewState = .loading }
 
         do {
-            let data = try await addonService.getAddonOffers(contractId: contractId)
+            let data = try await addonService.getAddonOffers(contractId: config.contractId)
 
             withAnimation {
                 addonOffer = data

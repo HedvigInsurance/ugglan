@@ -52,7 +52,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
         self.input = input
         if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
             changeAddonVm = .init(
-                contractId: config.contractId,
+                config: config,
                 addonSource: input.addonSource
             )
         }

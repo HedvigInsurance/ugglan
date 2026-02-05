@@ -52,7 +52,10 @@ struct AddonProcessingScreen: View {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     return AddonProcessingScreen(
-        vm: .init(contractId: "", addonSource: .insurances),
+        vm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        ),
         addonNavigationVm: .init()
     )
 }

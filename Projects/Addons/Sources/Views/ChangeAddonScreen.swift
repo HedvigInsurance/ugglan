@@ -239,13 +239,23 @@ struct ChangeAddonScreen: View {
 #Preview("Travel Addons") {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(changeAddonVm: .init(contractId: "id", addonSource: .insurances))
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }
 
 #Preview("Car Addons") {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarAddonRisk) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(changeAddonVm: .init(contractId: "id", addonSource: .insurances))
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }
