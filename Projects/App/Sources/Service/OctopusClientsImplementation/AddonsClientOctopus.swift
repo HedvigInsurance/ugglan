@@ -271,7 +271,7 @@ extension AddonVariant {
                     title: peril.title,
                     description: peril.description ?? "",
                     color: peril.colorCode,
-                    covered: [],
+                    covered: []
                 )
             },
             product: selectableData.product,

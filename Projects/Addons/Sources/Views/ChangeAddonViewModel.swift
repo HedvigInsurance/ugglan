@@ -76,7 +76,7 @@ public class ChangeAddonViewModel: ObservableObject {
         do {
             try await addonService.submitAddons(
                 quoteId: addonOffer?.quote.quoteId ?? "",
-                selectedAddonsIds: selectedAddonIds
+                selectedAddonIds: selectedAddonIds
             )
             logAddonEvent()
             withAnimation {

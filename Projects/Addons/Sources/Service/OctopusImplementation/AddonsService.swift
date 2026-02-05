@@ -9,8 +9,8 @@ public class AddonsService {
         try await client.getAddonV2(contractId: contractId)
     }
 
-    public func submitAddons(quoteId: String, selectedAddonsIds: Set<String>) async throws {
-        try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonsIds)
+    public func submitAddons(quoteId: String, selectedAddonIds: Set<String>) async throws {
+        try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
         await delay(3)
     }
 }
