@@ -74,6 +74,7 @@ struct ChangeAddonScreen: View {
     private var addOnSection: some View {
         if let offer = changeAddonVm.addonOffer {
             VStack(alignment: .leading, spacing: 0) {
+                let displayPriceDiff = !changeAddonVm.selectedAddonIds.isEmpty
                 HStack {
                     hText(offer.pageTitle)
                     Spacer()
@@ -85,6 +86,7 @@ struct ChangeAddonScreen: View {
                         colorLevel: .one
                     )
                     .hFieldSize(.small)
+                    .opacity(displayPriceDiff ? 1.0 : 0.0)
                 }
 
                 hText(offer.pageDescription, style: .label)
