@@ -131,7 +131,7 @@ struct ChangeAddonScreen: View {
                         )
                         .hFieldSize(.small)
                     },
-                    onTap: { changeAddonVm.selectAddon(addon: addon) }
+                    onTap: { withAnimation { changeAddonVm.selectAddon(addon: addon) } }
                 )
                 .padding(.top, .padding16)
             }
