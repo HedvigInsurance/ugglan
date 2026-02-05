@@ -46,22 +46,14 @@ extension ChangeAddonViewModel {
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
-        let priceIncrease = getPriceIncrease()
-
         let vm = QuoteSummaryViewModel(
             contract: [contractInfo],
             activationDate: addonOffer?.activationDate,
-            premium: .init(
-                gross: priceIncrease.gross,
-                net: priceIncrease.net
-            ),
+            premium: getPriceIncrease(),
             isAddon: true
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true
-            Task {
-                guard let self else { return }
-                await self.submitAddons()
-            }
+            Task { await self?.submitAddons() }
         }
 
         return vm
