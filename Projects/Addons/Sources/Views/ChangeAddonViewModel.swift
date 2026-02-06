@@ -18,15 +18,16 @@ public class ChangeAddonViewModel: ObservableObject {
         Task {
             await getAddons()
 
-            if let selectableAddon = addonOffer?.selectableAddons.first {
-                selectedAddons = [selectableAddon]
+            if case let .selectable(selectableAddon) = addonOffer?.quote.addonOfferContent,
+                let first = selectableAddon.quotes.first
+            {
+                selectedAddons = [first]
             }
         }
     }
 
-    var disableDropDown: Bool {
-        guard let addonOffer else { return true }
-        return addonOffer.allAddons.count == 1
+    func isDropDownDisabled(for selectableOffer: AddonOfferSelectable) -> Bool {
+        selectableOffer.quotes.count <= 1
     }
 
     var allowToContinue: Bool {
@@ -38,11 +39,11 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     func selectAddon(addon: AddonOfferQuote) {
-        guard let addonType = addonOffer?.addonType else { return }
-        switch (addonType) {
-        case .travel:
+        guard let addonOffer else { return }
+        switch addonOffer.quote.addonOfferContent {
+        case .selectable:
             selectedAddons = [addon]
-        case .car:
+        case .toggleable:
             if selectedAddons.contains(addon) {
                 selectedAddons.remove(addon)
             } else {
@@ -87,29 +88,24 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     private func logAddonEvent() {
-        guard let addonOffer else { return }
-        let logType = addonOffer.addonType.asLoggingAddonType()
-        let eventType = addonOffer.addonType.asLoggingAddonEventType(hasActiveAddons: addonOffer.hasActiveAddons)
-        selectedAddons.map(\.addonVariant.product)
-            .forEach { selectedSubtype in
-                let logInfo = AddonLogInfo(
-                    flow: addonSource,
-                    subType: selectedSubtype,
-                    type: logType
-                )
-                log.addUserAction(
-                    type: .custom,
-                    name: eventType.rawValue,
-                    error: nil,
-                    attributes: logInfo.asAddonAttributes
-                )
-            }
+        selectedAddons.forEach { addon in
+            let logInfo = AddonLogInfo(
+                flow: addonSource,
+                type: addon.addonVariant.product,
+                subType: addon.addonVariant.product
+            )
+            log.addUserAction(
+                type: .custom,
+                name: addon.addonVariant.product,
+                attributes: logInfo.asAddonAttributes
+            )
+        }
     }
 
     func getGrossPriceDifference(for addonOfferQuote: AddonOfferQuote) -> MonetaryAmount {
         let currentGrossPrice = addonOfferQuote.cost.premium.gross
 
-        guard let activeAddonGrossPrice = addonOffer?.activeAddons.first?.cost.premium.gross else {
+        guard let activeAddonGrossPrice = addonOffer?.quote.activeAddons.first?.cost.premium.gross else {
             return currentGrossPrice
         }
         return currentGrossPrice - activeAddonGrossPrice
@@ -118,12 +114,12 @@ public class ChangeAddonViewModel: ObservableObject {
     func getPriceIncrease() -> Premium {
         guard let addonOffer else { return .init(gross: .sek(0), net: .sek(0)) }
 
-        let currentAddonsPremium = addonOffer.activeAddons.map(\.cost.premium).sum()
+        let currentAddonsPremium = addonOffer.quote.activeAddons.map(\.cost.premium).sum()
         let purchasedAddonsPremium = selectedAddons.map(\.cost.premium).sum()
 
-        return switch (addonOffer.addonType) {
-        case .car: purchasedAddonsPremium
-        case .travel: purchasedAddonsPremium - currentAddonsPremium
+        return switch addonOffer.quote.addonOfferContent {
+        case .toggleable: purchasedAddonsPremium
+        case .selectable: purchasedAddonsPremium - currentAddonsPremium
         }
     }
 
@@ -131,17 +127,17 @@ public class ChangeAddonViewModel: ObservableObject {
         guard let addonOffer else { return [] }
         var items: [QuoteDisplayItem] = []
 
-        let baseTitle = addonOffer.quote.displayTitle
+        let baseTitle = config.displayName
         let baseGross = addonOffer.quote.baseQuoteCost.premium.gross.formattedAmountPerMonth
         items.append(.init(title: baseTitle, value: baseGross))
 
         let crossDisplayTitle =
-            switch addonOffer.addonType {
-            case .car: false
-            case .travel: true
+            switch addonOffer.quote.addonOfferContent {
+            case .toggleable: false
+            case .selectable: true
             }
 
-        items += addonOffer.activeAddons.map { activeAddon in
+        items += addonOffer.quote.activeAddons.map { activeAddon in
             .init(
                 title: activeAddon.displayTitle,
                 value: activeAddon.cost.premium.gross.formattedAmountPerMonth,
@@ -163,44 +159,22 @@ public class ChangeAddonViewModel: ObservableObject {
         return items
     }
 
-    func compareAddonDisplayItems(newDisplayItems: [AddonDisplayItem]) -> [QuoteDisplayItem] {
-        let displayItems: [QuoteDisplayItem] = newDisplayItems.map { item in
-            .init(title: item.displayTitle, value: item.displayValue)
-        }
-        return displayItems
-    }
-
     func getPremium() -> Premium {
         guard let addonOffer, !selectedAddons.isEmpty else { return .zeroSek }
 
         let basePremium = addonOffer.quote.baseQuoteCost.premium
-        let activePremium = addonOffer.activeAddons.map(\.cost.premium).sum()
+        let activePremium = addonOffer.quote.activeAddons.map(\.cost.premium).sum()
         let selectedPremium = selectedAddons.map(\.cost.premium).sum()
 
-        return switch addonOffer.addonType {
-        case .car: basePremium + activePremium + selectedPremium
-        case .travel: basePremium + selectedPremium
+        return switch addonOffer.quote.addonOfferContent {
+        case .toggleable: basePremium + activePremium + selectedPremium
+        case .selectable: basePremium + selectedPremium
         }
-    }
-
-    func getDisplayItems() -> [QuoteDisplayItem] {
-        let allDisplayItems = selectedAddons.flatMap { $0.displayItems }
-        return compareAddonDisplayItems(newDisplayItems: allDisplayItems)
     }
 }
 
-extension AddonType {
-    func asLoggingAddonType() -> AddonLogInfo.AddonType {
-        switch self {
-        case .travel: return .travelAddon
-        case .car: return .carAddon
-        }
-    }
-
-    func asLoggingAddonEventType(hasActiveAddons: Bool) -> AddonEventType {
-        switch self {
-        case .travel: return hasActiveAddons ? .addonUpgraded : .addonPurchased
-        case .car: return .addonPurchased
-        }
+extension AddonDisplayItem {
+    public func asQuoteDisplayItem() -> QuoteDisplayItem {
+        .init(title: displayTitle, value: displayValue)
     }
 }

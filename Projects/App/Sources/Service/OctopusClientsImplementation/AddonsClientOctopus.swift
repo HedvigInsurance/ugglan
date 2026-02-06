@@ -26,19 +26,11 @@ class AddonsClientOctopus: AddonsClient {
         let quote = AddonContractQuote(data: addonOffer.quote)
         let currentTotalCost = ItemCost(data: addonOffer.currentTotalCost)
 
-        let addonType: AddonType =
-            switch (quote.selectableAddons.isEmpty, quote.toggleableAddons.isEmpty) {
-            case (false, true): .travel
-            case (true, false): .car
-            default: throw AddonsError.somethingWentWrong
-            }
-
         return AddonOffer(
             pageTitle: addonOffer.pageTitle,
             pageDescription: addonOffer.pageDescription,
             quote: quote,
-            currentTotalCost: currentTotalCost,
-            addonType: addonType
+            currentTotalCost: currentTotalCost
         )
     }
 

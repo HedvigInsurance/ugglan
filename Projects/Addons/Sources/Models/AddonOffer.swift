@@ -4,8 +4,6 @@ import hCore
 /// Output type for AddonOffer mutation.
 /// Returns offer with quote and addons with prices etc to show in the offer page.
 public struct AddonOffer: Equatable, Sendable {
-    let addonType: AddonType
-
     /// Title to show in offer page.
     /// eg "Extend your coverage"
     let pageTitle: String
@@ -24,18 +22,13 @@ public struct AddonOffer: Equatable, Sendable {
         pageTitle: String,
         pageDescription: String,
         quote: AddonContractQuote,
-        currentTotalCost: ItemCost,
-        addonType: AddonType
+        currentTotalCost: ItemCost
     ) {
         self.pageTitle = pageTitle
         self.pageDescription = pageDescription
         self.quote = quote
         self.currentTotalCost = currentTotalCost
-        self.addonType = addonType
     }
-}
-public enum AddonType: Equatable, Sendable {
-    case travel, car
 }
 
 /// Returns price for an Addon offer.
@@ -56,7 +49,7 @@ public struct AddonContractQuote: Equatable, Sendable {
     /// Addon Content
     ///
     /// GraphQL: `addonOffer: AddonOfferContent!`
-    let addonOffer: AddonOfferContent
+    let addonOfferContent: AddonOfferContent
 
     /// List of member current addons
     let activeAddons: [ActiveAddon]
@@ -81,26 +74,26 @@ public struct AddonContractQuote: Equatable, Sendable {
         self.displayTitle = displayTitle
         self.displayDescription = displayDescription
         self.activationDate = activationDate
-        self.addonOffer = addonOffer
+        self.addonOfferContent = addonOffer
         self.activeAddons = activeAddons
         self.baseQuoteCost = baseQuoteCost
         self.productVariant = productVariant
     }
 
     public var selectableOffer: AddonOfferSelectable? {
-        if case .selectable(let s) = addonOffer { return s }
+        if case .selectable(let s) = addonOfferContent { return s }
         return nil
     }
 
     public var toggleableOffer: AddonOfferToggleable? {
-        if case .toggleable(let t) = addonOffer { return t }
+        if case .toggleable(let t) = addonOfferContent { return t }
         return nil
     }
     public var selectableAddons: [AddonOfferQuote] { selectableOffer?.quotes ?? [] }
     public var toggleableAddons: [AddonOfferQuote] { toggleableOffer?.quotes ?? [] }
 
     var addons: [AddonOfferQuote] {
-        switch addonOffer {
+        switch addonOfferContent {
         case .selectable(let addonOfferSelectable):
             addonOfferSelectable.quotes
         case .toggleable(let addonOfferToggleable):
@@ -265,42 +258,5 @@ public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
     public init(displayTitle: String, displayValue: String) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
-    }
-}
-
-extension AddonOffer {
-    var selectableOffer: AddonOfferSelectable? {
-        quote.selectableOffer
-    }
-
-    var toggleableOffer: AddonOfferToggleable? {
-        quote.toggleableOffer
-    }
-
-    var selectableAddons: [AddonOfferQuote] {
-        quote.selectableAddons
-    }
-
-    var allAddons: [AddonOfferQuote] {
-        quote.addons
-    }
-
-    var toggleableAddons: [AddonOfferQuote] {
-        quote.toggleableAddons
-    }
-
-    var activeAddons: [ActiveAddon] {
-        quote.activeAddons
-    }
-    var hasActiveAddons: Bool {
-        !activeAddons.isEmpty
-    }
-
-    var activationDate: Date {
-        quote.activationDate
-    }
-
-    var currency: String {
-        currentTotalCost.premium.gross.currency
     }
 }

@@ -5,13 +5,9 @@ import hCoreUI
 struct ChangeAddonSummaryScreen: View {
     let quoteSummaryVm: QuoteSummaryViewModel
 
-    init(
-        changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    ) {
-        quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
-            .asQuoteSummaryViewModel(
-                changeAddonNavigationVm: changeAddonNavigationVm
-            )
+    init(changeAddonNavigationVm: ChangeAddonNavigationViewModel) {
+        self.quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
+            .asQuoteSummaryViewModel(changeAddonNavigationVm: changeAddonNavigationVm)
     }
 
     var body: some View {
@@ -39,7 +35,7 @@ extension ChangeAddonViewModel {
                     changeAddonNavigationVm?.document = document
                 }
             ),
-            displayItems: getDisplayItems(),
+            displayItems: selectedAddons.flatMap(\.displayItems).map { $0.asQuoteDisplayItem() },
             insuranceLimits: [],
             typeOfContract: typeOfContract,
             isAddon: true,
@@ -48,7 +44,7 @@ extension ChangeAddonViewModel {
 
         let vm = QuoteSummaryViewModel(
             contract: [contractInfo],
-            activationDate: addonOffer?.activationDate,
+            activationDate: addonOffer?.quote.activationDate,
             premium: getPriceIncrease(),
             isAddon: true
         ) { [weak self, weak changeAddonNavigationVm] in
@@ -67,9 +63,7 @@ extension ChangeAddonViewModel {
         changeAddonNavigationVm: .init(
             input: .init(
                 addonSource: .insurances,
-                contractConfigs: [
-                    .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName")
-                ]
+                contractConfigs: [.init(contractId: "Id", exposureName: "title", displayName: "subtitle")]
             )
         )
     )

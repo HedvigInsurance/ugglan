@@ -93,18 +93,20 @@ struct ChangeAddonScreen: View {
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.top, .padding8)
 
-                switch (offer.addonType) {
-                case .travel: travelAddonSection(travelOffer: offer)
-                case .car: carAddonSection(carOffer: offer)
+                switch offer.quote.addonOfferContent {
+                case .selectable(let selectable):
+                    selectableAddonSection(selectable: selectable)
+                case .toggleable(let toggleable):
+                    toggleableAddonSection(activeAddons: offer.quote.activeAddons, toggleable: toggleable)
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func carAddonSection(carOffer: AddonOffer) -> some View {
+    private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(carOffer.activeAddons) { activeAddon in
+            ForEach(activeAddons) { activeAddon in
                 addonToggleRow(
                     title: activeAddon.displayTitle,
                     subtitle: activeAddon.displayDescription ?? "",
@@ -118,7 +120,7 @@ struct ChangeAddonScreen: View {
                 .padding(.top, .padding16)
             }
 
-            ForEach(carOffer.allAddons) { addon in
+            ForEach(toggleable.quotes) { addon in
                 addonToggleRow(
                     title: addon.displayTitle,
                     subtitle: addon.displayDescription,
@@ -190,26 +192,25 @@ struct ChangeAddonScreen: View {
     }
 
     @ViewBuilder
-    private func travelAddonSection(travelOffer: AddonOffer) -> some View {
+    private func selectableAddonSection(selectable: AddonOfferSelectable) -> some View {
         if let selectedQuote = changeAddonVm.selectedAddons.first {
             Group {
+                let isDropDownDisabled = changeAddonVm.isDropDownDisabled(for: selectable)
                 DropdownView(
                     value: selectedQuote.displayTitle,
                     placeHolder: L10n.addonFlowSelectDaysPlaceholder
                 ) {
-                    changeAddonNavigationVm.isSelectableAddonPresented = travelOffer.selectableOffer
+                    changeAddonNavigationVm.isSelectableAddonPresented = selectable
                 }
-                .disabled(changeAddonVm.disableDropDown)
+                .disabled(isDropDownDisabled)
                 .padding(.top, .padding16)
-                .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
+                .hBackgroundOption(option: isDropDownDisabled ? [.locked] : [])
                 .hWithoutHorizontalPadding([.section])
                 .accessibilityHidden(false)
             }
             .accessibilityElement(children: .combine)
             .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-            .accessibilityAction {
-                changeAddonNavigationVm.isSelectableAddonPresented = travelOffer.selectableOffer
-            }
+            .accessibilityAction { changeAddonNavigationVm.isSelectableAddonPresented = selectable }
         }
     }
 

@@ -113,8 +113,7 @@ public let testTravelOfferNoActive: AddonOffer = {
                     explanation: "Discount for bundling addons with your home insurance"
                 )
             ]
-        ),
-        addonType: .travel
+        )
     )
 }()
 
@@ -195,8 +194,7 @@ public let testTravelOffer45Days: AddonOffer = {
                     explanation: "Discount for bundling addons with your home insurance"
                 )
             ]
-        ),
-        addonType: .travel
+        )
     )
 }()
 
@@ -302,8 +300,7 @@ public let testCarOfferNoActive: AddonOffer = {
                     explanation: "Discount for bundling addons with your car insurance"
                 )
             ]
-        ),
-        addonType: .car
+        )
     )
 }()
 
@@ -402,7 +399,6 @@ public let testCarAddonRisk: AddonOffer = {
                     explanation: "Discount for bundling addons with your car insurance"
                 )
             ]
-        ),
-        addonType: .car
+        )
     )
 }()
