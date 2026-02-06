@@ -20,7 +20,7 @@ extension ChangeAddonViewModel {
         let documents = selectedAddons.flatMap { $0.addonVariant.documents }
 
         let typeOfContract: TypeOfContract? =
-            if let addonOffer = addonOffer {
+            if let addonOffer {
                 TypeOfContract(rawValue: addonOffer.quote.productVariant.typeOfContract)
             } else { nil }
 
@@ -45,7 +45,7 @@ extension ChangeAddonViewModel {
         let vm = QuoteSummaryViewModel(
             contract: [contractInfo],
             activationDate: addonOffer?.quote.activationDate,
-            premium: getPriceIncrease(),
+            premium: getPriceIncrease() ?? .zeroSek,
             isAddon: true
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true

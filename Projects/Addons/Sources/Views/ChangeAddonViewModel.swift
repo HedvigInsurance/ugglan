@@ -111,8 +111,8 @@ public class ChangeAddonViewModel: ObservableObject {
         return currentGrossPrice - activeAddonGrossPrice
     }
 
-    func getPriceIncrease() -> Premium {
-        guard let addonOffer else { return .init(gross: .sek(0), net: .sek(0)) }
+    func getPriceIncrease() -> Premium? {
+        guard let addonOffer, !selectedAddons.isEmpty else { return nil }
 
         let currentAddonsPremium = addonOffer.quote.activeAddons.map(\.cost.premium).sum()
         let purchasedAddonsPremium = selectedAddons.map(\.cost.premium).sum()

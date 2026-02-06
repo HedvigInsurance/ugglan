@@ -74,19 +74,17 @@ struct ChangeAddonScreen: View {
     private var addOnSection: some View {
         if let offer = changeAddonVm.addonOffer {
             VStack(alignment: .leading, spacing: 0) {
-                let displayPriceDiff = !changeAddonVm.selectedAddons.isEmpty
                 HStack {
                     hText(offer.quote.displayTitle)
                     Spacer()
-                    hPill(
-                        text: L10n.addonFlowPriceLabel(
-                            changeAddonVm.getPriceIncrease().gross.formattedAmount
-                        ),
-                        color: .grey,
-                        colorLevel: .one
-                    )
-                    .hFieldSize(.small)
-                    .opacity(displayPriceDiff ? 1.0 : 0.0)
+                    if let priceIncrease = changeAddonVm.getPriceIncrease() {
+                        hPill(
+                            text: L10n.addonFlowPriceLabel(priceIncrease.gross.formattedAmount),
+                            color: .grey,
+                            colorLevel: .one
+                        )
+                        .hFieldSize(.small)
+                    }
                 }
 
                 hText(offer.quote.displayDescription, style: .label)
@@ -184,7 +182,7 @@ struct ChangeAddonScreen: View {
             }
             .padding(.init(top: .padding18, leading: .padding16, bottom: .padding24, trailing: .padding16))
         }
-        .onTapGesture { onTap() }
+        .onTapGesture { withAnimation { onTap() } }
         .accessibilityAction { onTap() }
         .accessibilityHint(L10n.voiceoverPressTo)  // TODO: fix hint
         .background(hSurfaceColor.Opaque.primary)
