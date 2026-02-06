@@ -29,7 +29,7 @@
 "ADDON_FLOW_SELECT_BUTTON" = "Välj";
 "ADDON_FLOW_SELECT_DAYS_PLACEHOLDER" = "Antal resdagar";
 "ADDON_FLOW_SELECT_INSURANCE_SUBTITLE" = "Välj den försäkring du vill lägga till extra skydd för";
-"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Lägg till extra skydd";
+"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Utöka ditt reseskydd";
 "ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE" = "Välj antalet resdagar som täcks";
 "ADDON_FLOW_SELECT_SUBOPTION_TITLE" = "Välj antal resdagar";
 "ADDON_FLOW_SUBTITLE" = "För extra trygghet när du reser utomlands";
