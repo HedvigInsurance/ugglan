@@ -24,7 +24,7 @@ class AddonsClientOctopus: AddonsClient {
         }
 
         let quote = AddonContractQuote(data: addonOffer.quote)
-        let currentTotalCost = ItemCost(data: addonOffer.currentTotalCost)
+        let currentTotalCost = ItemCost(fragment: addonOffer.currentTotalCost.fragments.itemCostFragment)
 
         return AddonOffer(
             pageTitle: addonOffer.pageTitle,
@@ -64,22 +64,6 @@ class AddonsClientOctopus: AddonsClient {
     }
 }
 
-extension AddonDisplayItem {
-    init(
-        data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferSelectable.Quote.DisplayItem
-    ) {
-        self.init(displayTitle: data.displayTitle, displayValue: data.displayValue)
-    }
-
-    init(
-        data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferToggleable.Quote.DisplayItem
-    ) {
-        self.init(displayTitle: data.displayTitle, displayValue: data.displayValue)
-    }
-}
-
 extension AddonSource {
     public var flows: [GraphQLEnum<OctopusGraphQL.AddonFlow>] {
         let rawFlows: [OctopusGraphQL.AddonFlow] =
@@ -93,65 +77,6 @@ extension AddonSource {
 
 // MARK: - AddonOfferV2 Extensions
 
-extension ItemCost {
-    init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.CurrentTotalCost) {
-        self.init(fragment: data.fragments.itemCostFragment)
-    }
-
-    init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.BaseQuoteCost) {
-        self.init(
-            premium: .init(
-                gross: .init(
-                    amount: String(data.monthlyGross.amount),
-                    currency: data.monthlyGross.currencyCode.rawValue
-                ),
-                net: .init(amount: String(data.monthlyNet.amount), currency: data.monthlyNet.currencyCode.rawValue)
-            ),
-            discounts: data.discounts.map { discount in
-                .init(
-                    campaignCode: discount.campaignCode,
-                    displayName: discount.displayName,
-                    displayValue: discount.displayValue,
-                    explanation: discount.explanation
-                )
-            }
-        )
-    }
-
-    init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ActiveAddon.Cost) {
-        self.init(
-            premium: .init(
-                gross: .init(
-                    amount: String(data.monthlyGross.amount),
-                    currency: data.monthlyGross.currencyCode.rawValue
-                ),
-                net: .init(amount: String(data.monthlyNet.amount), currency: data.monthlyNet.currencyCode.rawValue)
-            ),
-            discounts: data.discounts.map { discount in
-                .init(
-                    campaignCode: discount.campaignCode,
-                    displayName: discount.displayName,
-                    displayValue: discount.displayValue,
-                    explanation: discount.explanation
-                )
-            }
-        )
-    }
-
-    init(
-        data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferToggleable.Quote.Cost
-    ) {
-        self.init(fragment: data.fragments.itemCostFragment)
-    }
-    init(
-        data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferSelectable.Quote.Cost
-    ) {
-        self.init(fragment: data.fragments.itemCostFragment)
-    }
-}
-
 extension AddonContractQuote {
     @MainActor
     init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote) {
@@ -162,23 +87,8 @@ extension AddonContractQuote {
             activationDate: data.activationDate.localDateToDate ?? Date(),
             addonOffer: .init(data: data.addonOffer),
             activeAddons: data.activeAddons.map { .init(data: $0) },
-            baseQuoteCost: .init(data: data.baseQuoteCost),
-            productVariant: .init(data: data.productVariant)
-        )
-    }
-}
-
-extension ProductVariant {
-    init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ProductVariant) {
-        self.init(
-            termsVersion: data.termsVersion,
-            typeOfContract: data.typeOfContract,
-            perils: data.perils.map { .init($0) },
-            insurableLimits: data.insurableLimits.map { .init($0) },
-            documents: data.documents.map { .init($0) },
-            displayName: data.displayName,
-            displayNameTier: data.displayNameTier,
-            tierDescription: data.tierDescription
+            baseQuoteCost: ItemCost(fragment: data.baseQuoteCost.fragments.itemCostFragment),
+            productVariant: ProductVariant(data: data.productVariant.fragments.productVariantFragment)
         )
     }
 }
@@ -205,7 +115,7 @@ extension AddonOfferSelectable {
             fieldTitle: data.fieldTitle,
             selectionTitle: data.selectionTitle,
             selectionDescription: data.selectionDescription,
-            quotes: data.quotes.map { .init(selectableData: $0) }
+            quotes: data.quotes.map { .init(fragment: $0.fragments.addonOfferQuoteFragment) }
         )
     }
 }
@@ -215,81 +125,26 @@ extension AddonOfferToggleable {
         data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
             .AsAddonOfferToggleable
     ) {
-        self.init(quotes: data.quotes.map { .init(toggleableData: $0) })
+        self.init(quotes: data.quotes.map { .init(fragment: $0.fragments.addonOfferQuoteFragment) })
     }
 }
 
 extension AddonOfferQuote {
-    init(
-        selectableData: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferSelectable.Quote
-    ) {
+    init(fragment: OctopusGraphQL.AddonOfferQuoteFragment) {
         self.init(
-            id: selectableData.id,
-            displayTitle: selectableData.displayTitle,
-            displayDescription: selectableData.displayDescription,
-            displayItems: selectableData.displayItems.map { .init(data: $0) },
-            cost: .init(data: selectableData.cost),
-            addonVariant: .init(selectableData: selectableData.addonVariant)
-        )
-    }
-
-    init(
-        toggleableData: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferToggleable.Quote
-    ) {
-        self.init(
-            id: toggleableData.id,
-            displayTitle: toggleableData.displayTitle,
-            displayDescription: toggleableData.displayDescription,
-            displayItems: toggleableData.displayItems.map { .init(data: $0) },
-            cost: .init(data: toggleableData.cost),
-            addonVariant: .init(toggleableData: toggleableData.addonVariant)
+            id: fragment.id,
+            displayTitle: fragment.displayTitle,
+            displayDescription: fragment.displayDescription,
+            displayItems: fragment.displayItems.map { .init(fragment: $0) },
+            cost: ItemCost(fragment: fragment.cost.fragments.itemCostFragment),
+            addonVariant: AddonVariant(fragment: fragment.addonVariant.fragments.addonVariantFragment)
         )
     }
 }
 
-extension AddonVariant {
-    init(
-        selectableData: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferSelectable.Quote.AddonVariant
-    ) {
-        self.init(
-            displayName: selectableData.displayName,
-            documents: [],
-            perils: selectableData.addonPerils.map { peril in
-                .init(
-                    id: peril.title,
-                    title: peril.title,
-                    description: peril.description ?? "",
-                    color: peril.colorCode,
-                    covered: []
-                )
-            },
-            product: selectableData.product,
-            termsVersion: selectableData.termsVersion
-        )
-    }
-
-    init(
-        toggleableData: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferToggleable.Quote.AddonVariant
-    ) {
-        self.init(
-            displayName: toggleableData.displayName,
-            documents: toggleableData.documents.map { .init($0) },
-            perils: toggleableData.addonPerils.map { peril in
-                .init(
-                    id: peril.title,
-                    title: peril.title,
-                    description: peril.description ?? "",
-                    color: peril.colorCode,
-                    covered: [],
-                )
-            },
-            product: toggleableData.product,
-            termsVersion: toggleableData.termsVersion
-        )
+extension AddonDisplayItem {
+    init(fragment: OctopusGraphQL.AddonOfferQuoteFragment.DisplayItem) {
+        self.init(displayTitle: fragment.displayTitle, displayValue: fragment.displayValue)
     }
 }
 
@@ -297,62 +152,9 @@ extension ActiveAddon {
     init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ActiveAddon) {
         self.init(
             id: data.id,
-            cost: .init(data: data.cost),
+            cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
             displayTitle: data.displayTitle,
             displayDescription: data.displayDescription!
-        )
-    }
-}
-
-extension Perils {
-    init(
-        _ data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ProductVariant
-            .Peril
-    ) {
-        self.init(
-            id: data.id,
-            title: data.title,
-            description: data.description,
-            color: data.colorCode,
-            covered: data.covered,
-            isDisabled: false
-        )
-    }
-}
-
-extension InsurableLimits {
-    init(
-        _ data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ProductVariant
-            .InsurableLimit
-    ) {
-        self.init(
-            label: data.label,
-            limit: data.limit,
-            description: data.description
-        )
-    }
-}
-
-extension hPDFDocument {
-    init(
-        _ data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ProductVariant
-            .Document
-    ) {
-        self.init(
-            displayName: data.displayName,
-            url: data.url,
-            type: data.type.asTypeOfDocument
-        )
-    }
-
-    init(
-        _ data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
-            .AsAddonOfferToggleable.Quote.AddonVariant.Document
-    ) {
-        self.init(
-            displayName: data.displayName,
-            url: data.url,
-            type: data.type.asTypeOfDocument
         )
     }
 }
