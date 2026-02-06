@@ -233,8 +233,9 @@ struct ChangeAddonScreen: View {
     }
 }
 
-#Preview("Travel Addons") {
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+#Preview("Travel") {
+    let offer = testTravelOfferNoActive
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(
         changeAddonVm: .init(
@@ -245,7 +246,34 @@ struct ChangeAddonScreen: View {
     .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }
 
-#Preview("Car Addons") {
+#Preview("Travel with Active addon") {
+    let offer = testTravelOffer45Days
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+}
+
+#Preview("Car") {
+    let offer = testCarOfferNoActive
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarOfferNoActive) })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+}
+
+#Preview("Car with Active addon") {
+    let offer = testCarAddonRisk
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarAddonRisk) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(
