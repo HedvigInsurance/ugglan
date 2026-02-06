@@ -76,7 +76,7 @@ struct ChangeAddonScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 let displayPriceDiff = !changeAddonVm.selectedAddons.isEmpty
                 HStack {
-                    hText(offer.pageTitle)
+                    hText(offer.quote.displayTitle)
                     Spacer()
                     hPill(
                         text: L10n.addonFlowPriceLabel(
@@ -89,7 +89,7 @@ struct ChangeAddonScreen: View {
                     .opacity(displayPriceDiff ? 1.0 : 0.0)
                 }
 
-                hText(offer.pageDescription, style: .label)
+                hText(offer.quote.displayDescription, style: .label)
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.top, .padding8)
 
