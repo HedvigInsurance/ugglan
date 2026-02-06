@@ -3,7 +3,7 @@ import hCore
 
 @MainActor
 public protocol AddonsClient: Sendable {
-    func getAddonV2(contractId: String) async throws -> AddonOffer
+    func getAddonOffer(contractId: String) async throws -> AddonOffer
     func submitAddons(quoteId: String, addonIds: Set<String>) async throws
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
 }

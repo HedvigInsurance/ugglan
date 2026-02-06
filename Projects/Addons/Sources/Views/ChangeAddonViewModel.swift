@@ -56,7 +56,7 @@ public class ChangeAddonViewModel: ObservableObject {
         withAnimation { fetchAddonsViewState = .loading }
 
         do {
-            let data = try await addonService.getAddonOffers(contractId: config.contractId)
+            let data = try await addonService.getAddonOffer(contractId: config.contractId)
 
             withAnimation {
                 addonOffer = data

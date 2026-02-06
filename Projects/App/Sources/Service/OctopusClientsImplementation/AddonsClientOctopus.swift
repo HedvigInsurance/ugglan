@@ -7,7 +7,7 @@ import hGraphQL
 class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
-    public func getAddonV2(contractId: String) async throws -> AddonOffer {
+    public func getAddonOffer(contractId: String) async throws -> AddonOffer {
         let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: contractId)
         let response = try await octopus.client.mutation(mutation: mutation)
 
@@ -75,7 +75,7 @@ extension AddonSource {
     }
 }
 
-// MARK: - AddonOfferV2 Extensions
+// MARK: - AddonOffer Extensions
 
 extension AddonContractQuote {
     @MainActor
