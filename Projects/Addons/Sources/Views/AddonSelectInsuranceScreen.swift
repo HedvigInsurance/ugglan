@@ -34,7 +34,7 @@ public struct AddonSelectInsuranceScreen: View {
                 if let selectedContract = selected.first?.0 {
                     vm.selectedItems = selected.compactMap(\.0)
                     changeAddonNavigationVm.changeAddonVm = .init(
-                        contractId: selectedContract.contractId,
+                        config: selectedContract,
                         addonSource: changeAddonNavigationVm.input.addonSource
                     )
                     vm.observer = changeAddonNavigationVm.changeAddonVm!.$fetchAddonsViewState

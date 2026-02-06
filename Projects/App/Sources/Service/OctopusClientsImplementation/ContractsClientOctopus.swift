@@ -8,6 +8,7 @@ import hGraphQL
 
 class FetchContractsClientOctopus: FetchContractsClient {
     @Inject private var octopus: hOctopus
+    @Inject private var addonClient: AddonsClient
 
     func getContracts() async throws -> ContractsStack {
         let query = OctopusGraphQL.ContractBundleQuery(
@@ -21,23 +22,8 @@ class FetchContractsClientOctopus: FetchContractsClient {
         )
     }
 
-    func getAddonBannerModel(source: AddonSource) async throws -> [AddonBannerModel] {
-        let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(flow: .case(source.getSource))
-        let data = try await octopus.client.fetch(query: query)
-        let bannerData = data.currentMember.upsellTravelAddonBanner
-
-        if let bannerData, !bannerData.contractIds.isEmpty {
-            return [
-                AddonBannerModel(
-                    contractIds: bannerData.contractIds,
-                    titleDisplayName: bannerData.titleDisplayName,
-                    descriptionDisplayName: bannerData.descriptionDisplayName,
-                    badges: bannerData.badges
-                )
-            ]
-        } else {
-            throw AddonsError.missingContracts
-        }
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
+        try await addonClient.getAddonBanners(source: source)
     }
 
     private func getCost(
