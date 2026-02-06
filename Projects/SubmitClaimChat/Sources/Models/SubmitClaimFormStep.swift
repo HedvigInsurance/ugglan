@@ -9,12 +9,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
             UIApplication.dismissKeyboard()
         }
         didSet {
-            if let id = oldValue?.id {
-                Task {
-                    try? await Task.sleep(seconds: 0.5)
-                    currentFieldId = id
-                }
-            }
+            handleFieldPresentation(dismissed: oldValue?.id)
         }
     }
     @Published var isSelectItemPresented: SingleItemModel? {
@@ -22,12 +17,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
             UIApplication.dismissKeyboard()
         }
         didSet {
-            if let id = oldValue?.id {
-                Task {
-                    try? await Task.sleep(seconds: 0.5)
-                    currentFieldId = id
-                }
-            }
+            handleFieldPresentation(dismissed: oldValue?.id)
         }
     }
     @Published var dateForPicker: Date = Date()
@@ -53,8 +43,20 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         }
     }
 
+    /// Handles field presentation dismissal and focuses the field for accessibility after a short delay
+    private func handleFieldPresentation(dismissed fieldId: String?) {
+        guard let fieldId else { return }
+        Task {
+            try? await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
+            currentFieldId = fieldId
+        }
+    }
+
     func getFormStepValue(for fieldId: String) -> FormStepValue {
-        formValues[fieldId]!
+        guard let value = formValues[fieldId] else {
+            fatalError("FormStepValue not found for fieldId: \(fieldId). This indicates a programming error.")
+        }
+        return value
     }
 
     override func validateInput() -> Bool {
@@ -109,15 +111,12 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
-            return L10n.claimChatSkippedLabel
+            return L10n.claimChatSkippedStep
         }
         let items = getAllValuesToShow()
             .filter { !$0.skipped }
-            .map { "\($0.key): \($0.value.localDateToDate?.displayDateDDMMMYYYYFormat ?? $0.value)" }
-        if items.isEmpty {
-            return ""
-        }
-        return L10n.a11YSubmittedValues(items.count) + ": " + items.joined(separator: ", ")
+        let values = items.map { "\($0.key): \($0.value.localDateToDate?.displayDateDDMMMYYYYFormat ?? $0.value)" }
+        return .accessibilitySubmittedValues(count: items.count, values: values)
     }
 }
 
@@ -140,61 +139,9 @@ final class FormStepValue: ObservableObject {
     }
 }
 
-//MARK: VALIDATION
+// MARK: - Validation
 extension FormStepValue {
     fileprivate func validateField(_ field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
-        let finalValue = self.values.joined(separator: ",")
-
-        guard !finalValue.isEmpty else {
-            self.error = L10n.claimChatFormRequiredField
-            return
-        }
-
-        let errors = collectValidationErrors(for: field, value: finalValue)
-        self.error = errors.isEmpty ? nil : errors.joined(separator: "\n")
-    }
-
-    private func collectValidationErrors(
-        for field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField,
-        value: String
-    ) -> [String] {
-        switch field.type {
-        case .text:
-            return validateTextField(value: value, field: field)
-        case .number:
-            return validateNumberField(value: value, field: field)
-        default:
-            return []
-        }
-    }
-
-    private func validateTextField(
-        value: String,
-        field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
-    ) -> [String] {
-        var errors: [String] = []
-        if let minValue = field.minValue, let minValueInt = Int(minValue), value.count < minValueInt {
-            errors.append(L10n.claimChatFormTextMinChar(minValueInt))
-        }
-        if let maxValue = field.maxValue, let maxValueInt = Int(maxValue), value.count > maxValueInt {
-            errors.append(L10n.claimChatFormTextMaxChar(maxValueInt))
-        }
-        return errors
-    }
-
-    private func validateNumberField(
-        value: String,
-        field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
-    ) -> [String] {
-        var errors: [String] = []
-        guard let numericValue = Int(value) else { return errors }
-
-        if let minValue = field.minValue, let minInt = Int(minValue), numericValue < minInt {
-            errors.append(L10n.claimChatFormNumberMinChar(minInt))
-        }
-        if let maxValue = field.maxValue, let maxInt = Int(maxValue), numericValue > maxInt {
-            errors.append(L10n.claimChatFormNumberMaxChar(maxInt))
-        }
-        return errors
+        self.error = FormFieldValidator.validate(values: values, for: field)
     }
 }

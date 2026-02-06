@@ -34,7 +34,7 @@ class AddonsClientOctopus: AddonsClient {
                     },
                     itemCost: .init(
                         premium: .init(
-                            gross: nil,
+                            gross: .init(fragment: currentAddon.netPremium.fragments.moneyFragment),
                             net: .init(fragment: currentAddon.netPremium.fragments.moneyFragment)
                         ),
                         discounts: []

@@ -9,14 +9,27 @@ struct SubmitClaimSingleSelectView: View {
 
     public var body: some View {
         hSection {
-            switch viewModel.model.style {
-            case .pill: pillInputView
-            case .binary: binaryInputView
+            VStack(spacing: .padding16) {
+                switch viewModel.model.style {
+                case .pill: pillInputView
+                case .binary: binaryInputView
+                }
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.generalConfirm)
+                ) {
+                    viewModel.submitResponse()
+                }
+                .opacity(showOptions ? 1 : 0)
+                .animation(.easeInOut, value: showOptions)
+                .disabled(viewModel.selectedOptionId == nil)
             }
         }
         .sectionContainerStyle(.transparent)
+        .animation(.easeInOut, value: viewModel.selectedOptionId)
         .task {
-            try? await Task.sleep(seconds: 0.2)
+            try? await Task.sleep(seconds: ClaimChatConstants.Timing.optionReveal)
             showOptions = true
         }
     }
@@ -27,7 +40,7 @@ struct SubmitClaimSingleSelectView: View {
             if showOptions {
                 hPill(
                     text: option.title,
-                    color: viewModel.model.defaultSelectedId == optionId ? .green : .grey,
+                    color: viewModel.selectedOptionId == optionId ? .green : .grey,
                     colorLevel: .two,
                     withBorder: false
                 )
@@ -48,21 +61,35 @@ struct SubmitClaimSingleSelectView: View {
                         .medium,
                         .ghost,
                         content: .init(title: option.title)
-                    ) { selectOption(id: option.id) }
+                    ) {
+                        selectOption(id: option.id)
+                    }
+                    .hCustomButtonView {
+                        hText(option.title, style: .body1)
+                            .foregroundColor(pillColor(optionId: option.id).pillTextColor(level: .two))
+                    }
+                    .hWrapInPill(color: viewModel.selectedOptionId == option.id ? .green : .grey, colorLevel: .two)
                     .hButtonTakeFullWidth(true)
-                    .hWrapInPill(color: .grey, colorLevel: .two)
                     .optionAccessibility(label: option.title)
                     .transition(.submitClaimOptionAppear)
+                    .accessibilityAddTraits(.isButton)
+                    .optionAccessibility(label: option.title)
                 }
             }
         }
-        .padding(.horizontal, 16)
+    }
+
+    private func pillColor(optionId: String) -> PillColor {
+        if optionId == viewModel.selectedOptionId {
+            return PillColor.green
+        } else {
+            return PillColor.grey
+        }
     }
 
     private func selectOption(id: String) {
         ImpactGenerator.soft()
         viewModel.selectedOptionId = id
-        viewModel.submitResponse()
     }
 }
 

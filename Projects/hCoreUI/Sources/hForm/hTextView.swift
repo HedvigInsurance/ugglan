@@ -13,6 +13,7 @@ public struct hTextView: View {
     @State private var value: String = ""
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
+    @Binding private var showOnAppear: Bool
     @AccessibilityFocusState var isFocused: Bool
     private let onContinue: (_ text: String) -> Void
     private let enabled: Bool
@@ -24,6 +25,7 @@ public struct hTextView: View {
         minCharacters: Int? = 0,
         maxCharacters: Int,
         enabled: Bool = true,
+        showOnAppear: Binding<Bool> = .constant(false),
         color: UIColor = UIColor { trait in
             let style = trait.userInterfaceStyle
             return hSurfaceColor.Opaque.primary.colorFor(style == .dark ? .dark : .light, .base).color.uiColor()
@@ -37,6 +39,7 @@ public struct hTextView: View {
         self.minCharacters = minCharacters ?? 0
         self.maxCharacters = maxCharacters
         self.enabled = enabled
+        self._showOnAppear = showOnAppear
         self.color = color
     }
 
@@ -101,6 +104,12 @@ public struct hTextView: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
+        .onAppear {
+            if showOnAppear {
+                showOnAppear = false
+                showFreeTextField()
+            }
+        }
     }
 
     private func showFreeTextField() {

@@ -13,6 +13,11 @@
 "A11Y_VIEW_DETAILS" = "Visa detaljer";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Få info direkt";
 "ADDON_ADD_COVERAGE" = "Lägg till skydd";
+/* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
+"ADDON_BADGE_ACTIVE" = "Aktiv";
+"ADDON_CAR_ALLRISK_DISPLAY_NAME" = "Drulle";
+"ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Självriskavdrag";
+"ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Hyrbil";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Ja, uppgradera mitt skydd";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@ och kan endast tas bort när din försäkring förnyas eller avslutas.";
 "ADDON_FLOW_CONFIRMATION_TITLE" = "Bekräfta uppgraderat skydd";
@@ -24,7 +29,7 @@
 "ADDON_FLOW_SELECT_BUTTON" = "Välj";
 "ADDON_FLOW_SELECT_DAYS_PLACEHOLDER" = "Antal resdagar";
 "ADDON_FLOW_SELECT_INSURANCE_SUBTITLE" = "Välj den försäkring du vill lägga till extra skydd för";
-"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Lägg till extra skydd";
+"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Utöka ditt reseskydd";
 "ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE" = "Välj antalet resdagar som täcks";
 "ADDON_FLOW_SELECT_SUBOPTION_TITLE" = "Välj antal resdagar";
 "ADDON_FLOW_SUBTITLE" = "För extra trygghet när du reser utomlands";
@@ -221,8 +226,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig";
 "CLAIM_CHAT_RECORDING_TITLE" = "Inspelning";
 "CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT" = "Om du inte minns inköpsdatum behöver du inte fylla i något.";
-"CLAIM_CHAT_SKIPPED_LABEL" = "Överhoppad";
-"CLAIM_CHAT_SKIPPED_STEP" = "Överhoppad";
+"CLAIM_CHAT_SKIPPED_STEP" = "Saknas";
 "CLAIM_CHAT_SKIP_STEP" = "Hoppa över";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Skicka in ditt skadeärende";
 "CLAIM_CHAT_SUCCESS_GO_TO_CLAIM" = "Gå till ärende";
@@ -296,6 +300,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "Om %1$li dagar kommer din försäkring förnyas. Läs ditt uppdaterade försäkringsbrev här.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Läs försäkringsbrev";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Din försäkring kommer att förnyas imorgon. Läs ditt uppdaterade försäkringsbevis här.";
+"DATA_TABLE_MULTIPLE_OWNERS" = "";
+"DATA_TABLE_WATER_CONNECTED" = "";
 "DEEP_LINK_CONTRACT" = "Försäkring";
 /* Figma */
 "DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Är du säker på att du vill radera ditt konto?";
@@ -429,12 +435,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_RELATED_QUESTIONS_TITLE" = "";
 "HC_TITLE" = "Hjälp och support";
 "HOMETAB_ACCOUNT_DELETION_NOTIFICATION" = "Vi har tagit emot din begäran om att radera ditt konto. Du kommer att få ett e-postmeddelande från oss inom 30 dagar som bekräftar att ditt konto har raderats. Tills dess kommer ditt konto att vara aktivt.";
-"HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på förtroende. Jag lovar dyrt och heligt att beskriva händelsen sanningsenligt och att endast begära den ersättning jag har rätt till.";
+"HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.";
 "HONESTY_PLEDGE_HEADER" = "Anmäl skada";
-"HONESTY_PLEDGE_NOTE_1" = "";
-"HONESTY_PLEDGE_NOTE_2" = "";
-"HONESTY_PLEDGE_NOTE_3" = "";
-"HONESTY_PLEDGE_TITLE" = "Läs innan du fortsätter";
+"HONESTY_PLEDGE_NOTE_1" = "Osäker på vad som täcks? Skicka in din anmälan oavsett";
+"HONESTY_PLEDGE_NOTE_2" = "Ha kvitton eller annan dokumentation redo för snabbare hjälp";
+"HONESTY_PLEDGE_NOTE_3" = "Vi hör av oss om vi behöver mer information eller fler uppgifter";
+"HONESTY_PLEDGE_TITLE" = "Innan vi börjar";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.";
@@ -640,7 +646,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_TOWING_A2" = "Så länge skadan täcks av försäkringsvillkoren så betalar du endast självrisken på 1750 kr direkt till Assistancekåren.";
 "SUBMIT_CLAIM_TOWING_A3" = "Du får såklart använda den bärgningstjänst som passar dig bäst. Men förloppet blir oftast snabbare och enklare om du vänder dig direkt till Assistancekåren.";
 "SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Läs mer";
-"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till 010–45 99 222. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.";
+"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till +46 020 912 912. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.";
 "SUBMIT_CLAIM_TOWING_INFO_LABEL" = "Du behöver kontakta Assistancekåren direkt för att få hjälp med din bärgning";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "Ring nu";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL" = "Få hjälp direkt, dygnet runt";
@@ -757,6 +763,10 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "För att kunna logga in på din bank så behöver du ha BankID-appen installerad.";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "Du saknar BankID på denna enheten";
 "Third_Party_Connected" = "";
+"UPSELL_TRAVEL_ADDON_CONTRACT_QUOTE_TITLE" = "Reseskydd Plus";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE" = "Antal resdagar";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION" = "Välj antalet resdagar som täcks";
+"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE" = "Välj antal resdagar";
 "USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK" = "Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada";
 "VOICEOVER_ACCEPTED" = "Är accepterad";
 "VOICEOVER_ADD_INFORMATION" = "lägga till information";

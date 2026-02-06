@@ -37,10 +37,7 @@ extension ChangeTierViewModel {
                 id: currentTier?.id ?? "",
                 displayName: displayName ?? "",
                 exposureName: activationDate,
-                premium: .init(
-                    gross: newTotalCost?.gross,
-                    net: newTotalCost?.net
-                ),
+                premium: newTotalCost,
                 documentSection: .init(
                     documents: documents,
                     onTap: { [weak changeTierNavigationVm] document in
@@ -57,27 +54,12 @@ extension ChangeTierViewModel {
             )
         )
 
-        let totalNet: MonetaryAmount = {
-            let totalValue =
-                contracts
-                .reduce(0, { $0 + ($1.premium?.net?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.premium?.net?.currency ?? "")
-        }()
-
-        let totalGross: MonetaryAmount = {
-            let totalValue =
-                contracts
-                .reduce(0, { $0 + ($1.premium?.gross?.value ?? 0) })
-            return .init(amount: totalValue, currency: contracts.first?.premium?.gross?.currency ?? "")
-        }()
+        let totalPremium = contracts.compactMap(\.premium).sum()
 
         let vm = QuoteSummaryViewModel(
             contract: contracts,
             activationDate: self.activationDate,
-            premium: .init(
-                gross: totalGross,
-                net: totalNet
-            ),
+            premium: totalPremium,
             onConfirmClick: { [weak changeTierNavigationVm] in
                 changeTierNavigationVm?.vm.commitTier()
                 changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)

@@ -29,8 +29,9 @@ struct ClaimFlowLauncher: ViewModifier {
                         startInput = nil
                         showOldSubmitClaimFlow = true
                     }
+                    .configureTitle(L10n.honestyPledgeHeader)
                     .embededInNavigation(
-                        options: .navigationBarHidden,
+                        options: .navigationType(type: .large),
                         tracking: self
                     )
                 }

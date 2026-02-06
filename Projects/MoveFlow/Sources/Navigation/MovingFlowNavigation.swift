@@ -14,7 +14,7 @@ class MovingFlowQuoteManager {
         router: Router,
         moveQuotesModel: MoveQuotesModel?,
         selectedHomeQuote: MovingFlowQuote?,
-        totalPremium: Premium?,
+        totalPremium: Premium,
         removedAddonIds: [String]
     ) -> QuoteSummaryViewModel {
         let movingFlowQuotes = getQuotes(
@@ -29,7 +29,7 @@ class MovingFlowQuoteManager {
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
             activationDate: movingFlowQuotes.first?.startDate,
-            premium: totalPremium ?? .init(gross: nil, net: nil)
+            premium: totalPremium
         )
 
         vm.onConfirmClick = { [weak router, weak viewModel] in
@@ -200,6 +200,7 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
     }
 
     func setMovingFlowSummaryViewModel(router: Router) {
+        guard let totalPremium else { return }
         movingFlowConfirmViewModel = .init()
         quoteSummaryViewModel = quoteManager.createSummaryViewModel(
             router: router,
@@ -435,6 +436,7 @@ public struct MovingFlowNavigation: View {
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
         let model = ChangeTierInput.existingIntent(intent: model) {
             [weak movingFlowNavigationVm, weak router] _, quote in
+            guard movingFlowNavigationVm?.totalPremium != nil else { return }
             let requestVm = movingFlowNavigationVm?.moveQuotesModel
             let id = quote.id
             if let currentHomeQuote = requestVm?.homeQuotes.first(where: { $0.id == id }) {

@@ -61,11 +61,10 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
     func getTotalPrice(selectedQuote: AddonQuote?) -> MonetaryAmount? {
         guard let selectedQuote else { return nil }
         guard let currentAddon else { return selectedQuote.itemCost.premium.net }
-        guard let currentAddonPrice = currentAddon.itemCost.premium.net,
-            let newPrice = selectedQuote.itemCost.premium.net
-        else { return nil }
-        let diffPrice = newPrice.value - currentAddonPrice.value
-        return MonetaryAmount(amount: diffPrice.asString, currency: newPrice.currency)
+        let currentAddonPrice = currentAddon.itemCost.premium.net
+        let newPrice = selectedQuote.itemCost.premium.net
+
+        return newPrice - currentAddonPrice
     }
 }
 

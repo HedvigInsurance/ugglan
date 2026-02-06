@@ -82,20 +82,20 @@ public class ChangeAddonViewModel: ObservableObject {
         if let currentAddon = addonOffer?.currentAddon {
             let currentAddonBreakdownDisplayItems = QuoteDisplayItem(
                 title: currentAddon.displayNameLong,
-                value: currentAddon.itemCost.premium.net?.formattedAmountPerMonth ?? "",
+                value: currentAddon.itemCost.premium.net.formattedAmountPerMonth,
                 crossDisplayTitle: true
             )
 
             let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
                 title: selectedQuote?.displayNameLong ?? "",
-                value: selectedQuote?.itemCost.premium.net?.formattedAmountPerMonth ?? ""
+                value: selectedQuote?.itemCost.premium.net.formattedAmountPerMonth ?? ""
             )
 
             return [currentAddonBreakdownDisplayItems, selectedAddonBreakdownDisplayItems]
         } else {
             let selectedAddonBreakdownDisplayItems = QuoteDisplayItem(
                 title: selectedQuote?.displayNameLong ?? "",
-                value: selectedQuote?.itemCost.premium.gross?.formattedAmountPerMonth ?? ""
+                value: selectedQuote?.itemCost.premium.gross.formattedAmountPerMonth ?? ""
             )
 
             let discountItems: [QuoteDisplayItem] =
@@ -118,20 +118,12 @@ public class ChangeAddonViewModel: ObservableObject {
         }
 
         if let currentAddonNet = addonOffer?.currentAddon?.itemCost.premium.net {
-            let amount = selectedQuoteNet.floatAmount - currentAddonNet.floatAmount
-            return .init(amount: amount, currency: selectedQuoteNet.currency)
+            return selectedQuoteNet - currentAddonNet
         }
         return selectedQuoteNet
     }
 
     func getPremium() -> Premium? {
-        if addonOffer?.currentAddon != nil {
-            return Premium(
-                gross: nil,
-                net: selectedQuote?.itemCost.premium.net
-            )
-        } else {
-            return selectedQuote?.itemCost.premium
-        }
+        selectedQuote?.itemCost.premium
     }
 }

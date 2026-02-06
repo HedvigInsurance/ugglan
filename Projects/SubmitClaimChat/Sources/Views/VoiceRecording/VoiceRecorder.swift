@@ -36,6 +36,7 @@ public final class VoiceRecorder: ObservableObject {
     private var recordingStartTime: Date?
     private var recentPeaks: [CGFloat] = []
     private let peakWindowSize = 30  // Track peaks over last 30 samples
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Types
     public enum RecordingState: Equatable {
@@ -77,6 +78,7 @@ public final class VoiceRecorder: ObservableObject {
     // MARK: - Initialization
     public init(filePath: URL) {
         self.filePath = filePath
+        observeAppLifecycle()
     }
 
     public convenience init() {
@@ -241,7 +243,7 @@ public final class VoiceRecorder: ObservableObject {
         }
 
         recordedFileURL = nil
-        currentTime = 0
+        currentTime = nil
         audioLevels = []
         recentPeaks = []
         recordingState = .idle
@@ -253,6 +255,25 @@ public final class VoiceRecorder: ObservableObject {
     }
 
     // MARK: - Private Methods
+    private func observeAppLifecycle() {
+        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    guard let self else { return }
+                    if self.isRecording {
+                        self.stopRecording()
+                    }
+                    if self.isPlaying {
+                        self.stopPlayback()
+                    }
+                    if self.isCountingDown {
+                        self.isCountingDown = false
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+
     @discardableResult
     private func requestMicrophonePermission() async -> Bool {
         await withCheckedContinuation { continuation in
@@ -306,7 +327,7 @@ public final class VoiceRecorder: ObservableObject {
         try session.setCategory(
             .playAndRecord,
             mode: .spokenAudio,
-            options: [.defaultToSpeaker, .allowBluetooth, .duckOthers]
+            options: [.defaultToSpeaker, .allowBluetoothHFP, .duckOthers]
         )
         try session.setActive(true)
     }
@@ -413,5 +434,15 @@ extension VoiceRecorder {
         let minutes = Int(currentTime) / 60
         let seconds = Int(currentTime) % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+    public var formattedTimeMinutes: String? {
+        guard let currentTime else { return nil }
+        let minutes = Int(currentTime) / 60
+        return String(format: "%02d", minutes)
+    }
+    public var formattedTimeSeconds: String? {
+        guard let currentTime else { return nil }
+        let seconds = Int(currentTime) % 60
+        return String(format: "%02d", seconds)
     }
 }

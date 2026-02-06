@@ -10,7 +10,7 @@ public enum ClaimIntentType {
 public protocol ClaimIntentClient {
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType?
     func claimIntentSubmitAudio(fileId: String?, freeText: String?, stepId: String) async throws -> ClaimIntentType?
-    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntentType?
+    func claimIntentSubmitFile(stepId: String, fileIds: [String]) async throws -> ClaimIntentType?
     func claimIntentSubmitForm(
         fields: [FieldValue],
         stepId: String
@@ -57,8 +57,8 @@ class ClaimIntentService {
         return data
     }
 
-    func claimIntentSubmitFile(stepId: String, fildIds: [String]) async throws -> ClaimIntentType? {
-        let data = try await client.claimIntentSubmitFile(stepId: stepId, fildIds: fildIds)
+    func claimIntentSubmitFile(stepId: String, fileIds: [String]) async throws -> ClaimIntentType? {
+        let data = try await client.claimIntentSubmitFile(stepId: stepId, fileIds: fileIds)
         return data
     }
 

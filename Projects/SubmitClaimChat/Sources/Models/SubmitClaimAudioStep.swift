@@ -9,9 +9,9 @@ import hGraphQL
 
 final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     var audioFileURL: URL?
-    @Published var uploadProgress: Double = 0
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
+
     @Published var textInput: String = "" {
         didSet {
             textInputError =
@@ -19,8 +19,15 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         }
     }
     @Published var textInputError: String?
-    @Published var isTextInputPresented: Bool = false
+    @Published var isTextInputPresented: Bool = false {
+        willSet {
+            showTextViewOnAppear = newValue
+        }
+    }
+    @Published var showTextViewOnAppear: Bool = false
     @Published var isAudioInputPresented: Bool = false
+    @Published var uploadProgress: Double = 0
+
     let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
         textInput.count < audioRecordingModel.freeTextMinLength
@@ -111,15 +118,15 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
                 throw ClaimIntentError.invalidResponse
             }
             isAudioInputPresented = false
-            Task {
-                try? await Task.sleep(seconds: 1)
-                voiceRecorder.isSending = false
+            Task { [weak voiceRecorder] in
+                try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+                voiceRecorder?.isSending = false
             }
             return result
         } catch {
-            Task {
-                try? await Task.sleep(seconds: 1)
-                voiceRecorder.isSending = false
+            Task { [weak voiceRecorder] in
+                try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+                voiceRecorder?.isSending = false
             }
             throw error
         }
@@ -127,12 +134,12 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
-            return L10n.claimChatSkippedLabel
+            return L10n.claimChatSkippedStep
         }
         if isTextInputPresented {
-            return L10n.a11YSubmittedValues(1) + ": " + textInput
+            return .accessibilitySubmittedValue(textInput)
         } else {
-            return L10n.a11YSubmittedValues(1) + ": " + L10n.claimChatAudioRecordingLabel
+            return .accessibilitySubmittedValue(L10n.claimChatAudioRecordingLabel)
         }
     }
 }
