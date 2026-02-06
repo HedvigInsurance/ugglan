@@ -91,13 +91,18 @@ struct AddonSelectSubOptionScreen: View {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
 
-    return AddonSelectSubOptionScreen(
-        selectable: offer.quote.selectableOffer!,
-        changeAddonNavigationVm: .init(
-            input: .init(
-                addonSource: .insurances,
-                contractConfigs: [.init(contractId: "contractId", exposureName: "exposure", displayName: "displayName")]
+    if case let .selectable(selectable) = offer.quote.addonOfferContent {
+        return AddonSelectSubOptionScreen(
+            selectable: selectable,
+            changeAddonNavigationVm: .init(
+                input: .init(
+                    addonSource: .insurances,
+                    contractConfigs: [
+                        .init(contractId: "contractId", exposureName: "exposure", displayName: "displayName")
+                    ]
+                )
             )
         )
-    )
+    }
+    return EmptyView()
 }

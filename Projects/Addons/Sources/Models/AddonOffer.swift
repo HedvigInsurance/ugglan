@@ -80,18 +80,6 @@ public struct AddonContractQuote: Equatable, Sendable {
         self.productVariant = productVariant
     }
 
-    public var selectableOffer: AddonOfferSelectable? {
-        if case .selectable(let s) = addonOfferContent { return s }
-        return nil
-    }
-
-    public var toggleableOffer: AddonOfferToggleable? {
-        if case .toggleable(let t) = addonOfferContent { return t }
-        return nil
-    }
-    public var selectableAddons: [AddonOfferQuote] { selectableOffer?.quotes ?? [] }
-    public var toggleableAddons: [AddonOfferQuote] { toggleableOffer?.quotes ?? [] }
-
     var addons: [AddonOfferQuote] {
         switch addonOfferContent {
         case .selectable(let addonOfferSelectable):
