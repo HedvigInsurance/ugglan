@@ -125,6 +125,8 @@ public struct SubmitClaimChatScreen: View {
                                     }
                             }
                         }
+                        .transition(.offset(x: 0, y: 1000))
+                        .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
                         .accessibilityFocused($isCurrentStepFocused)
                 }
             }
@@ -186,36 +188,39 @@ private struct CurrentStepView: View {
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
     @EnvironmentObject var router: Router
     var body: some View {
-        if step.state.showInput {
-            ClaimStepView(viewModel: step)
-                .transition(.offset(x: 0, y: 1000).animation(.easeInOut(duration: 0.5)))
-                .onChange(of: step.state.showError) { value in
-                    if value {
-                        alertVm.alertModel = .init(
-                            type: .error,
-                            message: step.state.error?.localizedDescription ?? "",
-                            action: {
-                                step.submitResponse()
-                            },
-                            onClose: {
-                                if let claimError = step.state.error as? ClaimIntentError {
-                                    switch claimError {
-                                    case .unknownStep, .unknownField:
-                                        Task { [weak router] in
-                                            try? await Task.sleep(seconds: 0.1)
-                                            router?.dismiss()
+        VStack {
+            if step.state.showInput {
+                ClaimStepView(viewModel: step)
+                    .transition(.offset(x: 0, y: 1000))
+                    .onChange(of: step.state.showError) { value in
+                        if value {
+                            alertVm.alertModel = .init(
+                                type: .error,
+                                message: step.state.error?.localizedDescription ?? "",
+                                action: {
+                                    step.submitResponse()
+                                },
+                                onClose: {
+                                    if let claimError = step.state.error as? ClaimIntentError {
+                                        switch claimError {
+                                        case .unknownStep, .unknownField:
+                                            Task { [weak router] in
+                                                try? await Task.sleep(seconds: 0.1)
+                                                router?.dismiss()
+                                            }
+                                        default:
+                                            step.state.isEnabled = true
                                         }
-                                    default:
+                                    } else {
                                         step.state.isEnabled = true
                                     }
-                                } else {
-                                    step.state.isEnabled = true
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
-                }
+            }
         }
+        .animation(.easeInOut(duration: 0.5), value: step.state.showInput)
     }
 }
 
@@ -345,7 +350,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
         scrollCoordinator.isInputScrolledOffScreen && currentVerticalSizeClass == .regular
             && !scrollCoordinator.shouldMergeInputWithContent
     }
-
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
     let openChat: () -> Void
@@ -361,8 +365,15 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
         // Configure scroll coordinator with dependencies
         scrollCoordinator.configure(
-            totalStepsHeight: { [weak self] in self?.totalStepsHeight ?? 0 },
-            currentStepInputHeight: { [weak self] in self?.currentStepInputHeight ?? 0 }
+            totalStepsHeight: { [weak self] in
+                self?.totalStepsHeight ?? 0
+            },
+            currentStepInputHeight: { [weak self] in
+                if self?.allSteps.count ?? 0 <= 1 {
+                    return 0
+                }
+                return self?.currentStepInputHeight ?? 0
+            }
         )
 
         startClaimIntent()

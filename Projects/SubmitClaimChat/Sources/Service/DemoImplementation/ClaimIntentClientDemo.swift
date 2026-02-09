@@ -24,7 +24,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                         )
                     ),
                     id: "1",
-                    text: "Select one"
+                    text: "Select one from options that we provided for you to select. Choose wisely"
                 ),
                 id: UUID().uuidString,
                 isSkippable: true,

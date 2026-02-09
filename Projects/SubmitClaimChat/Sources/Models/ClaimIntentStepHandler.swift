@@ -71,6 +71,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     final func submitResponse() {
         submitTask?.cancel()
+        state.showInput = false
         submitTask = Task { [weak self] in
             guard let self = self else { return }
             UIApplication.dismissKeyboard()
@@ -97,6 +98,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 }
                 state.isLoading = false
             } catch let error {
+                state.showInput = true
                 if let error = error as? ClaimIntentError {
                     switch error {
                     case .invalidInput:
@@ -114,7 +116,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     func skip() async {
         state.isLoading = true
         state.isEnabled = false
+        state.showInput = false
         defer {
+            state.isEnabled = true
             state.isLoading = false
         }
         do {
@@ -131,6 +135,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 mainHandler(.outcome(model: model))
             }
         } catch let ex {
+            state.showInput = true
             showErrorAlert(for: ex) { [weak self] in
                 await self?.skip()
             }
@@ -145,6 +150,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     func regret() async {
         state.isLoading = true
         state.isEnabled = false
+        state.showInput = false
         defer {
             state.isEnabled = true
             state.isLoading = false
@@ -165,6 +171,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 break
             }
         } catch let ex {
+            state.showInput = true
             showErrorAlert(for: ex) { [weak self] in
                 await self?.regret()
             }
