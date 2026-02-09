@@ -177,7 +177,7 @@ public struct VoiceWaveformView: View {
 
             adjustedLevel = amplifiedLevel * edgeMultiplier
             let height = max(minDotHeight * edgeMultiplier, adjustedLevel * maxHeight)
-            return min(height, maxHeight)
+            return max(min(height, maxHeight), minDotHeight)
         } else {
             // For playback: simple amplification without edge fade
             let amplifiedLevel = min(1.0, pow(level, 0.8) * 1.2)
