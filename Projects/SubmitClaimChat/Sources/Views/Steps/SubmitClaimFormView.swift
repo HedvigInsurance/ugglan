@@ -292,7 +292,10 @@ struct SubmitClaimFormResultView: View {
 }
 
 #Preview {
-    SubmitClaimFormView(
+    let demoService = ClaimIntentClientDemo()
+    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demoService })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return SubmitClaimFormView(
         viewModel: ClaimIntentClientDemo().demoFormModel
     )
 }

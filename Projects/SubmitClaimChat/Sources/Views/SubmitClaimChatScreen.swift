@@ -131,7 +131,7 @@ public struct SubmitClaimChatScreen: View {
                 }
             }
         }
-        .padding(.bottom, .padding8)
+        .padding(.bottom, .padding16)
         .environmentObject(viewModel)
         .background {
             BackgroundBlurView()
