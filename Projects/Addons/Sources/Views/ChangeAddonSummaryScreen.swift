@@ -38,7 +38,6 @@ extension ChangeAddonViewModel {
             displayItems: selectedAddons.flatMap(\.displayItems).map { $0.asQuoteDisplayItem() },
             insuranceLimits: [],
             typeOfContract: typeOfContract,
-            isAddon: true,
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
@@ -46,7 +45,8 @@ extension ChangeAddonViewModel {
             contract: [contractInfo],
             activationDate: addonOffer?.quote.activationDate,
             premium: getPriceIncrease() ?? .zeroSek,
-            isAddon: true
+            noticeInfo: L10n.addonFlowSummaryInfoText,
+            priceDisplayType: .increase
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true
             Task { await self?.submitAddons() }
