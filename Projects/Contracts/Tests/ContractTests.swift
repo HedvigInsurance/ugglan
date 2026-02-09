@@ -1,3 +1,4 @@
+import Addons
 @preconcurrency import XCTest
 import hCore
 
@@ -65,5 +66,22 @@ final class ContractsTests: XCTestCase {
         assert(respondedContracts.activeContracts == contractsStack.activeContracts)
         assert(respondedContracts.pendingContracts == contractsStack.pendingContracts)
         assert(respondedContracts.terminatedContracts == contractsStack.terminatedContracts)
+    }
+
+    func testGetAddonBannersSuccess() async {
+        let testBanner = AddonBanner(
+            contractIds: ["contractId"],
+            titleDisplayName: "Travel Plus",
+            descriptionDisplayName: "Extended travel insurance with extra coverage",
+            badges: ["Popular"]
+        )
+
+        let mockService = MockData.createMockContractsService(
+            fetchAddonBanners: { [testBanner] }
+        )
+        sut = mockService
+
+        let respondedBanners = try! await mockService.getAddonBanners(source: .insurances)
+        assert(respondedBanners == [testBanner])
     }
 }
