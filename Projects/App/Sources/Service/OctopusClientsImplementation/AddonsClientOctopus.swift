@@ -7,6 +7,7 @@ import hGraphQL
 class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
+    @Log
     public func getAddonOffer(contractId: String) async throws -> AddonOffer {
         let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: contractId)
         let response = try await octopus.client.mutation(mutation: mutation)
@@ -34,6 +35,7 @@ class AddonsClientOctopus: AddonsClient {
         )
     }
 
+    @Log
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
         let sumbitAddonsMutation = OctopusGraphQL.AddonActivateOfferMutation(
             quoteId: quoteId,
@@ -46,6 +48,7 @@ class AddonsClientOctopus: AddonsClient {
         }
     }
 
+    @Log
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
         let query = OctopusGraphQL.AddonBannersQuery(flows: source.flows)
 
