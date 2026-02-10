@@ -220,7 +220,14 @@ let project = Project(
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Production/Info.plist",
             sources: ["Sources/**"],
-            resources: ["Resources/**", "Config/Production/Resources/**", "Config/PrivacyInfo.xcprivacy"],
+            resources: [
+                "Resources/**",
+                .glob(
+                    pattern: "Config/Production/Resources/**",
+                    excluding: ["Config/Production/Resources/AppIcon.icon/**"]
+                ),
+                "Config/PrivacyInfo.xcprivacy",
+            ],
             entitlements: "Config/Production/Hedvig.entitlements",
             scripts: targetScripts,
             dependencies: prodAppDependencies,
