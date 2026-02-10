@@ -92,7 +92,7 @@ public class ChangeAddonViewModel: ObservableObject {
             let logInfo = AddonLogInfo(
                 flow: addonSource,
                 type: addon.addonVariant.product,
-                subType: addon.addonVariant.product
+                subType: addon.subtype
             )
             log.addUserAction(
                 type: .custom,
