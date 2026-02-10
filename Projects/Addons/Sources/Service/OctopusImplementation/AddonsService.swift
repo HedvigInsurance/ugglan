@@ -21,4 +21,16 @@ import hCore
         async let delayTask: () = delay(3)
         let _ = try await (submit, delayTask)
     }
+
+    @Log
+    public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
+        try await client.getAddonRemoveOffer(contractId: contractId)
+    }
+
+    @Log
+    public func confirmAddonRemoval(contractId: String, addonIds: [String]) async throws {
+        async let confirm: () = try await client.confirmAddonRemoval(contractId: contractId, addonIds: addonIds)
+        async let delayTask: () = delay(3)
+        let _ = try await (confirm, delayTask)
+    }
 }
