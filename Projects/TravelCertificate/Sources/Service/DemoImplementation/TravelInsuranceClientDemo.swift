@@ -13,7 +13,7 @@ class TravelInsuranceClientDemo: TravelInsuranceClient {
     func getList(
         source: AddonSource
     ) async throws -> (
-        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?
     ) {
         let listItem: TravelCertificateModel? = .init(id: "id", date: Date(), valid: true, url: nil)
         if let listItem {

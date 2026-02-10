@@ -38,7 +38,7 @@ struct AddonInfo: Equatable, Identifiable {
 @MainActor
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: AddonInfo?
-    @Published var isChangeCoverageDaysPresented: AddonOffer?
+    @Published var isSelectableAddonPresented: AddonOfferSelectable?
     @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel?
     @Published var document: hPDFDocument?
@@ -52,7 +52,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
         self.input = input
         if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
             changeAddonVm = .init(
-                contractId: config.contractId,
+                config: config,
                 addonSource: input.addonSource
             )
         }
@@ -124,10 +124,10 @@ public struct ChangeAddonNavigation: View {
                 )
         }
         .detent(
-            item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,
+            item: $changeAddonNavigationVm.isSelectableAddonPresented,
             options: .constant(.alwaysOpenOnTop)
-        ) { addOn in
-            AddonSelectSubOptionScreen(addonOffer: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
+        ) { selectable in
+            AddonSelectSubOptionScreen(selectable: selectable, changeAddonNavigationVm: changeAddonNavigationVm)
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: ChangeAddonTrackingType.selectSubOptionScreen

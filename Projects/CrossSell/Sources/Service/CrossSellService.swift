@@ -10,8 +10,8 @@ class CrossSellService {
         return try await client.getCrossSell(source: source)
     }
 
-    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
-        log.info("CrossSellService: getAddonBannerModel", error: nil, attributes: nil)
-        return try await client.getAddonBannerModel(source: source)
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
+        log.info("CrossSellService: getAddonBanners", error: nil, attributes: nil)
+        return try await client.getAddonBanners(source: source)
     }
 }

@@ -11,7 +11,7 @@ struct AddonProcessingScreen: View {
             loadingViewText: L10n.tierFlowCommitProcessingLoadingTitle,
             successViewTitle: L10n.addonFlowSuccessTitle,
             successViewBody: L10n.addonFlowSuccessSubtitle(
-                vm.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                vm.addonOffer?.quote.activationDate.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
                 addonNavigationVm.router.dismiss(withDismissingAll: true)
@@ -52,7 +52,10 @@ struct AddonProcessingScreen: View {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     return AddonProcessingScreen(
-        vm: .init(contractId: "", addonSource: .insurances),
+        vm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        ),
         addonNavigationVm: .init()
     )
 }

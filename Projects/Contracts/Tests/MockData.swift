@@ -14,13 +14,13 @@ struct MockData {
                 terminatedContracts: []
             )
         },
-        fetchAddonBanner: @escaping FetchAddonBanner = {
-            nil
+        fetchAddonBanners: @escaping FetchAddonBanners = {
+            []
         }
     ) -> MockContractService {
         let service = MockContractService(
             fetchContracts: fetchContracts,
-            fetchAddonBanner: fetchAddonBanner
+            fetchAddonBanners: fetchAddonBanners
         )
         Dependencies.shared.add(module: Module { () -> FetchContractsClient in service })
         return service
@@ -32,24 +32,24 @@ enum MockContractError: Error {
 }
 
 typealias FetchContracts = () async throws -> ContractsStack
-typealias FetchAddonBanner = () async throws -> AddonBannerModel?
+typealias FetchAddonBanners = () async throws -> [AddonBanner]
 
 class MockContractService: FetchContractsClient {
     var events = [Event]()
     var fetchContracts: FetchContracts
-    var fetchAddonBanner: FetchAddonBanner
+    var fetchAddonBanners: FetchAddonBanners
 
     enum Event {
         case getContracts
-        case getAddonBanner
+        case getAddonBanners
     }
 
     init(
         fetchContracts: @escaping FetchContracts,
-        fetchAddonBanner: @escaping FetchAddonBanner
+        fetchAddonBanners: @escaping FetchAddonBanners
     ) {
         self.fetchContracts = fetchContracts
-        self.fetchAddonBanner = fetchAddonBanner
+        self.fetchAddonBanners = fetchAddonBanners
     }
 
     func getContracts() async throws -> ContractsStack {
@@ -58,9 +58,9 @@ class MockContractService: FetchContractsClient {
         return data
     }
 
-    func getAddonBannerModel(source _: AddonSource) async throws -> AddonBannerModel? {
-        events.append(.getAddonBanner)
-        let data = try await fetchAddonBanner()
+    func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {
+        events.append(.getAddonBanners)
+        let data = try await fetchAddonBanners()
         return data
     }
 }

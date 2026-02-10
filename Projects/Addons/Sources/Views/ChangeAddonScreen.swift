@@ -39,13 +39,13 @@ struct ChangeAddonScreen: View {
                 title: .init(
                     .small,
                     .body2,
-                    L10n.addonFlowTitle,
+                    changeAddonVm.addonOffer?.pageTitle ?? "",
                     alignment: .leading
                 ),
                 subTitle: .init(
                     .small,
                     .body2,
-                    L10n.addonFlowSubtitle
+                    changeAddonVm.addonOffer?.pageDescription ?? ""
                 )
             )
             .hFormAttachToBottom {
@@ -61,7 +61,10 @@ struct ChangeAddonScreen: View {
                 }
 
                 hSection {
-                    buttonsView
+                    hContinueButton {
+                        changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+                    }
+                    .disabled(!changeAddonVm.allowToContinue)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -69,58 +72,143 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private var addOnSection: some View {
-        if let addonOffer = changeAddonVm.addonOffer {
+        if let offer = changeAddonVm.addonOffer {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
-                    hText(addonOffer.title)
-                        .fixedSize()
+                    hText(offer.quote.displayTitle)
                     Spacer()
-                    hPill(
-                        text: L10n.addonFlowPriceLabel(
-                            changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
-                                .formattedAmount ?? ""
-                        ),
-                        color: .grey,
-                        colorLevel: .one
-                    )
-                    .hFieldSize(.small)
-                }
-                if let subTitle = addonOffer.description {
-                    hText(subTitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                        .padding(.top, .padding8)
+                    if let priceIncrease = changeAddonVm.getPriceIncrease() {
+                        hPill(
+                            text: L10n.addonFlowPriceLabel(priceIncrease.gross.formattedAmount),
+                            color: .grey,
+                            colorLevel: .one
+                        )
+                        .hFieldSize(.small)
+                    }
                 }
 
+                hText(offer.quote.displayDescription, style: .label)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .padding(.top, .padding8)
+
+                switch offer.quote.addonOfferContent {
+                case .selectable(let selectable):
+                    selectableAddonSection(selectable: selectable)
+                case .toggleable(let toggleable):
+                    toggleableAddonSection(activeAddons: offer.quote.activeAddons, toggleable: toggleable)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(toggleable.quotes) { addon in
+                addonToggleRow(
+                    title: addon.displayTitle,
+                    subtitle: addon.displayDescription,
+                    isSelected: changeAddonVm.isAddonSelected(addon),
+                    trailingView: {
+                        hPill(
+                            text: L10n.addonFlowPriceLabel(addon.cost.premium.gross.formattedAmount),
+                            color: .grey,
+                            colorLevel: .one
+                        )
+                        .hFieldSize(.small)
+                    },
+                    onTap: { withAnimation { changeAddonVm.selectAddon(addon: addon) } }
+                )
+                .padding(.top, .padding16)
+            }
+
+            ForEach(activeAddons) { activeAddon in
+                addonToggleRow(
+                    title: activeAddon.displayTitle,
+                    subtitle: activeAddon.displayDescription ?? "",
+                    isSelected: true,
+                    isDisabled: true,
+                    trailingView: {
+                        hPill(text: L10n.addonBadgeActive, color: .green)
+                            .hFieldSize(.small)
+                    }
+                )
+                .padding(.top, .padding16)
+            }
+        }
+    }
+
+    @hColorBuilder
+    private func checkmarkColor(isSelected: Bool, isDisabled: Bool) -> some hColor {
+        if isSelected && !isDisabled { hColorBase(.green) } else { hGrayscaleTranslucent.greyScaleTranslucent300 }
+    }
+
+    @hColorBuilder
+    private func titleColor(isDisabled: Bool) -> some hColor {
+        if isDisabled { hTextColor.Translucent.secondary } else { hTextColor.Opaque.primary }
+    }
+
+    @hColorBuilder
+    private func subTitleColor(isDisabled: Bool) -> some hColor {
+        if isDisabled { hTextColor.Translucent.secondary } else { hTextColor.Opaque.secondary }
+    }
+
+    @ViewBuilder
+    private func addonToggleRow<Trailing: View>(
+        title: String,
+        subtitle: String,
+        isSelected: Bool,
+        isDisabled: Bool = false,
+        @ViewBuilder trailingView: () -> Trailing,
+        onTap: @escaping () -> Void = {}
+    ) -> some View {
+        let checkmarkColor = checkmarkColor(isSelected: isSelected, isDisabled: isDisabled)
+        let titleColor = titleColor(isDisabled: isDisabled)
+        let subTitleColor = subTitleColor(isDisabled: isDisabled)
+        ZStack {
+            HStack(alignment: .top) {
+                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
+                    .foregroundColor(checkmarkColor)
+                    .font(.title2)
+
+                VStack(alignment: .leading, spacing: .padding4) {
+                    HStack {
+                        hText(title).foregroundColor(titleColor)
+                        Spacer()
+                        trailingView()
+                    }
+                    hText(subtitle, style: .label).foregroundColor(subTitleColor)
+                }
+            }
+            .padding(.init(top: .padding18, leading: .padding16, bottom: .padding24, trailing: .padding16))
+        }
+        .onTapGesture { withAnimation { onTap() } }
+        .accessibilityAction { onTap() }
+        .accessibilityHint(L10n.voiceoverPressTo)  // TODO: fix hint
+        .background(hSurfaceColor.Opaque.primary)
+        .cornerRadius(.cornerRadiusL)
+    }
+
+    @ViewBuilder
+    private func selectableAddonSection(selectable: AddonOfferSelectable) -> some View {
+        if let selectedQuote = changeAddonVm.selectedAddons.first {
+            Group {
+                let isDropDownDisabled = changeAddonVm.isDropDownDisabled(for: selectable)
                 DropdownView(
-                    value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
+                    value: selectedQuote.displayTitle,
                     placeHolder: L10n.addonFlowSelectDaysPlaceholder
                 ) {
-                    changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
+                    changeAddonNavigationVm.isSelectableAddonPresented = selectable
                 }
-                .disabled(changeAddonVm.disableDropDown)
+                .disabled(isDropDownDisabled)
                 .padding(.top, .padding16)
-                .hBackgroundOption(option: changeAddonVm.disableDropDown ? [.locked] : [])
+                .hBackgroundOption(option: isDropDownDisabled ? [.locked] : [])
                 .hWithoutHorizontalPadding([.section])
                 .accessibilityHidden(false)
             }
             .accessibilityElement(children: .combine)
             .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-            .accessibilityAction {
-                changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOffer
-            }
-            .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    private var buttonsView: some View {
-        VStack(spacing: .padding8) {
-            hContinueButton {
-                changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
-            }
-
-            hCancelButton {
-                changeAddonNavigationVm.router.dismiss()
-            }
+            .accessibilityAction { changeAddonNavigationVm.isSelectableAddonPresented = selectable }
         }
     }
 
@@ -130,12 +218,13 @@ struct ChangeAddonScreen: View {
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
         ) {
+            let perils = changeAddonVm.selectedAddons.flatMap(\.addonVariant.perils)
+
             changeAddonNavigationVm.isLearnMorePresented = .init(
                 .init(
                     title: L10n.addonFlowTravelInformationTitle,
                     description: L10n.addonFlowTravelInformationDescription,
-                    perils: changeAddonNavigationVm.changeAddonVm?.selectedQuote?.addonVariant?
-                        .perils ?? []
+                    perils: perils
                 )
             )
         }
@@ -144,9 +233,54 @@ struct ChangeAddonScreen: View {
     }
 }
 
-#Preview {
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+#Preview("Travel") {
+    let offer = testTravelOfferNoActive
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(changeAddonVm: .init(contractId: "id", addonSource: .insurances))
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+}
+
+#Preview("Travel with Active addon") {
+    let offer = testTravelOffer45Days
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+}
+
+#Preview("Car") {
+    let offer = testCarOfferNoActive
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarOfferNoActive) })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
+}
+
+#Preview("Car with Active addon") {
+    let offer = testCarAddonRisk
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarAddonRisk) })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return ChangeAddonScreen(
+        changeAddonVm: .init(
+            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
+            addonSource: .insurances
+        )
+    )
+    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }

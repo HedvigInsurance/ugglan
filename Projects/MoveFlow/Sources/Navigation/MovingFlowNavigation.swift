@@ -29,7 +29,8 @@ class MovingFlowQuoteManager {
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
             activationDate: movingFlowQuotes.first?.startDate,
-            premium: totalPremium
+            premium: totalPremium,
+            noticeInfo: contractInfos.count > 1 ? L10n.changeAddressOtherInsurancesInfoText : nil
         )
 
         vm.onConfirmClick = { [weak router, weak viewModel] in

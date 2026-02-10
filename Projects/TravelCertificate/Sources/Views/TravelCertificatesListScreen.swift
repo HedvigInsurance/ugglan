@@ -89,7 +89,7 @@ public struct TravelCertificatesListScreen: View {
 
     @ViewBuilder
     private var addonView: some View {
-        if let banner = vm.addonBannerModel {
+        if let banner = vm.addonBanner {
             AddonCardView(
                 openAddon: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -168,7 +168,7 @@ class TravelCertificatesListScreenViewModel: ObservableObject {
     @Published var error: String?
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
-    @Published var addonBannerModel: AddonBannerModel?
+    @Published var addonBanner: AddonBanner?
     private var addonAddedObserver: NSObjectProtocol?
 
     init() {
@@ -198,7 +198,7 @@ class TravelCertificatesListScreenViewModel: ObservableObject {
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance
-                self.addonBannerModel = banner
+                self.addonBanner = banner
             }
         } catch _ {
             self.error = L10n.General.errorBody

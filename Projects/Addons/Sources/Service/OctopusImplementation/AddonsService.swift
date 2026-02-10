@@ -1,17 +1,19 @@
+import AutomaticLog
 import Foundation
 import hCore
 
-@MainActor
-public class AddonsService {
-    @Inject var service: AddonsClient
+@MainActor public class AddonsService {
+    @Inject var client: AddonsClient
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
-        log.info("AddonsService: getAddon", error: nil, attributes: nil)
-        return try await service.getAddon(contractId: contractId)
+    @Log
+    public func getAddonOffer(contractId: String) async throws -> AddonOffer {
+        try await client.getAddonOffer(contractId: contractId)
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws {
-        log.info("AddonsService: submitAddon", error: nil, attributes: nil)
-        return try await service.submitAddon(quoteId: quoteId, addonId: addonId)
+    @Log
+    public func submitAddons(quoteId: String, selectedAddonIds: Set<String>) async throws {
+        async let submit: () = try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
+        async let delayTask: () = delay(3)
+        let _ = try await (submit, delayTask)
     }
 }
