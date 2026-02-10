@@ -29,7 +29,7 @@
 "ADDON_FLOW_SELECT_BUTTON" = "Select";
 "ADDON_FLOW_SELECT_DAYS_PLACEHOLDER" = "Maximum travel limit";
 "ADDON_FLOW_SELECT_INSURANCE_SUBTITLE" = "Select the insurance you would like to add coverage for";
-"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Add extra coverage";
+"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Extend your travel coverage";
 "ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE" = "Days covered when travelling";
 "ADDON_FLOW_SELECT_SUBOPTION_TITLE" = "Choose your maximum travel limit";
 "ADDON_FLOW_SUBTITLE" = "For extra safety when you are travelling abroad";

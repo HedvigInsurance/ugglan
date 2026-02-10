@@ -35,7 +35,10 @@ struct SubmitClaimSingleSelectView: View {
     }
 
     private var pillInputView: some View {
-        TagList(tags: viewModel.model.options.map { $0.id }) { optionId in
+        TagList(
+            tags: viewModel.model.options.map { $0.id },
+            container: .vstack
+        ) { optionId in
             let option = viewModel.model.options.first(where: { $0.id == optionId })!
             if showOptions {
                 hPill(
@@ -51,6 +54,7 @@ struct SubmitClaimSingleSelectView: View {
                 .optionAccessibility(label: option.title)
             }
         }
+        .padding(.horizontal, -.padding4)
     }
 
     private var binaryInputView: some View {
