@@ -87,21 +87,6 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    private func logAddonEvent() {
-        selectedAddons.forEach { addon in
-            let logInfo = AddonLogInfo(
-                flow: addonSource,
-                type: addon.addonVariant.product,
-                subType: addon.subtype
-            )
-            log.addUserAction(
-                type: .custom,
-                name: addon.addonVariant.product,
-                attributes: logInfo.asAddonAttributes
-            )
-        }
-    }
-
     func getGrossPriceDifference(for addonOfferQuote: AddonOfferQuote) -> MonetaryAmount {
         let currentGrossPrice = addonOfferQuote.cost.premium.gross
 
@@ -176,5 +161,37 @@ public class ChangeAddonViewModel: ObservableObject {
 extension AddonDisplayItem {
     public func asQuoteDisplayItem() -> QuoteDisplayItem {
         .init(title: displayTitle, value: displayValue)
+    }
+}
+
+//MARK: Log purchase
+extension ChangeAddonViewModel {
+    fileprivate func logAddonEvent() {
+        let eventType: AddonEventType = {
+            switch addonOffer?.quote.addonOfferContent {
+            case .selectable(let addonOfferSelectable):
+                return addonOffer?.quote.activeAddons.count ?? 0 == 0 ? .addonPurchased : .addonUpgraded
+            case .toggleable(let addonOfferToggleable):
+                return .addonPurchased
+            case nil:
+                return .addonPurchased
+            }
+        }()
+        selectedAddons.forEach { addon in
+            let logInfo = AddonLogInfo(
+                flow: addonSource,
+                type: addon.addonVariant.product,
+                subType: addon.subtype
+            )
+            log.addUserAction(
+                type: .custom,
+                name: eventType.rawValue,
+                attributes: logInfo.asAddonAttributes
+            )
+        }
+    }
+    private enum AddonEventType: String, Codable {
+        case addonPurchased = "ADDON_PURCHASED"
+        case addonUpgraded = "ADDON_UPGRADED"
     }
 }
