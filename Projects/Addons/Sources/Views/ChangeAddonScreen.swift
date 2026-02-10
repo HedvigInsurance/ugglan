@@ -104,20 +104,6 @@ struct ChangeAddonScreen: View {
     @ViewBuilder
     private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(activeAddons) { activeAddon in
-                addonToggleRow(
-                    title: activeAddon.displayTitle,
-                    subtitle: activeAddon.displayDescription ?? "",
-                    isSelected: true,
-                    isDisabled: true,
-                    trailingView: {
-                        hPill(text: L10n.addonBadgeActive, color: .green)
-                            .hFieldSize(.small)
-                    }
-                )
-                .padding(.top, .padding16)
-            }
-
             ForEach(toggleable.quotes) { addon in
                 addonToggleRow(
                     title: addon.displayTitle,
@@ -132,6 +118,20 @@ struct ChangeAddonScreen: View {
                         .hFieldSize(.small)
                     },
                     onTap: { withAnimation { changeAddonVm.selectAddon(addon: addon) } }
+                )
+                .padding(.top, .padding16)
+            }
+
+            ForEach(activeAddons) { activeAddon in
+                addonToggleRow(
+                    title: activeAddon.displayTitle,
+                    subtitle: activeAddon.displayDescription ?? "",
+                    isSelected: true,
+                    isDisabled: true,
+                    trailingView: {
+                        hPill(text: L10n.addonBadgeActive, color: .green)
+                            .hFieldSize(.small)
+                    }
                 )
                 .padding(.top, .padding16)
             }
