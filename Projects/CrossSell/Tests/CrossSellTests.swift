@@ -15,7 +15,7 @@ final class CrossSellTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testGetCrossSellSuccess() async {
+    func testGetCrossSellSuccess() async throws {
         let crossSell: CrossSells = .init(
             recommended: nil,
             others: [
@@ -44,11 +44,11 @@ final class CrossSellTests: XCTestCase {
         )
         sut = mockService
 
-        let respondedCrossSell = try! await mockService.fetchCrossSell(.insurances)
+        let respondedCrossSell = try await mockService.fetchCrossSell(.insurances)
         assert(respondedCrossSell == crossSell)
     }
 
-    func testGetAddonBannerSuccess() async {
+    func testGetAddonBannerSuccess() async throws {
         let addonBanner = [
             AddonBanner(
                 contractIds: ["contractId"],
@@ -63,7 +63,7 @@ final class CrossSellTests: XCTestCase {
         )
         sut = mockService
 
-        let respondedAddonBanner = try! await mockService.getAddonBanners(source: .insurances)
+        let respondedAddonBanner = try await mockService.getAddonBanners(source: .insurances)
         assert(respondedAddonBanner == addonBanner)
     }
 }
