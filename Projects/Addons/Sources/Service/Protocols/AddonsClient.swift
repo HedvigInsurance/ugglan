@@ -7,6 +7,8 @@ public protocol AddonsClient: Sendable {
     func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost
     func submitAddons(quoteId: String, addonIds: Set<String>) async throws
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
+    func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer
+    func confirmAddonRemoval(contractId: String, addonIds: [String]) async throws
 }
 
 public enum AddonsError: Error {

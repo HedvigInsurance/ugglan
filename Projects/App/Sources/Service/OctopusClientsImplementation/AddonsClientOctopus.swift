@@ -52,6 +52,41 @@ class AddonsClientOctopus: AddonsClient {
         }
     }
 
+    public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
+        let mutation = OctopusGraphQL.AddonRemoveStartMutation(contractId: contractId)
+        let response = try await octopus.client.mutation(mutation: mutation)
+
+        guard let result = response?.addonRemoveStart else {
+            throw AddonsError.somethingWentWrong
+        }
+
+        if let userError = result.asUserError {
+            throw AddonsError.errorMessage(message: userError.message!)
+        }
+
+        guard let offer = result.asAddonRemoveOffer else {
+            throw AddonsError.somethingWentWrong
+        }
+
+        return AddonRemoveOffer(
+            pageTitle: offer.pageTitle,
+            pageDescription: offer.pageDescription,
+            currentTotalCost: ItemCost(fragment: offer.currentTotalCost.fragments.itemCostFragment),
+            baseCost: ItemCost(fragment: offer.baseCost.fragments.itemCostFragment),
+            productVariant: ProductVariant(data: offer.productVariant.fragments.productVariantFragment),
+            activationDate: offer.activationDate.localDateToDate ?? Date(),
+            removableAddons: offer.removableAddons.map { .init(data: $0) }
+        )
+    }
+
+    public func confirmAddonRemoval(contractId: String, addonIds: [String]) async throws {
+        let mutation = OctopusGraphQL.AddonRemoveConfirmMutation(contractId: contractId, addonIds: addonIds)
+        let response = try await octopus.client.mutation(mutation: mutation)
+        if let userError = response?.addonRemoveConfirm {
+            throw AddonsError.errorMessage(message: userError.message!)
+        }
+    }
+
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
         let query = OctopusGraphQL.AddonBannersQuery(flows: source.flows)
 
@@ -157,6 +192,15 @@ extension AddonDisplayItem {
 
 extension ActiveAddon {
     init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ActiveAddon) {
+        self.init(
+            id: data.id,
+            cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
+            displayTitle: data.displayTitle,
+            displayDescription: data.displayDescription
+        )
+    }
+
+    init(data: OctopusGraphQL.AddonRemoveStartMutation.Data.AddonRemoveStart.AsAddonRemoveOffer.RemovableAddon) {
         self.init(
             id: data.id,
             cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
