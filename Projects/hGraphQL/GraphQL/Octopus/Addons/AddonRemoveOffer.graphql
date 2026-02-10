@@ -1,0 +1,35 @@
+mutation AddonRemoveStart($contractId: ID!) {
+  addonRemoveStart(contractId: $contractId) {
+    ... on UserError {
+      message
+    }
+    ... on AddonRemoveOffer {
+      pageTitle
+      pageDescription
+      currentTotalCost {
+        ...ItemCostFragment
+      }
+      baseCost {
+        ...ItemCostFragment
+      }
+      productVariant {
+        ...ProductVariantFragment
+      }
+      activationDate
+      removableAddons {
+        id
+        cost {
+          ...ItemCostFragment
+        }
+        displayTitle
+        displayDescription
+      }
+    }
+  }
+}
+
+mutation AddonRemoveConfirm($contractId: ID!, $addonIds: [ID!]!) {
+  addonRemoveConfirm(contractId: $contractId, addonIds: $addonIds) {
+    message
+  }
+}
