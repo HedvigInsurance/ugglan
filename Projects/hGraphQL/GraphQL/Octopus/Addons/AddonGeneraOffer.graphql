@@ -2,6 +2,7 @@ fragment AddonOfferQuoteFragment on AddonOfferQuote {
   id
   displayTitle
   displayDescription
+  subtype
   displayItems {
     displayTitle
     displayValue
@@ -22,6 +23,7 @@ mutation AddonGenerateOffer($contractId: ID!) {
     ... on AddonOffer {
       pageTitle
       pageDescription
+      infoMessage
       quote {
         quoteId
         displayTitle

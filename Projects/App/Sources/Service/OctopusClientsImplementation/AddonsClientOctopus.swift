@@ -31,7 +31,8 @@ class AddonsClientOctopus: AddonsClient {
             pageTitle: addonOffer.pageTitle,
             pageDescription: addonOffer.pageDescription,
             quote: quote,
-            currentTotalCost: currentTotalCost
+            currentTotalCost: currentTotalCost,
+            infoMessage: addonOffer.infoMessage
         )
     }
 
@@ -140,7 +141,8 @@ extension AddonOfferQuote {
             displayDescription: fragment.displayDescription,
             displayItems: fragment.displayItems.map { .init(fragment: $0) },
             cost: ItemCost(fragment: fragment.cost.fragments.itemCostFragment),
-            addonVariant: AddonVariant(fragment: fragment.addonVariant.fragments.addonVariantFragment)
+            addonVariant: AddonVariant(fragment: fragment.addonVariant.fragments.addonVariantFragment),
+            subType: fragment.subtype
         )
     }
 }
@@ -157,7 +159,7 @@ extension ActiveAddon {
             id: data.id,
             cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
             displayTitle: data.displayTitle,
-            displayDescription: data.displayDescription!
+            displayDescription: data.displayDescription
         )
     }
 }

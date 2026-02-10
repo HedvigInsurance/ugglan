@@ -28,7 +28,8 @@ final class AddonsServiceTests: XCTestCase {
                 perils: [],
                 product: "travel",
                 termsVersion: "1.0"
-            )
+            ),
+            subType: "45 days",
         )
         let travelQuote60 = AddonOfferQuote(
             id: "addon60",
@@ -42,7 +43,8 @@ final class AddonsServiceTests: XCTestCase {
                 perils: [],
                 product: "travel",
                 termsVersion: "1.0"
-            )
+            ),
+            subType: "60 days"
         )
 
         let travelOffer = AddonOffer(
@@ -74,7 +76,8 @@ final class AddonsServiceTests: XCTestCase {
                     tierDescription: nil
                 )
             ),
-            currentTotalCost: .init(premium: .init(gross: .sek(299), net: .sek(299)), discounts: [])
+            currentTotalCost: .init(premium: .init(gross: .sek(299), net: .sek(299)), discounts: []),
+            infoMessage: nil,
         )
 
         let mockService = MockData.createMockAddonsService(fetchAddonOffer: { _ in

@@ -32,7 +32,8 @@ final class AddonsViewModelTests: XCTestCase {
                 perils: [],
                 product: "travel",
                 termsVersion: "1.0"
-            )
+            ),
+            subType: "45 days"
         )
         let travelQuote60 = AddonOfferQuote(
             id: "addon60",
@@ -46,7 +47,8 @@ final class AddonsViewModelTests: XCTestCase {
                 perils: [],
                 product: "travel",
                 termsVersion: "1.0"
-            )
+            ),
+            subType: "60 days"
         )
 
         let travelOffer = AddonOffer(
@@ -78,7 +80,8 @@ final class AddonsViewModelTests: XCTestCase {
                     tierDescription: nil
                 )
             ),
-            currentTotalCost: .init(premium: .init(gross: .sek(299), net: .sek(299)), discounts: [])
+            currentTotalCost: .init(premium: .init(gross: .sek(299), net: .sek(299)), discounts: []),
+            infoMessage: nil
         )
 
         let mockService = MockData.createMockAddonsService(fetchAddonOffer: { _ in
@@ -97,8 +100,6 @@ final class AddonsViewModelTests: XCTestCase {
         vm = model
         try await Task.sleep(seconds: 0.03)
         assert(model.addonOffer == travelOffer)
-        assert(model.addonOffer?.quote.addons == travelOffer.quote.addons)
-        assert(model.addonOffer?.quote.addons.count == travelOffer.quote.addons.count)
         assert(model.fetchAddonsViewState == .success)
         assert(model.selectedAddons == [travelQuote45])
 
@@ -132,9 +133,7 @@ final class AddonsViewModelTests: XCTestCase {
         vm = model
 
         try await Task.sleep(seconds: 0.03)
-        assert(model.addonOffer?.quote.addons == nil)
-        assert(model.addonOffer?.quote.addons.first == nil)
-        assert(model.addonOffer?.quote.addons.count == nil)
+        assert(model.addonOffer == nil)
         assert(model.selectedAddons.isEmpty)
 
         if case let .error(errorMessage) = model.fetchAddonsViewState {
@@ -211,7 +210,8 @@ final class AddonsViewModelTests: XCTestCase {
                 perils: [],
                 product: "car_addon",
                 termsVersion: "1.0"
-            )
+            ),
+            subType: nil
         )
         let carAddonRental = AddonOfferQuote(
             id: "hyrbil",
@@ -225,7 +225,8 @@ final class AddonsViewModelTests: XCTestCase {
                 perils: [],
                 product: "car_addon",
                 termsVersion: "1.0"
-            )
+            ),
+            subType: nil
         )
 
         let carOffer = AddonOffer(
@@ -250,7 +251,8 @@ final class AddonsViewModelTests: XCTestCase {
                     tierDescription: nil
                 )
             ),
-            currentTotalCost: .init(premium: .init(gross: .sek(469), net: .sek(469)), discounts: [])
+            currentTotalCost: .init(premium: .init(gross: .sek(469), net: .sek(469)), discounts: []),
+            infoMessage: nil
         )
 
         let mockService = MockData.createMockAddonsService(fetchAddonOffer: { _ in

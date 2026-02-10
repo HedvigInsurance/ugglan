@@ -18,16 +18,21 @@ public struct AddonOffer: Equatable, Sendable {
     /// Agreement total cost
     let currentTotalCost: ItemCost
 
+    /// Optional info message to show on the summary page.
+    let infoMessage: String?
+
     public init(
         pageTitle: String,
         pageDescription: String,
         quote: AddonContractQuote,
-        currentTotalCost: ItemCost
+        currentTotalCost: ItemCost,
+        infoMessage: String?
     ) {
         self.pageTitle = pageTitle
         self.pageDescription = pageDescription
         self.quote = quote
         self.currentTotalCost = currentTotalCost
+        self.infoMessage = infoMessage
     }
 }
 
@@ -68,7 +73,7 @@ public struct AddonContractQuote: Equatable, Sendable {
         addonOffer: AddonOfferContent,
         activeAddons: [ActiveAddon],
         baseQuoteCost: ItemCost,
-        productVariant: ProductVariant
+        productVariant: ProductVariant,
     ) {
         self.quoteId = quoteId
         self.displayTitle = displayTitle
@@ -78,15 +83,6 @@ public struct AddonContractQuote: Equatable, Sendable {
         self.activeAddons = activeAddons
         self.baseQuoteCost = baseQuoteCost
         self.productVariant = productVariant
-    }
-
-    var addons: [AddonOfferQuote] {
-        switch addonOfferContent {
-        case .selectable(let addonOfferSelectable):
-            addonOfferSelectable.quotes
-        case .toggleable(let addonOfferToggleable):
-            addonOfferToggleable.quotes
-        }
     }
 }
 
@@ -187,13 +183,17 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
     /// Addon variant
     let addonVariant: AddonVariant
 
+    /// Addon subtype
+    let subtype: String?
+
     public init(
         id: String,
         displayTitle: String,
         displayDescription: String,
         displayItems: [AddonDisplayItem],
         cost: ItemCost,
-        addonVariant: AddonVariant
+        addonVariant: AddonVariant,
+        subType: String?,
     ) {
         self.id = id
         self.displayTitle = displayTitle
@@ -201,6 +201,7 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
         self.displayItems = displayItems
         self.cost = cost
         self.addonVariant = addonVariant
+        self.subtype = subType
     }
 }
 

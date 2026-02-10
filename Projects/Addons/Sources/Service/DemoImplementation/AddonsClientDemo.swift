@@ -47,7 +47,8 @@ public let testTravelOfferNoActive: AddonOffer = {
             perils: [],
             product: "travel",
             termsVersion: "1.0"
-        )
+        ),
+        subType: "45 days",
     )
 
     let d60 = ItemDiscount(
@@ -71,7 +72,8 @@ public let testTravelOfferNoActive: AddonOffer = {
             perils: [],
             product: "travel",
             termsVersion: "1.0"
-        )
+        ),
+        subType: "60 days",
     )
 
     let selectable = AddonOfferSelectable(
@@ -101,7 +103,7 @@ public let testTravelOfferNoActive: AddonOffer = {
                 displayName: "Hyresrätt",
                 displayNameTier: nil,
                 tierDescription: nil
-            )
+            ),
         ),
         currentTotalCost: .init(
             premium: .init(gross: .sek(299), net: .sek(254)),
@@ -113,7 +115,8 @@ public let testTravelOfferNoActive: AddonOffer = {
                     explanation: "Discount for bundling addons with your home insurance"
                 )
             ]
-        )
+        ),
+        infoMessage: "info message",
     )
 }()
 
@@ -139,7 +142,8 @@ public let testTravelOffer45Days: AddonOffer = {
             perils: [],
             product: "travel",
             termsVersion: "1.0"
-        )
+        ),
+        subType: "60 days",
     )
 
     let activeD = ItemDiscount(
@@ -194,7 +198,8 @@ public let testTravelOffer45Days: AddonOffer = {
                     explanation: "Discount for bundling addons with your home insurance"
                 )
             ]
-        )
+        ),
+        infoMessage: "Info Message"
     )
 }()
 
@@ -223,7 +228,8 @@ public let testCarOfferNoActive: AddonOffer = {
             perils: [],
             product: "car_addon",
             termsVersion: "1.0"
-        )
+        ),
+        subType: nil,
     )
     let hyr = AddonOfferQuote(
         id: "hyrbil",
@@ -247,7 +253,8 @@ public let testCarOfferNoActive: AddonOffer = {
             perils: [],
             product: "car_addon",
             termsVersion: "1.0"
-        )
+        ),
+        subType: nil,
     )
     let dr = AddonOfferQuote(
         id: "drulle",
@@ -265,7 +272,14 @@ public let testCarOfferNoActive: AddonOffer = {
                 )
             ]
         ),
-        addonVariant: .init(displayName: "Drulle", documents: [], perils: [], product: "car_addon", termsVersion: "1.0")
+        addonVariant: .init(
+            displayName: "Drulle",
+            documents: [],
+            perils: [],
+            product: "car_addon",
+            termsVersion: "1.0"
+        ),
+        subType: nil,
     )
 
     return .init(
@@ -300,7 +314,8 @@ public let testCarOfferNoActive: AddonOffer = {
                     explanation: "Discount for bundling addons with your car insurance"
                 )
             ]
-        )
+        ),
+        infoMessage: "Info message",
     )
 }()
 
@@ -346,7 +361,8 @@ public let testCarAddonRisk: AddonOffer = {
             perils: [],
             product: "car_addon",
             termsVersion: "1.0"
-        )
+        ),
+        subType: nil,
     )
     let dr = AddonOfferQuote(
         id: "drulle",
@@ -364,7 +380,14 @@ public let testCarAddonRisk: AddonOffer = {
                 )
             ]
         ),
-        addonVariant: .init(displayName: "Drulle", documents: [], perils: [], product: "car_addon", termsVersion: "1.0")
+        addonVariant: .init(
+            displayName: "Drulle",
+            documents: [],
+            perils: [],
+            product: "car_addon",
+            termsVersion: "1.0"
+        ),
+        subType: nil,
     )
 
     return .init(
@@ -399,6 +422,7 @@ public let testCarAddonRisk: AddonOffer = {
                     explanation: "Discount for bundling addons with your car insurance"
                 )
             ]
-        )
+        ),
+        infoMessage: "Info message"
     )
 }()
