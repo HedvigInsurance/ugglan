@@ -10,8 +10,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published var isShowDetailsPresented: QuoteSummaryViewModel.ContractInfo? = nil
 
     public var onConfirmClick: () -> Void
-    let isAddon: Bool
-    let showNoticeCard: Bool
+    let noticeInfo: String?
+    let priceDisplayType: SummaryPriceDisplayType
 
     public struct ContractInfo: Identifiable, Equatable {
         public var id: String
@@ -23,7 +23,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
-        let isAddon: Bool
         let priceBreakdownItems: [QuoteDisplayItem]
 
         public init(
@@ -35,7 +34,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
-            isAddon: Bool? = false,
             priceBreakdownItems: [QuoteDisplayItem]
         ) {
             self.id = id
@@ -49,7 +47,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.shouldShowDetails =
                 !(documentSection.documents.isEmpty && displayItems.isEmpty
                 && insuranceLimits.isEmpty)
-            self.isAddon = isAddon ?? false
             self.priceBreakdownItems = priceBreakdownItems
         }
 
@@ -73,15 +70,21 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         contract: [ContractInfo],
         activationDate: Date?,
         premium: Premium,
-        isAddon: Bool? = false,
+        noticeInfo: String? = nil,
+        priceDisplayType: SummaryPriceDisplayType = .difference,
         onConfirmClick: (() -> Void)? = nil
     ) {
         self.contracts = contract
-        self.isAddon = isAddon ?? false
         self.activationDate = activationDate
         self.onConfirmClick = onConfirmClick ?? {}
         self.premium = premium
-        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
+        self.noticeInfo = noticeInfo
+        self.priceDisplayType = priceDisplayType
+    }
+
+    public enum SummaryPriceDisplayType {
+        case difference
+        case increase
     }
 }
 
