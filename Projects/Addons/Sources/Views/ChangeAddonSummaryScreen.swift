@@ -45,7 +45,7 @@ extension ChangeAddonViewModel {
             contract: [contractInfo],
             activationDate: addonOffer?.quote.activationDate,
             premium: getPriceIncrease() ?? .zeroSek,
-            noticeInfo: L10n.addonFlowSummaryInfoText,
+            noticeInfo: addonOffer?.infoMessage ?? L10n.addonFlowSummaryInfoText,
             priceDisplayType: .increase
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true
