@@ -151,12 +151,13 @@ extension MoveConfigurationModel {
 @MainActor
 extension MoveQuotesModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
+        let homeQuotes = data.fragments.quoteFragment.homeQuotes
         self.init(
-            homeQuotes: data.homeQuotes?.compactMap { MovingFlowQuote(from: $0) } ?? [],
-            mtaQuotes: data.fragments.quoteFragment.mtaQuotes?.compactMap { MovingFlowQuote(from: $0) } ?? [],
+            homeQuotes: data.homeQuotes.compactMap { MovingFlowQuote(from: $0) },
+            mtaQuotes: data.fragments.quoteFragment.mtaQuotes.compactMap { MovingFlowQuote(from: $0) },
             changeTierModel: {
-                if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
-                    return ChangeTierIntentModel.initWith(data: data)
+                if !homeQuotes.isEmpty {
+                    return ChangeTierIntentModel.initWith(data: homeQuotes)
                 }
                 return nil
             }()
