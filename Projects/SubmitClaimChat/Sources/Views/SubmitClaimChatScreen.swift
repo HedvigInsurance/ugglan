@@ -460,7 +460,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
         self.progress = newClaimIntent.progress
         Task { @MainActor in
             if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
-                currentStep?.state.showInput = false
                 if indexToRemove > 0 {
                     let stepIdToScrollTo = allSteps[indexToRemove - 1].id
                     scrollTarget = .init(id: "result_\(stepIdToScrollTo)", anchor: .top)
