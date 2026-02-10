@@ -15,7 +15,7 @@ final class ContractsTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testGetContractsSuccess() async {
+    func testGetContractsSuccess() async throws {
         let contractsStack: ContractsStack = .init(
             activeContracts: [
                 .init(
@@ -62,13 +62,13 @@ final class ContractsTests: XCTestCase {
         )
         sut = mockService
 
-        let respondedContracts = try! await mockService.fetchContracts()
+        let respondedContracts = try await mockService.fetchContracts()
         assert(respondedContracts.activeContracts == contractsStack.activeContracts)
         assert(respondedContracts.pendingContracts == contractsStack.pendingContracts)
         assert(respondedContracts.terminatedContracts == contractsStack.terminatedContracts)
     }
 
-    func testGetAddonBannersSuccess() async {
+    func testGetAddonBannersSuccess() async throws {
         let testBanner = AddonBanner(
             contractIds: ["contractId"],
             titleDisplayName: "Travel Plus",
@@ -81,7 +81,7 @@ final class ContractsTests: XCTestCase {
         )
         sut = mockService
 
-        let respondedBanners = try! await mockService.getAddonBanners(source: .insurances)
+        let respondedBanners = try await mockService.getAddonBanners(source: .insurances)
         assert(respondedBanners == [testBanner])
     }
 }

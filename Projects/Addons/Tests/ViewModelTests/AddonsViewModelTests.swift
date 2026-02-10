@@ -99,6 +99,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         vm = model
         try await Task.sleep(seconds: 0.03)
+
         assert(model.addonOffer == travelOffer)
         assert(model.fetchAddonsViewState == .success)
         assert(model.selectedAddons == [travelQuote45])
@@ -131,8 +132,8 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(config: testConfig, addonSource: .insurances)
 
         vm = model
-
         try await Task.sleep(seconds: 0.03)
+
         assert(model.addonOffer == nil)
         assert(model.selectedAddons.isEmpty)
 
@@ -157,9 +158,10 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(config: testConfig, addonSource: .insurances)
 
         vm = model
+        try await Task.sleep(seconds: 0.03)
+
         await model.submitAddons()
 
-        try await Task.sleep(seconds: 0.03)
         assert(model.submittingAddonsViewState == .success)
     }
 
@@ -183,9 +185,9 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(config: testConfig, addonSource: .insurances)
 
         vm = model
+        try await Task.sleep(seconds: 0.03)
         await model.submitAddons()
 
-        try await Task.sleep(seconds: 0.03)
         if case let .error(errorMessage) = model.submittingAddonsViewState {
             assert(errorMessage == AddonsError.submitError.localizedDescription)
         } else {
