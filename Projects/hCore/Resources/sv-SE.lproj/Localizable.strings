@@ -571,12 +571,20 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REFERRAL_PENDING_STATUS_LABEL" = "Avvaktar...";
 "REFERRAL_SMS_MESSAGE" = "Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$@ rabatt på månadskostnaden. Följ länken: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inaktiv";
+"REMOVE_ADDON_CONFIRMATION_BUTTON" = "Ja, ta bort";
+"REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@.";
+"REMOVE_ADDON_CONFIRMATION_TITLE" = "";
+/* Your updates will be effective from tomorrow. */
+"REMOVE_ADDON_SUCCESS_SUBTITLE" = "Aktiveras från och med %@.";
+"REMOVE_ADDON_SUCCESS_TITLE" = "";
 "REMOVE_CONFIRMATION_BUTTON" = "Ja, radera";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "Försök igen eller skriv ett meddelande till oss direkt i appen";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "Det gick inte öppna försäkringsvillkoren";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Spara och fortsätt";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Sök";
+"SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION" = "";
+"SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE" = "";
 "SETTINGS_LANGUAGE_TITLE" = "Språk";
 "SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE" = "Ja, avregistrera";
 /* Figma */

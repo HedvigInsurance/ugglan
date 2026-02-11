@@ -571,12 +571,20 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REFERRAL_PENDING_STATUS_LABEL" = "Pending...";
 "REFERRAL_SMS_MESSAGE" = "Hey! Get Hedvig using my link and we both get %1$@ per month discount on the monthly cost. Follow the link: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inactive";
+"REMOVE_ADDON_CONFIRMATION_BUTTON" = "Yes, remove";
+"REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "This change will take effect from %1$@.";
+"REMOVE_ADDON_CONFIRMATION_TITLE" = "Confirm removing selected addons";
+/* Your updates will be effective from tomorrow. */
+"REMOVE_ADDON_SUCCESS_SUBTITLE" = "Your changes will be effective from %@.";
+"REMOVE_ADDON_SUCCESS_TITLE" = "Removed successfully";
 "REMOVE_CONFIRMATION_BUTTON" = "Yes, remove";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "Try again or send us a message directly in the app";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "Failed to open new insurance terms";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Save and continue";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Search";
+"SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION" = "Which insurance do you want to remove addon from";
+"SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE" = "Select insurance";
 "SETTINGS_LANGUAGE_TITLE" = "Language";
 "SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE" = "Yes, unsubscribe";
 /* Figma */
