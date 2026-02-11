@@ -28,7 +28,7 @@ import hCore
     }
 
     @Log
-    public func confirmAddonRemoval(contractId: String, addonIds: [String]) async throws {
+    public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
         async let confirm: () = try await client.confirmAddonRemoval(contractId: contractId, addonIds: addonIds)
         async let delayTask: () = delay(3)
         let _ = try await (confirm, delayTask)

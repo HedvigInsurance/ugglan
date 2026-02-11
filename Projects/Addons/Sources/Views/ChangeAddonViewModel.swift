@@ -4,7 +4,7 @@ import hCoreUI
 
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
-    var addonService = AddonsService()
+    let addonService = AddonsService()
     @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var addonOffer: AddonOffer?

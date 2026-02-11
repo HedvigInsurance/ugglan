@@ -41,12 +41,9 @@ class AddonsClientOctopus: AddonsClient {
     }
 
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
-        let sumbitAddonsMutation = OctopusGraphQL.AddonActivateOfferMutation(
-            quoteId: quoteId,
-            addonIds: Array(addonIds)
-        )
+        let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, addonIds: Array(addonIds))
 
-        let response = try await octopus.client.mutation(mutation: sumbitAddonsMutation)
+        let response = try await octopus.client.mutation(mutation: mutation)
         if let error = response?.addonActivateOffer.userError?.message {
             throw AddonsError.errorMessage(message: error)
         }
@@ -79,8 +76,8 @@ class AddonsClientOctopus: AddonsClient {
         )
     }
 
-    public func confirmAddonRemoval(contractId: String, addonIds: [String]) async throws {
-        let mutation = OctopusGraphQL.AddonRemoveConfirmMutation(contractId: contractId, addonIds: addonIds)
+    public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
+        let mutation = OctopusGraphQL.AddonRemoveConfirmMutation(contractId: contractId, addonIds: Array(addonIds))
         let response = try await octopus.client.mutation(mutation: mutation)
         if let userError = response?.addonRemoveConfirm {
             throw AddonsError.errorMessage(message: userError.message!)

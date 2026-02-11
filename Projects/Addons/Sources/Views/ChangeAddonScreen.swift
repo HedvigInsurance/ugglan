@@ -33,32 +33,21 @@ struct ChangeAddonScreen: View {
             )
     }
 
+    @ViewBuilder
     private var successView: some View {
-        hForm {}
-            .hFormTitle(
-                title: .init(
-                    .small,
-                    .body2,
-                    changeAddonVm.addonOffer?.pageTitle ?? "",
-                    alignment: .leading
-                ),
-                subTitle: .init(
-                    .small,
-                    .body2,
-                    changeAddonVm.addonOffer?.pageDescription ?? ""
+        if let offer = changeAddonVm.addonOffer {
+            hForm {}
+                .hFormTitle(
+                    title: .init(.small, .body2, offer.pageTitle, alignment: .leading),
+                    subTitle: .init(.small, .body2, offer.pageDescription, alignment: .leading)
                 )
-            )
-            .hFormAttachToBottom {
-                CardView {
-                    hRow {
-                        addOnSection
+                .hFormAttachToBottom {
+                    CardView {
+                        hRow { addOnSection }
+                        hRow { coverageButtonView }
+                            .verticalPadding(0)
+                            .padding(.bottom, .padding16)
                     }
-                    hRow {
-                        coverageButtonView
-                    }
-                    .verticalPadding(0)
-                    .padding(.bottom, .padding16)
-                }
 
                 hSection {
                     hContinueButton {

@@ -1,3 +1,4 @@
+import Addons
 import Combine
 import EditCoInsured
 import Foundation
@@ -197,42 +198,44 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func addonsView(contract: Contract) -> some View {
         if let addonsData = testAddonsData {
-            hSection {
+            hSection(addonsData.all) { addon in
                 hRow {
-                    VStack(alignment: .leading) {
-                        ForEach(addonsData.existingAddons) { existingAddon in
-                            AddonView(
-                                title: existingAddon.displayTitle,
-                                subtitle: existingAddon.displayDescription,
-                                actionTitle: "Tillagd",  // TODO: localise
-                                actionColor: .grey,
-                                action: {
-                                    // TODO: go into removal flow
-                                    // contractsNavigationVm.isAddonPresented or removalPresented? = ...
-                                }
-                            )
-
-                            if existingAddon.id != addonsData.existingAddons.last?.id
-                                || !addonsData.availableAddons.isEmpty
-                            {
-                                hRowDivider()
+                    switch (addon) {
+                    case .available(let availableAddon):
+                        AddonView(
+                            title: availableAddon.displayName,
+                            subtitle: availableAddon.description,
+                            actionTitle: "Lägg till",  // TODO: localise
+                            actionColor: .green,
+                            action: {
+                                contractsNavigationVm.isAddonPresented = .init(
+                                    addonSource: .insurances,
+                                    contractConfigs: [
+                                        .init(
+                                            contractId: contract.id,
+                                            exposureName: contract.exposureDisplayName,
+                                            displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                                        )
+                                    ]
+                                )
                             }
-                        }
-
-                        ForEach(addonsData.availableAddons) { availableAddon in
-                            AddonView(
-                                title: availableAddon.displayName,
-                                subtitle: availableAddon.description,
-                                actionTitle: "Lägg till",  // TODO: localise
-                                actionColor: .green,
-                                action: {
-                                }
-                            )
-
-                            if availableAddon.id != addonsData.availableAddons.last?.id {
-                                hRowDivider()
+                        )
+                    case .existing(let existingAddon):
+                        AddonView(
+                            title: existingAddon.displayTitle,
+                            subtitle: existingAddon.displayDescription,
+                            actionTitle: "Tillagd",  // TODO: localise
+                            actionColor: .grey,
+                            action: {
+                                contractsNavigationVm.isRemoveAddonPresented = .init(
+                                    contractInfo: .init(
+                                        contractId: contract.id,
+                                        exposureName: contract.exposureDisplayName,
+                                        displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                                    )
+                                )
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -281,9 +284,23 @@ struct ContractInformationView: View {
         ]
     )
 
+    enum AddonEntry: Identifiable {
+        var id: UUID {
+            switch self {
+            case .existing(let e): e.id
+            case .available(let a): a.id
+            }
+        }
+
+        case existing(AddonsInfo.Existing)
+        case available(AddonsInfo.Available)
+    }
+
     struct AddonsInfo {
         let existingAddons: [Existing]
         let availableAddons: [Available]
+
+        var all: [AddonEntry] { existingAddons.map(AddonEntry.existing) + availableAddons.map(AddonEntry.available) }
 
         struct Existing: Identifiable {
             let id: UUID
@@ -296,7 +313,7 @@ struct ContractInformationView: View {
         }
 
         struct Available: Identifiable {
-            var id: String { displayName }
+            let id: UUID = UUID()
             let displayName: String
             let description: String
         }

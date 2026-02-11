@@ -61,7 +61,7 @@ public class AddonsClientDemo: AddonsClient {
         )
     }
 
-    public func confirmAddonRemoval(contractId: String, addonIds: [String]) async throws {
+    public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
         await delay(TimeInterval.random(in: 0.5...1.5))
     }
 
