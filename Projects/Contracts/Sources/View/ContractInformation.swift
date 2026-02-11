@@ -26,44 +26,52 @@ struct ContractInformationView: View {
                         .transition(.opacity.combined(with: .scale))
                     VStack(spacing: 0) {
                         if let displayItems = contract.currentAgreement?.displayItems {
-                            hSection(displayItems, id: \.id) { item in
-                                hRow {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        hText(item.displayTitle)
-                                        if let subtitle = item.displaySubtitle {
-                                            hText(subtitle, style: .label)
-                                                .foregroundColor(hTextColor.Translucent.secondary)
-                                        }
-                                    }
-                                }
-                                .withCustomAccessory {
-                                    Spacer()
-                                    Group {
-                                        if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
-                                            hText(date)
-                                        } else {
-                                            ZStack {
-                                                hText(item.displayValue)
-                                                hText(" ")
+                            hSection {
+                                hSection(displayItems, id: \.id) { item in
+                                    hRow {
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            hText(item.displayTitle)
+                                            if let subtitle = item.displaySubtitle {
+                                                hText(subtitle, style: .label)
+                                                    .foregroundColor(hTextColor.Translucent.secondary)
                                             }
                                         }
                                     }
-                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                    .withCustomAccessory {
+                                        Spacer()
+                                        Group {
+                                            if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat
+                                            {
+                                                hText(date)
+                                            } else {
+                                                ZStack {
+                                                    hText(item.displayValue)
+                                                    hText(" ")
+                                                }
+                                            }
+                                        }
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                    }
+                                    .accessibilityElement(children: .combine)
                                 }
-                                .accessibilityElement(children: .combine)
-                            }
 
-                            if let currentAgreementCost = contract.currentAgreement?.itemCost {
-                                hRowDivider()
-                                    .padding(.horizontal, .padding16)
-                                ItemCostView(itemCost: currentAgreementCost)
-                            }
+                                if let currentAgreementCost = contract.currentAgreement?.itemCost {
+                                    hRowDivider()
+                                        .padding(.horizontal, .padding16)
+                                    ItemCostView(itemCost: currentAgreementCost)
+                                }
 
-                            if contract.supportsCoInsured {
-                                hRowDivider()
-                                    .padding(.horizontal, .padding16)
-                                addCoInsuredView(contract: contract)
+                                if contract.supportsCoInsured {
+                                    hRowDivider()
+                                        .padding(.horizontal, .padding16)
+                                    addCoInsuredView(contract: contract)
+                                }
                             }
+                            .padding()
+                            .sectionContainerStyle(.opaque)
+                            .hWithoutHorizontalPadding([.section])
+
+                            addonsView(contract: contract)
 
                             VStack(spacing: .padding8) {
                                 if contract.showEditInfo {
@@ -183,6 +191,114 @@ struct ContractInformationView: View {
                 }
                 .accessibilityElement(children: .combine)
             }
+        }
+    }
+
+    @ViewBuilder
+    private func addonsView(contract: Contract) -> some View {
+        if let addonsData = testAddonsData {
+            hSection {
+                hRow {
+                    VStack(alignment: .leading) {
+                        ForEach(addonsData.existingAddons) { existingAddon in
+                            AddonView(
+                                title: existingAddon.displayTitle,
+                                subtitle: existingAddon.displayDescription,
+                                actionTitle: "Tillagd",  // TODO: localise
+                                actionColor: .grey,
+                                action: {
+                                    // TODO: go into removal flow
+                                    // contractsNavigationVm.isAddonPresented or removalPresented? = ...
+                                }
+                            )
+
+                            if existingAddon.id != addonsData.existingAddons.last?.id
+                                || !addonsData.availableAddons.isEmpty
+                            {
+                                hRowDivider()
+                            }
+                        }
+
+                        ForEach(addonsData.availableAddons) { availableAddon in
+                            AddonView(
+                                title: availableAddon.displayName,
+                                subtitle: availableAddon.description,
+                                actionTitle: "Lägg till",  // TODO: localise
+                                actionColor: .green,
+                                action: {
+                                }
+                            )
+
+                            if availableAddon.id != addonsData.availableAddons.last?.id {
+                                hRowDivider()
+                            }
+                        }
+                    }
+                }
+            }
+            .padding()
+            .sectionContainerStyle(.opaque)
+            .hWithoutHorizontalPadding([.section])
+        }
+    }
+
+    struct AddonView: View {
+        let title: String
+        let subtitle: String
+        let actionTitle: String
+        let actionColor: PillColor
+        let action: () -> Void
+
+        var body: some View {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    hText(title)
+                    hText(subtitle, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
+                Spacer(minLength: 0)
+                hPill(text: actionTitle, color: actionColor)
+                    .onTapGesture { action() }
+            }
+        }
+    }
+
+    private let testAddonsData: AddonsInfo? = .init(
+        existingAddons: [
+            .init(
+                id: UUID(),
+                displayDescription: "Kollision, viltolycka och bärgning",
+                displayTitle: "Självriskvadrag",
+                isRemovable: true,
+                isUpgradable: false,
+                startDate: Date(),
+                endDate: nil
+            )
+        ],
+        availableAddons: [
+            .init(displayName: "Hyrbil", description: "När din egen bil inte kan användas"),
+            .init(displayName: "Drulle", description: "Kupéskada, nycklar och feltankning"),
+        ]
+    )
+
+    struct AddonsInfo {
+        let existingAddons: [Existing]
+        let availableAddons: [Available]
+
+        struct Existing: Identifiable {
+            let id: UUID
+            let displayDescription: String
+            let displayTitle: String
+            let isRemovable: Bool
+            let isUpgradable: Bool  //for travel addon, 45->60
+            let startDate: Date
+            let endDate: Date?
+        }
+
+        struct Available: Identifiable {
+            var id: String { displayName }
+            let displayName: String
+            let description: String
         }
     }
 
@@ -322,4 +438,16 @@ public struct CoInsuredInfoView: View {
                 )
             ])
     }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+    Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
+
+    let store: ContractStore = globalPresentableStoreContainer.get()
+    store.send(.fetchContracts)
+
+    return ContractInformationView(id: "contractId")
+        .environmentObject(ContractsNavigationViewModel())
 }
