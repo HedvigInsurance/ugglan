@@ -218,18 +218,43 @@ struct ChangeAddonScreen: View {
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
         ) {
-            let perils = changeAddonVm.selectedAddons.flatMap(\.addonVariant.perils)
-
             changeAddonNavigationVm.isLearnMorePresented = .init(
                 .init(
                     title: L10n.addonFlowTravelInformationTitle,
                     description: L10n.addonFlowTravelInformationDescription,
-                    perils: perils
+                    perilGroups: getPerilGroups()
                 )
             )
         }
         .hButtonWithBorder
         .hButtonTakeFullWidth(true)
+    }
+}
+
+extension ChangeAddonScreen {
+    fileprivate func getPerilGroups() -> [AddonInfo.PerilGroup] {
+        let quotes: [AddonOfferQuote] =
+            switch changeAddonVm.addonOffer!.quote.addonOfferContent {
+            case .selectable(let selectable): selectable.quotes
+            case .toggleable(let toggleable): toggleable.quotes
+            }
+
+        let uniqueGroups =
+            quotes
+            .reduce(into: (seen: Set<String>(), groups: [AddonInfo.PerilGroup]())) { result, quote in
+                let product = quote.addonVariant.product
+                if result.seen.insert(product).inserted {
+                    result.groups.append(
+                        .init(title: quote.addonVariant.displayName, perils: quote.addonVariant.perils)
+                    )
+                }
+            }
+            .groups
+
+        if uniqueGroups.count == 1 {
+            return uniqueGroups.map { .init(title: nil, perils: $0.perils) }
+        }
+        return uniqueGroups
     }
 }
 
