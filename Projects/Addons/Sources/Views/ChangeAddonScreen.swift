@@ -13,23 +13,23 @@ struct ChangeAddonScreen: View {
     }
 
     var body: some View {
-        successView.loading($changeAddonVm.fetchAddonsViewState)
+        successView
+            .loading($changeAddonVm.fetchAddonsViewState)
+            .disabled(changeAddonVm.fetchingCostState == .loading)
+            .trackErrorState(for: $changeAddonVm.fetchingCostState)
             .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init(
-                        buttonAction: {
-                            Task {
-                                await changeAddonVm.getAddons()
-                            }
+                changeAddonVm.fetchAddonsViewState.isError
+                    ? .init(
+                        actionButton: .init { Task { await changeAddonVm.getAddons() } },
+                        dismissButton: .init { changeAddonNavigationVm.router.dismiss() }
+                    )
+                    : .init(
+                        actionButton: .init { changeAddonVm.fetchingCostState = .success },
+                        dismissButton: .init(buttonTitle: L10n.generalCloseButton) {
+                            changeAddonVm.fetchingCostState = .success
+                            changeAddonNavigationVm.router.dismiss()
                         }
-                    ),
-                    dismissButton:
-                        .init(
-                            buttonAction: {
-                                changeAddonNavigationVm.router.dismiss()
-                            }
-                        )
-                )
+                    )
             )
     }
 
@@ -62,9 +62,14 @@ struct ChangeAddonScreen: View {
 
                 hSection {
                     hContinueButton {
-                        changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+                        Task {
+                            await changeAddonVm.getAddonOfferCost()
+                            guard changeAddonVm.addonOfferCost != nil else { return }
+                            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+                        }
                     }
                     .disabled(!changeAddonVm.allowToContinue)
+                    .hButtonIsLoading(changeAddonVm.fetchingCostState == .loading)
                 }
                 .sectionContainerStyle(.transparent)
             }

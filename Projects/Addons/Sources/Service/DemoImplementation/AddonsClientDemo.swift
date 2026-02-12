@@ -9,6 +9,21 @@ public class AddonsClientDemo: AddonsClient {
         return offer
     }
 
+    public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+        return .init(
+            premium: .init(gross: .sek(129), net: .sek(110)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-19 kr/mo",
+                    explanation: "Discount for bundling addons"
+                )
+            ]
+        )
+    }
+
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
         await delay(TimeInterval.random(in: 0.5...1.5))
     }
