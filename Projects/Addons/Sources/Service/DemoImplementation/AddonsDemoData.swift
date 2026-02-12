@@ -111,7 +111,7 @@ public let testTravelOfferNoActive: AddonOffer = .init(
         productVariant: travelProductVariant
     ),
     currentTotalCost: cost(299, 254),
-    infoMessage: "info message"
+    infoMessage: "You're gonna lose your addons for good"
 )
 
 public let testTravelOffer45Days: AddonOffer = .init(
