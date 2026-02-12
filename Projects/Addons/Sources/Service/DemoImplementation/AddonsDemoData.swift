@@ -12,6 +12,8 @@ private func variant(_ name: String, product: String) -> AddonVariant {
     .init(displayName: name, documents: [], perils: [], product: product, termsVersion: "1.0")
 }
 
+private let activationDate = Calendar.current.date(from: DateComponents(year: 2026, month: 6, day: 6))!
+
 // MARK: - Product variants
 public let travelProductVariant = ProductVariant(
     termsVersion: "1.0",
@@ -95,7 +97,7 @@ public let testTravelOfferNoActive: AddonOffer = .init(
         quoteId: "quoteId1",
         displayTitle: "Travel Insurance Plus",
         displayDescription: "Extra coverage when you travel abroad",
-        activationDate: Date(),
+        activationDate: activationDate,
         addonOffer: .selectable(
             .init(
                 fieldTitle: "Maximum travel days",
@@ -119,7 +121,7 @@ public let testTravelOffer45Days: AddonOffer = .init(
         quoteId: "quoteId2",
         displayTitle: "Travel Insurance Plus",
         displayDescription: "Extra coverage when you travel abroad",
-        activationDate: Date(),
+        activationDate: activationDate,
         addonOffer: .selectable(
             .init(
                 fieldTitle: "Maximum travel days",
@@ -151,7 +153,7 @@ public let testCarOfferNoActive: AddonOffer = .init(
         quoteId: "carQuoteId1",
         displayTitle: "Car Plus",
         displayDescription: "Get extra coverage for your car insurance",
-        activationDate: Date(),
+        activationDate: activationDate,
         addonOffer: .toggleable(.init(quotes: [carQuoteSjalvrisk, carQuoteHyrbil, carQuoteDrulle])),
         activeAddons: [],
         baseQuoteCost: cost(469, 399),
@@ -168,7 +170,7 @@ public let testCarAddonRisk: AddonOffer = .init(
         quoteId: "carQuoteId2",
         displayTitle: "Car Plus",
         displayDescription: "Get extra coverage for your car insurance",
-        activationDate: Date(),
+        activationDate: activationDate,
         addonOffer: .toggleable(.init(quotes: [carQuoteHyrbil, carQuoteDrulle])),
         activeAddons: [
             .init(

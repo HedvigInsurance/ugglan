@@ -90,11 +90,12 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     func getAddonOfferCost() async {
+        addonOfferCost = nil
+        guard let offer = addonOffer, fetchingCostState != .loading else { return }
         withAnimation { fetchingCostState = .loading }
-        guard let offer = addonOffer else { return }
         let quoteId = offer.quote.quoteId
         let addonIds =
-            switch (offer.quote.addonOfferContent) {
+            switch offer.quote.addonOfferContent {
             case .toggleable: Set(selectedAddons.map(\.id)).union(Set(offer.quote.activeAddons.map(\.id)))
             case .selectable: Set(selectedAddons.map(\.id))
             }
@@ -142,7 +143,7 @@ public class ChangeAddonViewModel: ObservableObject {
             }
 
         items += addonOffer.quote.activeAddons.map { $0.asQuoteDisplayItem(crossDisplayTitle: crossDisplayTitle) }
-        items += selectedAddons.map { $0.asQuoteDisplayItems() }
+        items += selectedAddons.map { $0.asQuoteDisplayItem() }
         items += addonOfferCost?.discounts.map { $0.asQuoteDisplayItem() } ?? []
 
         return items
@@ -160,7 +161,7 @@ extension AddonDisplayItem {
 }
 
 extension AddonOfferQuote {
-    public func asQuoteDisplayItems() -> QuoteDisplayItem {
+    public func asQuoteDisplayItem() -> QuoteDisplayItem {
         .init(title: displayTitle, value: cost.premium.gross.formattedAmountPerMonth)
     }
 }
