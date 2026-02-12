@@ -388,6 +388,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_ADD_BUTTON" = "Lägg till";
 "GENERAL_ADD_INFO_BUTTON" = "Lägg till info";
 "GENERAL_ADD_NEW" = "Lägg till ny";
+"GENERAL_CHANGE_CONFIRMATION_DESCRIPTION" = "Din försäkring kommer att uppdateras den %1$@.";
 "GENERAL_CONFIRM" = "Bekräfta";
 "GENERAL_CONTACT_US_TITLE" = "Kontakta vårt serviceteam";
 "GENERAL_DOWNLOAD" = "Ladda ner";
@@ -571,12 +572,22 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REFERRAL_PENDING_STATUS_LABEL" = "Avvaktar...";
 "REFERRAL_SMS_MESSAGE" = "Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$@ rabatt på månadskostnaden. Följ länken: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inaktiv";
+"REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES" = "Inga av dina försäkringar har tillägg som kan tas bort.";
+"REMOVE_ADDON_CONFIRMATION_BUTTON" = "Ja, ta bort";
+"REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@.";
+"REMOVE_ADDON_CONFIRMATION_TITLE" = "";
+"REMOVE_ADDON_OFFER_PAGE_TITLE" = "Ta bort tillägg";
+/* Your updates will be effective from tomorrow. */
+"REMOVE_ADDON_SUCCESS_SUBTITLE" = "Den här ändringar börjar gälla %@.";
+"REMOVE_ADDON_SUCCESS_TITLE" = "Tillägg avslutade";
 "REMOVE_CONFIRMATION_BUTTON" = "Ja, radera";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "Försök igen eller skriv ett meddelande till oss direkt i appen";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "Det gick inte öppna försäkringsvillkoren";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Spara och fortsätt";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Sök";
+"SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION" = "Välj den försäkring du vill uppdatera";
+"SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE" = "";
 "SETTINGS_LANGUAGE_TITLE" = "Språk";
 "SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE" = "Ja, avregistrera";
 /* Figma */
