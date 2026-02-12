@@ -256,8 +256,8 @@ extension ChangeAddonScreen {
     }
 }
 
-#Preview("Travel") {
-    let offer = testTravelOfferNoActive
+@MainActor
+private func changeAddonPreview(offer: AddonOffer) -> some View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(
@@ -269,41 +269,7 @@ extension ChangeAddonScreen {
     .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }
 
-#Preview("Travel with Active addon") {
-    let offer = testTravelOffer45Days
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(
-        changeAddonVm: .init(
-            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
-            addonSource: .insurances
-        )
-    )
-    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
-}
-
-#Preview("Car") {
-    let offer = testCarOfferNoActive
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarOfferNoActive) })
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(
-        changeAddonVm: .init(
-            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
-            addonSource: .insurances
-        )
-    )
-    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
-}
-
-#Preview("Car with Active addon") {
-    let offer = testCarAddonRisk
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarAddonRisk) })
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(
-        changeAddonVm: .init(
-            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
-            addonSource: .insurances
-        )
-    )
-    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
-}
+#Preview("Travel") { changeAddonPreview(offer: testTravelOfferNoActive) }
+#Preview("Travel with Active addon") { changeAddonPreview(offer: testTravelOffer45Days) }
+#Preview("Car") { changeAddonPreview(offer: testCarOfferNoActive) }
+#Preview("Car with Active addon") { changeAddonPreview(offer: testCarAddonRisk) }
