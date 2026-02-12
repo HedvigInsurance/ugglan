@@ -95,7 +95,7 @@ public class RemoveAddonViewModel: ObservableObject {
         return removeOffer.currentTotalCost.premium - removedPremium
     }
 
-    func getPriceDifference() -> Premium {
+    func getCurrentAndNewPrice() -> Premium {
         guard let removeOffer else { return .zeroSek }
         let newPremium = getNewPremium()
         return Premium(gross: removeOffer.currentTotalCost.premium.gross, net: newPremium.gross)

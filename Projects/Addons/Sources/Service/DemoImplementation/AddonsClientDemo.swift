@@ -51,12 +51,18 @@ public class AddonsClientDemo: AddonsClient {
             ),
             activationDate: Date(),
             removableAddons: [
-                ActiveAddon(
-                    id: "sjalvriskreducering",
-                    cost: .init(premium: .init(gross: .sek(59), net: .sek(50)), discounts: []),
-                    displayTitle: "Självriskreducering",
-                    displayDescription: "Reduces your excess in case of a claim"
-                )
+                .init(
+                    id: "Självriskavdrag",
+                    cost: .init(premium: .init(gross: .sek(19), net: .sek(19)), discounts: []),
+                    displayTitle: "Självriskavdrag",
+                    displayDescription: "Kollision, viltolycka och bärgning"
+                ),
+                .init(
+                    id: "Hyrbil",
+                    cost: .init(premium: .zeroSek, discounts: []),
+                    displayTitle: "Hyrbil",
+                    displayDescription: "När din egen bil inte kan användas"
+                ),
             ]
         )
     }

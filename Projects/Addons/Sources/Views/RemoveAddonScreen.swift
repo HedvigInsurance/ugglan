@@ -30,8 +30,8 @@ struct RemoveAddonScreen: View {
                     subTitle: .init(.small, .body2, offer.pageDescription, alignment: .leading)
                 )
                 .hFormAttachToBottom {
-                    hRow {
-                        VStack(alignment: .leading, spacing: 0) {
+                    hSection {
+                        VStack(alignment: .leading, spacing: .padding8) {
                             ForEach(offer.removableAddons) { addon in
                                 addonToggleRow(
                                     title: addon.displayTitle,
@@ -47,19 +47,17 @@ struct RemoveAddonScreen: View {
                                     },
                                     onTap: { withAnimation { removeAddonVm.toggleAddon(addon) } }
                                 )
-                                .padding(.top, .padding16)
                             }
                         }
                     }
+                    hSection {
+                        hContinueButton {
+                            removeAddonNavigationVm.router.push(RemoveAddonRouterActions.summary)
+                        }
+                        .disabled(!removeAddonVm.allowToContinue)
+                    }
                 }
-
-            hSection {
-                hContinueButton {
-                    removeAddonNavigationVm.router.push(RemoveAddonRouterActions.summary)
-                }
-                .disabled(!removeAddonVm.allowToContinue)
-            }
-            .sectionContainerStyle(.transparent)
+                .sectionContainerStyle(.transparent)
         }
     }
 

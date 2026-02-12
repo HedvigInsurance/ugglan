@@ -67,11 +67,11 @@ struct ChangeAddonScreen: View {
     @ViewBuilder
     private var addOnSection: some View {
         if let offer = changeAddonVm.addonOffer {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: .padding8) {
                 HStack {
                     hText(offer.quote.displayTitle)
                     Spacer()
-                    if let priceIncrease = changeAddonVm.getPriceIncrease() {
+                    if let priceIncrease = changeAddonVm.getAddonPriceChange() {
                         hPill(
                             text: L10n.addonFlowPriceLabel(priceIncrease.gross.formattedAmount),
                             color: .grey,
@@ -83,7 +83,7 @@ struct ChangeAddonScreen: View {
 
                 hText(offer.quote.displayDescription, style: .label)
                     .foregroundColor(hTextColor.Translucent.secondary)
-                    .padding(.top, .padding8)
+                    .padding(.bottom, .padding8)
 
                 switch offer.quote.addonOfferContent {
                 case .selectable(let selectable):
@@ -97,7 +97,7 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: .padding4) {
             ForEach(toggleable.quotes) { addon in
                 addonToggleRow(
                     title: addon.displayTitle,
@@ -113,7 +113,6 @@ struct ChangeAddonScreen: View {
                     },
                     onTap: { withAnimation { changeAddonVm.selectAddon(addon: addon) } }
                 )
-                .padding(.top, .padding16)
             }
 
             ForEach(activeAddons) { activeAddon in

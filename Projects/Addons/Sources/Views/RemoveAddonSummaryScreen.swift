@@ -26,7 +26,7 @@ extension RemoveAddonViewModel {
             id: contractInfo.contractId,
             displayName: contractInfo.displayName,
             exposureName: contractInfo.exposureName,
-            premium: getPriceDifference(),
+            premium: getCurrentAndNewPrice(),
             documentSection: .init(
                 documents: [],
                 onTap: { [weak navigationVm] document in
@@ -42,8 +42,7 @@ extension RemoveAddonViewModel {
         let vm = QuoteSummaryViewModel(
             contract: [contractInfo],
             activationDate: removeOffer?.activationDate,
-            premium: getPriceDifference(),
-            priceDisplayType: .difference
+            totalPrice: .none
         ) { [weak self, weak navigationVm] in
             navigationVm?.isProcessingPresented = true
             Task { await self?.confirmRemoval() }
