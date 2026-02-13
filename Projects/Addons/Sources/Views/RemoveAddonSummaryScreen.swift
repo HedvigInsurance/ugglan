@@ -5,7 +5,7 @@ import hCoreUI
 struct RemoveAddonSummaryScreen: View {
     let quoteSummaryVm: QuoteSummaryViewModel
 
-    init(removeAddonNavigationVm: RemoveAddonNavigationViewModel) {
+    init(_ removeAddonNavigationVm: RemoveAddonNavigationViewModel) {
         self.quoteSummaryVm = removeAddonNavigationVm.removeAddonVm
             .asQuoteSummaryViewModel(navigationVm: removeAddonNavigationVm)
     }
@@ -55,9 +55,5 @@ extension RemoveAddonViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return RemoveAddonSummaryScreen(
-        removeAddonNavigationVm: .init(
-            contractInfo: .init(contractId: "1", exposureName: "exposure", displayName: "title")
-        )
-    )
+    return RemoveAddonSummaryScreen(.init(.init(contractId: "1", exposureName: "exposure", displayName: "title")))
 }

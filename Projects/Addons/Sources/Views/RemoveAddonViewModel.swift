@@ -11,7 +11,7 @@ public class RemoveAddonViewModel: ObservableObject {
     @Published var removeOffer: AddonRemoveOffer?
     @Published var selectedAddonIds: Set<String> = []
 
-    init(contractInfo: AddonConfig) {
+    init(_ contractInfo: AddonConfig) {
         self.contractInfo = contractInfo
         Task { await fetchOffer() }
     }
