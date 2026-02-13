@@ -42,6 +42,7 @@ public class ChangeAddonViewModel: ObservableObject {
 
     func selectAddon(addon: AddonOfferQuote) {
         guard let addonOffer else { return }
+        addonOfferCost = nil
         switch addonOffer.quote.addonOfferContent {
         case .selectable:
             selectedAddons = [addon]
@@ -90,8 +91,8 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     func getAddonOfferCost() async {
-        addonOfferCost = nil
         guard let offer = addonOffer, fetchingCostState != .loading else { return }
+        addonOfferCost = nil
         withAnimation { fetchingCostState = .loading }
         let quoteId = offer.quote.quoteId
         let addonIds =
