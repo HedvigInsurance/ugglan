@@ -59,12 +59,15 @@ extension ChangeAddonViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonSummaryScreen(
-        changeAddonNavigationVm: .init(
-            input: .init(
-                addonSource: .insurances,
-                contractConfigs: [.init(contractId: "Id", exposureName: "title", displayName: "subtitle")]
-            )
+
+    let navVm = ChangeAddonNavigationViewModel(
+        input: .init(
+            addonSource: .insurances,
+            contractConfigs: [.init(contractId: "Id", exposureName: "title", displayName: "subtitle")]
         )
     )
+    navVm.changeAddonVm?.addonOffer = testTravelOfferNoActive
+    navVm.changeAddonVm?.selectedAddons = [travelQuote45Days]
+    navVm.changeAddonVm?.addonOfferCost = testAddonOfferCost
+    return ChangeAddonSummaryScreen(changeAddonNavigationVm: navVm)
 }

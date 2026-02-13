@@ -8,6 +8,8 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var addonOffer: AddonOffer?
+    @Published var addonOfferCost: ItemCost?
+    @Published var fetchingCostState: ProcessingState = .success
     @Published var selectedAddons: Set<AddonOfferQuote> = []
     let addonSource: AddonSource
     let config: AddonConfig
@@ -40,6 +42,7 @@ public class ChangeAddonViewModel: ObservableObject {
 
     func selectAddon(addon: AddonOfferQuote) {
         guard let addonOffer else { return }
+        addonOfferCost = nil
         switch addonOffer.quote.addonOfferContent {
         case .selectable:
             selectedAddons = [addon]
@@ -87,6 +90,24 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
+    func getAddonOfferCost() async {
+        guard let offer = addonOffer, fetchingCostState != .loading else { return }
+        addonOfferCost = nil
+        withAnimation { fetchingCostState = .loading }
+        let quoteId = offer.quote.quoteId
+        let addonIds =
+            switch offer.quote.addonOfferContent {
+            case .toggleable: Set(selectedAddons.map(\.id)).union(Set(offer.quote.activeAddons.map(\.id)))
+            case .selectable: Set(selectedAddons.map(\.id))
+            }
+        do {
+            addonOfferCost = try await addonService.getAddonOfferCost(quoteId: quoteId, addonIds: addonIds)
+            withAnimation { fetchingCostState = .success }
+        } catch {
+            withAnimation { fetchingCostState = .error(errorMessage: error.localizedDescription) }
+        }
+    }
+
     func getGrossPriceDifference(for addonOfferQuote: AddonOfferQuote) -> MonetaryAmount {
         let currentGrossPrice = addonOfferQuote.cost.premium.gross
 
@@ -122,45 +143,43 @@ public class ChangeAddonViewModel: ObservableObject {
             case .selectable: true
             }
 
-        items += addonOffer.quote.activeAddons.map { activeAddon in
-            .init(
-                title: activeAddon.displayTitle,
-                value: activeAddon.cost.premium.gross.formattedAmountPerMonth,
-                crossDisplayTitle: crossDisplayTitle
-            )
-        }
-
-        items += selectedAddons.map { selectedAddon in
-            .init(
-                title: selectedAddon.displayTitle,
-                value: selectedAddon.cost.premium.gross.formattedAmountPerMonth
-            )
-        }
-
-        items += addonOffer.quote.baseQuoteCost.discounts.map { discount in
-            .init(title: discount.displayName, value: discount.displayValue)
-        }
+        items += addonOffer.quote.activeAddons.map { $0.asQuoteDisplayItem(crossDisplayTitle: crossDisplayTitle) }
+        items += selectedAddons.map { $0.asQuoteDisplayItem() }
+        items += addonOfferCost?.discounts.map { $0.asQuoteDisplayItem() } ?? []
 
         return items
     }
 
     func getPremium() -> Premium {
-        guard let addonOffer, !selectedAddons.isEmpty else { return .zeroSek }
-
-        let basePremium = addonOffer.quote.baseQuoteCost.premium
-        let activePremium = addonOffer.quote.activeAddons.map(\.cost.premium).sum()
-        let selectedPremium = selectedAddons.map(\.cost.premium).sum()
-
-        return switch addonOffer.quote.addonOfferContent {
-        case .toggleable: basePremium + activePremium + selectedPremium
-        case .selectable: basePremium + selectedPremium
-        }
+        addonOfferCost?.premium ?? .zeroSek
     }
 }
 
 extension AddonDisplayItem {
     public func asQuoteDisplayItem() -> QuoteDisplayItem {
         .init(title: displayTitle, value: displayValue)
+    }
+}
+
+extension AddonOfferQuote {
+    public func asQuoteDisplayItem() -> QuoteDisplayItem {
+        .init(title: displayTitle, value: cost.premium.gross.formattedAmountPerMonth)
+    }
+}
+
+extension ActiveAddon {
+    public func asQuoteDisplayItem(crossDisplayTitle: Bool) -> QuoteDisplayItem {
+        .init(
+            title: displayTitle,
+            value: cost.premium.gross.formattedAmountPerMonth,
+            crossDisplayTitle: crossDisplayTitle
+        )
+    }
+}
+
+extension ItemDiscount {
+    public func asQuoteDisplayItem() -> QuoteDisplayItem {
+        .init(title: displayName, value: displayValue)
     }
 }
 

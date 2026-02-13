@@ -11,6 +11,11 @@ import hCore
     }
 
     @Log
+    public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {
+        try await client.getAddonOfferCost(quoteId: quoteId, addonIds: addonIds)
+    }
+
+    @Log
     public func submitAddons(quoteId: String, selectedAddonIds: Set<String>) async throws {
         async let submit: () = try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
         async let delayTask: () = delay(3)
