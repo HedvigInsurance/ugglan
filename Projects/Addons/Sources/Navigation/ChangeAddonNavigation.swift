@@ -72,9 +72,7 @@ enum ChangeAddonRouterActions {
 public struct ChangeAddonNavigation: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
-    public init(
-        input: ChangeAddonInput
-    ) {
+    public init(input: ChangeAddonInput) {
         changeAddonNavigationVm = .init(input: input)
     }
 
@@ -84,37 +82,34 @@ public struct ChangeAddonNavigation: View {
             options: [.extendedNavigationWidth],
             tracking: ChangeAddonTrackingType.changeAddonScreen
         ) {
+            let multipleContracts = changeAddonNavigationVm.input.contractConfigs?.count ?? 0 > 1
             Group {
-                if changeAddonNavigationVm.input.contractConfigs?.count ?? 0 > 1 {
-                    selectInsuranceScreen
+                if multipleContracts {
+                    AddonSelectInsuranceScreen(changeAddonNavigationVm: changeAddonNavigationVm)
                 } else {
                     ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
-                        .withAlertDismiss()
+                        .environmentObject(changeAddonNavigationVm)
                 }
             }
+            .withAlertDismiss()
             .routerDestination(for: ChangeAddonRouterActions.self) { action in
                 switch action {
                 case .summary:
-                    ChangeAddonSummaryScreen(
-                        changeAddonNavigationVm: changeAddonNavigationVm
-                    )
-                    .configureTitle(L10n.offerUpdateSummaryTitle)
-                    .withAlertDismiss()
+                    ChangeAddonSummaryScreen(changeAddonNavigationVm)
+                        .configureTitle(L10n.offerUpdateSummaryTitle)
+                        .withAlertDismiss()
                 case .addonLandingScreen:
                     ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
                         .withAlertDismiss()
                 }
             }
         }
-        .environmentObject(changeAddonNavigationVm)
         .modally(
             presented: $changeAddonNavigationVm.isAddonProcessingPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
             AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm!)
-                .embededInNavigation(
-                    tracking: ChangeAddonTrackingType.processing
-                )
+                .embededInNavigation(tracking: ChangeAddonTrackingType.processing)
                 .environmentObject(changeAddonNavigationVm)
         }
         .modally(
@@ -145,11 +140,6 @@ public struct ChangeAddonNavigation: View {
         ) { document in
             PDFPreview(document: document)
         }
-    }
-
-    private var selectInsuranceScreen: some View {
-        AddonSelectInsuranceScreen(changeAddonNavigationVm: changeAddonNavigationVm)
-            .withDismissButton()
     }
 }
 

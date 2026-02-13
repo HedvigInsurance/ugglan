@@ -105,7 +105,7 @@ public struct ContractsNavigation<Content: View>: View {
             redirect(.addon(input: input))
         }
         .modally(item: $contractsNavigationVm.isRemoveAddonPresented) { input in
-            RemoveAddonNavigation(contractInfo: input.contractInfo)
+            RemoveAddonNavigation(.init(input.contractInfo))
         }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,

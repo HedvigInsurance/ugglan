@@ -5,7 +5,7 @@ import hCoreUI
 struct ChangeAddonSummaryScreen: View {
     let quoteSummaryVm: QuoteSummaryViewModel
 
-    init(changeAddonNavigationVm: ChangeAddonNavigationViewModel) {
+    init(_ changeAddonNavigationVm: ChangeAddonNavigationViewModel) {
         self.quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
             .asQuoteSummaryViewModel(changeAddonNavigationVm: changeAddonNavigationVm)
     }
@@ -69,5 +69,5 @@ extension ChangeAddonViewModel {
     navVm.changeAddonVm?.addonOffer = testTravelOfferNoActive
     navVm.changeAddonVm?.selectedAddons = [travelQuote45Days]
     navVm.changeAddonVm?.addonOfferCost = testAddonOfferCost
-    return ChangeAddonSummaryScreen(changeAddonNavigationVm: navVm)
+    return ChangeAddonSummaryScreen(navVm)
 }

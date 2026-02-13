@@ -3,31 +3,29 @@ import hCore
 import hCoreUI
 
 struct ChangeAddonScreen: View {
-    @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    @ObservedObject var changeAddonVm: ChangeAddonViewModel
+    @EnvironmentObject var navigationVm: ChangeAddonNavigationViewModel
+    @ObservedObject var vm: ChangeAddonViewModel
 
-    init(
-        changeAddonVm: ChangeAddonViewModel
-    ) {
-        self.changeAddonVm = changeAddonVm
+    init(changeAddonVm: ChangeAddonViewModel) {
+        self.vm = changeAddonVm
     }
 
     var body: some View {
         successView
-            .loading($changeAddonVm.fetchAddonsViewState)
-            .disabled(changeAddonVm.fetchingCostState == .loading)
+            .loading($vm.fetchAddonsViewState)
+            .disabled(vm.fetchingCostState == .loading)
             .trackErrorState(for: $changeAddonVm.fetchingCostState)
             .hStateViewButtonConfig(
                 changeAddonVm.fetchAddonsViewState.isError
                     ? .init(
                         actionButton: .init { Task { await changeAddonVm.getAddons() } },
-                        dismissButton: .init { changeAddonNavigationVm.router.dismiss() }
+                        dismissButton: .init { navigationVm.router.dismiss() }
                     )
                     : .init(
-                        actionButton: .init { changeAddonVm.fetchingCostState = .success },
+                        actionButton: .init { vm.fetchingCostState = .success },
                         dismissButton: .init(buttonTitle: L10n.generalCloseButton) {
-                            changeAddonVm.fetchingCostState = .success
-                            changeAddonNavigationVm.router.dismiss()
+                            vm.fetchingCostState = .success
+                            navigationVm.router.dismiss()
                         }
                     )
             )
@@ -35,7 +33,7 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private var successView: some View {
-        if let offer = changeAddonVm.addonOffer {
+        if let offer = vm.addonOffer {
             hForm {}
                 .hFormTitle(
                     title: .init(.small, .body2, offer.pageTitle, alignment: .leading),
@@ -52,13 +50,13 @@ struct ChangeAddonScreen: View {
                 hSection {
                     hContinueButton {
                         Task {
-                            await changeAddonVm.getAddonOfferCost()
-                            guard changeAddonVm.addonOfferCost != nil else { return }
-                            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+                            await vm.getAddonOfferCost()
+                            guard vm.addonOfferCost != nil else { return }
+                            navigationVm.router.push(ChangeAddonRouterActions.summary)
                         }
                     }
-                    .disabled(!changeAddonVm.allowToContinue)
-                    .hButtonIsLoading(changeAddonVm.fetchingCostState == .loading)
+                    .disabled(!vm.allowToContinue)
+                    .hButtonIsLoading(vm.fetchingCostState == .loading)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -66,12 +64,12 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private var addOnSection: some View {
-        if let offer = changeAddonVm.addonOffer {
+        if let offer = vm.addonOffer {
             VStack(alignment: .leading, spacing: .padding8) {
                 HStack {
                     hText(offer.quote.displayTitle)
                     Spacer()
-                    if let priceIncrease = changeAddonVm.getAddonPriceChange() {
+                    if let priceIncrease = vm.getAddonPriceChange() {
                         hPill(
                             text: L10n.addonFlowPriceLabel(priceIncrease.gross.formattedAmount),
                             color: .grey,
@@ -102,7 +100,7 @@ struct ChangeAddonScreen: View {
                 addonToggleRow(
                     title: addon.displayTitle,
                     subtitle: addon.displayDescription,
-                    isSelected: changeAddonVm.isAddonSelected(addon),
+                    isSelected: vm.isAddonSelected(addon),
                     trailingView: {
                         hPill(
                             text: L10n.addonFlowPriceLabel(addon.cost.premium.gross.formattedAmount),
@@ -111,7 +109,7 @@ struct ChangeAddonScreen: View {
                         )
                         .hFieldSize(.small)
                     },
-                    onTap: { withAnimation { changeAddonVm.selectAddon(addon: addon) } }
+                    onTap: { withAnimation { vm.selectAddon(addon: addon) } }
                 )
             }
 
@@ -184,14 +182,14 @@ struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private func selectableAddonSection(selectable: AddonOfferSelectable) -> some View {
-        if let selectedQuote = changeAddonVm.selectedAddons.first {
+        if let selectedQuote = vm.selectedAddons.first {
             Group {
-                let isDropDownDisabled = changeAddonVm.isDropDownDisabled(for: selectable)
+                let isDropDownDisabled = vm.isDropDownDisabled(for: selectable)
                 DropdownView(
                     value: selectedQuote.displayTitle,
                     placeHolder: L10n.addonFlowSelectDaysPlaceholder
                 ) {
-                    changeAddonNavigationVm.isSelectableAddonPresented = selectable
+                    navigationVm.isSelectableAddonPresented = selectable
                 }
                 .disabled(isDropDownDisabled)
                 .padding(.top, .padding16)
@@ -201,7 +199,7 @@ struct ChangeAddonScreen: View {
             }
             .accessibilityElement(children: .combine)
             .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-            .accessibilityAction { changeAddonNavigationVm.isSelectableAddonPresented = selectable }
+            .accessibilityAction { navigationVm.isSelectableAddonPresented = selectable }
         }
     }
 
@@ -211,7 +209,7 @@ struct ChangeAddonScreen: View {
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
         ) {
-            changeAddonNavigationVm.isLearnMorePresented = .init(
+            navigationVm.isLearnMorePresented = .init(
                 .init(
                     title: L10n.addonFlowTravelInformationTitle,
                     description: L10n.addonFlowTravelInformationDescription,
