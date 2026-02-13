@@ -7,15 +7,27 @@ struct AddonLearnMoreView: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: .padding8) {
+            VStack(alignment: .leading, spacing: .padding8) {
                 hSection {
                     headerText
                     pillSection
                 }
                 .sectionContainerStyle(.transparent)
-
-                VStack(spacing: .padding4) {
-                    PerilCollection(perils: model.perils)
+                VStack(alignment: .leading, spacing: .padding8) {
+                    ForEach(model.perilGroups, id: \.title) { perilGroup in
+                        if let title = perilGroup.title {
+                            hSection {
+                                HStack {
+                                    hText(title)
+                                    Spacer()
+                                }
+                            }
+                            .sectionContainerStyle(.transparent)
+                        }
+                        VStack(spacing: .padding4) {
+                            PerilCollection(perils: perilGroup.perils)
+                        }
+                    }
                 }
             }
         }
@@ -46,9 +58,26 @@ struct AddonLearnMoreView: View {
             title: "What is Travel Insurance Plus?",
             description:
                 "Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.",
-            perils: [
-                .init(id: "id", title: "Peril1", description: "description", color: nil, covered: []),
-                .init(id: "id", title: "Peril2", description: "description", color: nil, covered: []),
+            perilGroups: [
+                .init(
+                    title: "group 1",
+                    perils: [
+                        .init(
+                            id: "id",
+                            title: "Peril1",
+                            description: "description",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id",
+                            title: "Peril2",
+                            description: "description",
+                            color: nil,
+                            covered: []
+                        ),
+                    ]
+                )
             ]
         )
     )

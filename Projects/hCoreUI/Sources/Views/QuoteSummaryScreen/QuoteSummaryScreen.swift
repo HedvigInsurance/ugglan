@@ -33,8 +33,8 @@ public struct QuoteSummaryScreen: View {
             .hButtonTakeFullWidth(true)
             .hFormAlwaysAttachToBottom {
                 VStack(spacing: .padding8) {
-                    if vm.showNoticeCard {
-                        noticeComponent
+                    if let noticeInfo = vm.noticeInfo {
+                        noticeComponent(info: noticeInfo)
                     }
                     PriceSummarySection(vm: vm)
                 }
@@ -90,13 +90,10 @@ public struct QuoteSummaryScreen: View {
             )
     }
 
-    private var noticeComponent: some View {
+    private func noticeComponent(info: String) -> some View {
         hSection {
             InfoCard(
-                text:
-                    vm.isAddon
-                    ? L10n.addonFlowSummaryInfoText
-                    : L10n.changeAddressOtherInsurancesInfoText,
+                text: info,
                 type: .info
             )
         }
@@ -211,7 +208,20 @@ private struct PriceSummarySection: View {
             VStack(spacing: .padding16) {
                 let currentPremium = vm.premium.gross
                 let newPremium = vm.premium.net
-                if vm.isAddon {
+                switch vm.priceDisplayType {
+                case .difference:
+                    PriceField(
+                        viewModel: .init(
+                            initialValue: currentPremium,
+                            newValue: newPremium,
+                            title: nil,
+                            subTitle: L10n.summaryTotalPriceSubtitle(
+                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                            )
+                        )
+                    )
+                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+                case .increase:
                     HStack {
                         hText(L10n.tierFlowTotal)
                         Spacer()
@@ -226,18 +236,6 @@ private struct PriceSummarySection: View {
                         }
                     }
                     .accessibilityElement(children: .combine)
-                } else {
-                    PriceField(
-                        viewModel: .init(
-                            initialValue: currentPremium,
-                            newValue: newPremium,
-                            title: nil,
-                            subTitle: L10n.summaryTotalPriceSubtitle(
-                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
-                            )
-                        )
-                    )
-                    .hWithStrikeThroughPrice(setTo: .crossOldPrice)
                 }
                 VStack(spacing: .padding8) {
                     hButton(
@@ -263,128 +261,128 @@ private struct PriceSummarySection: View {
     }
 }
 
-#Preview(body: {
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+#Preview(
+    body: {
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 
-    let documents: [hPDFDocument] = [
-        .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
-        .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
-    ]
-    let vm = QuoteSummaryViewModel(
-        contract: [
-            .init(
-                id: "id1",
-                displayName: "Homeowner",
-                exposureName: "Bellmansgtan 19A",
-                premium: .init(
-                    gross: .init(amount: 599, currency: "SEK"),
-                    net: .init(amount: 999, currency: "SEK")
+        let documents: [hPDFDocument] = [
+            .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
+            .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
+        ]
+        let vm = QuoteSummaryViewModel(
+            contract: [
+                .init(
+                    id: "id1",
+                    displayName: "Homeowner",
+                    exposureName: "Bellmansgtan 19A",
+                    premium: .init(
+                        gross: .init(amount: 599, currency: "SEK"),
+                        net: .init(amount: 999, currency: "SEK")
+                    ),
+                    documentSection: .init(
+                        documents: [],
+                        onTap: { document in }
+                    ),
+                    displayItems: [
+                        .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
+                        .init(title: "Documents", value: "documents"),
+                        .init(title: "FAQ", value: "mockFAQ"),
+                    ],
+                    insuranceLimits: [],
+                    typeOfContract: .seApartmentBrf,
+                    priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
                 ),
-                documentSection: .init(
-                    documents: [],
-                    onTap: { document in }
+                .init(
+                    id: "id2",
+                    displayName: "Travel addon",
+                    exposureName: "Bellmansgtan 19A",
+                    premium: .init(
+                        gross: .init(amount: 599, currency: "SEK"),
+                        net: .init(amount: 999, currency: "SEK")
+                    ),
+                    documentSection: .init(
+                        documents: documents,
+                        onTap: { document in }
+                    ),
+                    displayItems: [
+                        .init(title: "Limits", value: "mockLimits"),
+                        .init(title: "Documents", value: "documents"),
+                        .init(title: "FAQ", value: "mockFAQ"),
+                    ],
+                    insuranceLimits: [
+                        .init(label: "label", limit: "limit", description: "description"),
+                        .init(label: "label2", limit: "limit2", description: "description2"),
+                        .init(label: "label3", limit: "limit3", description: "description3"),
+                    ],
+                    typeOfContract: nil,
+                    priceBreakdownItems: []
                 ),
-                displayItems: [
-                    .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
-                    .init(title: "Documents", value: "documents"),
-                    .init(title: "FAQ", value: "mockFAQ"),
-                ],
-                insuranceLimits: [],
-                typeOfContract: .seApartmentBrf,
-                priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
-            ),
-            .init(
-                id: "id2",
-                displayName: "Travel addon",
-                exposureName: "Bellmansgtan 19A",
-                premium: .init(
-                    gross: .init(amount: 599, currency: "SEK"),
-                    net: .init(amount: 999, currency: "SEK")
+                .init(
+                    id: "id3",
+                    displayName: "Homeowner",
+                    exposureName: "Bellmansgtan 19A",
+                    premium: .init(
+                        gross: .init(amount: 599, currency: "SEK"),
+                        net: .init(amount: 999, currency: "SEK")
+                    ),
+                    documentSection: .init(
+                        documents: [],
+                        onTap: { document in }
+                    ),
+                    displayItems: [],
+                    insuranceLimits: [
+                        .init(label: "label", limit: "limit", description: "description"),
+                        .init(label: "label2", limit: "limit2", description: "description2"),
+                        .init(label: "label3", limit: "limit3", description: "description3"),
+                    ],
+                    typeOfContract: .seAccident,
+                    priceBreakdownItems: []
                 ),
-                documentSection: .init(
-                    documents: documents,
-                    onTap: { document in }
+                .init(
+                    id: "id4",
+                    displayName: "Homeowner",
+                    exposureName: "Bellmansgtan 19A",
+                    premium: .init(
+                        gross: .init(amount: 599, currency: "SEK"),
+                        net: .init(amount: 999, currency: "SEK")
+                    ),
+                    documentSection: .init(
+                        documents: [],
+                        onTap: { document in }
+                    ),
+                    displayItems: [],
+                    insuranceLimits: [],
+                    typeOfContract: .seAccident,
+                    priceBreakdownItems: [
+                        .init(title: "15% bundle discount", value: "-30 kr/mo"),
+                        .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
+                    ]
                 ),
-                displayItems: [
-                    .init(title: "Limits", value: "mockLimits"),
-                    .init(title: "Documents", value: "documents"),
-                    .init(title: "FAQ", value: "mockFAQ"),
-                ],
-                insuranceLimits: [
-                    .init(label: "label", limit: "limit", description: "description"),
-                    .init(label: "label2", limit: "limit2", description: "description2"),
-                    .init(label: "label3", limit: "limit3", description: "description3"),
-                ],
-                typeOfContract: nil,
-                isAddon: true,
-                priceBreakdownItems: []
-            ),
-            .init(
-                id: "id3",
-                displayName: "Homeowner",
-                exposureName: "Bellmansgtan 19A",
-                premium: .init(
-                    gross: .init(amount: 599, currency: "SEK"),
-                    net: .init(amount: 999, currency: "SEK")
+                .init(
+                    id: "id5",
+                    displayName: "Dog",
+                    exposureName: "Bellmansgtan 19A",
+                    premium: .init(
+                        gross: .init(amount: 599, currency: "SEK"),
+                        net: .init(amount: 999, currency: "SEK")
+                    ),
+                    documentSection: .init(
+                        documents: [],
+                        onTap: { document in }
+                    ),
+                    displayItems: [],
+                    insuranceLimits: [],
+                    typeOfContract: .seDogStandard,
+                    priceBreakdownItems: []
                 ),
-                documentSection: .init(
-                    documents: [],
-                    onTap: { document in }
-                ),
-                displayItems: [],
-                insuranceLimits: [
-                    .init(label: "label", limit: "limit", description: "description"),
-                    .init(label: "label2", limit: "limit2", description: "description2"),
-                    .init(label: "label3", limit: "limit3", description: "description3"),
-                ],
-                typeOfContract: .seAccident,
-                priceBreakdownItems: []
-            ),
-            .init(
-                id: "id4",
-                displayName: "Homeowner",
-                exposureName: "Bellmansgtan 19A",
-                premium: .init(
-                    gross: .init(amount: 599, currency: "SEK"),
-                    net: .init(amount: 999, currency: "SEK")
-                ),
-                documentSection: .init(
-                    documents: [],
-                    onTap: { document in }
-                ),
-                displayItems: [],
-                insuranceLimits: [],
-                typeOfContract: .seAccident,
-                priceBreakdownItems: [
-                    .init(title: "15% bundle discount", value: "-30 kr/mo"),
-                    .init(title: "50% discount for 3 months", value: "-99 kr/mo"),
-                ]
-            ),
-            .init(
-                id: "id5",
-                displayName: "Dog",
-                exposureName: "Bellmansgtan 19A",
-                premium: .init(
-                    gross: .init(amount: 599, currency: "SEK"),
-                    net: .init(amount: 999, currency: "SEK")
-                ),
-                documentSection: .init(
-                    documents: [],
-                    onTap: { document in }
-                ),
-                displayItems: [],
-                insuranceLimits: [],
-                typeOfContract: .seDogStandard,
-                priceBreakdownItems: []
-            ),
-        ],
-        activationDate: "2025-08-24".localDateToDate ?? Date(),
-        premium: .init(gross: .sek(999), net: .sek(599)),
-        onConfirmClick: {}
-    )
+            ],
+            activationDate: "2025-08-24".localDateToDate ?? Date(),
+            premium: .init(gross: .sek(999), net: .sek(599)),
+            onConfirmClick: {}
+        )
 
-    return QuoteSummaryScreen(vm: vm)
-})
+        return QuoteSummaryScreen(vm: vm)
+    })
 
 private struct EnvironmentHAccessibilityWithoutCombinedElements: EnvironmentKey {
     static let defaultValue = false

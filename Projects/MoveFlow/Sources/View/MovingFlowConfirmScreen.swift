@@ -46,8 +46,7 @@ public class MovingFlowConfirmViewModel: ObservableObject {
         premium: .init(
             gross: .sek(399),
             net: .sek(399)
-        ),
-        isAddon: false
+        )
     ) {}
     Localization.Locale.currentLocale.send(.en_SE)
     return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
