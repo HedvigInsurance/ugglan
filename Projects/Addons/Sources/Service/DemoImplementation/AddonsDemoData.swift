@@ -2,10 +2,18 @@ import Foundation
 import hCore
 
 // MARK: - Shared helpers
-private let bundleDiscount = ItemDiscount(campaignCode: "bd", displayName: "15%", displayValue: "-10 kr/mo")
+private func bundleDiscount(gross: Float) -> ItemDiscount {
+    let discountAmount = Int(round(gross * 0.15))
+    return ItemDiscount(
+        campaignCode: "BUNDLE15",
+        displayName: "15% bundle discount",
+        displayValue: "-\(discountAmount) kr/mo",
+        explanation: "Discount for bundling"
+    )
+}
 
 private func cost(_ gross: Float, _ net: Float) -> ItemCost {
-    .init(premium: .init(gross: .sek(gross), net: .sek(net)), discounts: [bundleDiscount])
+    .init(premium: .init(gross: .sek(gross), net: .sek(net)), discounts: [bundleDiscount(gross: gross)])
 }
 
 private func variant(_ name: String, product: String) -> AddonVariant {
