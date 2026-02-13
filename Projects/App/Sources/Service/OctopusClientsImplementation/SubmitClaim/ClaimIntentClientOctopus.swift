@@ -340,7 +340,7 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
             isRequired: fragment.isRequired,
             maxValue: fragment.maxValue,
             minValue: fragment.minValue,
-            options: fragment.options?.map { .init(title: $0.title, value: $0.value) } ?? [],
+            options: fragment.options?.map { .init(title: $0.title, subtitle: $0.subtitle, value: $0.value) } ?? [],
             suffix: fragment.suffix,
             title: fragment.title,
             type: type
