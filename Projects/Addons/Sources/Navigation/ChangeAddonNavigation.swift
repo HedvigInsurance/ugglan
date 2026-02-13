@@ -35,7 +35,7 @@ struct AddonInfo: Equatable, Identifiable {
     let perilGroups: [PerilGroup]
 
     struct PerilGroup: Equatable {
-        let title: String?
+        let title: String
         let perils: [Perils]
     }
 }

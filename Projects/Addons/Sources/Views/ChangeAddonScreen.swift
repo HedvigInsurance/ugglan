@@ -236,9 +236,6 @@ extension ChangeAddonScreen {
             .uniqued(on: \.addonVariant.product)
             .map { AddonInfo.PerilGroup(title: $0.addonVariant.displayName, perils: $0.addonVariant.perils) }
 
-        if uniqueGroups.count == 1 {
-            return uniqueGroups.map { .init(title: nil, perils: $0.perils) }
-        }
         return uniqueGroups
     }
 }
