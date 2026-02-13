@@ -87,7 +87,7 @@ public struct ChangeAddonNavigation: View {
                 if multipleContracts {
                     AddonSelectInsuranceScreen(changeAddonNavigationVm: changeAddonNavigationVm)
                 } else {
-                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
+                    ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                         .environmentObject(changeAddonNavigationVm)
                 }
             }
@@ -99,7 +99,7 @@ public struct ChangeAddonNavigation: View {
                         .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withAlertDismiss()
                 case .addonLandingScreen:
-                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
+                    ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                         .withAlertDismiss()
                 }
             }

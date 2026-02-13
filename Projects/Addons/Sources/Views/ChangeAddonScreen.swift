@@ -6,19 +6,19 @@ struct ChangeAddonScreen: View {
     @EnvironmentObject var navigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var vm: ChangeAddonViewModel
 
-    init(changeAddonVm: ChangeAddonViewModel) {
-        self.vm = changeAddonVm
+    init(vm: ChangeAddonViewModel) {
+        self.vm = vm
     }
 
     var body: some View {
         successView
             .loading($vm.fetchAddonsViewState)
             .disabled(vm.fetchingCostState == .loading)
-            .trackErrorState(for: $changeAddonVm.fetchingCostState)
+            .trackErrorState(for: $vm.fetchingCostState)
             .hStateViewButtonConfig(
-                changeAddonVm.fetchAddonsViewState.isError
+                vm.fetchAddonsViewState.isError
                     ? .init(
-                        actionButton: .init { Task { await changeAddonVm.getAddons() } },
+                        actionButton: .init { Task { await vm.getAddons() } },
                         dismissButton: .init { navigationVm.router.dismiss() }
                     )
                     : .init(
@@ -47,19 +47,20 @@ struct ChangeAddonScreen: View {
                             .padding(.bottom, .padding16)
                     }
 
-                hSection {
-                    hContinueButton {
-                        Task {
-                            await vm.getAddonOfferCost()
-                            guard vm.addonOfferCost != nil else { return }
-                            navigationVm.router.push(ChangeAddonRouterActions.summary)
+                    hSection {
+                        hContinueButton {
+                            Task {
+                                await vm.getAddonOfferCost()
+                                guard vm.addonOfferCost != nil else { return }
+                                navigationVm.router.push(ChangeAddonRouterActions.summary)
+                            }
                         }
+                        .disabled(!vm.allowToContinue)
+                        .hButtonIsLoading(vm.fetchingCostState == .loading)
                     }
-                    .disabled(!vm.allowToContinue)
-                    .hButtonIsLoading(vm.fetchingCostState == .loading)
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.transparent)
-            }
+        }
     }
 
     @ViewBuilder
@@ -225,7 +226,7 @@ struct ChangeAddonScreen: View {
 extension ChangeAddonScreen {
     fileprivate func getPerilGroups() -> [AddonInfo.PerilGroup] {
         let quotes: [AddonOfferQuote] =
-            switch changeAddonVm.addonOffer!.quote.addonOfferContent {
+            switch vm.addonOffer!.quote.addonOfferContent {
             case .selectable(let selectable): selectable.quotes
             case .toggleable(let toggleable): toggleable.quotes
             }
@@ -247,7 +248,7 @@ private func changeAddonPreview(offer: AddonOffer) -> some View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(
-        changeAddonVm: .init(
+        vm: .init(
             config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
             addonSource: .insurances
         )
