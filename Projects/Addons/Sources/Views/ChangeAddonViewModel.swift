@@ -169,9 +169,9 @@ extension ChangeAddonViewModel {
     fileprivate func logAddonEvent() {
         let eventType: AddonEventType = {
             switch addonOffer?.quote.addonOfferContent {
-            case .selectable(let addonOfferSelectable):
+            case .selectable:
                 return addonOffer?.quote.activeAddons.count ?? 0 == 0 ? .addonPurchased : .addonUpgraded
-            case .toggleable(let addonOfferToggleable):
+            case .toggleable:
                 return .addonPurchased
             case nil:
                 return .addonPurchased
