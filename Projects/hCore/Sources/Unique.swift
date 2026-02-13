@@ -55,7 +55,6 @@ extension UniquedSequence: Sequence {
 extension UniquedSequence: LazySequenceProtocol
 where Base: LazySequenceProtocol {}
 
-
 extension Sequence where Element: Hashable {
     /// Returns a sequence with only the unique elements of this sequence, in the
     /// order of the first occurrence of each unique element.
@@ -110,7 +109,6 @@ extension Sequence {
         return result
     }
 }
-
 
 extension LazySequenceProtocol {
     /// Returns a lazy sequence with the unique elements of this sequence (as
