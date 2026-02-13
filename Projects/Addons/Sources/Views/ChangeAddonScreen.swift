@@ -241,15 +241,8 @@ extension ChangeAddonScreen {
 
         let uniqueGroups =
             quotes
-            .reduce(into: (seen: Set<String>(), groups: [AddonInfo.PerilGroup]())) { result, quote in
-                let product = quote.addonVariant.product
-                if result.seen.insert(product).inserted {
-                    result.groups.append(
-                        .init(title: quote.addonVariant.displayName, perils: quote.addonVariant.perils)
-                    )
-                }
-            }
-            .groups
+            .uniqued(on: \.addonVariant.product)
+            .map { AddonInfo.PerilGroup(title: $0.addonVariant.displayName, perils: $0.addonVariant.perils) }
 
         if uniqueGroups.count == 1 {
             return uniqueGroups.map { .init(title: nil, perils: $0.perils) }
