@@ -32,7 +32,12 @@ struct AddonInfo: Equatable, Identifiable {
     let id = UUID()
     let title: String
     let description: String
-    let perils: [Perils]
+    let perilGroups: [PerilGroup]
+
+    struct PerilGroup: Equatable {
+        let title: String?
+        let perils: [Perils]
+    }
 }
 
 @MainActor
