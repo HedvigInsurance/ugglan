@@ -13,23 +13,23 @@ struct ChangeAddonScreen: View {
     }
 
     var body: some View {
-        successView.loading($changeAddonVm.fetchAddonsViewState)
+        successView
+            .loading($changeAddonVm.fetchAddonsViewState)
+            .disabled(changeAddonVm.fetchingCostState == .loading)
+            .trackErrorState(for: $changeAddonVm.fetchingCostState)
             .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init(
-                        buttonAction: {
-                            Task {
-                                await changeAddonVm.getAddons()
-                            }
+                changeAddonVm.fetchAddonsViewState.isError
+                    ? .init(
+                        actionButton: .init { Task { await changeAddonVm.getAddons() } },
+                        dismissButton: .init { changeAddonNavigationVm.router.dismiss() }
+                    )
+                    : .init(
+                        actionButton: .init { changeAddonVm.fetchingCostState = .success },
+                        dismissButton: .init(buttonTitle: L10n.generalCloseButton) {
+                            changeAddonVm.fetchingCostState = .success
+                            changeAddonNavigationVm.router.dismiss()
                         }
-                    ),
-                    dismissButton:
-                        .init(
-                            buttonAction: {
-                                changeAddonNavigationVm.router.dismiss()
-                            }
-                        )
-                )
+                    )
             )
     }
 
@@ -62,9 +62,14 @@ struct ChangeAddonScreen: View {
 
                 hSection {
                     hContinueButton {
-                        changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+                        Task {
+                            await changeAddonVm.getAddonOfferCost()
+                            guard changeAddonVm.addonOfferCost != nil else { return }
+                            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
+                        }
                     }
                     .disabled(!changeAddonVm.allowToContinue)
+                    .hButtonIsLoading(changeAddonVm.fetchingCostState == .loading)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -251,8 +256,8 @@ extension ChangeAddonScreen {
     }
 }
 
-#Preview("Travel") {
-    let offer = testTravelOfferNoActive
+@MainActor
+private func changeAddonPreview(offer: AddonOffer) -> some View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(
@@ -264,41 +269,7 @@ extension ChangeAddonScreen {
     .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }
 
-#Preview("Travel with Active addon") {
-    let offer = testTravelOffer45Days
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(
-        changeAddonVm: .init(
-            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
-            addonSource: .insurances
-        )
-    )
-    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
-}
-
-#Preview("Car") {
-    let offer = testCarOfferNoActive
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarOfferNoActive) })
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(
-        changeAddonVm: .init(
-            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
-            addonSource: .insurances
-        )
-    )
-    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
-}
-
-#Preview("Car with Active addon") {
-    let offer = testCarAddonRisk
-    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: testCarAddonRisk) })
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(
-        changeAddonVm: .init(
-            config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
-            addonSource: .insurances
-        )
-    )
-    .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
-}
+#Preview("Travel") { changeAddonPreview(offer: testTravelOfferNoActive) }
+#Preview("Travel with Active addon") { changeAddonPreview(offer: testTravelOffer45Days) }
+#Preview("Car") { changeAddonPreview(offer: testCarOfferNoActive) }
+#Preview("Car with Active addon") { changeAddonPreview(offer: testCarAddonRisk) }
