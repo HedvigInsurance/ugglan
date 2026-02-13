@@ -134,7 +134,7 @@ private struct ContractCardView: View {
                 title: nil,
                 subTitle: nil,
                 bottomComponent: {
-                    bottomComponent(for: contract)
+                    pricingSummary(for: contract)
                         .padding(.top, .padding16)
                 }
             )
@@ -146,7 +146,7 @@ private struct ContractCardView: View {
     }
 
     @ViewBuilder
-    private func bottomComponent(
+    private func pricingSummary(
         for contract: QuoteSummaryViewModel.ContractInfo
     ) -> some View {
         VStack(spacing: .padding16) {
@@ -206,14 +206,12 @@ private struct PriceSummarySection: View {
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
-                let currentPremium = vm.premium.gross
-                let newPremium = vm.premium.net
-                switch vm.priceDisplayType {
-                case .difference:
+                switch vm.totalPrice {
+                case .comparison(let currentPrice, let newPrice):
                     PriceField(
                         viewModel: .init(
-                            initialValue: currentPremium,
-                            newValue: newPremium,
+                            initialValue: currentPrice,
+                            newValue: newPrice,
                             title: nil,
                             subTitle: L10n.summaryTotalPriceSubtitle(
                                 vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
@@ -221,21 +219,22 @@ private struct PriceSummarySection: View {
                         )
                     )
                     .hWithStrikeThroughPrice(setTo: .crossOldPrice)
-                case .increase:
+                case .change(let amount):
                     HStack {
                         hText(L10n.tierFlowTotal)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
-                            if newPremium.value >= 0 {
-                                hText(L10n.addonFlowPriceLabel(newPremium.formattedAmount))
+                            if amount.value >= 0 {
+                                hText(L10n.addonFlowPriceLabel(amount.formattedAmount))
                             } else {
-                                hText(newPremium.formattedAmountPerMonth)
+                                hText(amount.formattedAmountPerMonth)
                             }
                             hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
                     }
                     .accessibilityElement(children: .combine)
+                case .none: EmptyView()
                 }
                 VStack(spacing: .padding8) {
                     hButton(
@@ -377,7 +376,7 @@ private struct PriceSummarySection: View {
                 ),
             ],
             activationDate: "2025-08-24".localDateToDate ?? Date(),
-            premium: .init(gross: .sek(999), net: .sek(599)),
+            totalPrice: .comparison(old: .sek(599), new: .sek(999)),
             onConfirmClick: {}
         )
 

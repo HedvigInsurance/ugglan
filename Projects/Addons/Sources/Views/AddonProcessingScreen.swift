@@ -4,7 +4,7 @@ import hCoreUI
 
 struct AddonProcessingScreen: View {
     @ObservedObject var vm: ChangeAddonViewModel
-    @EnvironmentObject var addonNavigationVm: ChangeAddonNavigationViewModel
+    @EnvironmentObject var navigationVm: ChangeAddonNavigationViewModel
 
     var body: some View {
         ProcessingStateView(
@@ -14,19 +14,14 @@ struct AddonProcessingScreen: View {
                 vm.addonOffer?.quote.activationDate.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
-                addonNavigationVm.router.dismiss(withDismissingAll: true)
+                navigationVm.router.dismiss(withDismissingAll: true)
             },
             state: $vm.submittingAddonsViewState
         )
         .hStateViewButtonConfig(errorButtons)
         .onDeinit { [weak vm] in
             if vm?.submittingAddonsViewState == .success {
-                Task {
-                    NotificationCenter.default.post(
-                        name: .addonAdded,
-                        object: nil
-                    )
-                }
+                Task { NotificationCenter.default.post(name: .addonAdded, object: nil) }
             }
         }
     }
@@ -35,13 +30,13 @@ struct AddonProcessingScreen: View {
         .init(
             actionButton: .init(
                 buttonAction: {
-                    addonNavigationVm.isAddonProcessingPresented = false
+                    navigationVm.isAddonProcessingPresented = false
                 }
             ),
             dismissButton: .init(
                 buttonTitle: L10n.generalCancelButton,
                 buttonAction: {
-                    addonNavigationVm.router.dismiss(withDismissingAll: true)
+                    navigationVm.router.dismiss(withDismissingAll: true)
                 }
             )
         )
@@ -56,6 +51,6 @@ struct AddonProcessingScreen: View {
             config: .init(contractId: "contractId", exposureName: "exposureName", displayName: "displayName"),
             addonSource: .insurances
         ),
-        addonNavigationVm: .init()
+        navigationVm: .init()
     )
 }

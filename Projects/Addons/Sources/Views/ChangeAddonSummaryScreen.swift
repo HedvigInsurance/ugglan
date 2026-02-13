@@ -5,7 +5,7 @@ import hCoreUI
 struct ChangeAddonSummaryScreen: View {
     let quoteSummaryVm: QuoteSummaryViewModel
 
-    init(changeAddonNavigationVm: ChangeAddonNavigationViewModel) {
+    init(_ changeAddonNavigationVm: ChangeAddonNavigationViewModel) {
         self.quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
             .asQuoteSummaryViewModel(changeAddonNavigationVm: changeAddonNavigationVm)
     }
@@ -41,12 +41,12 @@ extension ChangeAddonViewModel {
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
+        let increase = getAddonPriceChange() ?? .zeroSek
         let vm = QuoteSummaryViewModel(
             contract: [contractInfo],
             activationDate: addonOffer?.quote.activationDate,
-            premium: getPriceIncrease() ?? .zeroSek,
             noticeInfo: addonOffer?.infoMessage,
-            priceDisplayType: .increase
+            totalPrice: .change(amount: increase.net)
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true
             Task { await self?.submitAddons() }
@@ -69,5 +69,5 @@ extension ChangeAddonViewModel {
     navVm.changeAddonVm?.addonOffer = testTravelOfferNoActive
     navVm.changeAddonVm?.selectedAddons = [travelQuote45Days]
     navVm.changeAddonVm?.addonOfferCost = testAddonOfferCost
-    return ChangeAddonSummaryScreen(changeAddonNavigationVm: navVm)
+    return ChangeAddonSummaryScreen(navVm)
 }

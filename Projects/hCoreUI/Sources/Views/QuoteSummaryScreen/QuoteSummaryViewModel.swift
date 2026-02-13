@@ -5,13 +5,12 @@ import hCore
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]
     @Published public var activationDate: Date?
-    @Published var premium: Premium
     @Published var isConfirmChangesPresented: Bool = false
     @Published var isShowDetailsPresented: QuoteSummaryViewModel.ContractInfo? = nil
 
     public var onConfirmClick: () -> Void
     let noticeInfo: String?
-    let priceDisplayType: SummaryPriceDisplayType
+    let totalPrice: TotalPrice
 
     public struct ContractInfo: Identifiable, Equatable {
         public var id: String
@@ -69,22 +68,21 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public init(
         contract: [ContractInfo],
         activationDate: Date?,
-        premium: Premium,
         noticeInfo: String? = nil,
-        priceDisplayType: SummaryPriceDisplayType = .difference,
+        totalPrice: TotalPrice,
         onConfirmClick: (() -> Void)? = nil
     ) {
         self.contracts = contract
         self.activationDate = activationDate
         self.onConfirmClick = onConfirmClick ?? {}
-        self.premium = premium
         self.noticeInfo = noticeInfo
-        self.priceDisplayType = priceDisplayType
+        self.totalPrice = totalPrice
     }
 
-    public enum SummaryPriceDisplayType {
-        case difference
-        case increase
+    public enum TotalPrice {
+        case comparison(old: MonetaryAmount, new: MonetaryAmount)
+        case change(amount: MonetaryAmount)
+        case none
     }
 }
 

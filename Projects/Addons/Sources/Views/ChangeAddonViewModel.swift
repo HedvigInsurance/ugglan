@@ -4,7 +4,7 @@ import hCoreUI
 
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
-    var addonService = AddonsService()
+    let addonService = AddonsService()
     @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var addonOffer: AddonOffer?
@@ -117,7 +117,7 @@ public class ChangeAddonViewModel: ObservableObject {
         return currentGrossPrice - activeAddonGrossPrice
     }
 
-    func getPriceIncrease() -> Premium? {
+    func getAddonPriceChange() -> Premium? {
         guard let addonOffer, !selectedAddons.isEmpty else { return nil }
 
         let currentAddonsPremium = addonOffer.quote.activeAddons.map(\.cost.premium).sum()

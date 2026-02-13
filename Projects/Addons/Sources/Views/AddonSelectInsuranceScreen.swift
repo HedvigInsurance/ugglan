@@ -16,7 +16,7 @@ public struct AddonSelectInsuranceScreen: View {
         self.vm = vm
         itemPickerConfig = .init(
             items: {
-                let addonContractConfigs: [AddonConfig] = changeAddonNavigationVm.input.contractConfigs ?? []
+                let addonContractConfigs = changeAddonNavigationVm.input.contractConfigs ?? []
                 let items = addonContractConfigs.map {
                     (
                         object: $0,
