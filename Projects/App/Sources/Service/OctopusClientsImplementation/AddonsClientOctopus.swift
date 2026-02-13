@@ -50,12 +50,10 @@ class AddonsClientOctopus: AddonsClient {
     }
 
     public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
-        let mutation = OctopusGraphQL.AddonRemoveStartMutation(contractId: contractId)
-        let response = try await octopus.client.mutation(mutation: mutation)
+        let query = OctopusGraphQL.AddonRemoveStartQuery(contractId: contractId)
+        let response = try await octopus.client.fetch(query: query)
 
-        guard let result = response?.addonRemoveStart else {
-            throw AddonsError.somethingWentWrong
-        }
+        let result = response.addonRemoveStart
 
         if let userError = result.asUserError {
             throw AddonsError.errorMessage(message: userError.message!)
@@ -197,7 +195,7 @@ extension ActiveAddon {
         )
     }
 
-    init(data: OctopusGraphQL.AddonRemoveStartMutation.Data.AddonRemoveStart.AsAddonRemoveOffer.RemovableAddon) {
+    init(data: OctopusGraphQL.AddonRemoveStartQuery.Data.AddonRemoveStart.AsAddonRemoveOffer.RemovableAddon) {
         self.init(
             id: data.id,
             cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
