@@ -115,6 +115,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         state.isLoading = true
         state.isEnabled = false
         defer {
+            state.isEnabled = true
             state.isLoading = false
         }
         do {

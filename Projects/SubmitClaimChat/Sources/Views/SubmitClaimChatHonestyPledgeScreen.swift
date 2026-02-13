@@ -49,7 +49,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         hSection(pledgeNotes) { text in
             questionRowView(text: text)
         }
-        .hWithoutHorizontalPadding([.row])
+        .hWithoutHorizontalPadding([.row, .divider])
         .sectionContainerStyle(.transparent)
     }
 

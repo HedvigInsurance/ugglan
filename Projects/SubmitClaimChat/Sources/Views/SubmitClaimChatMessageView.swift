@@ -15,9 +15,7 @@ struct SubmitClaimChatMessageView: View {
                             delay: 1,
                             animate: viewModel.state.animateText,
                             onTextAnimationDone: {
-                                withAnimation {
-                                    viewModel.state.showInput = true
-                                }
+                                viewModel.state.showInput = true
                             }
                         )
                         .accessibilityAddTraits(.isHeader)
