@@ -88,7 +88,6 @@ public struct ChangeAddonNavigation: View {
                     AddonSelectInsuranceScreen(changeAddonNavigationVm: changeAddonNavigationVm)
                 } else {
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
-                        .environmentObject(changeAddonNavigationVm)
                 }
             }
             .withAlertDismiss()
@@ -104,6 +103,7 @@ public struct ChangeAddonNavigation: View {
                 }
             }
         }
+        .environmentObject(changeAddonNavigationVm)
         .modally(
             presented: $changeAddonNavigationVm.isAddonProcessingPresented,
             options: .constant(.alwaysOpenOnTop)
