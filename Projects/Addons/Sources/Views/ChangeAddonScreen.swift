@@ -125,7 +125,6 @@ struct ChangeAddonScreen: View {
                             .hFieldSize(.small)
                     }
                 )
-                .padding(.top, .padding16)
             }
         }
     }
