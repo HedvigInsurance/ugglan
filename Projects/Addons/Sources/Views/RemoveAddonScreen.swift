@@ -33,7 +33,7 @@ struct RemoveAddonScreen: View {
                     hSection {
                         VStack(alignment: .leading, spacing: .padding8) {
                             ForEach(offer.removableAddons) { addon in
-                                addonToggleRow(
+                                AddonOptionRow(
                                     title: addon.displayTitle,
                                     subtitle: addon.displayDescription ?? "",
                                     isSelected: removeAddonVm.isAddonSelected(addon),
@@ -45,7 +45,7 @@ struct RemoveAddonScreen: View {
                                         )
                                         .hFieldSize(.small)
                                     },
-                                    onTap: { withAnimation { removeAddonVm.toggleAddon(addon) } }
+                                    onTap: { removeAddonVm.toggleAddon(addon) }
                                 )
                             }
                         }
@@ -59,44 +59,6 @@ struct RemoveAddonScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
         }
-    }
-
-    @hColorBuilder
-    private func checkmarkColor(isSelected: Bool) -> some hColor {
-        if isSelected { hColorBase(.green) } else { hGrayscaleTranslucent.greyScaleTranslucent300 }
-    }
-
-    @ViewBuilder
-    private func addonToggleRow<Trailing: View>(
-        title: String,
-        subtitle: String,
-        isSelected: Bool,
-        @ViewBuilder trailingView: () -> Trailing,
-        onTap: @escaping () -> Void
-    ) -> some View {
-        let checkmarkColor = checkmarkColor(isSelected: isSelected)
-        ZStack {
-            HStack(alignment: .top) {
-                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                    .foregroundColor(checkmarkColor)
-                    .font(.title2)
-
-                VStack(alignment: .leading, spacing: .padding4) {
-                    HStack {
-                        hText(title)
-                        Spacer()
-                        trailingView()
-                    }
-                    hText(subtitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                }
-            }
-            .padding(.init(top: .padding18, leading: .padding16, bottom: .padding24, trailing: .padding16))
-        }
-        .onTapGesture { withAnimation { onTap() } }
-        .accessibilityAction { onTap() }
-        .background(hSurfaceColor.Opaque.primary)
-        .cornerRadius(.cornerRadiusL)
     }
 }
 

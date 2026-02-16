@@ -98,7 +98,7 @@ struct ChangeAddonScreen: View {
     private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
         VStack(alignment: .leading, spacing: .padding4) {
             ForEach(toggleable.quotes) { addon in
-                addonToggleRow(
+                AddonOptionRow(
                     title: addon.displayTitle,
                     subtitle: addon.displayDescription,
                     isSelected: vm.isAddonSelected(addon),
@@ -110,12 +110,12 @@ struct ChangeAddonScreen: View {
                         )
                         .hFieldSize(.small)
                     },
-                    onTap: { withAnimation { vm.selectAddon(addon: addon) } }
+                    onTap: { vm.selectAddon(addon: addon) }
                 )
             }
 
             ForEach(activeAddons) { activeAddon in
-                addonToggleRow(
+                AddonOptionRow(
                     title: activeAddon.displayTitle,
                     subtitle: activeAddon.displayDescription ?? "",
                     isSelected: true,
@@ -127,57 +127,6 @@ struct ChangeAddonScreen: View {
                 )
             }
         }
-    }
-
-    @hColorBuilder
-    private func checkmarkColor(isSelected: Bool, isDisabled: Bool) -> some hColor {
-        if isSelected && !isDisabled { hColorBase(.green) } else { hGrayscaleTranslucent.greyScaleTranslucent300 }
-    }
-
-    @hColorBuilder
-    private func titleColor(isDisabled: Bool) -> some hColor {
-        if isDisabled { hTextColor.Translucent.secondary } else { hTextColor.Opaque.primary }
-    }
-
-    @hColorBuilder
-    private func subTitleColor(isDisabled: Bool) -> some hColor {
-        if isDisabled { hTextColor.Translucent.secondary } else { hTextColor.Opaque.secondary }
-    }
-
-    @ViewBuilder
-    private func addonToggleRow<Trailing: View>(
-        title: String,
-        subtitle: String,
-        isSelected: Bool,
-        isDisabled: Bool = false,
-        @ViewBuilder trailingView: () -> Trailing,
-        onTap: @escaping () -> Void = {}
-    ) -> some View {
-        let checkmarkColor = checkmarkColor(isSelected: isSelected, isDisabled: isDisabled)
-        let titleColor = titleColor(isDisabled: isDisabled)
-        let subTitleColor = subTitleColor(isDisabled: isDisabled)
-        ZStack {
-            HStack(alignment: .top) {
-                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                    .foregroundColor(checkmarkColor)
-                    .font(.title2)
-
-                VStack(alignment: .leading, spacing: .padding4) {
-                    HStack {
-                        hText(title).foregroundColor(titleColor)
-                        Spacer()
-                        trailingView()
-                    }
-                    hText(subtitle, style: .label).foregroundColor(subTitleColor)
-                }
-            }
-            .padding(.init(top: .padding18, leading: .padding16, bottom: .padding24, trailing: .padding16))
-        }
-        .onTapGesture { withAnimation { onTap() } }
-        .accessibilityAction { onTap() }
-        .accessibilityHint(L10n.voiceoverPressTo)  // TODO: fix hint
-        .background(hSurfaceColor.Opaque.primary)
-        .cornerRadius(.cornerRadiusL)
     }
 
     @ViewBuilder
