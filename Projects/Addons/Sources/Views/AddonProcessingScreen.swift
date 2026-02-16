@@ -21,7 +21,7 @@ struct AddonProcessingScreen: View {
         .hStateViewButtonConfig(errorButtons)
         .onDeinit { [weak vm] in
             if vm?.submittingAddonsViewState == .success {
-                Task { NotificationCenter.default.post(name: .addonAdded, object: nil) }
+                Task { NotificationCenter.default.post(name: .addonsChanged, object: nil) }
             }
         }
     }
