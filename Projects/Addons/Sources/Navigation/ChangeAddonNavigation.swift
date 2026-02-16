@@ -99,7 +99,7 @@ public struct ChangeAddonNavigation: View {
                         .withAlertDismiss()
                 case .addonLandingScreen:
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
-                        .withAlertDismiss()
+                        .withDismissButton()
                 }
             }
         }
