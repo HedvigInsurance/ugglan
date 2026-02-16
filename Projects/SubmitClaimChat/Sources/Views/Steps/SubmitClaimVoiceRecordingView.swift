@@ -61,7 +61,7 @@ struct SubmitClaimVoiceRecordingView: View {
 
             hButton(
                 .large,
-                .ghost,
+                .secondary,
                 content: .init(title: L10n.claimChatUseTextInput)
             ) {
                 viewModel.isTextInputPresented = true
