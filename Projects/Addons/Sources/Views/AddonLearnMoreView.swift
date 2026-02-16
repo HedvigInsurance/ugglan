@@ -16,6 +16,7 @@ struct AddonLearnMoreView: View {
             VStack(alignment: .leading, spacing: .padding8) {
                 hSection {
                     headerText
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     pillSection
                 }
                 .sectionContainerStyle(.transparent)
