@@ -219,6 +219,8 @@ extension TypeOfContract {
             return false
         case .seCatPremium:
             return false
+        case .seVacationHome:
+            return false
         case .unknown:
             return false
         }
