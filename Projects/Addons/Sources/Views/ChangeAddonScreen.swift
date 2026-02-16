@@ -153,21 +153,23 @@ struct ChangeAddonScreen: View {
     }
 
     private var coverageButtonView: some View {
-        hButton(
+        guard let offer = vm.addonOffer else { return EmptyView().asAnyView }
+        return hButton(
             .medium,
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
         ) {
             navigationVm.isLearnMorePresented = .init(
                 .init(
-                    title: L10n.addonFlowTravelInformationTitle,
-                    description: L10n.addonFlowTravelInformationDescription,
+                    title: offer.whatsIncludedPageTitle,
+                    description: offer.whatsIncludedPageDescription,
                     perilGroups: getPerilGroups()
                 )
             )
         }
         .hButtonWithBorder
         .hButtonTakeFullWidth(true)
+        .asAnyView
     }
 }
 

@@ -119,7 +119,9 @@ public let testTravelOfferNoActive: AddonOffer = .init(
         productVariant: travelProductVariant
     ),
     currentTotalCost: cost(299, 254),
-    infoMessage: "You're gonna lose your addons for good"
+    infoMessage: "You're gonna lose your addons for good",
+    whatsIncludedPageTitle: "What is Travel Insurance Plus?",
+    whatsIncludedPageDescription: "Travel Insurance Plus is extended coverage for those who travel often"
 )
 
 public let testTravelOffer45Days: AddonOffer = .init(
@@ -150,7 +152,9 @@ public let testTravelOffer45Days: AddonOffer = .init(
         productVariant: travelProductVariant
     ),
     currentTotalCost: cost(369, 314),
-    infoMessage: "Info Message"
+    infoMessage: "Info Message",
+    whatsIncludedPageTitle: "What is Travel Insurance Plus?",
+    whatsIncludedPageDescription: "Travel Insurance Plus is extended coverage for those who travel often"
 )
 
 // MARK: - Complete car offers
@@ -168,7 +172,9 @@ public let testCarOfferNoActive: AddonOffer = .init(
         productVariant: carProductVariant
     ),
     currentTotalCost: cost(469, 399),
-    infoMessage: "Info message"
+    infoMessage: "Info message",
+    whatsIncludedPageTitle: "What is Car Plus?",
+    whatsIncludedPageDescription: "Car Plus gives you extra protection for your car insurance"
 )
 
 public let testCarAddonRisk: AddonOffer = .init(
@@ -192,7 +198,9 @@ public let testCarAddonRisk: AddonOffer = .init(
         productVariant: carProductVariant
     ),
     currentTotalCost: cost(529, 450),
-    infoMessage: "Info message"
+    infoMessage: "Info message",
+    whatsIncludedPageTitle: "What is Car Plus?",
+    whatsIncludedPageDescription: "Car Plus gives you extra protection for your car insurance"
 )
 
 // MARK: - Test helpers

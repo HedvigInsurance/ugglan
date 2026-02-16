@@ -30,7 +30,9 @@ class AddonsClientOctopus: AddonsClient {
             pageDescription: addonOffer.pageDescription,
             quote: quote,
             currentTotalCost: currentTotalCost,
-            infoMessage: addonOffer.infoMessage
+            infoMessage: addonOffer.infoMessage,
+            whatsIncludedPageTitle: addonOffer.whatsIncludedPageTitle,
+            whatsIncludedPageDescription: addonOffer.whatsIncludedPageDescription
         )
     }
 
