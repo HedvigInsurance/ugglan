@@ -33,4 +33,24 @@ final class AddonsServiceTests: XCTestCase {
         assert(respondedBanners == [testAddonBanner])
         assert(respondedBanners.first?.titleDisplayName == "Travel Plus")
     }
+
+    func testGetAddonRemoveOfferCostSuccess() async throws {
+        let expectedCost = ItemCost(
+            premium: .init(gross: .sek(399), net: .sek(399)),
+            discounts: []
+        )
+        let mockService = MockData.createMockAddonsService(
+            fetchAddonRemoveOfferCost: { _, _ in expectedCost }
+        )
+
+        sut = mockService
+
+        let respondedCost = try await mockService.getAddonRemoveOfferCost(
+            contractId: "contractId",
+            addonIds: ["addonId"]
+        )
+
+        assert(respondedCost == expectedCost)
+        assert(mockService.events.contains(.getAddonRemoveOfferCost))
+    }
 }

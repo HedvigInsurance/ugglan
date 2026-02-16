@@ -13,11 +13,21 @@ struct RemoveAddonScreen: View {
     var body: some View {
         successView
             .loading($removeAddonVm.fetchState)
+            .disabled(removeAddonVm.fetchingCostState == .loading)
+            .trackErrorState(for: $removeAddonVm.fetchingCostState)
             .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init { Task { await removeAddonVm.fetchOffer() } },
-                    dismissButton: .init { removeAddonNavigationVm.router.dismiss() }
-                )
+                removeAddonVm.fetchState.isError
+                    ? .init(
+                        actionButton: .init { Task { await removeAddonVm.fetchOffer() } },
+                        dismissButton: .init { removeAddonNavigationVm.router.dismiss() }
+                    )
+                    : .init(
+                        actionButton: .init { removeAddonVm.fetchingCostState = .success },
+                        dismissButton: .init(buttonTitle: L10n.generalCloseButton) {
+                            removeAddonVm.fetchingCostState = .success
+                            removeAddonNavigationVm.router.dismiss()
+                        }
+                    )
             )
     }
 
@@ -52,9 +62,14 @@ struct RemoveAddonScreen: View {
                     }
                     hSection {
                         hContinueButton {
-                            removeAddonNavigationVm.router.push(RemoveAddonRouterActions.summary)
+                            Task {
+                                await removeAddonVm.getAddonRemoveOfferCost()
+                                guard removeAddonVm.addonRemoveOfferCost != nil else { return }
+                                removeAddonNavigationVm.router.push(RemoveAddonRouterActions.summary)
+                            }
                         }
                         .disabled(!removeAddonVm.allowToContinue)
+                        .hButtonIsLoading(removeAddonVm.fetchingCostState == .loading)
                     }
                 }
                 .sectionContainerStyle(.transparent)

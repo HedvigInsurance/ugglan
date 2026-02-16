@@ -24,6 +24,14 @@ public class AddonsClientDemo: AddonsClient {
         )
     }
 
+    public func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+        return .init(
+            premium: .init(gross: .sek(399), net: .sek(399)),
+            discounts: []
+        )
+    }
+
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
         await delay(TimeInterval.random(in: 0.5...1.5))
     }

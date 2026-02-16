@@ -10,6 +10,8 @@ public class RemoveAddonViewModel: ObservableObject {
     @Published var submittingState: ProcessingState = .loading
     @Published var removeOffer: AddonRemoveOffer?
     @Published var selectedAddonIds: Set<String> = []
+    @Published var addonRemoveOfferCost: ItemCost?
+    @Published var fetchingCostState: ProcessingState = .success
 
     init(_ contractInfo: AddonConfig) {
         self.contractInfo = contractInfo
@@ -42,6 +44,21 @@ public class RemoveAddonViewModel: ObservableObject {
             }
         } catch {
             fetchState = .error(errorMessage: error.localizedDescription)
+        }
+    }
+
+    func getAddonRemoveOfferCost() async {
+        guard removeOffer != nil, fetchingCostState != .loading else { return }
+        addonRemoveOfferCost = nil
+        withAnimation { fetchingCostState = .loading }
+        do {
+            addonRemoveOfferCost = try await addonService.getAddonRemoveOfferCost(
+                contractId: contractInfo.contractId,
+                addonIds: selectedAddonIds
+            )
+            withAnimation { fetchingCostState = .success }
+        } catch {
+            withAnimation { fetchingCostState = .error(errorMessage: error.localizedDescription) }
         }
     }
 

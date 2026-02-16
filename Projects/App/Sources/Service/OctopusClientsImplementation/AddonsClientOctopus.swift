@@ -40,6 +40,12 @@ class AddonsClientOctopus: AddonsClient {
         return .init(fragment: data.addonOfferCost.fragments.itemCostFragment)
     }
 
+    public func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost {
+        let query = OctopusGraphQL.AddonRemoveOfferCostQuery(contractId: contractId, addonIds: Array(addonIds))
+        let data = try await octopus.client.fetch(query: query)
+        return .init(fragment: data.addonRemoveOfferCost.fragments.itemCostFragment)
+    }
+
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
         let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, addonIds: Array(addonIds))
 
