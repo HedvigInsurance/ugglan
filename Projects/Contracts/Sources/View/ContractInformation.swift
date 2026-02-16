@@ -25,7 +25,7 @@ struct ContractInformationView: View {
                 VStack(spacing: 0) {
                     updatedContractView(contract)
                         .transition(.opacity.combined(with: .scale))
-                    VStack(spacing: 0) {
+                    VStack(spacing: .padding16) {
                         if let displayItems = contract.currentAgreement?.displayItems {
                             hSection {
                                 hSection(displayItems, id: \.id) { item in
@@ -68,7 +68,6 @@ struct ContractInformationView: View {
                                     addCoInsuredView(contract: contract)
                                 }
                             }
-                            .padding()
                             .sectionContainerStyle(.opaque)
                             .hWithoutHorizontalPadding([.section])
 
@@ -98,9 +97,11 @@ struct ContractInformationView: View {
                                 }
                                 moveAddressButton(contract: contract)
                             }
+                            .hWithoutHorizontalPadding(.all)
                             .padding(.bottom, .padding16)
                         }
                     }
+                    .padding(.horizontal, .padding16)
                     .hWithoutHorizontalPadding([.row, .divider])
                 }
             }
@@ -239,7 +240,6 @@ struct ContractInformationView: View {
                     }
                 }
             }
-            .padding()
             .sectionContainerStyle(.opaque)
             .hWithoutHorizontalPadding([.section])
         }
