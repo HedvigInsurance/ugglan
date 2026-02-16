@@ -111,7 +111,6 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
                 }
             )
         ]
-        presentationController.largestUndimmedDetentIdentifier = presentationController.detents.last?.identifier
 
         Task { @MainActor [weak presentationController] in
             try? await Task.sleep(nanoseconds: 100_000_000)
@@ -545,8 +544,6 @@ public enum Detent: Equatable {
                     }
                 } ?? [.medium()]
 
-            weakViewController?.sheetPresentationController?.largestUndimmedDetentIdentifier =
-                weakViewController?.sheetPresentationController?.detents.last?.identifier
             if let lastDetentIndex = lastDetentIndex {
                 setDetentIndex(on: presentationController, index: lastDetentIndex)
             }

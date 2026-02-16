@@ -165,6 +165,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
+                vc.view.accessibilityViewIsModal = true
                 vc.onDeinit = {
                     Task { @MainActor in
                         presented = false
