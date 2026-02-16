@@ -266,3 +266,20 @@ public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
         self.displayValue = displayValue
     }
 }
+
+public struct AddonDeflect {
+    let pageTitle: String
+    let pageDescription: String
+    let type: String
+
+    public init(pageTitle: String, pageDescription: String, type: String) {
+        self.pageTitle = pageTitle
+        self.pageDescription = pageDescription
+        self.type = type
+    }
+}
+
+public enum AddonData {
+    case offer(AddonOffer)
+    case deflect(AddonDeflect)
+}

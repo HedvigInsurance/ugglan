@@ -18,6 +18,16 @@ class AddonsClientOctopus: AddonsClient {
             throw AddonsError.errorMessage(message: errorMessage)
         }
 
+        if let deflect = result.asAddonOfferDeflect {
+            let data = AddonData.deflect(
+                .init(
+                    pageTitle: deflect.pageTitle,
+                    pageDescription: deflect.pageDescription,
+                    type: deflect.type.rawValue
+                )
+            )
+        }
+
         guard let addonOffer = result.asAddonOffer else {
             throw AddonsError.somethingWentWrong
         }
