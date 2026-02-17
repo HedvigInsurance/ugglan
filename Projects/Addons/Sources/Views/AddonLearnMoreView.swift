@@ -4,21 +4,28 @@ import hCoreUI
 
 struct AddonLearnMoreView: View {
     let model: AddonInfo
+    let multipleGroups: Bool
+
+    init(model: AddonInfo) {
+        self.model = model
+        multipleGroups = model.perilGroups.count > 1
+    }
 
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: .padding8) {
                 hSection {
                     headerText
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     pillSection
                 }
                 .sectionContainerStyle(.transparent)
                 VStack(alignment: .leading, spacing: .padding8) {
                     ForEach(model.perilGroups, id: \.title) { perilGroup in
-                        if let title = perilGroup.title {
+                        if multipleGroups {
                             hSection {
                                 HStack {
-                                    hText(title)
+                                    hText(perilGroup.title)
                                     Spacer()
                                 }
                             }

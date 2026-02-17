@@ -23,17 +23,14 @@ extension ChangeTierViewModel {
         let displayItems: [QuoteDisplayItem] =
             selectedQuote?.displayItems.map { .init(title: $0.title, value: $0.value) } ?? []
         let activationDate = L10n.changeAddressActivationDate(activationDate?.displayDateDDMMMYYYYFormat ?? "")
-        var contracts: [QuoteSummaryViewModel.ContractInfo] = []
 
-        //merge documents for in surance and addons
-        var documents = self.selectedQuote?.productVariant?.documents ?? []
-        selectedQuote?.addons
-            .forEach { addon in
-                documents.append(contentsOf: addon.addonVariant.documents)
-            }
+        //merge documents for insurance and addons
+        let documents =
+            (selectedQuote?.productVariant?.documents ?? [])
+            + (selectedQuote?.addons.flatMap(\.addonVariant.documents) ?? [])
 
-        contracts.append(
-            .init(
+        let contracts = [
+            QuoteSummaryViewModel.ContractInfo(
                 id: currentTier?.id ?? "",
                 displayName: displayName ?? "",
                 exposureName: activationDate,
@@ -47,19 +44,17 @@ extension ChangeTierViewModel {
                 displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
-                priceBreakdownItems: selectedQuote?.costBreakdown
-                    .map({ item in
-                        .init(title: item.title, value: item.value)
-                    }) ?? []
+                priceBreakdownItems: (selectedQuote?.costBreakdown ?? [])
+                    .map { item in .init(title: item.title, value: item.value) }
             )
-        )
+        ]
 
         let totalPremium = contracts.compactMap(\.premium).sum()
 
         let vm = QuoteSummaryViewModel(
             contract: contracts,
             activationDate: self.activationDate,
-            premium: totalPremium,
+            totalPrice: .change(amount: totalPremium.net),
             onConfirmClick: { [weak changeTierNavigationVm] in
                 changeTierNavigationVm?.vm.commitTier()
                 changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)

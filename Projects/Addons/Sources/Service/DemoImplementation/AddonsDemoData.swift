@@ -119,7 +119,9 @@ public let testTravelOfferNoActive: AddonOffer = .init(
         productVariant: travelProductVariant
     ),
     currentTotalCost: cost(299, 254),
-    infoMessage: "You're gonna lose your addons for good"
+    infoMessage: "You're gonna lose your addons for good",
+    whatsIncludedPageTitle: "What is Travel Insurance Plus?",
+    whatsIncludedPageDescription: "Travel Insurance Plus is extended coverage for those who travel often"
 )
 
 public let testTravelOffer45Days: AddonOffer = .init(
@@ -150,7 +152,9 @@ public let testTravelOffer45Days: AddonOffer = .init(
         productVariant: travelProductVariant
     ),
     currentTotalCost: cost(369, 314),
-    infoMessage: "Info Message"
+    infoMessage: "Info Message",
+    whatsIncludedPageTitle: "What is Travel Insurance Plus?",
+    whatsIncludedPageDescription: "Travel Insurance Plus is extended coverage for those who travel often"
 )
 
 // MARK: - Complete car offers
@@ -168,7 +172,9 @@ public let testCarOfferNoActive: AddonOffer = .init(
         productVariant: carProductVariant
     ),
     currentTotalCost: cost(469, 399),
-    infoMessage: "Info message"
+    infoMessage: "Info message",
+    whatsIncludedPageTitle: "What is Car Plus?",
+    whatsIncludedPageDescription: "Car Plus gives you extra protection for your car insurance"
 )
 
 public let testCarAddonRisk: AddonOffer = .init(
@@ -192,7 +198,33 @@ public let testCarAddonRisk: AddonOffer = .init(
         productVariant: carProductVariant
     ),
     currentTotalCost: cost(529, 450),
-    infoMessage: "Info message"
+    infoMessage: "Info message",
+    whatsIncludedPageTitle: "What is Car Plus?",
+    whatsIncludedPageDescription: "Car Plus gives you extra protection for your car insurance"
+)
+
+// MARK: - Remove offer
+public let testRemoveOffer = AddonRemoveOffer(
+    pageTitle: "Remove addon",
+    pageDescription: "Select which addons you want to remove",
+    currentTotalCost: .init(premium: .init(gross: .sek(529), net: .sek(450)), discounts: []),
+    baseCost: .init(premium: .init(gross: .sek(469), net: .sek(399)), discounts: []),
+    productVariant: carProductVariant,
+    activationDate: activationDate,
+    removableAddons: [
+        .init(
+            id: "sjalvriskreducering",
+            cost: .init(premium: .init(gross: .sek(19), net: .sek(19)), discounts: []),
+            displayTitle: "Självriskavdrag",
+            displayDescription: "Kollision, viltolycka och bärgning"
+        ),
+        .init(
+            id: "hyrbil",
+            cost: .init(premium: .zeroSek, discounts: []),
+            displayTitle: "Hyrbil",
+            displayDescription: "När din egen bil inte kan användas"
+        ),
+    ]
 )
 
 // MARK: - Test helpers

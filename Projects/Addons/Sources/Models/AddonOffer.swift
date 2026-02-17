@@ -21,18 +21,28 @@ public struct AddonOffer: Equatable, Sendable {
     /// Optional info message to show on the summary page.
     let infoMessage: String?
 
+    /// Title to show in what's included page. eg "What is Travel Insurance Plus?"
+    let whatsIncludedPageTitle: String
+
+    /// Description to show in what's included page. eg "Travel Insurance Plus is extended coverage for those..."
+    let whatsIncludedPageDescription: String
+
     public init(
         pageTitle: String,
         pageDescription: String,
         quote: AddonContractQuote,
         currentTotalCost: ItemCost,
-        infoMessage: String?
+        infoMessage: String?,
+        whatsIncludedPageTitle: String,
+        whatsIncludedPageDescription: String,
     ) {
         self.pageTitle = pageTitle
         self.pageDescription = pageDescription
         self.quote = quote
         self.currentTotalCost = currentTotalCost
         self.infoMessage = infoMessage
+        self.whatsIncludedPageTitle = whatsIncludedPageTitle
+        self.whatsIncludedPageDescription = whatsIncludedPageDescription
     }
 }
 
@@ -52,8 +62,6 @@ public struct AddonContractQuote: Equatable, Sendable {
     let activationDate: Date
 
     /// Addon Content
-    ///
-    /// GraphQL: `addonOffer: AddonOfferContent!`
     let addonOfferContent: AddonOfferContent
 
     /// List of member current addons
@@ -86,7 +94,7 @@ public struct AddonContractQuote: Equatable, Sendable {
     }
 }
 
-public struct ActiveAddon: Equatable, Sendable, Identifiable {
+public struct ActiveAddon: Equatable, Sendable, Identifiable, Hashable {
     public let id: String
 
     /// Cost of the existing addon.
