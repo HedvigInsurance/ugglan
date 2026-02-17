@@ -931,7 +931,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(addonAdded),
-            name: .addonAdded,
+            name: .addonsChanged,
             object: nil
         )
 

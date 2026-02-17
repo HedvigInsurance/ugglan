@@ -1,3 +1,4 @@
+import Addons
 import Combine
 import EditCoInsured
 import Foundation
@@ -21,11 +22,12 @@ struct ContractInformationView: View {
             }
         ) { contract in
             if let contract {
-                VStack(spacing: 0) {
+                VStack(spacing: .padding16) {
                     updatedContractView(contract)
                         .transition(.opacity.combined(with: .scale))
-                    VStack(spacing: 0) {
-                        if let displayItems = contract.currentAgreement?.displayItems {
+
+                    if let displayItems = contract.currentAgreement?.displayItems {
+                        hSection {
                             hSection(displayItems, id: \.id) { item in
                                 hRow {
                                     VStack(alignment: .leading, spacing: 0) {
@@ -64,36 +66,37 @@ struct ContractInformationView: View {
                                     .padding(.horizontal, .padding16)
                                 addCoInsuredView(contract: contract)
                             }
+                        }
+                        .sectionContainerStyle(.opaque)
+                        .hWithoutHorizontalPadding([.section])
 
-                            VStack(spacing: .padding8) {
-                                if contract.showEditInfo {
-                                    hSection {
-                                        hButton(
-                                            .large,
-                                            .secondary,
-                                            content: .init(title: vm.getButtonText(contract)),
-                                            {
-                                                if contract.onlyCoInsured() {
-                                                    let contract: InsuredPeopleConfig = .init(
-                                                        contract: contract,
-                                                        fromInfoCard: false
-                                                    )
+                        addonsView(contract: contract)
 
-                                                    contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-                                                } else {
-                                                    contractsNavigationVm.changeYourInformationContract = contract
-                                                }
-                                            }
-                                        )
+                        VStack(spacing: .padding8) {
+                            if contract.showEditInfo {
+                                hButton(
+                                    .large,
+                                    .secondary,
+                                    content: .init(title: vm.getButtonText(contract)),
+                                    {
+                                        if contract.onlyCoInsured() {
+                                            let contract: InsuredPeopleConfig = .init(
+                                                contract: contract,
+                                                fromInfoCard: false
+                                            )
+                                            contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                                        } else {
+                                            contractsNavigationVm.changeYourInformationContract = contract
+                                        }
                                     }
-                                }
-                                moveAddressButton(contract: contract)
+                                )
                             }
-                            .padding(.bottom, .padding16)
+                            moveAddressButton(contract: contract)
                         }
                     }
-                    .hWithoutHorizontalPadding([.row, .divider])
                 }
+                .padding(.horizontal, .padding16)
+                .padding(.bottom, .padding16)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -187,6 +190,129 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
+    private func addonsView(contract: Contract) -> some View {
+        if let addonsData = testAddonsData {
+            hSection(addonsData.all) { addon in
+                hRow {
+                    switch (addon) {
+                    case .available(let availableAddon):
+                        AddonView(
+                            title: availableAddon.displayName,
+                            subtitle: availableAddon.description,
+                            actionTitle: "Lägg till",  // TODO: localise
+                            actionColor: .green,
+                            action: {
+                                contractsNavigationVm.isAddonPresented = .init(
+                                    addonSource: .insurances,
+                                    contractConfigs: [
+                                        .init(
+                                            contractId: contract.id,
+                                            exposureName: contract.exposureDisplayName,
+                                            displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                                        )
+                                    ]
+                                )
+                            }
+                        )
+                    case .existing(let existingAddon):
+                        AddonView(
+                            title: existingAddon.displayTitle,
+                            subtitle: existingAddon.displayDescription,
+                            actionTitle: "Tillagd",  // TODO: localise
+                            actionColor: .grey,
+                            action: {
+                                contractsNavigationVm.isRemoveAddonPresented = .init(
+                                    contractInfo: .init(
+                                        contractId: contract.id,
+                                        exposureName: contract.exposureDisplayName,
+                                        displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+            .sectionContainerStyle(.opaque)
+            .hWithoutHorizontalPadding([.section])
+        }
+    }
+
+    struct AddonView: View {
+        let title: String
+        let subtitle: String
+        let actionTitle: String
+        let actionColor: PillColor
+        let action: () -> Void
+
+        var body: some View {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    hText(title)
+                    hText(subtitle, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
+                Spacer(minLength: 0)
+                hPill(text: actionTitle, color: actionColor)
+                    .onTapGesture { action() }
+            }
+        }
+    }
+
+    private let testAddonsData: AddonsInfo? = .init(
+        existingAddons: [
+            .init(
+                id: UUID(),
+                displayDescription: "Kollision, viltolycka och bärgning",
+                displayTitle: "Självriskvadrag",
+                isRemovable: true,
+                isUpgradable: false,
+                startDate: Date(),
+                endDate: nil
+            )
+        ],
+        availableAddons: [
+            .init(displayName: "Hyrbil", description: "När din egen bil inte kan användas"),
+            .init(displayName: "Drulle", description: "Kupéskada, nycklar och feltankning"),
+        ]
+    )
+
+    enum AddonEntry: Identifiable {
+        var id: UUID {
+            switch self {
+            case .existing(let e): e.id
+            case .available(let a): a.id
+            }
+        }
+
+        case existing(AddonsInfo.Existing)
+        case available(AddonsInfo.Available)
+    }
+
+    struct AddonsInfo {
+        let existingAddons: [Existing]
+        let availableAddons: [Available]
+
+        var all: [AddonEntry] { existingAddons.map(AddonEntry.existing) + availableAddons.map(AddonEntry.available) }
+
+        struct Existing: Identifiable {
+            let id: UUID
+            let displayDescription: String
+            let displayTitle: String
+            let isRemovable: Bool
+            let isUpgradable: Bool  //for travel addon, 45->60
+            let startDate: Date
+            let endDate: Date?
+        }
+
+        struct Available: Identifiable {
+            let id: UUID = UUID()
+            let displayName: String
+            let description: String
+        }
+    }
+
+    @ViewBuilder
     private func getAccessoryView(contract: Contract, coInsured: CoInsuredModel) -> some View {
         if contract.showEditCoInsuredInfo, coInsured.terminatesOn == nil {
             hCoreUIAssets.warningTriangleFilledSmall.view
@@ -201,45 +327,41 @@ struct ContractInformationView: View {
             let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
             URL(string: upcomingRenewal.certificateUrl) != nil
         {
-            hSection {
-                InfoCard(
-                    text: days == 1
-                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days + 1),
-                    type: .info
+            InfoCard(
+                text: days == 1
+                    ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days + 1),
+                type: .info
+            )
+            .buttons([
+                .init(
+                    buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
+                    buttonAction: {
+                        contractsNavigationVm.document = hPDFDocument(
+                            displayName: L10n.insuranceCertificateTitle,
+                            url: upcomingRenewal.certificateUrl ?? "",
+                            type: .unknown
+                        )
+                    }
                 )
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
-                        buttonAction: {
-                            contractsNavigationVm.document = hPDFDocument(
-                                displayName: L10n.insuranceCertificateTitle,
-                                url: upcomingRenewal.certificateUrl ?? "",
-                                type: .unknown
-                            )
-                        }
-                    )
-                ])
-            }
+            ])
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
-            hSection {
-                InfoCard(
-                    text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
-                        upcomingChangedAgreement.agreementDate.activeFrom?.localDateToDate?
-                            .displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    type: .info
+            InfoCard(
+                text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
+                    upcomingChangedAgreement.agreementDate.activeFrom?.localDateToDate?
+                        .displayDateDDMMMYYYYFormat ?? ""
+                ),
+                type: .info
+            )
+            .buttons([
+                .init(
+                    buttonTitle: L10n.InsurancesTab.viewDetails,
+                    buttonAction: {
+                        contractsNavigationVm.insuranceUpdate = upcomingChangedAgreement
+                    }
                 )
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.InsurancesTab.viewDetails,
-                        buttonAction: {
-                            contractsNavigationVm.insuranceUpdate = upcomingChangedAgreement
-                        }
-                    )
-                ])
-            }
+            ])
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             upcomingChangedAgreement.certificateUrl == nil
         {
@@ -260,17 +382,14 @@ struct ContractInformationView: View {
         if contract.supportsAddressChange, featureFlags.isMovingFlowEnabled,
             contractsThatSupportsMoving.count < 2, !contract.isTerminated
         {
-            hSection {
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.InsuranceDetails.moveButton),
-                    {
-                        contractsNavigationVm.isChangeAddressPresented = true
-                    }
-                )
-            }
-            .sectionContainerStyle(.transparent)
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.InsuranceDetails.moveButton),
+                {
+                    contractsNavigationVm.isChangeAddressPresented = true
+                }
+            )
         }
     }
 }
@@ -322,4 +441,16 @@ public struct CoInsuredInfoView: View {
                 )
             ])
     }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+    Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
+
+    let store: ContractStore = globalPresentableStoreContainer.get()
+    store.send(.fetchContracts)
+
+    return ScrollView { ContractInformationView(id: "contractId") }
+        .environmentObject(ContractsNavigationViewModel())
 }

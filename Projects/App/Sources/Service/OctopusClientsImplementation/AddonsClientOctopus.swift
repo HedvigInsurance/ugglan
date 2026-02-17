@@ -14,8 +14,8 @@ class AddonsClientOctopus: AddonsClient {
             throw AddonsError.somethingWentWrong
         }
 
-        if let userError = result.asUserError {
-            throw AddonsError.errorMessage(message: userError.message!)
+        if let errorMessage = result.asUserError?.message {
+            throw AddonsError.errorMessage(message: errorMessage)
         }
 
         guard let addonOffer = result.asAddonOffer else {
@@ -30,7 +30,9 @@ class AddonsClientOctopus: AddonsClient {
             pageDescription: addonOffer.pageDescription,
             quote: quote,
             currentTotalCost: currentTotalCost,
-            infoMessage: addonOffer.infoMessage
+            infoMessage: addonOffer.infoMessage,
+            whatsIncludedPageTitle: addonOffer.whatsIncludedPageTitle,
+            whatsIncludedPageDescription: addonOffer.whatsIncludedPageDescription
         )
     }
 
@@ -40,15 +42,51 @@ class AddonsClientOctopus: AddonsClient {
         return .init(fragment: data.addonOfferCost.fragments.itemCostFragment)
     }
 
-    public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
-        let sumbitAddonsMutation = OctopusGraphQL.AddonActivateOfferMutation(
-            quoteId: quoteId,
-            addonIds: Array(addonIds)
-        )
+    public func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost {
+        let query = OctopusGraphQL.AddonRemoveOfferCostQuery(contractId: contractId, addonIds: Array(addonIds))
+        let data = try await octopus.client.fetch(query: query)
+        return .init(fragment: data.addonRemoveOfferCost.fragments.itemCostFragment)
+    }
 
-        let response = try await octopus.client.mutation(mutation: sumbitAddonsMutation)
+    public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
+        let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, addonIds: Array(addonIds))
+
+        let response = try await octopus.client.mutation(mutation: mutation)
         if let error = response?.addonActivateOffer.userError?.message {
             throw AddonsError.errorMessage(message: error)
+        }
+    }
+
+    public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
+        let query = OctopusGraphQL.AddonRemoveStartQuery(contractId: contractId)
+        let response = try await octopus.client.fetch(query: query)
+
+        let result = response.addonRemoveStart
+
+        if let userError = result.asUserError {
+            throw AddonsError.errorMessage(message: userError.message!)
+        }
+
+        guard let offer = result.asAddonRemoveOffer else {
+            throw AddonsError.somethingWentWrong
+        }
+
+        return AddonRemoveOffer(
+            pageTitle: offer.pageTitle,
+            pageDescription: offer.pageDescription,
+            currentTotalCost: ItemCost(fragment: offer.currentTotalCost.fragments.itemCostFragment),
+            baseCost: ItemCost(fragment: offer.baseCost.fragments.itemCostFragment),
+            productVariant: ProductVariant(data: offer.productVariant.fragments.productVariantFragment),
+            activationDate: offer.activationDate.localDateToDate ?? Date(),
+            removableAddons: offer.removableAddons.map { .init(data: $0) }
+        )
+    }
+
+    public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
+        let mutation = OctopusGraphQL.AddonRemoveConfirmMutation(contractId: contractId, addonIds: Array(addonIds))
+        let response = try await octopus.client.mutation(mutation: mutation)
+        if let errorMessage = response?.addonRemoveConfirm?.message {
+            throw AddonsError.errorMessage(message: errorMessage)
         }
     }
 
@@ -157,6 +195,15 @@ extension AddonDisplayItem {
 
 extension ActiveAddon {
     init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ActiveAddon) {
+        self.init(
+            id: data.id,
+            cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
+            displayTitle: data.displayTitle,
+            displayDescription: data.displayDescription
+        )
+    }
+
+    init(data: OctopusGraphQL.AddonRemoveStartQuery.Data.AddonRemoveStart.AsAddonRemoveOffer.RemovableAddon) {
         self.init(
             id: data.id,
             cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),

@@ -172,7 +172,7 @@ class TravelCertificatesListScreenViewModel: ObservableObject {
     private var addonAddedObserver: NSObjectProtocol?
 
     init() {
-        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
+        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonsChanged, object: nil, queue: nil) {
             [weak self] _ in
             Task {
                 await self?.fetchTravelCertificateList()
