@@ -9,7 +9,7 @@ public class RemoveAddonViewModel: ObservableObject {
     @Published var fetchState: ProcessingState = .loading
     @Published var submittingState: ProcessingState = .loading
     @Published var removeOffer: AddonRemoveOffer?
-    @Published var selectedAddonIds: Set<String> = []
+    @Published var selectedAddons: Set<ActiveAddon> = []
     @Published var addonRemoveOfferCost: ItemCost?
     @Published var fetchingCostState: ProcessingState = .success
 
@@ -19,19 +19,19 @@ public class RemoveAddonViewModel: ObservableObject {
     }
 
     var allowToContinue: Bool {
-        !selectedAddonIds.isEmpty
+        !selectedAddons.isEmpty
     }
 
     func toggleAddon(_ addon: ActiveAddon) {
-        if selectedAddonIds.contains(addon.id) {
-            selectedAddonIds.remove(addon.id)
+        if selectedAddons.contains(addon) {
+            selectedAddons.remove(addon)
         } else {
-            selectedAddonIds.insert(addon.id)
+            selectedAddons.insert(addon)
         }
     }
 
     func isAddonSelected(_ addon: ActiveAddon) -> Bool {
-        selectedAddonIds.contains(addon.id)
+        selectedAddons.contains(addon)
     }
 
     func fetchOffer() async {
@@ -54,7 +54,7 @@ public class RemoveAddonViewModel: ObservableObject {
         do {
             addonRemoveOfferCost = try await addonService.getAddonRemoveOfferCost(
                 contractId: contractInfo.contractId,
-                addonIds: selectedAddonIds
+                addonIds: Set(selectedAddons.map(\.id))
             )
             withAnimation { fetchingCostState = .success }
         } catch {
@@ -69,7 +69,7 @@ public class RemoveAddonViewModel: ObservableObject {
         do {
             try await addonService.confirmAddonRemoval(
                 contractId: contractInfo.contractId,
-                addonIds: selectedAddonIds
+                addonIds: Set(selectedAddons.map(\.id))
             )
             withAnimation {
                 self.submittingState = .success

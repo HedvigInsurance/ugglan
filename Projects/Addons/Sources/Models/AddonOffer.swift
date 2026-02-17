@@ -94,7 +94,7 @@ public struct AddonContractQuote: Equatable, Sendable {
     }
 }
 
-public struct ActiveAddon: Equatable, Sendable, Identifiable {
+public struct ActiveAddon: Equatable, Sendable, Identifiable, Hashable {
     public let id: String
 
     /// Cost of the existing addon.
