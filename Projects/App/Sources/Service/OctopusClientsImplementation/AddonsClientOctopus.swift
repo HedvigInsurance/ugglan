@@ -14,8 +14,8 @@ class AddonsClientOctopus: AddonsClient {
             throw AddonsError.somethingWentWrong
         }
 
-        if let userError = result.asUserError {
-            throw AddonsError.errorMessage(message: userError.message!)
+        if let errorMessage = result.asUserError?.message {
+            throw AddonsError.errorMessage(message: errorMessage)
         }
 
         guard let addonOffer = result.asAddonOffer else {
@@ -85,8 +85,8 @@ class AddonsClientOctopus: AddonsClient {
     public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
         let mutation = OctopusGraphQL.AddonRemoveConfirmMutation(contractId: contractId, addonIds: Array(addonIds))
         let response = try await octopus.client.mutation(mutation: mutation)
-        if let userError = response?.addonRemoveConfirm {
-            throw AddonsError.errorMessage(message: userError.message!)
+        if let errorMessage = response?.addonRemoveConfirm?.message {
+            throw AddonsError.errorMessage(message: errorMessage)
         }
     }
 
