@@ -17,6 +17,8 @@ struct RemoveAddonSummaryScreen: View {
 
 extension RemoveAddonViewModel {
     func asQuoteSummaryViewModel(navigationVm: RemoveAddonNavigationViewModel) -> QuoteSummaryViewModel {
+        let documents = removeOffer?.productVariant.documents ?? []
+
         let typeOfContract: TypeOfContract? =
             if let removeOffer {
                 TypeOfContract(rawValue: removeOffer.productVariant.typeOfContract)
@@ -26,9 +28,9 @@ extension RemoveAddonViewModel {
             id: contractInfo.contractId,
             displayName: contractInfo.displayName,
             exposureName: contractInfo.exposureName,
-            premium: getCurrentAndNewPrice(),
+            premium: getPremium(),
             documentSection: .init(
-                documents: [],
+                documents: documents,
                 onTap: { [weak navigationVm] document in
                     navigationVm?.document = document
                 }

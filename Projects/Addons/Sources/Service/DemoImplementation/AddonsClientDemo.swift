@@ -24,6 +24,14 @@ public class AddonsClientDemo: AddonsClient {
         )
     }
 
+    public func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+        return .init(
+            premium: .init(gross: .sek(399), net: .sek(399)),
+            discounts: []
+        )
+    }
+
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
         await delay(TimeInterval.random(in: 0.5...1.5))
     }
@@ -34,37 +42,7 @@ public class AddonsClientDemo: AddonsClient {
 
     public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
         await delay(TimeInterval.random(in: 0.5...1.5))
-        return AddonRemoveOffer(
-            pageTitle: "Remove addon",
-            pageDescription: "Select which addons you want to remove",
-            currentTotalCost: .init(premium: .init(gross: .sek(529), net: .sek(450)), discounts: []),
-            baseCost: .init(premium: .init(gross: .sek(469), net: .sek(399)), discounts: []),
-            productVariant: .init(
-                termsVersion: "1.0",
-                typeOfContract: "SE_CAR_FULL",
-                perils: [],
-                insurableLimits: [],
-                documents: [],
-                displayName: "Bilförsäkring Hel",
-                displayNameTier: nil,
-                tierDescription: nil
-            ),
-            activationDate: Date(),
-            removableAddons: [
-                .init(
-                    id: "Självriskavdrag",
-                    cost: .init(premium: .init(gross: .sek(19), net: .sek(19)), discounts: []),
-                    displayTitle: "Självriskavdrag",
-                    displayDescription: "Kollision, viltolycka och bärgning"
-                ),
-                .init(
-                    id: "Hyrbil",
-                    cost: .init(premium: .zeroSek, discounts: []),
-                    displayTitle: "Hyrbil",
-                    displayDescription: "När din egen bil inte kan användas"
-                ),
-            ]
-        )
+        return testRemoveOffer
     }
 
     public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {

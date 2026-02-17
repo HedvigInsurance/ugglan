@@ -22,87 +22,81 @@ struct ContractInformationView: View {
             }
         ) { contract in
             if let contract {
-                VStack(spacing: 0) {
+                VStack(spacing: .padding16) {
                     updatedContractView(contract)
                         .transition(.opacity.combined(with: .scale))
-                    VStack(spacing: 0) {
-                        if let displayItems = contract.currentAgreement?.displayItems {
-                            hSection {
-                                hSection(displayItems, id: \.id) { item in
-                                    hRow {
-                                        VStack(alignment: .leading, spacing: 0) {
-                                            hText(item.displayTitle)
-                                            if let subtitle = item.displaySubtitle {
-                                                hText(subtitle, style: .label)
-                                                    .foregroundColor(hTextColor.Translucent.secondary)
+
+                    if let displayItems = contract.currentAgreement?.displayItems {
+                        hSection {
+                            hSection(displayItems, id: \.id) { item in
+                                hRow {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        hText(item.displayTitle)
+                                        if let subtitle = item.displaySubtitle {
+                                            hText(subtitle, style: .label)
+                                                .foregroundColor(hTextColor.Translucent.secondary)
+                                        }
+                                    }
+                                }
+                                .withCustomAccessory {
+                                    Spacer()
+                                    Group {
+                                        if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
+                                            hText(date)
+                                        } else {
+                                            ZStack {
+                                                hText(item.displayValue)
+                                                hText(" ")
                                             }
                                         }
                                     }
-                                    .withCustomAccessory {
-                                        Spacer()
-                                        Group {
-                                            if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat
-                                            {
-                                                hText(date)
-                                            } else {
-                                                ZStack {
-                                                    hText(item.displayValue)
-                                                    hText(" ")
-                                                }
-                                            }
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                }
+                                .accessibilityElement(children: .combine)
+                            }
+
+                            if let currentAgreementCost = contract.currentAgreement?.itemCost {
+                                hRowDivider()
+                                    .padding(.horizontal, .padding16)
+                                ItemCostView(itemCost: currentAgreementCost)
+                            }
+
+                            if contract.supportsCoInsured {
+                                hRowDivider()
+                                    .padding(.horizontal, .padding16)
+                                addCoInsuredView(contract: contract)
+                            }
+                        }
+                        .sectionContainerStyle(.opaque)
+                        .hWithoutHorizontalPadding([.section])
+
+                        addonsView(contract: contract)
+
+                        VStack(spacing: .padding8) {
+                            if contract.showEditInfo {
+                                hButton(
+                                    .large,
+                                    .secondary,
+                                    content: .init(title: vm.getButtonText(contract)),
+                                    {
+                                        if contract.onlyCoInsured() {
+                                            let contract: InsuredPeopleConfig = .init(
+                                                contract: contract,
+                                                fromInfoCard: false
+                                            )
+                                            contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                                        } else {
+                                            contractsNavigationVm.changeYourInformationContract = contract
                                         }
-                                        .foregroundColor(hTextColor.Opaque.secondary)
                                     }
-                                    .accessibilityElement(children: .combine)
-                                }
-
-                                if let currentAgreementCost = contract.currentAgreement?.itemCost {
-                                    hRowDivider()
-                                        .padding(.horizontal, .padding16)
-                                    ItemCostView(itemCost: currentAgreementCost)
-                                }
-
-                                if contract.supportsCoInsured {
-                                    hRowDivider()
-                                        .padding(.horizontal, .padding16)
-                                    addCoInsuredView(contract: contract)
-                                }
+                                )
                             }
-                            .padding()
-                            .sectionContainerStyle(.opaque)
-                            .hWithoutHorizontalPadding([.section])
-
-                            addonsView(contract: contract)
-
-                            VStack(spacing: .padding8) {
-                                if contract.showEditInfo {
-                                    hSection {
-                                        hButton(
-                                            .large,
-                                            .secondary,
-                                            content: .init(title: vm.getButtonText(contract)),
-                                            {
-                                                if contract.onlyCoInsured() {
-                                                    let contract: InsuredPeopleConfig = .init(
-                                                        contract: contract,
-                                                        fromInfoCard: false
-                                                    )
-
-                                                    contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-                                                } else {
-                                                    contractsNavigationVm.changeYourInformationContract = contract
-                                                }
-                                            }
-                                        )
-                                    }
-                                }
-                                moveAddressButton(contract: contract)
-                            }
-                            .padding(.bottom, .padding16)
+                            moveAddressButton(contract: contract)
                         }
                     }
-                    .hWithoutHorizontalPadding([.row, .divider])
                 }
+                .padding(.horizontal, .padding16)
+                .padding(.bottom, .padding16)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -239,7 +233,6 @@ struct ContractInformationView: View {
                     }
                 }
             }
-            .padding()
             .sectionContainerStyle(.opaque)
             .hWithoutHorizontalPadding([.section])
         }
@@ -334,45 +327,41 @@ struct ContractInformationView: View {
             let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
             URL(string: upcomingRenewal.certificateUrl) != nil
         {
-            hSection {
-                InfoCard(
-                    text: days == 1
-                        ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days + 1),
-                    type: .info
+            InfoCard(
+                text: days == 1
+                    ? L10n.dashboardRenewalPrompterBodyTomorrow : L10n.dashboardRenewalPrompterBody(days + 1),
+                type: .info
+            )
+            .buttons([
+                .init(
+                    buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
+                    buttonAction: {
+                        contractsNavigationVm.document = hPDFDocument(
+                            displayName: L10n.insuranceCertificateTitle,
+                            url: upcomingRenewal.certificateUrl ?? "",
+                            type: .unknown
+                        )
+                    }
                 )
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
-                        buttonAction: {
-                            contractsNavigationVm.document = hPDFDocument(
-                                displayName: L10n.insuranceCertificateTitle,
-                                url: upcomingRenewal.certificateUrl ?? "",
-                                type: .unknown
-                            )
-                        }
-                    )
-                ])
-            }
+            ])
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
-            hSection {
-                InfoCard(
-                    text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
-                        upcomingChangedAgreement.agreementDate.activeFrom?.localDateToDate?
-                            .displayDateDDMMMYYYYFormat ?? ""
-                    ),
-                    type: .info
+            InfoCard(
+                text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
+                    upcomingChangedAgreement.agreementDate.activeFrom?.localDateToDate?
+                        .displayDateDDMMMYYYYFormat ?? ""
+                ),
+                type: .info
+            )
+            .buttons([
+                .init(
+                    buttonTitle: L10n.InsurancesTab.viewDetails,
+                    buttonAction: {
+                        contractsNavigationVm.insuranceUpdate = upcomingChangedAgreement
+                    }
                 )
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.InsurancesTab.viewDetails,
-                        buttonAction: {
-                            contractsNavigationVm.insuranceUpdate = upcomingChangedAgreement
-                        }
-                    )
-                ])
-            }
+            ])
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             upcomingChangedAgreement.certificateUrl == nil
         {
@@ -393,17 +382,14 @@ struct ContractInformationView: View {
         if contract.supportsAddressChange, featureFlags.isMovingFlowEnabled,
             contractsThatSupportsMoving.count < 2, !contract.isTerminated
         {
-            hSection {
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.InsuranceDetails.moveButton),
-                    {
-                        contractsNavigationVm.isChangeAddressPresented = true
-                    }
-                )
-            }
-            .sectionContainerStyle(.transparent)
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.InsuranceDetails.moveButton),
+                {
+                    contractsNavigationVm.isChangeAddressPresented = true
+                }
+            )
         }
     }
 }
@@ -465,6 +451,6 @@ public struct CoInsuredInfoView: View {
     let store: ContractStore = globalPresentableStoreContainer.get()
     store.send(.fetchContracts)
 
-    return ContractInformationView(id: "contractId")
+    return ScrollView { ContractInformationView(id: "contractId") }
         .environmentObject(ContractsNavigationViewModel())
 }

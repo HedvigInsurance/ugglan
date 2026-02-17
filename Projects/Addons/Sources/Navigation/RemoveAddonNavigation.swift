@@ -13,7 +13,7 @@ public struct RemoveAddonInput: Identifiable, Equatable {
 }
 
 @MainActor
-public class RemoveAddonNavigationViewModel: ObservableObject {
+class RemoveAddonNavigationViewModel: ObservableObject {
     let router = Router()
     let removeAddonVm: RemoveAddonViewModel
     @Published var isProcessingPresented = false
@@ -31,9 +31,10 @@ public struct RemoveAddonNavigation: View {
     @StateObject var removeAddonNavigationVm: RemoveAddonNavigationViewModel
     @ObservedObject var removeAddonVm: RemoveAddonViewModel
 
-    public init(_ removeAddonNavigationVm: RemoveAddonNavigationViewModel) {
-        self._removeAddonNavigationVm = .init(wrappedValue: removeAddonNavigationVm)
-        self.removeAddonVm = removeAddonNavigationVm.removeAddonVm
+    public init(_ config: AddonConfig) {
+        let vm = RemoveAddonNavigationViewModel(config)
+        self._removeAddonNavigationVm = .init(wrappedValue: vm)
+        self.removeAddonVm = vm.removeAddonVm
     }
 
     public var body: some View {

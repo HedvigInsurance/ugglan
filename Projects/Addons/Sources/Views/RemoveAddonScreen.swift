@@ -13,11 +13,21 @@ struct RemoveAddonScreen: View {
     var body: some View {
         successView
             .loading($removeAddonVm.fetchState)
+            .disabled(removeAddonVm.fetchingCostState == .loading)
+            .trackErrorState(for: $removeAddonVm.fetchingCostState)
             .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init { Task { await removeAddonVm.fetchOffer() } },
-                    dismissButton: .init { removeAddonNavigationVm.router.dismiss() }
-                )
+                removeAddonVm.fetchState.isError
+                    ? .init(
+                        actionButton: .init { Task { await removeAddonVm.fetchOffer() } },
+                        dismissButton: .init { removeAddonNavigationVm.router.dismiss() }
+                    )
+                    : .init(
+                        actionButton: .init { removeAddonVm.fetchingCostState = .success },
+                        dismissButton: .init(buttonTitle: L10n.generalCloseButton) {
+                            removeAddonVm.fetchingCostState = .success
+                            removeAddonNavigationVm.router.dismiss()
+                        }
+                    )
             )
     }
 
@@ -33,7 +43,7 @@ struct RemoveAddonScreen: View {
                     hSection {
                         VStack(alignment: .leading, spacing: .padding8) {
                             ForEach(offer.removableAddons) { addon in
-                                addonToggleRow(
+                                AddonOptionRow(
                                     title: addon.displayTitle,
                                     subtitle: addon.displayDescription ?? "",
                                     isSelected: removeAddonVm.isAddonSelected(addon),
@@ -45,58 +55,25 @@ struct RemoveAddonScreen: View {
                                         )
                                         .hFieldSize(.small)
                                     },
-                                    onTap: { withAnimation { removeAddonVm.toggleAddon(addon) } }
+                                    onTap: { removeAddonVm.toggleAddon(addon) }
                                 )
                             }
                         }
                     }
                     hSection {
                         hContinueButton {
-                            removeAddonNavigationVm.router.push(RemoveAddonRouterActions.summary)
+                            Task {
+                                await removeAddonVm.getAddonRemoveOfferCost()
+                                guard removeAddonVm.addonRemoveOfferCost != nil else { return }
+                                removeAddonNavigationVm.router.push(RemoveAddonRouterActions.summary)
+                            }
                         }
                         .disabled(!removeAddonVm.allowToContinue)
+                        .hButtonIsLoading(removeAddonVm.fetchingCostState == .loading)
                     }
                 }
                 .sectionContainerStyle(.transparent)
         }
-    }
-
-    @hColorBuilder
-    private func checkmarkColor(isSelected: Bool) -> some hColor {
-        if isSelected { hColorBase(.green) } else { hGrayscaleTranslucent.greyScaleTranslucent300 }
-    }
-
-    @ViewBuilder
-    private func addonToggleRow<Trailing: View>(
-        title: String,
-        subtitle: String,
-        isSelected: Bool,
-        @ViewBuilder trailingView: () -> Trailing,
-        onTap: @escaping () -> Void
-    ) -> some View {
-        let checkmarkColor = checkmarkColor(isSelected: isSelected)
-        ZStack {
-            HStack(alignment: .top) {
-                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                    .foregroundColor(checkmarkColor)
-                    .font(.title2)
-
-                VStack(alignment: .leading, spacing: .padding4) {
-                    HStack {
-                        hText(title)
-                        Spacer()
-                        trailingView()
-                    }
-                    hText(subtitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                }
-            }
-            .padding(.init(top: .padding18, leading: .padding16, bottom: .padding24, trailing: .padding16))
-        }
-        .onTapGesture { withAnimation { onTap() } }
-        .accessibilityAction { onTap() }
-        .background(hSurfaceColor.Opaque.primary)
-        .cornerRadius(.cornerRadiusL)
     }
 }
 

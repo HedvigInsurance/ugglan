@@ -17,7 +17,7 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
-        let documents = selectedAddons.flatMap { $0.addonVariant.documents }
+        let documents = addonOffer?.quote.productVariant.documents ?? []
 
         let typeOfContract: TypeOfContract? =
             if let addonOffer {

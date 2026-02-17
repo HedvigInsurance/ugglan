@@ -29,7 +29,7 @@ struct RemoveAddonProcessingView: View {
         )
         .onDeinit { [weak navigationVm] in
             if navigationVm?.removeAddonVm.submittingState == .success {
-                Task { NotificationCenter.default.post(name: .addonRemoved, object: nil) }
+                Task { NotificationCenter.default.post(name: .addonsChanged, object: nil) }
             }
         }
     }
