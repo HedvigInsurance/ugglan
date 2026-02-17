@@ -13,8 +13,7 @@ struct MockData {
         fetchAddonOfferCost: @escaping FetchAddonOfferCost = { _, _ in throw AddonsError.somethingWentWrong },
         fetchAddonRemoveOffer: @escaping FetchAddonRemoveOffer = { _ in throw AddonsError.somethingWentWrong },
         confirmAddonRemoval: @escaping ConfirmAddonRemoval = { _, _ in },
-        fetchAddonRemoveOfferCost: @escaping FetchAddonRemoveOfferCost = { _, _ in
-            throw AddonsError.somethingWentWrong
+        fetchAddonRemoveOfferCost: @escaping FetchAddonRemoveOfferCost = { _, _ in throw AddonsError.somethingWentWrong
         }
     ) -> MockAddonsService {
         let service = MockAddonsService(

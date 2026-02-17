@@ -203,6 +203,30 @@ public let testCarAddonRisk: AddonOffer = .init(
     whatsIncludedPageDescription: "Car Plus gives you extra protection for your car insurance"
 )
 
+// MARK: - Remove offer
+public let testRemoveOffer = AddonRemoveOffer(
+    pageTitle: "Remove addon",
+    pageDescription: "Select which addons you want to remove",
+    currentTotalCost: .init(premium: .init(gross: .sek(529), net: .sek(450)), discounts: []),
+    baseCost: .init(premium: .init(gross: .sek(469), net: .sek(399)), discounts: []),
+    productVariant: carProductVariant,
+    activationDate: activationDate,
+    removableAddons: [
+        .init(
+            id: "sjalvriskreducering",
+            cost: .init(premium: .init(gross: .sek(19), net: .sek(19)), discounts: []),
+            displayTitle: "Självriskavdrag",
+            displayDescription: "Kollision, viltolycka och bärgning"
+        ),
+        .init(
+            id: "hyrbil",
+            cost: .init(premium: .zeroSek, discounts: []),
+            displayTitle: "Hyrbil",
+            displayDescription: "När din egen bil inte kan användas"
+        ),
+    ]
+)
+
 // MARK: - Test helpers
 @MainActor
 public let testAddonConfig = AddonConfig(contractId: "ContractId", exposureName: "Exposure", displayName: "Insurance")
