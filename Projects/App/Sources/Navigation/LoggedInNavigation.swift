@@ -51,7 +51,9 @@ class PushNotificationHandler {
         case .CHANGE_TIER:
             handleChangeTierNotification(notification)
         case .ADDON_TRAVEL:
-            Task { await handleAddon() }
+            Task { await handleAddon(type: .travelPlus, contractId: nil) }
+        case .ADDON_CAR_PLUS:
+            Task { await handleAddon(type: .carPlus, contractId: nil) }
         case .OPEN_CLAIM, .CLAIM_CLOSED:
             handleClaimNotification(notification)
         case .INSURANCE_EVIDENCE:
@@ -144,19 +146,22 @@ class PushNotificationHandler {
         }
     }
 
-    func handleAddon() async {
+    func handleAddon(type: AddonBanner.AddonType, contractId: String?) async {
         do {
             let client: FetchContractsClient = Dependencies.shared.resolve()
-            let addonBanners = try await client.getAddonBanners(source: .deeplink)
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
-            var addonConfigs: [AddonConfig] = []
+            // take the first one that hast same type
+            if let addonBanner = try await client.getAddonBanners(source: .deeplink)
+                .filter({ $0.addonType == type })
+                .first
+            {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
-            for addon in addonBanners {
-                let addonContracts = addon.contractIds.compactMap {
+                var addonConfigs: [AddonConfig] = []
+
+                let addonContracts = addonBanner.contractIds.compactMap {
                     contractStore.state.contractForId($0)
                 }
-
                 guard !addonContracts.isEmpty else {
                     throw AddonsError.missingContracts
                 }
@@ -170,11 +175,11 @@ class PushNotificationHandler {
                         )
                     }
                 )
+                viewModel?.isAddonPresented = .init(
+                    addonSource: .deeplink,
+                    contractConfigs: addonConfigs
+                )
             }
-            viewModel?.isAddonPresented = .init(
-                addonSource: .deeplink,
-                contractConfigs: addonConfigs
-            )
         } catch {
             viewModel?.isAddonErrorPresented = error.localizedDescription
         }
@@ -266,7 +271,14 @@ class DeepLinkHandler {
         case .changeTier:
             viewModel?.handleChangeTier(contractId: url.getParameter(property: .contractId))
         case .travelAddon:
-            Task { [weak viewModel] in await viewModel?.handleTravelAddon() }
+            Task { [weak viewModel] in
+                await viewModel?.handleAddon(type: .travelPlus, contractId: url.getParameter(property: .contractId))
+            }
+        case .carPlusAddon:
+            Task { [weak viewModel] in
+                await viewModel?.handleAddon(type: .carPlus, contractId: url.getParameter(property: .contractId))
+            }
+
         case .editCoInsured:
             handleEditCoInsured(url: url)
         case .claimDetails:
@@ -1039,8 +1051,8 @@ class LoggedInNavigationViewModel: ObservableObject {
         pushNotificationHandler.handleChangeTier(contractId: contractId)
     }
 
-    func handleTravelAddon() async {
-        await pushNotificationHandler.handleAddon()
+    func handleAddon(type: AddonBanner.AddonType, contractId: String?) async {
+        await pushNotificationHandler.handleAddon(type: type, contractId: contractId)
     }
 
     func handleInsuranceEvidence() {

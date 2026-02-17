@@ -126,6 +126,7 @@ enum PushNotificationType: String {
     case OPEN_CONTACT_INFO
     case CHANGE_TIER
     case ADDON_TRAVEL
+    case ADDON_CAR_PLUS
     case CLAIM_CLOSED
     case OPEN_CLAIM
     case INSURANCE_EVIDENCE

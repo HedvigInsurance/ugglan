@@ -94,9 +94,26 @@ class AddonsClientOctopus: AddonsClient {
                     contractIds: banner.contractIds,
                     titleDisplayName: banner.displayTitleName,
                     descriptionDisplayName: banner.descriptionDisplayName,
-                    badges: banner.badges
+                    badges: banner.badges,
+                    addonType: banner.flow.asAddonType
+
                 )
             }
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.AddonFlow> {
+    var asAddonType: AddonBanner.AddonType? {
+        switch self {
+        case let .case(type):
+            switch type {
+            case .appCarPlus: return .carPlus
+            case .appTravelPlusSellOnly: return .travelPlus
+            case .appTravelPlusSellOrUpgrade: return .travelPlus
+            }
+        case .unknown:
+            return nil
+        }
     }
 }
 
@@ -105,7 +122,7 @@ extension AddonSource {
         let rawFlows: [OctopusGraphQL.AddonFlow] =
             switch self {
             case .insurances, .crossSell: [.appTravelPlusSellOnly, .appCarPlus]
-            case .travelCertificates, .deeplink: [.appTravelPlusSellOrUpgrade]
+            case .travelCertificates, .deeplink: [.appTravelPlusSellOrUpgrade, .appCarPlus]
             }
         return rawFlows.map(GraphQLEnum.init)
     }
