@@ -82,7 +82,7 @@ public class RemoveAddonViewModel: ObservableObject {
     }
 
     func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
-        guard let removeOffer else { return [] }
+        guard let removeOffer, let addonRemoveOfferCost else { return [] }
         var items: [QuoteDisplayItem] = []
 
         let baseGross = removeOffer.baseCost.premium.gross.formattedAmountPerMonth
@@ -96,25 +96,14 @@ public class RemoveAddonViewModel: ObservableObject {
             )
         }
 
-        items += removeOffer.currentTotalCost.discounts.map { discount in
+        items += addonRemoveOfferCost.discounts.map { discount in
             .init(title: discount.displayName, value: discount.displayValue)
         }
 
         return items
     }
 
-    func getNewPremium() -> Premium {
-        guard let removeOffer else { return .zeroSek }
-        let removedPremium = removeOffer.removableAddons
-            .filter { selectedAddonIds.contains($0.id) }
-            .map(\.cost.premium)
-            .sum()
-        return removeOffer.currentTotalCost.premium - removedPremium
-    }
-
-    func getCurrentAndNewPrice() -> Premium {
-        guard let removeOffer else { return .zeroSek }
-        let newPremium = getNewPremium()
-        return Premium(gross: removeOffer.currentTotalCost.premium.gross, net: newPremium.gross)
+    func getPremium() -> Premium {
+        addonRemoveOfferCost?.premium ?? .zeroSek
     }
 }
