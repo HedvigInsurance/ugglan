@@ -40,7 +40,7 @@ struct SubmitClaimFormView: View {
         ) { [weak viewModel] model in
             ItemPickerScreen<SingleSelectValue>(
                 config: .init(
-                    items: model.values.map({ ($0, .init(title: $0.title)) }),
+                    items: model.values.map({ ($0, .init(title: $0.title, subTitle: $0.subtitle)) }),
                     preSelectedItems: {
                         if let fieldModel = viewModel?.getFormStepValue(for: model.id),
                             let fieldOptions = viewModel?.formModel.fields.first(where: { $0.id == model.id })?.options
@@ -48,7 +48,7 @@ struct SubmitClaimFormView: View {
                             let selectedValues = fieldModel.values
 
                             return fieldOptions.filter({ selectedValues.contains($0.value) })
-                                .map({ SingleSelectValue(title: $0.title, value: $0.value) })
+                                .map({ SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value) })
                         }
                         return []
                     },
@@ -186,7 +186,7 @@ struct FormFieldView: View {
             error: $fieldViewModel.error
         ) { [weak viewModel] in
             let values: [SingleSelectValue] = field.options.map {
-                .init(title: $0.title, value: $0.value)
+                .init(title: $0.title, subtitle: $0.subtitle, value: $0.value)
             }
             viewModel?.isSelectItemPresented = .init(
                 id: field.id,
@@ -207,7 +207,7 @@ struct FormFieldView: View {
             error: $fieldViewModel.error
         ) { [weak viewModel] in
             let values: [SingleSelectValue] = field.options.map {
-                .init(title: $0.title, value: $0.value)
+                .init(title: $0.title, subtitle: $0.subtitle, value: $0.value)
             }
             viewModel?.isSelectItemPresented = .init(
                 id: field.id,
@@ -292,7 +292,10 @@ struct SubmitClaimFormResultView: View {
 }
 
 #Preview {
-    SubmitClaimFormView(
+    let demoService = ClaimIntentClientDemo()
+    Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demoService })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return SubmitClaimFormView(
         viewModel: ClaimIntentClientDemo().demoFormModel
     )
 }

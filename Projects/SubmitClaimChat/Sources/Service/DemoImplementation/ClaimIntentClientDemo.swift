@@ -24,7 +24,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                         )
                     ),
                     id: "1",
-                    text: "Select one"
+                    text: "Select one from options that we provided for you to select. Choose wisely"
                 ),
                 id: UUID().uuidString,
                 isSkippable: true,
@@ -171,9 +171,9 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     maxValue: nil,
                                     minValue: nil,
                                     options: [
-                                        .init(title: "Option 1", value: "1"),
-                                        .init(title: "Option 2", value: "2"),
-                                        .init(title: "Option 3", value: "3"),
+                                        .init(title: "Option 1", subtitle: nil, value: "1"),
+                                        .init(title: "Option 2", subtitle: nil, value: "2"),
+                                        .init(title: "Option 3", subtitle: nil, value: "3"),
                                     ],
                                     suffix: nil,
                                     title: "Single select",
@@ -186,9 +186,9 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     maxValue: nil,
                                     minValue: nil,
                                     options: [
-                                        .init(title: "Option 1", value: "1"),
-                                        .init(title: "Option 2", value: "2"),
-                                        .init(title: "Option 3", value: "3"),
+                                        .init(title: "Option 1", subtitle: nil, value: "1"),
+                                        .init(title: "Option 2", subtitle: nil, value: "2"),
+                                        .init(title: "Option 3", subtitle: nil, value: "3"),
                                     ],
                                     suffix: nil,
                                     title: "Multi select",
@@ -345,8 +345,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 maxValue: nil,
                                 minValue: nil,
                                 options: [
-                                    .init(title: "Opt 1", value: "opt1"),
-                                    .init(title: "Opt 2", value: "opt2"),
+                                    .init(title: "Opt 1", subtitle: nil, value: "opt1"),
+                                    .init(title: "Opt 2", subtitle: nil, value: "opt2"),
                                 ],
                                 suffix: nil,
                                 title: "binary",
@@ -370,8 +370,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 maxValue: nil,
                                 minValue: nil,
                                 options: [
-                                    .init(title: "Opt 1", value: "opt1"),
-                                    .init(title: "Opt 2", value: "opt2"),
+                                    .init(title: "Opt 1", subtitle: nil, value: "opt1"),
+                                    .init(title: "Opt 2", subtitle: nil, value: "opt2"),
                                 ],
                                 suffix: nil,
                                 title: "single select",
@@ -384,8 +384,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 maxValue: nil,
                                 minValue: nil,
                                 options: [
-                                    .init(title: "Opt 1", value: "opt1"),
-                                    .init(title: "Opt 2", value: "opt2"),
+                                    .init(title: "Opt 1", subtitle: nil, value: "opt1"),
+                                    .init(title: "Opt 2", subtitle: nil, value: "opt2"),
                                 ],
                                 suffix: nil,
                                 title: "multi select",

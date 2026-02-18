@@ -120,6 +120,7 @@ fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormFi
     isRequired
     options {
         title
+        subtitle
         value
     }
     defaultValues

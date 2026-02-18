@@ -41,6 +41,8 @@ extension TypeOfContract {
             return .cat
         case .seCatPremium:
             return .cat
+        case .seVacationHome:
+            return .vacationHome
         case .unknown:
             return .unknown
         }
@@ -77,6 +79,8 @@ extension PillowType {
             return hCoreUIAssets.bigPillowHome
         case .villa:
             return hCoreUIAssets.bigPillowVilla
+        case .vacationHome:
+            return hCoreUIAssets.bigPillowVacationHome
         case .unknown:
             return hCoreUIAssets.bigPillowHome
         }
