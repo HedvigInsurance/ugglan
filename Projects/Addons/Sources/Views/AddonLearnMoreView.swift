@@ -4,11 +4,9 @@ import hCoreUI
 
 struct AddonLearnMoreView: View {
     let model: AddonInfo
-    let multipleGroups: Bool
 
     init(model: AddonInfo) {
         self.model = model
-        multipleGroups = model.perilGroups.count > 1
     }
 
     var body: some View {
@@ -17,20 +15,14 @@ struct AddonLearnMoreView: View {
                 hSection {
                     headerText
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    pillSection
                 }
                 .sectionContainerStyle(.transparent)
                 VStack(alignment: .leading, spacing: .padding8) {
                     ForEach(model.perilGroups, id: \.title) { perilGroup in
-                        if multipleGroups {
-                            hSection {
-                                HStack {
-                                    hText(perilGroup.title)
-                                    Spacer()
-                                }
-                            }
-                            .sectionContainerStyle(.transparent)
+                        hSection {
+                            pillSection(title: perilGroup.title)
                         }
+                        .sectionContainerStyle(.transparent)
                         VStack(spacing: .padding4) {
                             PerilCollection(perils: perilGroup.perils)
                         }
@@ -50,10 +42,10 @@ struct AddonLearnMoreView: View {
         .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var pillSection: some View {
-        hPill(text: L10n.addonLearnMoreLabel, color: .blue)
+    private func pillSection(title: String) -> some View {
+        hPill(text: title, color: .blue)
             .hFieldSize(.medium)
-            .padding(.top, .padding32)
+            .padding(.top, .padding24)
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityAddTraits(.isHeader)
     }
@@ -84,7 +76,26 @@ struct AddonLearnMoreView: View {
                             covered: []
                         ),
                     ]
-                )
+                ),
+                .init(
+                    title: "group 2",
+                    perils: [
+                        .init(
+                            id: "id",
+                            title: "Peril1",
+                            description: "description",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id",
+                            title: "Peril2",
+                            description: "description",
+                            color: nil,
+                            covered: []
+                        ),
+                    ]
+                ),
             ]
         )
     )
