@@ -278,11 +278,13 @@ public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
 
 public struct AddonDeflect: Equatable, Identifiable {
     public let id: UUID = UUID()
+    let contractId: String
     let pageTitle: String
     let pageDescription: String
     let type: DeflectType
 
-    public init(pageTitle: String, pageDescription: String, type: DeflectType) {
+    public init(contractId: String, pageTitle: String, pageDescription: String, type: DeflectType) {
+        self.contractId = contractId
         self.pageTitle = pageTitle
         self.pageDescription = pageDescription
         self.type = type

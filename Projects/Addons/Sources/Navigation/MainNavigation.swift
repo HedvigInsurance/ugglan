@@ -16,11 +16,7 @@ public struct NavigationModifier: ViewModifier {
             .modally(item: $multipleContractsInput) { input in ChangeAddonNavigation(input: input) }
             .modally(item: $offer) { offer in ChangeAddonNavigation(offer: offer) }
             .detent(item: $deflect) { deflect in
-                DeflectView(title: deflect.pageTitle, subtitle: deflect.pageDescription, buttonTitle: "Upgrade!") {
-                    switch deflect.type {
-                    case .upgradeTier: break  // TODO: go tier upgrade
-                    }
-                }
+                DeflectView(deflect: deflect, onDismiss: { self.deflect = nil })
             }
             .onChange(of: input) { input in
                 guard let input, let configs = input.contractConfigs else { return }
@@ -35,12 +31,24 @@ public struct NavigationModifier: ViewModifier {
                     do {
                         if let config = configs.first {
                             let data = try await service.getAddonOffer(config: config, source: input.addonSource)
-                            switch data {
-                            case .deflect(let deflect): self.deflect = deflect
-                            case .offer(let offer): self.offer = offer
-                            }
+                            withAnimation {
+                                deflect = .init(
+                                    contractId: config.contractId,
+                                    pageTitle: "Du behöver en högre skyddnivå",
+                                    pageDescription: """
+                                        Våra tilläggsförsäkringar går inte att
+                                        kombinera med trafikförsäkring. Välj en
+                                        högre skyddsnivå för att fortsätta.
+                                        """,
+                                    type: .upgradeTier
+                                )
+                                //                                switch data {
+                                //                                case .deflect(let deflect): self.deflect = deflect
+                                //                                case .offer(let offer): self.offer = offer
+                                //                                }
 
-                            self.input = nil
+                                self.input = nil
+                            }
                         }
                     } catch {
                         Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))

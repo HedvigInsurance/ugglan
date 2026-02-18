@@ -35,11 +35,7 @@ public struct AddonSelectInsuranceScreen: View {
             .loadingWithButtonLoading($vm.processingState)
             .hStateViewButtonConfig(.init(actionButton: .init { withAnimation { vm.processingState = .success } }))
             .detent(item: $vm.deflect) { deflect in
-                DeflectView(title: deflect.pageTitle, subtitle: deflect.pageDescription, buttonTitle: "Upgrade!") {
-                    switch deflect.type {
-                    case .upgradeTier: break  // TODO: go tier upgrade
-                    }
-                }
+                DeflectView(deflect: deflect, onDismiss: { vm.deflect = nil })
             }
     }
 
@@ -70,12 +66,10 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
             withAnimation { processingState = .loading }
             do {
                 let data = try await service.getAddonOffer(config: config, source: navigationVm.input.addonSource)
-                self.deflect = .init(pageTitle: "go", pageDescription: "down", type: .upgradeTier)
-                return
 
-                    withAnimation { processingState = .success }
+                withAnimation { processingState = .success }
                 switch data {
-                case .deflect(let deflect): self.deflect = deflect
+                case .deflect(let deflect): withAnimation { self.deflect = deflect }
                 case .offer(let offer):
                     navigationVm.changeAddonVm = .init(offer: offer)
                     navigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)

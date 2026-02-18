@@ -21,6 +21,7 @@ class AddonsClientOctopus: AddonsClient {
         if let deflect = result.asAddonOfferDeflect {
             return .deflect(
                 .init(
+                    contractId: config.contractId,
                     pageTitle: deflect.pageTitle,
                     pageDescription: deflect.pageDescription,
                     type: deflect.type.asDeflectType
