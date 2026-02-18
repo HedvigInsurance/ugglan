@@ -10,5 +10,6 @@ public enum PillowType: Codable {
     case student
     case travel
     case villa
+    case vacationHome
     case unknown
 }

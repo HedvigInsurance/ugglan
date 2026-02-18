@@ -7,6 +7,7 @@ struct VoiceRecordingCardContent: View {
     let onSend: () async throws -> Void
     @State private var waveformWidth: CGFloat = 0
     @State private var dragProgress: Double?
+    @State private var timerHeight: Double = 0
 
     var body: some View {
         hForm {
@@ -16,27 +17,39 @@ struct VoiceRecordingCardContent: View {
                         hText(L10n.claimsTriagingWhatHappenedTitle)
                             .foregroundColor(titleColor)
                             .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
-                        if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
-                            let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
-                        {
-                            HStack(spacing: 0) {
-                                hText(formattedTimeMinutes)
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                hText(":")
-                                hText(formattedTimeSeconds)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            .hTextStyle(.body1)
-                            .foregroundColor(recordingProgressColor)
-                            .accessibilityHidden(true)
-                        } else {
-                            hText(" ", style: .body1)
+                        Group {
+                            if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
+                                let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
+                            {
+                                HStack(spacing: 0) {
+                                    hText(formattedTimeMinutes)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                    hText(":")
+                                    hText(formattedTimeSeconds)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .hTextStyle(.body1)
                                 .foregroundColor(recordingProgressColor)
                                 .accessibilityHidden(true)
+                            } else {
+                                hText(" ", style: .body1)
+                                    .foregroundColor(recordingProgressColor)
+                                    .accessibilityHidden(true)
+                            }
+                        }
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        timerHeight = proxy.size.height
+                                    }
+                                    .onChange(of: proxy.size) { value in
+                                        timerHeight = value.height
+                                    }
+                            }
                         }
                     }
                     .opacity(voiceRecorder.error != nil ? 0 : 1)
-
                     ZStack {
                         if let error = voiceRecorder.error {
                             StateView(
@@ -55,7 +68,8 @@ struct VoiceRecordingCardContent: View {
                         }
                         waveformSection
                             .padding(.horizontal, .padding45)
-                            .padding(.vertical, .padding64)
+                            .padding(.bottom, .padding64)
+                            .padding(.top, max(.padding64 - timerHeight, 0))
                             .opacity(voiceRecorder.isSending || voiceRecorder.error != nil ? 0 : 1)
                             .animation(.defaultSpring, value: voiceRecorder.hasRecording)
                             .accessibilityHidden(

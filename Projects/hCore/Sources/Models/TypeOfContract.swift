@@ -31,6 +31,7 @@ public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
     case seCatBasic = "SE_CAT_BASIC"
     case seCatStandard = "SE_CAT_STANDARD"
     case seCatPremium = "SE_CAT_PREMIUM"
+    case seVacationHome = "SE_VACATION_HOME"
     case unknown = "UNKNOWN"
 }
 

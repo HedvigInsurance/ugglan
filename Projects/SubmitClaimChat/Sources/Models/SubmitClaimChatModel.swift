@@ -27,6 +27,7 @@ struct SingleItemModel: Equatable, Identifiable {
 
 struct SingleSelectValue: Hashable {
     let title: String
+    let subtitle: String?
     let value: String
 }
 
@@ -144,10 +145,12 @@ public struct ClaimIntentStepContentForm: Sendable {
 
     public struct ClaimIntentStepContentFormFieldOption: Sendable {
         let title: String
+        let subtitle: String?
         let value: String
 
-        public init(title: String, value: String) {
+        public init(title: String, subtitle: String?, value: String) {
             self.title = title
+            self.subtitle = subtitle
             self.value = value
         }
     }
