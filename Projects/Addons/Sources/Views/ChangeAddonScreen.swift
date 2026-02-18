@@ -25,7 +25,6 @@ struct ChangeAddonScreen: View {
             )
     }
 
-    @ViewBuilder
     private var successView: some View {
         hForm {}
             .hFormTitle(
@@ -41,7 +40,7 @@ struct ChangeAddonScreen: View {
                 }
 
                 hSection {
-                    hContinueButton {
+                    hContinueButton { [unowned vm, unowned navigationVm] in
                         Task {
                             await vm.getAddonOfferCost()
                             guard vm.addonOfferCost != nil else { return }
@@ -55,7 +54,6 @@ struct ChangeAddonScreen: View {
             }
     }
 
-    @ViewBuilder
     private var addOnSection: some View {
         VStack(alignment: .leading, spacing: .padding8) {
             HStack {
@@ -84,10 +82,9 @@ struct ChangeAddonScreen: View {
         }
     }
 
-    @ViewBuilder
     private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
         VStack(alignment: .leading, spacing: .padding4) {
-            ForEach(toggleable.quotes) { addon in
+            ForEach(toggleable.quotes) { [unowned vm] addon in
                 AddonOptionRow(
                     title: addon.displayTitle,
                     subtitle: addon.displayDescription,
@@ -100,7 +97,7 @@ struct ChangeAddonScreen: View {
                         )
                         .hFieldSize(.small)
                     },
-                    onTap: { vm.selectAddon(addon: addon) }
+                    onTap: { [unowned vm] in vm.selectAddon(addon: addon) }
                 )
             }
 
@@ -119,27 +116,24 @@ struct ChangeAddonScreen: View {
         }
     }
 
-    @ViewBuilder
     private func selectableAddonSection(selectable: AddonOfferSelectable) -> some View {
-        if let selectedQuote = vm.selectedAddons.first {
-            Group {
-                let isDropDownDisabled = vm.isDropDownDisabled(for: selectable)
-                DropdownView(
-                    value: selectedQuote.displayTitle,
-                    placeHolder: L10n.addonFlowSelectDaysPlaceholder
-                ) {
-                    navigationVm.isSelectableAddonPresented = selectable
-                }
-                .disabled(isDropDownDisabled)
-                .padding(.top, .padding16)
-                .hBackgroundOption(option: isDropDownDisabled ? [.locked] : [])
-                .hWithoutHorizontalPadding([.section])
-                .accessibilityHidden(false)
+        Group {
+            let isDropDownDisabled = vm.isDropDownDisabled(for: selectable)
+            DropdownView(
+                value: vm.selectedAddons.first!.displayTitle,
+                placeHolder: L10n.addonFlowSelectDaysPlaceholder
+            ) { [unowned navigationVm] in
+                navigationVm.isSelectableAddonPresented = selectable
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-            .accessibilityAction { navigationVm.isSelectableAddonPresented = selectable }
+            .disabled(isDropDownDisabled)
+            .padding(.top, .padding16)
+            .hBackgroundOption(option: isDropDownDisabled ? [.locked] : [])
+            .hWithoutHorizontalPadding([.section])
+            .accessibilityHidden(false)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
+        .accessibilityAction { [unowned navigationVm] in navigationVm.isSelectableAddonPresented = selectable }
     }
 
     private var coverageButtonView: some View {
@@ -147,7 +141,7 @@ struct ChangeAddonScreen: View {
             .medium,
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
-        ) {
+        ) { [unowned navigationVm, unowned vm] in
             navigationVm.isLearnMorePresented = .init(
                 .init(
                     title: vm.offer.whatsIncludedPageTitle,

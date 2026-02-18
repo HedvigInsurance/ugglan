@@ -13,6 +13,13 @@ public class ChangeAddonViewModel: ObservableObject {
 
     init(offer: AddonOffer) {
         self.offer = offer
+        switch offer.quote.addonOfferContent {
+        case let .selectable(data):
+            if let first = data.quotes.first {
+                self.selectedAddons = [first]
+            }
+        case .toggleable: break
+        }
     }
 
     func isDropDownDisabled(for selectableOffer: AddonOfferSelectable) -> Bool {

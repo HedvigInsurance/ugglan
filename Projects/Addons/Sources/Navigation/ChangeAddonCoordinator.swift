@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ChangeAddonCoordinator: ViewModifier {
+private struct ChangeAddonCoordinator: ViewModifier {
     let service = AddonsService()
 
     @Binding fileprivate var input: ChangeAddonInput?

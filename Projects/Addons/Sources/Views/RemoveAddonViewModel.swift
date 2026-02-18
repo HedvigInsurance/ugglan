@@ -15,7 +15,7 @@ public class RemoveAddonViewModel: ObservableObject {
 
     init(_ contractInfo: AddonConfig) {
         self.contractInfo = contractInfo
-        Task { await fetchOffer() }
+        Task { [weak self] in await self?.fetchOffer() }
     }
 
     var allowToContinue: Bool {

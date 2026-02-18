@@ -20,7 +20,7 @@ public struct AddonSelectInsuranceScreen: View {
                 return items
             }(),
             preSelectedItems: { vm.selectedItems },
-            onSelected: { selected in
+            onSelected: { [unowned vm] selected in
                 if let selectedConfig = selected.first?.0 {
                     vm.selectedItems = selected.compactMap(\.0)
                     vm.getAddonOffer(config: selectedConfig)
@@ -33,8 +33,10 @@ public struct AddonSelectInsuranceScreen: View {
     public var body: some View {
         successView
             .loadingWithButtonLoading($vm.processingState)
-            .hStateViewButtonConfig(.init(actionButton: .init { withAnimation { vm.processingState = .success } }))
-            .detent(item: $vm.deflect) { DeflectView(deflect: $0, onDismiss: { vm.deflect = nil }) }
+            .hStateViewButtonConfig(
+                .init(actionButton: .init { withAnimation { [unowned vm] in vm.processingState = .success } })
+            )
+            .detent(item: $vm.deflect) { DeflectView(deflect: $0, onDismiss: { [unowned vm] in vm.deflect = nil }) }
     }
 
     private var successView: some View {
