@@ -509,8 +509,6 @@ struct LoggedInNavigation: View {
                 ChangeTierNavigation(input: input) {
                     fetchContracts()
                 }
-            case let .addon(input: input):
-                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {

@@ -66,7 +66,7 @@ enum ChangeAddonRouterActions {
     case summary
 }
 
-public struct ChangeAddonNavigation: View {
+struct ChangeAddonNavigation: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
     public init(input: ChangeAddonInput) {

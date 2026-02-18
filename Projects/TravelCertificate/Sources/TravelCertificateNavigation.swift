@@ -129,12 +129,7 @@ public struct TravelCertificateNavigation: View {
                 description: L10n.TravelCertificate.Info.subtitle
             )
         }
-        .modally(
-            item: $vm.isAddonPresented,
-            options: .constant(.withoutGrabber)
-        ) { addonInput in
-            ChangeAddonNavigation(input: addonInput)
-        }
+        .handleAddons(input: $vm.isAddonPresented)
         .modally(
             item: $vm.isStartDateScreenPresented,
             tracking: TravelCertificateRouterActionsWithoutBackButton.startScreen

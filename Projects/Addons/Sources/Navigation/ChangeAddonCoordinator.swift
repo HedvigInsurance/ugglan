@@ -7,14 +7,15 @@ public struct ChangeAddonCoordinator: ViewModifier {
     let service = AddonsService()
 
     @Binding fileprivate var input: ChangeAddonInput?
+    @Binding fileprivate var options: DetentPresentationOption
     @State private var offer: AddonOffer?
     @State private var deflect: AddonDeflect?
     @State private var multipleContractsInput: ChangeAddonInput?
 
     public func body(content: Content) -> some View {
         content
-            .modally(item: $multipleContractsInput) { input in ChangeAddonNavigation(input: input) }
-            .modally(item: $offer) { offer in ChangeAddonNavigation(offer: offer) }
+            .modally(item: $multipleContractsInput, options: $options) { ChangeAddonNavigation(input: $0) }
+            .modally(item: $offer, options: $options) { ChangeAddonNavigation(offer: $0) }
             .detent(item: $deflect) { DeflectView(deflect: $0, onDismiss: { deflect = nil }) }
             .onChange(of: input) { input in
                 guard let input, let configs = input.contractConfigs else { return }
@@ -47,7 +48,10 @@ public struct ChangeAddonCoordinator: ViewModifier {
 }
 
 extension View {
-    public func handleAddons(input: Binding<ChangeAddonInput?>) -> some View {
-        modifier(ChangeAddonCoordinator(input: input))
+    public func handleAddons(
+        input: Binding<ChangeAddonInput?>,
+        options: Binding<DetentPresentationOption> = .constant(.alwaysOpenOnTop)
+    ) -> some View {
+        modifier(ChangeAddonCoordinator(input: input, options: options))
     }
 }
