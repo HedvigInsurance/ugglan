@@ -56,20 +56,10 @@ public struct DeflectView: View {
             .padding(.vertical, .padding32)
         }
         .hButtonTakeFullWidth(true)
+        .hFormContentPosition(.compact)
     }
 }
 
 #Preview {
-    DeflectView(
-        deflect: .init(
-            contractId: "cId",
-            pageTitle: "Du behöver en högre skyddnivå",
-            pageDescription: """
-                Våra tilläggsförsäkringar går inte att
-                kombinera med trafikförsäkring. Välj en
-                högre skyddsnivå för att fortsätta.
-                """,
-            type: .upgradeTier
-        )
-    ) {}
+    DeflectView(deflect: testDeflectUpgradeTier) {}
 }

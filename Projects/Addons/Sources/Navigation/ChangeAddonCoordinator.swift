@@ -15,9 +15,7 @@ public struct ChangeAddonCoordinator: ViewModifier {
         content
             .modally(item: $multipleContractsInput) { input in ChangeAddonNavigation(input: input) }
             .modally(item: $offer) { offer in ChangeAddonNavigation(offer: offer) }
-            .detent(item: $deflect) { deflect in
-                DeflectView(deflect: deflect, onDismiss: { self.deflect = nil })
-            }
+            .detent(item: $deflect) { DeflectView(deflect: $0, onDismiss: { deflect = nil }) }
             .onChange(of: input) { input in
                 guard let input, let configs = input.contractConfigs else { return }
 
