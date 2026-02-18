@@ -235,6 +235,19 @@ public let testRemoveOffer = AddonRemoveOffer(
     ]
 )
 
+// MARK: - Deflect data
+public let testDeflectUpgradeTier = AddonDeflect(
+    contractId: "cId",
+    pageTitle: "Du behöver en högre skyddnivå",
+    pageDescription: """
+        Våra tilläggsförsäkringar går inte att
+        kombinera med trafikförsäkring. Välj en
+        högre skyddsnivå för att fortsätta.
+        """,
+    type: .upgradeTier
+
+)
+
 // MARK: - Test helpers
 @MainActor
 public let testAddonConfig = AddonConfig(contractId: "ContractId", exposureName: "Exposure", displayName: "Insurance")

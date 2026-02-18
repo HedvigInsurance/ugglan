@@ -7,7 +7,7 @@ import hCore
 struct MockData {
     @discardableResult
     static func createMockAddonsService(
-        fetchAddonOffer: @escaping FetchAddonOffer = { _ in throw AddonsError.somethingWentWrong },
+        fetchAddonOffer: @escaping FetchAddonOffer = { _, _ in throw AddonsError.somethingWentWrong },
         addonsSubmit: @escaping AddonsSubmit = { _, _ in },
         fetchBanners: @escaping FetchBanners = { _ in [] },
         fetchAddonOfferCost: @escaping FetchAddonOfferCost = { _, _ in throw AddonsError.somethingWentWrong },
@@ -30,7 +30,7 @@ struct MockData {
     }
 }
 
-typealias FetchAddonOffer = (String) async throws -> AddonOffer
+typealias FetchAddonOffer = (AddonConfig, AddonSource) async throws -> AddonOfferData
 typealias AddonsSubmit = (String, Set<String>) async throws -> Void
 typealias FetchBanners = (Addons.AddonSource) async throws -> [Addons.AddonBanner]
 typealias FetchAddonOfferCost = (String, Set<String>) async throws -> ItemCost
@@ -77,9 +77,9 @@ class MockAddonsService: AddonsClient {
         self.fetchAddonRemoveOfferCost = fetchAddonRemoveOfferCost
     }
 
-    func getAddonOffer(contractId: String) async throws -> AddonOffer {
+    func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
         events.append(.getAddon)
-        return try await fetchAddon(contractId)
+        return try await fetchAddon(config, source)
     }
 
     func submitAddons(quoteId: String, addonIds: Set<String>) async throws {

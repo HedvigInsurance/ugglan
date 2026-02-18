@@ -276,7 +276,7 @@ public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
     }
 }
 
-public struct AddonDeflect: Equatable, Identifiable {
+public struct AddonDeflect: Equatable, Sendable, Identifiable {
     public let id: UUID = UUID()
     let contractId: String
     let pageTitle: String
@@ -290,12 +290,12 @@ public struct AddonDeflect: Equatable, Identifiable {
         self.type = type
     }
 
-    public enum DeflectType {
+    public enum DeflectType: Sendable {
         case upgradeTier
     }
 }
 
-public enum AddonOfferData {
+public enum AddonOfferData: Equatable, Sendable {
     case offer(AddonOffer)
     case deflect(AddonDeflect)
 }

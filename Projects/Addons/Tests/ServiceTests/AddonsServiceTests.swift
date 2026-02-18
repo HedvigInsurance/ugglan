@@ -14,13 +14,39 @@ final class AddonsServiceTests: XCTestCase {
     }
 
     func testFetchAddonDataSuccess() async throws {
-        let mockService = MockData.createMockAddonsService(fetchAddonOffer: { _ in testTravelOfferNoActive })
+        let mockService = MockData.createMockAddonsService(
+            fetchAddonOffer: { _, _ in .offer(testTravelOfferNoActive) }
+        )
 
         sut = mockService
 
-        let respondedAddonData = try await mockService.getAddonOffer(contractId: "cId")
+        let respondedAddonData = try await mockService.getAddonOffer(
+            config: testAddonConfig,
+            source: .insurances
+        )
 
-        assert(respondedAddonData == testTravelOfferNoActive)
+        assert(respondedAddonData == .offer(testTravelOfferNoActive))
+    }
+
+    func testFetchAddonDeflectSuccess() async throws {
+        let mockService = MockData.createMockAddonsService(
+            fetchAddonOffer: { _, _ in .deflect(testDeflectUpgradeTier) }
+        )
+
+        sut = mockService
+
+        let respondedAddonData = try await mockService.getAddonOffer(
+            config: testAddonConfig,
+            source: .insurances
+        )
+
+        assert(respondedAddonData == .deflect(testDeflectUpgradeTier))
+        if case .deflect(let deflect) = respondedAddonData {
+            assert(deflect.contractId == "carContractId")
+            assert(deflect.type == .upgradeTier)
+        } else {
+            XCTFail("Expected .deflect case")
+        }
     }
 
     func testGetAddonBannersSuccess() async throws {
