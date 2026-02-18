@@ -4,48 +4,26 @@ import hCore
 import hCoreUI
 
 public struct AddonSelectInsuranceScreen: View {
-    @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var vm: AddonSelectInsuranceScreenViewModel
-    let itemPickerConfig: ItemConfig<AddonConfig>
 
-    init(
-        changeAddonNavigationVm: ChangeAddonNavigationViewModel,
-        vm: AddonSelectInsuranceScreenViewModel = AddonSelectInsuranceScreenViewModel()
-    ) {
-        self.changeAddonNavigationVm = changeAddonNavigationVm
+    init(_ vm: AddonSelectInsuranceScreenViewModel) {
         self.vm = vm
-        itemPickerConfig = .init(
-            items: {
-                let addonContractConfigs = changeAddonNavigationVm.input.contractConfigs ?? []
-                let items = addonContractConfigs.map {
-                    (
-                        object: $0,
-                        displayName: ItemModel(
-                            title: $0.displayName,
-                            subTitle: $0.exposureName
-                        )
-                    )
-                }
+    }
 
+    private var itemPickerConfig: ItemConfig<AddonConfig> {
+        .init(
+            items: {
+                let addonContractConfigs = vm.navigationVm.input.contractConfigs ?? []
+                let items = addonContractConfigs.map {
+                    (object: $0, displayName: ItemModel(title: $0.displayName, subTitle: $0.exposureName))
+                }
                 return items
             }(),
             preSelectedItems: { vm.selectedItems },
             onSelected: { selected in
-                if let selectedContract = selected.first?.0 {
+                if let selectedConfig = selected.first?.0 {
                     vm.selectedItems = selected.compactMap(\.0)
-                    changeAddonNavigationVm.changeAddonVm = .init(
-                        config: selectedContract,
-                        addonSource: changeAddonNavigationVm.input.addonSource
-                    )
-                    vm.observer = changeAddonNavigationVm.changeAddonVm!.$fetchAddonsViewState
-                        .sink { [weak vm] value in
-                            withAnimation {
-                                vm?.processingState = value
-                            }
-                            guard value == .success else { return }
-                            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
-                            vm?.observer = nil
-                        }
+                    vm.getAddonOffer(config: selectedConfig)
                 }
             },
             buttonText: L10n.generalContinueButton
@@ -55,18 +33,14 @@ public struct AddonSelectInsuranceScreen: View {
     public var body: some View {
         successView
             .loadingWithButtonLoading($vm.processingState)
-            .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init(
-                        buttonAction: {
-                            withAnimation {
-                                vm.observer = nil
-                                vm.processingState = .success
-                            }
-                        }
-                    )
-                )
-            )
+            .hStateViewButtonConfig(.init(actionButton: .init { withAnimation { vm.processingState = .success } }))
+            .detent(item: $vm.deflect) { deflect in
+                DeflectView(title: deflect.pageTitle, subtitle: deflect.pageDescription, buttonTitle: "Upgrade!") {
+                    switch deflect.type {
+                    case .upgradeTier: break  // TODO: go tier upgrade
+                    }
+                }
+            }
     }
 
     private var successView: some View {
@@ -78,23 +52,54 @@ public struct AddonSelectInsuranceScreen: View {
     }
 }
 
+@MainActor
 class AddonSelectInsuranceScreenViewModel: ObservableObject {
+    private let service = AddonsService()
+    fileprivate let navigationVm: ChangeAddonNavigationViewModel
+
     @Published var processingState = ProcessingState.success
-    var observer: AnyCancellable?
     @Published var selectedItems: [AddonConfig] = []
+    @Published var deflect: AddonDeflect?
+
+    init(_ navigationVm: ChangeAddonNavigationViewModel) {
+        self.navigationVm = navigationVm
+    }
+
+    func getAddonOffer(config: AddonConfig) {
+        Task {
+            withAnimation { processingState = .loading }
+            do {
+                let data = try await service.getAddonOffer(config: config, source: navigationVm.input.addonSource)
+                self.deflect = .init(pageTitle: "go", pageDescription: "down", type: .upgradeTier)
+                return
+
+                    withAnimation { processingState = .success }
+                switch data {
+                case .deflect(let deflect): self.deflect = deflect
+                case .offer(let offer):
+                    navigationVm.changeAddonVm = .init(offer: offer)
+                    navigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
+                }
+            } catch {
+                withAnimation { processingState = .error(errorMessage: error.localizedDescription) }
+            }
+        }
+    }
 }
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return AddonSelectInsuranceScreen(
-        changeAddonNavigationVm: ChangeAddonNavigationViewModel(
-            input: .init(
-                addonSource: .insurances,
-                contractConfigs: [
-                    .init(contractId: "1", exposureName: "1", displayName: "1"),
-                    .init(contractId: "2", exposureName: "2", displayName: "2"),
-                ]
+        .init(
+            ChangeAddonNavigationViewModel(
+                input: .init(
+                    addonSource: .insurances,
+                    contractConfigs: [
+                        .init(contractId: "1", exposureName: "1", displayName: "1"),
+                        .init(contractId: "2", exposureName: "2", displayName: "2"),
+                    ]
+                )
             )
         )
     )

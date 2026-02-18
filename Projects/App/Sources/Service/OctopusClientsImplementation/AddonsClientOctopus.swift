@@ -6,8 +6,8 @@ import hGraphQL
 class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
-    public func getAddonOffer(contractId: String) async throws -> AddonOffer {
-        let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: contractId)
+    public func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
+        let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: config.contractId)
         let response = try await octopus.client.mutation(mutation: mutation)
 
         guard let result = response?.addonGenerateOffer else {
@@ -19,11 +19,11 @@ class AddonsClientOctopus: AddonsClient {
         }
 
         if let deflect = result.asAddonOfferDeflect {
-            let data = AddonData.deflect(
+            return .deflect(
                 .init(
                     pageTitle: deflect.pageTitle,
                     pageDescription: deflect.pageDescription,
-                    type: deflect.type.rawValue
+                    type: deflect.type.asDeflectType
                 )
             )
         }
@@ -35,14 +35,18 @@ class AddonsClientOctopus: AddonsClient {
         let quote = AddonContractQuote(data: addonOffer.quote)
         let currentTotalCost = ItemCost(fragment: addonOffer.currentTotalCost.fragments.itemCostFragment)
 
-        return AddonOffer(
-            pageTitle: addonOffer.pageTitle,
-            pageDescription: addonOffer.pageDescription,
-            quote: quote,
-            currentTotalCost: currentTotalCost,
-            infoMessage: addonOffer.infoMessage,
-            whatsIncludedPageTitle: addonOffer.whatsIncludedPageTitle,
-            whatsIncludedPageDescription: addonOffer.whatsIncludedPageDescription
+        return .offer(
+            .init(
+                config: config,
+                source: source,
+                pageTitle: addonOffer.pageTitle,
+                pageDescription: addonOffer.pageDescription,
+                quote: quote,
+                currentTotalCost: currentTotalCost,
+                infoMessage: addonOffer.infoMessage,
+                whatsIncludedPageTitle: addonOffer.whatsIncludedPageTitle,
+                whatsIncludedPageDescription: addonOffer.whatsIncludedPageDescription
+            )
         )
     }
 
@@ -240,5 +244,17 @@ extension ActiveAddon {
             displayTitle: data.displayTitle,
             displayDescription: data.displayDescription
         )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.AddonDeflectType> {
+    fileprivate var asDeflectType: AddonDeflect.DeflectType {
+        switch self {
+        case .case(let type):
+            switch type {
+            case .upgradeTier: .upgradeTier
+            }
+        case .unknown: .upgradeTier
+        }
     }
 }

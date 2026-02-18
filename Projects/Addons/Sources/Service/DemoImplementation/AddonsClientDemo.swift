@@ -4,9 +4,9 @@ import hCore
 public class AddonsClientDemo: AddonsClient {
     let offer: AddonOffer
 
-    public func getAddonOffer(contractId: String) async throws -> AddonOffer {
+    public func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
         await delay(TimeInterval.random(in: 0.5...1.5))
-        return offer
+        return .offer(offer)
     }
 
     public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {

@@ -101,12 +101,13 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
         }
-        .modally(item: $contractsNavigationVm.isAddonPresented) { input in
-            redirect(.addon(input: input))
-        }
+        //        .modally(item: $contractsNavigationVm.isAddonPresented) { input in
+        //            redirect(.addon(input: input))
+        //        }
         .modally(item: $contractsNavigationVm.isRemoveAddonPresented) { input in
             RemoveAddonNavigation(input.contractInfo)
         }
+        .handleAddons(input: $contractsNavigationVm.isAddonPresented)
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             transitionType: .detent(style: [.height])

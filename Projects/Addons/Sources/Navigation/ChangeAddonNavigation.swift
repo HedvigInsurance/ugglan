@@ -3,10 +3,10 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ChangeAddonInput: Identifiable, Equatable {
+public struct ChangeAddonInput: Identifiable, Equatable, Sendable {
     public var id: String = UUID().uuidString
 
-    let contractConfigs: [AddonConfig]?
+    public let contractConfigs: [AddonConfig]?
     let addonSource: AddonSource
     public init(
         addonSource: AddonSource,
@@ -21,7 +21,7 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     }
 }
 
-public enum AddonSource: String, Codable {
+public enum AddonSource: String, Codable, Sendable {
     case insurances = "INSURANCES"
     case travelCertificates = "TRAVEL_CERTIFICATES"
     case crossSell = "CROSS_SELL"
@@ -47,20 +47,17 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel?
     @Published var document: hPDFDocument?
-    let input: ChangeAddonInput
+    public let input: ChangeAddonInput
 
     let router = Router()
 
-    init(
-        input: ChangeAddonInput
-    ) {
+    init(input: ChangeAddonInput) {
         self.input = input
-        if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
-            changeAddonVm = .init(
-                config: config,
-                addonSource: input.addonSource
-            )
-        }
+    }
+
+    init(offer: AddonOffer) {
+        self.input = .init(addonSource: offer.source)
+        changeAddonVm = .init(offer: offer)
     }
 }
 
@@ -75,6 +72,9 @@ public struct ChangeAddonNavigation: View {
     public init(input: ChangeAddonInput) {
         changeAddonNavigationVm = .init(input: input)
     }
+    public init(offer: AddonOffer) {
+        changeAddonNavigationVm = .init(offer: offer)
+    }
 
     public var body: some View {
         RouterHost(
@@ -85,7 +85,7 @@ public struct ChangeAddonNavigation: View {
             let multipleContracts = changeAddonNavigationVm.input.contractConfigs?.count ?? 0 > 1
             Group {
                 if multipleContracts {
-                    AddonSelectInsuranceScreen(changeAddonNavigationVm: changeAddonNavigationVm)
+                    AddonSelectInsuranceScreen(.init(changeAddonNavigationVm))
                 } else {
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                 }

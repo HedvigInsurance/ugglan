@@ -17,17 +17,14 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
-        let documents = addonOffer?.quote.productVariant.documents ?? []
+        let documents = offer.quote.productVariant.documents
 
-        let typeOfContract: TypeOfContract? =
-            if let addonOffer {
-                TypeOfContract(rawValue: addonOffer.quote.productVariant.typeOfContract)
-            } else { nil }
+        let typeOfContract = TypeOfContract(rawValue: offer.quote.productVariant.typeOfContract)
 
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
-            id: config.contractId,
-            displayName: config.displayName,
-            exposureName: config.exposureName,
+            id: offer.config.contractId,
+            displayName: offer.config.displayName,
+            exposureName: offer.config.exposureName,
             premium: getPremium(),
             documentSection: .init(
                 documents: documents,
@@ -44,8 +41,8 @@ extension ChangeAddonViewModel {
         let increase = getAddonPriceChange() ?? .zeroSek
         let vm = QuoteSummaryViewModel(
             contract: [contractInfo],
-            activationDate: addonOffer?.quote.activationDate,
-            noticeInfo: addonOffer?.infoMessage,
+            activationDate: offer.quote.activationDate,
+            noticeInfo: offer.infoMessage,
             totalPrice: .change(amount: increase.net)
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true
@@ -60,13 +57,8 @@ extension ChangeAddonViewModel {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
 
-    let navVm = ChangeAddonNavigationViewModel(
-        input: .init(
-            addonSource: .insurances,
-            contractConfigs: [.init(contractId: "Id", exposureName: "title", displayName: "subtitle")]
-        )
-    )
-    navVm.changeAddonVm?.addonOffer = testTravelOfferNoActive
+    let navVm = ChangeAddonNavigationViewModel(offer: testTravelOfferNoActive)
+
     navVm.changeAddonVm?.selectedAddons = [travelQuote45Days]
     navVm.changeAddonVm?.addonOfferCost = testAddonOfferCost
     return ChangeAddonSummaryScreen(navVm)

@@ -99,6 +99,8 @@ public let carQuoteDrulle = AddonOfferQuote(
 
 // MARK: - Complete travel offers
 public let testTravelOfferNoActive: AddonOffer = .init(
+    config: testTravelAddonConfig,
+    source: .insurances,
     pageTitle: "Extend your coverage",
     pageDescription: "Get extra coverage when you travel abroad",
     quote: .init(
@@ -125,6 +127,8 @@ public let testTravelOfferNoActive: AddonOffer = .init(
 )
 
 public let testTravelOffer45Days: AddonOffer = .init(
+    config: testTravelAddonConfig,
+    source: .insurances,
     pageTitle: "Extend your coverage",
     pageDescription: "Upgrade your travel insurance for longer trips",
     quote: .init(
@@ -159,6 +163,8 @@ public let testTravelOffer45Days: AddonOffer = .init(
 
 // MARK: - Complete car offers
 public let testCarOfferNoActive: AddonOffer = .init(
+    config: testCarAddonConfig,
+    source: .insurances,
     pageTitle: "Extend your coverage",
     pageDescription: "Get extra coverage for your car insurance",
     quote: .init(
@@ -178,6 +184,8 @@ public let testCarOfferNoActive: AddonOffer = .init(
 )
 
 public let testCarAddonRisk: AddonOffer = .init(
+    config: testCarAddonConfig,
+    source: .insurances,
     pageTitle: "Extend your coverage",
     pageDescription: "Get extra coverage for your car insurance",
     quote: .init(
@@ -230,6 +238,34 @@ public let testRemoveOffer = AddonRemoveOffer(
 // MARK: - Test helpers
 @MainActor
 public let testAddonConfig = AddonConfig(contractId: "ContractId", exposureName: "Exposure", displayName: "Insurance")
+
+public let testTravelAddonConfig = AddonConfig(
+    contractId: "travelContractId",
+    exposureName: "Hemförsäkring",
+    displayName: "Hyresrätt"
+)
+
+public let testCarAddonConfig = AddonConfig(
+    contractId: "carContractId",
+    exposureName: "ABC 123",
+    displayName: "Bilförsäkring Hel"
+)
+
+public let testTravelChangeAddonInput = ChangeAddonInput(
+    addonSource: .insurances,
+    contractConfigs: [testTravelAddonConfig]
+)
+
+public let testCarChangeAddonInput = ChangeAddonInput(
+    addonSource: .insurances,
+    contractConfigs: [testCarAddonConfig]
+)
+
+@MainActor
+public let testMultipleContractsChangeAddonInput = ChangeAddonInput(
+    addonSource: .insurances,
+    contractConfigs: [testTravelAddonConfig, testCarAddonConfig]
+)
 
 public let testAddonBanner = AddonBanner(
     contractIds: ["contractId"],

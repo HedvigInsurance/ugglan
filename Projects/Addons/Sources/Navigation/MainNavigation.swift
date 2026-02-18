@@ -6,27 +6,52 @@ import hCoreUI
 public struct NavigationModifier: ViewModifier {
     let service = AddonsService()
 
-    @Binding fileprivate var addonInput: ChangeAddonInput?
-    @State private var offer: AddonOffer? = nil
-    @State private var deflect: Bool? = nil
+    @Binding fileprivate var input: ChangeAddonInput?
+    @State private var offer: AddonOffer?
+    @State private var deflect: AddonDeflect?
+    @State private var multipleContractsInput: ChangeAddonInput?
 
     public func body(content: Content) -> some View {
         content
-            .onChange(of: addonInput) { input in
-                guard let input else {
-                    offer = nil
-                    deflect = nil
+            .modally(item: $multipleContractsInput) { input in ChangeAddonNavigation(input: input) }
+            .modally(item: $offer) { offer in ChangeAddonNavigation(offer: offer) }
+            .detent(item: $deflect) { deflect in
+                DeflectView(title: deflect.pageTitle, subtitle: deflect.pageDescription, buttonTitle: "Upgrade!") {
+                    switch deflect.type {
+                    case .upgradeTier: break  // TODO: go tier upgrade
+                    }
+                }
+            }
+            .onChange(of: input) { input in
+                guard let input, let configs = input.contractConfigs else { return }
+
+                if configs.count > 1 {
+                    multipleContractsInput = input
+                    self.input = nil
                     return
                 }
+
                 Task {
-                    let data = try await service.getAddonOffer(contractId: input.id)
+                    do {
+                        if let config = configs.first {
+                            let data = try await service.getAddonOffer(config: config, source: input.addonSource)
+                            switch data {
+                            case .deflect(let deflect): self.deflect = deflect
+                            case .offer(let offer): self.offer = offer
+                            }
+
+                            self.input = nil
+                        }
+                    } catch {
+                        Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
+                    }
                 }
             }
     }
 }
 
 extension View {
-    public func handleAddons(@Binding addonInput: ChangeAddonInput?) -> some View {
-        modifier(NavigationModifier(addonInput: $addonInput))
+    public func handleAddons(input: Binding<ChangeAddonInput?>) -> some View {
+        modifier(NavigationModifier(input: input))
     }
 }
