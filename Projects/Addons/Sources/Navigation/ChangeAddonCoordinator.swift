@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct NavigationModifier: ViewModifier {
+public struct ChangeAddonCoordinator: ViewModifier {
     let service = AddonsService()
 
     @Binding fileprivate var input: ChangeAddonInput?
@@ -32,20 +32,10 @@ public struct NavigationModifier: ViewModifier {
                         if let config = configs.first {
                             let data = try await service.getAddonOffer(config: config, source: input.addonSource)
                             withAnimation {
-                                deflect = .init(
-                                    contractId: config.contractId,
-                                    pageTitle: "Du behöver en högre skyddnivå",
-                                    pageDescription: """
-                                        Våra tilläggsförsäkringar går inte att
-                                        kombinera med trafikförsäkring. Välj en
-                                        högre skyddsnivå för att fortsätta.
-                                        """,
-                                    type: .upgradeTier
-                                )
-                                //                                switch data {
-                                //                                case .deflect(let deflect): self.deflect = deflect
-                                //                                case .offer(let offer): self.offer = offer
-                                //                                }
+                                switch data {
+                                case .deflect(let deflect): self.deflect = deflect
+                                case .offer(let offer): self.offer = offer
+                                }
 
                                 self.input = nil
                             }
@@ -60,6 +50,6 @@ public struct NavigationModifier: ViewModifier {
 
 extension View {
     public func handleAddons(input: Binding<ChangeAddonInput?>) -> some View {
-        modifier(NavigationModifier(input: input))
+        modifier(ChangeAddonCoordinator(input: input))
     }
 }
