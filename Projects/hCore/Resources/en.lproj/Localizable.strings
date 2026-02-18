@@ -17,6 +17,7 @@
 "ADDON_BADGE_ACTIVE" = "Active";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "All-risk";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Lower deductible";
+"ADDON_CAR_PLUS_DISPLAY_NAME" = "Car Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Rental car";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Yes, upgrade my coverage";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "This upgrade will take effect from %1$@ and can only be removed when your insurance is renewed or cancelled.";

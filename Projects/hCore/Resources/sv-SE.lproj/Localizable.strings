@@ -17,6 +17,7 @@
 "ADDON_BADGE_ACTIVE" = "Aktiv";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "Drulle";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Självriskavdrag";
+"ADDON_CAR_PLUS_DISPLAY_NAME" = "Bil Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Hyrbil";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Ja, uppgradera mitt skydd";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@ och kan endast tas bort när din försäkring förnyas eller avslutas.";
