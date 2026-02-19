@@ -12,6 +12,7 @@
 /* Used in scenarios where we want hear something like "Double tap to view details" */
 "A11Y_VIEW_DETAILS" = "View details";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Get notified";
+"ADDON_ADDED_COVERAGE" = "Added";
 "ADDON_ADD_COVERAGE" = "Add coverage";
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Active";
@@ -135,6 +136,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Please enter year of construction";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
+"CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Enable push notifications to ensure you receive all our messages.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Claim";
 "CHAT_CONVERSATION_CLOSED" = "Closed";

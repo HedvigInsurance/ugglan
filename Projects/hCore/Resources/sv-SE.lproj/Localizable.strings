@@ -12,6 +12,7 @@
 /* Used in scenarios where we want hear something like "Double tap to view details" */
 "A11Y_VIEW_DETAILS" = "Visa detaljer";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Få info direkt";
+"ADDON_ADDED_COVERAGE" = "Tillagd";
 "ADDON_ADD_COVERAGE" = "Lägg till skydd";
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Aktiv";
@@ -135,6 +136,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Ange byggår";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
+"CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så du inte missar några av våra meddelanden.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Skadeärende";
 "CHAT_CONVERSATION_CLOSED" = "Avslutad";
