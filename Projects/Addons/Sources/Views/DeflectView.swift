@@ -6,8 +6,8 @@ public struct DeflectView: View {
     private let contractId: String
     private let title: String
     private let subtitle: String
-    private let buttonTitle: String
-    private let navigateToChangeTier: () -> Void
+    private let buttonTitle: String?
+    private let deflectAction: (() -> Void)?
     private let router = Router()
 
     init(deflect: AddonDeflect) {
@@ -17,11 +17,13 @@ public struct DeflectView: View {
         buttonTitle =
             switch (deflect.type) {
             case .upgradeTier: L10n.changeTierButtonTitle
+            case .none: nil
             }
-        navigateToChangeTier = {
+        deflectAction = {
             switch deflect.type {
             case .upgradeTier:
                 NotificationCenter.default.post(name: .openChangeTier, object: deflect.contractId)
+            case .none: break;
             }
         }
     }
@@ -45,9 +47,11 @@ public struct DeflectView: View {
                     .padding(.horizontal, .padding8)
 
                     VStack(spacing: .padding8) {
-                        hButton(.large, .primary, content: .init(title: buttonTitle)) { [weak router] in
-                            router?.dismiss()
-                            navigateToChangeTier()
+                        if let buttonTitle, let deflectAction {
+                            hButton(.large, .primary, content: .init(title: buttonTitle)) { [weak router] in
+                                router?.dismiss()
+                                deflectAction()
+                            }
                         }
                         hButton(.large, .secondary, content: .init(title: "Avbryt")) { [weak router] in
                             router?.dismiss()

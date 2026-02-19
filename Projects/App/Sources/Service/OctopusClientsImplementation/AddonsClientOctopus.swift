@@ -249,14 +249,14 @@ extension ActiveAddon {
     }
 }
 
-extension GraphQLEnum<OctopusGraphQL.AddonDeflectType> {
+extension GraphQLEnum<OctopusGraphQL.AddonDeflectType>? {
     fileprivate var asDeflectType: AddonDeflect.DeflectType {
         switch self {
         case .case(let type):
             switch type {
             case .upgradeTier: .upgradeTier
             }
-        case .unknown: .upgradeTier
+        case .unknown, .none: .none
         }
     }
 }

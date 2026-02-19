@@ -292,6 +292,7 @@ public struct AddonDeflect: Equatable, Sendable, Identifiable {
 
     public enum DeflectType: Sendable {
         case upgradeTier
+        case none
     }
 }
 
