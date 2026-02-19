@@ -53,7 +53,7 @@ public struct DeflectView: View {
                                 deflectAction()
                             }
                         }
-                        hButton(.large, .secondary, content: .init(title: "Avbryt")) { [weak router] in
+                        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) { [weak router] in
                             router?.dismiss()
                         }
                     }

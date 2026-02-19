@@ -55,7 +55,7 @@ struct RemoveAddonScreen: View {
                                         )
                                         .hFieldSize(.small)
                                     },
-                                    onTap: { vm.toggleAddon(addon) }
+                                    onTap: { [weak vm] in vm?.toggleAddon(addon) }
                                 )
                             }
                         }

@@ -937,7 +937,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(addonAdded),
+            selector: #selector(addonsChanged),
             name: .addonsChanged,
             object: nil
         )
@@ -957,7 +957,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         )
     }
 
-    @objc func addonAdded() {
+    @objc func addonsChanged() {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanners)
@@ -966,8 +966,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func openChangeTier(notification: Notification) {
-        print("OPEN CHANGE TIER NOTIFICATION")
-        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
         let contractId = notification.object as? String
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
