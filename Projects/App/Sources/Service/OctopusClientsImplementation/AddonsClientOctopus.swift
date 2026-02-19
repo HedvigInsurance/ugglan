@@ -37,7 +37,7 @@ class AddonsClientOctopus: AddonsClient {
     }
 
     public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {
-        let query = OctopusGraphQL.AddonOfferCostQuery(quoteId: quoteId, addonIds: Array(addonIds))
+        let query = OctopusGraphQL.AddonOfferCostQuery(quoteId: quoteId, selectedAddonIds: Array(addonIds))
         let data = try await octopus.client.fetch(query: query)
         return .init(fragment: data.addonOfferCost.fragments.itemCostFragment)
     }
@@ -49,7 +49,7 @@ class AddonsClientOctopus: AddonsClient {
     }
 
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
-        let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, addonIds: Array(addonIds))
+        let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, selectedAddonIds: Array(addonIds))
 
         let response = try await octopus.client.mutation(mutation: mutation)
         if let error = response?.addonActivateOffer.userError?.message {
@@ -104,23 +104,25 @@ class AddonsClientOctopus: AddonsClient {
                     descriptionDisplayName: banner.descriptionDisplayName,
                     badges: banner.badges,
                     addonType: banner.flow.asAddonType
-
                 )
             }
     }
 }
 
 extension GraphQLEnum<OctopusGraphQL.AddonFlow> {
-    var asAddonType: AddonBanner.AddonType? {
+    var asAddonType: AddonBanner.AddonType {
         switch self {
-        case let .case(type):
+        case .case(let type):
             switch type {
-            case .appCarPlus: return .carPlus
-            case .appTravelPlusSellOnly: return .travelPlus
-            case .appTravelPlusSellOrUpgrade: return .travelPlus
+            case .appCarPlus:
+                return .carPlus
+            case .appTravelPlusSellOnly:
+                return .travelPlus
+            case .appTravelPlusSellOrUpgrade:
+                return .travelPlus
             }
         case .unknown:
-            return nil
+            return .unknown
         }
     }
 }
@@ -130,7 +132,8 @@ extension AddonSource {
         let rawFlows: [OctopusGraphQL.AddonFlow] =
             switch self {
             case .insurances, .crossSell: [.appTravelPlusSellOnly, .appCarPlus]
-            case .travelCertificates, .deeplink: [.appTravelPlusSellOrUpgrade, .appCarPlus]
+            case .travelCertificates: [.appTravelPlusSellOrUpgrade]
+            case .deeplink: [.appTravelPlusSellOrUpgrade, .appCarPlus]
             }
         return rawFlows.map(GraphQLEnum.init)
     }

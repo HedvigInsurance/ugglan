@@ -162,6 +162,7 @@ class PushNotificationHandler {
                 let addonContracts = addonBanner.contractIds.compactMap {
                     contractStore.state.contractForId($0)
                 }
+
                 guard !addonContracts.isEmpty else {
                     throw AddonsError.missingContracts
                 }

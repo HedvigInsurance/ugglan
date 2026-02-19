@@ -1,5 +1,6 @@
-query AddonOfferCost($quoteId: ID!, $addonIds: [ID!]!) {
-  addonOfferCost(quoteId: $quoteId, addonIds: $addonIds) {
+
+query AddonOfferCost($quoteId: ID!, $selectedAddonIds: [ID!]!) {
+  addonOfferCost(quoteId: $quoteId, selectedAddonIds: $selectedAddonIds) {
     ...ItemCostFragment
   }
 }
