@@ -157,8 +157,6 @@ class PushNotificationHandler {
             {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
-                var addonConfigs: [AddonConfig] = []
-
                 let addonContracts = addonBanner.contractIds.compactMap {
                     contractStore.state.contractForId($0)
                 }
@@ -167,15 +165,13 @@ class PushNotificationHandler {
                     throw AddonsError.missingContracts
                 }
 
-                addonConfigs.append(
-                    contentsOf: addonContracts.map {
-                        .init(
-                            contractId: $0.id,
-                            exposureName: $0.exposureDisplayName,
-                            displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                        )
-                    }
-                )
+                let addonConfigs = addonContracts.map {
+                    AddonConfig(
+                        contractId: $0.id,
+                        exposureName: $0.exposureDisplayName,
+                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                    )
+                }
                 viewModel?.isAddonPresented = .init(
                     addonSource: .deeplink,
                     contractConfigs: addonConfigs
