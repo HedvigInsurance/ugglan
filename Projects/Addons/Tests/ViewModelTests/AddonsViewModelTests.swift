@@ -23,22 +23,15 @@ final class AddonsViewModelTests: XCTestCase {
         vm = model
 
         assert(model.offer == testTravelOfferNoActive)
-        assert(model.selectedAddons.isEmpty)
-
-        // Select first quote
-        model.selectAddon(addon: travelQuote45Days)
         assert(model.selectedAddons == [travelQuote45Days])
-        assert(model.selectedAddons.count == 1)
 
         // Select second quote — should replace, not add
         model.selectAddon(addon: travelQuote60Days)
         assert(model.selectedAddons == [travelQuote60Days])
-        assert(model.selectedAddons.count == 1)
 
         // Re-select first — still replaces
         model.selectAddon(addon: travelQuote45Days)
         assert(model.selectedAddons == [travelQuote45Days])
-        assert(model.selectedAddons.count == 1)
     }
 
     func testSubmitAddonsSuccess() async throws {
