@@ -54,7 +54,7 @@ extension ChangeTierViewModel {
         let vm = QuoteSummaryViewModel(
             contract: contracts,
             activationDate: self.activationDate,
-            totalPrice: .change(amount: totalPremium.net),
+            totalPrice: .comparison(old: totalPremium.gross, new: totalPremium.net),
             onConfirmClick: { [weak changeTierNavigationVm] in
                 changeTierNavigationVm?.vm.commitTier()
                 changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
