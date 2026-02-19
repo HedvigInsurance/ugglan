@@ -58,8 +58,6 @@ extension ChangeAddonViewModel {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
 
     let navVm = ChangeAddonNavigationViewModel(offer: testTravelOfferNoActive)
-
-    navVm.changeAddonVm?.selectedAddons = [travelQuote45Days]
     navVm.changeAddonVm?.addonOfferCost = testAddonOfferCost
     return ChangeAddonSummaryScreen(navVm)
 }

@@ -8,7 +8,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var addonOfferCost: ItemCost?
     @Published var fetchingCostState: ProcessingState = .success
-    @Published var selectedAddons: Set<AddonOfferQuote> = []
+    @Published private var selectedAddonIds: Set<String> = []
     let offer: AddonOffer
 
     init(offer: AddonOffer) {
@@ -16,10 +16,20 @@ public class ChangeAddonViewModel: ObservableObject {
         switch offer.quote.addonOfferContent {
         case let .selectable(data):
             if let first = data.quotes.first {
-                self.selectedAddons = [first]
+                self.selectedAddonIds = [first.id]
             }
         case .toggleable: break
         }
+    }
+
+    public var selectedAddons: [AddonOfferQuote] {
+        let availableAddons =
+            switch offer.quote.addonOfferContent {
+            case .toggleable(let t): t.quotes
+            case .selectable(let s): s.quotes
+            }
+
+        return availableAddons.filter { isAddonSelected($0) }
     }
 
     func isDropDownDisabled(for selectableOffer: AddonOfferSelectable) -> Bool {
@@ -27,23 +37,23 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     var allowToContinue: Bool {
-        !selectedAddons.isEmpty
+        !selectedAddonIds.isEmpty
     }
 
     func isAddonSelected(_ addon: AddonOfferQuote) -> Bool {
-        selectedAddons.contains(addon)
+        selectedAddonIds.contains(addon.id)
     }
 
     func selectAddon(addon: AddonOfferQuote) {
         addonOfferCost = nil
         switch offer.quote.addonOfferContent {
         case .selectable:
-            selectedAddons = [addon]
+            selectedAddonIds = [addon.id]
         case .toggleable:
-            if selectedAddons.contains(addon) {
-                selectedAddons.remove(addon)
+            if selectedAddonIds.contains(addon.id) {
+                selectedAddonIds.remove(addon.id)
             } else {
-                selectedAddons.insert(addon)
+                selectedAddonIds.insert(addon.id)
             }
         }
     }
@@ -55,7 +65,7 @@ public class ChangeAddonViewModel: ObservableObject {
         do {
             try await addonService.submitAddons(
                 quoteId: offer.quote.quoteId,
-                selectedAddonIds: Set(selectedAddons.map(\.id))
+                selectedAddonIds: Set(selectedAddonIds.map(\.id))
             )
             logAddonEvent()
             withAnimation {
@@ -73,13 +83,9 @@ public class ChangeAddonViewModel: ObservableObject {
         addonOfferCost = nil
         withAnimation { fetchingCostState = .loading }
         let quoteId = offer.quote.quoteId
-        let addonIds =
-            switch offer.quote.addonOfferContent {
-            case .toggleable: Set(selectedAddons.map(\.id)).union(Set(offer.quote.activeAddons.map(\.id)))
-            case .selectable: Set(selectedAddons.map(\.id))
-            }
+
         do {
-            addonOfferCost = try await addonService.getAddonOfferCost(quoteId: quoteId, addonIds: addonIds)
+            addonOfferCost = try await addonService.getAddonOfferCost(quoteId: quoteId, addonIds: selectedAddonIds)
             withAnimation { fetchingCostState = .success }
         } catch {
             withAnimation { fetchingCostState = .error(errorMessage: error.localizedDescription) }
@@ -96,7 +102,7 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     func getAddonPriceChange() -> Premium? {
-        guard !selectedAddons.isEmpty else { return nil }
+        guard !selectedAddonIds.isEmpty else { return nil }
 
         let currentAddonsPremium = offer.quote.activeAddons.map(\.cost.premium).sum()
         let purchasedAddonsPremium = selectedAddons.map(\.cost.premium).sum()
@@ -120,8 +126,8 @@ public class ChangeAddonViewModel: ObservableObject {
             case .selectable: true
             }
 
-        items += offer.quote.activeAddons.map { $0.asQuoteDisplayItem(crossDisplayTitle: crossDisplayTitle) }
         items += selectedAddons.map { $0.asQuoteDisplayItem() }
+        items += offer.quote.activeAddons.map { $0.asQuoteDisplayItem(crossDisplayTitle: crossDisplayTitle) }
         items += addonOfferCost?.discounts.map { $0.asQuoteDisplayItem() } ?? []
 
         return items
