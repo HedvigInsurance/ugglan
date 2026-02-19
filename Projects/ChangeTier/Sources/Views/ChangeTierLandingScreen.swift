@@ -109,6 +109,11 @@ public struct ChangeTierLandingScreen: View {
 
             VStack(spacing: .padding4) {
                 editTierView
+                if let info = vm.selectedQuote?.info {
+                    hSection {
+                        InfoCard(text: info, type: .info)
+                    }
+                }
                 addonView
                 if vm.showDeductibleField {
                     deductibleView
