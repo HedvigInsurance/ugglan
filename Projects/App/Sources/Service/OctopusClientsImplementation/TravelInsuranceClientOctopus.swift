@@ -80,7 +80,8 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
                         contractIds: bannerData.contractIds,
                         titleDisplayName: bannerData.displayTitleName,
                         descriptionDisplayName: bannerData.descriptionDisplayName,
-                        badges: bannerData.badges
+                        badges: bannerData.badges,
+                        addonType: .travelPlus
                     )
                 } else { nil }
 

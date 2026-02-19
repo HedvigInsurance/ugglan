@@ -234,17 +234,26 @@ public struct AddonBanner: Sendable, Equatable, Codable, Hashable {
     let titleDisplayName: String
     let descriptionDisplayName: String
     let badges: [String]
+    public let addonType: AddonType
 
     public init(
         contractIds: [String],
         titleDisplayName: String,
         descriptionDisplayName: String,
-        badges: [String]
+        badges: [String],
+        addonType: AddonType
     ) {
         self.contractIds = contractIds
         self.titleDisplayName = titleDisplayName
         self.descriptionDisplayName = descriptionDisplayName
         self.badges = badges
+        self.addonType = addonType
+    }
+
+    public enum AddonType: Sendable, Codable {
+        case travelPlus
+        case carPlus
+        case unknown
     }
 }
 

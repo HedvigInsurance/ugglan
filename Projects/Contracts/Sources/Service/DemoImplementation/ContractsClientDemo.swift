@@ -81,7 +81,8 @@ public class FetchContractsClientDemo: FetchContractsClient {
                 titleDisplayName: "Travel Plus",
                 descriptionDisplayName:
                     "Extended travel insurance with extra coverage for your travels",
-                badges: ["Popular"]
+                badges: ["Popular"],
+                addonType: .travelPlus
             )
         ]
     }

@@ -235,7 +235,8 @@ public let testAddonBanner = AddonBanner(
     contractIds: ["contractId"],
     titleDisplayName: "Travel Plus",
     descriptionDisplayName: "Extended travel insurance with extra coverage",
-    badges: ["Popular"]
+    badges: ["Popular"],
+    addonType: .travelPlus
 )
 
 public let testAddonOfferCost = ItemCost(
