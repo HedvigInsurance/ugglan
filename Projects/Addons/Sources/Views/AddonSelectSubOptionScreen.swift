@@ -52,7 +52,7 @@ struct AddonSelectSubOptionScreen: View {
                             router.dismiss()
                         }
                     )
-                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedAddon?.displayTitle ?? ""))
+                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedAddon?.displayDescription ?? ""))
 
                     hCancelButton {
                         router.dismiss()
@@ -72,7 +72,7 @@ struct AddonSelectSubOptionScreen: View {
             .getGrossPriceDifference(for: quote)
         {
             HStack {
-                hText(quote.displayTitle)
+                hText(quote.displayDescription)
                 Spacer()
                 hPill(
                     text: L10n.addonFlowPriceLabel(grossPriceDifference.formattedAmount),

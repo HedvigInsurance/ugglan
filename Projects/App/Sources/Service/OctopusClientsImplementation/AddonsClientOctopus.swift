@@ -111,6 +111,7 @@ class AddonsClientOctopus: AddonsClient {
         let data = try await octopus.client.fetch(query: query)
         let banners = data.currentMember.addonBanners
 
+        print("ADDON BANNERS \(banners.map{ $0.contractIds})")
         return banners.filter { !$0.contractIds.isEmpty }
             .map { banner in
                 AddonBanner(

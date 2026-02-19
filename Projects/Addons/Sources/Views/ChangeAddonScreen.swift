@@ -108,7 +108,7 @@ struct ChangeAddonScreen: View {
         Group {
             let isDropDownDisabled = vm.isDropDownDisabled(for: selectable)
             DropdownView(
-                value: vm.selectedAddons.first!.displayTitle,
+                value: vm.selectedAddons.first!.displayDescription,
                 placeHolder: L10n.addonFlowSelectDaysPlaceholder
             ) { [weak navigationVm] in
                 navigationVm?.isSelectableAddonPresented = selectable
