@@ -57,17 +57,17 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         let addon = testRemoveOffer.removableAddons[0]
 
-        assert(model.selectedAddonIds.isEmpty)
+        assert(model.selectedAddons.isEmpty)
         assert(model.allowToContinue == false)
 
         // Toggle on
         model.toggleAddon(addon)
-        assert(model.selectedAddonIds.contains(addon.id))
+        assert(model.selectedAddons.map(\.id).contains(addon.id))
         assert(model.allowToContinue == true)
 
         // Toggle off
         model.toggleAddon(addon)
-        assert(!model.selectedAddonIds.contains(addon.id))
+        assert(!model.selectedAddons.map(\.id).contains(addon.id))
         assert(model.allowToContinue == false)
     }
 

@@ -54,7 +54,8 @@ final class CrossSellTests: XCTestCase {
                 contractIds: ["contractId"],
                 titleDisplayName: "title",
                 descriptionDisplayName: "description",
-                badges: []
+                badges: [],
+                addonType: .travelPlus
             )
         ]
 

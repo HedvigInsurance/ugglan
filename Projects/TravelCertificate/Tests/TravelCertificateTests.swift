@@ -105,7 +105,8 @@ final class TravelCertificateTests: XCTestCase {
             contractIds: ["contractId"],
             titleDisplayName: "Travel Plus",
             descriptionDisplayName: "Extended travel insurance with extra coverage",
-            badges: ["Popular"]
+            badges: ["Popular"],
+            addonType: .travelPlus
         )
 
         let mockService = MockData.createMockTravelInsuranceService(

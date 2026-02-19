@@ -122,7 +122,9 @@ extension AddonBanner {
             contractIds: ["contractId"],
             titleDisplayName: "display name",
             descriptionDisplayName: "description",
-            badges: []
+            badges: [],
+            addonType: .carPlus,
+
         )
     ]
 }
