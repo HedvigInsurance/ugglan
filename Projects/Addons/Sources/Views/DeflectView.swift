@@ -8,9 +8,9 @@ public struct DeflectView: View {
     private let subtitle: String
     private let buttonTitle: String
     private let navigateToChangeTier: () -> Void
-    private let onDismiss: () -> Void
+    private let router = Router()
 
-    init(deflect: AddonDeflect, onDismiss: @escaping () -> Void) {
+    init(deflect: AddonDeflect) {
         contractId = deflect.contractId
         title = deflect.pageTitle
         subtitle = deflect.pageDescription
@@ -24,42 +24,51 @@ public struct DeflectView: View {
                 NotificationCenter.default.post(name: .openChangeTier, object: deflect.contractId)
             }
         }
-        self.onDismiss = onDismiss
     }
 
     public var body: some View {
         hForm {
-            VStack(spacing: .padding16) {
-                hCoreUIAssets.infoFilled.swiftUIImage
-                    .resizable()
-                    .frame(width: 32, height: 32)
-                    .foregroundColor(hSignalColor.Blue.element)
+            hSection {
+                VStack(spacing: .padding64) {
+                    VStack(spacing: .padding16) {
+                        hCoreUIAssets.infoFilled.swiftUIImage
+                            .resizable()
+                            .frame(width: 32, height: 32)
+                            .foregroundColor(hSignalColor.Blue.element)
 
-                VStack {
-                    hText(title).foregroundColor(hTextColor.Opaque.primary)
-                    hText(subtitle).foregroundColor(hTextColor.Translucent.secondary)
-                }
-            }
-            .padding(.horizontal, .padding24)
-            .padding(.vertical, .padding32)
+                        VStack(spacing: 0) {
+                            hText(title).foregroundColor(hTextColor.Opaque.primary)
+                            hText(subtitle).foregroundColor(hTextColor.Translucent.secondary)
+                        }
+                        .multilineTextAlignment(.center)
+                    }
+                    .padding(.horizontal, .padding8)
 
-            VStack(spacing: .padding8) {
-                hButton(.large, .primary, content: .init(title: buttonTitle)) {
-                    onDismiss()
-                    navigateToChangeTier()
+                    VStack(spacing: .padding8) {
+                        hButton(.large, .primary, content: .init(title: buttonTitle)) { [weak router] in
+                            router?.dismiss()
+                            navigateToChangeTier()
+                        }
+                        hButton(.large, .secondary, content: .init(title: "Avbryt")) { [weak router] in
+                            router?.dismiss()
+                        }
+                    }
                 }
-                hButton(.large, .secondary, content: .init(title: "Avbryt")) {
-                    onDismiss()
-                }
+                .padding(.top, .padding56)
+                .padding(.bottom, .padding16)
             }
-            .padding(.horizontal, .padding16)
-            .padding(.vertical, .padding32)
+            .sectionContainerStyle(.transparent)
         }
-        .hButtonTakeFullWidth(true)
         .hFormContentPosition(.compact)
+        .embededInNavigation(router: router, options: [.navigationBarHidden], tracking: self)
+    }
+}
+extension DeflectView: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        .init(describing: DeflectView.self)
     }
 }
 
 #Preview {
-    DeflectView(deflect: testDeflectUpgradeTier) {}
+    DeflectView(deflect: testDeflectUpgradeTier)
 }

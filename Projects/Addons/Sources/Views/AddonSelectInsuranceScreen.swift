@@ -36,7 +36,7 @@ public struct AddonSelectInsuranceScreen: View {
             .hStateViewButtonConfig(
                 .init(actionButton: .init { withAnimation { vm.processingState = .success } })
             )
-            .detent(item: $vm.deflect) { DeflectView(deflect: $0, onDismiss: { vm.deflect = nil }) }
+            .detent(item: $vm.deflect) { DeflectView(deflect: $0) }
     }
 
     private var successView: some View {

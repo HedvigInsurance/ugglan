@@ -238,7 +238,7 @@ public let testRemoveOffer = AddonRemoveOffer(
 // MARK: - Deflect data
 public let testDeflectUpgradeTier = AddonDeflect(
     contractId: "cId",
-    pageTitle: "Du behöver en högre skyddnivå",
+    pageTitle: "Du behöver en högre skyddsnivå",
     pageDescription: """
         Våra tilläggsförsäkringar går inte att
         kombinera med trafikförsäkring. Välj en
