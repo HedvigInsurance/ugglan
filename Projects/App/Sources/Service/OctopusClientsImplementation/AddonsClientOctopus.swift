@@ -37,7 +37,7 @@ class AddonsClientOctopus: AddonsClient {
     }
 
     public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {
-        let query = OctopusGraphQL.AddonOfferCostQuery(quoteId: quoteId, addonIds: Array(addonIds))
+        let query = OctopusGraphQL.AddonOfferCostQuery(quoteId: quoteId, selectedAddonIds: Array(addonIds))
         let data = try await octopus.client.fetch(query: query)
         return .init(fragment: data.addonOfferCost.fragments.itemCostFragment)
     }
@@ -49,7 +49,7 @@ class AddonsClientOctopus: AddonsClient {
     }
 
     public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
-        let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, addonIds: Array(addonIds))
+        let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, selectedAddonIds: Array(addonIds))
 
         let response = try await octopus.client.mutation(mutation: mutation)
         if let error = response?.addonActivateOffer.userError?.message {
