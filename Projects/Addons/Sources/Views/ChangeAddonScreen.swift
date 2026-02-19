@@ -40,11 +40,11 @@ struct ChangeAddonScreen: View {
                 }
 
                 hSection {
-                    hContinueButton { [unowned vm, unowned navigationVm] in
-                        Task {
-                            await vm.getAddonOfferCost()
-                            guard vm.addonOfferCost != nil else { return }
-                            navigationVm.router.push(ChangeAddonRouterActions.summary)
+                    hContinueButton {
+                        Task { [weak vm, weak navigationVm] in
+                            await vm?.getAddonOfferCost()
+                            guard vm?.addonOfferCost != nil else { return }
+                            navigationVm?.router.push(ChangeAddonRouterActions.summary)
                         }
                     }
                     .disabled(!vm.allowToContinue)
@@ -84,7 +84,7 @@ struct ChangeAddonScreen: View {
 
     private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
         VStack(alignment: .leading, spacing: .padding4) {
-            ForEach(toggleable.quotes) { [unowned vm] addon in
+            ForEach(toggleable.quotes) { addon in
                 AddonOptionRow(
                     title: addon.displayTitle,
                     subtitle: addon.displayDescription,
@@ -97,7 +97,7 @@ struct ChangeAddonScreen: View {
                         )
                         .hFieldSize(.small)
                     },
-                    onTap: { [unowned vm] in vm.selectAddon(addon: addon) }
+                    onTap: { vm.selectAddon(addon: addon) }
                 )
             }
 
@@ -122,7 +122,7 @@ struct ChangeAddonScreen: View {
             DropdownView(
                 value: vm.selectedAddons.first!.displayTitle,
                 placeHolder: L10n.addonFlowSelectDaysPlaceholder
-            ) { [unowned navigationVm] in
+            ) {
                 navigationVm.isSelectableAddonPresented = selectable
             }
             .disabled(isDropDownDisabled)
@@ -133,7 +133,7 @@ struct ChangeAddonScreen: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
-        .accessibilityAction { [unowned navigationVm] in navigationVm.isSelectableAddonPresented = selectable }
+        .accessibilityAction { navigationVm.isSelectableAddonPresented = selectable }
     }
 
     private var coverageButtonView: some View {
@@ -141,7 +141,7 @@ struct ChangeAddonScreen: View {
             .medium,
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
-        ) { [unowned navigationVm, unowned vm] in
+        ) {
             navigationVm.isLearnMorePresented = .init(
                 .init(
                     title: vm.offer.whatsIncludedPageTitle,

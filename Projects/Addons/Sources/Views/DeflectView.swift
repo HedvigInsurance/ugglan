@@ -16,7 +16,7 @@ public struct DeflectView: View {
         subtitle = deflect.pageDescription
         buttonTitle =
             switch (deflect.type) {
-            case .upgradeTier: "Ändra skyddnivå!"
+            case .upgradeTier: L10n.changeTierButtonTitle
             }
         navigateToChangeTier = {
             switch deflect.type {

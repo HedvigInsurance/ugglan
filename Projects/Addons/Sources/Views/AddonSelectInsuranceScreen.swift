@@ -20,7 +20,7 @@ public struct AddonSelectInsuranceScreen: View {
                 return items
             }(),
             preSelectedItems: { vm.selectedItems },
-            onSelected: { [unowned vm] selected in
+            onSelected: { selected in
                 if let selectedConfig = selected.first?.0 {
                     vm.selectedItems = selected.compactMap(\.0)
                     vm.getAddonOffer(config: selectedConfig)
@@ -34,9 +34,9 @@ public struct AddonSelectInsuranceScreen: View {
         successView
             .loadingWithButtonLoading($vm.processingState)
             .hStateViewButtonConfig(
-                .init(actionButton: .init { withAnimation { [unowned vm] in vm.processingState = .success } })
+                .init(actionButton: .init { withAnimation { vm.processingState = .success } })
             )
-            .detent(item: $vm.deflect) { DeflectView(deflect: $0, onDismiss: { [unowned vm] in vm.deflect = nil }) }
+            .detent(item: $vm.deflect) { DeflectView(deflect: $0, onDismiss: { vm.deflect = nil }) }
     }
 
     private var successView: some View {
@@ -61,21 +61,27 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
         self.navigationVm = navigationVm
     }
 
-    func getAddonOffer(config: AddonConfig) {
-        Task {
-            withAnimation { processingState = .loading }
-            do {
-                let data = try await service.getAddonOffer(config: config, source: navigationVm.input.addonSource)
+    func navigateToAddonLandingScreen(offer: AddonOffer) {
+        navigationVm.changeAddonVm = .init(offer: offer)
+        navigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
+    }
 
-                withAnimation { processingState = .success }
+    func getAddonOffer(config: AddonConfig) {
+        Task { [weak self] in
+            do {
+                guard let source = self?.navigationVm.input.addonSource, let service = self?.service else { return }
+
+                withAnimation { self?.processingState = .loading }
+
+                let data = try await service.getAddonOffer(config: config, source: source)
+
+                withAnimation { self?.processingState = .success }
                 switch data {
-                case .deflect(let deflect): withAnimation { self.deflect = deflect }
-                case .offer(let offer):
-                    navigationVm.changeAddonVm = .init(offer: offer)
-                    navigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
+                case .deflect(let deflect): withAnimation { self?.deflect = deflect }
+                case .offer(let offer): self?.navigateToAddonLandingScreen(offer: offer)
                 }
             } catch {
-                withAnimation { processingState = .error(errorMessage: error.localizedDescription) }
+                withAnimation { self?.processingState = .error(errorMessage: error.localizedDescription) }
             }
         }
     }
