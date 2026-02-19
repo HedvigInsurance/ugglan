@@ -5,27 +5,31 @@ import hCoreUI
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
     let addonService = AddonsService()
-    @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
-    @Published var addonOffer: AddonOffer?
     @Published var addonOfferCost: ItemCost?
     @Published var fetchingCostState: ProcessingState = .success
-    @Published var selectedAddons: Set<AddonOfferQuote> = []
-    let addonSource: AddonSource
-    let config: AddonConfig
+    @Published private var selectedAddonIds: Set<String> = []
+    let offer: AddonOffer
 
-    init(config: AddonConfig, addonSource: AddonSource) {
-        self.config = config
-        self.addonSource = addonSource
-        Task {
-            await getAddons()
-
-            if case let .selectable(selectableAddon) = addonOffer?.quote.addonOfferContent,
-                let first = selectableAddon.quotes.first
-            {
-                selectedAddons = [first]
+    init(offer: AddonOffer) {
+        self.offer = offer
+        switch offer.quote.addonOfferContent {
+        case let .selectable(data):
+            if let first = data.quotes.first {
+                self.selectedAddonIds = [first.id]
             }
+        case .toggleable: break
         }
+    }
+
+    public var selectedAddons: [AddonOfferQuote] {
+        let availableAddons =
+            switch offer.quote.addonOfferContent {
+            case .toggleable(let t): t.quotes
+            case .selectable(let s): s.quotes
+            }
+
+        return availableAddons.filter { isAddonSelected($0) }
     }
 
     func isDropDownDisabled(for selectableOffer: AddonOfferSelectable) -> Bool {
@@ -33,40 +37,24 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     var allowToContinue: Bool {
-        !selectedAddons.isEmpty
+        !selectedAddonIds.isEmpty
     }
 
     func isAddonSelected(_ addon: AddonOfferQuote) -> Bool {
-        selectedAddons.contains(addon)
+        selectedAddonIds.contains(addon.id)
     }
 
     func selectAddon(addon: AddonOfferQuote) {
-        guard let addonOffer else { return }
         addonOfferCost = nil
-        switch addonOffer.quote.addonOfferContent {
+        switch offer.quote.addonOfferContent {
         case .selectable:
-            selectedAddons = [addon]
+            selectedAddonIds = [addon.id]
         case .toggleable:
-            if selectedAddons.contains(addon) {
-                selectedAddons.remove(addon)
+            if selectedAddonIds.contains(addon.id) {
+                selectedAddonIds.remove(addon.id)
             } else {
-                selectedAddons.insert(addon)
+                selectedAddonIds.insert(addon.id)
             }
-        }
-    }
-
-    func getAddons() async {
-        withAnimation { fetchAddonsViewState = .loading }
-
-        do {
-            let data = try await addonService.getAddonOffer(contractId: config.contractId)
-
-            withAnimation {
-                addonOffer = data
-                fetchAddonsViewState = .success
-            }
-        } catch {
-            fetchAddonsViewState = .error(errorMessage: error.localizedDescription)
         }
     }
 
@@ -76,8 +64,8 @@ public class ChangeAddonViewModel: ObservableObject {
         }
         do {
             try await addonService.submitAddons(
-                quoteId: addonOffer?.quote.quoteId ?? "",
-                selectedAddonIds: Set(selectedAddons.map(\.id))
+                quoteId: offer.quote.quoteId,
+                selectedAddonIds: Set(selectedAddonIds.map(\.id))
             )
             logAddonEvent()
             withAnimation {
@@ -91,17 +79,13 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     func getAddonOfferCost() async {
-        guard let offer = addonOffer, fetchingCostState != .loading else { return }
+        guard fetchingCostState != .loading else { return }
         addonOfferCost = nil
         withAnimation { fetchingCostState = .loading }
         let quoteId = offer.quote.quoteId
-        let addonIds =
-            switch offer.quote.addonOfferContent {
-            case .toggleable: Set(selectedAddons.map(\.id)).union(Set(offer.quote.activeAddons.map(\.id)))
-            case .selectable: Set(selectedAddons.map(\.id))
-            }
+
         do {
-            addonOfferCost = try await addonService.getAddonOfferCost(quoteId: quoteId, addonIds: addonIds)
+            addonOfferCost = try await addonService.getAddonOfferCost(quoteId: quoteId, addonIds: selectedAddonIds)
             withAnimation { fetchingCostState = .success }
         } catch {
             withAnimation { fetchingCostState = .error(errorMessage: error.localizedDescription) }
@@ -111,40 +95,39 @@ public class ChangeAddonViewModel: ObservableObject {
     func getGrossPriceDifference(for addonOfferQuote: AddonOfferQuote) -> MonetaryAmount {
         let currentGrossPrice = addonOfferQuote.cost.premium.gross
 
-        guard let activeAddonGrossPrice = addonOffer?.quote.activeAddons.first?.cost.premium.gross else {
+        guard let activeAddonGrossPrice = offer.quote.activeAddons.first?.cost.premium.gross else {
             return currentGrossPrice
         }
         return currentGrossPrice - activeAddonGrossPrice
     }
 
     func getAddonPriceChange() -> Premium? {
-        guard let addonOffer, !selectedAddons.isEmpty else { return nil }
+        guard !selectedAddonIds.isEmpty else { return nil }
 
-        let currentAddonsPremium = addonOffer.quote.activeAddons.map(\.cost.premium).sum()
+        let currentAddonsPremium = offer.quote.activeAddons.map(\.cost.premium).sum()
         let purchasedAddonsPremium = selectedAddons.map(\.cost.premium).sum()
 
-        return switch addonOffer.quote.addonOfferContent {
+        return switch offer.quote.addonOfferContent {
         case .toggleable: purchasedAddonsPremium
         case .selectable: purchasedAddonsPremium - currentAddonsPremium
         }
     }
 
     func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
-        guard let addonOffer else { return [] }
         var items: [QuoteDisplayItem] = []
 
-        let baseTitle = config.displayName
-        let baseGross = addonOffer.quote.baseQuoteCost.premium.gross.formattedAmountPerMonth
+        let baseTitle = offer.config.displayName
+        let baseGross = offer.quote.baseQuoteCost.premium.gross.formattedAmountPerMonth
         items.append(.init(title: baseTitle, value: baseGross))
 
         let crossDisplayTitle =
-            switch addonOffer.quote.addonOfferContent {
+            switch offer.quote.addonOfferContent {
             case .toggleable: false
             case .selectable: true
             }
 
-        items += addonOffer.quote.activeAddons.map { $0.asQuoteDisplayItem(crossDisplayTitle: crossDisplayTitle) }
         items += selectedAddons.map { $0.asQuoteDisplayItem() }
+        items += offer.quote.activeAddons.map { $0.asQuoteDisplayItem(crossDisplayTitle: crossDisplayTitle) }
         items += addonOfferCost?.discounts.map { $0.asQuoteDisplayItem() } ?? []
 
         return items
@@ -186,19 +169,15 @@ extension ItemDiscount {
 //MARK: Log purchase
 extension ChangeAddonViewModel {
     fileprivate func logAddonEvent() {
-        let eventType: AddonEventType = {
-            switch addonOffer?.quote.addonOfferContent {
-            case .selectable:
-                return addonOffer?.quote.activeAddons.count ?? 0 == 0 ? .addonPurchased : .addonUpgraded
-            case .toggleable:
-                return .addonPurchased
-            case nil:
-                return .addonPurchased
+        let eventType: AddonEventType =
+            switch offer.quote.addonOfferContent {
+            case .selectable: offer.quote.activeAddons.isEmpty ? .addonPurchased : .addonUpgraded
+            case .toggleable: .addonPurchased
             }
-        }()
+
         selectedAddons.forEach { addon in
             let logInfo = AddonLogInfo(
-                flow: addonSource,
+                flow: offer.source,
                 type: addon.addonVariant.product,
                 subType: addon.subtype
             )

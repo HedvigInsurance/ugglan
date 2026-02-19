@@ -57,14 +57,14 @@ struct ContractTable: View {
                         VStack(spacing: .padding8) {
                             ForEach(vm.addonBanners, id: \.self) { banner in
                                 let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
+                                let input = ChangeAddonInput(addonSource: .insurances, contractConfigs: addonConfigs)
+
                                 AddonCardView(
-                                    openAddon: {
-                                        contractsNavigationVm.isAddonPresented = .init(
-                                            addonSource: .insurances,
-                                            contractConfigs: addonConfigs
-                                        )
-                                    },
+                                    openAddon: { contractsNavigationVm.isAddonPresented = input },
                                     addon: banner
+                                )
+                                .hButtonIsLoading(
+                                    contractsNavigationVm.isAddonPresented?.contractConfigs == input.contractConfigs
                                 )
                             }
                         }

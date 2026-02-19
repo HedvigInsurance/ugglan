@@ -3,7 +3,12 @@ import hCore
 
 /// Output type for AddonOffer mutation.
 /// Returns offer with quote and addons with prices etc to show in the offer page.
-public struct AddonOffer: Equatable, Sendable {
+public struct AddonOffer: Equatable, Sendable, Identifiable {
+    public let id: UUID = UUID()
+
+    let config: AddonConfig
+    let source: AddonSource
+
     /// Title to show in offer page.
     /// eg "Extend your coverage"
     let pageTitle: String
@@ -28,6 +33,8 @@ public struct AddonOffer: Equatable, Sendable {
     let whatsIncludedPageDescription: String
 
     public init(
+        config: AddonConfig,
+        source: AddonSource,
         pageTitle: String,
         pageDescription: String,
         quote: AddonContractQuote,
@@ -36,6 +43,8 @@ public struct AddonOffer: Equatable, Sendable {
         whatsIncludedPageTitle: String,
         whatsIncludedPageDescription: String,
     ) {
+        self.config = config
+        self.source = source
         self.pageTitle = pageTitle
         self.pageDescription = pageDescription
         self.quote = quote
@@ -213,8 +222,8 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
     }
 }
 
-public struct AddonConfig: Hashable {
-    let contractId: String
+public struct AddonConfig: Hashable, Sendable {
+    public let contractId: String
     let exposureName: String
     let displayName: String
 
@@ -265,4 +274,29 @@ public struct AddonDisplayItem: Equatable, Hashable, Sendable, Codable {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
     }
+}
+
+public struct AddonDeflect: Equatable, Sendable, Identifiable {
+    public let id: UUID = UUID()
+    let contractId: String
+    let pageTitle: String
+    let pageDescription: String
+    let type: DeflectType
+
+    public init(contractId: String, pageTitle: String, pageDescription: String, type: DeflectType) {
+        self.contractId = contractId
+        self.pageTitle = pageTitle
+        self.pageDescription = pageDescription
+        self.type = type
+    }
+
+    public enum DeflectType: Sendable {
+        case upgradeTier
+        case none
+    }
+}
+
+public enum AddonOfferData: Equatable, Sendable {
+    case offer(AddonOffer)
+    case deflect(AddonDeflect)
 }

@@ -3,29 +3,29 @@ import hCore
 import hCoreUI
 
 struct RemoveAddonScreen: View {
-    @EnvironmentObject var removeAddonNavigationVm: RemoveAddonNavigationViewModel
-    @ObservedObject var removeAddonVm: RemoveAddonViewModel
+    @EnvironmentObject var navigationVm: RemoveAddonNavigationViewModel
+    @ObservedObject var vm: RemoveAddonViewModel
 
     init(_ removeAddonVm: RemoveAddonViewModel) {
-        self.removeAddonVm = removeAddonVm
+        self.vm = removeAddonVm
     }
 
     var body: some View {
         successView
-            .loading($removeAddonVm.fetchState)
-            .disabled(removeAddonVm.fetchingCostState == .loading)
-            .trackErrorState(for: $removeAddonVm.fetchingCostState)
+            .loading($vm.fetchState)
+            .disabled(vm.fetchingCostState == .loading)
+            .trackErrorState(for: $vm.fetchingCostState)
             .hStateViewButtonConfig(
-                removeAddonVm.fetchState.isError
+                vm.fetchState.isError
                     ? .init(
-                        actionButton: .init { Task { await removeAddonVm.fetchOffer() } },
-                        dismissButton: .init { removeAddonNavigationVm.router.dismiss() }
+                        actionButton: .init { Task { await vm.fetchOffer() } },
+                        dismissButton: .init { navigationVm.router.dismiss() }
                     )
                     : .init(
-                        actionButton: .init { removeAddonVm.fetchingCostState = .success },
+                        actionButton: .init { vm.fetchingCostState = .success },
                         dismissButton: .init(buttonTitle: L10n.generalCloseButton) {
-                            removeAddonVm.fetchingCostState = .success
-                            removeAddonNavigationVm.router.dismiss()
+                            vm.fetchingCostState = .success
+                            navigationVm.router.dismiss()
                         }
                     )
             )
@@ -33,7 +33,7 @@ struct RemoveAddonScreen: View {
 
     @ViewBuilder
     private var successView: some View {
-        if let offer = removeAddonVm.removeOffer {
+        if let offer = vm.removeOffer {
             hForm {}
                 .hFormTitle(
                     title: .init(.small, .body2, offer.pageTitle, alignment: .leading),
@@ -46,7 +46,7 @@ struct RemoveAddonScreen: View {
                                 AddonOptionRow(
                                     title: addon.displayTitle,
                                     subtitle: addon.displayDescription ?? "",
-                                    isSelected: removeAddonVm.isAddonSelected(addon),
+                                    isSelected: vm.isAddonSelected(addon),
                                     trailingView: {
                                         hPill(
                                             text: addon.cost.premium.gross.formattedAmountPerMonth,
@@ -55,21 +55,21 @@ struct RemoveAddonScreen: View {
                                         )
                                         .hFieldSize(.small)
                                     },
-                                    onTap: { removeAddonVm.toggleAddon(addon) }
+                                    onTap: { [weak vm] in vm?.toggleAddon(addon) }
                                 )
                             }
                         }
                     }
                     hSection {
                         hContinueButton {
-                            Task {
-                                await removeAddonVm.getAddonRemoveOfferCost()
-                                guard removeAddonVm.addonRemoveOfferCost != nil else { return }
-                                removeAddonNavigationVm.router.push(RemoveAddonRouterActions.summary)
+                            Task { [weak vm, weak navigationVm] in
+                                await vm?.getAddonRemoveOfferCost()
+                                guard vm?.addonRemoveOfferCost != nil else { return }
+                                navigationVm?.router.push(RemoveAddonRouterActions.summary)
                             }
                         }
-                        .disabled(!removeAddonVm.allowToContinue)
-                        .hButtonIsLoading(removeAddonVm.fetchingCostState == .loading)
+                        .disabled(!vm.allowToContinue)
+                        .hButtonIsLoading(vm.fetchingCostState == .loading)
                     }
                 }
                 .sectionContainerStyle(.transparent)

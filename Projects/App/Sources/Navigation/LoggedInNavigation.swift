@@ -509,8 +509,6 @@ struct LoggedInNavigation: View {
                 ChangeTierNavigation(input: input) {
                     fetchContracts()
                 }
-            case let .addon(input: input):
-                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {
@@ -939,7 +937,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(addonAdded),
+            selector: #selector(addonsChanged),
             name: .addonsChanged,
             object: nil
         )
@@ -950,14 +948,38 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .claimCreated,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openChangeTier),
+            name: .openChangeTier,
+            object: nil
+        )
     }
 
-    @objc func addonAdded() {
+    @objc func addonsChanged() {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchAddonBanners)
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
+    }
+
+    @objc func openChangeTier(notification: Notification) {
+        let contractId = notification.object as? String
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+            isChangeTierPresented = .init(
+                source: .betterCoverage,
+                contracts: [
+                    .init(
+                        contractId: contractId,
+                        contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: contract.exposureDisplayName
+                    )
+                ]
+            )
+        }
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
