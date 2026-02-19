@@ -16,10 +16,10 @@ struct ChangeAddonScreen: View {
             .trackErrorState(for: $vm.fetchingCostState)
             .hStateViewButtonConfig(
                 .init(
-                    actionButton: .init { vm.fetchingCostState = .success },
-                    dismissButton: .init(buttonTitle: L10n.generalCloseButton) {
-                        vm.fetchingCostState = .success
-                        navigationVm.router.dismiss()
+                    actionButton: .init { [weak vm] in vm?.fetchingCostState = .success },
+                    dismissButton: .init(buttonTitle: L10n.generalCloseButton) { [weak vm, weak navigationVm] in
+                        vm?.fetchingCostState = .success
+                        navigationVm?.router.dismiss()
                     }
                 )
             )
@@ -40,8 +40,8 @@ struct ChangeAddonScreen: View {
                 }
 
                 hSection {
-                    hContinueButton {
-                        Task { [weak vm, weak navigationVm] in
+                    hContinueButton { [weak vm, weak navigationVm] in
+                        Task {
                             await vm?.getAddonOfferCost()
                             guard vm?.addonOfferCost != nil else { return }
                             navigationVm?.router.push(ChangeAddonRouterActions.summary)
@@ -84,21 +84,9 @@ struct ChangeAddonScreen: View {
 
     private func toggleableAddonSection(activeAddons: [ActiveAddon], toggleable: AddonOfferToggleable) -> some View {
         VStack(alignment: .leading, spacing: .padding4) {
-            ForEach(toggleable.quotes) { addon in
-                AddonOptionRow(
-                    title: addon.displayTitle,
-                    subtitle: addon.displayDescription,
-                    isSelected: vm.isAddonSelected(addon),
-                    trailingView: {
-                        hPill(
-                            text: L10n.addonFlowPriceLabel(addon.cost.premium.gross.formattedAmount),
-                            color: .grey,
-                            colorLevel: .one
-                        )
-                        .hFieldSize(.small)
-                    },
-                    onTap: { vm.selectAddon(addon: addon) }
-                )
+            // Added unowned vm and seperated view to avoid memory leak and make sure that view is working corectly
+            ForEach(toggleable.quotes) { [unowned vm] addon in
+                AddonOptionToggableView(addon: addon, vm: vm)
             }
 
             ForEach(activeAddons) { activeAddon in
@@ -122,8 +110,8 @@ struct ChangeAddonScreen: View {
             DropdownView(
                 value: vm.selectedAddons.first!.displayTitle,
                 placeHolder: L10n.addonFlowSelectDaysPlaceholder
-            ) {
-                navigationVm.isSelectableAddonPresented = selectable
+            ) { [weak navigationVm] in
+                navigationVm?.isSelectableAddonPresented = selectable
             }
             .disabled(isDropDownDisabled)
             .padding(.top, .padding16)
@@ -141,12 +129,13 @@ struct ChangeAddonScreen: View {
             .medium,
             .ghost,
             content: .init(title: L10n.addonFlowCoverButton)
-        ) {
+        ) { [weak navigationVm, weak vm] in
+            guard let vm, let navigationVm else { return }
             navigationVm.isLearnMorePresented = .init(
                 .init(
                     title: vm.offer.whatsIncludedPageTitle,
                     description: vm.offer.whatsIncludedPageDescription,
-                    perilGroups: getPerilGroups()
+                    perilGroups: vm.getPerilGroups()
                 )
             )
         }
@@ -155,10 +144,33 @@ struct ChangeAddonScreen: View {
     }
 }
 
-extension ChangeAddonScreen {
+private struct AddonOptionToggableView: View {
+    let addon: AddonOfferQuote
+    @ObservedObject var vm: ChangeAddonViewModel
+    var body: some View {
+        HStack(alignment: .top, spacing: .padding4) {
+            AddonOptionRow(
+                title: addon.displayTitle,
+                subtitle: addon.displayDescription,
+                isSelected: vm.isAddonSelected(addon),
+                trailingView: {
+                    hPill(
+                        text: L10n.addonFlowPriceLabel(addon.cost.premium.gross.formattedAmount),
+                        color: .grey,
+                        colorLevel: .one
+                    )
+                    .hFieldSize(.small)
+                },
+                onTap: { [weak vm] in vm?.selectAddon(addon: addon) }
+            )
+        }
+    }
+}
+
+extension ChangeAddonViewModel {
     fileprivate func getPerilGroups() -> [AddonInfo.PerilGroup] {
         let quotes: [AddonOfferQuote] =
-            switch vm.offer.quote.addonOfferContent {
+            switch self.offer.quote.addonOfferContent {
             case .selectable(let selectable): selectable.quotes
             case .toggleable(let toggleable): toggleable.quotes
             }
