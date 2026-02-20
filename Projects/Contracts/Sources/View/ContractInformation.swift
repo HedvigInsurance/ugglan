@@ -189,34 +189,35 @@ struct ContractInformationView: View {
         }
     }
 
+    private func handleAdd(contract: Contract) {
+        contractsNavigationVm.isAddonPresented = .init(
+            addonSource: .insurances,
+            contractConfigs: [contract.asContractConfig],
+        )
+    }
+
+    private func handleRemove(contract: Contract) {
+        contractsNavigationVm.isRemoveAddonPresented = .init(contractInfo: contract.asContractConfig)
+    }
+
     @ViewBuilder
     private func addonsView(contract: Contract) -> some View {
         if let addonsData = contract.addonsInfo {
             hSection(addonsData.all) { addon in
-                hRow {
-                    switch (addon) {
-                    case .available(let availableAddon):
+                switch (addon) {
+                case .available(let availableAddon):
+                    hRow {
                         AddonView(
                             title: availableAddon.displayName,
                             subtitle: availableAddon.description,
                             actionTitle: "Lägg till",  // TODO: localise
                             actionColor: .green,
-                            activationDate: nil,
-                            terminationDate: nil,
-                            action: {
-                                contractsNavigationVm.isAddonPresented = .init(
-                                    addonSource: .insurances,
-                                    contractConfigs: [
-                                        .init(
-                                            contractId: contract.id,
-                                            exposureName: contract.exposureDisplayName,
-                                            displayName: contract.currentAgreement?.productVariant.displayName ?? ""
-                                        )
-                                    ]
-                                )
-                            }
                         )
-                    case .existing(let existingAddon):
+                    }
+                    .containerShape(.rect)
+                    .onTapGesture { handleAdd(contract: contract) }
+                case .existing(let existingAddon):
+                    hRow {
                         AddonView(
                             title: existingAddon.displayName,
                             subtitle: existingAddon.description,
@@ -224,19 +225,10 @@ struct ContractInformationView: View {
                             actionColor: .grey,
                             activationDate: existingAddon.startDate,
                             terminationDate: existingAddon.endDate,
-                            action: {
-                                if existingAddon.isRemovable {
-                                    contractsNavigationVm.isRemoveAddonPresented = .init(
-                                        contractInfo: .init(
-                                            contractId: contract.id,
-                                            exposureName: contract.exposureDisplayName,
-                                            displayName: contract.currentAgreement?.productVariant.displayName ?? ""
-                                        )
-                                    )
-                                }
-                            }
                         )
                     }
+                    .containerShape(.rect)
+                    .onTapGesture { if existingAddon.isRemovable { handleRemove(contract: contract) } }
                 }
             }
             .sectionContainerStyle(.opaque)
@@ -251,7 +243,22 @@ struct ContractInformationView: View {
         let actionColor: PillColor
         let activationDate: String?
         let terminationDate: String?
-        let action: () -> Void
+
+        init(
+            title: String,
+            subtitle: String,
+            actionTitle: String,
+            actionColor: PillColor,
+            activationDate: String? = nil,
+            terminationDate: String? = nil,
+        ) {
+            self.title = title
+            self.subtitle = subtitle
+            self.actionTitle = actionTitle
+            self.actionColor = actionColor
+            self.activationDate = activationDate
+            self.terminationDate = terminationDate
+        }
 
         var description: String {
             if let activationDate { return "Aktiveras \(activationDate)" }
@@ -268,7 +275,6 @@ struct ContractInformationView: View {
                 }
                 Spacer(minLength: 0)
                 hPill(text: actionTitle, color: actionColor)
-                    .onTapGesture { action() }
             }
         }
     }
@@ -414,4 +420,10 @@ public struct CoInsuredInfoView: View {
 
     return ScrollView { ContractInformationView(id: "contractId") }
         .environmentObject(ContractsNavigationViewModel())
+}
+
+extension Contract {
+    var asContractConfig: AddonConfig {
+        .init(contractId: id, exposureName: exposureDisplayName, displayName: exposureDisplayName)
+    }
 }
