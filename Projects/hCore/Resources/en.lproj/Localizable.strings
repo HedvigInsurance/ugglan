@@ -224,6 +224,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_FORM_TEXT_MIN_CHAR" = "Value must be at least %d characters long";
 "CLAIM_CHAT_FREE_TEXT_LABEL" = "Written description";
 "CLAIM_CHAT_GET_NOTIFIED" = "Get notified";
+"CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "On a trip";
+"CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Outside my home";
+"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "In Sweden or abroad";
+"CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "In your home or on your property";
+"CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "In Sweden or abroad";
+"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "Storage, shared spaces or in public";
+"CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "Storage, shared spaces or in public";
 "CLAIM_CHAT_OTHER_TITLE" = "Other information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Please provide phone number in the case we need to contact you";
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Make sure we have right phone number in the case we need to contact you";
@@ -303,8 +310,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "In %1$li days your insurance will be renewed. Read your updated insurance certificate here.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Read certificate";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Your insurance will be renewed tomorrow. Read your updated insurance certificate here.";
-"DATA_TABLE_MULTIPLE_OWNERS" = "";
-"DATA_TABLE_WATER_CONNECTED" = "";
+"DATA_TABLE_MULTIPLE_OWNERS" = "Multiple owners";
+"DATA_TABLE_VALUE_FALSE" = "No";
+"DATA_TABLE_VALUE_TRUE" = "Yes";
+"DATA_TABLE_WATER_CONNECTED" = "Water connected";
 "DEEP_LINK_CONTRACT" = "Contract";
 /* Figma */
 "DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Are you sure you want to delete your account?";
