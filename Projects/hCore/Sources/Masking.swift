@@ -160,7 +160,7 @@ public struct Masking {
 
     public var autocapitalizationType: UITextAutocapitalizationType {
         switch type {
-        case .email: return .none
+        case .email, .none: return .none
         default: return .words
         }
     }
