@@ -27,6 +27,12 @@ query ContractBundle($options: DisplayItemOptions) {
 				...AgreementDisplayItemFragment
 			}
 		}
+		existingAddons {
+			...ContractAddonFragment
+		}
+		availableAddons {
+			...AvailableAddonFragment
+		}
     }
     pendingContracts {
 		displayItems(options: $options) {
@@ -48,6 +54,12 @@ query ContractBundle($options: DisplayItemOptions) {
 		}
 		cost {
 			...ItemCostFragment
+		}
+		existingAddons {
+			...ContractAddonFragment
+		}
+		availableAddons {
+			...AvailableAddonFragment
 		}
     }
     terminatedContracts {
@@ -71,4 +83,21 @@ fragment AgreementDisplayItemFragment on AgreementDisplayItem {
 	displayTitle
 	displayValue
 	displaySubtitle
+}
+
+fragment ContractAddonFragment on ContractAddon {
+	addonVariant {
+		...AddonVariantFragment
+	}
+	displayName
+	description
+	isRemovable
+	isUpgradable
+	startDate
+	endDate
+}
+
+fragment AvailableAddonFragment on AvailableAddon {
+	displayName
+	description
 }

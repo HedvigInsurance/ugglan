@@ -27,8 +27,8 @@ struct RemoveAddonProcessingView: View {
                 )
             )
         )
-        .onDeinit { [weak navigationVm] in
-            if navigationVm?.removeAddonVm.submittingState == .success {
+        .onDeinit { [weak vm] in
+            if vm?.submittingState == .success {
                 Task { NotificationCenter.default.post(name: .addonsChanged, object: nil) }
             }
         }

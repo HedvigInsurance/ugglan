@@ -22,7 +22,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         lastName: String,
         ssn: String?,
         typeOfContract: TypeOfContract,
-        coInsured: [CoInsuredModel]
+        coInsured: [CoInsuredModel],
+        addonsInfo: AddonsInfo? = nil
     ) {
         self.id = id
         self.currentAgreement = currentAgreement
@@ -40,6 +41,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.ssn = ssn
         self.typeOfContract = typeOfContract
         self.coInsured = coInsured
+        self.addonsInfo = addonsInfo
     }
 
     public let id: String
@@ -58,6 +60,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let lastName: String
     public let ssn: String?
     public var coInsured: [CoInsuredModel]
+    public let addonsInfo: AddonsInfo?
     public var fullName: String {
         firstName + " " + lastName
     }
@@ -329,6 +332,78 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
 
     public let displayName: String
     public let url: String
+}
+
+public struct AddonsInfo: Codable, Hashable, Sendable {
+    public let existingAddons: [ExistingAddon]
+    public let availableAddons: [AvailableAddon]
+
+    public init(existingAddons: [ExistingAddon], availableAddons: [AvailableAddon]) {
+        self.existingAddons = existingAddons
+        self.availableAddons = availableAddons
+    }
+
+    public var all: [AddonEntry] {
+        existingAddons.map(AddonEntry.existing) + availableAddons.map(AddonEntry.available)
+    }
+}
+
+public enum AddonEntry: Identifiable, Sendable {
+    public var id: UUID {
+        switch self {
+        case .existing(let e): e.id
+        case .available(let a): a.id
+        }
+    }
+    case existing(ExistingAddon)
+    case available(AvailableAddon)
+}
+
+public struct ExistingAddon: Codable, Hashable, Identifiable, Sendable {
+    public let id: UUID
+    public let addonVariant: AddonVariant
+    public let displayName: String
+    public let description: String
+    public let isRemovable: Bool
+    public let isUpgradable: Bool
+    public let startDate: String?
+    public let endDate: String?
+
+    public init(
+        id: UUID = UUID(),
+        addonVariant: AddonVariant,
+        displayName: String,
+        description: String,
+        isRemovable: Bool,
+        isUpgradable: Bool,
+        startDate: String?,
+        endDate: String?
+    ) {
+        self.id = id
+        self.addonVariant = addonVariant
+        self.displayName = displayName
+        self.description = description
+        self.isRemovable = isRemovable
+        self.isUpgradable = isUpgradable
+        self.startDate = startDate
+        self.endDate = endDate
+    }
+}
+
+public struct AvailableAddon: Codable, Hashable, Identifiable, Sendable {
+    public let id: UUID
+    public let displayName: String
+    public let description: String
+
+    public init(
+        id: UUID = UUID(),
+        displayName: String,
+        description: String
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.description = description
+    }
 }
 
 @MainActor

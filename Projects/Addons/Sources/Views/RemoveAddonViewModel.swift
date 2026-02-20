@@ -63,21 +63,15 @@ public class RemoveAddonViewModel: ObservableObject {
     }
 
     func confirmRemoval() async {
-        withAnimation {
-            self.submittingState = .loading
-        }
+        withAnimation { submittingState = .loading }
         do {
             try await addonService.confirmAddonRemoval(
                 contractId: contractInfo.contractId,
                 addonIds: Set(selectedAddons.map(\.id))
             )
-            withAnimation {
-                self.submittingState = .success
-            }
+            withAnimation { submittingState = .success }
         } catch {
-            withAnimation {
-                self.submittingState = .error(errorMessage: error.localizedDescription)
-            }
+            withAnimation { submittingState = .error(errorMessage: error.localizedDescription) }
         }
     }
 
