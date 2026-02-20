@@ -28,6 +28,7 @@ struct AddonOptionRow<Trailing: View>: View {
             .padding(.top, .padding19)
             .padding(.bottom, .padding21)
         }
+        .containerShape(.rect)
         .onTapGesture { withAnimation(.easeInOut(duration: 0.2)) { onTap() } }
         .accessibilityAction { onTap() }
         .accessibilityHint(L10n.voiceoverPressTo)  // TODO: fix hint
