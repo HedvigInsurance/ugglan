@@ -207,35 +207,38 @@ struct ContractInformationView: View {
             hSection(addonsData.all) { addon in
                 switch (addon) {
                 case .available(let availableAddon):
-                    hRow {
-                        AddonView(
-                            title: availableAddon.displayName,
-                            subtitle: availableAddon.description,
-                            actionTitle: "Lägg till",  // TODO: localise
-                            actionColor: .green,
-                        )
-                    }
-                    .containerShape(.rect)
-                    .onTapGesture { handleAdd(contract: contract, addonDisplayName: availableAddon.displayName) }
+                    AddonViewRow(
+                        title: availableAddon.displayName,
+                        subtitle: availableAddon.description,
+                        actionTitle: "Lägg till",  // TODO: localise
+                        buttonType: .primaryAlt,
+                        action: { handleAdd(contract: contract, addonDisplayName: availableAddon.displayName) }
+                    )
+                    .hButtonIsLoading(
+                        contractsNavigationVm.isAddonPresented?.preselectedAddonTitle == availableAddon.displayName
+                    )
                 case .existing(let existingAddon):
-                    hRow {
-                        AddonView(
-                            title: existingAddon.displayName,
-                            subtitle: existingAddon.description,
-                            actionTitle: "Tillagd",  // TODO: localise
-                            actionColor: .grey,
-                            activationDate: existingAddon.startDate,
-                            terminationDate: existingAddon.endDate,
-                        )
-                    }
-                    .containerShape(.rect)
-                    .onTapGesture {
-                        handleRemove(
-                            contract: contract,
-                            addonDisplayName: existingAddon.displayName,
-                            isRemovable: existingAddon.isRemovable
-                        )
-                    }
+                    AddonViewRow(
+                        title: existingAddon.displayName,
+                        subtitle: existingAddon.description,
+                        actionTitle: "Tillagd",  // TODO: localise
+                        buttonType: .secondary,
+                        activationDate: existingAddon.startDate,
+                        terminationDate: existingAddon.endDate,
+                        action: {
+                            handleRemove(
+                                contract: contract,
+                                addonDisplayName: existingAddon.displayName,
+                                isRemovable: existingAddon.isRemovable
+                            )
+                        }
+                    )
+                    .hButtonIsLoading(
+                        contractsNavigationVm.isRemoveAddonIntentPresented?
+                            .addonDisplayName == existingAddon.displayName
+                            || contractsNavigationVm.isRemoveAddonPresented?.preselectedAddons
+                                .contains(existingAddon.displayName) ?? false
+                    )
                 }
             }
             .sectionContainerStyle(.opaque)
@@ -243,28 +246,31 @@ struct ContractInformationView: View {
         }
     }
 
-    struct AddonView: View {
+    struct AddonViewRow: View {
         let title: String
         let subtitle: String
         let actionTitle: String
-        let actionColor: PillColor
+        let buttonType: hButtonConfigurationType
         let activationDate: String?
         let terminationDate: String?
+        let action: (() -> Void)
 
         init(
             title: String,
             subtitle: String,
             actionTitle: String,
-            actionColor: PillColor,
+            buttonType: hButtonConfigurationType,
             activationDate: String? = nil,
             terminationDate: String? = nil,
+            action: @escaping (() -> Void),
         ) {
             self.title = title
             self.subtitle = subtitle
             self.actionTitle = actionTitle
-            self.actionColor = actionColor
+            self.buttonType = buttonType
             self.activationDate = activationDate
             self.terminationDate = terminationDate
+            self.action = action
         }
 
         var description: String {
@@ -274,15 +280,20 @@ struct ContractInformationView: View {
         }
 
         var body: some View {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    hText(title)
-                    hText(description, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
+            hRow {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading) {
+                        hText(title)
+                        hText(description, style: .label)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                    }
+                    Spacer(minLength: 0)
+                    hButton(.small, buttonType, content: .init(title: actionTitle), action)
+                        .hFieldSize(.small)
                 }
-                Spacer(minLength: 0)
-                hPill(text: actionTitle, color: actionColor)
             }
+            .containerShape(.rect)
+            .onTapGesture(perform: action)
         }
     }
 
