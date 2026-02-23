@@ -41,6 +41,7 @@ public struct ContractsNavigation<Content: View>: View {
                     }
                 }
         }
+        .disabled(contractsNavigationVm.isAddonPresented != nil)
         .detent(
             item: $contractsNavigationVm.insurableLimit,
             transitionType: .detent(style: [.height])
