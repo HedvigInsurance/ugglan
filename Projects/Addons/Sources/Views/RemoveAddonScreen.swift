@@ -81,6 +81,6 @@ struct RemoveAddonScreen: View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let contractInfo: AddonConfig = .init(contractId: "1", exposureName: "exposure", displayName: "title")
-    return RemoveAddonScreen(.init(contractInfo))
-        .environmentObject(RemoveAddonNavigationViewModel(contractInfo))
+    return RemoveAddonScreen(.init(.init(contractId: "", exposureName: "", displayName: ""), []))
+        .environmentObject(RemoveAddonNavigationViewModel(contractInfo, []))
 }

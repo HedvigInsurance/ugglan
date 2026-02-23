@@ -53,24 +53,29 @@ struct ContractTable: View {
                     CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
-                    hSection {
-                        VStack(spacing: .padding8) {
-                            ForEach(vm.addonBanners, id: \.self) { banner in
-                                let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
-                                let input = ChangeAddonInput(addonSource: .insurances, contractConfigs: addonConfigs)
+                    if !vm.addonBanners.isEmpty {
+                        hSection {
+                            VStack(spacing: .padding8) {
+                                ForEach(vm.addonBanners, id: \.self) { banner in
+                                    let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
+                                    let input = ChangeAddonInput(
+                                        addonSource: .insurances,
+                                        contractConfigs: addonConfigs
+                                    )
 
-                                AddonCardView(
-                                    openAddon: { contractsNavigationVm.isAddonPresented = input },
-                                    addon: banner
-                                )
-                                .hButtonIsLoading(
-                                    contractsNavigationVm.isAddonPresented?.contractConfigs == input.contractConfigs
-                                )
+                                    AddonCardView(
+                                        openAddon: { contractsNavigationVm.isAddonPresented = input },
+                                        addon: banner
+                                    )
+                                    .hButtonIsLoading(
+                                        contractsNavigationVm.isAddonPresented?.contractConfigs == input.contractConfigs
+                                    )
+                                }
                             }
                         }
+                        .withHeader(title: L10n.insuranceAddonsSubheading)
+                        .sectionContainerStyle(.transparent)
                     }
-                    .withHeader(title: L10n.insuranceAddonsSubheading)
-                    .sectionContainerStyle(.transparent)
 
                     movingToANewHomeView
                     PresentableStoreLens(
@@ -210,17 +215,6 @@ public class ContractTableViewModel: ObservableObject {
                     self?.viewState = .success
                 }
             }
-
-        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonsChanged, object: nil, queue: nil) {
-            [weak self] _ in
-            Task {
-                await self?.getAddonBanners()
-            }
-            Task {
-                let store: ContractStore = await globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
-            }
-        }
     }
 
     deinit {

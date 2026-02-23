@@ -6,9 +6,11 @@ import hCoreUI
 public struct RemoveAddonInput: Identifiable, Equatable {
     public var id: String { contractInfo.contractId }
     public let contractInfo: AddonConfig
+    public let preselectedAddons: Set<String>
 
-    public init(contractInfo: AddonConfig) {
+    public init(contractInfo: AddonConfig, preselectedAddons: Set<String>) {
         self.contractInfo = contractInfo
+        self.preselectedAddons = preselectedAddons
     }
 }
 
@@ -19,8 +21,8 @@ class RemoveAddonNavigationViewModel: ObservableObject {
     @Published var isProcessingPresented = false
     @Published var document: hPDFDocument?
 
-    public init(_ contractInfo: AddonConfig) {
-        self.removeAddonVm = .init(contractInfo)
+    public init(_ contractInfo: AddonConfig, _ preselectedAddons: Set<String>) {
+        self.removeAddonVm = .init(contractInfo, preselectedAddons)
     }
 }
 
@@ -31,8 +33,8 @@ public struct RemoveAddonNavigation: View {
     @StateObject var removeAddonNavigationVm: RemoveAddonNavigationViewModel
     @ObservedObject var removeAddonVm: RemoveAddonViewModel
 
-    public init(_ config: AddonConfig) {
-        let vm = RemoveAddonNavigationViewModel(config)
+    public init(_ config: AddonConfig, _ preselectedAddons: Set<String>) {
+        let vm = RemoveAddonNavigationViewModel(config, preselectedAddons)
         self._removeAddonNavigationVm = .init(wrappedValue: vm)
         self.removeAddonVm = vm.removeAddonVm
     }

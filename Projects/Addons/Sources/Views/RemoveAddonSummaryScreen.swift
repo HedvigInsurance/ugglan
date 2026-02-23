@@ -57,5 +57,5 @@ extension RemoveAddonViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return RemoveAddonSummaryScreen(.init(.init(contractId: "1", exposureName: "exposure", displayName: "title")))
+    return RemoveAddonSummaryScreen(.init(.init(contractId: "1", exposureName: "exposure", displayName: "title"), []))
 }

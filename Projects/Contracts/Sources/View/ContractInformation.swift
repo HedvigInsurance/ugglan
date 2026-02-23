@@ -196,8 +196,8 @@ struct ContractInformationView: View {
         )
     }
 
-    private func handleRemove(contract: Contract) {
-        contractsNavigationVm.isRemoveAddonPresented = .init(contractInfo: contract.asContractConfig)
+    private func handleRemove(contract: Contract, addonDisplayName: String) {
+        contractsNavigationVm.isRemoveAddonIntentPresented = .init(contract, addonDisplayName)
     }
 
     @ViewBuilder
@@ -228,7 +228,11 @@ struct ContractInformationView: View {
                         )
                     }
                     .containerShape(.rect)
-                    .onTapGesture { if existingAddon.isRemovable { handleRemove(contract: contract) } }
+                    .onTapGesture {
+                        if existingAddon.isRemovable {
+                            handleRemove(contract: contract, addonDisplayName: existingAddon.displayName)
+                        }
+                    }
                 }
             }
             .sectionContainerStyle(.opaque)
@@ -425,5 +429,16 @@ public struct CoInsuredInfoView: View {
 extension Contract {
     var asContractConfig: AddonConfig {
         .init(contractId: id, exposureName: exposureDisplayName, displayName: exposureDisplayName)
+    }
+}
+
+public struct RemoveAddonIntent: Equatable, Identifiable {
+    public var id: String { addonDisplayName }
+    let contract: Contract
+    let addonDisplayName: String
+
+    init(_ contract: Contract, _ addonDisplayName: String) {
+        self.contract = contract
+        self.addonDisplayName = addonDisplayName
     }
 }
