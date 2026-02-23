@@ -189,10 +189,11 @@ struct ContractInformationView: View {
         }
     }
 
-    private func handleAdd(contract: Contract) {
+    private func handleAdd(contract: Contract, addonDisplayName: String) {
         contractsNavigationVm.isAddonPresented = .init(
             addonSource: .insurances,
             contractConfigs: [contract.asContractConfig],
+            preselectedAddonTitle: addonDisplayName
         )
     }
 
@@ -215,7 +216,7 @@ struct ContractInformationView: View {
                         )
                     }
                     .containerShape(.rect)
-                    .onTapGesture { handleAdd(contract: contract) }
+                    .onTapGesture { handleAdd(contract: contract, addonDisplayName: availableAddon.displayName) }
                 case .existing(let existingAddon):
                     hRow {
                         AddonView(

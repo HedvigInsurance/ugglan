@@ -11,14 +11,18 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published private var selectedAddonIds: Set<String> = []
     let offer: AddonOffer
 
-    init(offer: AddonOffer) {
+    init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
         self.offer = offer
         switch offer.quote.addonOfferContent {
         case let .selectable(data):
             if let first = data.quotes.first {
                 self.selectedAddonIds = [first.id]
             }
-        case .toggleable: break
+        case let .toggleable(data):
+            let preselectedIds = data.quotes
+                .filter { $0.displayTitle == preselectedAddonTitle }
+                .map(\.id)
+            self.selectedAddonIds = Set(preselectedIds)
         }
     }
 

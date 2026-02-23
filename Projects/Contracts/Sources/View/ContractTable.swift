@@ -53,29 +53,7 @@ struct ContractTable: View {
                     CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
-                    if !vm.addonBanners.isEmpty {
-                        hSection {
-                            VStack(spacing: .padding8) {
-                                ForEach(vm.addonBanners, id: \.self) { banner in
-                                    let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
-                                    let input = ChangeAddonInput(
-                                        addonSource: .insurances,
-                                        contractConfigs: addonConfigs
-                                    )
-
-                                    AddonCardView(
-                                        openAddon: { contractsNavigationVm.isAddonPresented = input },
-                                        addon: banner
-                                    )
-                                    .hButtonIsLoading(
-                                        contractsNavigationVm.isAddonPresented?.contractConfigs == input.contractConfigs
-                                    )
-                                }
-                            }
-                        }
-                        .withHeader(title: L10n.insuranceAddonsSubheading)
-                        .sectionContainerStyle(.transparent)
-                    }
+                    addonBannersView
 
                     movingToANewHomeView
                     PresentableStoreLens(
@@ -162,6 +140,30 @@ struct ContractTable: View {
         }
         .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private var addonBannersView: some View {
+        if !vm.addonBanners.isEmpty {
+            hSection {
+                VStack(spacing: .padding8) {
+                    ForEach(vm.addonBanners, id: \.self) { banner in
+                        let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
+                        let input = ChangeAddonInput(addonSource: .insurances, contractConfigs: addonConfigs)
+
+                        AddonCardView(
+                            openAddon: { contractsNavigationVm.isAddonPresented = input },
+                            addon: banner
+                        )
+                        .hButtonIsLoading(
+                            contractsNavigationVm.isAddonPresented?.contractConfigs == input.contractConfigs
+                        )
+                    }
+                }
+            }
+            .withHeader(title: L10n.insuranceAddonsSubheading)
+            .sectionContainerStyle(.transparent)
+        }
     }
 
     @ViewBuilder
