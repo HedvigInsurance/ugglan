@@ -20,7 +20,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig)
+        let model = RemoveAddonViewModel(testAddonConfig, [])
 
         vm = model
         try await Task.sleep(seconds: 0.03)
@@ -36,7 +36,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig)
+        let model = RemoveAddonViewModel(testAddonConfig, [])
 
         vm = model
         try await Task.sleep(seconds: 0.03)
@@ -50,7 +50,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig)
+        let model = RemoveAddonViewModel(testAddonConfig, [])
 
         vm = model
         try await Task.sleep(seconds: 0.03)
@@ -80,7 +80,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig)
+        let model = RemoveAddonViewModel(testAddonConfig, [])
 
         vm = model
         try await Task.sleep(seconds: 0.03)
@@ -100,7 +100,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig)
+        let model = RemoveAddonViewModel(testAddonConfig, [])
 
         vm = model
         try await Task.sleep(seconds: 0.03)
@@ -118,7 +118,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig)
+        let model = RemoveAddonViewModel(testAddonConfig, [])
 
         vm = model
         try await Task.sleep(seconds: 0.03)
