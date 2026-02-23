@@ -206,38 +206,40 @@ struct ContractInformationView: View {
         if let addonsData = contract.addonsInfo {
             hSection(addonsData.all) { addon in
                 switch (addon) {
-                case .available(let availableAddon):
+                case .available(let available):
                     AddonViewRow(
-                        title: availableAddon.displayName,
-                        subtitle: availableAddon.description,
-                        actionTitle: "Lägg till",  // TODO: localise
+                        title: available.displayName,
+                        subtitle: available.description,
+                        actionTitle: L10n.contractOverviewAddonAdd,
                         buttonType: .primaryAlt,
-                        action: { handleAdd(contract: contract, addonDisplayName: availableAddon.displayName) }
+                        action: { handleAdd(contract: contract, addonDisplayName: available.displayName) }
                     )
                     .hButtonIsLoading(
-                        contractsNavigationVm.isAddonPresented?.preselectedAddonTitle == availableAddon.displayName
+                        contractsNavigationVm.isAddonPresented?.preselectedAddonTitle == available.displayName
                     )
-                case .existing(let existingAddon):
+                case .existing(let existing):
                     AddonViewRow(
-                        title: existingAddon.displayName,
-                        subtitle: existingAddon.description,
-                        actionTitle: "Tillagd",  // TODO: localise
+                        title: existing.displayName,
+                        subtitle: existing.description,
+                        actionTitle: L10n.contractOverviewAddonIsAdded,
                         buttonType: .secondary,
-                        activationDate: existingAddon.startDate,
-                        terminationDate: existingAddon.endDate,
+                        activationDate: existing.startDate,
+                        terminationDate: existing.endDate,
                         action: {
-                            handleRemove(
-                                contract: contract,
-                                addonDisplayName: existingAddon.displayName,
-                                isRemovable: existingAddon.isRemovable
-                            )
+                            if existing.endDate == nil {
+                                handleRemove(
+                                    contract: contract,
+                                    addonDisplayName: existing.displayName,
+                                    isRemovable: existing.isRemovable
+                                )
+                            }
                         }
                     )
                     .hButtonIsLoading(
                         contractsNavigationVm.isRemoveAddonIntentPresented?
-                            .addonDisplayName == existingAddon.displayName
+                            .addonDisplayName == existing.displayName
                             || contractsNavigationVm.isRemoveAddonPresented?.preselectedAddons
-                                .contains(existingAddon.displayName) ?? false
+                                .contains(existing.displayName) ?? false
                     )
                 }
             }
@@ -274,8 +276,8 @@ struct ContractInformationView: View {
         }
 
         var description: String {
-            if let activationDate { return "Aktiveras \(activationDate)" }
-            if let terminationDate { return "Avslutas \(terminationDate)" }
+            if let activationDate { return L10n.contractOverviewAddonActivatesDate(activationDate) }
+            if let terminationDate { return L10n.contractOverviewAddonEndsDate(terminationDate) }
             return subtitle
         }
 
