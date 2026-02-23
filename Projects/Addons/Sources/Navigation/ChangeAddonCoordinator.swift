@@ -42,6 +42,7 @@ private struct ChangeAddonCoordinator: ViewModifier {
                             }
                         }
                     } catch {
+                        self.input = nil
                         Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
                     }
                 }
