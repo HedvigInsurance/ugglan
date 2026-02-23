@@ -45,7 +45,7 @@ extension ChangeTierViewModel {
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
                 priceBreakdownItems: (selectedQuote?.costBreakdown ?? [])
-                    .map { item in .init(title: item.title, value: item.value) }
+                    .map { item in .init(title: item.title, value: item.value, crossDisplayTitle: item.isCrossed) }
             )
         ]
 
