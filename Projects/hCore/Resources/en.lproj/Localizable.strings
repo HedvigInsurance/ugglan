@@ -12,11 +12,13 @@
 /* Used in scenarios where we want hear something like "Double tap to view details" */
 "A11Y_VIEW_DETAILS" = "View details";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Get notified";
+"ADDON_ADDED_COVERAGE" = "Added";
 "ADDON_ADD_COVERAGE" = "Add coverage";
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Active";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "All-risk";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Lower deductible";
+"ADDON_CAR_PLUS_DISPLAY_NAME" = "Car Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Rental car";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Yes, upgrade my coverage";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "This upgrade will take effect from %1$@ and can only be removed when your insurance is renewed or cancelled.";
@@ -134,6 +136,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Please enter year of construction";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
+"CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Enable push notifications to ensure you receive all our messages.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Claim";
 "CHAT_CONVERSATION_CLOSED" = "Closed";
@@ -221,6 +224,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_FORM_TEXT_MIN_CHAR" = "Value must be at least %d characters long";
 "CLAIM_CHAT_FREE_TEXT_LABEL" = "Written description";
 "CLAIM_CHAT_GET_NOTIFIED" = "Get notified";
+"CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "On a trip";
+"CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Outside my home";
+"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "In Sweden or abroad";
+"CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "In your home or on your property";
+"CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "In Sweden or abroad";
+"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "Storage, shared spaces or in public";
+"CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "Storage, shared spaces or in public";
 "CLAIM_CHAT_OTHER_TITLE" = "Other information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Please provide phone number in the case we need to contact you";
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Make sure we have right phone number in the case we need to contact you";
@@ -300,8 +310,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "In %1$li days your insurance will be renewed. Read your updated insurance certificate here.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Read certificate";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Your insurance will be renewed tomorrow. Read your updated insurance certificate here.";
-"DATA_TABLE_MULTIPLE_OWNERS" = "";
-"DATA_TABLE_WATER_CONNECTED" = "";
+"DATA_TABLE_MULTIPLE_OWNERS" = "Multiple owners";
+"DATA_TABLE_VALUE_FALSE" = "No";
+"DATA_TABLE_VALUE_TRUE" = "Yes";
+"DATA_TABLE_WATER_CONNECTED" = "Water connected";
 "DEEP_LINK_CONTRACT" = "Contract";
 /* Figma */
 "DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Are you sure you want to delete your account?";

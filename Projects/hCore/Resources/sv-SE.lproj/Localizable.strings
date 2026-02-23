@@ -12,11 +12,13 @@
 /* Used in scenarios where we want hear something like "Double tap to view details" */
 "A11Y_VIEW_DETAILS" = "Visa detaljer";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Få info direkt";
+"ADDON_ADDED_COVERAGE" = "Tillagd";
 "ADDON_ADD_COVERAGE" = "Lägg till skydd";
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Aktiv";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "Drulle";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Självriskavdrag";
+"ADDON_CAR_PLUS_DISPLAY_NAME" = "Bil Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Hyrbil";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Ja, uppgradera mitt skydd";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@ och kan endast tas bort när din försäkring förnyas eller avslutas.";
@@ -134,6 +136,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Ange byggår";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
+"CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så du inte missar några av våra meddelanden.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Skadeärende";
 "CHAT_CONVERSATION_CLOSED" = "Avslutad";
@@ -221,6 +224,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_FORM_TEXT_MIN_CHAR" = "Värdet måste vara minst %d tecken";
 "CLAIM_CHAT_FREE_TEXT_LABEL" = "Textbeskrivning";
 "CLAIM_CHAT_GET_NOTIFIED" = "Bli meddelad";
+"CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "På resa";
+"CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Utanför mitt hem";
+"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "I Sverige eller utomlands";
+"CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "I bostaden eller på tillhörande tomt";
+"CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "I Sverige eller utomlands";
+"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "T.ex. i förråd, tvättstuga eller på stan";
+"CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "T.ex. i förråd, tvättstuga eller på stan";
 "CLAIM_CHAT_OTHER_TITLE" = "Övrig information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Vänligen ange telefonnummer ifall vi behöver kontakta dig";
 "CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig";
@@ -300,8 +310,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "Om %1$li dagar kommer din försäkring förnyas. Läs ditt uppdaterade försäkringsbrev här.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Läs försäkringsbrev";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Din försäkring kommer att förnyas imorgon. Läs ditt uppdaterade försäkringsbevis här.";
-"DATA_TABLE_MULTIPLE_OWNERS" = "";
-"DATA_TABLE_WATER_CONNECTED" = "";
+"DATA_TABLE_MULTIPLE_OWNERS" = "Flera ägare";
+"DATA_TABLE_VALUE_FALSE" = "Nej";
+"DATA_TABLE_VALUE_TRUE" = "Ja";
+"DATA_TABLE_WATER_CONNECTED" = "Vatten anslutet";
 "DEEP_LINK_CONTRACT" = "Försäkring";
 /* Figma */
 "DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Är du säker på att du vill radera ditt konto?";
