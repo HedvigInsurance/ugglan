@@ -236,10 +236,8 @@ struct ContractInformationView: View {
                         }
                     )
                     .hButtonIsLoading(
-                        contractsNavigationVm.isRemoveAddonIntentPresented?
-                            .addonDisplayName == existing.displayName
-                            || contractsNavigationVm.isRemoveAddonPresented?.preselectedAddons
-                                .contains(existing.displayName) ?? false
+                        contractsNavigationVm.isRemoveAddonPresented?.preselectedAddons
+                            .contains(existing.displayName) == true
                     )
                 }
             }
