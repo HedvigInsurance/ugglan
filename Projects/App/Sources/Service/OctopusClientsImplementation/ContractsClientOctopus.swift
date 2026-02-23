@@ -239,20 +239,9 @@ extension FetchContractsClientOctopus {
                 return nil
             }()
             let addonsInfo = AddonsInfo(
-                existingAddons: contract.existingAddons.map { addon in
-                    ExistingAddon(
-                        addonVariant: .init(fragment: addon.addonVariant.fragments.addonVariantFragment),
-                        displayName: addon.displayName,
-                        description: addon.description,
-                        isRemovable: addon.isRemovable,
-                        isUpgradable: addon.isUpgradable,
-                        startDate: addon.startDate,
-                        endDate: addon.endDate
-                    )
-                },
-                availableAddons: contract.availableAddons.map { addon in
-                    AvailableAddon(displayName: addon.displayName, description: addon.description)
-                }
+                existingAddons: contract.existingAddons.map { ExistingAddon(from: $0) },
+                availableAddons: contract.availableAddons
+                    .map { .init(displayName: $0.displayName, description: $0.description) }
             )
             return Contract(
                 contract: contract.fragments.contractFragment,
@@ -315,20 +304,9 @@ extension FetchContractsClientOctopus {
                 )
             }
             let addonsInfo = AddonsInfo(
-                existingAddons: contract.existingAddons.map { addon in
-                    ExistingAddon(
-                        addonVariant: .init(fragment: addon.addonVariant.fragments.addonVariantFragment),
-                        displayName: addon.displayName,
-                        description: addon.description,
-                        isRemovable: addon.isRemovable,
-                        isUpgradable: addon.isUpgradable,
-                        startDate: addon.startDate,
-                        endDate: addon.endDate
-                    )
-                },
-                availableAddons: contract.availableAddons.map { addon in
-                    AvailableAddon(displayName: addon.displayName, description: addon.description)
-                }
+                existingAddons: contract.existingAddons.map { ExistingAddon(from: $0) },
+                availableAddons: contract.availableAddons
+                    .map { .init(displayName: $0.displayName, description: $0.description) }
             )
             return Contract(
                 pendingContract: contract,
@@ -344,5 +322,31 @@ extension FetchContractsClientOctopus {
                 addonsInfo: addonsInfo
             )
         }
+    }
+}
+
+extension ExistingAddon {
+    public init(from data: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract.ExistingAddon) {
+        self.init(
+            addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment),
+            displayName: data.displayName,
+            description: data.description,
+            isRemovable: data.isRemovable,
+            isUpgradable: data.isUpgradable,
+            startDate: data.startDate,
+            endDate: data.endDate
+        )
+    }
+
+    public init(from data: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.ExistingAddon) {
+        self.init(
+            addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment),
+            displayName: data.displayName,
+            description: data.description,
+            isRemovable: data.isRemovable,
+            isUpgradable: data.isUpgradable,
+            startDate: data.startDate,
+            endDate: data.endDate
+        )
     }
 }
