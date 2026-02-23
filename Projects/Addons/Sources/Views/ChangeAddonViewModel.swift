@@ -130,8 +130,8 @@ public class ChangeAddonViewModel: ObservableObject {
             case .selectable: true
             }
 
-        items += selectedAddons.map { $0.asQuoteDisplayItem() }
         items += offer.quote.activeAddons.map { $0.asQuoteDisplayItem(crossDisplayTitle: crossDisplayTitle) }
+        items += selectedAddons.map { $0.asQuoteDisplayItem() }
         items += addonOfferCost?.discounts.map { $0.asQuoteDisplayItem() } ?? []
 
         return items
