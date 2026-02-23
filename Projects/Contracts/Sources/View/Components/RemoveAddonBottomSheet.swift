@@ -24,6 +24,7 @@ struct RemoveAddonBottomSheet: View {
                     VStack(alignment: .leading, spacing: 0) {
                         hText(removeAddonIntent.addonDisplayName).foregroundColor(hTextColor.Opaque.primary)
                         hText(
+                            // TODO: localise
                             action != nil
                                 ? "Den här tillägsförsäkringen är aktiv och gäller ihop med din valda bilförsäkring"
                                 : "Du kan bara ta bort det tilläget under förnyelseperiod"

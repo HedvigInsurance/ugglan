@@ -197,8 +197,8 @@ struct ContractInformationView: View {
         )
     }
 
-    private func handleRemove(contract: Contract, addonDisplayName: String) {
-        contractsNavigationVm.isRemoveAddonIntentPresented = .init(contract, addonDisplayName)
+    private func handleRemove(contract: Contract, addonDisplayName: String, isRemovable: Bool) {
+        contractsNavigationVm.isRemoveAddonIntentPresented = .init(contract, addonDisplayName, isRemovable)
     }
 
     @ViewBuilder
@@ -230,9 +230,11 @@ struct ContractInformationView: View {
                     }
                     .containerShape(.rect)
                     .onTapGesture {
-                        if existingAddon.isRemovable {
-                            handleRemove(contract: contract, addonDisplayName: existingAddon.displayName)
-                        }
+                        handleRemove(
+                            contract: contract,
+                            addonDisplayName: existingAddon.displayName,
+                            isRemovable: existingAddon.isRemovable
+                        )
                     }
                 }
             }
@@ -429,7 +431,11 @@ public struct CoInsuredInfoView: View {
 
 extension Contract {
     var asContractConfig: AddonConfig {
-        .init(contractId: id, exposureName: exposureDisplayName, displayName: exposureDisplayName)
+        .init(
+            contractId: id,
+            exposureName: currentAgreement?.productVariant.displayName ?? "",
+            displayName: exposureDisplayName
+        )
     }
 }
 
@@ -437,9 +443,11 @@ public struct RemoveAddonIntent: Equatable, Identifiable {
     public var id: String { addonDisplayName }
     let contract: Contract
     let addonDisplayName: String
+    let isRemovable: Bool
 
-    init(_ contract: Contract, _ addonDisplayName: String) {
+    init(_ contract: Contract, _ addonDisplayName: String, _ isRemovable: Bool) {
         self.contract = contract
         self.addonDisplayName = addonDisplayName
+        self.isRemovable = isRemovable
     }
 }

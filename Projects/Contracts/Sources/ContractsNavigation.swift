@@ -105,14 +105,17 @@ public struct ContractsNavigation<Content: View>: View {
             RemoveAddonNavigation(input.contractInfo, input.preselectedAddons)
         }
         .detent(item: $contractsNavigationVm.isRemoveAddonIntentPresented) { removeAddonIntent in
-            RemoveAddonBottomSheet(removeAddonIntent: removeAddonIntent) {
-                contractsNavigationVm.isRemoveAddonIntentPresented = nil
-            } action: {
-                contractsNavigationVm.isRemoveAddonPresented = .init(
-                    contractInfo: removeAddonIntent.contract.asContractConfig,
-                    preselectedAddons: [removeAddonIntent.addonDisplayName]
-                )
-            }
+            RemoveAddonBottomSheet(
+                removeAddonIntent: removeAddonIntent,
+                dismiss: { [weak contractsNavigationVm] in contractsNavigationVm?.isRemoveAddonIntentPresented = nil },
+                action: removeAddonIntent.isRemovable
+                    ? { [weak contractsNavigationVm] in
+                        contractsNavigationVm?.isRemoveAddonPresented = .init(
+                            contractInfo: removeAddonIntent.contract.asContractConfig,
+                            preselectedAddons: [removeAddonIntent.addonDisplayName]
+                        )
+                    } : nil
+            )
         }
         .handleAddons(input: $contractsNavigationVm.isAddonPresented)
         .detent(
