@@ -589,9 +589,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REFERRAL_SMS_MESSAGE" = "Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$@ rabatt på månadskostnaden. Följ länken: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inaktiv";
 "REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES" = "Inga av dina försäkringar har tillägg som kan tas bort.";
+"REMOVE_ADDON_BUTTON_TITLE" = "Ta bort tillägg";
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Ja, ta bort";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "";
+"REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din valda försäkring";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Ta bort tillägg";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "Den här ändringar börjar gälla %@.";

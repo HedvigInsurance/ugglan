@@ -589,9 +589,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REFERRAL_SMS_MESSAGE" = "Hey! Get Hedvig using my link and we both get %1$@ per month discount on the monthly cost. Follow the link: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inactive";
 "REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES" = "None of your insurances have addons you can remove.";
+"REMOVE_ADDON_BUTTON_TITLE" = "Remove addon";
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Yes, remove";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "This change will take effect from %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "Confirm removing selected addons";
+"REMOVE_ADDON_DESCRIPTION" = "This add-on insurance is active and applies together with your selected insurance";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Remove addon";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "This change will take effect from %@.";

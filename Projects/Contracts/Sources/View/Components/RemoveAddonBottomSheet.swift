@@ -24,17 +24,16 @@ struct RemoveAddonBottomSheet: View {
                     VStack(alignment: .leading, spacing: 0) {
                         hText(removeAddonIntent.addonDisplayName).foregroundColor(hTextColor.Opaque.primary)
                         hText(
-                            // TODO: localise
                             action != nil
-                                ? "Den här tillägsförsäkringen är aktiv och gäller ihop med din valda bilförsäkring"
-                                : "Du kan bara ta bort det tilläget under förnyelseperiod"
+                                ? L10n.removeAddonDescription
+                                : "Du kan bara ta bort det tilläget under förnyelseperiod"  // TODO: localise
                         )
                         .foregroundColor(hTextColor.Translucent.secondary)
                     }
 
                     VStack(spacing: .padding8) {
                         if let action {
-                            hButton(.large, .primary, content: .init(title: L10n.removeAddonOfferPageTitle), action)
+                            hButton(.large, .primary, content: .init(title: L10n.removeAddonButtonTitle), action)
                             hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) { dismiss?() }
                         } else {
                             hButton(.large, .secondary, content: .init(title: L10n.generalCloseButton)) { dismiss?() }
