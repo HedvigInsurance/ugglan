@@ -63,19 +63,6 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         }
     }
 
-    @MainActor
-    var displayName: String? {
-        switch self {
-        case .chat:
-            if isLiquidGlassEnabled {
-                return L10n.chatConversationInbox
-            }
-            return nil
-        default:
-            return nil
-        }
-    }
-
     var showBadge: Bool {
         switch self {
         case let .crossSell(hasNewOffser):

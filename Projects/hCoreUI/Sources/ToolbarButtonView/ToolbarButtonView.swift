@@ -35,17 +35,11 @@ public struct ToolbarButtonView: View {
                 action(type)
             }) {
                 ZStack(alignment: .topTrailing) {
-                    if let displayName = type.displayName {
-                        hText(displayName)
-                            .padding(.horizontal, .padding12)
-                            .fixedSize()
+                    if type.shouldAnimate {
+                        imageFor(type: type)
+                            .rotate()
                     } else {
-                        if type.shouldAnimate {
-                            imageFor(type: type)
-                                .rotate()
-                        } else {
-                            imageFor(type: type)
-                        }
+                        imageFor(type: type)
                     }
                     if type.showBadge && !isLiquidGlassEnabled {
                         Circle()

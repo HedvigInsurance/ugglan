@@ -521,7 +521,7 @@ public struct BackgroundBlurView: UIViewRepresentable {
     public init() {}
 
     public func makeUIView(context _: Context) -> UIView {
-        let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         for subview in view.subviews {
             subview.backgroundColor = UIColor.clear
         }
