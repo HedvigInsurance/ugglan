@@ -11,7 +11,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
     case editCoInsured
     case upgradeCoverage
     case cancellation
-    case removeAddons  // TODO: do we even want to have this action?
+    case removeAddons
 
     public var displayTitle: String {
         switch self {
@@ -24,7 +24,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         case .editCoInsured: L10n.hcQuickActionsCoInsuredTitle
         case .upgradeCoverage: L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation: L10n.hcQuickActionsTerminationTitle
-        case .removeAddons: "TODO: QuickAction.removeAddons.displayTitle"  // TODO: localise
+        case .removeAddons: L10n.removeAddonButtonTitle
         }
     }
 
@@ -39,7 +39,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         case .editCoInsured: L10n.hcQuickActionsCoInsuredSubtitle
         case .upgradeCoverage: L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation: L10n.hcQuickActionsTerminationSubtitle
-        case .removeAddons: "TODO: QuickAction.removeAddons.displaySubtitle"  // TODO: localise
+        case .removeAddons: L10n.hcQuickActionsRemoveAddonSubtitle
         }
     }
 
