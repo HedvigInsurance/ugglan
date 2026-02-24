@@ -13,9 +13,15 @@ public class RemoveAddonViewModel: ObservableObject {
     @Published var addonRemoveOfferCost: ItemCost?
     @Published var fetchingCostState: ProcessingState = .success
 
-    init(_ contractInfo: AddonConfig) {
+    init(_ contractInfo: AddonConfig, _ preselectedAddons: Set<String>) {
         self.contractInfo = contractInfo
-        Task { [weak self] in await self?.fetchOffer() }
+        Task { [weak self] in
+            await self?.fetchOffer()
+            guard let offer = self?.removeOffer else { return }
+            self?.selectedAddons = Set(
+                offer.removableAddons.filter { preselectedAddons.contains($0.displayTitle) }
+            )
+        }
     }
 
     var allowToContinue: Bool {
@@ -63,21 +69,15 @@ public class RemoveAddonViewModel: ObservableObject {
     }
 
     func confirmRemoval() async {
-        withAnimation {
-            self.submittingState = .loading
-        }
+        withAnimation { submittingState = .loading }
         do {
             try await addonService.confirmAddonRemoval(
                 contractId: contractInfo.contractId,
                 addonIds: Set(selectedAddons.map(\.id))
             )
-            withAnimation {
-                self.submittingState = .success
-            }
+            withAnimation { submittingState = .success }
         } catch {
-            withAnimation {
-                self.submittingState = .error(errorMessage: error.localizedDescription)
-            }
+            withAnimation { submittingState = .error(errorMessage: error.localizedDescription) }
         }
     }
 

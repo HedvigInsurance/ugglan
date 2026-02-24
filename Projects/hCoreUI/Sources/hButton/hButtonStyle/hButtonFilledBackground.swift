@@ -5,6 +5,8 @@ struct hButtonFilledBackground: View {
     @Environment(\.hButtonConfigurationType) private var configurationType
     @Environment(\.hUseLightMode) private var useLightMode
     @Environment(\.hButtonIsLoading) private var isLoading
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.userInterfaceLevel) private var userInterfaceLevel
 
     var configuration: SwiftUI.ButtonStyle.Configuration
 
@@ -23,26 +25,15 @@ struct hButtonFilledBackground: View {
         }
     }
 
-    @ViewBuilder
     private var regularBackgroundColor: some View {
         let colorSet = configurationType.hButtonColorSet
-
-        if configuration.isPressed {
-            colorSet.resting.asAnyView
-        } else if isEnabled || isLoading {
-            colorSet.resting.asAnyView
-        } else {
-            colorSet.disabled.asAnyView
-        }
+        let hColor = (isEnabled || isLoading || configuration.isPressed) ? colorSet.resting : colorSet.disabled
+        return hColor.colorFor(colorScheme, userInterfaceLevel).color
     }
 
-    @ViewBuilder
     private var alertBackgroundColor: some View {
-        if configuration.isPressed || isEnabled || isLoading {
-            hSignalColor.Red.element
-        } else {
-            hSignalColor.Red.element.opacity(0.2)
-        }
+        let activeOpacity: Double = (configuration.isPressed || isEnabled || isLoading) ? 1.0 : 0.2
+        return hSignalColor.Red.element.colorFor(colorScheme, userInterfaceLevel).color.opacity(activeOpacity)
     }
 }
 

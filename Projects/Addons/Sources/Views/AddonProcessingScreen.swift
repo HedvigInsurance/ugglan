@@ -24,16 +24,10 @@ struct AddonProcessingScreen: View {
 
     private var errorButtons: StateViewButtonConfig {
         .init(
-            actionButton: .init(
-                buttonAction: {
-                    navigationVm.isAddonProcessingPresented = false
-                }
-            ),
+            actionButton: .init { navigationVm.isAddonProcessingPresented = false },
             dismissButton: .init(
                 buttonTitle: L10n.generalCancelButton,
-                buttonAction: {
-                    navigationVm.router.dismiss(withDismissingAll: true)
-                }
+                buttonAction: { navigationVm.router.dismiss(withDismissingAll: true) }
             )
         )
     }

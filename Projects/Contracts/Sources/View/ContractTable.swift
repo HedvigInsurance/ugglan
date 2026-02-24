@@ -53,24 +53,7 @@ struct ContractTable: View {
                     CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
-                    hSection {
-                        VStack(spacing: .padding8) {
-                            ForEach(vm.addonBanners, id: \.self) { banner in
-                                let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
-                                let input = ChangeAddonInput(addonSource: .insurances, contractConfigs: addonConfigs)
-
-                                AddonCardView(
-                                    openAddon: { contractsNavigationVm.isAddonPresented = input },
-                                    addon: banner
-                                )
-                                .hButtonIsLoading(
-                                    contractsNavigationVm.isAddonPresented?.contractConfigs == input.contractConfigs
-                                )
-                            }
-                        }
-                    }
-                    .withHeader(title: L10n.insuranceAddonsSubheading)
-                    .sectionContainerStyle(.transparent)
+                    addonBannersView
 
                     movingToANewHomeView
                     PresentableStoreLens(
@@ -160,6 +143,30 @@ struct ContractTable: View {
     }
 
     @ViewBuilder
+    private var addonBannersView: some View {
+        if !vm.addonBanners.isEmpty {
+            hSection {
+                VStack(spacing: .padding8) {
+                    ForEach(vm.addonBanners, id: \.self) { banner in
+                        let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
+                        let input = ChangeAddonInput(addonSource: .insurances, contractConfigs: addonConfigs)
+
+                        AddonCardView(
+                            openAddon: { withAnimation { contractsNavigationVm.isAddonPresented = input } },
+                            addon: banner
+                        )
+                        .hButtonIsLoading(
+                            contractsNavigationVm.isAddonPresented?.contractConfigs == input.contractConfigs
+                        )
+                    }
+                }
+            }
+            .withHeader(title: L10n.insuranceAddonsSubheading)
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
+    @ViewBuilder
     private var movingToANewHomeView: some View {
         PresentableStoreLens(
             ContractStore.self,
@@ -193,7 +200,6 @@ public class ContractTableViewModel: ObservableObject {
     @Published var loadingCancellable: AnyCancellable?
     @Inject var service: FetchContractsClient
     @Published var addonBanners: [AddonBanner] = []
-    private var addonAddedObserver: NSObjectProtocol?
 
     init() {
         loadingCancellable = store.loadingSignal
@@ -210,25 +216,6 @@ public class ContractTableViewModel: ObservableObject {
                     self?.viewState = .success
                 }
             }
-
-        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonsChanged, object: nil, queue: nil) {
-            [weak self] _ in
-            Task {
-                await self?.getAddonBanners()
-            }
-            Task {
-                let store: ContractStore = await globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
-            }
-        }
-    }
-
-    deinit {
-        Task { @MainActor [weak self] in
-            if let addonAddedObserver = self?.addonAddedObserver {
-                NotificationCenter.default.removeObserver(addonAddedObserver)
-            }
-        }
     }
 
     func getAddonBanners() async {

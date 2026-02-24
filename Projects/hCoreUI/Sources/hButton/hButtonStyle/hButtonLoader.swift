@@ -15,11 +15,12 @@ struct LoaderOrContent<Content: View>: View {
     }
 
     var body: some View {
-        if shouldShowLoading {
-            loadingIndicator
-                .fixedSize(horizontal: false, vertical: true)
-        } else {
-            content()
+        ZStack {
+            if shouldShowLoading {
+                loadingIndicator
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            content().opacity(shouldShowLoading ? 0 : 1)
         }
     }
 

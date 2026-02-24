@@ -189,48 +189,58 @@ struct ContractInformationView: View {
         }
     }
 
+    private func handleAdd(contract: Contract, addonDisplayName: String) {
+        withAnimation {
+            contractsNavigationVm.isAddonPresented = .init(
+                addonSource: .insurances,
+                contractConfigs: [contract.asContractConfig],
+                preselectedAddonTitle: addonDisplayName
+            )
+        }
+    }
+
+    private func handleRemove(contract: Contract, addonDisplayName: String, isRemovable: Bool) {
+        contractsNavigationVm.isRemoveAddonIntentPresented = .init(contract, addonDisplayName, isRemovable)
+    }
+
     @ViewBuilder
     private func addonsView(contract: Contract) -> some View {
-        if let addonsData = testAddonsData {
+        if let addonsData = contract.addonsInfo {
             hSection(addonsData.all) { addon in
-                hRow {
-                    switch (addon) {
-                    case .available(let availableAddon):
-                        AddonView(
-                            title: availableAddon.displayName,
-                            subtitle: availableAddon.description,
-                            actionTitle: "Lägg till",  // TODO: localise
-                            actionColor: .green,
-                            action: {
-                                contractsNavigationVm.isAddonPresented = .init(
-                                    addonSource: .insurances,
-                                    contractConfigs: [
-                                        .init(
-                                            contractId: contract.id,
-                                            exposureName: contract.exposureDisplayName,
-                                            displayName: contract.currentAgreement?.productVariant.displayName ?? ""
-                                        )
-                                    ]
+                switch (addon) {
+                case .available(let available):
+                    AddonViewRow(
+                        title: available.displayName,
+                        subtitle: available.description,
+                        actionTitle: L10n.contractOverviewAddonAdd,
+                        buttonType: .primaryAlt,
+                        action: { handleAdd(contract: contract, addonDisplayName: available.displayName) }
+                    )
+                    .hButtonIsLoading(
+                        contractsNavigationVm.isAddonPresented?.preselectedAddonTitle == available.displayName
+                    )
+                case .existing(let existing):
+                    AddonViewRow(
+                        title: existing.displayName,
+                        subtitle: existing.description,
+                        actionTitle: L10n.contractOverviewAddonIsAdded,
+                        buttonType: .secondary,
+                        activationDate: existing.startDate,
+                        terminationDate: existing.endDate,
+                        action: {
+                            if existing.endDate == nil {
+                                handleRemove(
+                                    contract: contract,
+                                    addonDisplayName: existing.displayName,
+                                    isRemovable: existing.isRemovable
                                 )
                             }
-                        )
-                    case .existing(let existingAddon):
-                        AddonView(
-                            title: existingAddon.displayTitle,
-                            subtitle: existingAddon.displayDescription,
-                            actionTitle: "Tillagd",  // TODO: localise
-                            actionColor: .grey,
-                            action: {
-                                contractsNavigationVm.isRemoveAddonPresented = .init(
-                                    contractInfo: .init(
-                                        contractId: contract.id,
-                                        exposureName: contract.exposureDisplayName,
-                                        displayName: contract.currentAgreement?.productVariant.displayName ?? ""
-                                    )
-                                )
-                            }
-                        )
-                    }
+                        }
+                    )
+                    .hButtonIsLoading(
+                        contractsNavigationVm.isRemoveAddonPresented?.preselectedAddons
+                            .contains(existing.displayName) == true
+                    )
                 }
             }
             .sectionContainerStyle(.opaque)
@@ -238,77 +248,54 @@ struct ContractInformationView: View {
         }
     }
 
-    struct AddonView: View {
+    struct AddonViewRow: View {
         let title: String
         let subtitle: String
         let actionTitle: String
-        let actionColor: PillColor
-        let action: () -> Void
+        let buttonType: hButtonConfigurationType
+        let activationDate: String?
+        let terminationDate: String?
+        let action: (() -> Void)
+
+        init(
+            title: String,
+            subtitle: String,
+            actionTitle: String,
+            buttonType: hButtonConfigurationType,
+            activationDate: String? = nil,
+            terminationDate: String? = nil,
+            action: @escaping (() -> Void),
+        ) {
+            self.title = title
+            self.subtitle = subtitle
+            self.actionTitle = actionTitle
+            self.buttonType = buttonType
+            self.activationDate = activationDate
+            self.terminationDate = terminationDate
+            self.action = action
+        }
+
+        var description: String {
+            if let activationDate { return L10n.contractOverviewAddonActivatesDate(activationDate) }
+            if let terminationDate { return L10n.contractOverviewAddonEndsDate(terminationDate) }
+            return subtitle
+        }
 
         var body: some View {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    hText(title)
-                    hText(subtitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
+            hRow {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading) {
+                        hText(title)
+                        hText(description, style: .label)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                    }
+                    Spacer(minLength: 0)
+                    hButton(.small, buttonType, content: .init(title: actionTitle), action)
+                        .hFieldSize(.small)
                 }
-                Spacer(minLength: 0)
-                hPill(text: actionTitle, color: actionColor)
-                    .onTapGesture { action() }
             }
-        }
-    }
-
-    private let testAddonsData: AddonsInfo? = .init(
-        existingAddons: [
-            .init(
-                id: UUID(),
-                displayDescription: "Kollision, viltolycka och bärgning",
-                displayTitle: "Självriskvadrag",
-                isRemovable: true,
-                isUpgradable: false,
-                startDate: Date(),
-                endDate: nil
-            )
-        ],
-        availableAddons: [
-            .init(displayName: "Hyrbil", description: "När din egen bil inte kan användas"),
-            .init(displayName: "Drulle", description: "Kupéskada, nycklar och feltankning"),
-        ]
-    )
-
-    enum AddonEntry: Identifiable {
-        var id: UUID {
-            switch self {
-            case .existing(let e): e.id
-            case .available(let a): a.id
-            }
-        }
-
-        case existing(AddonsInfo.Existing)
-        case available(AddonsInfo.Available)
-    }
-
-    struct AddonsInfo {
-        let existingAddons: [Existing]
-        let availableAddons: [Available]
-
-        var all: [AddonEntry] { existingAddons.map(AddonEntry.existing) + availableAddons.map(AddonEntry.available) }
-
-        struct Existing: Identifiable {
-            let id: UUID
-            let displayDescription: String
-            let displayTitle: String
-            let isRemovable: Bool
-            let isUpgradable: Bool  //for travel addon, 45->60
-            let startDate: Date
-            let endDate: Date?
-        }
-
-        struct Available: Identifiable {
-            let id: UUID = UUID()
-            let displayName: String
-            let description: String
+            .containerShape(.rect)
+            .onTapGesture(perform: action)
         }
     }
 
@@ -453,4 +440,27 @@ public struct CoInsuredInfoView: View {
 
     return ScrollView { ContractInformationView(id: "contractId") }
         .environmentObject(ContractsNavigationViewModel())
+}
+
+extension Contract {
+    var asContractConfig: AddonConfig {
+        .init(
+            contractId: id,
+            exposureName: currentAgreement?.productVariant.displayName ?? "",
+            displayName: exposureDisplayName
+        )
+    }
+}
+
+public struct RemoveAddonIntent: Equatable, Identifiable {
+    public var id: String { addonDisplayName }
+    let contract: Contract
+    let addonDisplayName: String
+    let isRemovable: Bool
+
+    init(_ contract: Contract, _ addonDisplayName: String, _ isRemovable: Bool) {
+        self.contract = contract
+        self.addonDisplayName = addonDisplayName
+        self.isRemovable = isRemovable
+    }
 }

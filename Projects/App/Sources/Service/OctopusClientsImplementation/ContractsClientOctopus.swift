@@ -12,7 +12,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
 
     func getContracts() async throws -> ContractsStack {
         let query = OctopusGraphQL.ContractBundleQuery(
-            options: .some(OctopusGraphQL.DisplayItemOptions(hidePrice: true))
+            options: .some(OctopusGraphQL.DisplayItemOptions(hidePrice: true, hideAddons: true))
         )
         let contractsData = try await octopus.client.fetch(query: query)
         return .init(
@@ -83,7 +83,8 @@ extension Contract {
         itemCost: ItemCost,
         firstName: String,
         lastName: String,
-        ssn: String?
+        ssn: String?,
+        addonsInfo: AddonsInfo?
     ) {
         let currentAgreement = Agreement(
             id: pendingContract.id,
@@ -111,7 +112,8 @@ extension Contract {
             lastName: lastName,
             ssn: ssn,
             typeOfContract: TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract),
-            coInsured: []
+            coInsured: [],
+            addonsInfo: addonsInfo
         )
     }
 
@@ -121,7 +123,8 @@ extension Contract {
         upcomoingAgreement: Agreement?,
         firstName: String,
         lastName: String,
-        ssn: String?
+        ssn: String?,
+        addonsInfo: AddonsInfo?
     ) {
         self.init(
             id: contract.id,
@@ -139,7 +142,8 @@ extension Contract {
             lastName: lastName,
             ssn: ssn,
             typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract),
-            coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? []
+            coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
+            addonsInfo: addonsInfo
         )
     }
 }
@@ -234,13 +238,19 @@ extension FetchContractsClientOctopus {
                 }
                 return nil
             }()
+            let addonsInfo = AddonsInfo(
+                existingAddons: contract.existingAddons.map { ExistingAddon(from: $0) },
+                availableAddons: contract.availableAddons
+                    .map { .init(displayName: $0.displayName, description: $0.description) }
+            )
             return Contract(
                 contract: contract.fragments.contractFragment,
                 currentAgreement: currentAgreement,
                 upcomoingAgreement: upcomingAgreement,
                 firstName: data.currentMember.firstName,
                 lastName: data.currentMember.lastName,
-                ssn: data.currentMember.ssn
+                ssn: data.currentMember.ssn,
+                addonsInfo: addonsInfo
             )
         }
     }
@@ -276,7 +286,8 @@ extension FetchContractsClientOctopus {
                 upcomoingAgreement: nil,
                 firstName: data.currentMember.firstName,
                 lastName: data.currentMember.lastName,
-                ssn: data.currentMember.ssn
+                ssn: data.currentMember.ssn,
+                addonsInfo: nil
             )
         }
     }
@@ -292,6 +303,11 @@ extension FetchContractsClientOctopus {
                     amount: addon.premium.fragments.moneyFragment
                 )
             }
+            let addonsInfo = AddonsInfo(
+                existingAddons: contract.existingAddons.map { ExistingAddon(from: $0) },
+                availableAddons: contract.availableAddons
+                    .map { .init(displayName: $0.displayName, description: $0.description) }
+            )
             return Contract(
                 pendingContract: contract,
                 itemCost: getCost(
@@ -302,8 +318,35 @@ extension FetchContractsClientOctopus {
                 ),
                 firstName: data.currentMember.firstName,
                 lastName: data.currentMember.lastName,
-                ssn: data.currentMember.ssn
+                ssn: data.currentMember.ssn,
+                addonsInfo: addonsInfo
             )
         }
+    }
+}
+
+extension ExistingAddon {
+    public init(from data: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract.ExistingAddon) {
+        self.init(
+            addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment),
+            displayName: data.displayName,
+            description: data.description,
+            isRemovable: data.isRemovable,
+            isUpgradable: data.isUpgradable,
+            startDate: data.startDate,
+            endDate: data.endDate
+        )
+    }
+
+    public init(from data: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.ActiveContract.ExistingAddon) {
+        self.init(
+            addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment),
+            displayName: data.displayName,
+            description: data.description,
+            isRemovable: data.isRemovable,
+            isUpgradable: data.isUpgradable,
+            startDate: data.startDate,
+            endDate: data.endDate
+        )
     }
 }

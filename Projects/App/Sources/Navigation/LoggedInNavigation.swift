@@ -965,7 +965,11 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func addonsChanged() {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
-            await store.sendAsync(.fetchAddonBanners)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            _ = await (
+                store.sendAsync(.fetchAddonBanners),
+                contractStore.sendAsync(.fetchContracts)
+            )
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
     }

@@ -4,20 +4,19 @@ import hCore
 import hCoreUI
 
 public struct ChangeAddonInput: Identifiable, Equatable, Sendable {
-    public var id: String = UUID().uuidString
+    public let id: String = UUID().uuidString
 
     public let contractConfigs: [AddonConfig]?
     let addonSource: AddonSource
+    public let preselectedAddonTitle: String?
     public init(
         addonSource: AddonSource,
-        contractConfigs: [AddonConfig]? = nil
+        contractConfigs: [AddonConfig]? = nil,
+        preselectedAddonTitle: String? = nil
     ) {
         self.addonSource = addonSource
         self.contractConfigs = contractConfigs
-    }
-
-    public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
-        lhs.id == rhs.id
+        self.preselectedAddonTitle = preselectedAddonTitle
     }
 }
 
@@ -55,9 +54,9 @@ class ChangeAddonNavigationViewModel: ObservableObject {
         self.input = input
     }
 
-    init(offer: AddonOffer) {
+    init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
         self.input = .init(addonSource: offer.source)
-        changeAddonVm = .init(offer: offer)
+        changeAddonVm = .init(offer: offer, preselectedAddonTitle: preselectedAddonTitle)
     }
 }
 
@@ -72,8 +71,8 @@ struct ChangeAddonNavigation: View {
     public init(input: ChangeAddonInput) {
         changeAddonNavigationVm = .init(input: input)
     }
-    public init(offer: AddonOffer) {
-        changeAddonNavigationVm = .init(offer: offer)
+    public init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
+        changeAddonNavigationVm = .init(offer: offer, preselectedAddonTitle: preselectedAddonTitle)
     }
 
     public var body: some View {
