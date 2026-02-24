@@ -507,8 +507,6 @@ struct LoggedInNavigation: View {
                 PDFPreview(document: document)
             case let .changeTier(input):
                 ChangeTierNavigation(input: input)
-            case let .addon(input: input):
-                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {
