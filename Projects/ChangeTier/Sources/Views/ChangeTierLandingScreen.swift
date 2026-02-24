@@ -293,8 +293,7 @@ public struct ChangeTierLandingScreen: View {
     )
     .environmentObject(
         ChangeTierNavigationViewModel(
-            changeTierContractsInput: .init(source: .betterCoverage, contracts: []),
-            onChangedTier: {}
+            changeTierContractsInput: .init(source: .betterCoverage, contracts: [])
         )
     )
 }

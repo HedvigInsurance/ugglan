@@ -506,9 +506,9 @@ struct LoggedInNavigation: View {
             case let .pdf(document):
                 PDFPreview(document: document)
             case let .changeTier(input):
-                ChangeTierNavigation(input: input) {
-                    fetchContracts()
-                }
+                ChangeTierNavigation(input: input)
+            case let .addon(input: input):
+                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {
@@ -944,6 +944,13 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
+            selector: #selector(tierChanged),
+            name: .tierChanged,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
             selector: #selector(claimCreated),
             name: .claimCreated,
             object: nil
@@ -978,6 +985,18 @@ class LoggedInNavigationViewModel: ObservableObject {
                         contractExposureName: contract.exposureDisplayName
                     )
                 ]
+
+            )
+        }
+    }
+
+    @objc func tierChanged() {
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        Task {
+            await (
+                crossSellStore.sendAsync(.fetchAddonBanner),
+                contractStore.sendAsync(.fetchContracts)
             )
         }
     }
