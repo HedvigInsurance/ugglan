@@ -999,7 +999,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             await (
-                crossSellStore.sendAsync(.fetchAddonBanner),
+                crossSellStore.sendAsync(.fetchAddonBanners),
                 contractStore.sendAsync(.fetchContracts)
             )
         }
