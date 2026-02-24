@@ -11,7 +11,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
         case .changeTier: return L10n.InsuranceDetails.changeCoverage
         case .cancellation: return L10n.hcQuickActionsCancellationTitle
-        case .removeAddons: return "TODO: removeAddons title"
+        case .removeAddons: return L10n.removeAddonButtonTitle
         }
     }
 
@@ -21,7 +21,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .coInsured: return L10n.hcQuickActionsCoInsuredSubtitle
         case .changeTier: return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation: return L10n.hcQuickActionsTerminationSubtitle
-        case .removeAddons: return "TODO: removeAddons subtitle"
+        case .removeAddons: return L10n.hcQuickActionsRemoveAddonSubtitle
         }
     }
 

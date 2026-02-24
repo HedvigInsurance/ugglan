@@ -440,6 +440,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_FIRSTVET_TITLE" = "FirstVet";
 "HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE" = "Change bank or bank account";
 "HC_QUICK_ACTIONS_PAYMENTS_TITLE" = "Payments";
+"HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE" = "Change or remove active addons";
 "HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE" = "Get emergency help when sick abroad";
 "HC_QUICK_ACTIONS_SICK_ABROAD_TITLE" = "Sick abroad";
 "HC_QUICK_ACTIONS_TERMINATION_SUBTITLE" = "No binding time, cancel anytime";

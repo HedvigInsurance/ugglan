@@ -440,6 +440,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_FIRSTVET_TITLE" = "FirstVet";
 "HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE" = "Ändra bank eller bankkonto";
 "HC_QUICK_ACTIONS_PAYMENTS_TITLE" = "Betalning";
+"HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE" = "Ändra eller ta bort aktiva tillägg";
 "HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE" = "Få akut hjälp på din resa";
 "HC_QUICK_ACTIONS_SICK_ABROAD_TITLE" = "Sjuk utomlands";
 "HC_QUICK_ACTIONS_TERMINATION_SUBTITLE" = "Inga bindningstider, säg upp när du vill";
