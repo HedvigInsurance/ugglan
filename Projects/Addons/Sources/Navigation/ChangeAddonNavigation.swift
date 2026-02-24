@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct ChangeAddonInput: Identifiable, Equatable, Sendable {
-    public var id: String = UUID().uuidString
+    public let id: String = UUID().uuidString
 
     public let contractConfigs: [AddonConfig]?
     let addonSource: AddonSource
@@ -17,10 +17,6 @@ public struct ChangeAddonInput: Identifiable, Equatable, Sendable {
         self.addonSource = addonSource
         self.contractConfigs = contractConfigs
         self.preselectedAddonTitle = preselectedAddonTitle
-    }
-
-    public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
-        lhs.id == rhs.id
     }
 }
 

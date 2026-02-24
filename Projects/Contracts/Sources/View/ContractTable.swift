@@ -152,7 +152,7 @@ struct ContractTable: View {
                         let input = ChangeAddonInput(addonSource: .insurances, contractConfigs: addonConfigs)
 
                         AddonCardView(
-                            openAddon: { contractsNavigationVm.isAddonPresented = input },
+                            openAddon: { withAnimation { contractsNavigationVm.isAddonPresented = input } },
                             addon: banner
                         )
                         .hButtonIsLoading(

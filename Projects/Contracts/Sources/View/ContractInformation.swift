@@ -190,11 +190,13 @@ struct ContractInformationView: View {
     }
 
     private func handleAdd(contract: Contract, addonDisplayName: String) {
-        contractsNavigationVm.isAddonPresented = .init(
-            addonSource: .insurances,
-            contractConfigs: [contract.asContractConfig],
-            preselectedAddonTitle: addonDisplayName
-        )
+        withAnimation {
+            contractsNavigationVm.isAddonPresented = .init(
+                addonSource: .insurances,
+                contractConfigs: [contract.asContractConfig],
+                preselectedAddonTitle: addonDisplayName
+            )
+        }
     }
 
     private func handleRemove(contract: Contract, addonDisplayName: String, isRemovable: Bool) {
