@@ -12,7 +12,6 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isInfoViewPresented: InfoViewDataModel? = nil
     let useOwnNavigation: Bool
     let router: Router
-    var onChangedTier: () -> Void = {}
 
     // NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
     var vm: ChangeTierViewModel!
@@ -21,19 +20,16 @@ public class ChangeTierNavigationViewModel: ObservableObject {
 
     init(
         router: Router?,
-        vm: ChangeTierViewModel,
-        onChangedTier: @escaping () -> Void
+        vm: ChangeTierViewModel
     ) {
         self.router = router ?? Router()
         useOwnNavigation = router == nil
         self.vm = vm
         changeTierContractsInput = nil
-        self.onChangedTier = onChangedTier
     }
 
     init(
-        changeTierContractsInput: ChangeTierContractsInput,
-        onChangedTier: @escaping () -> Void
+        changeTierContractsInput: ChangeTierContractsInput
     ) {
         if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
             vm = .init(
@@ -45,7 +41,6 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         } else {
             self.changeTierContractsInput = changeTierContractsInput
         }
-        self.onChangedTier = onChangedTier
         router = Router()
         useOwnNavigation = true
     }
@@ -175,8 +170,7 @@ public struct ChangeTierNavigation: View {
     public init(
         input: ChangeTierInput,
         dataProvider: ChangeTierQuoteDataProvider? = nil,
-        router: Router? = nil,
-        onChangedTier: @escaping () -> Void = {}
+        router: Router? = nil
     ) {
         _changeTierNavigationVm = StateObject(
             wrappedValue: .init(
@@ -184,20 +178,17 @@ public struct ChangeTierNavigation: View {
                 vm: .init(
                     changeTierInput: input,
                     dataProvider: dataProvider
-                ),
-                onChangedTier: onChangedTier
+                )
             )
         )
     }
 
     public init(
-        input: ChangeTierContractsInput,
-        onChangedTier: @escaping () -> Void = {}
+        input: ChangeTierContractsInput
     ) {
         _changeTierNavigationVm = StateObject(
             wrappedValue: .init(
-                changeTierContractsInput: input,
-                onChangedTier: onChangedTier
+                changeTierContractsInput: input
             )
         )
     }

@@ -304,6 +304,7 @@ public class ChangeTierViewModel: ObservableObject {
                 withAnimation {
                     viewState = .success
                 }
+                NotificationCenter.default.post(name: .tierChanged, object: nil)
             } catch {
                 withAnimation {
                     self.viewState = .error(
