@@ -14,8 +14,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 
     public struct ContractInfo: Identifiable, Equatable {
         public var id: String
-        let displayName: String
-        let exposureName: String
+        let title: String
+        let subtitle: String
         public let premium: Premium?
         let displayItems: [QuoteDisplayItem]
         let documentSection: DocumentSection
@@ -26,8 +26,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 
         public init(
             id: String,
-            displayName: String,
-            exposureName: String,
+            title: String,
+            subtitle: String,
             premium: Premium?,
             documentSection: DocumentSection,
             displayItems: [QuoteDisplayItem],
@@ -36,8 +36,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             priceBreakdownItems: [QuoteDisplayItem]
         ) {
             self.id = id
-            self.displayName = displayName
-            self.exposureName = exposureName
+            self.title = title
+            self.subtitle = subtitle
             self.premium = premium
             self.documentSection = documentSection
             self.displayItems = displayItems

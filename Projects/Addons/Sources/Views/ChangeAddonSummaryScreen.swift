@@ -23,8 +23,8 @@ extension ChangeAddonViewModel {
 
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
             id: offer.config.contractId,
-            displayName: offer.config.displayName,
-            exposureName: offer.config.exposureName,
+            title: offer.config.exposureName,
+            subtitle: offer.config.displayName,
             premium: getPremium(),
             documentSection: .init(
                 documents: documents,

@@ -32,8 +32,8 @@ extension ChangeTierViewModel {
         let contracts = [
             QuoteSummaryViewModel.ContractInfo(
                 id: currentTier?.id ?? "",
-                displayName: displayName ?? "",
-                exposureName: activationDate,
+                title: displayName ?? "",
+                subtitle: activationDate,
                 premium: newTotalCost,
                 documentSection: .init(
                     documents: documents,

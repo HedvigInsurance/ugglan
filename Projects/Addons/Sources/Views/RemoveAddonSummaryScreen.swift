@@ -26,8 +26,8 @@ extension RemoveAddonViewModel {
 
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
             id: contractInfo.contractId,
-            displayName: contractInfo.displayName,
-            exposureName: contractInfo.exposureName,
+            title: contractInfo.exposureName,
+            subtitle: contractInfo.displayName,
             premium: getPremium(),
             documentSection: .init(
                 documents: documents,

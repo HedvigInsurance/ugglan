@@ -101,8 +101,8 @@ public struct ChangeTierLandingScreen: View {
         CardView {
             hRow {
                 ContractInformation(
-                    displayName: vm.displayName,
-                    exposureName: vm.exposureName,
+                    title: vm.displayName,
+                    subtitle: vm.exposureName,
                     pillowImage: vm.typeOfContract?.pillowType.bgImage
                 )
             }

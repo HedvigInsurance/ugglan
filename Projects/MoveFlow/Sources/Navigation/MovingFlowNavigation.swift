@@ -77,8 +77,8 @@ class MovingFlowQuoteManager {
 
         return QuoteSummaryViewModel.ContractInfo(
             id: quote.id,
-            displayName: quote.displayName,
-            exposureName: quote.exposureName ?? "",
+            title: quote.displayName,
+            subtitle: quote.exposureName ?? "",
             premium: quote.totalPremium,
             documentSection: .init(
                 documents: documents,

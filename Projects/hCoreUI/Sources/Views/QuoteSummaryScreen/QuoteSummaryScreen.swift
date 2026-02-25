@@ -126,8 +126,8 @@ private struct ContractCardView: View {
                 onSelected: {},
                 mainContent:
                     ContractInformation(
-                        displayName: contract.displayName,
-                        exposureName: contract.exposureName,
+                        title: contract.title,
+                        subtitle: contract.subtitle,
                         pillowImage: contract.typeOfContract?.pillowType.bgImage,
                         status: nil
                     ),
@@ -272,8 +272,8 @@ private struct PriceSummarySection: View {
             contract: [
                 .init(
                     id: "id1",
-                    displayName: "Homeowner",
-                    exposureName: "Bellmansgtan 19A",
+                    title: "Homeowner",
+                    subtitle: "Bellmansgtan 19A",
                     premium: .init(
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
@@ -293,8 +293,8 @@ private struct PriceSummarySection: View {
                 ),
                 .init(
                     id: "id2",
-                    displayName: "Travel addon",
-                    exposureName: "Bellmansgtan 19A",
+                    title: "Travel addon",
+                    subtitle: "Bellmansgtan 19A",
                     premium: .init(
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
@@ -318,8 +318,8 @@ private struct PriceSummarySection: View {
                 ),
                 .init(
                     id: "id3",
-                    displayName: "Homeowner",
-                    exposureName: "Bellmansgtan 19A",
+                    title: "Homeowner",
+                    subtitle: "Bellmansgtan 19A",
                     premium: .init(
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
@@ -339,8 +339,8 @@ private struct PriceSummarySection: View {
                 ),
                 .init(
                     id: "id4",
-                    displayName: "Homeowner",
-                    exposureName: "Bellmansgtan 19A",
+                    title: "Homeowner",
+                    subtitle: "Bellmansgtan 19A",
                     premium: .init(
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
@@ -359,8 +359,8 @@ private struct PriceSummarySection: View {
                 ),
                 .init(
                     id: "id5",
-                    displayName: "Dog",
-                    exposureName: "Bellmansgtan 19A",
+                    title: "Dog",
+                    subtitle: "Bellmansgtan 19A",
                     premium: .init(
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
