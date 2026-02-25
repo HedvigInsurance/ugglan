@@ -15,62 +15,6 @@ final class RemoveAddonViewModelTests: XCTestCase {
         XCTAssertNil(vm)
     }
 
-    func testFetchRemoveOfferSuccess() async throws {
-        let mockService = MockData.createMockAddonsService(fetchAddonRemoveOffer: { _ in testRemoveOffer })
-
-        sut = mockService
-
-        let model = RemoveAddonViewModel(testAddonConfig, [])
-
-        vm = model
-        try await Task.sleep(seconds: 0.03)
-
-        assert(model.removeOffer == testRemoveOffer)
-        assert(model.fetchState == .success)
-    }
-
-    func testFetchRemoveOfferFailure() async throws {
-        let mockService = MockData.createMockAddonsService(
-            fetchAddonRemoveOffer: { _ in throw AddonsError.somethingWentWrong }
-        )
-
-        sut = mockService
-
-        let model = RemoveAddonViewModel(testAddonConfig, [])
-
-        vm = model
-        try await Task.sleep(seconds: 0.03)
-
-        assert(model.removeOffer == nil)
-        assert(model.fetchState == .error(errorMessage: AddonsError.somethingWentWrong.localizedDescription))
-    }
-
-    func testToggleAddonSelection() async throws {
-        let mockService = MockData.createMockAddonsService(fetchAddonRemoveOffer: { _ in testRemoveOffer })
-
-        sut = mockService
-
-        let model = RemoveAddonViewModel(testAddonConfig, [])
-
-        vm = model
-        try await Task.sleep(seconds: 0.03)
-
-        let addon = testRemoveOffer.removableAddons[0]
-
-        assert(model.selectedAddons.isEmpty)
-        assert(model.allowToContinue == false)
-
-        // Toggle on
-        model.toggleAddon(addon)
-        assert(model.selectedAddons == [addon])
-        assert(model.allowToContinue == true)
-
-        // Toggle off
-        model.toggleAddon(addon)
-        assert(model.selectedAddons.isEmpty)
-        assert(model.allowToContinue == false)
-    }
-
     func testGetAddonRemoveOfferCostSuccess() async throws {
         let expectedCost = ItemCost(premium: .init(gross: .sek(399), net: .sek(399)), discounts: [])
         let mockService = MockData.createMockAddonsService(
@@ -80,7 +24,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig, [])
+        let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
         vm = model
         try await Task.sleep(seconds: 0.03)
@@ -100,7 +44,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig, [])
+        let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
         vm = model
         try await Task.sleep(seconds: 0.03)
@@ -118,7 +62,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = RemoveAddonViewModel(testAddonConfig, [])
+        let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
         vm = model
         try await Task.sleep(seconds: 0.03)
