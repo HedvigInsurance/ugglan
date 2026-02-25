@@ -29,10 +29,21 @@ extension EditType {
             editTypes.append(.coInsured)
         }
 
+        if contract.supportsAddonRemoval {
+            editTypes.append(.removeAddons)
+        }
+
         if Dependencies.featureFlags().isTerminationFlowEnabled, contract.canTerminate {
             editTypes.append(.cancellation)
         }
 
         return editTypes
+    }
+}
+
+extension Contract {
+    // TODO, move to backend?
+    var supportsAddonRemoval: Bool {
+        addonsInfo?.existingAddons.contains(where: { $0.isRemovable && $0.endDate == nil }) ?? false
     }
 }

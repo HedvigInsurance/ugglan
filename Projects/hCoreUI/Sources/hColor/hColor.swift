@@ -455,8 +455,8 @@ public struct PrimaryAlt: hButtonColor {
 
     public var disabled: any hColor {
         hColorScheme(
-            light: hGrayscaleOpaqueColor.greyScale100,
-            dark: hGrayscaleOpaqueColor.greyScale900
+            light: hGreenColor.green100,
+            dark: hGreenColor.green200
         )
     }
 }

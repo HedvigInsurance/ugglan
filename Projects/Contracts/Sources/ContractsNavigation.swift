@@ -90,6 +90,15 @@ public struct ContractsNavigation<Content: View>: View {
                         }
                     case .changeAddress:
                         break
+                    case .removeAddons:
+                        contractsNavigationVm.isRemoveAddonPresented = .init(
+                            contractInfo: .init(
+                                contractId: contract.id,
+                                exposureName: contract.currentAgreement?.productVariant.displayName ?? "",
+                                displayName: contract.exposureDisplayName
+                            ),
+                            preselectedAddons: []
+                        )
                     }
                 }
             )

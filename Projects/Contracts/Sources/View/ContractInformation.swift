@@ -190,7 +190,7 @@ struct ContractInformationView: View {
     }
 
     private func handleAdd(contract: Contract, addonDisplayName: String) {
-        withAnimation {
+        withAnimation(.easeInOut(duration: 0.2)) {
             contractsNavigationVm.isAddonPresented = .init(
                 addonSource: .insurances,
                 contractConfigs: [contract.asContractConfig],

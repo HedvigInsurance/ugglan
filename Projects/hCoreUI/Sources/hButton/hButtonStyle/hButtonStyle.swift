@@ -74,7 +74,8 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
 
         var body: some View {
-            let resolvedColor = foregroundHColor.colorFor(colorScheme, userInterfaceLevel).color
+            let resolvedColor = foregroundHColor.colorFor(hUseLightMode ? .light : colorScheme, userInterfaceLevel)
+                .color
             let label = configuration.label
                 .foregroundColor(resolvedColor)
                 .animation(.default, value: isEnabled)

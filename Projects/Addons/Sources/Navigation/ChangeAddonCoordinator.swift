@@ -33,12 +33,12 @@ private struct ChangeAddonCoordinator: ViewModifier {
                     do {
                         if let config = configs.first {
                             let data = try await service.getAddonOffer(config: config, source: input.addonSource)
-                            withAnimation {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                self.input = nil
                                 switch data {
                                 case .deflect(let deflect): self.deflect = deflect
                                 case .offer(let offer): self.offerInput = .init(offer, input.preselectedAddonTitle)
                                 }
-                                self.input = nil
                             }
                         }
                     } catch {
