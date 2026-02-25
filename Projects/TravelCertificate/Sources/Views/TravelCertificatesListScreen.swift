@@ -101,6 +101,7 @@ public struct TravelCertificatesListScreen: View {
                 },
                 addon: banner
             )
+            .hButtonIsLoading(travelCertificateNavigationVm.isAddonPresented != nil)
         }
     }
 
