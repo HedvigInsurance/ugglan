@@ -111,19 +111,6 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
         }
-        .handleRemoveAddons(input: $contractsNavigationVm.isRemoveAddonPresented)
-        .detent(item: $contractsNavigationVm.isRemoveAddonIntentPresented) { removeAddonIntent in
-            RemoveAddonBottomSheet(
-                removeAddonIntent: removeAddonIntent,
-                action: { [weak contractsNavigationVm] in
-                    contractsNavigationVm?.isRemoveAddonPresented = .init(
-                        contractInfo: removeAddonIntent.contract.asContractConfig,
-                        preselectedAddons: [removeAddonIntent.addonDisplayName]
-                    )
-                },
-                contractsNavigationVm: contractsNavigationVm
-            )
-        }
         .handleAddons(input: $contractsNavigationVm.isAddonPresented)
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
@@ -138,6 +125,19 @@ public struct ContractsNavigation<Content: View>: View {
                 tracking: ContractsDetentType.upcomingChanges
             )
             .environmentObject(contractsNavigationVm)
+        }
+        .handleRemoveAddons(input: $contractsNavigationVm.isRemoveAddonPresented)
+        .detent(item: $contractsNavigationVm.isRemoveAddonIntentPresented) { removeAddonIntent in
+            RemoveAddonBottomSheet(
+                removeAddonIntent: removeAddonIntent,
+                action: { [weak contractsNavigationVm] in
+                    contractsNavigationVm?.isRemoveAddonPresented = .init(
+                        contractInfo: removeAddonIntent.contract.asContractConfig,
+                        preselectedAddons: [removeAddonIntent.addonDisplayName]
+                    )
+                },
+                contractsNavigationVm: contractsNavigationVm
+            )
         }
         .handleTerminateInsurance(
             vm: contractsNavigationVm.terminateInsuranceVm

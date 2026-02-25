@@ -34,6 +34,8 @@ struct RemoveAddonBottomSheet: View {
                         }
                     }
                 }
+                .padding(.top, .padding8)
+                .padding(.horizontal, .padding8)
             }
             .padding(.top, .padding16)
             .padding(.bottom, .padding32)

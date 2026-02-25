@@ -60,6 +60,7 @@ public struct DeflectView: View {
                 }
                 .padding(.top, .padding56)
                 .padding(.bottom, .padding16)
+                .padding(.horizontal, .padding8)
             }
             .sectionContainerStyle(.transparent)
         }
