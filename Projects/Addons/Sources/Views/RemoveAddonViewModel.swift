@@ -13,7 +13,7 @@ class RemoveAddonViewModel: ObservableObject {
     init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
         self.removeOffer = removeOffer.offer
         self.selectedAddons = Set(
-            self.removeOffer.removableAddons.filter { removeOffer.preselectedAddons.contains($0.displayTitle) }
+            self.removeOffer.removableAddons.filter { removeOffer.preselectedAddons.contains($0.id) }
         )
         self.addonRemoveOfferCost = removeOffer.cost
     }
