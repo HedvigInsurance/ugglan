@@ -11,7 +11,7 @@ struct RemoveAddonProcessingView: View {
             loadingViewText: L10n.tierFlowCommitProcessingLoadingTitle,
             successViewTitle: L10n.addonFlowSuccessTitle,
             successViewBody: L10n.addonFlowSuccessSubtitle(
-                navigationVm.removeAddonVm.removeOffer?.activationDate.displayDateDDMMMYYYYFormat ?? ""
+                navigationVm.removeAddonVm.removeOffer.activationDate.displayDateDDMMMYYYYFormat
             ),
             successViewButtonAction: {
                 navigationVm.router.dismiss(withDismissingAll: true)

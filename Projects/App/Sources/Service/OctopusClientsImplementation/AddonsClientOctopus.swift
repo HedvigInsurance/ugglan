@@ -72,8 +72,8 @@ class AddonsClientOctopus: AddonsClient {
         }
     }
 
-    public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
-        let query = OctopusGraphQL.AddonRemoveStartQuery(contractId: contractId)
+    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
+        let query = OctopusGraphQL.AddonRemoveStartQuery(contractId: config.contractId)
         let response = try await octopus.client.fetch(query: query)
 
         let result = response.addonRemoveStart
@@ -89,6 +89,7 @@ class AddonsClientOctopus: AddonsClient {
         return AddonRemoveOffer(
             pageTitle: offer.pageTitle,
             pageDescription: offer.pageDescription,
+            contractInfo: config,
             currentTotalCost: ItemCost(fragment: offer.currentTotalCost.fragments.itemCostFragment),
             baseCost: ItemCost(fragment: offer.baseCost.fragments.itemCostFragment),
             productVariant: ProductVariant(data: offer.productVariant.fragments.productVariantFragment),

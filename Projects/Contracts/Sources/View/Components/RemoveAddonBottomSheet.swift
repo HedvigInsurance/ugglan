@@ -1,3 +1,4 @@
+import Addons
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,17 +6,8 @@ import hCoreUI
 struct RemoveAddonBottomSheet: View {
     let removeAddonIntent: RemoveAddonIntent
     let action: (() -> Void)?
-    let dismiss: (() -> Void)?
-
-    init(
-        removeAddonIntent: RemoveAddonIntent,
-        dismiss: @escaping () -> Void,
-        action: (() -> Void)? = nil
-    ) {
-        self.removeAddonIntent = removeAddonIntent
-        self.dismiss = dismiss
-        self.action = action
-    }
+    @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
+    private let router = Router()
 
     var body: some View {
         hForm {
@@ -26,7 +18,7 @@ struct RemoveAddonBottomSheet: View {
                         hText(
                             action != nil
                                 ? L10n.removeAddonDescription
-                                : "Du kan bara ta bort det tilläget under förnyelseperiod"  // TODO: localise
+                                : L10n.removeAddonDescriptionRenewal
                         )
                         .foregroundColor(hTextColor.Translucent.secondary)
                     }
@@ -34,9 +26,11 @@ struct RemoveAddonBottomSheet: View {
                     VStack(spacing: .padding8) {
                         if let action {
                             hButton(.large, .primary, content: .init(title: L10n.removeAddonButtonTitle), action)
-                            hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) { dismiss?() }
+                                .hButtonIsLoading(contractsNavigationVm.isRemoveAddonPresented != nil)
                         } else {
-                            hButton(.large, .secondary, content: .init(title: L10n.generalCloseButton)) { dismiss?() }
+                            hButton(.large, .secondary, content: .init(title: L10n.generalCloseButton)) {
+                                router.dismiss()
+                            }
                         }
                     }
                 }
@@ -46,5 +40,15 @@ struct RemoveAddonBottomSheet: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.compact)
+        .embededInNavigation(
+            options: [.navigationBarHidden],
+            tracking: self
+        )
+    }
+}
+
+extension RemoveAddonBottomSheet: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        String(describing: RemoveAddonBottomSheet.self)
     }
 }

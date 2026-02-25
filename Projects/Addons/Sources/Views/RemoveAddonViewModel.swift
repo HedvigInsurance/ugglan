@@ -3,25 +3,19 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class RemoveAddonViewModel: ObservableObject {
+class RemoveAddonViewModel: ObservableObject {
     let addonService = AddonsService()
-    let contractInfo: AddonConfig
-    @Published var fetchState: ProcessingState = .loading
     @Published var submittingState: ProcessingState = .loading
-    @Published var removeOffer: AddonRemoveOffer?
+    @Published var removeOffer: AddonRemoveOffer
     @Published var selectedAddons: Set<ActiveAddon> = []
     @Published var addonRemoveOfferCost: ItemCost?
     @Published var fetchingCostState: ProcessingState = .success
-
-    init(_ contractInfo: AddonConfig, _ preselectedAddons: Set<String>) {
-        self.contractInfo = contractInfo
-        Task { [weak self] in
-            await self?.fetchOffer()
-            guard let offer = self?.removeOffer else { return }
-            self?.selectedAddons = Set(
-                offer.removableAddons.filter { preselectedAddons.contains($0.displayTitle) }
-            )
-        }
+    init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
+        self.removeOffer = removeOffer.offer
+        self.selectedAddons = Set(
+            self.removeOffer.removableAddons.filter { removeOffer.preselectedAddons.contains($0.displayTitle) }
+        )
+        self.addonRemoveOfferCost = removeOffer.cost
     }
 
     var allowToContinue: Bool {
@@ -40,26 +34,13 @@ public class RemoveAddonViewModel: ObservableObject {
         selectedAddons.contains(addon)
     }
 
-    func fetchOffer() async {
-        withAnimation { fetchState = .loading }
-        do {
-            let data = try await addonService.getAddonRemoveOffer(contractId: contractInfo.contractId)
-            withAnimation {
-                removeOffer = data
-                fetchState = .success
-            }
-        } catch {
-            fetchState = .error(errorMessage: error.localizedDescription)
-        }
-    }
-
     func getAddonRemoveOfferCost() async {
-        guard removeOffer != nil, fetchingCostState != .loading else { return }
+        guard fetchingCostState != .loading else { return }
         addonRemoveOfferCost = nil
         withAnimation { fetchingCostState = .loading }
         do {
             addonRemoveOfferCost = try await addonService.getAddonRemoveOfferCost(
-                contractId: contractInfo.contractId,
+                contractId: removeOffer.contractInfo.contractId,
                 addonIds: Set(selectedAddons.map(\.id))
             )
             withAnimation { fetchingCostState = .success }
@@ -72,7 +53,7 @@ public class RemoveAddonViewModel: ObservableObject {
         withAnimation { submittingState = .loading }
         do {
             try await addonService.confirmAddonRemoval(
-                contractId: contractInfo.contractId,
+                contractId: removeOffer.contractInfo.contractId,
                 addonIds: Set(selectedAddons.map(\.id))
             )
             withAnimation { submittingState = .success }
@@ -82,7 +63,7 @@ public class RemoveAddonViewModel: ObservableObject {
     }
 
     func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
-        guard let removeOffer, let addonRemoveOfferCost else { return [] }
+        guard let addonRemoveOfferCost else { return [] }
         var items: [QuoteDisplayItem] = []
 
         let baseGross = removeOffer.baseCost.premium.gross.formattedAmountPerMonth

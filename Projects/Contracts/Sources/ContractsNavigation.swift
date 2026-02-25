@@ -111,20 +111,17 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
         }
-        .modally(item: $contractsNavigationVm.isRemoveAddonPresented) { input in
-            RemoveAddonNavigation(input.contractInfo, input.preselectedAddons)
-        }
+        .handleRemoveAddons(input: $contractsNavigationVm.isRemoveAddonPresented)
         .detent(item: $contractsNavigationVm.isRemoveAddonIntentPresented) { removeAddonIntent in
             RemoveAddonBottomSheet(
                 removeAddonIntent: removeAddonIntent,
-                dismiss: { [weak contractsNavigationVm] in contractsNavigationVm?.isRemoveAddonIntentPresented = nil },
-                action: removeAddonIntent.isRemovable
-                    ? { [weak contractsNavigationVm] in
-                        contractsNavigationVm?.isRemoveAddonPresented = .init(
-                            contractInfo: removeAddonIntent.contract.asContractConfig,
-                            preselectedAddons: [removeAddonIntent.addonDisplayName]
-                        )
-                    } : nil
+                action: { [weak contractsNavigationVm] in
+                    contractsNavigationVm?.isRemoveAddonPresented = .init(
+                        contractInfo: removeAddonIntent.contract.asContractConfig,
+                        preselectedAddons: [removeAddonIntent.addonDisplayName]
+                    )
+                },
+                contractsNavigationVm: contractsNavigationVm
             )
         }
         .handleAddons(input: $contractsNavigationVm.isAddonPresented)

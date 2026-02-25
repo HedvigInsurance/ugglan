@@ -3,17 +3,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct RemoveAddonInput: Identifiable, Equatable {
-    public var id: String { contractInfo.contractId }
-    public let contractInfo: AddonConfig
-    public let preselectedAddons: Set<String>
-
-    public init(contractInfo: AddonConfig, preselectedAddons: Set<String>) {
-        self.contractInfo = contractInfo
-        self.preselectedAddons = preselectedAddons
-    }
-}
-
 @MainActor
 class RemoveAddonNavigationViewModel: ObservableObject {
     let router = Router()
@@ -21,8 +10,8 @@ class RemoveAddonNavigationViewModel: ObservableObject {
     @Published var isProcessingPresented = false
     @Published var document: hPDFDocument?
 
-    public init(_ contractInfo: AddonConfig, _ preselectedAddons: Set<String>) {
-        self.removeAddonVm = .init(contractInfo, preselectedAddons)
+    init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
+        self.removeAddonVm = .init(removeOffer)
     }
 }
 
@@ -33,8 +22,8 @@ public struct RemoveAddonNavigation: View {
     @StateObject var removeAddonNavigationVm: RemoveAddonNavigationViewModel
     @ObservedObject var removeAddonVm: RemoveAddonViewModel
 
-    public init(_ config: AddonConfig, _ preselectedAddons: Set<String>) {
-        let vm = RemoveAddonNavigationViewModel(config, preselectedAddons)
+    public init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
+        let vm = RemoveAddonNavigationViewModel(removeOffer)
         self._removeAddonNavigationVm = .init(wrappedValue: vm)
         self.removeAddonVm = vm.removeAddonVm
     }
@@ -45,16 +34,22 @@ public struct RemoveAddonNavigation: View {
             options: [.extendedNavigationWidth],
             tracking: RemoveAddonTrackingType.removeAddonScreen
         ) {
-            RemoveAddonScreen(removeAddonNavigationVm.removeAddonVm)
-                .withAlertDismiss()
-                .routerDestination(for: RemoveAddonRouterActions.self) { action in
-                    switch action {
-                    case .summary:
-                        RemoveAddonSummaryScreen(removeAddonNavigationVm)
-                            .configureTitle(L10n.offerUpdateSummaryTitle)
-                            .withAlertDismiss()
+            if removeAddonNavigationVm.removeAddonVm.addonRemoveOfferCost == nil {
+                RemoveAddonScreen(removeAddonNavigationVm.removeAddonVm)
+                    .withAlertDismiss()
+                    .routerDestination(for: RemoveAddonRouterActions.self) { action in
+                        switch action {
+                        case .summary:
+                            RemoveAddonSummaryScreen(removeAddonNavigationVm)
+                                .configureTitle(L10n.offerUpdateSummaryTitle)
+                                .withAlertDismiss()
+                        }
                     }
-                }
+            } else {
+                RemoveAddonSummaryScreen(removeAddonNavigationVm)
+                    .configureTitle(L10n.offerUpdateSummaryTitle)
+                    .withAlertDismiss()
+            }
         }
         .environmentObject(removeAddonNavigationVm)
         .modally(

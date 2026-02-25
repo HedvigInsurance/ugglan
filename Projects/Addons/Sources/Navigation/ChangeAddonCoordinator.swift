@@ -58,14 +58,3 @@ extension View {
         modifier(ChangeAddonCoordinator(input: input, options: options))
     }
 }
-
-struct OfferInput: Equatable, Identifiable {
-    var id: UUID { offer.id }
-    let offer: AddonOffer
-    let preselectedAddonTitle: String?
-
-    init(_ offer: AddonOffer, _ preselectedAddonTitle: String?) {
-        self.offer = offer
-        self.preselectedAddonTitle = preselectedAddonTitle
-    }
-}

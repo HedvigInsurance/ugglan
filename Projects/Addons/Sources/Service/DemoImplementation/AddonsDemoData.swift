@@ -215,6 +215,7 @@ public let testCarAddonRisk: AddonOffer = .init(
 public let testRemoveOffer = AddonRemoveOffer(
     pageTitle: "Remove addon",
     pageDescription: "Select which addons you want to remove",
+    contractInfo: .init(contractId: "sad", exposureName: "exp", displayName: "dis"),
     currentTotalCost: .init(premium: .init(gross: .sek(529), net: .sek(450)), discounts: []),
     baseCost: .init(premium: .init(gross: .sek(469), net: .sek(399)), discounts: []),
     productVariant: carProductVariant,

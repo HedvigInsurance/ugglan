@@ -40,7 +40,7 @@ public class AddonsClientDemo: AddonsClient {
         []
     }
 
-    public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
+    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
         await delay(TimeInterval.random(in: 0.5...1.5))
         return testRemoveOffer
     }

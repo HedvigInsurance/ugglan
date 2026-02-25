@@ -226,10 +226,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_GET_NOTIFIED" = "Bli meddelad";
 "CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "På resa";
 "CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Utanför mitt hem";
-"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "I Sverige eller utomlands";
 "CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "I bostaden eller på tillhörande tomt";
 "CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "I Sverige eller utomlands";
-"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "T.ex. i förråd, tvättstuga eller på stan";
 "CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "T.ex. i förråd, tvättstuga eller på stan";
 "CLAIM_CHAT_OTHER_TITLE" = "Övrig information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Vänligen ange telefonnummer ifall vi behöver kontakta dig";
@@ -594,7 +592,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Ja, ta bort";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "";
-"REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din valda försäkring";
+"REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring";
+"REMOVE_ADDON_DESCRIPTION_RENEWAL" = "Du kan bara ta bort det tilläget under förnyelseperiod";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Ta bort tillägg";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "Den här ändringar börjar gälla %@.";

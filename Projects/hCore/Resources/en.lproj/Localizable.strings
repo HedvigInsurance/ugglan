@@ -226,10 +226,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_GET_NOTIFIED" = "Get notified";
 "CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "On a trip";
 "CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Outside my home";
-"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "In Sweden or abroad";
 "CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "In your home or on your property";
 "CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "In Sweden or abroad";
-"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "Storage, shared spaces or in public";
 "CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "Storage, shared spaces or in public";
 "CLAIM_CHAT_OTHER_TITLE" = "Other information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Please provide phone number in the case we need to contact you";
@@ -291,9 +289,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_FIRST_NAME" = "First name";
 "CONTRACT_LAST_NAME" = "Last name";
 "CONTRACT_NO_INFORMATION" = "No information available";
-"CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE" = "Activates %1$@";
+"CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE" = "Activates on %1$@";
 "CONTRACT_OVERVIEW_ADDON_ADD" = "Add";
-"CONTRACT_OVERVIEW_ADDON_ENDS_DATE" = "End %1$@";
+"CONTRACT_OVERVIEW_ADDON_ENDS_DATE" = "Ends on %1$@";
 "CONTRACT_OVERVIEW_ADDON_IS_ADDED" = "Added";
 "CONTRACT_PERSONAL_IDENTITY" = "Personal identity no.";
 "CONTRACT_REMOVE_COINSURED_CONFIRMATION" = "Are you sure you want to \nremove co-insured?";
@@ -489,7 +487,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MOVING_FLOW_ADDON_REMOVE_OPTION" = "No extra coverage";
 "MOVING_FLOW_BODY" = "Which insurance do you want to update the address for?";
 "MOVING_FLOW_SUCCESS_TOAST" = "Address change submitted";
-"MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION" = "This extended coverage can be removed by [contacting us](https://link.hedvig.com/chat).";
+"MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION" = "This addon can be removed by [contacting us](https://link.hedvig.com/chat).";
 "MY_DOCUMENTS_INSURANCE_CERTIFICATE" = "Insurance certificate";
 "MY_INFO_EMAIL_EMPTY_ERROR" = "You forgot to enter your email";
 "MY_INFO_EMAIL_MALFORMED_ERROR" = "The entered email address doesn't seem correct";
@@ -594,7 +592,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Yes, remove";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "This change will take effect from %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "Confirm removing selected addons";
-"REMOVE_ADDON_DESCRIPTION" = "This add-on insurance is active and applies together with your selected insurance";
+"REMOVE_ADDON_DESCRIPTION" = "This addon is active and part of your insurance";
+"REMOVE_ADDON_DESCRIPTION_RENEWAL" = "The addon can only be removed when your insurance is renewed or cancelled.";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Remove addon";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "This change will take effect from %@.";

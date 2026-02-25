@@ -28,8 +28,8 @@ import hCore
     }
 
     @Log
-    public func getAddonRemoveOffer(contractId: String) async throws -> AddonRemoveOffer {
-        try await client.getAddonRemoveOffer(contractId: contractId)
+    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
+        try await client.getAddonRemoveOffer(config: config)
     }
 
     @Log
