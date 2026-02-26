@@ -218,6 +218,7 @@ class PushNotificationHandler {
 @MainActor
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
+    @InjectObservableObject private var featureFlags: FeatureFlags
 
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
@@ -284,7 +285,11 @@ class DeepLinkHandler {
             }
         case .submitClaim:
             viewModel?.selectedTab = 0
-            viewModel?.homeNavigationVm.isSubmitClaimPresented = true
+            if featureFlags.isNewClaimFlowEnabled {
+                viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
+            } else {
+                viewModel?.homeNavigationVm.isSubmitClaimPresented = true
+            }
         case .claimChat:
             handleChatClaimDeeplink(url)
         }
