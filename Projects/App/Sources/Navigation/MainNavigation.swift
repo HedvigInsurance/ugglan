@@ -34,7 +34,9 @@ struct MainNavigation: App {
                         .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.5)))
                         .zIndex(1)
                 }
-                if vm.stateToShow.isOneOf([.notLoggedIn]) {
+                if vm.stateToShow.isOneOf([.notLoggedIn]) && !featureFlags.osVersionTooLow
+                    && !featureFlags.isUpdateNecessary
+                {
                     LaunchScreen()
                         .foregroundColor(logoColor)
                         .zIndex(2)
