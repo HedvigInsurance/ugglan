@@ -130,12 +130,6 @@ public struct ContractsNavigation<Content: View>: View {
         .detent(item: $contractsNavigationVm.isRemoveAddonIntentPresented) { removeAddonIntent in
             RemoveAddonBottomSheet(
                 removeAddonIntent: removeAddonIntent,
-                action: { [weak contractsNavigationVm] in
-                    contractsNavigationVm?.isRemoveAddonPresented = .init(
-                        contractInfo: removeAddonIntent.contract.asContractConfig,
-                        preselectedAddons: [removeAddonIntent.addonDisplayName]
-                    )
-                },
                 contractsNavigationVm: contractsNavigationVm
             )
         }

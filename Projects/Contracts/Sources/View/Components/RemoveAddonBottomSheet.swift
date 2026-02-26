@@ -5,7 +5,6 @@ import hCoreUI
 
 struct RemoveAddonBottomSheet: View {
     let removeAddonIntent: RemoveAddonIntent
-    let action: (() -> Void)?
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
     private let router = Router()
 
@@ -16,7 +15,7 @@ struct RemoveAddonBottomSheet: View {
                     VStack(alignment: .leading, spacing: 0) {
                         hText(removeAddonIntent.addonDisplayName).foregroundColor(hTextColor.Opaque.primary)
                         hText(
-                            action != nil
+                            removeAddonIntent.isRemovable
                                 ? L10n.removeAddonDescription
                                 : L10n.removeAddonDescriptionRenewal
                         )
@@ -24,9 +23,15 @@ struct RemoveAddonBottomSheet: View {
                     }
 
                     VStack(spacing: .padding8) {
-                        if let action {
-                            hButton(.large, .primary, content: .init(title: L10n.removeAddonButtonTitle), action)
-                                .hButtonIsLoading(contractsNavigationVm.isRemoveAddonPresented != nil)
+                        if removeAddonIntent.isRemovable {
+                            hButton(.large, .primary, content: .init(title: L10n.removeAddonButtonTitle)) {
+                                [weak contractsNavigationVm] in
+                                contractsNavigationVm?.isRemoveAddonPresented = .init(
+                                    contractInfo: removeAddonIntent.contract.asContractConfig,
+                                    preselectedAddons: [removeAddonIntent.addonDisplayName]
+                                )
+                            }
+                            .hButtonIsLoading(contractsNavigationVm.isRemoveAddonPresented != nil)
                         } else {
                             hButton(.large, .secondary, content: .init(title: L10n.generalCloseButton)) {
                                 router.dismiss()
@@ -43,6 +48,7 @@ struct RemoveAddonBottomSheet: View {
         }
         .hFormContentPosition(.compact)
         .embededInNavigation(
+            router: router,
             options: [.navigationBarHidden],
             tracking: self
         )
