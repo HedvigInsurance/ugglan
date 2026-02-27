@@ -120,7 +120,7 @@ public class ChangeAddonViewModel: ObservableObject {
     func getBreakdownDisplayItems() -> [QuoteDisplayItem] {
         var items: [QuoteDisplayItem] = []
 
-        let baseTitle = offer.config.displayName
+        let baseTitle = offer.config.exposureName
         let baseGross = offer.quote.baseQuoteCost.premium.gross.formattedAmountPerMonth
         items.append(.init(title: baseTitle, value: baseGross))
 

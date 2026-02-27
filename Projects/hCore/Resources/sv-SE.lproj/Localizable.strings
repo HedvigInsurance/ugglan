@@ -4,6 +4,7 @@
 /* Used as content description for the "X" button which appears in the text fields which allows the member to clear the textfield's input */
 "A11Y_CLEAR_FIELD" = "Rensa fält";
 "A11Y_CLOSE" = "Stäng";
+"A11Y_OPTION_NOT_SELECTED" = "Alternativet är inte valt";
 /* Pause action for a video, an audio recording etc. */
 "A11Y_PAUSE" = "Pausa";
 /* Play action for a video, an audio recording etc. */
@@ -462,6 +463,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HONESTY_PLEDGE_TITLE" = "Innan vi börjar";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
+"INSURANCE_ADDON_SUBHEADING" = "Tillägg";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.";
 "INSURANCE_EVIDENCE.DOCUMENT_TITLE" = "Giltighetsintyg";
 "INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION" = "Giltighetsintyget är nu skickat till din e-post.";

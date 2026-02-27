@@ -8,7 +8,23 @@ struct AddonOptionRow<Trailing: View>: View {
     let isSelected: Bool
     var isDisabled: Bool = false
     @ViewBuilder let trailingView: () -> Trailing
-    var onTap: () -> Void = {}
+    let onTap: (() -> Void)?
+
+    init(
+        title: String,
+        subtitle: String,
+        isSelected: Bool,
+        isDisabled: Bool = false,
+        trailingView: @escaping () -> Trailing,
+        onTap: (() -> Void)? = nil
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.isSelected = isSelected
+        self.isDisabled = isDisabled
+        self.trailingView = trailingView
+        self.onTap = onTap
+    }
 
     var body: some View {
         Group {
@@ -29,11 +45,23 @@ struct AddonOptionRow<Trailing: View>: View {
             .padding(.bottom, .padding21)
         }
         .containerShape(.rect)
-        .onTapGesture { withAnimation(.easeInOut(duration: 0.2)) { onTap() } }
-        .accessibilityAction { onTap() }
-        .accessibilityHint(L10n.voiceoverPressTo)  // TODO: fix hint
         .background(hSurfaceColor.Opaque.primary)
         .cornerRadius(.cornerRadiusL)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(hint)
+        .addAccessibilityAction(for: onTap, isSelected: isSelected)
+    }
+
+    private var hint: String {
+        let status: String = {
+            if isDisabled && isSelected {
+                return L10n.voiceoverOptionSelected
+            } else if isSelected {
+                return L10n.voiceoverOptionSelected
+            }
+            return L10n.a11YOptionNotSelected
+        }()
+        return status
     }
 
     @hColorBuilder
@@ -72,5 +100,30 @@ private struct CheckmarkSquare<Color: hColor>: View {
                         .foregroundColor(hSurfaceColor.Opaque.primary)
                 }
             }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    fileprivate func addAccessibilityAction(for action: (() -> Void)?, isSelected: Bool) -> some View {
+        if let action {
+            self
+                .onTapGesture { withAnimation(.easeInOut(duration: 0.2)) { action() } }
+                .accessibilityAddTraits(.isButton)
+                .accessibilityAction {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        action()
+                    }
+                    Task {
+                        await delay(0.25)
+                        UIAccessibility.post(
+                            notification: .announcement,
+                            argument: isSelected ? L10n.a11YOptionNotSelected : L10n.voiceoverOptionSelected
+                        )
+                    }
+                }
+        } else {
+            self
+        }
     }
 }
