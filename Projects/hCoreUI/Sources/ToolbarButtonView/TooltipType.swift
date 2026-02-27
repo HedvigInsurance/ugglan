@@ -13,6 +13,30 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     private static var animateOffer = true
 
     @MainActor
+    var image: Image {
+        switch self {
+        case .crossSell:
+            if isLiquidGlassEnabled {
+                return hCoreUIAssets.campaign.view
+            } else {
+                return hCoreUIAssets.campaignQuickNav.view
+            }
+        case .firstVet:
+            if isLiquidGlassEnabled {
+                return hCoreUIAssets.firstVet.view
+            } else {
+                return hCoreUIAssets.firstVetQuickNav.view
+            }
+        case .chat:
+            if isLiquidGlassEnabled {
+                return hCoreUIAssets.envelope.view
+            } else {
+                return hCoreUIAssets.inbox.view
+            }
+        case .travelCertificate, .insuranceEvidence:
+            return hCoreUIAssets.infoOutlined.view
+        }
+    }
     var priority: Int {
         switch self {
         case .crossSell:
@@ -26,28 +50,14 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         }
     }
 
-    @MainActor
-    var image: UIImage {
-        switch self {
-        case .crossSell:
-            return hCoreUIAssets.campaignQuickNav.image
-        case .firstVet:
-            return hCoreUIAssets.firstVetQuickNav.image
-        case .chat:
-            return hCoreUIAssets.inbox.image
-        case .travelCertificate, .insuranceEvidence:
-            return hCoreUIAssets.infoOutlined.image
-        }
-    }
-
-    var displayName: String {
+    var accessibilityDisplayName: String {
         switch self {
         case .crossSell:
             return L10n.InsuranceTab.CrossSells.title
         case .firstVet:
             return L10n.hcQuickActionsFirstvetTitle
         case .chat:
-            return L10n.Toast.newMessage
+            return L10n.chatConversationInbox
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
         }
@@ -166,12 +176,57 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         }
     }
 
+    @MainActor
     var imageSize: CGFloat {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return 24
-        default:
+        case .crossSell:
+            if isLiquidGlassEnabled {
+                return 20
+            }
+        case .firstVet, .chat:
+            if isLiquidGlassEnabled {
+                return 17
+            }
+        }
+        return 40
+    }
+
+    @MainActor
+    var offsetForToolTip: CGFloat {
+        switch self {
+        case .travelCertificate, .insuranceEvidence:
             return 40
+        case .crossSell, .firstVet, .chat:
+            return 40
+        }
+    }
+
+    @MainActor
+    @hColorBuilder
+    var imageTintColor: some hColor {
+        switch self {
+        case .crossSell:
+            hSignalColor.Green.element
+        case .firstVet:
+            hSignalColor.Blue.firstVet
+        default:
+            hFillColor.Opaque.primary
+        }
+    }
+
+    @MainActor
+    var navBarItemBackgroundColor: UIColor? {
+        switch self {
+        case .travelCertificate, .insuranceEvidence:
+            return hFillColor.Opaque.primary.colorFor(.dark, .base).color.uiColor()
+        case .crossSell:
+            return hSignalColor.Green.fill.colorFor(.dark, .base).color.uiColor()
+        case .firstVet:
+            return hSignalColor.Blue.firstVet.colorFor(.dark, .base).color.uiColor()
+        case .chat:
+            return hSignalColor.Grey.element.colorFor(.dark, .base).color.uiColor()
         }
     }
 

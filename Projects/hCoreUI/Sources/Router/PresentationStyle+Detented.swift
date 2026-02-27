@@ -61,7 +61,6 @@ public struct PresentationOptions: OptionSet, Sendable {
 
     static let useBlur = PresentationOptions()
 }
-
 class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
     var detents: [Detent]
     var options: PresentationOptions
@@ -95,49 +94,33 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
         presenting: UIViewController?,
         source _: UIViewController
     ) -> UIPresentationController? {
-        let presentationController: BlurredSheetPresentationController = {
-            let presentationController = BlurredSheetPresentationController(
-                presentedViewController: presented,
-                presenting: presenting,
-                useBlur: options.contains(.useBlur)
-            )
-            if !isLiquidGlassEnabled {
-                presentationController.preferredCornerRadius = .cornerRadiusXL
-            }
-            return presentationController
-        }()
+        let presentationController = BlurredSheetPresentationController(
+            presentedViewController: presented,
+            presenting: presenting,
+            useBlur: options.contains(.useBlur)
+        )
+        if !isLiquidGlassEnabled {
+            presentationController.preferredCornerRadius = .cornerRadiusXL
+        }
 
         presentationController.detents = [
-            .custom(resolver: { _ in
-                0
-            })
+            .custom(
+                identifier: UISheetPresentationController.Detent.Identifier.init("zero"),
+                resolver: { context in
+                    0
+                }
+            )
         ]
 
-        Detent.set(
-            [
-                .custom(
-                    "zero",
-                    { _, _ in
-                        0
-                    }
-                )
-            ],
-            on: presentationController,
-            viewController: viewController,
-            unanimated: false
-        )
-
         Task { @MainActor [weak presentationController] in
-            for _ in 0...2 {
-                try? await Task.sleep(seconds: 0.05)
-                if let presentationController {
-                    Detent.set(
-                        self.detents,
-                        on: presentationController,
-                        viewController: self.viewController,
-                        unanimated: false
-                    )
-                }
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            if let presentationController {
+                Detent.set(
+                    self.detents,
+                    on: presentationController,
+                    viewController: self.viewController,
+                    unanimated: false
+                )
             }
         }
 
@@ -537,6 +520,7 @@ public enum Detent: Equatable {
     ) {
         guard !detents.isEmpty else { return }
         weak let weakViewController = viewController
+        weak let weakPresentationController = presentationController
         func apply() {
             weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
             weakViewController?.appliedDetents = detents
@@ -559,6 +543,7 @@ public enum Detent: Equatable {
                         }
                     }
                 } ?? [.medium()]
+
             if let lastDetentIndex = lastDetentIndex {
                 setDetentIndex(on: presentationController, index: lastDetentIndex)
             }
@@ -684,7 +669,6 @@ public class BlurredSheetPresentationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
         if #available(iOS 17.0, *) {
             prefersPageSizing = false
         }
@@ -699,6 +683,17 @@ public class BlurredSheetPresentationController: UISheetPresentationController {
 
     @objc private func didTapBackground() {
         presentedViewController.dismiss(animated: true)
+    }
+
+    public override func containerViewDidLayoutSubviews() {
+        super.containerViewDidLayoutSubviews()
+        guard let containerView, let presentedView else { return }
+        let containerViewWidth = containerView.frame.width
+        let presentedViewOffset = presentedView.frame.origin.x
+        let presentedViewWidth = presentedView.frame.width
+        if presentedViewOffset == 0, containerViewWidth != presentedViewWidth {
+            presentedView.frame.size.width = containerViewWidth
+        }
     }
 
     override public func presentationTransitionWillBegin() {

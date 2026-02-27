@@ -853,6 +853,12 @@ public struct hSignalColor {
                 dark: hBlueColor.blue900
             )
         }
+
+        public static var firstVet: some hColor {
+            hColorScheme(
+                Color(hexString: "0062FF")
+            )
+        }
     }
 
     @MainActor

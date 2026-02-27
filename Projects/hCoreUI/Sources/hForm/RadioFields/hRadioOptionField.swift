@@ -87,7 +87,7 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
         } else if isSelected {
             hSignalColor.Green.element
         } else {
-            hSurfaceColor.Opaque.primary
+            hBackgroundColor.clear
         }
     }
 
