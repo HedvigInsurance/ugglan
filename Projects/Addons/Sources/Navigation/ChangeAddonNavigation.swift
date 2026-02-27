@@ -3,26 +3,25 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ChangeAddonInput: Identifiable, Equatable {
-    public var id: String = UUID().uuidString
+public struct ChangeAddonInput: Identifiable, Equatable, Sendable {
+    public let id: String = UUID().uuidString
 
-    let contractConfigs: [AddonConfig]?
+    public let contractConfigs: [AddonConfig]?
     let addonSource: AddonSource
+    public let preselectedAddonTitle: String?
     public init(
         addonSource: AddonSource,
-        contractConfigs: [AddonConfig]? = nil
+        contractConfigs: [AddonConfig]? = nil,
+        preselectedAddonTitle: String? = nil
     ) {
         self.addonSource = addonSource
         self.contractConfigs = contractConfigs
-    }
-
-    public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
-        lhs.id == rhs.id
+        self.preselectedAddonTitle = preselectedAddonTitle
     }
 }
 
-public enum AddonSource: String, Codable {
-    case insurances = "INSURANCES"
+public enum AddonSource: String, Codable, Sendable {
+    case insurances = "INSURANCES_TAB"
     case travelCertificates = "TRAVEL_CERTIFICATES"
     case crossSell = "CROSS_SELL"
     case deeplink = "DEEPLINK"
@@ -32,30 +31,32 @@ struct AddonInfo: Equatable, Identifiable {
     let id = UUID()
     let title: String
     let description: String
-    let perils: [Perils]
+    let perilGroups: [PerilGroup]
+
+    struct PerilGroup: Equatable {
+        let title: String
+        let perils: [Perils]
+    }
 }
 
 @MainActor
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: AddonInfo?
-    @Published var isChangeCoverageDaysPresented: AddonOffer?
+    @Published var isSelectableAddonPresented: AddonOfferSelectable?
     @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel?
     @Published var document: hPDFDocument?
-    let input: ChangeAddonInput
+    public let input: ChangeAddonInput
 
     let router = Router()
 
-    init(
-        input: ChangeAddonInput
-    ) {
+    init(input: ChangeAddonInput) {
         self.input = input
-        if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
-            changeAddonVm = .init(
-                contractId: config.contractId,
-                addonSource: input.addonSource
-            )
-        }
+    }
+
+    init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
+        self.input = .init(addonSource: offer.source)
+        changeAddonVm = .init(offer: offer, preselectedAddonTitle: preselectedAddonTitle)
     }
 }
 
@@ -64,13 +65,14 @@ enum ChangeAddonRouterActions {
     case summary
 }
 
-public struct ChangeAddonNavigation: View {
+struct ChangeAddonNavigation: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
-    public init(
-        input: ChangeAddonInput
-    ) {
+    public init(input: ChangeAddonInput) {
         changeAddonNavigationVm = .init(input: input)
+    }
+    public init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
+        changeAddonNavigationVm = .init(offer: offer, preselectedAddonTitle: preselectedAddonTitle)
     }
 
     public var body: some View {
@@ -79,25 +81,24 @@ public struct ChangeAddonNavigation: View {
             options: [.extendedNavigationWidth],
             tracking: ChangeAddonTrackingType.changeAddonScreen
         ) {
+            let multipleContracts = changeAddonNavigationVm.input.contractConfigs?.count ?? 0 > 1
             Group {
-                if changeAddonNavigationVm.input.contractConfigs?.count ?? 0 > 1 {
-                    selectInsuranceScreen
+                if multipleContracts {
+                    AddonSelectInsuranceScreen(.init(changeAddonNavigationVm))
                 } else {
-                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
-                        .withAlertDismiss()
+                    ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                 }
             }
+            .withAlertDismiss()
             .routerDestination(for: ChangeAddonRouterActions.self) { action in
                 switch action {
                 case .summary:
-                    ChangeAddonSummaryScreen(
-                        changeAddonNavigationVm: changeAddonNavigationVm
-                    )
-                    .configureTitle(L10n.offerUpdateSummaryTitle)
-                    .withAlertDismiss()
-                case .addonLandingScreen:
-                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
+                    ChangeAddonSummaryScreen(changeAddonNavigationVm)
+                        .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withAlertDismiss()
+                case .addonLandingScreen:
+                    ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
+                        .withDismissButton()
                 }
             }
         }
@@ -107,9 +108,7 @@ public struct ChangeAddonNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) {
             AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm!)
-                .embededInNavigation(
-                    tracking: ChangeAddonTrackingType.processing
-                )
+                .embededInNavigation(tracking: ChangeAddonTrackingType.processing)
                 .environmentObject(changeAddonNavigationVm)
         }
         .modally(
@@ -124,10 +123,10 @@ public struct ChangeAddonNavigation: View {
                 )
         }
         .detent(
-            item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,
+            item: $changeAddonNavigationVm.isSelectableAddonPresented,
             options: .constant(.alwaysOpenOnTop)
-        ) { addOn in
-            AddonSelectSubOptionScreen(addonOffer: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
+        ) { selectable in
+            AddonSelectSubOptionScreen(selectable: selectable, changeAddonNavigationVm: changeAddonNavigationVm)
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: ChangeAddonTrackingType.selectSubOptionScreen
@@ -140,11 +139,6 @@ public struct ChangeAddonNavigation: View {
         ) { document in
             PDFPreview(document: document)
         }
-    }
-
-    private var selectInsuranceScreen: some View {
-        AddonSelectInsuranceScreen(changeAddonNavigationVm: changeAddonNavigationVm)
-            .withDismissButton()
     }
 }
 

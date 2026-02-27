@@ -51,10 +51,12 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
         @Environment(\.hUseLightMode) var hUseLightMode
         @Environment(\.hUseButtonTextColor) var buttonTextColor
+        @Environment(\.colorScheme) var colorScheme
+        @Environment(\.userInterfaceLevel) var userInterfaceLevel
 
         var configuration: Configuration
 
-        @hColorBuilder var foregroundColor: some hColor {
+        @hColorBuilder var foregroundHColor: some hColor {
             if buttonTextColor == .red {
                 hSignalColor.Red.element
             } else if !isEnabled {
@@ -72,8 +74,11 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
 
         var body: some View {
+            let resolvedColor = foregroundHColor.colorFor(hUseLightMode ? .light : colorScheme, userInterfaceLevel)
+                .color
             let label = configuration.label
-                .foregroundColor(foregroundColor)
+                .foregroundColor(resolvedColor)
+                .animation(.default, value: isEnabled)
 
             LoaderOrContent() {
                 if hUseLightMode {

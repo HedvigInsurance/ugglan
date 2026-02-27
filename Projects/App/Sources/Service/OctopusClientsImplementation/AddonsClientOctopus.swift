@@ -1,124 +1,262 @@
 import Addons
+import Foundation
 import hCore
 import hGraphQL
 
 class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
-    func getAddon(contractId: String) async throws -> AddonOffer {
-        do {
-            let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
+    public func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
+        let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: config.contractId)
+        let response = try await octopus.client.mutation(mutation: mutation)
 
-            let addonOfferData = try await octopus.client.mutation(mutation: mutation)
-            let response = addonOfferData?.upsellTravelAddonOffer
-
-            if let error = response?.userError, let message = error.message {
-                throw AddonsError.errorMessage(message: message)
-            }
-
-            guard let addonOffer = response?.offer else {
-                throw AddonsError.somethingWentWrong
-            }
-
-            let currentAddon: AddonQuote? = {
-                guard let currentAddon = addonOffer.currentAddon else { return nil }
-
-                return .init(
-                    displayName: "",
-                    displayNameLong: currentAddon.displayNameLong,
-                    quoteId: "quoteId",
-                    addonId: "addonId",
-                    addonSubtype: "addonSubtype",
-                    displayItems: currentAddon.displayItems.map {
-                        .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
-                    },
-                    itemCost: .init(
-                        premium: .init(
-                            gross: .init(fragment: currentAddon.netPremium.fragments.moneyFragment),
-                            net: .init(fragment: currentAddon.netPremium.fragments.moneyFragment)
-                        ),
-                        discounts: []
-                    ),
-                    addonVariant: nil,
-                    documents: []
-                )
-            }()
-            let addonData = AddonOffer(
-                titleDisplayName: addonOffer.titleDisplayName,
-                description: addonOffer.descriptionDisplayName,
-                activationDate: addonOffer.activationDate.localDateToDate,
-                currentAddon: currentAddon,
-                quotes: addonOffer.quotes.map { quote in
-                    .init(fragment: quote.fragments.upsellTravelAddonQuoteFragment)
-                }
-            )
-
-            return addonData
-        } catch let exception {
-            if let exception = exception as? AddonsError {
-                throw exception
-            }
+        guard let result = response?.addonGenerateOffer else {
             throw AddonsError.somethingWentWrong
+        }
+
+        if let errorMessage = result.asUserError?.message {
+            throw AddonsError.errorMessage(message: errorMessage)
+        }
+
+        if let deflect = result.asAddonOfferDeflect {
+            return .deflect(
+                .init(
+                    contractId: config.contractId,
+                    pageTitle: deflect.pageTitle,
+                    pageDescription: deflect.pageDescription,
+                    type: deflect.type.asDeflectType
+                )
+            )
+        }
+
+        guard let addonOffer = result.asAddonOffer else {
+            throw AddonsError.somethingWentWrong
+        }
+
+        let quote = AddonContractQuote(data: addonOffer.quote)
+        let currentTotalCost = ItemCost(fragment: addonOffer.currentTotalCost.fragments.itemCostFragment)
+
+        return .offer(
+            .init(
+                config: config,
+                source: source,
+                pageTitle: addonOffer.pageTitle,
+                pageDescription: addonOffer.pageDescription,
+                quote: quote,
+                currentTotalCost: currentTotalCost,
+                infoMessage: addonOffer.infoMessage,
+                whatsIncludedPageTitle: addonOffer.whatsIncludedPageTitle,
+                whatsIncludedPageDescription: addonOffer.whatsIncludedPageDescription
+            )
+        )
+    }
+
+    public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {
+        let query = OctopusGraphQL.AddonOfferCostQuery(quoteId: quoteId, selectedAddonIds: Array(addonIds))
+        let data = try await octopus.client.fetch(query: query)
+        return .init(fragment: data.addonOfferCost.fragments.itemCostFragment)
+    }
+
+    public func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost {
+        let query = OctopusGraphQL.AddonRemoveOfferCostQuery(contractId: contractId, addonIds: Array(addonIds))
+        let data = try await octopus.client.fetch(query: query)
+        return .init(fragment: data.addonRemoveOfferCost.fragments.itemCostFragment)
+    }
+
+    public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
+        let mutation = OctopusGraphQL.AddonActivateOfferMutation(quoteId: quoteId, selectedAddonIds: Array(addonIds))
+
+        let response = try await octopus.client.mutation(mutation: mutation)
+        if let error = response?.addonActivateOffer.userError?.message {
+            throw AddonsError.errorMessage(message: error)
         }
     }
 
-    func submitAddon(quoteId: String, addonId: String) async throws {
-        do {
-            let mutation = OctopusGraphQL.UpsellTravelAddonActivateMutation(quoteId: quoteId, addonId: addonId)
-            let delayTask = Task {
-                try await Task.sleep(seconds: 3)
-            }
-            let response = try await octopus.client.mutation(mutation: mutation)
-            try await delayTask.value
-            if let error = response?.upsellTravelAddonActivate.userError, let message = error.message {
-                throw AddonsError.errorMessage(message: message)
-            }
-        } catch let exception {
-            if let exception = exception as? AddonsError {
-                throw exception
-            }
+    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
+        let query = OctopusGraphQL.AddonRemoveStartQuery(contractId: config.contractId)
+        let response = try await octopus.client.fetch(query: query)
+
+        let result = response.addonRemoveStart
+
+        if let userError = result.asUserError {
+            throw AddonsError.errorMessage(message: userError.message!)
+        }
+
+        guard let offer = result.asAddonRemoveOffer else {
             throw AddonsError.somethingWentWrong
+        }
+
+        return AddonRemoveOffer(
+            pageTitle: offer.pageTitle,
+            pageDescription: offer.pageDescription,
+            contractInfo: config,
+            currentTotalCost: ItemCost(fragment: offer.currentTotalCost.fragments.itemCostFragment),
+            baseCost: ItemCost(fragment: offer.baseCost.fragments.itemCostFragment),
+            productVariant: ProductVariant(data: offer.productVariant.fragments.productVariantFragment),
+            activationDate: offer.activationDate.localDateToDate ?? Date(),
+            removableAddons: offer.removableAddons.map { .init(data: $0) }
+        )
+    }
+
+    public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
+        let mutation = OctopusGraphQL.AddonRemoveConfirmMutation(contractId: contractId, addonIds: Array(addonIds))
+        let response = try await octopus.client.mutation(mutation: mutation)
+        if let errorMessage = response?.addonRemoveConfirm?.message {
+            throw AddonsError.errorMessage(message: errorMessage)
+        }
+    }
+
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
+        let query = OctopusGraphQL.AddonBannersQuery(flows: source.flows)
+
+        let data = try await octopus.client.fetch(query: query)
+        let banners = data.currentMember.addonBanners
+
+        return banners.filter { !$0.contractIds.isEmpty }
+            .map { banner in
+                AddonBanner(
+                    contractIds: banner.contractIds,
+                    titleDisplayName: banner.displayTitleName,
+                    descriptionDisplayName: banner.descriptionDisplayName,
+                    badges: banner.badges,
+                    addonType: banner.flow.asAddonType
+                )
+            }
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.AddonFlow> {
+    var asAddonType: AddonBanner.AddonType {
+        switch self {
+        case .case(let type):
+            switch type {
+            case .appCarPlus:
+                return .carPlus
+            case .appTravelPlusSellOnly:
+                return .travelPlus
+            case .appTravelPlusSellOrUpgrade:
+                return .travelPlus
+            }
+        case .unknown:
+            return .unknown
         }
     }
 }
 
-extension AddonQuote {
-    init(
-        fragment: OctopusGraphQL.UpsellTravelAddonQuoteFragment
-    ) {
-        let displayItems: [AddonDisplayItem] = fragment.displayItems.map {
-            .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
-        }
-        let documents = fragment.documents.compactMap { document in
-            hPDFDocument(displayName: document.displayName, url: document.url, type: .unknown)
-        }
+extension AddonSource {
+    public var flows: [GraphQLEnum<OctopusGraphQL.AddonFlow>] {
+        let rawFlows: [OctopusGraphQL.AddonFlow] =
+            switch self {
+            case .insurances, .crossSell: [.appTravelPlusSellOnly, .appCarPlus]
+            case .travelCertificates: [.appTravelPlusSellOrUpgrade]
+            case .deeplink: [.appTravelPlusSellOrUpgrade, .appCarPlus]
+            }
+        return rawFlows.map(GraphQLEnum.init)
+    }
+}
+
+// MARK: - AddonOffer Extensions
+
+extension AddonContractQuote {
+    @MainActor
+    init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote) {
         self.init(
-            displayName: fragment.displayName,
-            displayNameLong: fragment.displayNameLong,
-            quoteId: fragment.quoteId,
-            addonId: fragment.addonId,
-            addonSubtype: fragment.addonSubtype,
-            displayItems: displayItems,
-            itemCost: .init(fragment: fragment.itemCost.fragments.itemCostFragment),
-            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
-            documents: documents,
+            quoteId: data.quoteId,
+            displayTitle: data.displayTitle,
+            displayDescription: data.displayDescription,
+            activationDate: data.activationDate.localDateToDate ?? Date(),
+            addonOffer: .init(data: data.addonOffer),
+            activeAddons: data.activeAddons.map { .init(data: $0) },
+            baseQuoteCost: ItemCost(fragment: data.baseQuoteCost.fragments.itemCostFragment),
+            productVariant: ProductVariant(data: data.productVariant.fragments.productVariantFragment)
+        )
+    }
+}
+
+extension AddonOfferContent {
+    init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer) {
+        if let selectable = data.asAddonOfferSelectable {
+            self = .selectable(.init(data: selectable))
+        } else if let toggleable = data.asAddonOfferToggleable {
+            self = .toggleable(.init(data: toggleable))
+        } else {
+            // Default to toggleable with empty quotes if neither type matches
+            self = .toggleable(.init(quotes: []))
+        }
+    }
+}
+
+extension AddonOfferSelectable {
+    init(
+        data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
+            .AsAddonOfferSelectable
+    ) {
+        self.init(
+            fieldTitle: data.fieldTitle,
+            selectionTitle: data.selectionTitle,
+            selectionDescription: data.selectionDescription,
+            quotes: data.quotes.map { .init(fragment: $0.fragments.addonOfferQuoteFragment) }
+        )
+    }
+}
+
+extension AddonOfferToggleable {
+    init(
+        data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.AddonOffer
+            .AsAddonOfferToggleable
+    ) {
+        self.init(quotes: data.quotes.map { .init(fragment: $0.fragments.addonOfferQuoteFragment) })
+    }
+}
+
+extension AddonOfferQuote {
+    init(fragment: OctopusGraphQL.AddonOfferQuoteFragment) {
+        self.init(
+            id: fragment.id,
+            displayTitle: fragment.displayTitle,
+            displayDescription: fragment.displayDescription,
+            displayItems: fragment.displayItems.map { .init(fragment: $0) },
+            cost: ItemCost(fragment: fragment.cost.fragments.itemCostFragment),
+            addonVariant: AddonVariant(fragment: fragment.addonVariant.fragments.addonVariantFragment),
+            subType: fragment.subtype
         )
     }
 }
 
 extension AddonDisplayItem {
-    init(
-        fragment: OctopusGraphQL.UpsellTravelAddonDisplayItemFragment
-    ) {
+    init(fragment: OctopusGraphQL.AddonOfferQuoteFragment.DisplayItem) {
         self.init(displayTitle: fragment.displayTitle, displayValue: fragment.displayValue)
     }
 }
 
-extension AddonSource {
-    public var getSource: OctopusGraphQL.UpsellTravelAddonFlow {
+extension ActiveAddon {
+    init(data: OctopusGraphQL.AddonGenerateOfferMutation.Data.AddonGenerateOffer.AsAddonOffer.Quote.ActiveAddon) {
+        self.init(
+            id: data.id,
+            cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
+            displayTitle: data.displayTitle,
+            displayDescription: data.displayDescription
+        )
+    }
+
+    init(data: OctopusGraphQL.AddonRemoveStartQuery.Data.AddonRemoveStart.AsAddonRemoveOffer.RemovableAddon) {
+        self.init(
+            id: data.id,
+            cost: ItemCost(fragment: data.cost.fragments.itemCostFragment),
+            displayTitle: data.displayTitle,
+            displayDescription: data.displayDescription
+        )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.AddonDeflectType>? {
+    fileprivate var asDeflectType: AddonDeflect.DeflectType {
         switch self {
-        case .insurances, .crossSell: return .appOnlyUpsale
-        case .travelCertificates, .deeplink: return .appUpsellUpgrade
+        case .case(let type):
+            switch type {
+            case .upgradeTier: .upgradeTier
+            }
+        case .unknown, .none: .none
         }
     }
 }

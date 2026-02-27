@@ -51,34 +51,34 @@ final class CrossSellStoreTests: XCTestCase {
         assert(mockService.events.first == .getCrossSell)
     }
 
-    func testFetchAddonBannerDataSuccess() async {
+    func testFetchAddonBannersDataSuccess() async {
         let mockService = MockData.createMockCrossSellService(
-            fetchAddonBannerModel: { _ in AddonBannerModel.getDefault }
+            fetchAddonBanners: { _ in AddonBanner.getDefault }
         )
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchAddonBanner)
+        await store.sendAsync(.fetchAddonBanners)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchAddonBanner] == nil && store.state.addonBanner == AddonBannerModel.getDefault
+            store.loadingState[.fetchAddonBanners] == nil && store.state.addonBanners == AddonBanner.getDefault
         }
 
         assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getAddonBannerModel)
+        assert(mockService.events.first == .getAddonBanners)
     }
 
     func testFetchAddonBannerDataFailure() async throws {
         let mockService = MockData.createMockCrossSellService(
-            fetchAddonBannerModel: { _ in throw MockContractError.fetchAddonBanner }
+            fetchAddonBanners: { _ in throw MockContractError.fetchAddonBanners }
         )
 
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchAddonBanner)
+        await store.sendAsync(.fetchAddonBanners)
         try await Task.sleep(seconds: 0.5)
-        assert(store.loadingState[.fetchAddonBanner] != nil)
+        assert(store.loadingState[.fetchAddonBanners] != nil)
         assert(store.state.crossSells?.others.isEmpty == nil)
         assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getAddonBannerModel)
+        assert(mockService.events.first == .getAddonBanners)
     }
 }
 
@@ -116,13 +116,17 @@ extension CrossSellState {
 }
 
 @MainActor
-extension AddonBannerModel {
-    fileprivate static let getDefault = AddonBannerModel(
-        contractIds: ["contractId"],
-        titleDisplayName: "display name",
-        descriptionDisplayName: "description",
-        badges: []
-    )
+extension AddonBanner {
+    fileprivate static let getDefault = [
+        AddonBanner(
+            contractIds: ["contractId"],
+            titleDisplayName: "display name",
+            descriptionDisplayName: "description",
+            badges: [],
+            addonType: .carPlus,
+
+        )
+    ]
 }
 
 @MainActor

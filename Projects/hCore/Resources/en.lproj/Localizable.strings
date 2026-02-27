@@ -4,6 +4,7 @@
 /* Used as content description for the "X" button which appears in the text fields which allows the member to clear the textfield's input */
 "A11Y_CLEAR_FIELD" = "Clear field";
 "A11Y_CLOSE" = "Close";
+"A11Y_OPTION_NOT_SELECTED" = "Option not selected";
 /* Pause action for a video, an audio recording etc. */
 "A11Y_PAUSE" = "Pause";
 /* Play action for a video, an audio recording etc. */
@@ -40,12 +41,15 @@
 "ADDON_FLOW_SUCCESS_TITLE" = "Added successfully";
 "ADDON_FLOW_SUMMARY_ACTIVE_FROM" = "Activates %1$@";
 "ADDON_FLOW_SUMMARY_CONFIRM_BUTTON" = "Add and confirm";
-"ADDON_FLOW_SUMMARY_INFO_TEXT" = "The extended coverage is tied to your contract period and can only be removed when your insurance is renewed or cancelled.";
+"ADDON_FLOW_SUMMARY_INFO_TEXT" = "The addon is tied to your contract period and can only be removed when your insurance is renewed or cancelled.";
 "ADDON_FLOW_SUMMARY_PRICE_SUBTITLE" = "Added to your total monthly premium";
 "ADDON_FLOW_TITLE" = "Extend your travel coverage";
 "ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "Travel Insurance Plus is our extended travel insurance, for extra coverage on your trip.";
 "ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.";
 "ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "What is Travel Insurance Plus?";
+"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Select what you'd like to do with this addon.";
+"ADDON_FLOW_UPGRADE_ADDON" = "Upgrade addon";
+"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "You can upgrade your addon to extend the coverage. This addon can only be removed when your insurance is renewed or cancelled.";
 "ADDON_LEARN_MORE_LABEL" = "See what's included";
 "ADDON_REMOVE_CANCEL_BUTTON" = "Keep current coverage";
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Cancel %1$@";
@@ -226,10 +230,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_GET_NOTIFIED" = "Get notified";
 "CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "On a trip";
 "CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Outside my home";
-"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "In Sweden or abroad";
 "CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "In your home or on your property";
 "CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "In Sweden or abroad";
-"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "Storage, shared spaces or in public";
 "CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "Storage, shared spaces or in public";
 "CLAIM_CHAT_OTHER_TITLE" = "Other information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Please provide phone number in the case we need to contact you";
@@ -291,9 +293,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_FIRST_NAME" = "First name";
 "CONTRACT_LAST_NAME" = "Last name";
 "CONTRACT_NO_INFORMATION" = "No information available";
-"CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE" = "Activates %1$@";
+"CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE" = "Activates on %1$@";
 "CONTRACT_OVERVIEW_ADDON_ADD" = "Add";
-"CONTRACT_OVERVIEW_ADDON_ENDS_DATE" = "End %1$@";
+"CONTRACT_OVERVIEW_ADDON_ENDS_DATE" = "Ends on %1$@";
 "CONTRACT_OVERVIEW_ADDON_IS_ADDED" = "Added";
 "CONTRACT_PERSONAL_IDENTITY" = "Personal identity no.";
 "CONTRACT_REMOVE_COINSURED_CONFIRMATION" = "Are you sure you want to \nremove co-insured?";
@@ -440,6 +442,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_FIRSTVET_TITLE" = "FirstVet";
 "HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE" = "Change bank or bank account";
 "HC_QUICK_ACTIONS_PAYMENTS_TITLE" = "Payments";
+"HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE" = "Change or remove active addons";
 "HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE" = "Get emergency help when sick abroad";
 "HC_QUICK_ACTIONS_SICK_ABROAD_TITLE" = "Sick abroad";
 "HC_QUICK_ACTIONS_TERMINATION_SUBTITLE" = "No binding time, cancel anytime";
@@ -460,6 +463,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HONESTY_PLEDGE_TITLE" = "Before we start";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Discounts available";
 "INSURANCE_ADDONS_SUBHEADING" = "Addons";
+"INSURANCE_ADDON_SUBHEADING" = "Addon";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "To return to your previous coverage, register your car as active again with Transportstyrelsen.";
 "INSURANCE_EVIDENCE.DOCUMENT_TITLE" = "Certificate of validity";
 "INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION" = "The certificate has been sent to your email.";
@@ -488,7 +492,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MOVING_FLOW_ADDON_REMOVE_OPTION" = "No extra coverage";
 "MOVING_FLOW_BODY" = "Which insurance do you want to update the address for?";
 "MOVING_FLOW_SUCCESS_TOAST" = "Address change submitted";
-"MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION" = "This extended coverage can be removed by [contacting us](https://link.hedvig.com/chat).";
+"MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION" = "This addon can be removed by [contacting us](https://link.hedvig.com/chat).";
 "MY_DOCUMENTS_INSURANCE_CERTIFICATE" = "Insurance certificate";
 "MY_INFO_EMAIL_EMPTY_ERROR" = "You forgot to enter your email";
 "MY_INFO_EMAIL_MALFORMED_ERROR" = "The entered email address doesn't seem correct";
@@ -593,7 +597,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Yes, remove";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "This change will take effect from %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "Confirm removing selected addons";
-"REMOVE_ADDON_DESCRIPTION" = "This add-on insurance is active and applies together with your selected insurance";
+"REMOVE_ADDON_DESCRIPTION" = "This addon is active and part of your insurance";
+"REMOVE_ADDON_DESCRIPTION_RENEWAL" = "The addon is tied to your contract period and can only be removed when your insurance is renewed or cancelled.";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Remove addon";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "This change will take effect from %@.";

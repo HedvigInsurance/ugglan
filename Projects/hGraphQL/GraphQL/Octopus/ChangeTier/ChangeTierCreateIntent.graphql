@@ -33,6 +33,7 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
 		costBreakdown {
 			displayName
 			displayValue
+            isCrossed
 		}
 		currentTotalCost {
 			...TotalCostFragment
@@ -40,6 +41,7 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
 		newTotalCost {
 			...TotalCostFragment
 		}
+        info
       }
 	
     }

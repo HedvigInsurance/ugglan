@@ -4,6 +4,7 @@
 /* Used as content description for the "X" button which appears in the text fields which allows the member to clear the textfield's input */
 "A11Y_CLEAR_FIELD" = "Rensa fält";
 "A11Y_CLOSE" = "Stäng";
+"A11Y_OPTION_NOT_SELECTED" = "Alternativet är inte valt";
 /* Pause action for a video, an audio recording etc. */
 "A11Y_PAUSE" = "Pausa";
 /* Play action for a video, an audio recording etc. */
@@ -46,6 +47,9 @@
 "ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.";
 "ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.";
 "ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "Vad är Reseskydd Plus?";
+"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Välj vad du vill göra med det här tillägget.";
+"ADDON_FLOW_UPGRADE_ADDON" = "Uppgradera tillägg";
+"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "Du kan uppgradera ditt tillägg för att utöka skyddet. Detta tillägg kan bara tas bort när din försäkring förnyas eller sägs upp.";
 "ADDON_LEARN_MORE_LABEL" = "Se vad som ingår";
 "ADDON_REMOVE_CANCEL_BUTTON" = "Behåll nuvarande skydd";
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Avsluta %1$@";
@@ -226,10 +230,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_GET_NOTIFIED" = "Bli meddelad";
 "CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "På resa";
 "CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Utanför mitt hem";
-"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "I Sverige eller utomlands";
 "CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "I bostaden eller på tillhörande tomt";
 "CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "I Sverige eller utomlands";
-"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "T.ex. i förråd, tvättstuga eller på stan";
 "CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "T.ex. i förråd, tvättstuga eller på stan";
 "CLAIM_CHAT_OTHER_TITLE" = "Övrig information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Vänligen ange telefonnummer ifall vi behöver kontakta dig";
@@ -440,6 +442,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_FIRSTVET_TITLE" = "FirstVet";
 "HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE" = "Ändra bank eller bankkonto";
 "HC_QUICK_ACTIONS_PAYMENTS_TITLE" = "Betalning";
+"HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE" = "Ändra eller ta bort aktiva tillägg";
 "HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE" = "Få akut hjälp på din resa";
 "HC_QUICK_ACTIONS_SICK_ABROAD_TITLE" = "Sjuk utomlands";
 "HC_QUICK_ACTIONS_TERMINATION_SUBTITLE" = "Inga bindningstider, säg upp när du vill";
@@ -460,6 +463,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HONESTY_PLEDGE_TITLE" = "Innan vi börjar";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
+"INSURANCE_ADDON_SUBHEADING" = "Tillägg";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.";
 "INSURANCE_EVIDENCE.DOCUMENT_TITLE" = "Giltighetsintyg";
 "INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION" = "Giltighetsintyget är nu skickat till din e-post.";
@@ -593,7 +597,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Ja, ta bort";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "";
-"REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din valda försäkring";
+"REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring";
+"REMOVE_ADDON_DESCRIPTION_RENEWAL" = "Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Ta bort tillägg";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "Den här ändringar börjar gälla %@.";

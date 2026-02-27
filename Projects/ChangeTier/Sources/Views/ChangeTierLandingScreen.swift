@@ -101,14 +101,19 @@ public struct ChangeTierLandingScreen: View {
         CardView {
             hRow {
                 ContractInformation(
-                    displayName: vm.displayName,
-                    exposureName: vm.exposureName,
+                    title: vm.displayName,
+                    subtitle: vm.exposureName,
                     pillowImage: vm.typeOfContract?.pillowType.bgImage
                 )
             }
 
             VStack(spacing: .padding4) {
                 editTierView
+                if let info = vm.selectedQuote?.info {
+                    hSection {
+                        InfoCard(text: info, type: .info)
+                    }
+                }
                 addonView
                 if vm.showDeductibleField {
                     deductibleView

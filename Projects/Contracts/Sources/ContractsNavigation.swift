@@ -41,6 +41,7 @@ public struct ContractsNavigation<Content: View>: View {
                     }
                 }
         }
+        .disabled(contractsNavigationVm.isAddonPresented != nil)
         .detent(
             item: $contractsNavigationVm.insurableLimit,
             transitionType: .detent(style: [.height])
@@ -89,6 +90,15 @@ public struct ContractsNavigation<Content: View>: View {
                         }
                     case .changeAddress:
                         break
+                    case .removeAddons:
+                        contractsNavigationVm.isRemoveAddonPresented = .init(
+                            contractInfo: .init(
+                                contractId: contract.id,
+                                exposureName: contract.currentAgreement?.productVariant.displayName ?? "",
+                                displayName: contract.exposureDisplayName
+                            ),
+                            preselectedAddons: []
+                        )
                     }
                 }
             )
@@ -101,9 +111,7 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
         }
-        .modally(item: $contractsNavigationVm.isAddonPresented) { input in
-            redirect(.addon(input: input))
-        }
+        .handleAddons(input: $contractsNavigationVm.isAddonPresented, options: .constant([]))
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             transitionType: .detent(style: [.height])
@@ -117,6 +125,13 @@ public struct ContractsNavigation<Content: View>: View {
                 tracking: ContractsDetentType.upcomingChanges
             )
             .environmentObject(contractsNavigationVm)
+        }
+        .handleRemoveAddons(input: $contractsNavigationVm.isRemoveAddonPresented)
+        .detent(item: $contractsNavigationVm.addonActionPresented) { addonAction in
+            AddonActionSheet(
+                addonAction: addonAction,
+                contractsNavigationVm: contractsNavigationVm
+            )
         }
         .handleTerminateInsurance(
             vm: contractsNavigationVm.terminateInsuranceVm
@@ -148,6 +163,8 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var isChangeAddressPresented = false
     @Published public var changeTierInput: ChangeTierInput?
     @Published public var isAddonPresented: ChangeAddonInput?
+    @Published public var isRemoveAddonPresented: RemoveAddonInput?
+    @Published public var addonActionPresented: AddonAction?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -161,7 +178,6 @@ public enum RedirectType {
     case movingFlow
     case pdf(document: hPDFDocument)
     case changeTier(input: ChangeTierInput)
-    case addon(input: ChangeAddonInput)
 }
 
 public enum RedirectAction {

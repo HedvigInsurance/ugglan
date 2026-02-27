@@ -14,57 +14,99 @@ final class AddonsServiceTests: XCTestCase {
     }
 
     func testFetchAddonDataSuccess() async throws {
-        let addonModel: AddonOffer = .init(
-            titleDisplayName: "title",
-            description: "description",
-            activationDate: Date(),
-            currentAddon: nil,
-            quotes: [
-                .init(
-                    displayName: "option title",
-                    displayNameLong: "option title long",
-                    quoteId: "quoteId1",
-                    addonId: "addonId1",
-                    addonSubtype: "addonSubtype1",
-                    displayItems: [],
-                    itemCost: .init(premium: .init(gross: .sek(49), net: .sek(49)), discounts: []),
-                    addonVariant: .init(
-                        displayName: "displayName",
-                        documents: [],
-                        perils: [],
-                        product: "",
-                        termsVersion: ""
-                    ),
-                    documents: []
-                ),
-                .init(
-                    displayName: "option title",
-                    displayNameLong: "option title long",
-                    quoteId: "quoteId2",
-                    addonId: "addonId2",
-                    addonSubtype: "addonSubtype2",
-                    displayItems: [],
-                    itemCost: .init(premium: .init(gross: .sek(79), net: .sek(79)), discounts: []),
-                    addonVariant: .init(
-                        displayName: "displayName2",
-                        documents: [],
-                        perils: [],
-                        product: "",
-                        termsVersion: ""
-                    ),
-                    documents: []
-                ),
-            ]
+        let mockService = MockData.createMockAddonsService(
+            fetchAddonOffer: { _, _ in .offer(testTravelOfferNoActive) }
         )
-
-        let mockService = MockData.createMockAddonsService(fetchAddon: { _ in
-            addonModel
-        })
 
         sut = mockService
 
-        let respondedAddonData = try await mockService.getAddon(contractId: "contractId")
+        let respondedAddonData = try await mockService.getAddonOffer(
+            config: testAddonConfig,
+            source: .insurances
+        )
 
-        assert(respondedAddonData == addonModel)
+        assert(respondedAddonData == .offer(testTravelOfferNoActive))
+    }
+
+    func testFetchAddonDeflectSuccess() async throws {
+        let mockService = MockData.createMockAddonsService(
+            fetchAddonOffer: { _, _ in .deflect(testDeflectUpgradeTier) }
+        )
+
+        sut = mockService
+
+        let respondedAddonData = try await mockService.getAddonOffer(
+            config: testAddonConfig,
+            source: .insurances
+        )
+
+        assert(respondedAddonData == .deflect(testDeflectUpgradeTier))
+    }
+
+    func testGetAddonBannersSuccess() async throws {
+        let mockService = MockData.createMockAddonsService(fetchBanners: { _ in [testAddonBanner] })
+
+        sut = mockService
+
+        let respondedBanners = try await mockService.getAddonBanners(source: .insurances)
+
+        assert(respondedBanners == [testAddonBanner])
+    }
+
+    func testGetAddonRemoveOfferSuccess() async throws {
+        let mockService = MockData.createMockAddonsService(fetchAddonRemoveOffer: { _ in testRemoveOffer })
+
+        sut = mockService
+
+        let respondedOffer = try await mockService.getAddonRemoveOffer(
+            config: .init(contractId: "cId", exposureName: "eName", displayName: "dName")
+        )
+
+        assert(respondedOffer == testRemoveOffer)
+        assert(mockService.events == [.getAddonRemoveOffer])
+    }
+
+    func testConfirmAddonRemovalSuccess() async throws {
+        let mockService = MockData.createMockAddonsService(confirmAddonRemoval: { _, _ in })
+
+        sut = mockService
+
+        try await mockService.confirmAddonRemoval(contractId: "cId", addonIds: ["aId"])
+
+        assert(mockService.events == [.confirmAddonRemoval])
+    }
+
+    func testSubmitAddonsSuccess() async throws {
+        let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
+
+        sut = mockService
+
+        try await mockService.submitAddons(quoteId: "qId", addonIds: ["aId"])
+
+        assert(mockService.events == [.submitAddon])
+    }
+
+    func testGetAddonOfferCostSuccess() async throws {
+        let expectedCost = ItemCost(premium: .init(gross: .sek(348), net: .sek(328)), discounts: [])
+        let mockService = MockData.createMockAddonsService(fetchAddonOfferCost: { _, _ in expectedCost })
+
+        sut = mockService
+
+        let respondedCost = try await mockService.getAddonOfferCost(quoteId: "qId", addonIds: ["aId"])
+
+        assert(respondedCost == expectedCost)
+        assert(mockService.events == [.getAddonOfferCost])
+    }
+
+    func testGetAddonRemoveOfferCostSuccess() async throws {
+        let expectedCost = ItemCost(premium: .init(gross: .sek(399), net: .sek(399)), discounts: [])
+        let mockService = MockData.createMockAddonsService(fetchAddonRemoveOfferCost: { _, _ in expectedCost })
+
+        sut = mockService
+
+        let respondedCost = try await mockService.getAddonRemoveOfferCost(contractId: "cId", addonIds: ["aId"])
+
+        assert(respondedCost == expectedCost)
+        assert(mockService.events == [.getAddonRemoveOfferCost])
     }
 }

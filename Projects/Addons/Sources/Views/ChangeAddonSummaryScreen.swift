@@ -5,13 +5,9 @@ import hCoreUI
 struct ChangeAddonSummaryScreen: View {
     let quoteSummaryVm: QuoteSummaryViewModel
 
-    init(
-        changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    ) {
-        quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
-            .asQuoteSummaryViewModel(
-                changeAddonNavigationVm: changeAddonNavigationVm
-            )
+    init(_ changeAddonNavigationVm: ChangeAddonNavigationViewModel) {
+        self.quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
+            .asQuoteSummaryViewModel(changeAddonNavigationVm: changeAddonNavigationVm)
     }
 
     var body: some View {
@@ -21,45 +17,36 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
+        let documents = offer.quote.productVariant.documents
+
+        let typeOfContract = TypeOfContract(rawValue: offer.quote.productVariant.typeOfContract)
+
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
-            id: contractId,
-            displayName: selectedQuote?.addonVariant?.displayName ?? "",
-            exposureName: L10n.addonFlowSummaryActiveFrom(
-                addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
-            ),
+            id: offer.config.contractId,
+            title: offer.config.exposureName,
+            subtitle: offer.config.displayName,
             premium: getPremium(),
             documentSection: .init(
-                documents: selectedQuote?.documents ?? [],
+                documents: documents,
                 onTap: { [weak changeAddonNavigationVm] document in
                     changeAddonNavigationVm?.document = document
                 }
             ),
-            displayItems: compareAddonDisplayItems(
-                newDisplayItems: selectedQuote?.displayItems ?? []
-            ),
+            displayItems: selectedAddons.flatMap(\.displayItems).map { $0.asQuoteDisplayItem() },
             insuranceLimits: [],
-            typeOfContract: nil,
-            isAddon: true,
+            typeOfContract: typeOfContract,
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
-        let totalPrice = getTotalPrice()
+        let increase = getAddonPriceChange() ?? .zeroSek
         let vm = QuoteSummaryViewModel(
-            contract: [
-                contractInfo
-            ],
-            activationDate: self.addonOffer?.activationDate,
-            premium: .init(
-                gross: totalPrice,
-                net: totalPrice
-            ),
-            isAddon: true
+            contract: [contractInfo],
+            activationDate: offer.quote.activationDate,
+            noticeInfo: offer.infoMessage,
+            totalPrice: .change(amount: increase.net)
         ) { [weak self, weak changeAddonNavigationVm] in
             changeAddonNavigationVm?.isAddonProcessingPresented = true
-            Task {
-                guard let self else { return }
-                await self.submitAddons()
-            }
+            Task { await self?.submitAddons() }
         }
 
         return vm
@@ -69,5 +56,8 @@ extension ChangeAddonViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init(addonSource: .insurances)))
+
+    let navVm = ChangeAddonNavigationViewModel(offer: testTravelOfferNoActive)
+    navVm.changeAddonVm?.addonOfferCost = testAddonOfferCost
+    return ChangeAddonSummaryScreen(navVm)
 }

@@ -29,7 +29,8 @@ class MovingFlowQuoteManager {
         let vm = QuoteSummaryViewModel(
             contract: contractInfos,
             activationDate: movingFlowQuotes.first?.startDate,
-            premium: totalPremium
+            noticeInfo: contractInfos.count > 1 ? L10n.changeAddressOtherInsurancesInfoText : nil,
+            totalPrice: .comparison(old: totalPremium.net, new: totalPremium.gross)
         )
 
         vm.onConfirmClick = { [weak router, weak viewModel] in
@@ -76,8 +77,8 @@ class MovingFlowQuoteManager {
 
         return QuoteSummaryViewModel.ContractInfo(
             id: quote.id,
-            displayName: quote.displayName,
-            exposureName: quote.exposureName ?? "",
+            title: quote.displayName,
+            subtitle: quote.exposureName ?? "",
             premium: quote.totalPremium,
             documentSection: .init(
                 documents: documents,

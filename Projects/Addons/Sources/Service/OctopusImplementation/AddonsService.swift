@@ -1,17 +1,41 @@
+import AutomaticLog
 import Foundation
 import hCore
 
-@MainActor
-public class AddonsService {
-    @Inject var service: AddonsClient
+@MainActor public class AddonsService {
+    @Inject var client: AddonsClient
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
-        log.info("AddonsService: getAddon", error: nil, attributes: nil)
-        return try await service.getAddon(contractId: contractId)
+    @Log
+    public func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
+        try await client.getAddonOffer(config: config, source: source)
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws {
-        log.info("AddonsService: submitAddon", error: nil, attributes: nil)
-        return try await service.submitAddon(quoteId: quoteId, addonId: addonId)
+    @Log
+    public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {
+        try await client.getAddonOfferCost(quoteId: quoteId, addonIds: addonIds)
+    }
+
+    @Log
+    public func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost {
+        try await client.getAddonRemoveOfferCost(contractId: contractId, addonIds: addonIds)
+    }
+
+    @Log
+    public func submitAddons(quoteId: String, selectedAddonIds: Set<String>) async throws {
+        async let submit: () = try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
+        async let delayTask: () = delay(3)
+        let _ = try await (submit, delayTask)
+    }
+
+    @Log
+    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
+        try await client.getAddonRemoveOffer(config: config)
+    }
+
+    @Log
+    public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
+        async let confirm: () = try await client.confirmAddonRemoval(contractId: contractId, addonIds: addonIds)
+        async let delayTask: () = delay(3)
+        let _ = try await (confirm, delayTask)
     }
 }
