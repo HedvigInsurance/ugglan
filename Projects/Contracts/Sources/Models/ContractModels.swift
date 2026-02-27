@@ -390,6 +390,19 @@ public struct ExistingAddon: Codable, Hashable, Identifiable, Sendable {
     }
 }
 
+extension ExistingAddon {
+    var availableActions: [AddonAction.AddonActionType] {
+        var types = [AddonAction.AddonActionType]()
+        if isUpgradable {
+            types.append(.upgrade)
+        }
+        if isRemovable {
+            types.append(.removal)
+        }
+        return types
+    }
+}
+
 public struct AvailableAddon: Codable, Hashable, Identifiable, Sendable {
     public let id: UUID
     public let displayName: String

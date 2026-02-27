@@ -189,7 +189,7 @@ struct ContractInformationView: View {
         }
     }
 
-    private func handleAdd(contract: Contract, addonDisplayName: String) {
+    private func presentAddonUpgrade(contract: Contract, addonDisplayName: String) {
         withAnimation(.easeInOut(duration: 0.2)) {
             contractsNavigationVm.isAddonPresented = .init(
                 addonSource: .insurances,
@@ -199,8 +199,12 @@ struct ContractInformationView: View {
         }
     }
 
-    private func handleRemove(contract: Contract, addonDisplayName: String, isRemovable: Bool) {
-        contractsNavigationVm.isRemoveAddonIntentPresented = .init(contract, addonDisplayName, isRemovable)
+    private func presentAddonActions(contract: Contract, addon: ExistingAddon) {
+        contractsNavigationVm.addonActionPresented = .init(
+            contract: contract,
+            displayName: addon.displayName,
+            types: addon.availableActions
+        )
     }
 
     @ViewBuilder
@@ -214,7 +218,7 @@ struct ContractInformationView: View {
                         subtitle: available.description,
                         actionTitle: L10n.contractOverviewAddonAdd,
                         buttonType: .primaryAlt,
-                        action: { handleAdd(contract: contract, addonDisplayName: available.displayName) }
+                        action: { presentAddonUpgrade(contract: contract, addonDisplayName: available.displayName) }
                     )
                     .hButtonIsLoading(
                         contractsNavigationVm.isAddonPresented?.preselectedAddonTitle == available.displayName
@@ -229,10 +233,9 @@ struct ContractInformationView: View {
                         terminationDate: existing.endDate,
                         action: {
                             if existing.endDate == nil {
-                                handleRemove(
+                                presentAddonActions(
                                     contract: contract,
-                                    addonDisplayName: existing.displayName,
-                                    isRemovable: existing.isRemovable
+                                    addon: existing
                                 )
                             }
                         }
@@ -275,7 +278,7 @@ struct ContractInformationView: View {
             self.action = action
         }
 
-        var description: String {
+        var displayDescription: String {
             if let activationDate { return L10n.contractOverviewAddonActivatesDate(activationDate) }
             if let terminationDate { return L10n.contractOverviewAddonEndsDate(terminationDate) }
             return subtitle
@@ -286,7 +289,7 @@ struct ContractInformationView: View {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading) {
                         hText(title)
-                        hText(description, style: .label)
+                        hText(displayDescription, style: .label)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                     Spacer(minLength: 0)
@@ -452,15 +455,40 @@ extension Contract {
     }
 }
 
-public struct RemoveAddonIntent: Equatable, Identifiable {
-    public var id: String { addonDisplayName }
+public struct AddonAction: Equatable, Identifiable {
+    public var id: String { displayName }
     let contract: Contract
-    let addonDisplayName: String
-    let isRemovable: Bool
+    let displayName: String
+    let description: String
+    let types: [AddonActionType]
 
-    init(_ contract: Contract, _ addonDisplayName: String, _ isRemovable: Bool) {
+    init(contract: Contract, displayName: String, types: [AddonActionType]) {
         self.contract = contract
-        self.addonDisplayName = addonDisplayName
-        self.isRemovable = isRemovable
+        self.displayName = displayName
+        self.types = types
+        self.description = {
+            if types.contains(.removal) && types.contains(.upgrade) {
+                return L10n.addonFlowUpdateAddonDescription
+            } else if types.contains(.removal) {
+                return L10n.removeAddonDescription
+            } else if types.contains(.upgrade) {
+                return L10n.addonFlowUpgradeAddonDescription
+            }
+            return L10n.removeAddonDescriptionRenewal
+        }()
+    }
+
+    enum AddonActionType: Identifiable {
+        var id: Self { self }
+
+        case upgrade
+        case removal
+
+        var title: String {
+            switch self {
+            case .upgrade: return L10n.addonFlowUpgradeAddon
+            case .removal: return L10n.removeAddonButtonTitle
+            }
+        }
     }
 }
