@@ -15,7 +15,7 @@ struct ClaimFlowLauncher: ViewModifier {
     @Binding var startInput: StartClaimInput?
     @Binding var showOldSubmitClaimFlow: Bool
     @State private var submitClaimInput: StartClaimInput?
-    @State private var router = Router()
+    @State private var router = NavigationRouter()
     func body(content: Content) -> some View {
         content
             .detent(
@@ -29,7 +29,7 @@ struct ClaimFlowLauncher: ViewModifier {
                         startInput = nil
                         showOldSubmitClaimFlow = true
                     }
-                    .configureTitle(L10n.honestyPledgeHeader)
+                    .navigationTitle(L10n.honestyPledgeHeader)
                     .embededInNavigation(
                         options: .navigationType(type: .large),
                         tracking: self

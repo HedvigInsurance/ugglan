@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct TerminationDeflectAutoDecomScreen: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @ObservedObject var vm: TerminationDeflectAutoDecomViewModel
     let model: TerminationFlowDeflectAutoDecomModel
     init(
@@ -127,7 +127,7 @@ struct TerminationDeflectAutoDecomScreen: View {
         ),
         navigation: navigation
     )
-    .environmentObject(Router())
+    .environmentObject(NavigationRouter())
 }
 
 @MainActor

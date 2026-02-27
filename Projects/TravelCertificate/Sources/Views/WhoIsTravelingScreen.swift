@@ -73,8 +73,8 @@ class WhoIsTravelingViewModel: ObservableObject {
     var isPolicyHolderIncluded = true
     @Published var isLoading = false
     let contract: Contracts.Contract?
-    let router: Router
-    init(specification: TravelInsuranceContractSpecification, router: Router) {
+    let router: NavigationRouter
+    init(specification: TravelInsuranceContractSpecification, router: NavigationRouter) {
         self.specification = specification
         self.router = router
         let contractStore: ContractStore = globalPresentableStoreContainer.get()

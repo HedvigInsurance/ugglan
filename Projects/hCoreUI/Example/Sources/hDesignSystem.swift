@@ -117,6 +117,6 @@ struct hDesignSystem: View {
 
 extension hDesignSystem {
     static var journey: some JourneyPresentation {
-        HostingJourney(rootView: hDesignSystem()).configureTitle("hDesignSystem")
+        HostingJourney(rootView: hDesignSystem()).navigationTitle("hDesignSystem")
     }
 }

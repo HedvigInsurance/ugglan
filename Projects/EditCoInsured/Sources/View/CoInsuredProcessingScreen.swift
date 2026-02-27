@@ -7,7 +7,7 @@ struct CoInsuredProcessingScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    private let router = Router()
+    private let router = NavigationRouter()
     init(
         showSuccessScreen: Bool,
         intentVM: IntentViewModel

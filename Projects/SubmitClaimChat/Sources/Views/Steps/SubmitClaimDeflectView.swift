@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct SubmitClaimDeflectStepView: View {
     private let model: ClaimIntentOutcomeDeflection
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     public init(
         model: ClaimIntentOutcomeDeflection,
     ) {

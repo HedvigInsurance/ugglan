@@ -10,7 +10,7 @@ public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
     @Published var isAskForPushNotificationsPresented = false
     @Published var isAutomationMessagePresented: InfoViewDataModel?
-    let router = Router()
+    let router = NavigationRouter()
     let chatType: ChatType
     init(chatType: ChatType) {
         self.chatType = chatType
@@ -86,7 +86,7 @@ public struct ChatNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: chatNavigationViewModel.router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: ChatNavigationViewName.chat
@@ -113,7 +113,7 @@ public struct ChatNavigation<Content: View>: View {
                     )
                 case .inbox:
                     InboxView()
-                        .configureTitle(L10n.chatConversationInbox)
+                        .navigationTitle(L10n.chatConversationInbox)
                 }
             }
             .withDismissButton(

@@ -68,7 +68,7 @@ public class HomeNavigationViewModel: ObservableObject {
         }
     }
 
-    public var router = Router()
+    public var router = NavigationRouter()
 
     @Published public var isSubmitClaimPresented = false
     @Published public var claimsAutomationStartInput: StartClaimInput?

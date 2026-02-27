@@ -11,7 +11,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var document: hPDFDocument?
     @Published public var isInfoViewPresented: InfoViewDataModel? = nil
     let useOwnNavigation: Bool
-    let router: Router
+    let router: NavigationRouter
 
     // NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
     var vm: ChangeTierViewModel!
@@ -19,10 +19,10 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     let changeTierContractsInput: ChangeTierContractsInput?
 
     init(
-        router: Router?,
+        router: NavigationRouter?,
         vm: ChangeTierViewModel
     ) {
-        self.router = router ?? Router()
+        self.router = router ?? NavigationRouter()
         useOwnNavigation = router == nil
         self.vm = vm
         changeTierContractsInput = nil
@@ -41,7 +41,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         } else {
             self.changeTierContractsInput = changeTierContractsInput
         }
-        router = Router()
+        router = NavigationRouter()
         useOwnNavigation = true
     }
 
@@ -170,7 +170,7 @@ public struct ChangeTierNavigation: View {
     public init(
         input: ChangeTierInput,
         dataProvider: ChangeTierQuoteDataProvider? = nil,
-        router: Router? = nil
+        router: NavigationRouter? = nil
     ) {
         _changeTierNavigationVm = StateObject(
             wrappedValue: .init(
@@ -196,7 +196,7 @@ public struct ChangeTierNavigation: View {
     public var body: some View {
         Group {
             if changeTierNavigationVm.useOwnNavigation {
-                RouterHost(
+                hNavigationStack(
                     router: changeTierNavigationVm.router,
                     options: .extendedNavigationWidth,
                     tracking: ChangeTierTrackingType.changeTierLandingScreen
@@ -298,7 +298,7 @@ public struct ChangeTierNavigation: View {
                             changeTierVm: changeTierNavigationVm.vm,
                             changeTierNavigationVm: changeTierNavigationVm
                         )
-                        .configureTitle(L10n.offerUpdateSummaryTitle)
+                        .navigationTitle(L10n.offerUpdateSummaryTitle)
                         .withAlertDismiss()
                     }
                 } else {

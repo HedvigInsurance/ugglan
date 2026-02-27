@@ -7,7 +7,7 @@ public struct EditContractScreen: View {
 
     let editTypes: [EditType]
     let onSelectedType: (EditType) -> Void
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     public init(editTypes: [EditType], onSelectedType: @escaping (EditType) -> Void) {
         self.editTypes = editTypes

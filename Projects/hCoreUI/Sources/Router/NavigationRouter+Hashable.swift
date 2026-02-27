@@ -13,7 +13,6 @@ extension View {
 }
 
 private struct RouterDestinationModifier<D, C>: ViewModifier where D: Hashable, C: View {
-    @EnvironmentObject var router: Router
     let options: RouterDestionationOptions
 
     @ViewBuilder
@@ -25,14 +24,15 @@ private struct RouterDestinationModifier<D, C>: ViewModifier where D: Hashable, 
 
     func body(content: Content) -> some View {
         content
-            .onAppear { [weak router] in
-                router?.builders["\(D.self)"] = .init(
-                    builder: { item in
-                        let view = destination(item as! D)
-                        return AnyView(view)
-                    },
-                    options: options
-                )
+            .navigationDestination(for: D.self) { item in
+                destination(item)
+                    .modifier(
+                        NavigationStackDestinationOptionsModifier(
+                            options: options,
+                            trackingName: (item as? TrackingViewNameProtocol)?.nameForTracking,
+                            navigationTitle: (item as? NavigationTitleProtocol)?.navigationTitle
+                        )
+                    )
             }
     }
 }

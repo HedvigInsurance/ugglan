@@ -6,7 +6,7 @@ struct ClaimStatusCard: View {
     var claim: ClaimModel
     var enableTap: Bool
 
-    @EnvironmentObject var homeRouter: Router
+    @EnvironmentObject var homeRouter: NavigationRouter
 
     var body: some View {
         StatusCard(

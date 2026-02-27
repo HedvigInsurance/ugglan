@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct DeleteAccountView: View {
     @ObservedObject var vm: DeleteAccountViewModel
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
     let memberDetails: MemberDetails?
     public init(
@@ -17,7 +17,7 @@ public struct DeleteAccountView: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: router,
             options: .extendedNavigationWidth,
             tracking: DeleteDetentType.deleteAccountView

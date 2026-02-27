@@ -12,7 +12,7 @@ public struct InfoViewHolder: View {
     let description: String
     let type: InfoButtonType
     @StateObject var infoViewNavigationModel = InfoViewNavigationViewModel()
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     public init(title: String, description: String, type: InfoButtonType = .regular) {
         self.title = title

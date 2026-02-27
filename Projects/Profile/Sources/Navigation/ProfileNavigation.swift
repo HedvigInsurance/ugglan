@@ -15,7 +15,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isConfirmEmailPreferencesPresented = false
     @Published public var isCreateInsuranceEvidencePresented = false
     let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
-    public let profileRouter = Router()
+    public let profileRouter = NavigationRouter()
 
     public func pushToProfile() {
         Task {
@@ -45,7 +45,7 @@ public struct ProfileNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: profileNavigationViewModel.profileRouter,
             tracking: ProfileDetentType.profile
         ) {
@@ -84,7 +84,7 @@ public struct ProfileNavigation<Content: View>: View {
                     switch redirectType {
                     case let .claimsCard(claim):
                         ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                            .configureTitle(L10n.claimsYourClaim)
+                            .navigationTitle(L10n.claimsYourClaim)
                     }
                 }
         }
@@ -104,7 +104,7 @@ public struct ProfileNavigation<Content: View>: View {
 
             content: {
                 redirect(.pickLanguage)
-                    .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
+                    .navigationTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
                     .embededInNavigation(
                         options: .navigationType(type: .large),
                         tracking: ProfileDetentType.languagePicker

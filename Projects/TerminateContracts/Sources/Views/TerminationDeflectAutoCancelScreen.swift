@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct TerminationDeflectAutoCancelScreen: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     let model: TerminationFlowDeflectAutoCancelModel
     init(model: TerminationFlowDeflectAutoCancelModel) {
         self.model = model
@@ -68,6 +68,6 @@ struct TerminationDeflectAutoCancelScreen_Previews: PreviewProvider {
                 extraMessage: "extra message"
             )
         )
-        .environmentObject(Router())
+        .environmentObject(NavigationRouter())
     }
 }

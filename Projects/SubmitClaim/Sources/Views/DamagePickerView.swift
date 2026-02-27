@@ -40,6 +40,6 @@ struct DamagePickerView: View {
             )
         )
         .hFormContentPosition(.compact)
-        .configureTitle(L10n.Claims.Item.Screen.Damage.button)
+        .navigationTitle(L10n.Claims.Item.Screen.Damage.button)
     }
 }

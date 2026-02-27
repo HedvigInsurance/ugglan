@@ -11,7 +11,7 @@ public class PaymentsNavigationViewModel: ObservableObject {
 }
 
 public struct PaymentsNavigation: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
 
     public init(
@@ -21,9 +21,9 @@ public struct PaymentsNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: PaymentsDetentActions.paymentsView) {
+        hNavigationStack(router: router, tracking: PaymentsDetentActions.paymentsView) {
             PaymentsView()
-                .configureTitle(L10n.myPaymentTitle)
+                .navigationTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
                         .configureTitleView(title: paymentData.title, titleColor: paymentData.titleColor, topPadding: 0)
@@ -91,5 +91,5 @@ extension PaymentData: NavigationTitleProtocol {
 
 #Preview {
     PaymentsNavigation(paymentsNavigationVm: .init())
-        .environmentObject(Router())
+        .environmentObject(NavigationRouter())
 }

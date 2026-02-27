@@ -26,7 +26,7 @@ public struct ContractSelectView<T: Hashable>: View {
                 )
                 .hItemPickerAttributes([.singleSelect])
                 .hFormContentPosition(.compact)
-                .configureTitle(title)
+                .navigationTitle(title)
             } else {
                 ItemPickerScreen<T>(
                     config: itemPickerConfig
