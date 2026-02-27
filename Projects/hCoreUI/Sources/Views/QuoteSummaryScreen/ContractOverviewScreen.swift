@@ -3,7 +3,7 @@ import hCore
 
 struct ContractOverviewScreen: View {
     let contract: QuoteSummaryViewModel.ContractInfo
-    @State private var router = Router()
+    @State private var router = NavigationRouter()
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {

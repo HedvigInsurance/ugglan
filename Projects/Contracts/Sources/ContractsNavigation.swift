@@ -24,14 +24,14 @@ public struct ContractsNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: contractsNavigationVm.contractsRouter, tracking: self) {
+        hNavigationStack(router: contractsNavigationVm.contractsRouter, tracking: self) {
             Contracts(showTerminated: false)
                 .environmentObject(contractsNavigationVm)
-                .configureTitle(L10n.InsurancesTab.title)
+                .navigationTitle(L10n.InsurancesTab.title)
                 .routerDestination(for: Contract.self) { contract in
                     ContractDetail(id: contract.id)
                         .environmentObject(contractsNavigationVm)
-                        .configureTitle(contract.currentAgreement?.productVariant.displayName ?? "")
+                        .navigationTitle(contract.currentAgreement?.productVariant.displayName ?? "")
                 }
                 .routerDestination(for: ContractsRouterType.self) { type in
                     switch type {
@@ -92,7 +92,7 @@ public struct ContractsNavigation<Content: View>: View {
                     }
                 }
             )
-            .configureTitle(L10n.contractChangeInformationTitle)
+            .navigationTitle(L10n.contractChangeInformationTitle)
             .embededInNavigation(options: [.navigationType(type: .large)], tracking: ContractsDetentType.editContract)
         }
         .modally(presented: $contractsNavigationVm.isChangeAddressPresented) {
@@ -111,7 +111,7 @@ public struct ContractsNavigation<Content: View>: View {
             UpcomingChangesScreen(
                 agreement: agreement
             )
-            .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
+            .navigationTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
             .embededInNavigation(
                 options: [.navigationType(type: .large), .extendedNavigationWidth],
                 tracking: ContractsDetentType.upcomingChanges
@@ -136,7 +136,7 @@ public struct ContractsNavigation<Content: View>: View {
 
 @MainActor
 public class ContractsNavigationViewModel: ObservableObject {
-    public let contractsRouter = Router()
+    public let contractsRouter = NavigationRouter()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     @Published public var insurableLimit: InsurableLimits?

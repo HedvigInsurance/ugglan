@@ -4,7 +4,7 @@ import hCoreUI
 
 struct TravelCertificateProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var startDateViewModel: StartDateViewModel
     @EnvironmentObject var whoIsTravelingViewModel: WhoIsTravelingViewModel
 

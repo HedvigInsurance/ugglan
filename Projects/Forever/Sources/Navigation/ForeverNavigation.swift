@@ -57,8 +57,8 @@ extension ForeverRouterActions: TrackingViewNameProtocol {
 }
 
 public struct ForeverNavigation: View {
-    @EnvironmentObject var router: Router
-    private let changeCodeRouter = Router()
+    @EnvironmentObject var router: NavigationRouter
+    private let changeCodeRouter = NavigationRouter()
     @StateObject var foreverNavigationVm = ForeverNavigationViewModel()
     let useOwnNavigation: Bool
 
@@ -69,17 +69,16 @@ public struct ForeverNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(
+                hNavigationStack(
                     router: router,
-                    options: .extendedNavigationWidth,
                     tracking: ForeverNavigationDetentType.forever
                 ) {
                     ForeverView()
-                        .configureTitle(L10n.ReferralsInfoSheet.headline)
+                        .navigationTitle(L10n.ReferralsInfoSheet.headline)
                 }
             } else {
                 ForeverView()
-                    .configureTitle(L10n.ReferralsInfoSheet.headline)
+                    .navigationTitle(L10n.ReferralsInfoSheet.headline)
             }
         }
         .detent(
@@ -98,7 +97,7 @@ public struct ForeverNavigation: View {
                             }
                     }
                 }
-                .configureTitle(L10n.ReferralsChange.changeCode)
+                .navigationTitle(L10n.ReferralsChange.changeCode)
                 .embededInNavigation(
                     router: changeCodeRouter,
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -125,5 +124,5 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
 
 #Preview {
     ForeverNavigation(useOwnNavigation: true)
-        .environmentObject(Router())
+        .environmentObject(NavigationRouter())
 }

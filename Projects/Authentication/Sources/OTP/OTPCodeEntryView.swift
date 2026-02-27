@@ -5,7 +5,7 @@ import hCoreUI
 public struct OTPCodeEntryView: View {
     @StateObject private var vm = OTPCodeEntryViewModel()
     @EnvironmentObject var otpVM: OTPState
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     public init() {}
 
     public var body: some View {
@@ -91,7 +91,7 @@ public struct OTPCodeEntryView: View {
 class OTPCodeEntryViewModel: ObservableObject {
     private var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusCodeField: Bool? = true
-    var router: Router?
+    var router: NavigationRouter?
     func check(otpState: OTPState) {
         let code = otpState.code
         Task {

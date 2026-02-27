@@ -20,7 +20,7 @@ extension EuroBonusRouterType: TrackingViewNameProtocol {
 }
 
 public struct EuroBonusNavigation: View {
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     private let useOwnNavigation: Bool
     @StateObject var euroBonusNavigationViewModel = EuroBonusNavigationViewModel()
 
@@ -33,18 +33,18 @@ public struct EuroBonusNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(
+                hNavigationStack(
                     router: router,
                     options: .extendedNavigationWidth,
                     tracking: EuroBonusDetentType.euroBonus
                 ) {
                     EuroBonusView()
-                        .configureTitle(L10n.SasIntegration.title)
+                        .navigationTitle(L10n.SasIntegration.title)
                         .withDismissButton()
                 }
             } else {
                 EuroBonusView()
-                    .configureTitle(L10n.SasIntegration.title)
+                    .navigationTitle(L10n.SasIntegration.title)
             }
         }
         .environmentObject(euroBonusNavigationViewModel)
@@ -53,7 +53,7 @@ public struct EuroBonusNavigation: View {
             transitionType: .detent(style: [.height])
         ) {
             ChangeEuroBonusView()
-                .configureTitle(L10n.SasIntegration.enterYourNumber)
+                .navigationTitle(L10n.SasIntegration.enterYourNumber)
                 .routerDestination(for: EuroBonusRouterType.self, options: [.hidesBackButton]) { routerType in
                     switch routerType {
                     case .successChangeEuroBonus:

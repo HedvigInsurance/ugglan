@@ -13,14 +13,14 @@ private class ClaimsMainNavigationViewModel: ObservableObject {
 }
 
 struct ClaimsMainNavigation: View {
-    @StateObject var claimsRouter = Router()
+    @StateObject var claimsRouter = NavigationRouter()
     @StateObject private var claimsNavigationVm = ClaimsMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false
     @State private var measuredHeight: CGFloat = 0
     @EnvironmentObject var homeNavigationVm: HomeNavigationViewModel
 
     var body: some View {
-        RouterHost(router: claimsRouter, options: .extendedNavigationWidth, tracking: self) {
+        hNavigationStack(router: claimsRouter, options: .extendedNavigationWidth, tracking: self) {
             honestyPledge()
                 .captureHeight(in: $measuredHeight)
                 .onDisappear {

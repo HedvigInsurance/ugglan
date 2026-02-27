@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct DeleteRequestLoadingView: View {
     var profileService = ProfileService()
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     private var dismissAction: (ProfileNavigationDismissAction) -> Void
 
     public init(

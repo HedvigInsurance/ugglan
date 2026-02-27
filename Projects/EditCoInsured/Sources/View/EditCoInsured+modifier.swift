@@ -12,7 +12,7 @@ extension View {
 
 struct EditCoInsured: ViewModifier {
     @ObservedObject var vm: EditCoInsuredViewModel
-    @State var errorRouter = Router()
+    @State var errorRouter = NavigationRouter()
     func body(content: Content) -> some View {
         content
             .detent(

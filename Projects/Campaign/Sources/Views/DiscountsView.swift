@@ -7,7 +7,7 @@ import hCoreUI
 struct DiscountsView: View {
     let data: PaymentDiscountsData
     @PresentableStore var store: CampaignStore
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     var body: some View {
         hForm {

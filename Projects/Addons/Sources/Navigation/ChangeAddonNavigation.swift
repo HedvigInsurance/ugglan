@@ -44,7 +44,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var document: hPDFDocument?
     let input: ChangeAddonInput
 
-    let router = Router()
+    let router = NavigationRouter()
 
     init(
         input: ChangeAddonInput
@@ -74,7 +74,7 @@ public struct ChangeAddonNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: changeAddonNavigationVm.router,
             options: [.extendedNavigationWidth],
             tracking: ChangeAddonTrackingType.changeAddonScreen
@@ -93,7 +93,7 @@ public struct ChangeAddonNavigation: View {
                     ChangeAddonSummaryScreen(
                         changeAddonNavigationVm: changeAddonNavigationVm
                     )
-                    .configureTitle(L10n.offerUpdateSummaryTitle)
+                    .navigationTitle(L10n.offerUpdateSummaryTitle)
                     .withAlertDismiss()
                 case .addonLandingScreen:
                     ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)

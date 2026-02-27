@@ -144,7 +144,7 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     let onConfirmAction: (() -> Void)?
 
     init(

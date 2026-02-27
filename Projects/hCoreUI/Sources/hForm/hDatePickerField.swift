@@ -22,7 +22,7 @@ public struct hDatePickerField: View {
     @Environment(\.hFieldSize) var size
 
     @StateObject var datePickerNavigationModel = hDatePickerFieldNavigationModel()
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(

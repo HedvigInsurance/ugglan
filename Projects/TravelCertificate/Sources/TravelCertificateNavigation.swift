@@ -65,8 +65,8 @@ extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProto
 
 public struct TravelCertificateNavigation: View {
     @ObservedObject var vm: TravelCertificateNavigationViewModel
-    @StateObject var router = Router()
-    @StateObject var createNewRouter = Router()
+    @StateObject var router = NavigationRouter()
+    @StateObject var createNewRouter = NavigationRouter()
 
     private var infoButtonPlacement: ListToolBarPlacement
     private let useOwnNavigation: Bool
@@ -98,7 +98,7 @@ public struct TravelCertificateNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(
+                hNavigationStack(
                     router: router,
                     options: .extendedNavigationWidth,
                     tracking: TravelCertificateRouterActions.list(specifications: [])
@@ -179,7 +179,7 @@ public struct TravelCertificateNavigation: View {
         TravelCertificatesListScreen(
             infoButtonPlacement: infoButtonPlacement
         )
-        .configureTitle(L10n.TravelCertificate.cardTitle)
+        .navigationTitle(L10n.TravelCertificate.cardTitle)
     }
 
     @ViewBuilder

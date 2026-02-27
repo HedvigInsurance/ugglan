@@ -22,74 +22,47 @@ extension String: TrackingViewNameProtocol {
 }
 
 @MainActor
-public class Router: ObservableObject {
-    var routes = [AnyHashable]()
-    var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()
-    fileprivate var onPush:
-        (
-            (_ options: RouterDestionationOptions, _ view: AnyView, _ contentName: String, _ title: String?) ->
-                UIViewController?
-        )?
-    fileprivate var onPop: (() -> Void)?
-    fileprivate var onPopToRoot: (() -> Void)?
-    fileprivate var onPopAtIndex: ((Int) -> Void)?
-    fileprivate var onDismiss: ((_ withDismissingAll: Bool) -> Void)?
+public class NavigationRouter: ObservableObject {
+    @Published public var path = NavigationPath()
+    var onDismiss: ((_ withDismissingAll: Bool) -> Void)?
 
     public init() {}
 
-    var builders: [String: ContentBuilder<AnyView>] = [:]
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
-        let key = "\(T.self)"
-        let titleName: String? = {
-            guard let route = route as? NavigationTitleProtocol else {
-                return nil
-            }
-            return route.navigationTitle
-        }()
-        if let builder = builders[key], let view = builder.builder(route) {
-            _ = onPush?(builder.options, view, route.nameForTracking, titleName)
-            routes.append(key)
-        } else {
-            routesToBePushedAfterViewAppears.append(route)
-        }
+        path.append(route)
     }
 
     public func pop<T>(_ hash: T.Type) {
-        if let index = routes.lastIndex(of: "\(hash.self)") {
-            routes.remove(at: index)
-            onPopAtIndex?(index)
-        }
+        guard !path.isEmpty else { return }
+        path.removeLast()
     }
 
     public func pop<T>(_ view: T) where T: View {
-        if let index = routes.firstIndex(of: "\(type(of: view))") {
-            routes.remove(at: index)
-            onPopAtIndex?(index)
-        }
+        guard !path.isEmpty else { return }
+        path.removeLast()
     }
 
     public func pop() {
-        routes.removeLast()
-        onPop?()
+        guard !path.isEmpty else { return }
+        path.removeLast()
     }
 
     public func popToRoot() {
-        routes.removeAll()
-        onPopToRoot?()
+        path = NavigationPath()
     }
 
     public func dismiss(withDismissingAll: Bool = false) {
         onDismiss?(withDismissingAll)
     }
 
-    fileprivate func dismissPresentedVcFor(vc: UIViewController?) {
+    func dismissPresentedVcFor(vc: UIViewController?) {
         if let presentedViewController = vc?.presentedViewController {
             dismissPresentedVcFor(vc: presentedViewController)
             presentedViewController.dismiss(animated: false)
         }
     }
 
-    fileprivate func getTopPresentedVcFor(vc: UIViewController?) -> UIViewController? {
+    func getTopPresentedVcFor(vc: UIViewController?) -> UIViewController? {
         if let presentedViewController = vc?.presentedViewController {
             return getTopPresentedVcFor(vc: presentedViewController)
         }
@@ -97,203 +70,151 @@ public class Router: ObservableObject {
     }
 }
 
-struct ContentBuilder<Content: View> {
-    let builder: (AnyHashable) -> Content?
-    let options: RouterDestionationOptions
-    init(builder: @escaping (AnyHashable) -> Content?, options: RouterDestionationOptions) {
-        self.builder = builder
-        self.options = options
-    }
-}
+// MARK: - NavigationStack-based host
 
-public struct RouterHost<Screen: View>: View {
-    let router: Router
+public struct hNavigationStack<Screen: View>: View {
+    @ObservedObject var router: NavigationRouter
     let options: RouterOptions
     let tracking: TrackingViewNameProtocol
     @ViewBuilder var initialView: () -> Screen
 
     public init(
-        router: Router,
+        router: NavigationRouter,
         options: RouterOptions = [],
         tracking: TrackingViewNameProtocol,
         @ViewBuilder initial: @escaping () -> Screen
     ) {
-        initialView = initial
         self.router = router
         self.options = options
         self.tracking = tracking
+        self.initialView = initial
     }
 
     public var body: some View {
-        RouterWrappedValue(router: router, options: options, tracking: tracking, initial: initialView)
-            .ignoresSafeArea()
-            .environmentObject(router)
-    }
-}
-
-private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
-    let router: Router
-    let options: RouterOptions
-    let tracking: TrackingViewNameProtocol?
-    var initialView: () -> Screen
-
-    init(
-        router: Router,
-        options: RouterOptions = [],
-        tracking: TrackingViewNameProtocol?,
-        @ViewBuilder initial: @escaping () -> Screen
-    ) {
-        initialView = initial
-        self.router = router
-        self.tracking = tracking
-        self.options = options
-    }
-
-    public func makeUIViewController(context _: Context) -> UINavigationController {
-        let navigation: hNavigationBaseController = {
-            let extendedNavigationWidth = options.contains(.extendedNavigationWidth)
-            if options.contains(.largeNavigationBar) {
-                return hNavigationControllerWithLargerNavBar(extendedNavigationWidth: extendedNavigationWidth)
-            } else if options.contains(.navigationBarWithProgress) {
-                return hNavigationController(additionalHeight: 4, extendedNavigationWidth: extendedNavigationWidth)
-            }
-            return hNavigationController(extendedNavigationWidth: extendedNavigationWidth)
-        }()
-        let controller = hHostingController(
-            rootView: initialView().environmentObject(router),
-            contentName: tracking?.nameForTracking ?? "\(Screen.self)"
-        )
-        if isLiquidGlassEnabled {
-            controller.view.backgroundColor = .clear
-        }
-        navigation.setViewControllers(
-            [controller],
-            animated: false
-        )
-        if options.contains(.navigationBarHidden) {
-            navigation.setNavigationBarHidden(true, animated: true)
-        }
-        router.onPush = { [weak router, weak navigation] options, view, name, title in
-            guard let router = router else { return nil }
-            let vc = hHostingController(rootView: view.environmentObject(router), contentName: name)
-            vc.onViewWillLayoutSubviews = { [weak vc] in
-                guard let vc = vc else { return }
-                if options.contains(.hidesBackButton) {
-                    vc.navigationItem.setHidesBackButton(true, animated: true)
-                }
-            }
-            if let title {
-                vc.title = title
-            }
-            vc.onViewWillAppear = { [weak vc] in
-                if options.contains(.hidesBottomBarWhenPushed) {
-                    if let tabBarController = vc?.tabBarController {
-                        tabBarController.tabBar.isHidden = true
-                        UIView.transition(
-                            with: tabBarController.tabBar,
-                            duration: 0.35,
-                            options: .transitionCrossDissolve,
-                            animations: nil
-                        )
-                    }
-                }
-            }
-
-            vc.onViewWillDisappear = { [weak vc] in
-                if options.contains(.hidesBottomBarWhenPushed) {
-                    if let tabBarController = vc?.tabBarController {
-                        tabBarController.tabBar.isHidden = false
-                        UIView.transition(
-                            with: tabBarController.tabBar,
-                            duration: 0.35,
-                            options: .transitionCrossDissolve,
-                            animations: nil
-                        )
-                    }
-                }
-            }
-
-            vc.onViewDidLayoutSubviews = { [weak vc] in
-                guard let vc = vc else { return }
-                vc.sheetPresentationController?
-                    .animateChanges {
-                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                            .invalidateDetents()
-                    }
-            }
-
-            navigation?
-                .pushViewController(
-                    vc,
-                    animated: true
+        NavigationStack(path: $router.path) {
+            initialView()
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar(
+                    options.contains(.navigationBarHidden) ? .hidden : .visible,
+                    for: .navigationBar
                 )
-            if options.contains(.hidesBackButton) {
-                vc.navigationItem.setHidesBackButton(true, animated: true)
+                .trackNavigation(name: tracking.nameForTracking)
+        }
+        .introspect(.navigationStack, on: .iOS(.v16...)) { navController in
+            hNavigationStack.applyCustomStyling(to: navController, options: options)
+            hNavigationStack.wireUpDismiss(navController: navController, router: router)
+        }
+        .environmentObject(router)
+    }
+
+    private static func applyCustomStyling(to navController: UINavigationController, options: RouterOptions) {
+        if options.contains(.navigationBarHidden) {
+            navController.setNavigationBarHidden(true, animated: false)
+        }
+
+        if options.contains(.largeNavigationBar) {
+            object_setClass(navController.navigationBar, LargeNavBar.self)
+            if options.contains(.extendedNavigationWidth) {
+                (navController.navigationBar as? LargeNavBar)?.extendedNavigationWidth = true
             }
-            return vc
-        }
-
-        router.onPop = { [weak navigation] in
-            navigation?.popViewController(animated: true)
-        }
-
-        router.onPopToRoot = { [weak navigation] in
-            navigation?.popToRootViewController(animated: true)
-        }
-
-        router.onPopAtIndex = { [weak navigation] index in
-            if let viewControllers = navigation?.viewControllers {
-                var newVCs = viewControllers
-                newVCs.remove(at: index + 1)
-                navigation?.setViewControllers(newVCs, animated: true)
+            navController.additionalSafeAreaInsets.top =
+                hNavigationControllerWithLargerNavBar.navigationBarHeight - 44
+        } else {
+            object_setClass(navController.navigationBar, NavBar.self)
+            if options.contains(.extendedNavigationWidth) {
+                (navController.navigationBar as? NavBar)?.extendedNavigationWidth = true
+            }
+            if options.contains(.navigationBarWithProgress) {
+                (navController.navigationBar as? NavBar)?.additionalHeight = 4
+                navController.additionalSafeAreaInsets.top = 4
             }
         }
-        navigation.onDeinit = { [weak router] in
-            Task { @MainActor in
-                router?.builders.removeAll()
-            }
-        }
+        navController.navigationBar.setNeedsLayout()
+    }
 
-        router.onDismiss = { [weak navigation, weak router] withDismissingAll in
-            /// If we have presentedView controllers,
-            /// take the screenshot of top one and add it to navigation to avoid odd dismissing
-            /// dismiss presented view controllers without animations
+    private static func wireUpDismiss(navController: UINavigationController, router: NavigationRouter) {
+        router.onDismiss = { [weak navController, weak router] withDismissingAll in
             if withDismissingAll {
-                if navigation?.presentedViewController != nil,
-                    let vc = router?.getTopPresentedVcFor(vc: navigation),
+                if navController?.presentedViewController != nil,
+                    let vc = router?.getTopPresentedVcFor(vc: navController),
                     let viewToAdd = vc.view.snapshotView(afterScreenUpdates: false)
                 {
-                    navigation?.view.addSubview(viewToAdd)
-                    router?.dismissPresentedVcFor(vc: navigation)
+                    navController?.view.addSubview(viewToAdd)
+                    router?.dismissPresentedVcFor(vc: navController)
                 }
             }
-            navigation?.dismiss(animated: true)
+            navController?.dismiss(animated: true)
         }
-
-        Task { [weak router] in
-            for item in router?.routesToBePushedAfterViewAppears ?? [] {
-                router?.push(item)
-            }
-            router?.routesToBePushedAfterViewAppears = []
-        }
-
-        return navigation
     }
-
-    public func updateUIViewController(_: UINavigationController, context _: Context) {}
-    public typealias UIViewControllerType = UINavigationController
 }
 
-public struct ViewRouterOptions: OptionSet {
-    public let rawValue: Int
-    public init(rawValue: Int) {
-        self.rawValue = rawValue
+// MARK: - NavigationStack destination modifiers
+
+struct NavigationStackDestinationOptionsModifier: ViewModifier {
+    let options: RouterDestionationOptions
+    let trackingName: String?
+    let navigationTitle: String?
+
+    func body(content: Content) -> some View {
+        content
+            .navigationBarBackButtonHidden(options.contains(.hidesBackButton))
+            .toolbar(
+                options.contains(.hidesBottomBarWhenPushed) ? .hidden : .automatic,
+                for: .tabBar
+            )
+            .ifLet(navigationTitle) { view, title in
+                view.navigationTitle(title)
+            }
+            .trackNavigation(name: trackingName)
+    }
+}
+
+private struct NavigationTrackingModifier: ViewModifier {
+    let name: String?
+    private let key = UUID().uuidString
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                if let name = name?.getTrackingViewName() {
+                    logStartView(key, name)
+                }
+            }
+            .onDisappear {
+                if name?.getTrackingViewName() != nil {
+                    logStopView(key)
+                }
+            }
+    }
+}
+
+extension String {
+    fileprivate func getTrackingViewName() -> String? {
+        if lowercased().contains("anyview") || isEmpty || contains("Navigation") {
+            return nil
+        }
+        return self
+    }
+}
+
+extension View {
+    func trackNavigation(name: String?) -> some View {
+        modifier(NavigationTrackingModifier(name: name))
+    }
+
+    @ViewBuilder
+    func ifLet<T, Content: View>(_ value: T?, @ViewBuilder transform: (Self, T) -> Content) -> some View {
+        if let value {
+            transform(self, value)
+        } else {
+            self
+        }
     }
 }
 
 extension View {
     public func embededInNavigation(
-        router: Router? = nil,
+        router: NavigationRouter? = nil,
         options: RouterOptions = [],
         tracking: TrackingViewNameProtocol
     ) -> some View {
@@ -302,11 +223,11 @@ extension View {
 }
 
 private struct EmbededInNavigation: ViewModifier {
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     let options: RouterOptions
     let tracking: TrackingViewNameProtocol
 
-    init(options: RouterOptions, tracking: TrackingViewNameProtocol, router: Router? = nil) {
+    init(options: RouterOptions, tracking: TrackingViewNameProtocol, router: NavigationRouter? = nil) {
         if let router {
             _router = StateObject(wrappedValue: router)
         }
@@ -315,26 +236,14 @@ private struct EmbededInNavigation: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        RouterHost(router: router, options: options, tracking: tracking) {
+        hNavigationStack(router: router, options: options, tracking: tracking) {
             content
                 .environmentObject(router)
         }
-        .ignoresSafeArea()
     }
 }
 
 extension View {
-    @MainActor public func configureTitle(_ title: String) -> some View {
-        introspect(.viewController, on: .iOS(.v13...)) { vc in
-            let fadeTextAnimation = CATransition()
-            fadeTextAnimation.duration = 0.2
-            fadeTextAnimation.type = .fade
-
-            vc.navigationController?.navigationBar.layer.add(fadeTextAnimation, forKey: "fadeText")
-            vc.navigationItem.title = title
-        }
-    }
-
     @ViewBuilder
     @MainActor public func configureTitleView(
         title: String,

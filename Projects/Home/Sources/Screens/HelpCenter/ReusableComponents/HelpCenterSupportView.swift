@@ -4,10 +4,10 @@ import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @ObservedObject var router: Router
+    @ObservedObject var router: NavigationRouter
 
     init(
-        router: Router
+        router: NavigationRouter
     ) {
         self.router = router
     }
@@ -83,5 +83,5 @@ struct SupportView: View {
 #Preview {
     let locale: Localization.Locale = .sv_SE
     Localization.Locale.currentLocale = .init(locale)
-    return SupportView(router: Router())
+    return SupportView(router: NavigationRouter())
 }

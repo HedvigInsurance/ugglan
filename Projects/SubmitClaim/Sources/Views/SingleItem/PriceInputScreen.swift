@@ -6,7 +6,7 @@ import hCoreUI
 struct PriceInputScreen: View {
     @State var purchasePrice: String = ""
     @State var type: ClaimsFlowSingleItemFieldType? = .purchasePrice
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     let currency: String

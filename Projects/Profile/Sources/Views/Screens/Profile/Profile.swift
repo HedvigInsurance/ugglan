@@ -82,7 +82,7 @@ public struct ProfileView: View {
         .onPullToRefresh {
             await store.sendAsync(.fetchProfileState)
         }
-        .configureTitle(L10n.profileTitle)
+        .navigationTitle(L10n.profileTitle)
     }
 
     @ViewBuilder

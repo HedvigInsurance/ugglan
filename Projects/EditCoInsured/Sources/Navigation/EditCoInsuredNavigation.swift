@@ -77,7 +77,7 @@ public struct EditCoInsuredNavigation: View {
     let config: InsuredPeopleConfig
     @State var openSpecificScreen: EditCoInsuredScreenType
     @ObservedObject private var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
@@ -90,7 +90,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: openSpecificScreen.getTrackingType(for: config)
@@ -163,7 +163,7 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
         )
-        .configureTitle(L10n.coinsuredEditTitle)
+        .navigationTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }
 
@@ -180,12 +180,12 @@ public struct EditCoInsuredNavigation: View {
             editCoInsuredNavigation: editCoInsuredNavigationVm
         )
         .environmentObject(editCoInsuredNavigationVm)
-        .configureTitle(L10n.contractAddConisuredInfo)
+        .navigationTitle(L10n.contractAddConisuredInfo)
     }
 
     func openCoInsuredSelectScreen(contractId: String) -> some View {
         CoInsuredSelectScreen(contractId: contractId, editCoInsuredNavigation: editCoInsuredNavigationVm)
-            .configureTitle(L10n.contractAddConisuredInfo)
+            .navigationTitle(L10n.contractAddConisuredInfo)
     }
 
     func openProgress(showSuccess: Bool) -> some View {
@@ -203,7 +203,7 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .delete
         )
-        .configureTitle(L10n.coinsuredEditTitle)
+        .navigationTitle(L10n.coinsuredEditTitle)
     }
 
     func coInsuredInput(coInsuredInputModel: CoInsuredInputModel) -> some View {
@@ -215,7 +215,7 @@ public struct EditCoInsuredNavigation: View {
 
 public struct EditCoInsuredSelectInsuranceNavigation: View {
     let configs: [InsuredPeopleConfig]
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
     @StateObject var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel(config: .init())
 
@@ -226,7 +226,11 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
+        hNavigationStack(
+            router: router,
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
+            tracking: self
+        ) {
             openSelectInsurance()
         }
     }
@@ -249,7 +253,7 @@ extension EditCoInsuredSelectInsuranceNavigation: TrackingViewNameProtocol {
 
 public struct EditCoInsuredAlertNavigation: View {
     let config: InsuredPeopleConfig
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
@@ -259,7 +263,11 @@ public struct EditCoInsuredAlertNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
+        hNavigationStack(
+            router: router,
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
+            tracking: self
+        ) {
             openMissingCoInsuredAlert()
         }
     }

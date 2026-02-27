@@ -118,10 +118,9 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
             content
                 .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
                     if let nav = vc.navigationController {
-                        if self.navVm.nav != nav {
-                            self.navVm.nav = nav
-                            setNavigation(vc)
-                        }
+                        self.navVm.nav = nav
+                        self.navVm.viewController = vc
+                        setNavigation(vc)
                     }
                 }
                 .onChange(of: types) { _ in
@@ -146,16 +145,16 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     }
 
     private func setNavigation(_ vc: UIViewController? = nil) {
-        if let leading, let vc = vc, showLeading {
-            setView(for: leading, vc: vc, placement: .leading)
+        let targetVC = vc ?? navVm.viewController
+        if let leading, let targetVC, showLeading {
+            setView(for: leading, vc: targetVC, placement: .leading)
         }
-        if let trailing, let vc = vc, showTrailing {
-            setView(for: trailing, vc: vc, placement: .trailing)
-        } else {
-            if let vc = navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
-                let viewToInject = ToolbarButtonView(types: $types, placement: placement, action: action)
-                setView(for: viewToInject, vc: vc, placement: placement)
-            }
+        if let trailing, let targetVC, showTrailing {
+            setView(for: trailing, vc: targetVC, placement: .trailing)
+        }
+        if !showLeading && !showTrailing, let targetVC {
+            let viewToInject = ToolbarButtonView(types: $types, placement: placement, action: action)
+            setView(for: viewToInject, vc: targetVC, placement: placement)
         }
     }
 
@@ -174,6 +173,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
 
 class ToolbarButtonsViewModifierViewModel: ObservableObject {
     weak var nav: UINavigationController?
+    weak var viewController: UIViewController?
 }
 
 extension TimeInterval {

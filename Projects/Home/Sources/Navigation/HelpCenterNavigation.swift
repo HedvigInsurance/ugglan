@@ -18,7 +18,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-    public let router = Router()
+    public let router = NavigationRouter()
 
     struct QuickActions {
         var editContractActions: EditInsuranceActionsWrapper?
@@ -72,7 +72,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: helpCenterVm.router,
             options: .extendedNavigationWidth,
             tracking: HelpCenterDetentRouterType.startView
@@ -92,7 +92,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             }
             .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                 InboxView()
-                    .configureTitle(L10n.chatConversationInbox)
+                    .navigationTitle(L10n.chatConversationInbox)
             }
         }
         .ignoresSafeArea()
@@ -101,7 +101,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             transitionType: .detent(style: [.large])
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
-                .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+                .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
                 .embededInNavigation(
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -144,7 +144,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         handle(quickAction: selectedType.asQuickAction)
                     }
                 )
-                .configureTitle(L10n.hcQuickActionsEditInsuranceTitle)
+                .navigationTitle(L10n.hcQuickActionsEditInsuranceTitle)
                 .embededInNavigation(
                     options: [.navigationType(type: .large)],
                     tracking: HelpCenterDetentRouterType.editYourInsurance

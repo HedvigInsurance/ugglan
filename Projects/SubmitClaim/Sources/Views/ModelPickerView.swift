@@ -4,10 +4,14 @@ import hCoreUI
 
 struct ModelPickerView: View {
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
-    @ObservedObject var router: Router
+    @ObservedObject var router: NavigationRouter
     var itemPickerConfig: ItemConfig<ClaimFlowItemModelOptionModel>
 
-    init(router: Router, claimsNavigationVm: SubmitClaimNavigationViewModel, brand: ClaimFlowItemBrandOptionModel) {
+    init(
+        router: NavigationRouter,
+        claimsNavigationVm: SubmitClaimNavigationViewModel,
+        brand: ClaimFlowItemBrandOptionModel
+    ) {
         self.router = router
         self.claimsNavigationVm = claimsNavigationVm
         let step = claimsNavigationVm.singleItemModel
@@ -57,7 +61,7 @@ struct ModelPickerView: View {
 
 #Preview {
     ModelPickerView(
-        router: Router(),
+        router: NavigationRouter(),
         claimsNavigationVm: .init(),
         brand: .init(displayName: "displayName", itemBrandId: "brandId", itemTypeId: "type")
     )

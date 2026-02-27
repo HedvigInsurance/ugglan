@@ -85,7 +85,8 @@ class TerminationRedirectHandler {
 }
 
 class TerminationStepHandler {
-    @MainActor func route(step: TerminationContractStep, to router: Router) -> (model: Any?, progress: Float?) {
+    @MainActor func route(step: TerminationContractStep, to router: NavigationRouter) -> (model: Any?, progress: Float?)
+    {
         switch step {
         case let .setTerminationDateStep(model):
             router.push(TerminationFlowRouterActions.terminationDate(model: model))
@@ -180,7 +181,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         }
     }
 
-    let router = Router()
+    let router = NavigationRouter()
 
     private let terminateContractsService = TerminateContractsService()
 
@@ -420,7 +421,7 @@ struct TerminationFlowNavigation: View {
     }
 
     var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: vm.router,
             options: [
                 .navigationType(type: .withProgress),

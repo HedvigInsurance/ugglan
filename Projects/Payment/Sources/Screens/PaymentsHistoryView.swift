@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 public struct PaymentHistoryView: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @PresentableStore var store: PaymentStore
     @StateObject var vm = PaymentsHistoryViewModel()
 

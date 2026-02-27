@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct HelpCenterQuestionNavigation: View {
-    private let router = Router()
+    private let router = NavigationRouter()
     private let question: FAQModel
 
     public init(question: FAQModel) {
@@ -12,12 +12,12 @@ public struct HelpCenterQuestionNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large)], tracking: question) {
+        hNavigationStack(router: router, options: [.navigationType(type: .large)], tracking: question) {
             HelpCenterQuestionView(question: question, router: router)
                 .withDismissButton()
                 .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                     InboxView()
-                        .configureTitle(L10n.chatConversationInbox)
+                        .navigationTitle(L10n.chatConversationInbox)
                 }
         }
     }
@@ -25,10 +25,10 @@ public struct HelpCenterQuestionNavigation: View {
 
 struct HelpCenterQuestionView: View {
     private var question: FAQModel
-    @ObservedObject var router: Router
+    @ObservedObject var router: NavigationRouter
     init(
         question: FAQModel,
-        router: Router
+        router: NavigationRouter
     ) {
         self.question = question
         self.router = router
@@ -88,6 +88,6 @@ struct HelpCenterQuestionView: View {
             answer:
                 "The total amount of your insurance cost is deducted retrospectively on the 27th of each month, for the current month. \n\nYour insurance starts on 1 June. The first dawn takes place on June 27, for the entire month of June. This means that you pay 27 days in arrears and 3 days in advance. \n\nThe insurance is valid even if the first payment has not been received. \n\nGo to Payments to view your full history"
         ),
-        router: Router()
+        router: NavigationRouter()
     )
 }
