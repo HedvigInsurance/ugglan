@@ -46,6 +46,9 @@
 "ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.";
 "ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.";
 "ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "Vad är Reseskydd Plus?";
+"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Välj vad du vill göra med det här tillägget.";
+"ADDON_FLOW_UPGRADE_ADDON" = "Uppgradera tillägg";
+"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "Du kan uppgradera ditt tillägg för att utöka skyddet. Detta tillägg kan bara tas bort när din försäkring förnyas eller sägs upp.";
 "ADDON_LEARN_MORE_LABEL" = "Se vad som ingår";
 "ADDON_REMOVE_CANCEL_BUTTON" = "Behåll nuvarande skydd";
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Avsluta %1$@";
@@ -593,7 +596,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "";
 "REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring";
-"REMOVE_ADDON_DESCRIPTION_RENEWAL" = "Du kan bara ta bort det tilläget under förnyelseperiod";
+"REMOVE_ADDON_DESCRIPTION_RENEWAL" = "Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Ta bort tillägg";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "Den här ändringar börjar gälla %@.";

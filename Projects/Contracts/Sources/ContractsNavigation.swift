@@ -111,7 +111,7 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
         }
-        .handleAddons(input: $contractsNavigationVm.isAddonPresented)
+        .handleAddons(input: $contractsNavigationVm.isAddonPresented, options: .constant([]))
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             transitionType: .detent(style: [.height])
@@ -127,9 +127,9 @@ public struct ContractsNavigation<Content: View>: View {
             .environmentObject(contractsNavigationVm)
         }
         .handleRemoveAddons(input: $contractsNavigationVm.isRemoveAddonPresented)
-        .detent(item: $contractsNavigationVm.isRemoveAddonIntentPresented) { removeAddonIntent in
-            RemoveAddonBottomSheet(
-                removeAddonIntent: removeAddonIntent,
+        .detent(item: $contractsNavigationVm.addonActionPresented) { addonAction in
+            AddonActionSheet(
+                addonAction: addonAction,
                 contractsNavigationVm: contractsNavigationVm
             )
         }
@@ -164,7 +164,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var changeTierInput: ChangeTierInput?
     @Published public var isAddonPresented: ChangeAddonInput?
     @Published public var isRemoveAddonPresented: RemoveAddonInput?
-    @Published public var isRemoveAddonIntentPresented: RemoveAddonIntent?
+    @Published public var addonActionPresented: AddonAction?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
