@@ -30,7 +30,7 @@ class MovingFlowQuoteManager {
             contract: contractInfos,
             activationDate: movingFlowQuotes.first?.startDate,
             noticeInfo: contractInfos.count > 1 ? L10n.changeAddressOtherInsurancesInfoText : nil,
-            totalPrice: .comparison(old: totalPremium.net, new: totalPremium.gross)
+            totalPrice: .comparison(old: totalPremium.gross, new: totalPremium.net)
         )
 
         vm.onConfirmClick = { [weak router, weak viewModel] in
