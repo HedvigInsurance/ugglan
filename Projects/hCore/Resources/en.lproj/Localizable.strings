@@ -291,6 +291,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_FIRST_NAME" = "First name";
 "CONTRACT_LAST_NAME" = "Last name";
 "CONTRACT_NO_INFORMATION" = "No information available";
+"CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE" = "Activates %1$@";
+"CONTRACT_OVERVIEW_ADDON_ADD" = "Add";
+"CONTRACT_OVERVIEW_ADDON_ENDS_DATE" = "End %1$@";
+"CONTRACT_OVERVIEW_ADDON_IS_ADDED" = "Added";
 "CONTRACT_PERSONAL_IDENTITY" = "Personal identity no.";
 "CONTRACT_REMOVE_COINSURED_CONFIRMATION" = "Are you sure you want to \nremove co-insured?";
 "CONTRACT_SSN_FETCH_INFO" = "Fetch info";
@@ -585,9 +589,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REFERRAL_SMS_MESSAGE" = "Hey! Get Hedvig using my link and we both get %1$@ per month discount on the monthly cost. Follow the link: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inactive";
 "REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES" = "None of your insurances have addons you can remove.";
+"REMOVE_ADDON_BUTTON_TITLE" = "Remove addon";
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Yes, remove";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "This change will take effect from %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "Confirm removing selected addons";
+"REMOVE_ADDON_DESCRIPTION" = "This add-on insurance is active and applies together with your selected insurance";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Remove addon";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "This change will take effect from %@.";
@@ -669,7 +675,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUBMIT_CLAIM_TOWING_A2" = "As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.";
 "SUBMIT_CLAIM_TOWING_A3" = "You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.";
 "SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Read more";
-"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 020 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
+"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 20 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
 "SUBMIT_CLAIM_TOWING_INFO_LABEL" = "You need to contact Assistancekåren directly to receive further assistance";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "Call now";
 "SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL" = "Available 24/7";

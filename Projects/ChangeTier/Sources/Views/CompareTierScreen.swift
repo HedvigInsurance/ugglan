@@ -320,8 +320,7 @@ extension Perils {
     return CompareTierScreen(vm: vm)
         .environmentObject(
             ChangeTierNavigationViewModel(
-                changeTierContractsInput: .init(source: .changeTier, contracts: []),
-                onChangedTier: {}
+                changeTierContractsInput: .init(source: .changeTier, contracts: [])
             )
         )
 }

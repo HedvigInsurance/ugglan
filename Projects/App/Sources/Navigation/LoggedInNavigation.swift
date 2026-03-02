@@ -208,6 +208,7 @@ class PushNotificationHandler {
 @MainActor
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
+    @InjectObservableObject private var featureFlags: FeatureFlags
 
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
@@ -267,7 +268,11 @@ class DeepLinkHandler {
             }
         case .submitClaim:
             viewModel?.selectedTab = 0
-            viewModel?.homeNavigationVm.isSubmitClaimPresented = true
+            if featureFlags.isNewClaimFlowEnabled {
+                viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
+            } else {
+                viewModel?.homeNavigationVm.isSubmitClaimPresented = true
+            }
         case .claimChat:
             handleChatClaimDeeplink(url)
         }
@@ -489,9 +494,7 @@ struct LoggedInNavigation: View {
             case let .pdf(document):
                 PDFPreview(document: document)
             case let .changeTier(input):
-                ChangeTierNavigation(input: input) {
-                    fetchContracts()
-                }
+                ChangeTierNavigation(input: input)
             case let .addon(input: input):
                 ChangeAddonNavigation(input: input)
             }
@@ -929,6 +932,13 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
+            selector: #selector(tierChanged),
+            name: .tierChanged,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
             selector: #selector(claimCreated),
             name: .claimCreated,
             object: nil
@@ -941,6 +951,17 @@ class LoggedInNavigationViewModel: ObservableObject {
             await store.sendAsync(.fetchAddonBanner)
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
+    }
+
+    @objc func tierChanged() {
+        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        Task {
+            await (
+                crossSellStore.sendAsync(.fetchAddonBanner),
+                contractStore.sendAsync(.fetchContracts)
+            )
+        }
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

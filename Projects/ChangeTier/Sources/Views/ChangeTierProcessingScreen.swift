@@ -15,7 +15,6 @@ struct ChangeTierProcessingView: View {
                 vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
-                changeTierNavigationVm.onChangedTier()
                 changeTierNavigationVm.router.dismiss()
             },
             state: $vm.viewState

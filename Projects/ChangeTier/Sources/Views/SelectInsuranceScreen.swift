@@ -75,8 +75,7 @@ struct SelectInsuranceScreen: View {
                         contractExposureName: "exposureName"
                     )
                 ]
-            ),
-            onChangedTier: {}
+            )
         )
     )
 }
