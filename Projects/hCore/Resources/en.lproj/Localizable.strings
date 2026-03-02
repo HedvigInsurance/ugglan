@@ -47,9 +47,9 @@
 "ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "Travel Insurance Plus is our extended travel insurance, for extra coverage on your trip.";
 "ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.";
 "ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "What is Travel Insurance Plus?";
-"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Select what you'd like to do with this addon.";
-"ADDON_FLOW_UPGRADE_ADDON" = "Upgrade addon";
-"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "You can upgrade your addon to extend the coverage. This addon can only be removed when your insurance is renewed or cancelled.";
+"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Select an option";
+"ADDON_FLOW_UPGRADE_ADDON" = "Extend coverage";
+"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "You can extend the coverage of this addon. It can only be removed when your insurance is renewed or cancelled.";
 "ADDON_LEARN_MORE_LABEL" = "See what's included";
 "ADDON_REMOVE_CANCEL_BUTTON" = "Keep current coverage";
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Cancel %1$@";

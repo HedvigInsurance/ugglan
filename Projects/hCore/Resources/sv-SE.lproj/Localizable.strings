@@ -47,9 +47,9 @@
 "ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.";
 "ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.";
 "ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "Vad är Reseskydd Plus?";
-"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Välj vad du vill göra med det här tillägget.";
-"ADDON_FLOW_UPGRADE_ADDON" = "Uppgradera tillägg";
-"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "Du kan uppgradera ditt tillägg för att utöka skyddet. Detta tillägg kan bara tas bort när din försäkring förnyas eller sägs upp.";
+"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Välj ett alternativ";
+"ADDON_FLOW_UPGRADE_ADDON" = "Utöka skydd";
+"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "Du kan utöka skyddet för det här tillägget. Det kan tas bort vid förnyelse eller uppsägning av försäkringen.";
 "ADDON_LEARN_MORE_LABEL" = "Se vad som ingår";
 "ADDON_REMOVE_CANCEL_BUTTON" = "Behåll nuvarande skydd";
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Avsluta %1$@";
@@ -376,7 +376,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "FIELD_EXTRA_BUIDLINGS_CARPORT_LABEL" = "Carport";
 "FIELD_EXTRA_BUIDLINGS_FRIGGEBOD_LABEL" = "Friggebod";
 "FIELD_EXTRA_BUIDLINGS_GARAGE_LABEL" = "Garage";
-"FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL" = "Gazebo";
+"FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL" = "Lusthus";
 "FIELD_EXTRA_BUIDLINGS_GREENHOUSE_LABEL" = "Växthus";
 "FIELD_EXTRA_BUIDLINGS_GUESTHOUSE_LABEL" = "Gästhus";
 "FIELD_EXTRA_BUIDLINGS_OTHER_LABEL" = "Annat";

@@ -44,9 +44,12 @@ struct CrossSellPillowComponent: View {
                 }
             }
             VStack {
-                hText(crossSell.title)
-                hText(crossSell.description)
-                    .foregroundColor(hTextColor.Translucent.secondary)
+                hSection {
+                    hText(crossSell.title)
+                    hText(crossSell.description)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
+                .sectionContainerStyle(.transparent)
             }
             .multilineTextAlignment(.center)
         }
