@@ -119,8 +119,9 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                         .sink { _ in
                         } receiveValue: { [weak vm] keyboardHeight in
-                            if vm?.vc?.presentedViewController == nil {
-                            if vm?.vc?.presentedViewController == nil || vm?.vc?.presentedViewController?.isKind(of: UISearchController.self) == true {
+                            if vm?.vc?.presentedViewController == nil
+                                || vm?.vc?.presentedViewController?.isKind(of: UISearchController.self) == true
+                            {
                                 vm?.keyboardVisible = keyboardHeight != nil
                                 ignoreKeyboard = false
                             } else {
