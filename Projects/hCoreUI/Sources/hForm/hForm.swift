@@ -29,7 +29,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         ZStack {
             VStack(spacing: 0) {
                 scrollView
-                if !vm.keyboardVisible, verticalSizeClass == .regular {
+                if verticalSizeClass == .regular {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                 }
@@ -120,6 +120,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .sink { _ in
                         } receiveValue: { [weak vm] keyboardHeight in
                             if vm?.vc?.presentedViewController == nil {
+                            if vm?.vc?.presentedViewController == nil || vm?.vc?.presentedViewController?.isKind(of: UISearchController.self) == true {
                                 vm?.keyboardVisible = keyboardHeight != nil
                                 ignoreKeyboard = false
                             } else {
@@ -164,7 +165,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 content
                 getBottomAttachedView
             }
-            if vm.keyboardVisible || verticalSizeClass == .compact {
+            if verticalSizeClass == .compact {
                 getAlwaysVisibleBottomView
                     .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }

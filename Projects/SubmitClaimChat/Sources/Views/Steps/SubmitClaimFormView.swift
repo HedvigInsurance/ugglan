@@ -29,7 +29,7 @@ struct SubmitClaimFormView: View {
             transitionType: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
-                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+                .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.datePicker)
         }
         .detent(
             item: $viewModel.isSelectItemPresented,
@@ -64,36 +64,42 @@ struct SubmitClaimFormView: View {
             )
             .hItemPickerAttributes(model.attributes)
             .navigationTitle(model.title)
-            .embededInNavigation(options: .largeNavigationBar, tracking: self)
+            .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.itemPicker)
             .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
         }
         .detent(
             item: $viewModel.isSearchPresented,
-            transitionType: .detent(style: [.large])
+            transitionType: .detent(style: [.large]),
+            options: .constant(.withoutGrabber)
         ) { [weak viewModel] model in
             FormFieldSearchView(
-                viewModel: FormFieldSearchViewModel(
-                    stepId: model.stepId,
-                    fieldId: model.id
-                ),
+                model: model,
                 onSelected: { [weak viewModel] selected in
                     viewModel?.getFormStepValue(for: model.id).value = selected.value
                     viewModel?.getFormStepValue(for: model.id).selectedDisplayTitle = selected.title
                     viewModel?.isSearchPresented = nil
-                },
-                onCancel: {
-                    viewModel?.isSearchPresented = nil
                 }
             )
             .navigationTitle(model.title)
-            .embededInNavigation(options: .largeNavigationBar, tracking: self)
+            .embededInNavigation(tracking: SubmitClaimModalType.search)
         }
     }
 }
 
-extension SubmitClaimFormView: TrackingViewNameProtocol {
+private enum SubmitClaimModalType: TrackingViewNameProtocol {
+    case itemPicker
+    case datePicker
+    case search
+
     var nameForTracking: String {
-        .init(describing: SubmitClaimFormView.self)
+        switch self {
+        case .itemPicker:
+            return String(describing: ItemPickerScreen<SingleSelectValue>.self)
+        case .datePicker:
+            return String(describing: DatePickerView.self)
+        case .search:
+            return String(describing: FormFieldSearchView.self)
+        }
     }
 }
 
