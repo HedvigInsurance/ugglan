@@ -27,16 +27,8 @@ struct FormFieldSearchView: View {
         }
         .hFormAlwaysAttachToBottom {
             hSection {
-                VStack(spacing: .padding4) {
-                    hButton(.large, .primary, content: .init(title: "Confirm")) {
-                        if let selectedValue = vm.selectedValue {
-                            onSelected?(selectedValue)
-                        }
-                    }
-                    .disabled(vm.selectedValue == nil)
-                    hCancelButton(type: .secondary) {
-                        router.dismiss()
-                    }
+                hCancelButton(type: .secondary) {
+                    router.dismiss()
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -90,19 +82,15 @@ struct FormFieldSearchView: View {
                             itemDisplayName: nil,
                             leftViewWithItem: nil,
                             leftView: nil,
-                            cellView: {
-                                hRadioOptionSelectedView<SingleSelectValue>(
-                                    selectedValue: $vm.selectedValue,
-                                    value: result
-                                )
-                                .asAnyView
-                            }
+                            cellView: nil
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            vm.selectedValue = result
+                            onSelected?(result)
                         }
                     }
+                    .withChevronAccessory
+                    .hRowContentAlignment(.center)
                 }
             }
         }
