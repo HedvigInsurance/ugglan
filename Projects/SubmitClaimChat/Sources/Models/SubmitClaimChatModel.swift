@@ -31,6 +31,12 @@ struct SingleSelectValue: Hashable {
     let value: String
 }
 
+struct SearchFieldModel: Equatable, Identifiable {
+    let id: String
+    let stepId: String
+    let title: String
+}
+
 enum SubmitClaimChatMessageSender {
     case hedvig
     case member
@@ -163,6 +169,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         case singleSelect
         case multiSelect
         case binary
+        case search
     }
 }
 

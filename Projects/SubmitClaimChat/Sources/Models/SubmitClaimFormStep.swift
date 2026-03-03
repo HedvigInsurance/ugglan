@@ -20,6 +20,14 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
             handleFieldPresentation(dismissed: oldValue?.id)
         }
     }
+    @Published var isSearchPresented: SearchFieldModel? {
+        willSet {
+            UIApplication.dismissKeyboard()
+        }
+        didSet {
+            handleFieldPresentation(dismissed: oldValue?.id)
+        }
+    }
     @Published var dateForPicker: Date = Date()
     @Published var formValues: [String: FormStepValue] = [:]
 
@@ -88,6 +96,10 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         formModel.fields
             .map { field in
                 let userEnteredValues = formValues[field.id]!.values
+                // For search fields, use the stored display title
+                if field.type == .search, let displayTitle = formValues[field.id]?.selectedDisplayTitle {
+                    return .init(key: field.title, value: displayTitle, skipped: false)
+                }
                 let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
                 if !valuesToDisplay.isEmpty {
                     let valueToDisplay = valuesToDisplay.joined(separator: ", ")
@@ -133,6 +145,8 @@ final class FormStepValue: ObservableObject {
         }
     }
     @Published var error: String?
+    /// Display title for search-selected values (since the value is an opaque ID)
+    @Published var selectedDisplayTitle: String?
     init(values: [String]) {
         self.value = values.first ?? ""
         self.values = values

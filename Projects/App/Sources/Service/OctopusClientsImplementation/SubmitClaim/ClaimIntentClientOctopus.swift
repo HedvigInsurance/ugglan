@@ -206,6 +206,28 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         }
     }
 
+    func claimIntentFormFieldSearch(
+        stepId: String,
+        fieldId: String,
+        query: String
+    ) async throws -> [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] {
+        let input = OctopusGraphQL.ClaimIntentFormFieldSearchInput(
+            stepId: stepId,
+            fieldId: fieldId,
+            query: query
+        )
+        let searchQuery = OctopusGraphQL.ClaimIntentFormFieldSearchQuery(input: input)
+
+        do {
+            let data = try await octopus.client.fetch(query: searchQuery)
+            return data.claimIntentFormFieldSearch.options.map {
+                .init(title: $0.title, subtitle: $0.subtitle, value: $0.value)
+            }
+        } catch {
+            throw try logClaimIntentError(error)
+        }
+    }
+
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntentType? {
         let input = OctopusGraphQL.ClaimIntentSubmitSelectInput(stepId: stepId, selectedId: selectedValue)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSelectMutation(input: input)
@@ -365,6 +387,8 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
             return .binary
         case .multiSelect:
             return .multiSelect
+        case .search:
+            return .search
         }
     }
 }

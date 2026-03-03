@@ -67,6 +67,27 @@ struct SubmitClaimFormView: View {
             .embededInNavigation(options: .largeNavigationBar, tracking: self)
             .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
         }
+        .detent(
+            item: $viewModel.isSearchPresented,
+            transitionType: .detent(style: [.large])
+        ) { [weak viewModel] model in
+            FormFieldSearchView(
+                viewModel: FormFieldSearchViewModel(
+                    stepId: model.stepId,
+                    fieldId: model.id
+                ),
+                onSelected: { [weak viewModel] selected in
+                    viewModel?.getFormStepValue(for: model.id).value = selected.value
+                    viewModel?.getFormStepValue(for: model.id).selectedDisplayTitle = selected.title
+                    viewModel?.isSearchPresented = nil
+                },
+                onCancel: {
+                    viewModel?.isSearchPresented = nil
+                }
+            )
+            .navigationTitle(model.title)
+            .embededInNavigation(options: .largeNavigationBar, tracking: self)
+        }
     }
 }
 
@@ -107,6 +128,8 @@ struct FormFieldView: View {
             singleSelectField
         case .multiSelect:
             multiSelectField
+        case .search:
+            searchField
         }
     }
     var numberView: some View {
@@ -213,6 +236,20 @@ struct FormFieldView: View {
                 id: field.id,
                 values: values,
                 multiselect: true,
+                title: field.title
+            )
+        }
+    }
+
+    private var searchField: some View {
+        DropdownView(
+            value: fieldViewModel.selectedDisplayTitle ?? "",
+            placeHolder: field.title,
+            error: $fieldViewModel.error
+        ) { [weak viewModel] in
+            viewModel?.isSearchPresented = .init(
+                id: field.id,
+                stepId: viewModel?.claimIntent.currentStep.id ?? "",
                 title: field.title
             )
         }

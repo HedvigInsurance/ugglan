@@ -194,6 +194,17 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     title: "Multi select",
                                     type: .multiSelect
                                 ),
+                                .init(
+                                    defaultValues: [],
+                                    id: "5",
+                                    isRequired: true,
+                                    maxValue: nil,
+                                    minValue: nil,
+                                    options: [],
+                                    suffix: nil,
+                                    title: "Search",
+                                    type: .search
+                                ),
                             ]
                         )
                     ),
@@ -246,6 +257,22 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 progress: 0
             )
         )
+    }
+
+    public func claimIntentFormFieldSearch(
+        stepId: String,
+        fieldId: String,
+        query: String
+    ) async throws -> [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] {
+        try await Task.sleep(nanoseconds: 300_000_000)
+        let allOptions: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] = [
+            .init(title: "iPhone 15 Pro", subtitle: "Apple", value: "iphone_15_pro"),
+            .init(title: "iPhone 14", subtitle: "Apple", value: "iphone_14"),
+            .init(title: "Samsung Galaxy S24", subtitle: "Samsung", value: "galaxy_s24"),
+            .init(title: "Google Pixel 8", subtitle: "Google", value: "pixel_8"),
+        ]
+        if query.isEmpty { return allOptions }
+        return allOptions.filter { $0.title.localizedCaseInsensitiveContains(query) }
     }
 
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {
@@ -390,6 +417,17 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 suffix: nil,
                                 title: "multi select",
                                 type: .multiSelect
+                            ),
+                            .init(
+                                defaultValues: [],
+                                id: "id7",
+                                isRequired: false,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [],
+                                suffix: nil,
+                                title: "Search device",
+                                type: .search
                             ),
                         ]
                     )
