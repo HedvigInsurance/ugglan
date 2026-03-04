@@ -98,7 +98,7 @@ struct AddonSelectSubOptionScreen: View {
                 input: .init(
                     addonSource: .insurances,
                     contractConfigs: [
-                        .init(contractId: "contractId", exposureName: "exposure", displayName: "displayName")
+                        .init(contractId: "contractId", exposureName: "exposure", variantDisplayName: "displayName")
                     ]
                 )
             )

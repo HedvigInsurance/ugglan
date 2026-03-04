@@ -169,7 +169,7 @@ class PushNotificationHandler {
                     AddonConfig(
                         contractId: $0.id,
                         exposureName: $0.exposureDisplayName,
-                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                        variantDisplayName: $0.currentAgreement?.productVariant.displayName ?? ""
                     )
                 }
                 viewModel?.isAddonPresented = .init(

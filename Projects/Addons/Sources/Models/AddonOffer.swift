@@ -225,16 +225,16 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
 public struct AddonConfig: Hashable, Sendable {
     public let contractId: String
     let exposureName: String
-    let displayName: String
+    let variantDisplayName: String
 
     public init(
         contractId: String,
         exposureName: String,
-        displayName: String
+        variantDisplayName: String
     ) {
         self.contractId = contractId
         self.exposureName = exposureName
-        self.displayName = displayName
+        self.variantDisplayName = variantDisplayName
     }
 }
 

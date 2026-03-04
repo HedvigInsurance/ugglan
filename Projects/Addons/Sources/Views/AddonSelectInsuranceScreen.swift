@@ -15,7 +15,7 @@ public struct AddonSelectInsuranceScreen: View {
             items: {
                 let addonContractConfigs = vm.navigationVm.input.contractConfigs ?? []
                 let items = addonContractConfigs.map {
-                    (object: $0, displayName: ItemModel(title: $0.displayName, subTitle: $0.exposureName))
+                    (object: $0, displayName: ItemModel(title: $0.variantDisplayName, subTitle: $0.exposureName))
                 }
                 return items
             }(),
@@ -96,8 +96,8 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
                 input: .init(
                     addonSource: .insurances,
                     contractConfigs: [
-                        .init(contractId: "1", exposureName: "1", displayName: "1"),
-                        .init(contractId: "2", exposureName: "2", displayName: "2"),
+                        .init(contractId: "1", exposureName: "1", variantDisplayName: "1"),
+                        .init(contractId: "2", exposureName: "2", variantDisplayName: "2"),
                     ]
                 )
             )

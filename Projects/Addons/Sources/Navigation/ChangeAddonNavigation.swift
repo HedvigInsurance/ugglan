@@ -46,6 +46,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel?
     @Published var document: hPDFDocument?
+    @Published var activeAddonInfoModel: InfoViewDataModel?
     public let input: ChangeAddonInput
 
     let router = Router()
@@ -68,14 +69,14 @@ enum ChangeAddonRouterActions {
 struct ChangeAddonNavigation: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
-    public init(input: ChangeAddonInput) {
+    init(input: ChangeAddonInput) {
         changeAddonNavigationVm = .init(input: input)
     }
-    public init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
+    init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
         changeAddonNavigationVm = .init(offer: offer, preselectedAddonTitle: preselectedAddonTitle)
     }
 
-    public var body: some View {
+    var body: some View {
         RouterHost(
             router: changeAddonNavigationVm.router,
             options: [.extendedNavigationWidth],
@@ -138,6 +139,15 @@ struct ChangeAddonNavigation: View {
             transitionType: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
+        }
+        .detent(
+            item: $changeAddonNavigationVm.activeAddonInfoModel,
+            options: .constant(.withoutGrabber)
+        ) { infoModel in
+            InfoView(
+                title: infoModel.title,
+                description: infoModel.description
+            )
         }
     }
 }

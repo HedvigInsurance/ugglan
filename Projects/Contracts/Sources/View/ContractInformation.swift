@@ -400,8 +400,8 @@ extension Contract {
     var asContractConfig: AddonConfig {
         .init(
             contractId: id,
-            exposureName: currentAgreement?.productVariant.displayName ?? "",
-            displayName: exposureDisplayName
+            exposureName: exposureDisplayName,
+            variantDisplayName: currentAgreement?.productVariant.displayName ?? ""
         )
     }
 }

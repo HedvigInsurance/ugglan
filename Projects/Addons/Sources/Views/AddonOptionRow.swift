@@ -49,7 +49,7 @@ struct AddonOptionRow<Trailing: View>: View {
         .cornerRadius(.cornerRadiusL)
         .accessibilityElement(children: .combine)
         .accessibilityHint(hint)
-        .addAccessibilityAction(for: onTap, isSelected: isSelected)
+        .addAccessibilityAction(for: onTap, isSelected: isSelected, isDisabled: isDisabled)
     }
 
     private var hint: String {
@@ -105,7 +105,8 @@ private struct CheckmarkSquare<Color: hColor>: View {
 
 extension View {
     @ViewBuilder
-    fileprivate func addAccessibilityAction(for action: (() -> Void)?, isSelected: Bool) -> some View {
+    fileprivate func addAccessibilityAction(for action: (() -> Void)?, isSelected: Bool, isDisabled: Bool) -> some View
+    {
         if let action {
             self
                 .onTapGesture { withAnimation(.easeInOut(duration: 0.2)) { action() } }
@@ -114,12 +115,14 @@ extension View {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         action()
                     }
-                    Task {
-                        await delay(0.25)
-                        UIAccessibility.post(
-                            notification: .announcement,
-                            argument: isSelected ? L10n.a11YOptionNotSelected : L10n.voiceoverOptionSelected
-                        )
+                    if !isDisabled {
+                        Task {
+                            await delay(0.25)
+                            UIAccessibility.post(
+                                notification: .announcement,
+                                argument: isSelected ? L10n.a11YOptionNotSelected : L10n.voiceoverOptionSelected
+                            )
+                        }
                     }
                 }
         } else {

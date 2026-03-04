@@ -94,8 +94,8 @@ public struct ContractsNavigation<Content: View>: View {
                         contractsNavigationVm.isRemoveAddonPresented = .init(
                             contractInfo: .init(
                                 contractId: contract.id,
-                                exposureName: contract.currentAgreement?.productVariant.displayName ?? "",
-                                displayName: contract.exposureDisplayName
+                                exposureName: contract.exposureDisplayName,
+                                variantDisplayName: contract.currentAgreement?.productVariant.displayName ?? ""
                             ),
                             preselectedAddons: []
                         )

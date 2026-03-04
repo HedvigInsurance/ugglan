@@ -215,7 +215,7 @@ public let testCarAddonRisk: AddonOffer = .init(
 public let testRemoveOffer = AddonRemoveOffer(
     pageTitle: "Remove addon",
     pageDescription: "Select which addons you want to remove",
-    contractInfo: .init(contractId: "sad", exposureName: "exp", displayName: "dis"),
+    contractInfo: .init(contractId: "sad", exposureName: "exp", variantDisplayName: "dis"),
     currentTotalCost: .init(premium: .init(gross: .sek(529), net: .sek(450)), discounts: []),
     baseCost: .init(premium: .init(gross: .sek(469), net: .sek(399)), discounts: []),
     productVariant: carProductVariant,
@@ -251,18 +251,22 @@ public let testDeflectUpgradeTier = AddonDeflect(
 
 // MARK: - Test helpers
 @MainActor
-public let testAddonConfig = AddonConfig(contractId: "ContractId", exposureName: "Exposure", displayName: "Insurance")
+public let testAddonConfig = AddonConfig(
+    contractId: "ContractId",
+    exposureName: "Exposure",
+    variantDisplayName: "Insurance"
+)
 
 public let testTravelAddonConfig = AddonConfig(
     contractId: "travelContractId",
     exposureName: "Hemförsäkring",
-    displayName: "Hyresrätt"
+    variantDisplayName: "Hyresrätt"
 )
 
 public let testCarAddonConfig = AddonConfig(
     contractId: "carContractId",
     exposureName: "ABC 123",
-    displayName: "Bilförsäkring Hel"
+    variantDisplayName: "Bilförsäkring Hel"
 )
 
 public let testTravelChangeAddonInput = ChangeAddonInput(

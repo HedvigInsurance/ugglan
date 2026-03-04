@@ -89,7 +89,7 @@ struct ChangeAddonScreen: View {
                 AddonOptionToggableView(addon: addon, vm: vm)
             }
 
-            ForEach(activeAddons) { activeAddon in
+            ForEach(activeAddons) { [weak navigationVm] activeAddon in
                 AddonOptionRow(
                     title: activeAddon.displayTitle,
                     subtitle: activeAddon.displayDescription ?? "",
@@ -98,6 +98,12 @@ struct ChangeAddonScreen: View {
                     trailingView: {
                         hPill(text: L10n.addonBadgeActive, color: .green)
                             .hFieldSize(.small)
+                    },
+                    onTap: {
+                        navigationVm?.activeAddonInfoModel = .init(
+                            title: L10n.addonFlowAlreadyActiveExplanationTitle,
+                            description: L10n.addonFlowAlreadyActiveExplanationSubtitle
+                        )
                     }
                 )
             }
