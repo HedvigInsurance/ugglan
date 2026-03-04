@@ -59,7 +59,7 @@ final class AddonsServiceTests: XCTestCase {
         sut = mockService
 
         let respondedOffer = try await mockService.getAddonRemoveOffer(
-            config: .init(contractId: "cId", exposureName: "eName", displayName: "dName")
+            config: .init(contractId: "cId", exposureName: "eName", variantDisplayName: "dName")
         )
 
         assert(respondedOffer == testRemoveOffer)
