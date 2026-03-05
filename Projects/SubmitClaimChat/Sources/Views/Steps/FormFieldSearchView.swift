@@ -57,7 +57,7 @@ struct FormFieldSearchView: View {
             vc.definesPresentationContext = false
             vm.activateSearch()
         }
-        .scrollDismissesKeyboard(.immediately)
+        .dismissKeyboard()
     }
     private func errorView(message: String) -> some View {
         GenericErrorView(
