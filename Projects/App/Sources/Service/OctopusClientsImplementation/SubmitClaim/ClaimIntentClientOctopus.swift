@@ -356,7 +356,6 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
         guard let type = fragment.type.value?.asType else {
             throw ClaimIntentError.unknownField
         }
-        print("SUGGESTED QUERY \(fragment.suggestedQuery ?? "nil")")
         self.init(
             defaultValues: fragment.defaultValues,
             id: fragment.id,

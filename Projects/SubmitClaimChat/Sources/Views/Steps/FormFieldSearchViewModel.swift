@@ -9,19 +9,15 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     @Published var searchResults: [SingleSelectValue] = []
     @Published var processingState: ProcessingState = .success
     @Published var noResults: Bool = false
-    @Published var searchInProgress: Bool = false {
-        didSet {
-            selectedValue = nil
-        }
-    }
     @Published var selectedValue: SingleSelectValue?
     @Published var isDebouncing: Bool = false
+    @Published var searchText = ""
 
     private let stepId: String
     private let fieldId: String
     private let service: ClaimIntentService
     private var cancellables = Set<AnyCancellable>()
-    let searchSubject = PassthroughSubject<String, Never>()
+    let searchSubject = CurrentValueSubject<String, Never>("")
 
     lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -34,7 +30,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         return searchController
     }()
 
-    private let suggestedQuery: String?
+    let suggestedQuery: String?
 
     init(stepId: String, fieldId: String, suggestedQuery: String? = nil) {
         self.stepId = stepId
@@ -43,6 +39,8 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         self.service = ClaimIntentService()
         super.init()
         setupSearchSubscription()
+        searchSubject.send(suggestedQuery ?? "")
+        searchText = suggestedQuery ?? ""
     }
 
     private var didActivate = false
@@ -50,21 +48,19 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     func activateSearch() {
         if !didActivate {
             // Activate without animation
-            Task {
+            Task { [weak searchController] in
+                if let suggestedQuery, !suggestedQuery.isEmpty {
+                    searchController?.searchBar.text = suggestedQuery
+                }
                 await delay(0.1)
                 UIView.performWithoutAnimation {
-                    searchController.isActive = true
+                    searchController?.isActive = true
                 }
-
-                if let suggestedQuery, !suggestedQuery.isEmpty {
-                    searchController.searchBar.text = suggestedQuery
-                }
-
                 // Small delay to ensure the search bar is in the hierarchy
                 await delay(0.3)
-                searchController.searchBar.searchTextField.becomeFirstResponder()
+                searchController?.searchBar.searchTextField.becomeFirstResponder()
                 await delay(0.2)
-                searchController.searchBar.searchTextField.becomeFirstResponder()
+                searchController?.searchBar.searchTextField.becomeFirstResponder()
             }
             didActivate = true
         }
@@ -74,6 +70,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         searchSubject
             .handleEvents(
                 receiveOutput: { [weak self] value in
+                    self?.searchText = value
                     if value.count > 1 {
                         self?.noResults = false
                         self?.isDebouncing = true
@@ -127,7 +124,6 @@ extension FormFieldSearchViewModel: UISearchResultsUpdating {
     nonisolated func updateSearchResults(for searchController: UISearchController) {
         MainActor.assumeIsolated {
             let text = searchController.searchBar.text ?? ""
-            searchInProgress = searchController.isActive
             searchSubject.send(text)
             updateColors()
         }

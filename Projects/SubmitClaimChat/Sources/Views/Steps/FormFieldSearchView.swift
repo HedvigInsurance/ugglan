@@ -14,7 +14,6 @@ struct FormFieldSearchView: View {
         )
         self.onSelected = onSelected
     }
-
     var body: some View {
         hForm {
             if isProcessingLoading && vm.searchResults.isEmpty {
@@ -24,10 +23,10 @@ struct FormFieldSearchView: View {
             }
             if case .error(let errorMessage) = vm.processingState {
                 errorView(message: errorMessage)
+            } else if vm.searchText.count < 2 {
+                notSearchState
             } else if vm.noResults {
                 emptyResults
-            } else if !vm.searchInProgress || vm.searchController.searchBar.text?.count ?? 0 < 2 {
-                notSearchState
             } else {
                 resultsView
             }
@@ -41,10 +40,9 @@ struct FormFieldSearchView: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(
-            !vm.searchInProgress || isProcessingError || vm.noResults
-                || vm.searchController.searchBar.text?.count ?? 0 < 2 ? .center : .top
+            isProcessingError || vm.noResults
+                || vm.searchText.count < 2 ? .center : .top
         )
-        .animation(.default, value: vm.searchInProgress)
         .animation(.default, value: vm.searchResults)
         .animation(.default, value: vm.processingState)
         .animation(.default, value: vm.selectedValue)
@@ -130,7 +128,7 @@ struct FormFieldSearchView: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     return FormFieldSearchView(
-        model: .init(id: "id", stepId: "stepId", title: "title", suggestedQuery: nil),
+        model: .init(id: "id", stepId: "stepId", title: "title", suggestedQuery: "Iphone"),
         onSelected: { _, _ in }
     )
     .embededInNavigation(tracking: "")
