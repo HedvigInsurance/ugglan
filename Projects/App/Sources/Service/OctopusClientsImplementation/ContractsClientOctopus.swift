@@ -138,7 +138,9 @@ extension Contract {
             terminationDate: contract.terminationDate,
             supportsAddressChange: contract.supportsMoving,
             supportsCoInsured: contract.supportsCoInsured,
-            supportsCoOwners: !contract.supportsCoInsured,  // TODO: Testing
+            supportsCoOwners:
+                TypeOfContract
+                .resolve(for: contract.currentAgreement.productVariant.typeOfContract) == .seVacationHome,  // TODO: Testing
             supportsTravelCertificate: contract.supportsTravelCertificate,
             supportsChangeTier: contract.supportsChangeTier,
             upcomingChangedAgreement: upcomoingAgreement,
