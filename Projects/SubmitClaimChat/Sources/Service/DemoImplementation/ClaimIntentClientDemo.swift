@@ -271,10 +271,25 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     ) async throws -> [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] {
         try await Task.sleep(nanoseconds: 500_000_000)
         let allOptions: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] = [
-            .init(title: "iPhone 15 Pro", subtitle: "Apple", value: "iphone_15_pro"),
-            .init(title: "iPhone 14", subtitle: "Apple", value: "iphone_14"),
-            .init(title: "Samsung Galaxy S24", subtitle: "Samsung", value: "galaxy_s24"),
-            .init(title: "Google Pixel 8", subtitle: "Google", value: "pixel_8"),
+            .init(
+                title: "iPhone 15 Pro",
+                subtitle: "Apple",
+                value: "iphone_15_pro",
+                imageUrl: "https://d2rro69q822tnr.cloudfront.net/produktbilder/163169278255445648779_small.jpg"
+            ),
+            .init(
+                title: "iPhone 14",
+                subtitle: "Apple",
+                value: "iphone_14",
+                imageUrl: "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14.jpg"
+            ),
+            .init(
+                title: "Samsung Galaxy S24",
+                subtitle: "Samsung",
+                value: "galaxy_s24",
+                imageUrl: "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg"
+            ),
+            .init(title: "Google Pixel 8", subtitle: "Google", value: "pixel_8", imageUrl: nil),
         ]
         if query.isEmpty { return allOptions }
         return allOptions.filter { $0.title.localizedCaseInsensitiveContains(query) }

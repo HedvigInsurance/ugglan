@@ -29,6 +29,14 @@ struct SingleSelectValue: Hashable {
     let title: String
     let subtitle: String?
     let value: String
+    let imageUrl: String?
+
+    init(title: String, subtitle: String?, value: String, imageUrl: String? = nil) {
+        self.title = title
+        self.subtitle = subtitle
+        self.value = value
+        self.imageUrl = imageUrl
+    }
 }
 
 struct SearchFieldModel: Equatable, Identifiable {
@@ -157,11 +165,13 @@ public struct ClaimIntentStepContentForm: Sendable {
         let title: String
         let subtitle: String?
         let value: String
+        let imageUrl: String?
 
-        public init(title: String, subtitle: String?, value: String) {
+        public init(title: String, subtitle: String?, value: String, imageUrl: String? = nil) {
             self.title = title
             self.subtitle = subtitle
             self.value = value
+            self.imageUrl = imageUrl
         }
     }
 

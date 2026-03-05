@@ -221,7 +221,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.fetch(query: searchQuery)
             return data.claimIntentFormFieldSearch.options.map {
-                .init(title: $0.title, subtitle: $0.subtitle, value: $0.value)
+                .init(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl)
             }
         } catch {
             throw try logClaimIntentError(error)
@@ -362,7 +362,8 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
             isRequired: fragment.isRequired,
             maxValue: fragment.maxValue,
             minValue: fragment.minValue,
-            options: fragment.options?.map { .init(title: $0.title, subtitle: $0.subtitle, value: $0.value) } ?? [],
+            options: fragment.options?
+                .map { .init(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl) } ?? [],
             suffix: fragment.suffix,
             suggestedQuery: fragment.suggestedQuery,
             title: fragment.title,

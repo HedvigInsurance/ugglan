@@ -106,7 +106,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
                 query: query
             )
             searchResults = options.map {
-                SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value)
+                SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl)
             }
             processingState = .success
             if searchResults.isEmpty && !query.isEmpty {

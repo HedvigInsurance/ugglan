@@ -48,7 +48,14 @@ struct SubmitClaimFormView: View {
                             let selectedValues = fieldModel.values
 
                             return fieldOptions.filter({ selectedValues.contains($0.value) })
-                                .map({ SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value) })
+                                .map({
+                                    SingleSelectValue(
+                                        title: $0.title,
+                                        subtitle: $0.subtitle,
+                                        value: $0.value,
+                                        imageUrl: $0.imageUrl
+                                    )
+                                })
                         }
                         return []
                     },
@@ -82,7 +89,7 @@ struct SubmitClaimFormView: View {
                     viewModel?.isSearchPresented = nil
                 }
             )
-            .navigationTitle(model.title)
+            .navigationTitle("Search for your item")
             .embededInNavigation(tracking: SubmitClaimModalType.search)
         }
     }

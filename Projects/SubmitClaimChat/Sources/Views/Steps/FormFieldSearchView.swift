@@ -1,3 +1,4 @@
+import Kingfisher
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -56,6 +57,7 @@ struct FormFieldSearchView: View {
             vc.definesPresentationContext = false
             vm.activateSearch()
         }
+        .scrollDismissesKeyboard(.immediately)
     }
     private func errorView(message: String) -> some View {
         GenericErrorView(
@@ -79,8 +81,8 @@ struct FormFieldSearchView: View {
     private var emptyResults: some View {
         hSection {
             VStack(spacing: 0) {
-                hText("No results")
-                hText("Check your input or try searching with different keywords")
+                hText("No results found")
+                hText("Try a different word or check your spelling")
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
@@ -93,14 +95,31 @@ struct FormFieldSearchView: View {
             ForEach(vm.searchResults, id: \.title) { [unowned vm] result in
                 hSection {
                     hRow {
-                        hFieldTextContent<SingleSelectValue>(
-                            item: .init(title: result.title, subTitle: result.subtitle),
-                            fieldSize: .medium,
-                            itemDisplayName: nil,
-                            leftViewWithItem: nil,
-                            leftView: nil,
-                            cellView: nil
-                        )
+                        HStack(spacing: .padding16) {
+                            if let imageUrl = result.imageUrl, let url = URL(string: imageUrl) {
+                                HStack {
+                                    KFImage(url)
+                                        .placeholder {
+                                            WordmarkActivityIndicator(.standard)
+                                        }
+                                        .onFailureImage(hCoreUIAssets.helipadBig.image)
+                                        .resizable()
+                                        .fade(duration: 0.1)
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxHeight: 46)
+                                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
+                                }
+                                .frame(width: 46)
+                            }
+                            VStack(alignment: .leading, spacing: 4) {
+                                hText(result.title, style: .heading1)
+                                if let subtitle = result.subtitle {
+                                    hText(subtitle, style: .label)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                }
+                            }
+                            Spacer()
+                        }
                         .contentShape(Rectangle())
                         .onTapGesture {
                             onSelected?(result, vm.searchController.searchBar.text ?? "")
@@ -128,7 +147,7 @@ struct FormFieldSearchView: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     return FormFieldSearchView(
-        model: .init(id: "id", stepId: "stepId", title: "title", suggestedQuery: "Iphone"),
+        model: .init(id: "id", stepId: "stepId", title: "title", suggestedQuery: "sams"),
         onSelected: { _, _ in }
     )
     .embededInNavigation(tracking: "")
