@@ -15,7 +15,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     public let router = Router()
@@ -214,7 +214,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                     Toasts.shared.displayToastBar(toast: .init(type: .error, text: exception.localizedDescription))
                 }
             }
-        case .editCoInsured:
+        case .editCoInsured, .editCoOwners:
             helpCenterVm.editCoInsuredVm.start()
         case .upgradeCoverage:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()

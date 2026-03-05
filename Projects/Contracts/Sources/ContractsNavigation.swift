@@ -67,8 +67,8 @@ public struct ContractsNavigation<Content: View>: View {
                 onSelectedType: { selectedType in
                     contractsNavigationVm.changeYourInformationContract = nil
                     switch selectedType {
-                    case .coInsured:
-                        let configContract: InsuredPeopleConfig = .init(
+                    case .coInsured, .coOwners:
+                        let configContract: StakeHoldersConfig = .init(
                             contract: contract,
                             fromInfoCard: false
                         )
@@ -152,8 +152,8 @@ public class ContractsNavigationViewModel: ObservableObject {
 
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: hPDFDocument?
-    @Published public var editCoInsuredConfig: InsuredPeopleConfig?
-    @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
+    @Published public var editCoInsuredConfig: StakeHoldersConfig?
+    @Published public var editCoInsuredMissingAlert: StakeHoldersConfig?
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Agreement?
     @Published public var isChangeAddressPresented = false
@@ -163,7 +163,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var addonActionPresented: AddonAction?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 
     public init() {}

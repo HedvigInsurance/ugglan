@@ -62,6 +62,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             terminationDate: nil,
             supportsAddressChange: false,
             supportsCoInsured: false,
+            supportsCoOwners: false,
             supportsTravelCertificate: false,
             supportsChangeTier: false,
             upcomingChangedAgreement: nil,
@@ -70,7 +71,8 @@ public class FetchContractsClientDemo: FetchContractsClient {
             lastName: "",
             ssn: nil,
             typeOfContract: TypeOfContract.seHouse,
-            coInsured: []
+            coInsured: [],
+            coOwners: [],
         )
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }

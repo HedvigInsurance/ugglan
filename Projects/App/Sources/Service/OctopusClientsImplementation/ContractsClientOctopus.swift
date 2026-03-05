@@ -105,6 +105,7 @@ extension Contract {
             terminationDate: nil,
             supportsAddressChange: false,
             supportsCoInsured: false,
+            supportsCoOwners: false,
             supportsTravelCertificate: false,
             supportsChangeTier: false,
             upcomingChangedAgreement: nil,
@@ -114,7 +115,8 @@ extension Contract {
             ssn: ssn,
             typeOfContract: TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract),
             coInsured: [],
-            addonsInfo: addonsInfo
+            coOwners: [],
+            addonsInfo: addonsInfo,
         )
     }
 
@@ -136,6 +138,7 @@ extension Contract {
             terminationDate: contract.terminationDate,
             supportsAddressChange: contract.supportsMoving,
             supportsCoInsured: contract.supportsCoInsured,
+            supportsCoOwners: !contract.supportsCoInsured,  // TODO: Testing
             supportsTravelCertificate: contract.supportsTravelCertificate,
             supportsChangeTier: contract.supportsChangeTier,
             upcomingChangedAgreement: upcomoingAgreement,
@@ -145,7 +148,8 @@ extension Contract {
             ssn: ssn,
             typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract),
             coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
-            addonsInfo: addonsInfo
+            coOwners: [],  // TODO: fix
+            addonsInfo: addonsInfo,
         )
     }
 }

@@ -18,7 +18,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     @Published var type: CoInsuredInputType?
     @Published var actionType: CoInsuredAction
     let contractId: String
-    let coInsuredModel: CoInsuredModel
+    let coInsuredModel: StakeHolder
     var editCoInsuredService = EditCoInsuredService()
 
     func showErrorView(inputError: String?) -> Bool {
@@ -26,7 +26,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     }
 
     init(
-        coInsuredModel: CoInsuredModel,
+        coInsuredModel: StakeHolder,
         actionType: CoInsuredAction,
         contractId: String
     ) {

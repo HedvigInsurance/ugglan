@@ -9,7 +9,7 @@ import hCoreUI
 struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
     @ObservedObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
-    let itemPickerConfig: ItemConfig<CoInsuredModel>
+    let itemPickerConfig: ItemConfig<StakeHolder>
     init(vm: WhoIsTravelingViewModel, travelCertificateNavigationVm: TravelCertificateNavigationViewModel) {
         self.vm = vm
         self.travelCertificateNavigationVm = travelCertificateNavigationVm
@@ -55,7 +55,7 @@ struct WhoIsTravelingScreen: View {
     }
 
     var body: some View {
-        ItemPickerScreen<CoInsuredModel>(
+        ItemPickerScreen<StakeHolder>(
             config: itemPickerConfig
         )
         .hFormContentPosition(.bottom)
@@ -67,7 +67,7 @@ struct WhoIsTravelingScreen: View {
 @MainActor
 class WhoIsTravelingViewModel: ObservableObject {
     let specification: TravelInsuranceContractSpecification
-    let coInsuredModelData: [CoInsuredModel]
+    let coInsuredModelData: [StakeHolder]
     @Published var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
     @Published var hasMissingCoInsuredData = false
     var isPolicyHolderIncluded = true
@@ -79,13 +79,13 @@ class WhoIsTravelingViewModel: ObservableObject {
         self.router = router
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contract = contractStore.state.contractForId(specification.contractId)
-        let insuranceHolder = CoInsuredModel(
+        let insuranceHolder = StakeHolder(
             firstName: contract?.firstName,
             lastName: contract?.lastName,
             SSN: contract?.ssn,
             needsMissingInfo: false
         )
-        var coInsured: [CoInsuredModel] = []
+        var coInsured: [StakeHolder] = []
         coInsured.append(insuranceHolder)
         coInsured.append(contentsOf: contract?.coInsured.filter { !$0.hasMissingInfo } ?? [])
         coInsuredModelData = coInsured

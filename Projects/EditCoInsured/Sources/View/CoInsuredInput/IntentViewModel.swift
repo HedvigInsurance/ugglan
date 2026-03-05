@@ -38,7 +38,7 @@ public class IntentViewModel: ObservableObject {
     var contractId: String?
 
     @MainActor
-    func getIntent(contractId: String, origin: GetIntentOrigin, coInsured: [CoInsuredModel]) async {
+    func getIntent(contractId: String, origin: GetIntentOrigin, coInsured: [StakeHolder]) async {
         self.contractId = contractId
         withAnimation {
             self.isLoading = true

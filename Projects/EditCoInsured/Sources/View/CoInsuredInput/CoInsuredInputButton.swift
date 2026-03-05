@@ -34,7 +34,9 @@ public struct CoInsuredInputButton: View {
                 } else {
                     CoInsuredActionButton(
                         style: .primary,
-                        title: vm.buttonDisplayText,
+                        title: vm.buttonDisplayText(
+                            for: editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType
+                        ),
                         vm: vm,
                         intentViewModel: intentViewModel,
                         onTap: {
@@ -50,7 +52,7 @@ public struct CoInsuredInputButton: View {
         .disabled(vm.buttonIsDisabled && !(vm.actionType == .delete))
     }
 
-    var coInsuredToDelete: CoInsuredModel {
+    var coInsuredToDelete: StakeHolder {
         (vm.personalData.firstName == "" && vm.SSN == "")
             ? .init()
             : .init(
@@ -62,7 +64,7 @@ public struct CoInsuredInputButton: View {
             )
     }
 
-    var coInsuredPerformModel: CoInsuredModel {
+    var coInsuredPerformModel: StakeHolder {
         .init(
             firstName: vm.personalData.firstName,
             lastName: vm.personalData.lastName,
@@ -81,7 +83,7 @@ public struct CoInsuredInputButton: View {
     }
 
     private func performIntent(for action: CoInsuredAction) async {
-        let coInsuredModel: [CoInsuredModel] = {
+        let coInsuredModel: [StakeHolder] = {
             switch action {
             case .add:
                 return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
@@ -158,11 +160,11 @@ private struct CoInsuredActionButton: View {
 }
 
 extension CoInusuredInputViewModel {
-    var buttonDisplayText: String {
+    func buttonDisplayText(for stakeHolderType: StakeHolderType) -> String {
         if !noSSN, !nameFetchedFromSSN {
             return L10n.contractSsnFetchInfo
         } else {
-            return L10n.contractAddCoinsured
+            return stakeHolderType.addButtonTitle
         }
     }
 

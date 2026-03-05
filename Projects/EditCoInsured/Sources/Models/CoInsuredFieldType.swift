@@ -50,14 +50,14 @@ enum CoInsuredFieldType {
         }
     }
 
-    var title: String {
+    func title(for stakeHolderType: StakeHolderType) -> String {
         switch self {
         case .empty:
-            return L10n.contractAddConisuredInfo
+            return stakeHolderType.addInfoTitle
         case .localEdit:
-            return L10n.contractAddConisuredInfo
+            return stakeHolderType.addInfoTitle
         case .delete:
-            return L10n.contractRemoveCoinsuredConfirmation
+            return stakeHolderType.removeConfirmationTitle
         }
     }
 

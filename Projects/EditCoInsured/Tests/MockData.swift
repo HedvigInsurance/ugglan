@@ -38,7 +38,7 @@ struct MockData {
 
 typealias SendMidtermChangeIntent = (String) async throws -> Void
 typealias FetchPersonalInformation = (String) async throws -> PersonalData?
-typealias SendIntent = @Sendable (String, [CoInsuredModel]) async throws -> Intent
+typealias SendIntent = @Sendable (String, [StakeHolder]) async throws -> Intent
 typealias FetchContracts = () async throws -> [Contract]
 
 class MockEditCoInsuredService: EditCoInsuredClient {
@@ -84,7 +84,7 @@ class MockEditCoInsuredService: EditCoInsuredClient {
         return data
     }
 
-    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
+    func sendIntent(contractId: String, coInsured: [StakeHolder]) async throws -> Intent {
         events.append(.sendIntent)
         let data = try await submitIntent(contractId, coInsured)
         return data

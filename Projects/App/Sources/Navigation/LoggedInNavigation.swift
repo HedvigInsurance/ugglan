@@ -414,17 +414,13 @@ class DeepLinkHandler {
             if let contractId = url.getParameter(property: .contractId),
                 let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
             {
-                let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
+                let contractConfig: StakeHoldersConfig = .init(contract: contract, fromInfoCard: false)
 
-                if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
-                    viewModel.homeNavigationVm.editCoInsuredVm
-                        .start(
-                            fromContract: contractConfig,
-                            forMissingCoInsured: true
-                        )
-                } else {
-                    viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
-                }
+                viewModel.homeNavigationVm.editCoInsuredVm.start(
+                    fromContract: contractConfig,
+                    forMissingStakeHolders: (contract.nbOfMissingCoInsuredWithoutTermination
+                        + contract.nbOfMissingCoOwnersWithoutTermination) > 0
+                )
             } else {
                 // select insurance
                 viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
