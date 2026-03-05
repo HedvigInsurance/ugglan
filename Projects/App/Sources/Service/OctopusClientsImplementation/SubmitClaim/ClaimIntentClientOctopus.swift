@@ -373,7 +373,7 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
 }
 
 extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
-    public var asType: ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldType {
+    public var asType: ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldType? {
         switch self {
         case .text:
             return .text

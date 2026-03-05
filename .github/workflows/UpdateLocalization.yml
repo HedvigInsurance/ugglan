@@ -36,11 +36,11 @@ jobs:
       - name: Build project
         if: steps.changes.outputs.has_changes == 'true'
         run: xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro' CODE_SIGNING_ALLOWED=NO
-      - name: Commit changes
+      - name: Push changes
         if: steps.changes.outputs.has_changes == 'true'
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add .
-          git commit -m "Update localizations"
+          git config user.name "hedvig-ops-bot"
+          git config user.email "infra@hedvig.com"
+          git add -A
+          git commit -m "chore: Updated translations $(date +'%Y-%m-%d-%H%M%S')"
           git push
